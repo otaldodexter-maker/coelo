@@ -122,5 +122,44 @@
    "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-create-revisao.jpg; units-list-apos-criar.jpg; public.units f5284f2f",
    "recordedAt": "2026-09-11T10:35:00-03:00"
   }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 10:49-10:52): rota normal do catalogo da instituicao 190dd028 em producao com qa-r03 (build release de qa_main + CDP): Criar local -> \"Sala R04 Estrutura\" (interno, andar Terreo) salvo e detalhe aberto; Editar local -> andar \"1o andar\" salvo; detalhe recarregado por Page.navigate mantem os dados. Correcao no caminho: o balao de chat cobria o botao Salvar do formulario (Decisao 7), removido em a276f15a8 com teste.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+   "revision": "estrutura.json rev 37",
+   "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me | provas: locations-create-form.jpg; locations-detail-apos-criar.jpg; locations-edit-form.jpg; locations-detail-apos-reload.jpg",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_location_create_v2 (lote 47) e superadmin_location_update_v2 (lote 48) em producao alcancados pela sessao interna do qa-r03: public.activity_locations 82e92854-8229-4a9d-a890-042e17d669d3 criado 13:49:32Z (audit location.create success) e editado 13:52:08Z (audit location.update success, management_version 2). Negativas medidas no espelho de producao (baseline + 102 lotes): superadmin_location_catalog_v2_authorization_test 26/26 (cross-institution unit is denied; cross-scope and nonexistent ids are indistinguishable; sessao externa nao vira ator interno), catalog_v2 30/30, update_status_v2 28/28, isolation 6/6. A suite de autorizacao tinha fixture com units.institution_type_id (coluna inexistente em producao); corrigida para unit_type_id/handle nesta continuacao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 37",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt), lotes 46-49 e 81-95 aplicados | provas: supabase db query --linked somente leitura em 11/09 10:52 (public.activity_locations, audit location.create/location.update); pgTAP authorization 26/26, catalog 30/30, update_status 28/28, isolation 6/6 no espelho supabase_db_coelo_baseline_estrutura",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal abre, criar e editar persistem em producao, RLS/escopo nega outra instituicao por pgTAP e o reload do detalhe mantem o local (regua do MVP, ADR 0034). Fora desta prova: agenda semanal (locations.schedule), copia Trazer da instituicao e midia do local.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+   "revision": "estrutura.json rev 37",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: locations-create-form.jpg; locations-detail-apos-criar.jpg; locations-edit-form.jpg; locations-detail-apos-reload.jpg; public.activity_locations 82e92854",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
  }
 ]

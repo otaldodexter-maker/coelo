@@ -233,9 +233,14 @@ UnitRecord _record(Map<String, dynamic> row, {InstitutionRecord? fallbackInstitu
   final branding = _mapOrEmpty(row['branding']);
   final unitType = _mapOrEmpty(row['unit_type']);
   final inheritedPlan = effectivePlan['inherited'] != false;
+  // O handle publico vem em public_profile e e atribuido pelo servidor: o
+  // payload de criacao/atualizacao nunca o envia (update rejeita a chave), por
+  // isso ele so entra no registro para ser exibido.
+  final publicProfile = _mapOrEmpty(row['public_profile']);
   return UnitRecord(
     institution: parent,
     managementVersion: _int(row['management_version']),
+    handle: (publicProfile['handle'] as String? ?? '').trim(),
     unit: InstitutionUnit(
       id: _string(row, 'id'),
       name: _string(row, 'name'),

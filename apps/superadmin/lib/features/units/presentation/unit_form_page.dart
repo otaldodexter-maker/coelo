@@ -311,6 +311,7 @@ final class _UnitFormPageState extends State<UnitFormPage> {
           institution: _institution,
           unit: unit,
           managementVersion: _original?.managementVersion ?? 0,
+          handle: _original?.handle ?? '',
         ),
       );
       if (!mounted) return;
@@ -541,6 +542,30 @@ final class _UnitFormPageState extends State<UnitFormPage> {
     ],
   );
 
+  /// O Identificador e o `slug`, gravado como digitado. O `@` publico e outra
+  /// coisa: `create_unit_for_superadmin` o deriva no servidor (letras e numeros
+  /// do slug, sem hifens, mais um sufixo do id) e `update_unit_for_superadmin`
+  /// rejeita a chave `handle`; so a acao de handle o altera. Este formulario
+  /// nao o edita, entao diz isso e mostra o valor final quando o conhece.
+  Widget _handleNote() {
+    final theme = Theme.of(context);
+    final handle = _original?.handle ?? '';
+    final text = _original == null
+        ? 'O @ público é gerado pelo servidor ao criar: letras e números do '
+              'identificador (sem hífens) mais um sufixo com o código da unidade. '
+              'Não é editado por este formulário.'
+        : handle.isEmpty
+        ? 'O @ público foi atribuído pelo servidor na criação e não é editado por '
+              'este formulário.'
+        : '@ público: @$handle · atribuído pelo servidor na criação a partir do '
+              'identificador; não é editado por este formulário.';
+    return Text(
+      text,
+      key: const Key('unit-handle-note'),
+      style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+    );
+  }
+
   Widget _branding() {
     final colors = Theme.of(context).colorScheme;
     final accent = _unitHexColor(
@@ -720,12 +745,19 @@ final class _UnitFormPageState extends State<UnitFormPage> {
             key: const Key('unit-name-field'),
             required: true,
           ),
-          _field(
-            'slug',
-            'Identificador',
-            Icons.alternate_email_rounded,
-            key: const Key('unit-slug-field'),
-            required: true,
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              _field(
+                'slug',
+                'Identificador',
+                Icons.alternate_email_rounded,
+                key: const Key('unit-slug-field'),
+                required: true,
+              ),
+              const SizedBox(height: CoeloSpacing.space1),
+              _handleNote(),
+            ],
           ),
           CoeloAdminSingleSelectField<UnitFilterOption>(
             label: 'Tipo',

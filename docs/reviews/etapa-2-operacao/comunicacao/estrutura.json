@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 36,
+ "revision": 37,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-11T10:35:21-03:00",
+ "updatedAt": "2026-09-11T11:00:27-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1",
  "conversa": "R04 · Estrutura (sessao coelo-b3), continuacao por ordem do Owner depois do fechamento da R04 (08:52)",
@@ -183,7 +183,7 @@
    "estado": "verde no espelho de producao (102 lotes na ordem real); aguardando o coordenador aplicar"
   }
  ],
- "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (10): groups.edit, institutions.create e units.create com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS e revertido.",
+ "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (13): groups.edit, institutions.create, units.create e locations.create-edit com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS (231 acoes; E2E 42) e revertido. O ensaio mostrou units.create ainda pending-verification no inventario de dev: o coordenador ainda nao aplicou este arquivo.",
  "pedidosAoCoordenador": [],
  "avisosParaOutrosGrupos": [
   {
@@ -192,13 +192,18 @@
    "texto": "padding inferior do scroll de conteudo passou de space6 (24px) para space10 (40px), com o rodape ja ancorado. Regravar medication_form_mobile_light depois de integrar esta branch; todos os formularios mobile ganham 16px de respiro no fim."
   }
  ],
- "perguntasParaOOwner": [],
+ "perguntasParaOOwner": [
+  "P38 (Unidades/Instituicoes, visual): o campo Identificador usa o icone @ mas grava o slug; o @ publico e gerado pelo servidor. Trocar o icone (ex.: link/tag) ou manter? Recomendacao: trocar, porque o @ induz a ler o campo como handle",
+  "P39 (Unidades, produto): o Identificador digitado deve virar o @ publico na criacao (exigiria proibir hifen no cliente) ou o @ continua derivado pelo servidor? Recomendacao: manter derivado ate existir a acao \"Alterar @\" no cliente"
+ ],
  "pendenciasDeCodeReview": [
   "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
   "Assercoes que esperavam SAI_MFA_REQUIRED do Owner em AAL1 foram trocadas pela regra do MVP em 9 suites (lista em regraDosTestesAAL1); revisar quando MFA voltar",
   "assessment_v2_save_configuration recebeu #variable_conflict use_variable: conferir as demais funcoes plpgsql de 180350 quanto a nomes de variaveis iguais a colunas (o pgTAP cobre os 12 RPCs, mas nao todo caminho)",
   "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
-  "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage"
+  "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage",
+  "superadmin_location_catalog_v2_authorization_test (lote 47) nunca rodou contra a forma de producao (units.institution_type_id); corrigida aqui. Conferir se outras suites de Locais dos lotes 46-49 tem o mesmo desvio antes de cita-las como prova",
+  "Unidades: o icone @ no campo Identificador (Unidades e Instituicoes) sugere handle, mas o campo e o slug; decisao visual do Owner se troca o icone. Produto: se o Identificador deve virar o @ na criacao, o cliente precisaria mandar handle: slug no create com validador ^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$ (sem hifen). Recomendacao: manter slug interno e @ gerado ate existir a acao de handle no cliente"
  ],
  "bloqueio": null,
  "wip": [],
@@ -211,7 +216,7 @@
   ]
  },
  "ack": null,
- "proximoPasso": "locations.create-edit pela rota real na instituicao nova; depois pacote institution_contacts_v2",
+ "proximoPasso": "commit + push desta revisao; depois activities.create/edit pela rota real (cadeia v2 em producao) e locations.schedule (agenda semanal); pacote institution_contacts_v2 para destravar institutions.edit",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -306,6 +311,14 @@
     ],
     "resultado": "Lancar avaliacoes abre com superadmin_assessment_context_options em producao (180350): \"Sem atribuicoes\" honesto porque qa-r03 nao tem vinculo profissional com atividade",
     "captura": "evidence/etapa-2/r04-estrutura/rota-real/assessments-entry.jpg"
+   },
+   {
+    "tela": "Locais",
+    "action_ids": [
+     "locations.create-edit"
+    ],
+    "resultado": "criar local pelo assistente (Identidade, Andar, Visibilidade Equipe) e editar o andar; ambos persistiram em producao (activity_locations 82e92854, versao 2) e o reload do detalhe mantem; cards das unidades visiveis no catalogo da instituicao",
+    "captura": "evidence/etapa-2/r04-estrutura/rota-real/locations-create-form.jpg, locations-detail-apos-criar.jpg, locations-edit-form.jpg, locations-detail-apos-reload.jpg, locations-instituicao-com-unidades.jpg"
    }
   ],
   "bloqueios": [
@@ -438,11 +451,14 @@
    "Rota real com qa-r03 pelo caminho da skill (flutter build web -t test_driver/qa_main.dart, servidor estatico, Chrome 9556 com CDP): login, units.list, groups.list, activities.list (modelos), locations.list (instituicao e unidade), assessments.entry abertos contra producao; groups.create PERSISTIU em producao (public.groups 368a5cea..., audit group.create success, 12:40:58Z) e o reload da lista mantem a turma",
    "groups.edit pela rota real: /groups/<id>/edit carrega a turma (group_detail_v2), nome alterado e salvo; public.groups renomeada 12:48:52Z com audit group.update success; lista recarregada mostra o nome novo (a captura do reload falhou porque o coordenador removeu a worktree, e com ela o build servido, no meio da prova; o dado esta conferido no banco)",
    "institutions.create pela rota real com o cliente novo e 180360 em producao (lote 24): assistente completo (7 etapas, CEP por viacep/IBGE, representante e administradora sinteticas) -> \"Instituicao criada com sucesso\"; public.institutions 190dd028-3125-452d-8502-612bfa1029de (qa-r04-escola, draft, tipo Escola resolvido pelo nome) com audit institution.create success as 13:22:20Z; diretorio recarregado e edicao carregada pelo detail_v2",
-   "units.create pela rota real: assistente de 10 etapas (identidade herdada, hierarquia com tipo Filial do catalogo 180320, CEP por viacep, plano herdado) -> public.units f5284f2f \"Unidade Centro R04\" com audit unit.create success 13:34:01Z; lista recarregada mostra a unidade. Achado: o identificador digitado (hifens, unica forma que o cliente aceita) vira unidadecentror04_f5284f2f no servidor (CHECK de handle sem hifen): inconsistencia cliente x banco a corrigir (aceitar ponto/underscore no cliente ou mostrar o handle final)"
+   "units.create pela rota real: assistente de 10 etapas (identidade herdada, hierarquia com tipo Filial do catalogo 180320, CEP por viacep, plano herdado) -> public.units f5284f2f \"Unidade Centro R04\" com audit unit.create success 13:34:01Z; lista recarregada mostra a unidade. Achado: o identificador digitado (hifens, unica forma que o cliente aceita) vira unidadecentror04_f5284f2f no servidor (CHECK de handle sem hifen): inconsistencia cliente x banco a corrigir (aceitar ponto/underscore no cliente ou mostrar o handle final)",
+   "locations.create-edit pela rota real no catalogo da instituicao 190dd028: Criar local \"Sala R04 Estrutura\" (interno, andar Terreo) -> public.activity_locations 82e92854-8229-4a9d-a890-042e17d669d3 (audit location.create success 13:49:32Z); Editar local (andar \"1o andar\") -> management_version 2 (audit location.update success 13:52:08Z); detalhe recarregado mantem. No caminho: o balao de chat cobria o botao Salvar do formulario de Locais (Decisao 7) -> corrigido em a276f15a8 (showChatLauncher so no diretorio; 40/40 em location_capabilities_test). Os cards das unidades (LocationInstitutionUnitsSection) apareceram em producao na tela de Locais da instituicao (locations-instituicao-com-unidades.jpg)",
+   "Negativas de Locais medidas por mim no espelho de producao: superadmin_location_catalog_v2_authorization_test 26/26 (cross-institution unit is denied; cross-scope e id inexistente indistinguiveis; sessao externa nao vira ator interno), catalog_v2 30/30, update_status_v2 28/28, isolation 6/6. A suite de autorizacao (lote 47, de outra frente) tinha fixture com units.institution_type_id, coluna que nao existe em producao: corrigida para unit_types/unit_type_id/handle (mesmo padrao das 9 suites da R04)",
+   "Achado do handle de Unidades (subagente): o servidor NAO ignora o Identificador. O Identificador e o slug (create_unit_for_superadmin grava lower(btrim(slug)) sem CHECK, hifens preservados); o \"@\" publico e outra coluna, derivada no servidor (letras/numeros do slug ate 20 + \"_\" + 8 hex do id) e so alteravel por change_unit_handle_for_superadmin (units.handle.manage, carencia de 15 dias). O cliente nunca enviava nem lia public_profile.handle. Correcao honesta: UnitRecord.handle lido de public_profile nas RPCs, legenda unit-handle-note sob o Identificador (ao criar explica que o @ e gerado; ao editar mostra o @ final); validador do slug mantido (hifens validos). 174/174 em test/features/units; goldens intactos (a etapa Hierarquia nao esta nos goldens)"
   ],
   "metodoQueFuncionou": "no build release o tap do driver trava mas enter_text pelo gancho window.$flutterDriver funciona; cliques por CDP Input.dispatchMouseEvent (press/release com 80 ms); navegacao entre rotas por Page.navigate (a sessao sobrevive com Manter sessao aberta); popstate sintetico so funcionou uma vez, nao usar. Scripts: scratchpad/goto.js, cdp-click.js, drv.js",
   "avisoAoCoordenador": "a worktree e2-r04-estrutura foi removida duas vezes enquanto esta conversa trabalhava nela (08:52 e 09:5x), apagando o build web servido e derrubando a rota real no meio de uma prova. Enquanto a continuacao estiver viva, por favor nao remover a worktree; a branch e publicada a cada commit.",
   "achadoInstitutionsEdit": "a edicao da instituicao criada pelo v2 nao fecha: o assistente exige CNPJ, representantes e administradores, que a criacao v2 nao persiste (so ROOT+ADDRESS+handle+tipo), e o cliente recusa salvar campos sem contrato remoto; alem disso o detalhe devolve document_type \"cnpj\" em minusculas. institutions.edit proposto como blocked-decision ate o pacote de documento/contato/pessoas no realm interno (institution_contacts_v2). O slug digitado no assistente so aceita letras minusculas, numeros e hifens (regex do cliente); o servidor aceita ponto e underscore."
  },
- "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts. Remover no fechamento (P37)."
+ "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Remover no fechamento (P37)."
 }

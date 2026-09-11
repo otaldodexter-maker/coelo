@@ -831,6 +831,81 @@ void main() {
     expect(find.text('Localização'), findsWidgets);
   });
 
+  testWidgets('identificador aceita hifens e o @ publico e declarado como gerado pelo servidor', (
+    tester,
+  ) async {
+    // Achado da rota real (11/09): o identificador digitado com hifens vai como
+    // slug e e gravado assim; o handle unidadecentror04_f5284f2f e outra coluna,
+    // derivada pelo servidor. O assistente nao pode deixar parecer que o campo e
+    // o @ nem esconder que o @ existe.
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: FakeUnitDirectoryRepository(institutions),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hierarquia').first);
+    await tester.pumpAndSettle();
+
+    final note = find.byKey(const Key('unit-handle-note'));
+    expect(note, findsOneWidget);
+    expect(tester.widget<Text>(note).data, contains('gerado pelo servidor ao criar'));
+    expect(tester.widget<Text>(note).data, contains('sem hífens'));
+
+    await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Centro R04');
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-centro-r04');
+    await tester.tap(find.byKey(const Key('unit-form-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Use somente letras minúsculas sem acento, números e hífens.'), findsNothing);
+    expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
+  });
+
+  testWidgets('edicao mostra o @ publico final ao lado do identificador', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
+    final edited = repository.records.first.copyWith(
+      slug: 'unidade-centro-r04',
+      handle: 'unidadecentror04_f5284f2f',
+    );
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: UnitFormPage(
+          repository: _LoadingUnitRepository(repository, Future.value(edited)),
+          unitId: edited.id,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Hierarquia').first);
+    await tester.pumpAndSettle();
+
+    expect(
+      tester.widget<TextFormField>(find.byKey(const Key('unit-slug-field'))).controller!.text,
+      'unidade-centro-r04',
+    );
+    final note = tester.widget<Text>(find.byKey(const Key('unit-handle-note')));
+    expect(note.data, contains('@unidadecentror04_f5284f2f'));
+    expect(note.data, contains('não é editado por este formulário'));
+  });
+
   testWidgets('edit saves from the current step and remains on the form', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));

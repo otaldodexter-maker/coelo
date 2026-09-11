@@ -7,9 +7,11 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
   ('81100000-0000-4000-8000-000000000001','Location Institution A','location-test-a','active','81000000-0000-4000-8000-000000000001'),
   ('81100000-0000-4000-8000-000000000002','Location Institution B','location-test-b','active','81000000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,name,slug,status,institution_type_id) values
-  ('81200000-0000-4000-8000-000000000001','81100000-0000-4000-8000-000000000001','Location Unit A','location-unit-a','active','81000000-0000-4000-8000-000000000001'),
-  ('81200000-0000-4000-8000-000000000002','81100000-0000-4000-8000-000000000002','Location Unit B','location-unit-b','active','81000000-0000-4000-8000-000000000001');
+insert into public.unit_types(id,code,name,status) values
+  ('810000f0-0000-4000-8000-000000000001','superadmin-location-catalog-v2-authorization-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,name,slug,status,unit_type_id,handle) values
+  ('81200000-0000-4000-8000-000000000001','81100000-0000-4000-8000-000000000001','Location Unit A','location-unit-a','active','810000f0-0000-4000-8000-000000000001','location.unit.a'),
+  ('81200000-0000-4000-8000-000000000002','81100000-0000-4000-8000-000000000002','Location Unit B','location-unit-b','active','810000f0-0000-4000-8000-000000000001','location.unit.b');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data)
   select ('81300000-0000-4000-8000-'||lpad(i::text,12,'0'))::uuid,'authenticated','authenticated',
     'location-'||i::text||'@invalid.test',now(),now(),now(),'{}','{}' from generate_series(1,4) i;

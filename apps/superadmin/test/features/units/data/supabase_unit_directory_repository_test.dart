@@ -119,6 +119,63 @@ void main() {
     expect(form.record!.contactEmail, 'centro@coelo.me');
   });
 
+  test('handle publico vem de public_profile e nunca sai no payload', () async {
+    // create_unit_for_superadmin deriva o handle no servidor (letras e numeros
+    // do slug mais sufixo do id) quando o payload nao traz 'handle', e
+    // update_unit_for_superadmin rejeita a chave 'handle'. O cliente envia so o
+    // slug, como digitado (com hifens), e le o handle final para exibir.
+    Request? captured;
+    final unit = {
+      ..._unitRow(),
+      'slug': 'unidade-centro-r04',
+      'public_profile': {'handle': 'unidadecentror04_f5284f2f', 'discovery_enabled': false},
+    };
+    final client = _client((request) async {
+      captured = request;
+      if (request.url.path.endsWith('/update_unit_for_superadmin')) {
+        return _json(unit, request);
+      }
+      return _json({
+        'unit': unit,
+        'not_found': false,
+        'institutions': [
+          {
+            'institution_id': '11111111-1111-4111-8111-111111111111',
+            'institution_name': 'Casa Nuvem',
+            'institution_type': {'id': 'type-1', 'label': 'Escola'},
+            'effective_plan': {'id': 'plan-1', 'code': 'essential', 'label': 'Essencial'},
+          },
+        ],
+      }, request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseUnitDirectoryRepository(client);
+
+    final form = await repository.loadForm(unitId: '22222222-2222-4222-8222-222222222222');
+    expect(form.record!.slug, 'unidade-centro-r04');
+    expect(form.record!.handle, 'unidadecentror04_f5284f2f');
+
+    await repository.upsert(form.record!);
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['slug'], 'unidade-centro-r04');
+    expect(payload.containsKey('handle'), isFalse);
+  });
+
+  test('registro sem public_profile fica com handle vazio', () async {
+    final client = _client(
+      (request) async => _json({
+        'items': [_unitRow()],
+        'total_count': 1,
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final page = await SupabaseUnitDirectoryRepository(client).fetchPage(UnitDirectoryQuery());
+
+    expect(page.items.single.record.handle, isEmpty);
+  });
+
   test('recibo de outra unidade na atualizacao nao entra no cache', () async {
     // Sem conferencia de identidade, uma resposta que nao corresponde a unidade
     // pedida entraria no cache como se fosse o registro salvo. O repositorio de

@@ -4,11 +4,22 @@ import 'unit_status.dart';
 export 'unit_status.dart';
 
 final class UnitRecord {
-  const UnitRecord({required this.institution, required this.unit, this.managementVersion = 0});
+  const UnitRecord({
+    required this.institution,
+    required this.unit,
+    this.managementVersion = 0,
+    this.handle = '',
+  });
 
   final InstitutionRecord institution;
   final InstitutionUnit unit;
   final int managementVersion;
+
+  /// Handle publico (`@`) atribuido pelo servidor. Nao e o `slug`: na criacao
+  /// `create_unit_for_superadmin` deriva o handle das letras e numeros do slug
+  /// mais um sufixo do id, e depois so `change_unit_handle_for_superadmin`
+  /// pode altera-lo. Vazio quando a origem nao informou.
+  final String handle;
 
   String get id => unit.id;
   String get institutionId => institution.id;
@@ -73,6 +84,7 @@ final class UnitRecord {
     String? surfaceColor,
     int? activitiesCount,
     int? managementVersion,
+    String? handle,
   }) {
     final targetInstitution = institutionId == null || institutionId == institution.id
         ? institution
@@ -84,6 +96,7 @@ final class UnitRecord {
     return UnitRecord(
       institution: targetInstitution,
       managementVersion: managementVersion ?? this.managementVersion,
+      handle: handle ?? this.handle,
       unit: unit.copyWith(
         id: id,
         name: name,
