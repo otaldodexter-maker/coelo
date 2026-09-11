@@ -316,7 +316,9 @@ select is((select count(*) from audit.audit_logs
   where actor_internal_membership_id='66000000-0000-4000-8000-000000000004'
     and action_code='institution.detail' and outcome='success'
     and institution_id in('61000000-0000-4000-8000-000000000001',
-      '61000000-0000-4000-8000-000000000002')),2::bigint,
+      '61000000-0000-4000-8000-000000000002')),3::bigint,
+  -- MVP (ADR 0034, Decisao 12): o Owner ja leu a instituicao A em AAL1 no caso
+  -- anterior, entao sao tres sucessos desta membership, nao dois.
   'platform reads append one success event for each Institution');
 
 select set_config('request.jwt.claims',jsonb_build_object(

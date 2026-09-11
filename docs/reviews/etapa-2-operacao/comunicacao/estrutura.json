@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 27,
+ "revision": 28,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T22:48:38-03:00",
+ "updatedAt": "2026-09-10T23:06:36-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -288,6 +288,27 @@
    "mudanca": "recarimbo; Owner AAL1 le no MVP",
    "pgTAP": "33/33",
    "estado": "verde na prova integral"
+  },
+  {
+   "carimbo": "20260910180320_structure_type_catalog_seed_v1",
+   "origem": "novo",
+   "mudanca": "catalogo minimo de tipos (institution_types: Escola, Colegio, Creche; unit_types: Sede, Filial), idempotente por code; nomes sao dados, o Owner renomeia se quiser",
+   "pgTAP": "sem suite propria (pos-condicao no proprio pacote); aplica no espelho",
+   "estado": "aplica"
+  },
+  {
+   "carimbo": "20260910180330_superadmin_internal_institution_detail_v2_baseline",
+   "origem": "20260827234500",
+   "mudanca": "so recarimbo; teste: Owner AAL1 ja leu antes (MVP), contagem 2 -> 3",
+   "pgTAP": "25/25",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180340_superadmin_internal_institution_create_v2",
+   "origem": "novo",
+   "mudanca": "superadmin_institution_create_v2(p_request_id uuid, p_payload jsonb): realm interno v2, capacidade institution.activate, so escopo de plataforma (owner/operations), reutiliza o validador ROOT+ADDRESS do edit_core + slug pelo trigger de handle, sempre draft, recibo por request_id (replay sem novo evento), envelope e auditoria internos, helpers privados sem grant a clientes",
+   "pgTAP": "26/26 (validador, criacao, replay, request_id reutilizado, handle repetido, tipo inativo, escopo de instituicao, support, sessao expirada, sem claims, contagens de auditoria)",
+   "estado": "verde"
   }
  ],
  "deltasPropostos": [],
@@ -308,7 +329,7 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "180330 detail_v2 e 180340 create_v2 com pgTAP; preflight do 180320; depois client create(); goldens do recorte",
+ "proximoPasso": "fechar a regravacao dos goldens; JSON + handoff; depois Locais/Turmas na rota normal (leitura) quando o driver voltar a ser permitido; 04:20 mini-revisao",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -322,7 +343,7 @@
   "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
   "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
  },
- "ordemDeAplicacao": "pelo carimbo: 180000, 180020, 180030, 180040, 180050, 180060, 180070, 180080, 180090, 180100, 180110, 180120, 180140, 180150, 180200, 180300, 180310. Chave de composicao: structureMutationsEnabled (gate maior) e adapters de Locais/Atividades; lista exata sera dada quando o cliente for ligado nesta rodada.",
+ "ordemDeAplicacao": "pelo carimbo: 180000, 180020..180120, 180140, 180150, 180200, 180300, 180310, 180320, 180330, 180340. Mapa de testes por migration em provaIntegral; 180330 -> superadmin_internal_institution_detail_test, 180340 -> superadmin_internal_institution_create_v2_test.",
  "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas.",
  "provaIntegral": {
   "quando": "2026-09-10T22:22:15-03:00",
@@ -340,7 +361,8 @@
    "180200": "superadmin_group_location_create_v2_test",
    "180300": "superadmin_internal_unit_detail_test",
    "180310": "superadmin_internal_group_detail_test"
-  }
+  },
+  "resultado2": "2026-09-10T23:06:36-03:00: espelho novo + 46 lotes + 20 candidatos: todos aplicam; 18 suites verdes (594 + 25 + 26 = 645 assercoes, 0 falhas) - o create_v2 foi reexecutado apos duas correcoes de fixture (grants de anon na tabela temporaria; caso anonimo passa a ser sessao autenticada sem claims porque anon nem executa o wrapper, o que a suite ja afirma)"
  },
  "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
  "flutter": {
@@ -388,5 +410,12 @@
     "efeito": "units.* e groups.* ficam com o primeiro gate em P22"
    }
   ]
- }
+ },
+ "cliente": {
+  "institutionsCreate": "SupabaseInstitutionDirectoryRepository.create() deixa de lancar Unavailable e chama superadmin_institution_create_v2 com ROOT+ADDRESS+slug, omite endereco em branco, rejeita tipo sem id de catalogo (local-type-*) com excecao honesta e recarrega o detalhe autoritativo; 3 testes novos no repositorio (37/37 no arquivo)",
+  "gapDeclarado": "representantes legais, administradores, contato, documento, plano e marca NAO sao persistidos pela criacao (sem contrato no realm interno); o assistente exige essas etapas, entao rejeitar deixaria a criacao impossivel: o detalhe recarregado mostra-os vazios. Proximo pacote: contatos/pessoas da instituicao no realm interno.",
+  "driver": "ponto de entrada movido de lib/main_driver.dart para test_driver/main_driver.dart (lint depend_on_referenced_packages); flutter run -t test_driver/main_driver.dart"
+ },
+ "regraCriarSempre": "Regra do Owner (via coordenador, 23:0x): busca, filtros (mesmo sem opcoes), toggle grade/lista, Arquivos, abas de status e card Criar aparecem sempre, inclusive no vazio. No composto CoeloAdminDirectory a toolbar e as abas sao renderizadas em todos os estados e _withCreate poe o Criar em vazio/sem resultados/falha; Instituicoes, Unidades, Turmas e Atividades passam create quando onCreate existe (gate structureMutationsEnabled); Locais ja tem o Criar por grupo (R03). Conferencia visual em producao depende da chave ligada.",
+ "goldens": "7 goldens de formulario do recorte que ja falhavam em dev: as diferencas sao so as regras transversais aplicadas depois da referencia (Pesquisar no menu, sem balao de chat em editar, cabecalho MENU-M, rodape ancorado); regravacao em andamento nos tres arquivos de teste; os 375 (institution_form_create, unit_form_create) so ficam se MENU-M estiver fechado pela Fase 0 - pergunta ao coordenador."
 }
