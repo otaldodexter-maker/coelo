@@ -173,6 +173,138 @@ function rpcFailure(
   return response(origin, outcome.status, body);
 }
 
+
+// R05 realm-interno: uploads de RESPOSTA (answer-image) no R2 (ADR 0032) atras
+// da chave COELO_FORMS_MEDIA_PROVIDER=r2. Sem a chave o fluxo legado (Supabase
+// Storage) segue igual; com ela, prepare/finalize/download usam o espelho do
+// catalogo privado (20260911210800: form_prepare_asset_upload_r2_v1,
+// form_asset_r2_descriptor_v1, form_media_finalize_answer_r2_v1) e o bucket
+// coelo-media-prod, reutilizando o transporte do ramo question-image.
+function answerR2Enabled(dependencies: FormMediaDependencies): boolean {
+  return dependencies.envGet("COELO_FORMS_MEDIA_PROVIDER") === "r2";
+}
+
+const R2_ANSWER_KEY =
+  /^tenants\/[0-9a-f-]{36}\/forms\/form\/[0-9a-f-]{36}\/answer-image\/[0-9a-f-]{36}\/original\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+
+function answerR2Key(value: unknown): value is string {
+  return typeof value === "string" && R2_ANSWER_KEY.test(value);
+}
+
+function answerEnvelope(value: unknown): Json {
+  const envelope = value as Json | null;
+  if (!envelope || envelope.ok !== true || !envelope.data) {
+    throw new Error("asset_unavailable");
+  }
+  return envelope.data as Json;
+}
+
+async function handleAnswerR2(
+  origin: string | null,
+  action: "prepare" | "finalize" | "download",
+  requestId: string,
+  expectedVersion: number,
+  payload: unknown,
+  actorPersonId: string,
+  userClient: SupabaseClient,
+  serviceClient: SupabaseClient,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  if (action === "prepare") {
+    const input = parsePrepareAsset(payload);
+    const { data, error } = await userClient.rpc("form_prepare_asset_upload_r2_v1", {
+      p_request_id: requestId,
+      p_expected_version: expectedVersion,
+      p_payload: input,
+    });
+    if (
+      error || !data || !answerR2Key(data.object_key) ||
+      data.bucket !== QUESTION_IMAGE_BUCKET
+    ) throw new Error("prepare_failed");
+    const signed = await questionImageTransport(dependencies, data.bucket).presignPut(
+      data.object_key,
+      input.mime_type,
+      QUESTION_IMAGE_UPLOAD_TTL_SECONDS,
+    );
+    return response(origin, 200, {
+      asset_id: data.asset_id,
+      upload_url: signed.url.toString(),
+      required_headers: signed.requiredHeaders,
+      expires_at: data.expires_at,
+      storage_provider: "r2",
+    });
+  }
+  const access = parseAssetAccess(payload);
+  if (action === "finalize") {
+    // O usuario confirma o upload pelo legado (autoriza dono/segredo anonimo).
+    const queued = await userClient.rpc("form_finalize_asset_upload", {
+      p_request_id: requestId,
+      p_expected_version: expectedVersion,
+      p_payload: access,
+    });
+    if (queued.error) throw new Error("finalize_failed");
+    const described = await serviceClient.rpc("form_asset_r2_descriptor_v1", {
+      p_asset_id: access.asset_id,
+    });
+    if (described.error) throw new Error("asset_unavailable");
+    const descriptor = answerEnvelope(described.data);
+    if (!answerR2Key(descriptor.object_key)) throw new Error("asset_unavailable");
+    if (descriptor.state === "finalized" && descriptor.media_status === "ready") {
+      return response(origin, 200, { asset_id: access.asset_id, state: "finalized" });
+    }
+    const expectedBytes = Number(descriptor.expected_byte_size);
+    const expectedMime = String(descriptor.mime_type);
+    const transport = questionImageTransport(dependencies, String(descriptor.bucket));
+    const stored = await transport.head(descriptor.object_key);
+    if (stored.byteSize !== expectedBytes || stored.byteSize > MAX_IMAGE_BYTES) {
+      await transport.delete(descriptor.object_key).catch(() => {});
+      throw new Error("asset_unavailable");
+    }
+    const bytes = await transport.get(descriptor.object_key, expectedBytes);
+    const dimensions = sniffImageMime(bytes) === expectedMime
+      ? imageDimensions(bytes, expectedMime)
+      : null;
+    const finalized = await serviceClient.rpc("form_media_finalize_answer_r2_v1", {
+      p_asset_id: access.asset_id,
+      p_byte_size: bytes.byteLength,
+      p_checksum_sha256: await sha256(bytes),
+      p_pixel_width: dimensions?.width ?? null,
+      p_pixel_height: dimensions?.height ?? null,
+    });
+    if (finalized.error) throw new Error("verification_failed");
+    const outcome = finalized.data as Json | null;
+    if (!outcome || outcome.ok !== true) {
+      // O banco ja descartou o legado e enfileirou a limpeza; o objeto sai.
+      await transport.delete(descriptor.object_key).catch(() => {});
+      throw new Error("verification_failed");
+    }
+    return response(origin, 200, {
+      asset_id: access.asset_id,
+      state: "finalized",
+      media_asset_id: (outcome.data as Json).media_asset_id,
+    });
+  }
+  const authorized = await serviceClient.rpc("form_media_authorize_for_worker", {
+    p_asset_id: access.asset_id,
+    p_actor_person_id: actorPersonId,
+    p_edit_secret: access.edit_secret,
+  });
+  if (authorized.error || !authorized.data || authorized.data.state !== "finalized") {
+    throw new Error("asset_unavailable");
+  }
+  const described = await serviceClient.rpc("form_asset_r2_descriptor_v1", {
+    p_asset_id: access.asset_id,
+  });
+  if (described.error) throw new Error("asset_unavailable");
+  const descriptor = answerEnvelope(described.data);
+  if (!answerR2Key(descriptor.object_key) || descriptor.media_status !== "ready") {
+    throw new Error("asset_unavailable");
+  }
+  const signed = await questionImageTransport(dependencies, String(descriptor.bucket))
+    .presignGet(descriptor.object_key, 60);
+  return response(origin, 200, { signed_url: signed.url.toString(), expires_in: 60 });
+}
+
 /** Ramo question-image (R2, lote 33). O ator e reautorizado pelo JWT em cada
  * RPC `superadmin_form_media_*_v2`; somente a finalizacao medida usa
  * service_role, e apenas com o ticket que a propria autora acabou de liberar.
@@ -524,6 +656,22 @@ export async function handleFormMediaRequest(
     const expectedVersion = body.expected_version;
 
     try {
+      if (
+        answerR2Enabled(dependencies) &&
+        (action === "prepare" || action === "finalize" || action === "download")
+      ) {
+        return await handleAnswerR2(
+          origin,
+          action,
+          requestId,
+          expectedVersion,
+          body.payload,
+          actorPersonId,
+          userClient,
+          serviceClient,
+          dependencies,
+        );
+      }
       if (action === "prepare") {
         const payload = parsePrepareAsset(body.payload);
         const { data, error } = await userClient.rpc(

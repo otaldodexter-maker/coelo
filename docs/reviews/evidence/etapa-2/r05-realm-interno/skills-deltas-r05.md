@@ -80,8 +80,8 @@ gerar uma chave assim para outros catálogos: sempre no banco, com
   `expected_version` encadeado (a segunda usa a versão devolvida pela
   primeira). O reload lê `representatives`/`administrators` do `detail_v2`
   com contatos **mascarados** (LGPD): o formulário mostra a máscara e só envia
-  o campo se o usuário digitar um valor novo. `administrators[].handle` é
-  `null` até o @ das pessoas existir.
+  o campo se o usuário digitar um valor novo. `administrators[].handle` vem de
+  `person_handles` (pacote 210600) e é editado pelas RPCs de @ (170100).
 - **chat.attach e forms.upload:** E2E só depois da Edge Function
   (`chat-media`, `form-media` em R2) e do cron de expire; até lá ficam
   `local-green` no backend com contrato publicado.
@@ -96,3 +96,33 @@ gerar uma chave assim para outros catálogos: sempre no banco, com
   mesmos + não acompanhar) e três chaves de notificação; `get` devolve
   `is_default` para a tela mostrar "padrão da plataforma" antes da primeira
   gravação. Sem chat em telas de edição.
+
+## Complemento (13:40) — Edge Functions de mídia
+
+### `coelo-backend`
+
+- **Worker por segredo próprio + cron pelo Vault (padrão 230023, replicado em
+  `210700` e `210900`):** a Edge Function expõe `action: "expire"` protegida
+  por `x-worker-secret` (segredo `*_WORKER_SECRET` nos secrets da função) e o
+  cron `app_private.*_dispatch_expire_worker()` lê `*_worker_url` e
+  `*_worker_secret` do Vault, devolvendo `null` enquanto faltarem, para o job
+  poder ser agendado antes do deploy. O coordenador grava os dois valores
+  (Vault e secrets) a partir de um arquivo local depois apagado; a migration
+  nunca gera o segredo, porque lê-lo do Vault para copiar aos secrets
+  imprimiria o valor.
+- **Cutover de provedor de mídia por variável de ambiente, nunca por edição do
+  ramo legado:** `form-media` ganhou os ramos R2 atrás de
+  `COELO_FORMS_MEDIA_PROVIDER=r2`; sem a variável o Storage legado segue igual
+  e os testes antigos continuam valendo. Reverter é remover a variável.
+- **Dimensões de imagem vêm dos bytes:** `_shared/image_dimensions.ts` lê
+  largura/altura do cabeçalho JPEG/PNG/WebP após o `sniffImageMime`; o
+  `finalize` dos catálogos R2 passa `pixel_width/height` medidos, nunca os do
+  cliente, e a RPC `service_role` recusa fora de 1–2560 px.
+- **Segredos a criar no deploy (sem custo, regra do Owner de 11/09):**
+  `CHAT_MEDIA_WORKER_SECRET` + `CHAT_MEDIA_ALLOWED_ORIGINS` (chat-media),
+  `FORMS_MEDIA_WORKER_SECRET` + `COELO_FORMS_MEDIA_PROVIDER` (form-media),
+  Vault `chat_media_worker_url/secret` e `forms_media_worker_url/secret`.
+  Roteiro: gerar com `openssl rand -hex 32` num arquivo local, `supabase
+  secrets set --workdir packages/coelo_database NOME=valor`, `select
+  vault.create_secret('<valor>','nome')` via `supabase db query --linked -f
+  arquivo.sql`, apagar o arquivo; registrar só os nomes.

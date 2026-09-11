@@ -91,3 +91,29 @@ Assinaturas, envelopes e capacidades estao em
 `docs/reviews/etapa-2-operacao/comunicacao/realm-interno.json` (campo
 `contrato`). As 10 RPCs que `SupabaseChatRepository` ja chama nao mudam de
 assinatura; Criar grupo e uma RPC nova.
+
+## Rodada 5 (E2-R05-20260911) — faixa 2026091121xxxx
+
+Backend transversal. Prova: descartável `coelo_realm_r05` (baseline + seed +
+`ordem-de-aplicacao-producao.txt` + migrations que outros grupos publicaram
+em `dev` durante a rodada + candidatos). pgTAP em `supabase/tests/`.
+
+| Ordem | Arquivo | Assunto | pgTAP | Estado |
+| --- | --- | --- | --- | --- |
+| 1 | `20260911210000_institution_contacts_v1.sql` | documento, contato, representantes e administradores da instituição | `institution_contacts_v1_test.sql` 38 | produção (lote 28), movido para `migrations/` |
+| 2 | `20260911210100_revoke_authenticated_crud_without_policy_v1.sql` | revoke presence-based de grants sem policy; `person_auth_links_self_read` | `revoke_authenticated_crud_without_policy_v1_test.sql` 12 | produção (lote 30) |
+| 3 | `20260911210200_superadmin_internal_chat_attachments_v1.sql` | chat.attach (prepare/finalize/read/expire) | `superadmin_internal_chat_attachments_v1_test.sql` 28 | produção (lote 32) |
+| 4 | `20260911210300_forms_question_media_r2_v1.sql` | imagem de pergunta no R2 | `forms_question_media_r2_v1_test.sql` 25 | produção (lote 33) |
+| 5 | `20260911210400_structure_hierarchy_p36_v1.sql` | P36: atividade ativa exige turma | `structure_hierarchy_p36_v1_test.sql` 13 | produção (lote 35) |
+| 6 | `20260911210500_unit_care_policies_notifications_v1.sql` | P32: políticas macro da unidade + sino | `unit_care_policies_notifications_v1_test.sql` 20 | produção (lote 36) |
+| 7 | `20260911210600_institution_people_handles_v1.sql` | @ das pessoas no detalhe da instituição | `institution_people_handles_v1_test.sql` 4 | pronto |
+| 8 | `20260911210700_chat_media_expire_dispatch_v1.sql` | cron do chat-media (Vault) | `media_expire_dispatch_v1_test.sql` 6 | pronto |
+| 9 | `20260911210800_forms_answer_media_r2_v1.sql` | answer-image no R2 (espelho do `form_assets`) | `forms_answer_media_r2_v1_test.sql` 14 | pronto |
+| 10 | `20260911210900_forms_media_expire_dispatch_v1.sql` | cron do form-media (Vault) | idem 8 | pronto |
+| 11 | `20260911211000_plans_select_for_institution_directory_v1.sql` | SELECT em `plans` para a view `institution_directory` | `plans_select_for_institution_directory_v1_test.sql` 4 | opcional (decisão de code review) |
+
+Endurecimento transversal: `r05_realm_interno_hardening_test.sql` (6).
+Edge Functions escritas sem deploy: `functions/chat-media` (nova),
+`functions/form-media` (ramos R2 atrás de `COELO_FORMS_MEDIA_PROVIDER=r2`,
+`question_*`, `expire`), `functions/_shared/image_dimensions.ts`.
+Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
