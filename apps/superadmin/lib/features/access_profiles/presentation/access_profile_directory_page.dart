@@ -19,6 +19,7 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
     required this.repository,
     required this.logout,
     this.onCreate,
+    this.onCreateFromModel,
     this.onOpen,
     this.onDuplicate,
     this.onDestinationSelected,
@@ -36,6 +37,10 @@ final class AccessProfileDirectoryPage extends StatefulWidget {
   final AccessProfileRepository repository;
   final LogoutAction logout;
   final ValueChanged<AccessProfileDomain>? onCreate;
+
+  /// P31: com este callback, "Criar perfil" pergunta se o perfil nasce do
+  /// zero ou a partir de um modelo do sistema (perfil predefinido da lista).
+  final void Function(AccessProfileDomain domain, String sourceProfileId)? onCreateFromModel;
   final void Function(AccessProfileDomain domain, String profileId)? onOpen;
   final void Function(AccessProfileDomain domain, String profileId)? onDuplicate;
   final ValueChanged<String>? onDestinationSelected;
@@ -118,6 +123,7 @@ final class _AccessProfileDirectoryPageState extends State<AccessProfileDirector
       viewModel: _viewModel,
       searchController: _searchController,
       onCreate: widget.onCreate,
+      onCreateFromModel: widget.onCreateFromModel,
       onOpen: widget.onOpen,
       onDuplicate: widget.onDuplicate,
       createActionLabel: widget.createActionLabel,
@@ -139,6 +145,7 @@ final class _AccessProfileDirectoryContent extends StatelessWidget {
     required this.viewModel,
     required this.searchController,
     required this.onCreate,
+    required this.onCreateFromModel,
     required this.onOpen,
     required this.onDuplicate,
     required this.createActionLabel,
@@ -150,12 +157,63 @@ final class _AccessProfileDirectoryContent extends StatelessWidget {
   final AccessProfileViewModel viewModel;
   final TextEditingController searchController;
   final void Function(AccessProfileDomain)? onCreate;
+  final void Function(AccessProfileDomain, String)? onCreateFromModel;
   final void Function(AccessProfileDomain, String)? onOpen;
   final void Function(AccessProfileDomain, String)? onDuplicate;
   final String createActionLabel;
   final AccessProfileDirectoryKind directoryKind;
   final ValueChanged<AccessProfileDirectoryKind>? onDirectoryKindSelected;
   final ValueChanged<double> onFooterHeightChanged;
+
+  /// P31: o perfil nasce do zero ou a partir de um modelo do sistema.
+  Future<void> _chooseCreateMode(
+    BuildContext context,
+    AccessProfileDomain domain,
+    List<AccessProfile> models,
+  ) async {
+    final choice = await showDialog<String>(
+      context: context,
+      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      builder: (context) => CoeloAdminDialogShell(
+        dialogKey: const Key('access-profile-create-mode-dialog'),
+        title: 'Como criar o perfil?',
+        closeTooltip: 'Fechar',
+        body: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            const Text(
+              'Modelos do sistema não são editáveis; um perfil criado a partir deles pode ser ajustado.',
+            ),
+            const SizedBox(height: CoeloSpacing.space3),
+            for (final model in models)
+              ListTile(
+                key: Key('access-profile-create-from-${model.id}'),
+                leading: const Icon(Icons.control_point_duplicate_outlined),
+                title: Text('A partir de: ${model.name}'),
+                subtitle: Text(model.description, maxLines: 1, overflow: TextOverflow.ellipsis),
+                onTap: () => Navigator.of(context).pop(model.id),
+              ),
+          ],
+        ),
+        secondaryAction: OutlinedButton(
+          onPressed: () => Navigator.of(context).pop(),
+          child: const Text('Cancelar'),
+        ),
+        primaryAction: FilledButton(
+          key: const Key('access-profile-create-from-scratch'),
+          onPressed: () => Navigator.of(context).pop(''),
+          child: const Text('Do zero'),
+        ),
+      ),
+    );
+    if (choice == null) return;
+    if (choice.isEmpty) {
+      onCreate!(domain);
+    } else {
+      onCreateFromModel!(domain, choice);
+    }
+  }
 
   @override
   Widget build(BuildContext context) => AnimatedBuilder(
@@ -178,9 +236,12 @@ final class _AccessProfileDirectoryContent extends StatelessWidget {
       final showsDemo =
           viewModel.page.isDemo ||
           (query.domain == AccessProfileDomain.principal && viewModel.isDemo);
+      final models = viewModel.page.items.where((item) => item.isSystem).toList(growable: false);
       final onCreate = this.onCreate == null || principal
           ? null
-          : () => this.onCreate!(query.domain);
+          : onCreateFromModel == null || models.isEmpty
+          ? () => this.onCreate!(query.domain)
+          : () => _chooseCreateMode(context, query.domain, models);
       final onOpen = this.onOpen == null ? null : (String id) => this.onOpen!(query.domain, id);
       final onDuplicate = this.onDuplicate == null
           ? null
