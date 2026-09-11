@@ -414,5 +414,18 @@
       "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03",
       "recordedAt": "2026-09-11T02:31:00-03:00"
     }
+  },
+  {
+    "action_id": "access-models.create",
+    "camada": "e2e",
+    "estado_proposto": "verified",
+    "delta": "R04: regua do MVP: rota normal /profile-models/new/platform abre (build release, sessao qa-r03); CRUD persistiu em producao pela UI (template qa-r04-modelo-sintetico-b6f3958c, recibo model_create ok); RLS/autorizacao negada a quem nao tem a capacidade (pgTAP 171300: read_authorization 11/11 e crud_catalog 32/32 com negativas); reload: o cursor superadmin_access_profile_models_cursor (o mesmo que a lista usa) devolve o modelo apos a criacao; a captura da lista rolada saiu em branco por falta de memoria do Chrome. Se o coordenador exigir a captura da lista, manter FE local-green + BE done.",
+    "evidencia": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-models-create-passo1/2/3.png; comunicacao/acessos-pessoas.json r105/r106",
+    "certificacao": {
+      "evidence": "evidence/etapa-2/r04-acessos-pessoas/capturas/access-models-create-passo3-revisao.png",
+      "revision": "6aea1d104",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03; cursor por PostgREST",
+      "recordedAt": "2026-09-11T02:37:00-03:00"
+    }
   }
 ]
