@@ -115,8 +115,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(AppBar), findsNothing);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
@@ -129,7 +129,7 @@ void main() {
     await tester.pump();
 
     expect(find.byKey(const Key('now-publication-loading')), findsOneWidget);
-    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(find.byType(PrincipalPublicationSheet), findsNothing);
     expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsNothing);
 
@@ -153,7 +153,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.loadCalls, 2);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
   });
 
   testWidgets('falha ao salvar oferece retry sem descartar o rascunho', (tester) async {
@@ -165,7 +165,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
@@ -176,7 +175,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(repository.saveCalls, 2);
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
   });
 
   testWidgets('retry de publicação conclui o fluxo hospedeiro', (tester) async {
@@ -207,7 +206,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Publicar agora'));
     await tester.pumpAndSettle();
@@ -229,7 +227,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
@@ -248,7 +245,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final caption = find.byKey(const Key('now-caption-field'));
     expect(find.text('Legenda A'), findsOneWidget);
@@ -285,7 +281,6 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.text('Adicionar mídia'));
     await tester.pump();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final captionController = tester
         .widget<EditableText>(
@@ -309,7 +304,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('now-publication-unauthorized')), findsOneWidget);
-    expect(find.byType(PrincipalPublicationFrame), findsNothing);
+    expect(find.byType(PrincipalPublicationSheet), findsNothing);
     expect(captionController.text, isEmpty);
     expect(repository.saveCalls, 1);
     expect(tester.takeException(), isNull);
@@ -435,7 +430,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
@@ -461,7 +455,6 @@ void main() {
     repositoryA.loadCompleter.complete(const NowPublicationDraft(caption: 'Contexto A'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final field = tester.widget<EditableText>(
       find.descendant(
@@ -521,7 +514,6 @@ void main() {
     repository.completers[0].complete(const NowPublicationDraft(caption: 'Contexto A'));
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final field = tester.widget<EditableText>(
       find.descendant(
@@ -664,33 +656,32 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('usa o frame, etapas e rodapé canônicos do Superadmin', (tester) async {
+  testWidgets('usa o sheet da familia Publicacao, sem etapas, com rodape canonico', (tester) async {
     await pumpPage(tester, const Size(1440, 1000));
 
-    expect(find.byType(PrincipalPublicationFrame), findsOneWidget);
-    expect(find.byType(PrincipalPublicationStepNavigation), findsOneWidget);
+    expect(find.byType(PrincipalPublicationSheet), findsOneWidget);
+    expect(find.byType(PrincipalPublicationStepNavigation), findsNothing);
     expect(find.byType(PrincipalPublicationActionFooter), findsOneWidget);
-    expect(find.text('Mídia'), findsOneWidget);
-    expect(find.text('Detalhes'), findsOneWidget);
+    expect(find.text('Detalhes'), findsNothing);
     expect(find.byKey(const Key('now-publication-close')), findsNothing);
     expect(find.text('Sua publicação'), findsOneWidget);
-    expect(find.byKey(const Key('now-publication-desktop-preview')), findsOneWidget);
+    expect(find.text('Publicar no Agora'), findsOneWidget);
+    expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
+    expect(find.text('Salvar rascunho'), findsOneWidget);
+    expect(find.text('Publicar agora'), findsOneWidget);
+    // Familia Publicacao: o Agora nao tem previa; midia a esquerda, detalhes a direita.
+    expect(find.byKey(const Key('now-publication-desktop-preview')), findsNothing);
+    expect(find.byKey(const Key('now-publication-details-column')), findsOneWidget);
   });
 
-  testWidgets('avança e retorna sem perder a mídia selecionada', (tester) async {
+  testWidgets('midia e detalhes vivem na mesma tela', (tester) async {
     await pumpPage(tester, const Size(1440, 1000));
 
     await tester.tap(find.text('Adicionar mídia'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
-    await tester.pumpAndSettle();
 
     expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
     expect(find.text('Publicar agora'), findsOneWidget);
-
-    await tester.tap(find.text('Anterior'));
-    await tester.pumpAndSettle();
-
     expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
     expect(find.text('Adicionar mídia'), findsNothing);
   });
@@ -705,10 +696,11 @@ void main() {
       expect(find.text('Música'), findsOneWidget);
       expect(find.text('Cortar'), findsOneWidget);
       expect(find.text('Capa'), findsOneWidget);
-      expect(find.text('Continuar'), findsOneWidget);
+      expect(find.text('Continuar'), findsNothing);
       expect(find.text('Sua publicação'), findsOneWidget);
+      expect(find.byKey(const Key('now-publication-desktop-preview')), findsNothing);
       expect(
-        find.byKey(const Key('now-publication-desktop-preview')),
+        find.byKey(const Key('now-publication-details-column')),
         size.width >= 1024 ? findsOneWidget : findsNothing,
       );
       expect(tester.takeException(), isNull);
@@ -736,7 +728,6 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(find.byKey(const Key('now-media-stage')), findsOneWidget);
-      await tester.tap(find.text('Continuar'));
       await tester.pumpAndSettle();
       expect(find.byKey(const Key('now-caption-field')), findsOneWidget);
       expect(tester.takeException(), isNull);
@@ -815,7 +806,6 @@ void main() {
 
   testWidgets('agendamento aplica uma data futura sem date picker Material', (tester) async {
     await pumpPage(tester, const Size(375, 900));
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.ensureVisible(find.byKey(const Key('now-schedule-toggle')));
     await tester.tap(find.byKey(const Key('now-schedule-toggle')));
@@ -837,7 +827,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
     final field = tester.widget<TextFormField>(find.byKey(const Key('now-caption-field')));
@@ -1007,7 +996,6 @@ void main() {
     await tester.pump();
     await tester.tap(find.text('Concluir'));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Salvar rascunho'));
     await tester.pumpAndSettle();
@@ -1068,7 +1056,6 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final toggleFinder = find.byKey(const Key('now-schedule-toggle'));
     expect(find.byType(PrincipalPublicationToggleField), findsOneWidget);

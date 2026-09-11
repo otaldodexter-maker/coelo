@@ -47,7 +47,6 @@ void main() {
   testWidgets('an Error while saving leaves the surface usable', (tester) async {
     final repository = _ThrowingRepository(onSave: true);
     await pump(tester, repository);
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Salvar rascunho'));
@@ -75,7 +74,6 @@ void main() {
     final repository = _ThrowingRepository(onPublish: true, publishable: true);
     NowPublication? completed;
     await pump(tester, repository, onCompleted: (value) => completed = value);
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
 
     await tester.tap(find.text('Publicar agora'));

@@ -84,7 +84,6 @@ void main() {
     final context = tester.element(find.byType(PrincipalNowPublicationPage));
     await tester.runAsync(() => precacheImage(MemoryImage(imageBytes), context));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     final pointer = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(pointer.removePointer);
@@ -118,7 +117,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('now-media-unavailable')), findsNWidgets(2));
+    expect(find.byKey(const Key('now-media-unavailable')), findsOneWidget);
     await expectLater(
       find.byType(PrincipalNowPublicationPage),
       matchesGoldenFile('goldens/principal_now_publication_media_unavailable_light_1440.png'),
