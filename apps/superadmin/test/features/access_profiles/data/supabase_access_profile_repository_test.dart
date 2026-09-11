@@ -167,6 +167,39 @@ void main() {
     expect(paths, contains(endsWith('/rpc/superadmin_access_profile_delete_and_reassign')));
   });
 
+  test(
+    'save unwraps the {domain, profile, version} envelope of superadmin_access_profile_save',
+    () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-test',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({
+              'domain': 'institution',
+              'profile': {..._profileJson, 'id': 'created-1', 'version': 1, 'is_system': true},
+              'profile_id': 'created-1',
+              'version': 1,
+              'replayed': false,
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      final saved = await SupabaseAccessProfileRepository(client).save(
+        requestId: '00000000-0000-4000-8000-000000000003',
+        expectedVersion: 0,
+        reason: 'Teste',
+        draft: AccessProfile.fromJson(AccessProfileDomain.institution, {..._profileJson, 'id': ''}),
+      );
+      expect(saved.id, 'created-1');
+      expect(saved.isSystem, isTrue);
+    },
+  );
+
   test('fails closed when the integration is unavailable', () {
     const repository = UnavailableAccessProfileRepository();
 
