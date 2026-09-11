@@ -6,7 +6,7 @@
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "1b453fc19",
+  "head": "c6b5d47a0",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
   "updatedAt": "2026-09-11T03:12:00-03:00",
@@ -1183,7 +1183,7 @@
   },
   "finalizado": {
     "at": "2026-09-11T03:12:00-03:00",
-    "head": "1b453fc19",
+    "head": "c6b5d47a0",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
   }
