@@ -1,6 +1,6 @@
 {
-  "revision": 30,
-  "updated_at": "2026-09-11T19:40-03:00",
+  "revision": 31,
+  "updated_at": "2026-09-11T20:19-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-principal-chat-sistema",
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
-  "head": "ca60b096b (+ commit desta rev)",
-  "status": "ABERTA 19:37. Prompt colado antes de coordenacao.json registrar T0 e 'usuarios qa-r06 prontos' (rev 51 ainda e da R05; Coelo-backups nao tem qa-r06-principal.env). Assumo T0=19:17 (abertura da frente 19:37 = T0+20): T0+2h=21:17, revisao ate 21:27. Trabalho local (item 0, item 1 cliente, item 2 telas, item 6 pacote) nao depende do usuario; a rota real espera o .env ou usa qa-r03 como fallback declarado.",
-  "T0_assumido": "2026-09-11T19:17-03:00 (corrigir quando coordenacao.json gravar)",
+  "head": "060d21e53 (publicado em origin/work/etapa2-r06-principal-chat-sistema)",
+  "status": "EM ANDAMENTO 20:19. Itens 0, 1 (cliente), 2 (telas) e 6 (pacote) feitos e publicados; agora rota real (Cardapios, publicadores com midia, perfil, Para voce, erros).",
+  "T0_assumido": "2026-09-11T19:24-03:00 (qa-r06-*.env criados 19:44 = T0+20); T0+2h = 21:24; revisao ate 21:34. Corrigir se coordenacao.json disser outra coisa.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
     "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
@@ -21,24 +21,87 @@
   ],
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
   "ordem_de_trabalho": [
-    "0. principal_real_route_test 'offers the profile selector (P28)': EM ANDAMENTO",
-    "1. Cardapios P47=A: pendente",
-    "2. Publicadores na familia Publicacao (agora/acontece/momentos, mobile-375 e web-1440) + create/publish com midia: pendente",
-    "3. chat.create-group pela UI + chat.attach no cliente: pendente",
-    "4. principal.profile-edit e principal.for-you rota real + V-1/V-2/V-3: pendente",
-    "5. errors.* pela rota real: pendente",
-    "6. P48=A pacote candidatos/principal-chat-sistema 2026091213xxxx: pendente"
+    "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
+    "1. Cardapios P47=A: cliente FEITO e689033ff/dcd2e3a84 (fail-closed removido; servidor valida); prova na rota real: EM ANDAMENTO",
+    "2. Familia Publicacao: FEITO 14abb3b0a (Acontece), c7a614737 (Agora), e9c67d9f9 (Momentos): PrincipalPublicationSheet/Block/Note em principal_shared, sem etapas, rodape em card, goldens regravados (67+95+88 verdes); prova create/publish com midia na rota real: EM ANDAMENTO",
+    "3. chat.create-group UI + chat.attach cliente: pendente",
+    "4. principal.profile-edit / for-you rota real + V-1/V-2/V-3: pendente",
+    "5. errors.* rota real: pendente",
+    "6. P48=A: FEITO 060d21e53 candidatos/principal-chat-sistema/20260911130400 (pgTAP 16/16 + regressoes 22/22, 13/13, 17/17, 6/6 no descartavel coelo_pcs6_db)"
   ],
-  "tests": {},
-  "lotes": [],
-  "pacotesProntos": [],
+  "tests": {
+    "principal_real_route_test": "4/4 (08c46b1b7)",
+    "meal_plan_production_routes_test + meal_plan_production_composition_test": "5/5",
+    "principal_happens_publication (page, focus, error_recovery, golden)": "67/67 goldens regravados",
+    "principal_now_publication": "95/95 goldens regravados",
+    "principal_moments_publication": "88/88 goldens regravados (legenda 0/220 conforme referencia)",
+    "principal_shared/principal_publication_frame_test": "verde (rodape em card sem blur)",
+    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)"
+  },
+  "lotes": [
+    {
+      "commit": "08c46b1b7",
+      "titulo": "principal_real_route_test 4/4",
+      "action_ids": [
+        "principal.for-you",
+        "acontece.feed"
+      ]
+    },
+    {
+      "commit": "e689033ff + dcd2e3a84",
+      "titulo": "P47 A: assistente de cardapio abre sem tenant injetado",
+      "action_ids": [
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.model-create",
+        "meal-plans.model-edit",
+        "meal-plans.publish"
+      ]
+    },
+    {
+      "commit": "14abb3b0a, c7a614737, e9c67d9f9",
+      "titulo": "publicadores na familia Publicacao (V-4/V-5/V-6 reprovados -> reconstruidos)",
+      "action_ids": [
+        "acontece.create",
+        "acontece.publish",
+        "agora.create",
+        "agora.publish",
+        "momentos.create",
+        "momentos.publish"
+      ],
+      "prova": "goldens novos em test/features/principal_*_publication/presentation/goldens (comparados a olho com aprovadas-20260911: estrutura, ordem dos blocos, rodape e previa batem; sem shell do Superadmin no golden porque a pagina e testada isolada)"
+    },
+    {
+      "commit": "060d21e53",
+      "titulo": "P48 A: 130400 sincronizador por papel interno",
+      "action_ids": [
+        "principal.*",
+        "acontece.*",
+        "agora.*",
+        "momentos.*"
+      ],
+      "prova": "pgTAP 16/16"
+    }
+  ],
+  "pacotesProntos": [
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "060d21e53",
+      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
+      "assunto": "P48=A: institution_reader (so *.read) + sincronizador owner->institution_admin, operations->institution_reader, demais sem vinculo; revoga o que o 130000 deu a operations/auditor (inactive+revoked_at)",
+      "pgTAP": "internal_actor_institution_access_by_role_v1_test 16/16; principal_internal_actor_bridge_v1 22/22; principal_runtime_contexts 13/13; internal_actor_service_person_v1 17/17; happens_feed_owner_visibility_v1 6/6",
+      "chave_de_composicao": "nenhuma",
+      "depois_de_aplicar": "select app_private.superadmin_internal_actor_institution_access_sync() = 0 na segunda chamada; qa-r06-* (owner) mantem 3 contextos",
+      "risco": "baixo: so afeta espelhos internos; usuario interno operations perde escrita nas instituicoes (regra P48)"
+    }
+  ],
   "perguntas_ao_owner_via_coordenador": [],
   "pendencias_registradas_sem_bloquear": [],
   "blocker": null,
   "perguntas_ao_coordenador": [
     "T0 e usuario qa-r06-principal: nao encontrados na abertura (19:37); gravar em coordenacao.json / Coelo-backups. Ate la uso T0 assumido 19:17 e, para a rota real, qa-r03 se o .env nao aparecer."
   ],
-  "next_step": "item 0",
+  "next_step": "rota real com qa-r06-principal: Cardapios list/create/edit/model/publish, depois Momentos/Agora com midia",
   "ack": null,
   "loop": "/loop 15m agendado na abertura",
   "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
