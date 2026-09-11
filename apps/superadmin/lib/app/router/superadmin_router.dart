@@ -232,6 +232,30 @@ import 'superadmin_routes.dart';
 
 const _productionMutationUnavailablePath = '/errors/mutation-capability-unavailable';
 
+/// Turmas ativas da instituição para vincular/transferir aluno (P36).
+Future<List<StudentGroupOption>> _studentGroupOptions(
+  GroupDirectoryRepository groups,
+  String institutionId,
+) async {
+  final page = await groups.fetchPage(
+    GroupDirectoryQuery(
+      institutionIds: {institutionId},
+      statuses: {GroupStatus.active},
+      pageSize: 100,
+      sortColumn: GroupDirectorySortColumn.name,
+    ),
+  );
+  return [
+    for (final item in page.items)
+      StudentGroupOption(
+        groupId: item.record.id,
+        groupName: item.record.name,
+        unitId: item.record.unitId,
+        unitName: item.record.unitName,
+      ),
+  ];
+}
+
 /// `?from=<uuid>` da criação de perfil (P31); qualquer outro valor é ignorado.
 String? _nullableProfileId(String? raw) {
   final value = raw?.trim() ?? '';
@@ -2507,6 +2531,11 @@ GoRouter createSuperadminRouter({
               childContextId: state.pathParameters['childContextId']!,
               logout: logout,
               onBack: () => context.goNamed(SuperadminRoutes.studentsName),
+              // P36: a turma decide a unidade; as opções vêm do diretório de
+              // Turmas em produção (o servidor refaz a autorização no comando).
+              loadGroupOptions: groupRepository is UnavailableGroupDirectoryRepository
+                  ? null
+                  : (institutionId) => _studentGroupOptions(groupRepository, institutionId),
             ),
           ),
           GoRoute(

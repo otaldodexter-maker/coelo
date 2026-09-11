@@ -114,11 +114,7 @@ final class SupabaseStudentLinkRepository implements StudentLinkRepository {
     try {
       final response = await _client.rpc<Object?>(
         function,
-        params: {
-          'request_id': requestId,
-          'child_context_id': childContextId,
-          'payload': payload,
-        },
+        params: {'request_id': requestId, 'child_context_id': childContextId, 'payload': payload},
       );
       return response is Map ? response.cast<String, Object?>() : const <String, Object?>{};
     } on PostgrestException catch (error) {
