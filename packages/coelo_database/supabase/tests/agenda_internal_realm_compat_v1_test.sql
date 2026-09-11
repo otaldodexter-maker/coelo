@@ -141,13 +141,8 @@ select is((select message from agenda_errors where label='cross_tenant_unit'),'i
   'contexto de unidade fora do tenant e recusado');
 select is((select jsonb_array_length(body->'items')::text from agenda_results where label='content_list'),'1','Content interno le a Agenda');
 select is((select message from agenda_errors where label='content_save'),'agenda_permission_denied','Content interno nao cria');
--- Com a ponte de ator, a identidade escopada em instituicao le pela pessoa de servico
--- (platform_membership espelhada) e enxerga a Agenda da propria instituicao. A ponte
--- espelha o escopo de instituicao como membership de plataforma: a prova de que outra
--- instituicao continua invisivel fica registrada como pendencia da revisao profunda.
-select ok((select jsonb_array_length(body->'items')=1 and bool_and(item->>'institutionId' is null or item->>'institutionId'='9b100000-0000-4000-8000-000000000010')
-  from agenda_results, jsonb_array_elements(body->'items') item where label='scoped_list' group by body),
-  'identidade interna escopada em instituicao le a Agenda da propria instituicao (ponte de ator)');
+select is((select message from agenda_errors where label='scoped_list'),'agenda_permission_denied',
+  'identidade interna escopada em instituicao nao le a Agenda de plataforma (211200: a platform_membership espelhada pela ponte nao concede agenda.*)');
 select is((select message from agenda_errors where label='people_list'),'agenda_permission_denied',
   'pessoa sem membership de plataforma e negada');
 select ok(not exists(select 1 from agenda_results where body::text like '%@invalid.test%'),'saidas nao expoem e-mail');
