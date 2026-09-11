@@ -1,6 +1,6 @@
 {
-  "revision": 14,
-  "updated_at": "2026-09-11T02:25:00-03:00",
+  "revision": 15,
+  "updated_at": "2026-09-11T02:40:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11",
@@ -8,10 +8,10 @@
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
-  "base": "origin/dev f51233023 (rebase 02:05; a branch ja estava integrada em dev por 1641e09cf, o rebase so carregou o WIP)",
-  "head": "f51233023 + WIP (launcher, Decisao 7) ainda nao commitado",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 64db08980 (rev 13); push desta revisao junto com o commit do launcher",
-  "status": "Retomada as 02:00 por coelo-11 depois da queda da maquina (00:27). WIP que sobreviveu: superadmin_shell.dart (flag showChatLauncher da pagina embutida chega ao hospedeiro) e o teste novo superadmin_shell_chat_visibility_test.dart. Completado nesta revisao: conjunto SuperadminShell.chatLauncherHiddenDestinations (Agora aberto, Momentos aberto e as tres telas de publicar) porque as paginas do Principal nao embutem shell proprio, e showChatLauncher=false no assistente de Cardapios e nos formularios de Planos via productionOperationalPage. Teste em execucao (um flutter test por vez).",
+  "base": "origin/dev a2b8d1899 (rebase 02:15)",
+  "head": "1e34eb9f4",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 1e34eb9f4 (0d559370c e 1e34eb9f4 integrados pelo coordenador em 959951de2)",
+  "status": "Launcher/Decisao 7 fechado em dois commits: 7322260c5 (flag da pagina embutida chega ao hospedeiro; destinos do Principal sem balao; Cardapios/Planos criar/editar) e 1e34eb9f4 (SuperadminFormFrame registra supressao no hospedeiro em qualquer largura; Circulares e Avisos com flag explicita). Testes: superadmin_shell_chat_visibility_test 12/12; suite test/app/shell 124/124 (no 7322260c5). Rota real de Cardapios/Principal: subindo o app em debug (flutter run -d chrome, qa_main) porque os builds release e profile de qa_main nao expoem window.$flutterDriver nesta maquina.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -32,7 +32,7 @@
     "7. erro 409: imagens candidatas + pagina lado a lado para o Owner (2335ea3c1)",
     "8. pacote de revoke de anon em 199 funcoes security definer + privilegio padrao: FEITO c3f31b64b (pgTAP 7; suite do grupo 9 arquivos / 201 PASS)",
     "9. Momentos: moldura a partir de 840, aside a partir de 1200, midia contain: FEITO (commit desta revisao); goldens 1024/1440/like_hover/text_200_dark regravados apos observacao",
-    "10. (R04 retomada, coelo-11) regressao transversal do launcher (Decisao 7): flag da pagina embutida chega ao host + destinos do Principal sem balao + Cardapios/Planos criar/editar sem balao: EM CURSO (teste rodando; commit e push na sequencia)",
+    "10. (R04 retomada, coelo-11) regressao transversal do launcher (Decisao 7): FEITO 7322260c5 + 1e34eb9f4 (integrados em 959951de2)",
     "11. (R04 retomada) Cardapios e Principal na rota real com a ponte de ator em producao (lote 10): A FAZER depois do item 10",
     "12. (R04 retomada) dialogo de Criar grupo com o diretorio de Pessoas pela tela real: A FAZER",
     "13. (R04 retomada) goldens conforme as tres listas do Owner (Perfil FOTO/SHELL, galeria mobile do Acontece, imports FUNDO): A FAZER"
@@ -59,7 +59,8 @@
     "PROCESSO: 'supabase db reset' com as 45 migrations/ + seed NAO reproduz producao num projeto novo: 20260910170100_superadmin_internal_person_detail tem preflight que exige people.read com requires_mfa=true em platform_permissions, e o seed (que traz o catalogo) roda DEPOIS das migrations. Contorno usado: reset com so a baseline + seed, depois as 44 migrations via psql em ordem (script scratchpad/baseline-pcs/reset-and-apply.sh). Depois da migration 'MFA fora do MVP' esse preflight (requires_mfa=true) vai falhar tambem em replay; vale registrar no README do pacote.",
     "MEDICAO: 20260909214000 (feed misto) consta 1/1 presente, mas o corpo em producao NAO tem o predicado de retirada nem can_withdraw; 213000 consta 1/2 e o objeto presente e o feed direto SEM as colunas de retirada. Presenca do nome nao prova o corpo. acontece.remove estava blocked-environment por isso; 190800 fecha.",
     "Agora: producao nunca teve a fundacao (0/17, 0/4, 0/4). Entra inteira como tres pacotes recarimbados. Diferenca unica: nao cria bucket no Supabase Storage (toda midia nova e R2).",
-    "Portas locais em uso por outras frentes: 573xx coordenador, 583xx fcr, 593xx (meu da R03, ainda de pe), 603xx (ocupada), 613xx estrutura. Uso 623xx."
+    "Portas locais em uso por outras frentes: 573xx coordenador, 583xx fcr, 593xx (meu da R03, ainda de pe), 603xx (ocupada), 613xx estrutura. Uso 623xx.",
+    "FERRAMENTA (rota real): flutter build web --release e --profile de test_driver/qa_main.dart geram bundle com registerWebServiceExtension (3 ocorrencias em main.dart.js), mas na pagina servida em 127.0.0.1:3000 (Chrome 152, perfil limpo) window.$flutterDriver fica indefinido: no release so $flutterDriverResult=null aparece (a atribuicao seguinte, A._functionToJS1, nao tem efeito nem lanca excecao visivel no console); no profile nem isso. Sem excecao no console. Caminho adotado: flutter run -d chrome (debug, DDC) com --web-browser-flag=--remote-debugging-port=9333, como o grupo formularios. Fallback escrito: scratchpad/cdp_sem.dart dirige pela arvore de semantica (flt-semantics) via CDP sem depender do driver."
   ],
   "pendencias_registradas_sem_bloquear": [
     "now: substituicao de ativo (mesma publicacao/kind com metadados novos) gera chave nova e deixa o objeto anterior orfao no R2; coletor claim_stale para Agora/Acontece fica para depois (Momentos ja tem o dele).",
@@ -85,7 +86,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Terminar o item 10 (teste verde, commit, push), depois Cardapios e Principal na rota real com qa-r03 (um Chrome), Criar grupo com o diretorio de Pessoas, goldens; mini-revisao no JSON as 04:00.",
+  "next_step": "Cardapios e Principal (Acontece/Momentos/Agora/Para voce/Perfil) na rota real com qa-r03 no app em debug (um Chrome), deltas por action_id; depois Criar grupo com o diretorio de Pessoas; mini-revisao as 04:00.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -153,6 +154,34 @@
         "chat.list"
       ],
       "prova": "chat + chat Principal + router 244 PASS; goldens do Chat regravados (A)"
+    },
+    {
+      "commit": "7322260c5",
+      "titulo": "Balao Mensagens obedece showChatLauncher=false no hospedeiro; destinos do Principal (Agora aberto, Momentos aberto, publicar) sem balao; Cardapios/Planos criar/editar sem balao",
+      "action_ids": [
+        "shell.load",
+        "shell.navigate",
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.model-create",
+        "meal-plans.model-edit",
+        "plans.create",
+        "plans.edit",
+        "agora.view",
+        "agora.create",
+        "acontece.create",
+        "momentos.view",
+        "momentos.create"
+      ],
+      "prova": "superadmin_shell_chat_visibility_test 9/9; test/app/shell 124/124"
+    },
+    {
+      "commit": "1e34eb9f4",
+      "titulo": "SuperadminFormFrame suprime o balao no hospedeiro em qualquer largura (regra generica de criar/editar/publicar); Circulares e Avisos com showChatLauncher=false no router",
+      "action_ids": [
+        "shell.load"
+      ],
+      "prova": "superadmin_shell_chat_visibility_test 12/12 (frame a 375/1024/1440, rodape presente, balao volta ao sair)"
     }
   ],
   "proposta_delta_por_action_id": {
@@ -337,6 +366,7 @@
     "sessao_nova": "coelo-11 (Claude Fable 5.1) assumiu o grupo por ordem do coordenador coelo-04 as 01:58",
     "wip_sobrevivente": "apps/superadmin/lib/app/shell/superadmin_shell.dart modificado (+25/-1) e test/app/shell/superadmin_shell_chat_visibility_test.dart novo; nenhum stash; commitados nesta revisao",
     "regras_da_retomada": "no maximo dois Chrome/flutter run por frente, um flutter test por vez, fechar Chrome e dart ao fim de cada prova; subagentes so para trabalho sem Chrome; rtk nos comandos",
-    "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus"
+    "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus",
+    "memoria": "02:20: 0,5 GB livres de 15,6 (meu dart2js 2,2 GB + vmmemWSL 2 GB + 21-29 chrome.exe de outras frentes); um flutter_tester meu ficou 10 min a 3,3 GB por pumpAndSettle que nao assentava no hospedeiro desktop; troquei por pumps fixos no teste novo"
   }
 }
