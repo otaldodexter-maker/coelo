@@ -2809,6 +2809,21 @@ final class _QuestionCardState extends State<_QuestionCard> {
         const SizedBox(height: CoeloSpacing.space3),
         _dateConfiguration(),
       ],
+      // P16 (Decisao 9): as opcoes de Local nao sao autoradas aqui. O servidor
+      // resolve os Locais ativos da instituicao ao salvar o rascunho e ignora
+      // qualquer opcao enviada pelo cliente; a lista abaixo e o snapshot lido.
+      if (widget.question.kind == FormItemKind.location) ...[
+        const SizedBox(height: CoeloSpacing.space3),
+        CoeloStatePanel(
+          key: ValueKey('forms-editor-location-notice-${widget.question.id}'),
+          icon: Icons.place_outlined,
+          title: 'Opções do catálogo de Locais',
+          message: widget.question.options.isEmpty
+              ? 'As opções vêm do catálogo de Locais ativos da instituição e são preenchidas ao salvar o rascunho. Não há edição manual.'
+              : 'As opções vêm do catálogo de Locais ativos da instituição e são atualizadas ao salvar. '
+                    'Locais no rascunho: ${widget.question.options.map((option) => option.text).join(', ')}.',
+        ),
+      ],
       if (widget.question.kind == FormItemKind.singleChoice ||
           widget.question.kind == FormItemKind.multipleChoice) ...[
         const SizedBox(height: CoeloSpacing.space3),
@@ -3204,6 +3219,7 @@ final class _PreviewAnswer extends StatelessWidget {
       FormItemKind.gallery => Icons.photo_library_outlined,
       FormItemKind.yesNo => Icons.toggle_off_outlined,
       FormItemKind.date => Icons.calendar_today_outlined,
+      FormItemKind.location => Icons.place_outlined,
       _ => Icons.edit_outlined,
     };
     return Container(
@@ -3236,6 +3252,7 @@ const _catalogGroups = [
       FormItemKind.singleChoice,
       FormItemKind.multipleChoice,
       FormItemKind.scale,
+      FormItemKind.location,
     ],
   ),
   (label: 'Mídias', items: [FormItemKind.photo, FormItemKind.gallery]),
@@ -3258,12 +3275,14 @@ String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.photo => 'Foto',
   FormItemKind.gallery => 'Galeria',
   FormItemKind.information => 'Bloco informativo',
+  FormItemKind.location => 'Local',
 };
 
 String _defaultQuestionLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.date => 'Data da visita',
   FormItemKind.yesNo => 'Nova pergunta Sim / Não',
   FormItemKind.information => 'Novo bloco informativo',
+  FormItemKind.location => 'Em qual local?',
   _ => 'Nova pergunta de ${_kindLabel(kind).toLowerCase()}',
 };
 
@@ -3280,6 +3299,7 @@ IconData _kindIcon(FormItemKind kind) => switch (kind) {
   FormItemKind.photo => Icons.photo_camera_outlined,
   FormItemKind.gallery => Icons.photo_library_outlined,
   FormItemKind.information => Icons.info_outline_rounded,
+  FormItemKind.location => Icons.place_outlined,
 };
 
 bool _canBranch(FormItemKind kind) =>
