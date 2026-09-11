@@ -1,7 +1,7 @@
 ---
 title: "Handoff R04 — publicacoes-agenda (Avisos, Circulares, Agenda)"
 source: "comunicacao/publicacoes-agenda.json rev 19; commits da branch work/etapa2-r04-publicacoes-agenda; provas em producao (prova-producao-*.md) e capturas ui/"
-status: "mini-revisao de 10 minutos (03:25-03:50 de 11/09/2026)"
+status: "handoff em andamento (revisoes 19-21 gravadas 02:19-02:34 de 11/09/2026; definitivo ate 04:00)"
 generated_at: "2026-09-11"
 ---
 
@@ -85,7 +85,7 @@ criar/editar evento pela tela, Agenda de eventos (lista) em produção, `circula
 - FUNDO em `agenda_create_light_375`, `agenda_detail_*`, `notice_form_initial_mobile_light_375`: origem no
   `SuperadminFormFrame` compartilhado; regravar só após a correção do frame.
 
-## Complemento 02:30–03:05 (segundo Chrome, viewport 1024)
+## Complemento 02:20–02:34 (segundo Chrome, viewport 1024)
 
 | Captura | O que prova |
 | --- | --- |
