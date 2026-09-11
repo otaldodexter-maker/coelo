@@ -80,8 +80,8 @@ gerar uma chave assim para outros catálogos: sempre no banco, com
   `expected_version` encadeado (a segunda usa a versão devolvida pela
   primeira). O reload lê `representatives`/`administrators` do `detail_v2`
   com contatos **mascarados** (LGPD): o formulário mostra a máscara e só envia
-  o campo se o usuário digitar um valor novo. `administrators[].handle` é
-  `null` até o @ das pessoas existir.
+  o campo se o usuário digitar um valor novo. `administrators[].handle` vem de
+  `person_handles` (pacote 210600) e é editado pelas RPCs de @ (170100).
 - **chat.attach e forms.upload:** E2E só depois da Edge Function
   (`chat-media`, `form-media` em R2) e do cron de expire; até lá ficam
   `local-green` no backend com contrato publicado.
