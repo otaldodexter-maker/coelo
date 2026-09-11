@@ -93,7 +93,14 @@ sintéticos ficam até o fim da Etapa 2.
   `activity_golden_test` (9), `institution_directory_pagination_disabled_light_1440`
   (0,21%), `test/shared` (11: underline_tabs e form_action_footer_adoption). A
   suíte completa fechou 6692 aprovados / 53 falhos / 11 pulados na base
-  integrada; nenhuma falha nova atribuída à R05.
+  integrada. Comparação com `origin/dev` `9bf60463b` (mesmas suítes numa
+  worktree limpa): **4 falhas novas atribuídas à R05**, a corrigir na abertura
+  da R06 — `fail_closed_screens_with_data_probe_test` "Importações lays out
+  with data" 1440 e 375 (G7, Importações migradas ao composto),
+  `principal_real_route_test` "real route opens the first context and offers
+  the profile selector (P28)" (G4), `health_care_golden_test` "profile
+  directory tabs hover and table evidence" (G3 ou composto de tabela). As
+  demais 49 já falhavam em `origin/dev`.
 - Balão de chat sobre o rodapé de Assiduidade (corrigido pela G3 sem prova na
   rota real); página genérica "503" para recurso adiado por decisão (texto
   honesto seria "Disponível depois do MVP").

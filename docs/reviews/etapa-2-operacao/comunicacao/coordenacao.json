@@ -1387,7 +1387,7 @@
    "e2eVerified": "105/199 (52,76%)",
    "base": "inventario validado as 15:53 de 11/09 sobre 1f19d52db; ambiente repositorio + producao medida nos lotes 28 a 48"
   },
-  "suiteCompleta": "flutter test do superadmin na base integrada: 6692 aprovados / 53 falhos / 11 pulados (segunda execucao para listar as falhas em curso ao fechar); falhas conhecidas pre-existentes em origin/dev: test/app 18, test/core/config 4, activity_golden 9, institution pagination 1, test/shared 11",
+  "suiteCompleta": "flutter test do superadmin na base integrada 45a110063: 6692 aprovados / 53 falhos / 11 pulados. Comparadas com origin/dev 9bf60463b em worktree limpa: 49 pre-existentes; 4 novas da R05 para a abertura da R06: fail_closed_screens_with_data_probe_test Importacoes 1440/375 (G7), principal_real_route_test P28 (G4), health_care_golden_test tabs hover (G3/composto)",
   "perguntasAoOwner": "P43-P50, agenda_create_* A+, IMP-R05-2 e arrobas reservados em next-round/R05-perguntas-ao-owner-20260911.md",
   "fechamento": "next-round/R05-fechamento.md (dados sinteticos, chaves, recomendacoes para a R06)"
  }
