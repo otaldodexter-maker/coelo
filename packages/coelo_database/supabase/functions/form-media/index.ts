@@ -1,5 +1,6 @@
 import { createClient, type SupabaseClient } from "@supabase/supabase-js";
 import { R2Client, type R2Config, validateR2Config } from "../_shared/r2_s3.ts";
+import { imageDimensions } from "../_shared/image_dimensions.ts";
 import {
   allowedOrigin,
   corsHeaders,
@@ -27,7 +28,45 @@ export type FormMediaDependencies = Readonly<{
   createClient: typeof createClient;
   now?: () => Date;
   createR2?: (config: R2Config) => Pick<R2Client, "presignGet">;
+  createR2Writer?: (
+    config: R2Config,
+  ) => Pick<R2Client, "presignPut" | "presignGet" | "head" | "get" | "delete">;
 }>;
+
+// R05 realm-interno: uploads de resposta no R2 (ADR 0032) atras da chave
+// COELO_FORMS_MEDIA_PROVIDER=r2. Sem a chave o fluxo legado (Supabase Storage)
+// continua igual; com ela, prepare/finalize/download usam o catalogo privado
+// (form_prepare_asset_upload_r2_v1, form_asset_r2_descriptor_v1,
+// form_media_finalize_answer_r2_v1) e o bucket coelo-media-prod.
+function r2Enabled(dependencies: FormMediaDependencies): boolean {
+  return dependencies.envGet("COELO_FORMS_MEDIA_PROVIDER") === "r2";
+}
+
+function r2Writer(dependencies: FormMediaDependencies, bucket: string) {
+  const config = validateR2Config({
+    endpoint: dependencies.envGet("COELO_R2_ENDPOINT") ?? "",
+    region: dependencies.envGet("COELO_R2_REGION") ?? "auto",
+    accessKeyId: dependencies.envGet("COELO_R2_ACCESS_KEY_ID") ?? "",
+    secretAccessKey: dependencies.envGet("COELO_R2_SECRET_ACCESS_KEY") ?? "",
+    bucket,
+  });
+  return dependencies.createR2Writer?.(config) ?? new R2Client(config);
+}
+
+const R2_ANSWER_KEY =
+  /^tenants\/[0-9a-f-]{36}\/forms\/form\/[0-9a-f-]{36}\/answer-image\/[0-9a-f-]{36}\/original\/[0-9a-f-]{36}\.(jpg|png|webp)$/;
+
+function r2ObjectKey(value: unknown): value is string {
+  return typeof value === "string" && R2_ANSWER_KEY.test(value);
+}
+
+function unwrapEnvelope(value: unknown): Record<string, unknown> {
+  const envelope = value as Record<string, unknown> | null;
+  if (!envelope || envelope.ok !== true || !envelope.data) {
+    throw new Error("asset_unavailable");
+  }
+  return envelope.data as Record<string, unknown>;
+}
 const productionDependencies: FormMediaDependencies = {
   envGet: (name) => Deno.env.get(name),
   createClient,
@@ -185,6 +224,33 @@ export async function handleFormMediaRequest(
     const expectedVersion = body.expected_version;
 
     try {
+      if (action === "prepare" && r2Enabled(dependencies)) {
+        const payload = parsePrepareAsset(body.payload);
+        const { data, error } = await userClient.rpc(
+          "form_prepare_asset_upload_r2_v1",
+          {
+            p_request_id: requestId,
+            p_expected_version: expectedVersion,
+            p_payload: payload,
+          },
+        );
+        if (
+          error || !data || !r2ObjectKey(data.object_key) ||
+          data.bucket !== "coelo-media-prod"
+        ) throw new Error("prepare_failed");
+        const signed = await r2Writer(dependencies, data.bucket).presignPut(
+          data.object_key,
+          payload.mime_type,
+          300,
+        );
+        return response(origin, 200, {
+          asset_id: data.asset_id,
+          upload_url: signed.url.toString(),
+          required_headers: signed.requiredHeaders,
+          expires_at: data.expires_at,
+          storage_provider: "r2",
+        });
+      }
       if (action === "prepare") {
         const payload = parsePrepareAsset(body.payload);
         const { data, error } = await userClient.rpc(
@@ -206,6 +272,87 @@ export async function handleFormMediaRequest(
           signed_upload_url: signed.data.signedUrl,
           upload_token: signed.data.token,
           expires_at: data.expires_at,
+        });
+      }
+      if (action === "finalize" && r2Enabled(dependencies)) {
+        const payload = parseAssetAccess(body.payload);
+        // O usuario confirma o upload pelo legado (autoriza dono/segredo).
+        const queued = await userClient.rpc("form_finalize_asset_upload", {
+          p_request_id: requestId,
+          p_expected_version: expectedVersion,
+          p_payload: payload,
+        });
+        if (queued.error) throw new Error("finalize_failed");
+        const described = await serviceClient.rpc("form_asset_r2_descriptor_v1", {
+          p_asset_id: payload.asset_id,
+        });
+        if (described.error) throw new Error("asset_unavailable");
+        const descriptor = unwrapEnvelope(described.data);
+        if (!r2ObjectKey(descriptor.object_key)) throw new Error("asset_unavailable");
+        if (descriptor.state === "finalized" && descriptor.media_status === "ready") {
+          return response(origin, 200, { asset_id: payload.asset_id, state: "finalized" });
+        }
+        const expectedBytes = Number(descriptor.expected_byte_size);
+        const expectedMime = String(descriptor.mime_type);
+        const writer = r2Writer(dependencies, String(descriptor.bucket));
+        const stored = await writer.head(descriptor.object_key);
+        if (stored.byteSize !== expectedBytes || stored.byteSize > MAX_IMAGE_BYTES) {
+          await writer.delete(descriptor.object_key).catch(() => {});
+          throw new Error("asset_unavailable");
+        }
+        const bytes = await writer.get(descriptor.object_key, expectedBytes);
+        const actualMimeType = sniffImageMime(bytes) ?? "application/octet-stream";
+        const dimensions = actualMimeType === expectedMime
+          ? imageDimensions(bytes, expectedMime)
+          : null;
+        const finalized = await serviceClient.rpc("form_media_finalize_answer_r2_v1", {
+          p_asset_id: payload.asset_id,
+          p_byte_size: bytes.byteLength,
+          p_checksum_sha256: await sha256(bytes),
+          p_pixel_width: dimensions?.width ?? null,
+          p_pixel_height: dimensions?.height ?? null,
+        });
+        if (finalized.error) throw new Error("verification_failed");
+        const outcome = finalized.data as Record<string, unknown> | null;
+        if (!outcome || outcome.ok !== true) {
+          // O banco ja descartou o legado e enfileirou a limpeza; o objeto sai.
+          await writer.delete(descriptor.object_key).catch(() => {});
+          throw new Error("verification_failed");
+        }
+        return response(origin, 200, {
+          asset_id: payload.asset_id,
+          state: "finalized",
+          media_asset_id: (outcome.data as Record<string, unknown>).media_asset_id,
+        });
+      }
+      if (action === "download" && r2Enabled(dependencies)) {
+        const payload = parseAssetAccess(body.payload);
+        const authorized = await serviceClient.rpc(
+          "form_media_authorize_for_worker",
+          {
+            p_asset_id: payload.asset_id,
+            p_actor_person_id: actorPersonId,
+            p_edit_secret: payload.edit_secret,
+          },
+        );
+        if (authorized.error || !authorized.data || authorized.data.state !== "finalized") {
+          throw new Error("asset_unavailable");
+        }
+        const described = await serviceClient.rpc("form_asset_r2_descriptor_v1", {
+          p_asset_id: payload.asset_id,
+        });
+        if (described.error) throw new Error("asset_unavailable");
+        const descriptor = unwrapEnvelope(described.data);
+        if (!r2ObjectKey(descriptor.object_key) || descriptor.media_status !== "ready") {
+          throw new Error("asset_unavailable");
+        }
+        const signed = await r2Writer(dependencies, String(descriptor.bucket)).presignGet(
+          descriptor.object_key,
+          60,
+        );
+        return response(origin, 200, {
+          signed_url: signed.url.toString(),
+          expires_in: 60,
         });
       }
       if (action === "finalize") {
