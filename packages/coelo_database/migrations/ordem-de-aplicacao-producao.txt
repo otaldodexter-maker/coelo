@@ -122,3 +122,5 @@
 20260910171900_child_safety_decision_enum_cast_fix_v1.sql
 # lote 20 (11/09 03:17)
 20260910172000_owner_child_safety_review_grant_v1.sql
+# lote 21 (11/09 03:2x)
+20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql
