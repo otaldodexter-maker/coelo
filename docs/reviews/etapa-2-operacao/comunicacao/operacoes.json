@@ -1,13 +1,13 @@
 {
-  "revision": 25,
-  "updated_at": "2026-09-11T14:20:00-03:00",
+  "revision": 26,
+  "updated_at": "2026-09-11T13:46:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "13be50ae8 (+ este commit)",
+  "head": "58e3977cc (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -195,6 +195,22 @@
       "status": "gate-real-registrado (sem mudanca de estado)",
       "delta": "validate_catalog_index OK; validate_package_boundaries 5 diagnosticos (CoeloAdminDirectory, CoeloAdminDirectoryStatusTabs, CoeloAdminDirectoryViewToggle, CoeloAdminPaginationFooter, CoeloAdminUnderlineTabs sem entrada no indice coelo-ui.index.jsonl); validate_catalog_sync 21 diagnosticos (os 5 + 7 source-example-fingerprint-mismatch: admin.flyout, admin.resizable-table, admin.work-item-card, superadmin.form-action-footer, core.date-range-picker, core.date-range-field, core.date-time-field; relatorio versionado desatualizado). Defeito da ferramenta: validate_catalog_sync regrava assets/catalog-sync-report.json com caminhos absolutos (revertido, nao commitado). catalog.publish = deploy do app do Catalogo (Cloudflare Pages, decisao nominal). Fechar validate/sync exige entradas de indice + exemplos atualizados no registry (governanca do Design System, nao CRUD do MVP): pos-MVP salvo ordem do Owner.",
       "proof": "saida dos tres validadores em 14:00"
+    },
+    {
+      "action_ids": [
+        "audit.export"
+      ],
+      "status": "adiamento-honesto-provado -> FE verified proposto",
+      "delta": "Arquivos -> Exportar CSV/XLSX: 'Disponivel depois do MVP', sem chamada de exportacao.",
+      "proof": "capturas 38-39"
+    },
+    {
+      "action_ids": [
+        "account.theme"
+      ],
+      "status": "rota-real-verificada -> FE verified proposto",
+      "delta": "Aparencia Claro persiste em localStorage e sobrevive a carga completa; restaurado Sistema.",
+      "proof": "capturas 70-72"
     }
   ],
   "tests": {
@@ -223,6 +239,10 @@
     {
       "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json",
       "summary": "plans.list/create/edit FE verified; BE local-green (6 deltas)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit-export-theme.json",
+      "summary": "audit.export FE verified (adiado honesto); account.theme FE verified (2 deltas)"
     }
   ],
   "packages_ready": [
@@ -265,7 +285,8 @@
     "1b0c2c5ff (merge)",
     "4371853e1",
     "60b415707",
-    "13be50ae8"
+    "13be50ae8",
+    "58e3977cc"
   ],
   "r04_history": {
     "revision": 20,
@@ -879,5 +900,6 @@
       "tipo": "teste-pre-existente",
       "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
     }
-  ]
+  ],
+  "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26."
 }
