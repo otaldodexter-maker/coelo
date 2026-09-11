@@ -142,13 +142,15 @@ Map<String, Object?> _encodeItem(FormItem item) => {
 
 FormOption _decodeOption(Map<String, Object?> json) {
   const context = 'form_option';
-  requireOnlyKeys(json, const {
+  // A projecao do servidor traz as tres chaves de Local juntas nos itens
+  // `location` e nenhuma delas nos demais; qualquer outra combinacao e drift.
+  const locationKeys = {'location_id', 'location_status', 'location_available'};
+  final hasLocation = json.keys.any(locationKeys.contains);
+  requireOnlyKeys(json, {
     'id',
     'label',
     'position',
-    'location_id',
-    'location_status',
-    'location_available',
+    if (hasLocation) ...locationKeys,
   }, context: context);
   final locationAvailable = json['location_available'];
   if (locationAvailable != null && locationAvailable is! bool) {
