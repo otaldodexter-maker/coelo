@@ -1,6 +1,8 @@
 import 'dart:io';
 
 import '../../support/import_repository_stub.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
+import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_repository.dart';
 import 'package:coelo_superadmin/features/imports/domain/import_job.dart';
 import 'package:coelo_superadmin/features/imports/presentation/import_directory_page.dart';
@@ -208,8 +210,14 @@ Widget _app(Brightness brightness, ImportRepository repository) => MaterialApp(
   themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
   builder: (context, child) =>
       RepaintBoundary(key: const Key('import-hub-golden-root'), child: child!),
-  home: Scaffold(
-    body: ImportDirectoryPage(
+  // FUNDO/MENU (decisão do Owner de 10/09): o golden reproduz a rota real,
+  // dentro da shell (menu, cabeçalho, Bug), sem fundo cinza de Scaffold avulso.
+  home: SuperadminShell(
+    logout: () async => const LogoutResult.success(),
+    title: 'Importações',
+    subtitle: 'Acompanhe as importações de dados da plataforma.',
+    currentDestination: 'imports',
+    child: ImportDirectoryPage(
       key: ValueKey(repository),
       repository: repository,
       onNewImport: (_) {},
