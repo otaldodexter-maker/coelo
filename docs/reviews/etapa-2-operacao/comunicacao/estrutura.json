@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 38,
+ "revision": 39,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-11T11:23:22-03:00",
+ "updatedAt": "2026-09-11T11:33:55-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1",
  "conversa": "R04 · Estrutura (sessao coelo-b3), continuacao por ordem do Owner depois do fechamento da R04 (08:52)",
@@ -11,7 +11,7 @@
  "branch": "work/etapa2-r04-estrutura",
  "head": "(commit desta revisao)",
  "upstream": "origin/work/etapa2-r04-estrutura",
- "base": "origin/dev d3201a50d (lote 24: 180360 em producao; continuacao integrada)",
+ "base": "origin/dev 5d7af9358 (revs 34-37 integradas pelo coordenador; deltas continuacao-2 ate locations.create-edit aplicados) mesclada na branch; worktree e2-r04-estrutura recriada",
  "horario": {
   "inicio": "2026-09-10T21:44:19-03:00",
   "retomada": "2026-09-11T02:05:01-03:00",
@@ -185,11 +185,11 @@
  ],
  "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (16): groups.edit, institutions.create, units.create, locations.create-edit e locations.schedule com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS (231 acoes; E2E 43) e revertido. NAO aplicado ainda no inventario de dev (o ensaio mostrou units.create pending-verification em dev).",
  "pedidosAoCoordenador": [
+  "Aplicar as 3 entradas de locations.schedule de deltas-r04-estrutura-continuacao-2.json (entradas 14-16; as 13 primeiras ja estao em dev) e integrar 85f66cd38, a125c89c7, a71d7ff0a e os commits desta retomada",
   "Aplicar deltas-r04-estrutura-continuacao-2.json (16 entradas) com node docs/reviews/apply-tracker-delta.cjs + validate-trackers.cjs; a certificacao de cada terminal aponta para um arquivo existente em docs/reviews/evidence/etapa-2/r04-estrutura/",
   "Integrar em dev os commits da branch work/etapa2-r04-estrutura posteriores a a276f15a8: a12160088 (rev 37, Locais criar/editar, handle de Unidades, fixture de autorizacao de Locais) e 85f66cd38 (chave activityLocationCreateEnabled) e esta revisao 38; todos enviados ao remoto",
-  "Worktree e2-r04-estrutura: contem WIP nao commitado (ver wip); preservar/identificar antes de remover. Projeto descartavel supabase coelo_baseline_estrutura (portas 613xx) pode ser parado; Chrome de QA (porta 9556) e servidor estatico (3020) desta conversa podem ser fechados",
   "P37: remover os dados sinteticos desta conversa em producao no fechamento (groups 368a5cea, institutions 190dd028 + endereco, units f5284f2f + endereco/contatos, activity_locations 82e92854 com a semana publicada)",
-  "Levar ao Owner P38 (icone @ no campo Identificador de Unidades/Instituicoes) e P39 (Identificador vira @ na criacao?) com as recomendacoes registradas em perguntasParaOOwner",
+  "Levar ao Owner P40 (icone @ no campo Identificador de Unidades/Instituicoes) e P41 (Identificador vira @ na criacao?) com as recomendacoes registradas em perguntasParaOOwner",
   "Conferir em producao public.units.slug de f5284f2f (esperado unidade-centro-r04): a consulta somente leitura foi bloqueada pelo classificador nesta conversa",
   "Pendencias que ficam para a proxima rodada: activities.create/edit pela rota real (depois de ligar fetchFormOptions e rebuild); institution_contacts_v2 para destravar institutions.edit; assessments.entry precisa de vinculo profissional do qa-r03; tres falhas pre-existentes em composition_root_sanitization_test e superadmin_auth_scope_test (rotina e acessos, outras familias)"
  ],
@@ -201,8 +201,8 @@
   }
  ],
  "perguntasParaOOwner": [
-  "P38 (Unidades/Instituicoes, visual): o campo Identificador usa o icone @ mas grava o slug; o @ publico e gerado pelo servidor. Trocar o icone (ex.: link/tag) ou manter? Recomendacao: trocar, porque o @ induz a ler o campo como handle",
-  "P39 (Unidades, produto): o Identificador digitado deve virar o @ publico na criacao (exigiria proibir hifen no cliente) ou o @ continua derivado pelo servidor? Recomendacao: manter derivado ate existir a acao \"Alterar @\" no cliente"
+  "P40 (Unidades/Instituicoes, visual): o campo Identificador usa o icone @ mas grava o slug; o @ publico e gerado pelo servidor. Trocar o icone (ex.: link/tag) ou manter? Recomendacao: trocar, porque o @ induz a ler o campo como handle",
+  "P41 (Unidades, produto): o Identificador digitado deve virar o @ publico na criacao (exigiria proibir hifen no cliente) ou o @ continua derivado pelo servidor? Recomendacao: manter derivado ate existir a acao \"Alterar @\" no cliente"
  ],
  "pendenciasDeCodeReview": [
   "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
@@ -215,13 +215,7 @@
  ],
  "bloqueio": null,
  "wip": {
-  "onde": "worktree C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura, NAO commitado",
-  "arquivos": [
-   "apps/superadmin/lib/features/activities/data/supabase_activity_directory_repository.dart (fetchFormOptions/searchProfessionals -> superadmin_activity_form_options_v2)",
-   "apps/superadmin/test/features/activities/data/supabase_activity_directory_repository_test.dart",
-   "apps/superadmin/test/features/activities/data/activity_repository_security_test.dart"
-  ],
-  "estado": "subagente ainda editando/testando no momento da pausa; se a conversa estrutura voltar, ela commita apos test/features/activities verde; se nao voltar, o coordenador decide: commitar como WIP identificado ou descartar (a ligacao e pequena e refazivel)"
+  "estado": "resolvido: o coordenador preservou a ligacao de fetchFormOptions/searchProfessionals como a71d7ff0a; verificada nesta retomada (test/features/activities/data 145/145 + composicao 2/2; analyze limpo). Decisao do subagente mantida: nao pedir a secao taxonomy (a v2 devolve a taxonomia plana e o controller substituiria a arvore com subtipos/Outros); reversivel com uma linha"
  },
  "recursos": {
   "processos": [
@@ -232,7 +226,7 @@
   ]
  },
  "ack": null,
- "proximoPasso": "PAUSADA. Se retomar: commitar o WIP do subagente apos verde, rebuild do qa_main, provar activities.create (rascunho com instituicao + unidade) e activities.edit pela rota real; depois institution_contacts_v2",
+ "proximoPasso": "rebuild do qa_main com fetchFormOptions ligado + chave do local; provar activities.create (rascunho com instituicao + unidade) e activities.edit pela rota real; depois institution_contacts_v2",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -422,7 +416,7 @@
   "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
   "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
  },
- "estado": "PAUSADA pelo Owner em 11/09 ~11:30 (ordem: \"pause a atividade\"); entrega ao coordenador para ajustar pendencias, commits e worktree",
+ "estado": "em andamento (retomada por ordem do Owner, 11/09 tarde, depois da pausa)",
  "validacaoDeEntrega": {
   "quando": "2026-09-11T08:31:24-03:00",
   "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
@@ -495,5 +489,6 @@
   "avisoAoCoordenador": "a worktree e2-r04-estrutura foi removida duas vezes enquanto esta conversa trabalhava nela (08:52 e 09:5x), apagando o build web servido e derrubando a rota real no meio de uma prova. Enquanto a continuacao estiver viva, por favor nao remover a worktree; a branch e publicada a cada commit.",
   "achadoInstitutionsEdit": "a edicao da instituicao criada pelo v2 nao fecha: o assistente exige CNPJ, representantes e administradores, que a criacao v2 nao persiste (so ROOT+ADDRESS+handle+tipo), e o cliente recusa salvar campos sem contrato remoto; alem disso o detalhe devolve document_type \"cnpj\" em minusculas. institutions.edit proposto como blocked-decision ate o pacote de documento/contato/pessoas no realm interno (institution_contacts_v2). O slug digitado no assistente so aceita letras minusculas, numeros e hifens (regex do cliente); o servidor aceita ponto e underscore."
  },
- "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Remover no fechamento (P37)."
+ "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Remover no fechamento (P37).",
+ "renumeracao": "as perguntas desta frente antes chamadas P38/P39 (icone @ e semantica do handle de Unidades) passam a P40/P41: o coordenador ja usou P38 para o golden forms_editor_dark_1440 na segunda leva de 11/09"
 }
