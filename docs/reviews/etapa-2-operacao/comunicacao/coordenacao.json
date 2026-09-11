@@ -1,12 +1,12 @@
 {
- "revision": 30,
+ "revision": 31,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T03:52:00-03:00",
+ "updatedAt": "2026-09-11T08:52:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -220,6 +220,7 @@
   "28": "03:05 lote 19 em producao; acessos-pessoas e publicacoes finalizadas; metricas parciais FE 39 / BE done 40 / E2E 24",
   "29": "03:46 lotes 20 e 21; acessos finalizada; rota real de operacoes e formularios por subagentes (E2E 37/199); pacotes de backend de formularios em curso",
   "30": "03:52 lote 22 (contextos do Principal); mini-revisoes de 04:00 recebidas de seis frentes; estrutura sem retorno; P35/P36",
+  "31": "08:52 FECHAMENTO da R04: sete frentes integradas e worktrees removidas; lote 23; rastreadores e skills consolidados; percentuais finais",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -608,5 +609,54 @@
   "beDone": "62/224",
   "e2eVerified": "37/199",
   "base": "validate-trackers PASS sobre d12700d53"
+ },
+ "lote23": {
+  "aplicadoEm": "2026-09-11T08:42 -03:00; ledger 102",
+  "dump": "schema-producao-20260911-lote23.sql",
+  "conteudo": [
+   "formularios-cuidado-rotina 20260910220600 child_context_directory_v2_baseline (45/45; destrava Cuidado/Medicacao/Alunos, F-R04-FCR-006)",
+   "220700 attendance_dashboard_access_and_context_options_v1 (22/22; F-R04-FCR-007)",
+   "220800 forms_location_snapshot_v1_route (8/8; P16 no caminho v1 da rota de producao, F-R04-FCR-005)"
+  ],
+  "escritosPor": "frente formularios (coelo-17) apos o subagente do coordenador cair por limite do modelo as 04:15"
+ },
+ "fechamentoR04": {
+  "quando": "2026-09-11T08:52:00-03:00 (relogio da maquina)",
+  "devPublicado": "fab697d6c (+ commit da rev 31)",
+  "janela": "frentes ate 04:20 (mini-revisoes recebidas entre 03:00 e 04:00; entregas finais por Git entre 08:30 e 08:55 de todas as sete frentes); coordenador consolidou de 04:30 a 05:20 e reabriu para a integracao final as 08:30",
+  "frentes": {
+   "estrutura": "rev 32, SHA 97ba3e21d (sessao coelo-b3, retomada da coelo-39): 21 pacotes em producao (lotes 10-11), chaves ligadas, 46 deltas (40 BE local-green, 6 FE local-green), skills atualizadas; rota real nao provada; worktree removida; nenhum dado sintetico",
+   "acessos-pessoas": "rev 118, SHA 3b499860f (coelo-01/d1): lotes 12,14,16,18,19,20,21 (9 pacotes); 48 deltas; access-models.create E2E; retidos 171600 (P31) e 171800 (P32); worktree removida",
+   "formularios-cuidado-rotina": "rev 33, SHA 508d9e842 (coelo-17): lotes 17 e 23 (4 pacotes); 29 deltas (forms.list/create/edit, medication.list E2E); P16 backend+cliente; worktree removida",
+   "principal-chat-sistema": "rev 20, SHA 4ddef877f (coelo-f9/b7): lotes 9, 11, 22 (8 pacotes); launcher Decisao 7 no frame; chat 6 acoes E2E; Cardapios abre na rota real; Principal bloqueado por P35; worktree removida",
+   "realm-interno": "rev 15, SHA d89c236de (coelo-82/7a): lotes 9, 10, 13 (7 pacotes); prova cross-tenant 21/21; varredura de grants de authenticated (pendencia); P24 corrigida; worktree removida",
+   "publicacoes-agenda": "rev 30, SHA 3895238a5 (coelo-75/9f): lotes 9, 10, 15 (6 pacotes); 64 deltas (16 E2E: Avisos, Circulares, Agenda); 52 capturas; P33/P34 lado a lado; worktree removida",
+   "operacoes": "rev 20, SHA a71928c7c (coelo-12/9c + subagentes): lote 10 (2 pacotes); 25 deltas (Suporte 6 e account.profile E2E); Suporte e Auditoria no composto; worktree removida"
+  },
+  "producao": "lotes 8 a 23: 66 pacotes aplicados; ledger 102 versoes de 10/09; happens-media e now-media implantadas; dumps em Coelo-backups por lote; candidatos restantes: 171600 (P31), 171800 (P32), 230023 disparo do worker (P30)",
+  "integracao": "sete branches integradas por merge, 0 commits fora da base conjunta; skills coelo-backend/coelo-frontend/coelo-frontend-backend unidas de cinco branches (conflitos resolvidos preservando os dois lados); worktrees das frentes removidas, branches preservadas; sem stash; WIP retido: nenhum na R04 (resta a worktree quebrada e2-r03-realm-interno, so o Owner remove)",
+  "docker": "10 projetos descartaveis das frentes parados; espelho do coordenador coelo_baseline mantido",
+  "rastreadores": "validate-trackers PASS; bloco Estado vigente R04 nos tres md; inventario 231 acoes",
+  "percentuais": {
+   "feVerified": "56/231 (24,24%)",
+   "feLocalGreen": "34/231 (14,72%)",
+   "feAprovacaoVisualDoOwner": "52/231 (22,51%)",
+   "beLocalGreen": "96/224 (42,86%)",
+   "beSqlEmProducao": "129/224 (57,59%)",
+   "beDone": "63/224 (28,13%)",
+   "e2eVerified": "37/199 (18,59%)",
+   "base": "inventario validado sobre fab697d6c (+ commit da rev 31) as 08:50; ambiente repositorio + producao medida"
+  },
+  "perguntasAoOwner": "P22 a P37 em next-round/R04-perguntas-ao-owner-20260911.md (P22 resolvida pela ponte; P24 corrigida; P26/P28/P33/P34 com pagina lado a lado; P30 disparo do worker; P31/P32 pacotes retidos; P35 contexto do Principal; P37 limpeza dos dados sinteticos)",
+  "pendenciasDeCodeReview": [
+   "180060 create or replace em 3 funcoes existentes e sobrecarga de 14 args de audit_append_superadmin_internal",
+   "grants CRUD de authenticated sem policy (varredura-authenticated-2026-09-11.md)",
+   "literal 'aal2' na trilha de auditoria apos MFA fora do MVP",
+   "suites pgTAP legadas com drift (audit_production_test, auth_context #8, 4 de Formularios)",
+   "13 paginas com ValueChanged<SupportReportDraft> em vez de SuperadminBugReportSubmit",
+   "save de permissoes de perfil: corrigido no cliente (capabilities), revalidar pela UI",
+   "Responsaveis do Suporte sem RPC; preferencia cards/tabela nao persiste",
+   "goldens divergentes registrados (32 support_*, forms 1440, activity/institution 375)"
+  ]
  }
 }
