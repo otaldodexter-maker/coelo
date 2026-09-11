@@ -1,15 +1,15 @@
 {
-  "revision": 125,
-  "updated_at": "2026-09-11T17:52:15.058Z",
-  "relogio_local": "Fri Sep 11 2026 14:52:15 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 126,
+  "updated_at": "2026-09-11T18:03:05.149Z",
+  "relogio_local": "Fri Sep 11 2026 15:03:05 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Opus 5 (esforco medio)",
-  "status": "finalizado (complementos apos a mini-revisao)",
+  "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-acessos-pessoas",
   "branch": "work/etapa2-r05-acessos-pessoas",
-  "head": "7058176f3 (publicado)",
+  "head": "0ed15b79f (publicado; inclui merges de origin/dev ate 15:03)",
   "base_observed": "origin/dev 2f6a6114f; lotes 8-27 em producao; candidatos/acessos-pessoas so com 170750 e 170900 OBSOLETOS (171600 e 171800 aplicados no lote 25); ordem-de-aplicacao ate lote 27",
   "recorte": {
     "familias": [
@@ -133,10 +133,12 @@
     "Skills: pgTAP em psql nao carrega pg_safeupdate; DELETE/UPDATE em funcao sempre com WHERE e um caso com load 'safeupdate' como supabase_admin."
   ],
   "MINI_REVISAO_14h40": {
-    "1_sha_final": "7058176f3 publicado em origin/work/etapa2-r05-acessos-pessoas (rev 124 tinha 80b3a872d; desde entao: b64bd9bf9 ja incluido, 3d6d7de0a e 7058176f3); status limpo; descartavel coelo_acessos_r05 sera encerrado no fechamento",
-    "5_pacotes": "candidatos/acessos-pessoas: 170400 VERDE pendente (chave segmentFilterAvailable); 170100/170200/170300 aplicados"
+    "1_sha_final": "0ed15b79f publicado; status limpo; Chrome 9411, servidor 3010 e descartavel coelo_acessos_r05 encerrados as 15:02",
+    "4_deltas": "deltas-r05.json (26, aplicados em dev 530613fb5); deltas-r05-2.json (7) e deltas-r05-3.json (7) a aplicar pelo coordenador",
+    "5_pacotes": "170400 VERDE pendente em candidatos/acessos-pessoas (chave segmentFilterAvailable em superadmin_auth_scope.dart ~387); 170100/170200/170300 aplicados",
+    "commits_desde_a_rev_124": "3d6d7de0a (aba Criancas, superado pelo 170400), 7058176f3 (170400 + cliente gateado), 0aeb9b729 (codigo com hifen), 0ed15b79f (deltas 3)"
   },
-  "encerramento": "Chrome 9411, servidores 3000 e descartavel coelo_acessos_r05 encerrados as 14:34; nenhum dart/flutter desta worktree em execucao; respondo a revisao das 15:50 no JSON; depois de 16:00 nao retomo por conta propria.",
+  "encerramento": "nenhum processo desta frente em execucao; nao retomo por conta propria depois de 16:00; respondo a revisao das 15:50 no JSON.",
   "PACOTE_170400_14h51": {
     "id": "AP-PEOPLE-LIST-SEGMENT-170400",
     "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170400_people_list_segment_v1.sql",
@@ -145,6 +147,13 @@
     "o_que_faz": "superadmin_people_list ganha p_segment (all|institutional_team|guardians|children|dual_profile, allowlist) filtrado no servidor por tipo, guardian_links e institution_memberships; DROP da sobrecarga de 12 parametros e CREATE da de 13 com default 'all' (chamadas antigas continuam validas); grants refeitos (anon revogado, authenticated/service_role executam).",
     "chave_de_composicao": "SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true) em lib/core/config/superadmin_auth_scope.dart (~linha 387); ligar so depois de aplicar.",
     "motivo": "rota real: as abas do diretorio de Pessoas nao filtravam em producao (so o repositorio de desenvolvimento aplicava matchesSegment). Commit 3d6d7de0a (aba Criancas por p_types) fica superado por este, sem conflito."
+  },
+  "ROTA_REAL_MODELOS_15h00": {
+    "access-models.list": "verified + E2E proposto: modelos reais de plataforma na rota real; reload mantem",
+    "access-models.filter": "verified + E2E proposto: busca 'QA R04' filtra no servidor (2 modelos sinteticos)",
+    "access-models.detail": "verified + E2E proposto: detalhe do modelo cc322488 com permissoes, vinculos e auditoria",
+    "access-models.edit": "local-green: formulario abre com dados reais; DEFEITO corrigido em 0aeb9b729 (codigo com hifen gerado pelo servidor falhava na validacao do cliente e bloqueava Continuar em perfis e modelos); salvar pela UI depende de build novo",
+    "deltas": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/deltas-r05-3.json (7), ensaiados apply+validate PASS na base com origin/dev e revertidos"
   },
   "historico_r04": {
     "revision": 118,
