@@ -120,7 +120,13 @@ final class SupabaseAccessProfileRepository
           'p_draft': draft.toDraftJson(),
         },
       );
-      return AccessProfile.fromJson(draft.domain, Map<String, dynamic>.from(response as Map));
+      // superadmin_access_profile_save devolve o envelope
+      // {domain, profile, profile_id, version, replayed}; o perfil vem em `profile`.
+      final payload = Map<String, dynamic>.from(response as Map);
+      final profileJson = payload['profile'] is Map
+          ? Map<String, dynamic>.from(payload['profile'] as Map)
+          : payload;
+      return AccessProfile.fromJson(draft.domain, profileJson);
     } on PostgrestException catch (error) {
       throw _mapError(error);
     } catch (_) {
