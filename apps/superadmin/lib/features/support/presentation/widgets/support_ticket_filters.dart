@@ -60,7 +60,12 @@ final class SupportTicketFilters {
         label: 'Responsável',
         options: controller.teamMembers.map((member) => member.id).toList(growable: false),
         selectedValues: controller.filters.assigneeIds,
-        optionLabel: (id) => controller.teamMembers.firstWhere((member) => member.id == id).name,
+        optionLabel: (id) =>
+            controller.teamMembers
+                .where((member) => member.id == id)
+                .map((member) => member.name)
+                .firstOrNull ??
+            'Responsável fora da equipe',
         onChanged: (assigneeIds) => _update(assigneeIds: assigneeIds),
         searchHintText: 'Buscar responsável',
       ),
