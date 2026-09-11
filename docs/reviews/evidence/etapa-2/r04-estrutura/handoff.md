@@ -1,7 +1,7 @@
 ---
 title: "Handoff — grupo estrutura, Rodada 4 (E2-R04-20260911)"
 source: "worktree e2-r04-estrutura, branch work/etapa2-r04-estrutura; comunicacao/estrutura.json revisões 23 a 28"
-status: "em andamento; atualizado na mini-revisão das 04:20"
+status: "finalizado; mini-revisão gravada às 08:4x de 11/09 (a sessão caiu com a máquina às 00:27 e a rev 31 não foi publicada)"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---
@@ -56,9 +56,9 @@ Instituições lista e filtra contra produção com estado vazio honesto.
 
 | Pendência | Primeiro gate |
 | --- | --- |
-| Aplicar os 20 candidatos e ligar `structureMutationsEnabled` | Coordenador (preflight no espelho dele em curso) |
-| `institutions.create/edit`, `activities.*`, `locations.*` na rota normal com escrita | Chave ligada na base conjunta (o classificador desta sessão bloqueou a edição) |
-| `units.*` e `groups.*` com escrita | P22 ponte de ator (RPCs people-based negam qa-r03) |
+| ~~Aplicar os 21 candidatos e ligar as chaves~~ | Feito pelo coordenador (lotes 10 e 11, 23:23 e 23:33); `candidatos/estrutura` vazio |
+| `institutions.create/edit`, `activities.*`, `locations.*` na rota normal com escrita | Rota real por CDP (`qa_main.dart`): o assistente de Instituições travou o renderer ao avançar de Perfil, causa não isolada |
+| `units.*` e `groups.*` com escrita | Ponte de ator (220400) em produção; rota real por CDP pendente |
 | Contato, documento, representantes, administradores, plano e marca na criação | Próximo pacote no realm interno; hoje ficam vazios após criar |
 | MENU-M: os dois goldens 375 regravados congelam o cabeçalho mobile atual | Fase 0 confirmar; reverter os dois PNG de `20f497709` se mudar |
 | 180060 substitui três funções compartilhadas em produção | Code review depois do MVP (registrado) |
@@ -73,3 +73,18 @@ Instituições lista e filtra contra produção com estado vazio honesto.
   falhas restantes em `test/shared` (underline tabs, footer adoption) são
   pré-existentes em `origin/dev`, medidas na worktree limpa
   `e2-r04-estrutura-base`.
+
+## Entrega ao coordenador (validação de 11/09, manhã)
+
+- Deltas por action_id: `deltas-r04-estrutura.json` neste diretório (46;
+  40 backend → `remote-green`, 6 frontend → `local-green`; nenhum terminal),
+  ensaiado com `apply-tracker-delta.cjs` + `validate-trackers.cjs` (PASS) e
+  revertido. Comando: `node docs/reviews/apply-tracker-delta.cjs
+  docs/reviews/evidence/etapa-2/r04-estrutura/deltas-r04-estrutura.json`.
+- Skills: seções "Regras medidas pelo grupo estrutura na Rodada 4" em
+  `coelo-supabase`, `coelo-flutter-review` e dois itens em
+  `coelo-flutter-supabase-review`, nesta branch.
+- Dados sintéticos criados em produção por esta conversa: nenhum.
+- Worktrees: `e2-r04-estrutura` (branch) e `e2-r04-estrutura-base` (detached,
+  só medição; pode ser removida). Projeto descartável
+  `coelo_baseline_estrutura` pode ser parado.

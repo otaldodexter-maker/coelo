@@ -157,6 +157,20 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
 - `db query -f` de um arquivo a partir de `candidatos/<grupo>` é o caminho de
   aplicação; ao integrar branches, o Git pode realocar um candidato novo para
   `migrations/` por "rename" de diretório: mover de volta antes do preflight.
+- Estrutura na R04 (Instituições, Unidades, Turmas, Atividades, Avaliações e
+  Locais): 21 pacotes entraram em produção nos lotes 10 e 11 e as chaves
+  `structureMutationsEnabled`/`assessmentMutationsEnabled` foram ligadas; o
+  Back-end das 49 ações fica `remote-green`, não `done`, porque só a leitura
+  de Instituições foi provada na rota real. `institutions.create` v2 persiste
+  apenas ROOT+ADDRESS+handle: representantes, administradores, contato,
+  documento, plano e marca ficam vazios no detalhe recarregado até o pacote
+  de contatos/pessoas no realm interno, e o E2E dessa ação espera por ele.
+- Um grupo que perde a conversa (reinício da máquina) entrega pelo Git: rev do
+  JSON com a mini-revisão, `deltas-*.json` ensaiado com
+  `apply-tracker-delta.cjs` + `validate-trackers.cjs` na própria worktree e
+  revertido (o coordenador aplica), handoff e push da branch. O coordenador
+  registra "sem retorno" quando o push não acontece; publicar antes de provar
+  vale mais que provar sem publicar.
 
 ## Contrato de abertura
 

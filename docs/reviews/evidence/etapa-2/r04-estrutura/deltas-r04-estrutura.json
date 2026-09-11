@@ -1,0 +1,324 @@
+[
+ {
+  "action_id": "institutions.list",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_institution_directory_v2 (230001) em producao; rota normal aberta com qa-r03 as 23:0x listando a instituicao sintetica. Falta CRUD+reload por action_id para done.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.filter",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_institution_filter_options_v2 (230001) em producao; tipos vieram vazios ate o catalogo 180320 (Escola/Colegio/Creche) entrar no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.detail",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_institution_detail_v2 recarimbado como 180330 (pgTAP 25/25) e em producao no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.create",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_institution_create_v2 novo (180340, pgTAP 26/26: realm interno v2, institution.activate, escopo de plataforma, sempre draft, recibo por request_id) em producao no lote 10; catalogo de tipos 180320. Persiste so ROOT+ADDRESS+handle.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.edit",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_institution_edit_core_v2 (230002, lote 3) em producao; detalhe v2 (180330) fecha o fetchById do fluxo de edicao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.reload",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: leitura v2 (directory/filter/detail) em producao; reload da lista provado na rota normal; reload apos escrita pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.error",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: envelope SAI_* das RPCs v2 de Instituicoes em producao (230001/230002/180330/180340).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.access-denied",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: require_superadmin_internal_context nega e audita nas RPCs v2 em producao; negativas cobertas por pgTAP (institution_detail 25/25, create 26/26).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.locations-map",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: catalogo de Locais v2 (230012-230016, lote 5) e reservas/bindings (180000/180140) em producao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.list",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.filter",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.create",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.edit",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.status",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.reload",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.error",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.access-denied",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.locations-map",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: catalogo de Locais v2 por unidade em producao (230012-230016) mais bindings 180140.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.copy-institution-location",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_location_copy_v2 (230015, lote 5) em producao; pgTAP 19/19 do coordenador.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.list",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_group_directory (baseline) + ponte de ator em producao; P5 no cliente (filtro degrada). superadmin_group_detail_v2 (180310, 33/33) no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.create",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_group_save (baseline people-based) alcancavel pela ponte de ator (220400); deixa de ser blocked-environment. superadmin_group_location_create_v2 (180200, 46/46) em producao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_group_save + ponte de ator em producao; detalhe v2 180310.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.members",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_group_detail_v2 (180310) em producao devolve membros; escrita por superadmin_group_save via ponte.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.location",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_group_location_create_v2 (180200, 46/46) e bindings (180140, 30/30) em producao no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.list",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.create",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.detail",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.edit",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.assessment",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: Avaliacoes v2 (180350, 12 RPCs, 47/47) em producao no lote 11 (migration historica nunca aplicava: parentese e ambiguidade corrigidos).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.location",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_activity_location_create_v2 (180150, 33/33) e reservas (180000, 49/49) em producao no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "assessments.entry",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "assessments.gradebook",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "assessments.close",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "assessments.reopen",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "assessments.detail",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "locations.list",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: catalogo v2 (lote 5) em producao; capacidades locations.* provisionadas (230012).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: create/update/status/copy v2 (lote 5) em producao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "locations.detail-links",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: reservas (180000, 49/49) e bindings de consumidores (180140, 30/30) em producao no lote 10.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "locations.schedule",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R04: superadmin_location_schedule_set_v2 (230016, 38/38) e reservas (180000) em producao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.create",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04: SupabaseInstitutionDirectoryRepository.create() chama superadmin_institution_create_v2 (37/37 no repositorio); assistente aberto na rota real ate a etapa Perfil; o Chrome travou ao avancar (renderer sem resposta), causa nao isolada.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "institutions.filter",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04: rota normal aberta com qa-r03: filtros exibem \"Sem tipos cadastrados\" com o catalogo vazio (regra do estado vazio, Decisao 13).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "groups.list",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04 P5: GroupDirectoryViewModel.filterOptionsUnavailable + rotulo \"(indisponivel)\" quando fetchFilterOptions falha; 5/5 no view model; diretorio no composto.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "units.import",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04 P6: widget morto do dialogo de importar (FilePicker + previa) removido; o botao mostra indisponibilidade honesta.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "activities.detail",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04: activity_detail_light_375 (decisao A) passa sem diff no SDK 3.44.2.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ },
+ {
+  "action_id": "locations.detail-links",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R04: goldens location_detail_light_375/focus_375/dark_1440 regravados apos o texto sem previa (decisao A); LocationDirectoryPanel ganha slot trailing (WIP provado 64/64).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md"
+ }
+]

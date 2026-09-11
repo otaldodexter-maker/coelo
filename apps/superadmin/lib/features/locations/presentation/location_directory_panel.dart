@@ -19,10 +19,16 @@ class LocationDirectoryPanel extends StatefulWidget {
     this.sessionAvailable = false,
     this.contextRevision = 0,
     this.onCreate,
+    this.trailing,
     super.key,
   });
   final LocationScope scope;
   final ValueChanged<LocationCatalogEntry> onOpen;
+
+  /// Conteudo de dominio que a pagina pendura depois dos grupos de locais,
+  /// rolando junto com eles: hoje, os cards das unidades da instituicao. Nulo
+  /// nao muda nada no diretorio, e os goldens renderizam o painel sem isso.
+  final Widget? trailing;
 
   /// Abre a criacao ja com o tipo do grupo em que o card Criar foi clicado.
   /// Nulo esconde os cards Criar, quando a pessoa nao pode criar.
@@ -360,6 +366,10 @@ class _LocationDirectoryPanelState extends State<LocationDirectoryPanel> {
                           label: const Text('Recarregar'),
                         ),
                       ),
+                    if (widget.trailing case final trailing?) ...[
+                      const SizedBox(height: CoeloSpacing.space6),
+                      trailing,
+                    ],
                   ],
                 ),
               ),
@@ -409,7 +419,8 @@ CoeloAdminTableColumn<LocationCatalogEntry> _column(
 /// Titulo do grupo. O tipo do local deixa de ser uma linha perdida no corpo do
 /// card e passa a ser o titulo que separa os dois grupos, como o Owner pediu em
 /// 10/09/2026: locais internos dentro da instituicao ou da unidade, locais
-/// externos ao lado.
+/// externos ao lado. A anatomia e a de [LocationGroupHeading], compartilhada
+/// com o grupo Unidades da tela da instituicao.
 class _GroupHeading extends StatelessWidget {
   const _GroupHeading({required this.kind, required this.scope});
 
@@ -417,28 +428,11 @@ class _GroupHeading extends StatelessWidget {
   final LocationScope scope;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    return Semantics(
-      header: true,
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            _groupTitle(kind, scope),
-            key: Key('location-group-${kind.name}'),
-            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
-          ),
-          Text(
-            _groupDescription(kind),
-            style: theme.textTheme.bodySmall?.copyWith(
-              color: theme.colorScheme.onSurfaceVariant,
-            ),
-          ),
-        ],
-      ),
-    );
-  }
+  Widget build(BuildContext context) => LocationGroupHeading(
+    titleKey: Key('location-group-${kind.name}'),
+    title: _groupTitle(kind, scope),
+    description: _groupDescription(kind),
+  );
 }
 
 String _groupTitle(LocationKind kind, LocationScope scope) => switch (kind) {

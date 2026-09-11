@@ -1,21 +1,23 @@
 {
  "grupo": "estrutura",
- "revision": 30,
+ "revision": 32,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T23:24:34-03:00",
+ "updatedAt": "2026-09-11T08:31:24-03:00",
  "app": "Claude",
- "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
- "conversa": "R04 · Estrutura",
- "coordenador": "R04 · Coordenação noturna (coordenacao.json); ACK pendente",
+ "modelo": "Fable 5.1",
+ "conversa": "R04 · Estrutura (sessao original, retomada as 08:23 de 11/09 depois do reinicio de 00:27; coelo-39 cobriu de 02:00 a 02:06)",
+ "coordenador": "coelo-04 (ref de3c83), mesma conversa e worktree e2-r04-coordenacao",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-estrutura",
  "branch": "work/etapa2-r04-estrutura",
  "head": "(commit desta revisao)",
  "upstream": "origin/work/etapa2-r04-estrutura",
- "base": "origin/dev 836c63215 (rebaseada; lote 8 MFA fora do MVP em producao)",
+ "base": "origin/dev 0376a0446 (rebaseada as 08:30)",
  "horario": {
   "inicio": "2026-09-10T21:44:19-03:00",
+  "retomada": "2026-09-11T02:05:01-03:00",
   "corte": "2026-09-11T04:20:00-03:00",
-  "loop": "/loop 15m agendado na abertura"
+  "miniRevisao": "04:00 (pedido do coordenador)",
+  "loop": "sem /loop: conversa dirigida por mensagens do coordenador; nao encerra o turno antes da mini-revisao"
  },
  "escopo": [
   {
@@ -116,7 +118,7 @@
   {
    "n": 1,
    "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-   "estado": "CONCLUIDO: 21 candidatos verdes na prova integral 3 (inclui Instituicoes detail/create v2, catalogo de tipos e Avaliacoes v2); aguardando o coordenador aplicar e ligar as chaves",
+   "estado": "CONCLUIDO E APLICADO: 21 pacotes em producao (lotes 10 e 11); chaves ligadas em dev f51233023",
    "action_ids": [
     "locations.detail-links",
     "locations.schedule",
@@ -129,7 +131,7 @@
   {
    "n": 2,
    "item": "Rota normal com sessao qa-r03@coelo.me em localhost:3000: Instituicoes -> Unidades -> Turmas -> Atividades -> Locais -> Avaliacoes; verified so com CRUD em producao + RLS nega outro tenant em pgTAP + reload",
-   "estado": "em andamento: app de producao subindo em Chrome na porta 3020 (3000 e 3010 ocupadas por outras frentes; minhas familias nao usam o CORS do R2) com lib/main_driver.dart (extensao do Flutter Driver sobre o main() de producao) para dirigir a rota normal pelo MCP do Dart"
+   "estado": "retomado as 02:03 por coelo-39: app dirigido a subir em Chrome (porta 3020; 3000 ocupada por outra frente), sessao qa-r03 pelo test_driver/qa_drive.dart"
   },
   {
    "n": 3,
@@ -151,7 +153,7 @@
    "estado": "feito no que o Owner decidiu A e cujas observacoes estao aplicadas: 7 goldens de formulario e 3 de detalhe de Locais regravados (commits 20f497709 e 64afc1f0a); activity_form_create_light_375, activity_detail_light_375 e activity_form_location_dialog_light_375 passam hoje (sem diff); espacamento de Turmas ja decidido"
   }
  ],
- "primeiroGate": "nenhum bloqueio: coordenador aplicar os candidatos de estrutura na ordem dos carimbos quando esta frente marcar cada um como verde",
+ "primeiroGate": "nenhum bloqueio conhecido na abertura da retomada",
  "criteriosFechados": [
   "Reservas de Locais sobre a baseline com a assinatura real de auditoria: 49/49",
   "Bindings, activity_location_create e group_location_create verdes no espelho: 30/30, 33/33, 46/46",
@@ -171,151 +173,7 @@
  },
  "pacotesProntos": [
   {
-   "carimbo": "20260910180000_superadmin_location_reservations_v2",
-   "origem": "20260909165000",
-   "mudanca": "assinatura real de audit_append_superadmin_internal (13 args) no preflight e no override; teste sem after_json",
-   "pgTAP": "49/49",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180020_activities_v2_actor_attribution",
-   "origem": "20260831192831",
-   "mudanca": "recarimbo",
-   "pgTAP": "actor_contract 39/39 (fixture units na forma de producao; asserção de colunas internal_identity_id restrita ao agregado de Atividades, porque o catalogo de Locais em producao as expoe de proposito)",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180030_activities_v2_actor_provenance_hardening",
-   "origem": "20260831195118",
-   "mudanca": "recarimbo",
-   "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "aplica na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180040_activities_v2_actor_provenance_semantics",
-   "origem": "20260831195944",
-   "mudanca": "recarimbo",
-   "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "aplica na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180050_activities_v2_permissions_receipts",
-   "origem": "20260831203645",
-   "mudanca": "recarimbo",
-   "pgTAP": "permissions_publish 18/18",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180060_activities_v2_internal_gateways",
-   "origem": "20260831211945",
-   "mudanca": "recarimbo; ATENCAO: create or replace em audit_activity_change, has_activity_capability e audit_mask_payload (existem em producao com outro corpo) e cria a sobrecarga de 14 args de audit_append_superadmin_internal",
-   "pgTAP": "commands 28/28, read 28/28, relationships 24/24 (AAL1 do Owner na regua do MVP)",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180070_activities_v2_rls_grants",
-   "origem": "20260831231645",
-   "mudanca": "recarimbo",
-   "pgTAP": "security_contract 37/37",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180080_activities_v2_final_review_hardening",
-   "origem": "20260831234307",
-   "mudanca": "recarimbo",
-   "pgTAP": "hardening 25/25",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180090_activity_template_unit_scope",
-   "origem": "20260901165125",
-   "mudanca": "recarimbo + revoke de escrita de anon/authenticated em public.activity_templates (privilegio padrao do schema public; o cliente nao le a tabela direto)",
-   "pgTAP": "31/31 (has_fk/has_check trocados por pg_constraint: a pgTAP 1.3 do espelho nao tem essas assinaturas)",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180100_superadmin_activity_directory_v2_client_contract",
-   "origem": "20260907222911",
-   "mudanca": "recarimbo",
-   "pgTAP": "directory_contract 97/97",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180110_superadmin_activity_save_v2",
-   "origem": "20260908154257",
-   "mudanca": "recarimbo (activity_v2_denied_envelope vem de 180060)",
-   "pgTAP": "46/46",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180120_superadmin_activity_link_end_clock_v1",
-   "origem": "20260908235110",
-   "mudanca": "recarimbo",
-   "pgTAP": "sem suite propria",
-   "estado": "aplica na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180140_superadmin_location_consumer_bindings_v2",
-   "origem": "era 180000",
-   "mudanca": "recarimbo (teste usa superadmin_activity_create_v2)",
-   "pgTAP": "30/30",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180150_superadmin_activity_location_create_v2",
-   "origem": "era 180100",
-   "mudanca": "recarimbo",
-   "pgTAP": "33/33",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180200_superadmin_group_location_create_v2",
-   "origem": "inalterado",
-   "mudanca": "nenhuma",
-   "pgTAP": "46/46",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180300_superadmin_internal_unit_detail_v2_baseline",
-   "origem": "inalterado",
-   "mudanca": "fixture: inherit_plan=false com plan_override_id; Owner AAL1 le no MVP",
-   "pgTAP": "31/31",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180310_superadmin_internal_group_detail_v2_baseline",
-   "origem": "20260828003500",
-   "mudanca": "recarimbo; Owner AAL1 le no MVP",
-   "pgTAP": "33/33",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180320_structure_type_catalog_seed_v1",
-   "origem": "novo",
-   "mudanca": "catalogo minimo de tipos (institution_types: Escola, Colegio, Creche; unit_types: Sede, Filial), idempotente por code; nomes sao dados, o Owner renomeia se quiser",
-   "pgTAP": "sem suite propria (pos-condicao no proprio pacote); aplica no espelho",
-   "estado": "aplica na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180330_superadmin_internal_institution_detail_v2_baseline",
-   "origem": "20260827234500",
-   "mudanca": "so recarimbo; teste: Owner AAL1 ja leu antes (MVP), contagem 2 -> 3",
-   "pgTAP": "25/25",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180340_superadmin_internal_institution_create_v2",
-   "origem": "novo",
-   "mudanca": "superadmin_institution_create_v2(p_request_id uuid, p_payload jsonb): realm interno v2, capacidade institution.activate, so escopo de plataforma (owner/operations), reutiliza o validador ROOT+ADDRESS do edit_core + slug pelo trigger de handle, sempre draft, recibo por request_id (replay sem novo evento), envelope e auditoria internos, helpers privados sem grant a clientes",
-   "pgTAP": "26/26 (validador, criacao, replay, request_id reutilizado, handle repetido, tipo inativo, escopo de instituicao, support, sessao expirada, sem claims, contagens de auditoria)",
-   "estado": "verde na prova integral 3"
-  },
-  {
-   "carimbo": "20260910180350_superadmin_assessments_internal_v2",
-   "origem": "20260901182838",
-   "mudanca": "recarimbo com DUAS correcoes de sintaxe que impediam a migration de aplicar em qualquer lugar: superadmin_assessment_context_options nao fechava o jsonb_build_object externo antes do INTO (parentese a menos) e assessment_v2_save_configuration tinha ambiguidade variavel x coluna (institution_id/unit_id/activity_id): recebe #variable_conflict use_variable. Nenhum objeto de Avaliacoes existe em producao (12 RPCs superadmin_assessment_* e 8 tabelas). Teste: fixture na forma de producao (unit_type_id, handle), definicoes de atividade inseridas com o marcador interno da cadeia v2 (criador people-based nulo), version na revogacao da membership e Owner AAL1 na regua do MVP",
-   "pgTAP": "47/47",
-   "estado": "verde na prova integral 3"
+   "nota": "os 21 candidatos de estrutura (180000..180350) foram aplicados em producao pelo coordenador nos lotes 10 e 11 e movidos para migrations/; candidatos/estrutura esta vazio. Pacote novo nasce aqui na faixa 2026091018xxxx acima de 180350."
   }
  ],
  "deltasPropostos": [],
@@ -338,11 +196,15 @@
  "bloqueio": null,
  "wip": [],
  "recursos": {
-  "processos": [],
-  "portas": []
+  "processos": [
+   "flutter run -d chrome (1 Chrome) a partir de 02:05"
+  ],
+  "portas": [
+   "3020 (web-port)"
+  ]
  },
  "ack": null,
- "proximoPasso": "coordenador aplica os 21 e liga structureMutationsEnabled/assessmentMutationsEnabled; enquanto isso: relancar o app dirigido e provar leitura de Locais/Turmas; mini-revisao as 04:20",
+ "proximoPasso": "coordenador aplica os 46 deltas e integra as skills; esta frente esta finalizada na R04 (mini-revisao gravada as 2026-09-11T08:31:24-03:00)",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -460,5 +322,62 @@
    ],
    "motivo": "texto \"Planta, marcadores e fotos ainda nao estao disponiveis.\" sem a palavra previa (D3); decisao A do Owner"
   }
+ },
+ "retomada": {
+  "commitSobrevivente": "a22721fbe (coordenador) -> 709675f57 apos rebase: LocationDirectoryPanel ganha o slot trailing (conteudo rolando depois dos grupos) e LocationGroupHeading passa a viver em location_read_widgets.dart, para os cards das unidades na tela de Locais da instituicao (pendencia da R03)",
+  "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
+  "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
+ },
+ "estado": "finalizado",
+ "validacaoDeEntrega": {
+  "quando": "2026-09-11T08:31:24-03:00",
+  "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
+  "corrigido": [
+   "branch rebaseada em origin/dev 0376a0446 e publicada com o WIP provado (64/64) e esta rev 32 (push --force-with-lease porque origin tinha o WIP pre-rebase)",
+   "deltas por action_id gerados: evidence/etapa-2/r04-estrutura/deltas-r04-estrutura.json (46 entradas: 40 backend -> remote-green, 6 frontend -> local-green), ensaiados com apply-tracker-delta.cjs + validate-trackers.cjs (PASS, 231 acoes) na worktree do grupo e revertidos: o coordenador aplica",
+   "entrypoint duplicado test_driver/main_driver.dart removido (regra da skill: o unico e qa_main.dart)",
+   "handoff.md atualizado; propostas de skills aplicadas nas tres SKILL.md desta branch (secoes \"Regras medidas pelo grupo estrutura na Rodada 4\")"
+  ],
+  "worktrees": "e2-r04-estrutura (branch do grupo) e e2-r04-estrutura-base (detached em 836c63215, so para medir falhas pre-existentes; pode ser removida pelo coordenador). Projeto Supabase descartavel coelo_baseline_estrutura (portas 613xx) pode ser parado.",
+  "dadosSinteticosEmProducao": "nenhum criado por esta conversa. A instituicao \"QA R04 Instituicao Sintetica\" vista no diretorio as 23:4x foi criada por outra frente/coordenador; o assistente de criar (slug qa.r04.escola.sintetica) travou antes de salvar."
+ },
+ "miniRevisao": {
+  "shaPublicado": "(commit desta revisao na branch work/etapa2-r04-estrutura; ver git log)",
+  "fechouPorActionId": [
+   "BACKEND em producao (lotes 10 e 11 do coordenador), com pgTAP verde na prova integral 3 (692 assercoes): institutions.detail (180330, 25/25), institutions.create (180340, 26/26, RPC novo), institutions.filter/list (tipos de catalogo 180320); units.* detalhe (180300, 31/31) e ponte de ator; groups.members/edit detalhe (180310, 33/33), groups.location (180200, 46/46); activities.list/create/detail/edit/publish (180020..180120, 9 suites), activities.location (180150, 33/33), activities.assessment e assessments.* (180350, 47/47); locations.detail-links/schedule (180000 reservas 49/49, 180140 bindings 30/30)",
+   "FRONTEND local-green: groups.list (P5, 5/5), units.import (P6), institutions.create (create() v2, 37/37), institutions.filter (estado vazio honesto na rota real), activities.detail e locations.detail-links (goldens A regravados)",
+   "P15 no SuperadminFormFrame (respiro space10) e regra gravada em coelo-ui/form-layout-contracts.md",
+   "Goldens regravados apos observacao: 7 de formulario (institution_form_create_light_375, institution_form_bio_light_1440, institution_form_edit_dark_1440, institution_form_identity_unavailable_light_1440, unit_form_create_light_375, group_form_edit_dark_1440, group_form_members_dark_1440) e 3 de detalhe de Locais",
+   "Rota real com qa-r03 (leitura): institutions.list e institutions.filter abrem contra producao; com a chave ligada o card Criar e a instituicao sintetica aparecem e o assistente abre em /institutions/new"
+  ],
+  "abertoComPrimeiroGate": [
+   "institutions.create E2E: o assistente travou o renderer do Chrome ao avancar de Perfil (causa nao isolada; suspeita: busca de municipios/CEP ou loop de handle); gate = repetir pelo caminho CDP da skill integrada (flutter build web + qa_main) e depois o pacote de contatos/pessoas do realm interno para persistir representantes, administradores, contato, documento, plano e marca",
+   "institutions.edit/status e demais escritas: rota real pendente (a chave so subiu em dev as 23:2x e o app travou); gate = rota real com CDP",
+   "units.*, groups.*, activities.*, assessments.*, locations.* na rota real: gate = mesma sessao CDP; backend pronto",
+   "Cards das unidades na tela de Locais da instituicao: slot trailing pronto (WIP 64/64); gate = injetar UnitDirectoryRepository em LocationsPage pelo router",
+   "SupabaseLocationConsumerSelectionReader(available:false) em main.dart: virar available:true agora que 180140/180150/180200 estao em producao; nao liguei porque o classificador bloqueou edicoes de composicao nesta sessao",
+   "MENU-M: os dois goldens 375 regravados congelam o cabecalho mobile atual; reverter os PNG de 20f497709 se a Fase 0 mudar o menu",
+   "Codigo: 180060 substitui tres funcoes compartilhadas; 9 suites com AAL1 na regua do MVP; #variable_conflict em 180350 (pendenciasDeCodeReview)"
+  ],
+  "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura.json (46; formato {action_id, camada, estado_proposto, delta, evidencia}); nenhum terminal (verified/done/verified-e2e), portanto sem certificacao",
+  "pacotesProntos": "todos os 21 (180000..180350) ja aplicados pelo coordenador; candidatos/estrutura vazio; nenhum pacote novo pendente",
+  "duvidasAoOwner": [
+   "Nomes do catalogo minimo de tipos (Escola, Colegio, Creche; Sede, Filial) sao dados: renomear ou ampliar quando quiser",
+   "Os 30 goldens orfaos de Locais (test/features/locations/goldens/ raiz) continuam sem decisao de remocao"
+  ]
+ },
+ "skillsAtualizadas": {
+  "onde": "nesta branch, para o coordenador integrar em dev",
+  "coelo-backend (.agents/skills/coelo-supabase/SKILL.md)": "secao \"Regras medidas pelo grupo estrutura na Rodada 4\": migration historica que nunca aplicou (Avaliacoes: parentese e #variable_conflict), cadeia ausente x fixture ausente, 13 argumentos de audit_append_superadmin_internal, 180060 substitui funcoes compartilhadas (code review), pgTAP 1.3 sem has_fk/has_check, fixtures na forma de producao (unit_type_id, handle, inherit_plan, plans.description, handle de instituicao, marcador interno em activity_definitions), AAL1 na regua do MVP, padrao de RPC de criacao v2, catalogo de producao vazio e semeadura idempotente, grants padrao do schema public, espelho por grupo com mapa suite -> migration",
+  "coelo-frontend (.agents/skills/coelo-flutter-review/SKILL.md)": "secao \"Regras medidas pelo grupo estrutura na Rodada 4\": P5 (filtro degrada), P15 (respiro), P6 (widget morto sai), medir falhas na baseline limpa antes de atribuir ao delta (11 pre-existentes em test/shared; goldens transversais), chave de composicao esconde o Criar e o classificador pode bloquear, rota real em debug (tap/enter_text via VM Service; renderer travou no assistente), slot trailing de Locais",
+  "coelo-frontend-backend (.agents/skills/coelo-flutter-supabase-review/SKILL.md)": "dois itens em \"Regras de integracao medidas na Rodada 4\": estado de Estrutura (remote-green, nao done; gap do create v2) e entrega pelo Git quando a conversa cai (deltas ensaiados e revertidos, push antes de provar)",
+  "evolucaoEtapa2": "Back-end das seis familias saiu de 61 local-green / 31 SQL em producao (fechamento R03) para 21 pacotes em producao cobrindo as 49 acoes (proposta: 40 remote-green novos); Front-end: 6 local-green novos; E2E: nenhum (leitura de Instituicoes provada, escrita nao)",
+  "soDepoisDoMvp": [
+   "code review de 180060 (funcoes compartilhadas) e das demais plpgsql de 180350",
+   "revisao das 9 suites com AAL1 quando MFA voltar",
+   "pacote de contatos/pessoas da instituicao no realm interno (representantes, administradores, contato, documento, plano, marca)",
+   "endurecer os grants CRUD de authenticated sem policy nas 200+ tabelas (achado da R03)",
+   "decisao sobre os 30 goldens orfaos de Locais e sobre MENU-M nos goldens 375"
+  ]
  }
 }

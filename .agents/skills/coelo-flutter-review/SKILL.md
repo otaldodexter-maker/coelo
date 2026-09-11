@@ -174,3 +174,40 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026):
 - Golden só é regravado depois de aplicar a observação do Owner e no SDK
   registrado; goldens de formulário em 375 que congelam o cabeçalho mobile
   ficam retidos enquanto MENU-M estiver aberto.
+
+Regras medidas pelo grupo estrutura na Rodada 4:
+
+- Filtro que depende de opções remotas degrada, não derruba a tela (P5):
+  quando `fetchFilterOptions` falha, o diretório lista, o view model expõe
+  `filterOptionsUnavailable` e o rótulo do filtro ganha " (indisponível)"
+  (`GroupDirectoryViewModel`); a seleção atual não é podada sem opções.
+- Respiro no fim do conteúdo (P15): o scroll do `SuperadminFormFrame`
+  termina com `CoeloSpacing.space10` para a última linha nunca ficar sob o
+  rodapé ancorado; vale para os dezenove formulários do frame e o golden
+  mobile de cada um muda por consequência (regra em
+  `coelo-ui/references/form-layout-contracts.md`).
+- Importar/exportar adiado (P6) remove o widget morto (seletor de arquivo,
+  prévia de linhas, texto de job) em vez de escondê-lo; fica só o botão com
+  a indisponibilidade honesta.
+- Antes de atribuir uma falha de teste ao delta, medir a mesma suíte numa
+  worktree limpa de `origin/dev` (`git worktree add --detach`): na R04, 11
+  falhas de `test/shared` (`superadmin_underline_tabs_test`,
+  `superadmin_form_action_footer_adoption_test`) e 7 goldens de formulário
+  eram pré-existentes; os goldens divergiam só pelas regras transversais
+  (Pesquisar no menu, sem chat em editar, rodapé, texto sem "prévia") e por
+  isso foram regravados.
+- A chave de composição (`structureMutationsEnabled`) esconde o card Criar e
+  as rotas de escrita: sem ela ligada a rota real prova só leitura. Ligar a
+  chave é do coordenador; o classificador do modo automático pode bloquear
+  essa edição e toques do driver na conversa da frente: registrar no JSON e
+  seguir no independente, não contornar.
+- Rota real em debug (`flutter run -d chrome`): `tap` e `enter_text` do
+  driver funcionam para login e navegação; a credencial entra por
+  `enter_text` via VM Service a partir de script que lê o `.env`, nunca pelo
+  chat. O renderer do Chrome travou ao avançar o assistente de Instituições
+  (Continuar depois de Perfil), causa não isolada; para escrita usar o
+  caminho por CDP da skill integrada.
+- Locais: `LocationDirectoryPanel` tem o slot `trailing` (conteúdo rolando
+  depois dos grupos) e `LocationGroupHeading` vive em
+  `location_read_widgets.dart`, preparados para os cards das unidades na tela
+  da instituição (pendência da R03; provado 64/64, seção ainda não ligada).

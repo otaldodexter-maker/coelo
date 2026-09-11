@@ -46,6 +46,45 @@ Widget locationStatusIndicator(BuildContext context, LocationCatalogEntry item) 
   );
 }
 
+/// Titulo de grupo do diretorio de Locais: "Locais internos da instituicao",
+/// "Locais externos" e, na instituicao, "Unidades". Vive aqui para os tres
+/// grupos terem a mesma anatomia (titulo `titleMedium` w700 e descricao
+/// `bodySmall` em `onSurfaceVariant`), como o Owner pediu em 10/09/2026.
+class LocationGroupHeading extends StatelessWidget {
+  const LocationGroupHeading({
+    required this.title,
+    required this.description,
+    this.titleKey,
+    super.key,
+  });
+
+  final String title;
+  final String description;
+  final Key? titleKey;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    return Semantics(
+      header: true,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            key: titleKey,
+            style: theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w700),
+          ),
+          Text(
+            description,
+            style: theme.textTheme.bodySmall?.copyWith(color: theme.colorScheme.onSurfaceVariant),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
 class LocationReadStatePanel extends StatelessWidget {
   const LocationReadStatePanel({required this.state, required this.prefix, super.key});
   final LocationReadState state;

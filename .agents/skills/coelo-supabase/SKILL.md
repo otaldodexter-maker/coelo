@@ -376,6 +376,60 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
   11/09 às 00:27 a máquina reiniciou por esgotamento e todas as conversas
   caíram; o dump de um lote ficou vazio e teve de ser refeito.
 
+Regras medidas pelo grupo estrutura na Rodada 4 (21 pacotes, 180000..180350):
+
+- Migration histórica pode nunca ter aplicado em lugar nenhum: a de
+  Avaliações (`20260901182838`) tinha um parêntese a menos em
+  `superadmin_assessment_context_options` ("unexpected end of function
+  definition") e ambiguidade variável × coluna em
+  `assessment_v2_save_configuration` (resolvida com `#variable_conflict
+  use_variable`). Recarimbar exige aplicar no espelho antes de entregar.
+- "Fixture ausente" pode ser cadeia ausente: `activity_v2_denied_envelope`
+  não existia porque nenhuma das onze migrations de Atividades v2 estava em
+  produção (0 objetos na baseline). Medir presença por objeto de toda a cadeia
+  antes de diagnosticar um pacote isolado.
+- `app_private.audit_append_superadmin_internal` tem 13 argumentos em
+  produção; a sobrecarga de 14 (metadado `jsonb`) só existe depois de 180060.
+  Preflights que exigem 14 abortam; o metadado do override de reserva saiu
+  (o `reason_code` já carrega o fato).
+- 180060 faz `create or replace` em três funções compartilhadas que existem
+  em produção com outro corpo (`audit_activity_change`,
+  `has_activity_capability`, `audit_mask_payload`): pendência de code review
+  pós-MVP, registrada por action_id.
+- pgTAP 1.3 do projeto descartável não tem `has_fk`/`has_check` com quatro
+  argumentos: afirmar por `pg_constraint` (`contype`, `conname`, `conrelid`).
+- Fixtures na forma de produção: `units` usa `unit_type_id` → `unit_types`,
+  `handle` NOT NULL com `^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$` e
+  `units_plan_inheritance_check` (`inherit_plan=false` quando há
+  `plan_override_id`); `plans.description` exige ≥ 1 caractere; o handle de
+  instituição segue `^[a-z0-9][a-z0-9._-]{2,29}$` pelo trigger; `insert`
+  direto em `activity_definitions` exige o marcador interno da cadeia v2
+  (`app_private.activity_v2_internal_marker`) com `created_by_person_id`
+  nulo, senão `guard_activity_v2_actor_provenance` nega.
+- AAL1: `require_superadmin_internal_context` devolve `requires_mfa` no
+  contexto mas nunca negou AAL1, e o lote 8 zerou `requires_mfa`. Asserções
+  que esperavam `SAI_MFA_REQUIRED` do Owner em AAL1 afirmam o comportamento do
+  MVP (nove suítes ajustadas na R04, com comentário no próprio teste);
+  negativas cross-tenant, anon, sessão expirada e permissão revogada ficam.
+- Padrão de RPC de criação no realm interno v2
+  (`superadmin_institution_create_v2`, 180340): reutiliza o validador
+  ROOT+ADDRESS do edit_core, exige escopo de plataforma, cria sempre em
+  `draft`, recibo por `request_id`, replay devolve o recibo sem novo evento de
+  auditoria, helpers privados sem grant a cliente.
+- Catálogo de produção nasceu sem `institution_types` (0), com 1 `unit_type`
+  e 0 `plans`; nenhum caminho de criar instituição funciona sem tipo ativo.
+  Dado de catálogo entra por migration idempotente por `code` (180320), nunca
+  por `insert` manual.
+- Grants padrão do schema `public`: `activity_locations` e
+  `activity_templates` tinham ALL para `anon`/`authenticated`; o pacote que
+  toca a tabela revoga a escrita e mantém só o SELECT governado por policy
+  (230013, 180090).
+- Espelho por grupo em portas próprias (613xx) com `preflight.sh` e um mapa
+  suíte → migration: cada suíte roda depois da última migration que ela cobre
+  (as de Atividades v2 só depois de 180080; a de Avaliações depende do
+  marcador da cadeia v2). Prova integral = espelho novo + lotes por `psql` +
+  candidatos na ordem dos carimbos, repetida a cada candidato novo.
+
 Priorizar o primeiro gate backend que permite fechar a subtela selecionada,
 reutilizando readers, migrations e provas já válidas. Pacote verde vai para
 produção no mesmo turno; não acumular fila de candidatos. Só Cloudflare pode
