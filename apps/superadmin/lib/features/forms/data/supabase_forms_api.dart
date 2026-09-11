@@ -728,7 +728,8 @@ final class SupabaseFormsApi
 }
 
 Map<String, Object?> _applicationPayload(FormApplication value) => {
-  'id': value.id,
+  // id vazio = distribuicao nova; o servidor gera o uuid (ver forms_schedule_dialog).
+  'id': value.id.isEmpty ? null : value.id,
   'form_id': value.formId,
   'institution_id': value.institutionId,
   'name': value.name,

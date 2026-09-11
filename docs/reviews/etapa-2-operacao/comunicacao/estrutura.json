@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 39,
+ "revision": 40,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-11T11:33:55-03:00",
+ "updatedAt": "2026-09-11T11:58:58-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1",
  "conversa": "R04 · Estrutura (sessao coelo-b3), continuacao por ordem do Owner depois do fechamento da R04 (08:52)",
@@ -185,7 +185,7 @@
  ],
  "deltasPropostos": "evidence/etapa-2/r04-estrutura/deltas-r04-estrutura-continuacao-2.json (16): groups.edit, institutions.create, units.create, locations.create-edit e locations.schedule com FE verified / BE done / E2E verified-e2e; institutions.edit blocked-decision. Ensaiado com apply + validate PASS (231 acoes; E2E 43) e revertido. NAO aplicado ainda no inventario de dev (o ensaio mostrou units.create pending-verification em dev).",
  "pedidosAoCoordenador": [
-  "Aplicar as 3 entradas de locations.schedule de deltas-r04-estrutura-continuacao-2.json (entradas 14-16; as 13 primeiras ja estao em dev) e integrar 85f66cd38, a125c89c7, a71d7ff0a e os commits desta retomada",
+  "Integrar em dev a sequencia 85f66cd38, a125c89c7, a71d7ff0a, 115aa0383, ce27a3555, 44574dfda + 631f9de52 (44574dfda NAO compila sozinho; 631f9de52 o completa) e as revs 38-40; aplicar as entradas 14-16 (locations.schedule) de deltas-r04-estrutura-continuacao-2.json",
   "Aplicar deltas-r04-estrutura-continuacao-2.json (16 entradas) com node docs/reviews/apply-tracker-delta.cjs + validate-trackers.cjs; a certificacao de cada terminal aponta para um arquivo existente em docs/reviews/evidence/etapa-2/r04-estrutura/",
   "Integrar em dev os commits da branch work/etapa2-r04-estrutura posteriores a a276f15a8: a12160088 (rev 37, Locais criar/editar, handle de Unidades, fixture de autorizacao de Locais) e 85f66cd38 (chave activityLocationCreateEnabled) e esta revisao 38; todos enviados ao remoto",
   "P37: remover os dados sinteticos desta conversa em producao no fechamento (groups 368a5cea, institutions 190dd028 + endereco, units f5284f2f + endereco/contatos, activity_locations 82e92854 com a semana publicada)",
@@ -211,11 +211,13 @@
   "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
   "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage",
   "superadmin_location_catalog_v2_authorization_test (lote 47) nunca rodou contra a forma de producao (units.institution_type_id); corrigida aqui. Conferir se outras suites de Locais dos lotes 46-49 tem o mesmo desvio antes de cita-las como prova",
-  "Unidades: o icone @ no campo Identificador (Unidades e Instituicoes) sugere handle, mas o campo e o slug; decisao visual do Owner se troca o icone. Produto: se o Identificador deve virar o @ na criacao, o cliente precisaria mandar handle: slug no create com validador ^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$ (sem hifen). Recomendacao: manter slug interno e @ gerado ate existir a acao de handle no cliente"
+  "Unidades: o icone @ no campo Identificador (Unidades e Instituicoes) sugere handle, mas o campo e o slug; decisao visual do Owner se troca o icone. Produto: se o Identificador deve virar o @ na criacao, o cliente precisaria mandar handle: slug no create com validador ^[a-z0-9][a-z0-9._]{1,28}[a-z0-9]$ (sem hifen). Recomendacao: manter slug interno e @ gerado ate existir a acao de handle no cliente",
+  "activities.edit ponta a ponta ainda bloqueado na apresentacao: em modo edicao ActivityFormPage._load carrega opcoes so por fetchFormOptions (form_options_v2 nao devolve taxonomia/modelos/instituicoes), entao taxonomy fica null e o roteador recusa salvar (taxonomyId ?? throw); alem disso o payload de edicao envia capability_policies nulas e group_capability_settings vazio sem UI, e activity.taxonomy_id da v2 pode ser id de subtipo na arvore legada. Proximo passo: combinar fetchTemplateOptions com fetchFormOptions no modo edicao",
+  "activities.publish pelo cliente: superadmin_activity_publish_v2 exige status draft (ACTIVITY_INVALID_STATE e rollback do save inteiro se nao for); a rota de edicao manda publish no Concluir sem conhecer o status corrente; decidir p_publish pelo status antes de abrir"
  ],
  "bloqueio": null,
  "wip": {
-  "estado": "resolvido: o coordenador preservou a ligacao de fetchFormOptions/searchProfessionals como a71d7ff0a; verificada nesta retomada (test/features/activities/data 145/145 + composicao 2/2; analyze limpo). Decisao do subagente mantida: nao pedir a secao taxonomy (a v2 devolve a taxonomia plana e o controller substituiria a arvore com subtipos/Outros); reversivel com uma linha"
+  "estado": "nenhum WIP retido: 44574dfda foi completado e verificado em 631f9de52"
  },
  "recursos": {
   "processos": [
@@ -226,7 +228,7 @@
   ]
  },
  "ack": null,
- "proximoPasso": "rebuild do qa_main com fetchFormOptions ligado + chave do local; provar activities.create (rascunho com instituicao + unidade) e activities.edit pela rota real; depois institution_contacts_v2",
+ "proximoPasso": "rebuild do qa_main (o build foi apagado com a worktree); provar activities.create (rascunho com instituicao + unidade) pela rota real; depois combinar fetchTemplateOptions no modo edicao para destravar activities.edit; institution_contacts_v2",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -416,7 +418,7 @@
   "prova": "flutter test location_read_panels_test + locations_page_test + location_read_panels_golden_test: 64/64 PASS as 02:03 (trailing nulo nao muda os goldens). WIP mantido, nao revertido.",
   "proximo": "ligar SupabaseLocationConsumerSelectionReader(available:true) em main.dart porque 180140/180150/180200 estao em producao; subir o app dirigido (test_driver/qa_main.dart, um Chrome) e percorrer institutions.create -> units -> groups -> activities -> locations -> assessments"
  },
- "estado": "em andamento (retomada por ordem do Owner, 11/09 tarde, depois da pausa)",
+ "estado": "em andamento (segunda retomada por ordem do Owner, 11/09 ~12:10)",
  "validacaoDeEntrega": {
   "quando": "2026-09-11T08:31:24-03:00",
   "achado": "O coordenador registrou \"estrutura sem retorno desde 02:06\" porque a rev 31 (02:05) e o WIP rebaseado de Locais nunca foram publicados: a sessao coelo-39 caiu antes do push. O que estava em origin era a rev 30 (23:24) e o WIP a22721fbe pre-rebase (nao provado). Os tres subagentes lancados as 00:1x (deltas por action_id, contrato de Avaliacoes, cards de Unidades em Locais) morreram com a maquina; so o teste de Avaliacoes sobreviveu e ja esta em dev por outro caminho (6fea02635).",
@@ -483,7 +485,8 @@
    "Achado do handle de Unidades (subagente): o servidor NAO ignora o Identificador. O Identificador e o slug (create_unit_for_superadmin grava lower(btrim(slug)) sem CHECK, hifens preservados); o \"@\" publico e outra coluna, derivada no servidor (letras/numeros do slug ate 20 + \"_\" + 8 hex do id) e so alteravel por change_unit_handle_for_superadmin (units.handle.manage, carencia de 15 dias). O cliente nunca enviava nem lia public_profile.handle. Correcao honesta: UnitRecord.handle lido de public_profile nas RPCs, legenda unit-handle-note sob o Identificador (ao criar explica que o @ e gerado; ao editar mostra o @ final); validador do slug mantido (hifens validos). 174/174 em test/features/units; goldens intactos (a etapa Hierarquia nao esta nos goldens)",
    "Chave de composicao do local ao criar atividade ligada (180150 em producao): SuperadminApp.activityLocationCreateEnabled -> router enableActivityLocationCreate; main.dart liga; SupabaseActivityCommandRepository(activityLocationCreateAvailable: true) no escopo de autenticacao; teste de composicao do app + assercao no teste do escopo. Commit 85f66cd38",
    "locations.schedule pela rota real: Ver agenda (vazio honesto) -> Adicionar janela Segunda 08:00-12:00 -> Publicar semana; releitura e reload completo mantem a janela (activity_locations 82e92854). pgTAP schedule 38/38 e copy 19/19 no espelho. Tres capturas em rota-real/",
-   "activities.create pela rota real: /activities/new abre (Identidade digitada, sigla R4, Continuar); ao escolher a instituicao em Estrutura e locais aparece \"Nao foi possivel carregar os vinculos desta instituicao\". Causa: SupabaseActivityDirectoryRepository.fetchFormOptions e searchProfessionals retornam unavailable (nunca foram ligados), enquanto superadmin_activity_form_options_v2 (180060, lote 86) existe em producao. Subagente lancado para ligar os dois metodos com testes; ainda rodando na pausa (WIP nao commitado, ver wip)"
+   "activities.create pela rota real: /activities/new abre (Identidade digitada, sigla R4, Continuar); ao escolher a instituicao em Estrutura e locais aparece \"Nao foi possivel carregar os vinculos desta instituicao\". Causa: SupabaseActivityDirectoryRepository.fetchFormOptions e searchProfessionals retornam unavailable (nunca foram ligados), enquanto superadmin_activity_form_options_v2 (180060, lote 86) existe em producao. Subagente lancado para ligar os dois metodos com testes; ainda rodando na pausa (WIP nao commitado, ver wip)",
+   "activities.edit ligado no cliente (subagente, verificado por mim: test/features/activities/data 180/180, analyze limpo): fetchById -> superadmin_activity_detail_v2 (secoes participants, professionals, permissions numa chamada; NOT_FOUND -> null; negacao -> nao autorizado; envelope invalido/rede -> indisponivel) mapeado para ActivityDetail; guarda de update em SupabaseActivityCommandRepository aceita activityId com expected_version >= 1 em saveDraft (superadmin_activity_save_v2 com p_publish false), exige management_version maior e activity_id igual no retorno; publish continua fechado antes de HTTP. Commit 631f9de52 sobre 44574dfda (o WIP preservado pelo coordenador nao compilava sozinho)"
   ],
   "metodoQueFuncionou": "no build release o tap do driver trava mas enter_text pelo gancho window.$flutterDriver funciona; cliques por CDP Input.dispatchMouseEvent (press/release com 80 ms); navegacao entre rotas por Page.navigate (a sessao sobrevive com Manter sessao aberta); popstate sintetico so funcionou uma vez, nao usar. Scripts: scratchpad/goto.js, cdp-click.js, drv.js",
   "avisoAoCoordenador": "a worktree e2-r04-estrutura foi removida duas vezes enquanto esta conversa trabalhava nela (08:52 e 09:5x), apagando o build web servido e derrubando a rota real no meio de uma prova. Enquanto a continuacao estiver viva, por favor nao remover a worktree; a branch e publicada a cada commit.",
