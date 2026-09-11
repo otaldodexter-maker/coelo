@@ -56,6 +56,118 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  // P16 (ADR 0034, Decisoes 9, 10 e 12): pergunta de Local com opcoes fixas
+  // do snapshot; Local revogado desabilitado; obrigatoria sem alternativa
+  // bloqueia; erro estavel do servidor aparece inline.
+  FormItem locationItem({required bool required, required List<FormOption> options}) =>
+      FormItem(
+        id: 'place',
+        kind: FormItemKind.location,
+        label: 'Em qual local?',
+        position: 0,
+        isRequired: required,
+        options: options,
+      );
+  const patio = FormOption(
+    id: 'opt-patio',
+    label: 'Pátio',
+    position: 0,
+    locationId: 'loc-patio',
+    locationStatus: 'active',
+    locationAvailable: true,
+  );
+  const quadra = FormOption(
+    id: 'opt-quadra',
+    label: 'Quadra',
+    position: 1,
+    locationId: 'loc-quadra',
+    locationStatus: 'active',
+    locationAvailable: false,
+  );
+
+  testWidgets('location revoked option is disabled and cannot be answered', (tester) async {
+    final api = _ResponseApi(items: [locationItem(required: true, options: const [patio, quadra])]);
+    await tester.binding.setSurfaceSize(const Size(1000, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, api);
+
+    expect(find.text('Quadra (indisponível)'), findsOneWidget);
+    final revoked = tester.widget<ChoiceChip>(
+      find.byKey(const Key('form-response-location-place-opt-quadra')),
+    );
+    expect(revoked.onSelected, isNull);
+    expect(find.byKey(const Key('form-response-location-blocked-place')), findsNothing);
+
+    await tester.tap(find.byKey(const Key('form-response-location-place-opt-quadra')));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    expect(api.saveCalls, isEmpty);
+
+    await tester.tap(find.byKey(const Key('form-response-location-place-opt-patio')));
+    await tester.pump(const Duration(seconds: 2));
+    await tester.pumpAndSettle();
+    final answer = api.saveCalls.last.payload.answers['place']!;
+    expect(answer.kind, FormAnswerKind.location);
+    expect((answer.value as FormChoiceValue).optionIds, {'opt-patio'});
+  });
+
+  testWidgets('required location without available option blocks with a warning', (
+    tester,
+  ) async {
+    final api = _ResponseApi(items: [locationItem(required: true, options: const [quadra])]);
+    await tester.binding.setSurfaceSize(const Size(1000, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, api);
+
+    expect(find.byKey(const Key('form-response-location-blocked-place')), findsOneWidget);
+    expect(find.textContaining('Não é possível enviar a resposta'), findsOneWidget);
+
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsNothing);
+    expect(find.byKey(const Key('form-response-submit')), findsNothing);
+    expect(find.textContaining('Não é possível enviar a resposta'), findsWidgets);
+    expect(api.submitCommand, isNull);
+  });
+
+  testWidgets('optional location without available option does not block', (tester) async {
+    final api = _ResponseApi(items: [locationItem(required: false, options: const [quadra])]);
+    await tester.binding.setSurfaceSize(const Size(1000, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, api);
+
+    expect(find.byKey(const Key('form-response-location-blocked-place')), findsNothing);
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    expect(find.text('Revisão da resposta'), findsOneWidget);
+  });
+
+  testWidgets('location server refusal is shown inline as the honest message', (tester) async {
+    const refusal =
+        'O local escolhido não está mais disponível no catálogo da instituição. Escolha outro local.';
+    final api = _ResponseApi(items: [locationItem(required: true, options: const [patio])])
+      ..submitFailure = const FormApiException(
+        FormApiFailureKind.validation,
+        refusal,
+        details: {'code': 'FORMS_LOCATION_REVOKED'},
+      );
+    await tester.binding.setSurfaceSize(const Size(1000, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await open(tester, api);
+
+    await tester.tap(find.byKey(const Key('form-response-location-place-opt-patio')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-review')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('form-response-submit')));
+    await tester.pumpAndSettle();
+
+    expect(api.submitCommand, isNotNull);
+    expect(find.text(refusal), findsOneWidget);
+    expect(find.byKey(const Key('form-response-review')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final required in [true, false]) {
     for (final count in [1, 2, 5, 6]) {
       testWidgets('gallery bounds restored count $count required $required', (tester) async {
@@ -2342,6 +2454,7 @@ final class _ResponseApi implements FormsApi {
   final Map<String, FormAnswer>? receiptAnswers;
   final String? lostConfirmation;
   FormApiFailureKind? saveFailure;
+  FormApiException? submitFailure;
   final confirmationCalls = <(String, FormCommand<FormResponseDraftPayload>)>[];
   final _confirmed = <String, FormResponseDraft>{};
   int? _remoteVersion;
@@ -2465,6 +2578,7 @@ final class _ResponseApi implements FormsApi {
   @override
   Future<FormResponseDraft> submitResponse(FormCommand<FormResponseDraftPayload> command) async {
     submitCommand = command;
+    if (submitFailure case final failure?) throw failure;
     if (lostConfirmation == 'submit') return _commitWithLostConfirmation('submit', command);
     if (submitGate != null) await submitGate;
     return FormResponseDraft(
