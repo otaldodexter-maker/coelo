@@ -2315,6 +2315,14 @@ GoRouter createSuperadminRouter({
                 contextRevision: session.authorizationInvalidationRevision,
                 logout: logout,
                 onBack: () => context.goNamed(SuperadminRoutes.activitiesName),
+                // Sem este callback o botao "Editar atividade" nascia sempre
+                // desligado (medido na rota real da R05).
+                onEdit: hasStructureMutationCapability()
+                    ? (detail) => context.goNamed(
+                        SuperadminRoutes.activityEditName,
+                        pathParameters: {'activityId': detail.id},
+                      )
+                    : null,
                 onAssessmentSettings: (detail) => context.goNamed(
                   SuperadminRoutes.activityAssessmentSettingsName,
                   pathParameters: {'activityId': detail.id},

@@ -8,6 +8,7 @@ import '../domain/institution_directory_item.dart';
 import '../domain/institution_directory_page.dart';
 import '../domain/institution_directory_query.dart';
 import '../domain/institution_directory_repository.dart';
+import '../domain/institution_people.dart';
 import '../domain/institution_record.dart';
 
 final class SupabaseInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
@@ -172,7 +173,24 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
         },
       );
       _unwrapEnvelope(response);
-      final record = await fetchById(draft.id);
+      var record = await fetchById(draft.id);
+      // R05 (lote 28): documento, contato, representantes e administradores
+      // persistem por superadmin_institution_contacts_edit_v1, com a versao
+      // que o edit_core acabou de devolver. Sem mudanca, nao ha segunda RPC.
+      final contacts = _institutionContactsPayload(draft, current: record);
+      if (contacts != null) {
+        final contactsResponse = await _client.rpc<Object?>(
+          'superadmin_institution_contacts_edit_v1',
+          params: {
+            'p_request_id': _nextRequestId(),
+            'p_institution_id': draft.id,
+            'p_expected_version': record.version,
+            'p_payload': contacts,
+          },
+        );
+        _unwrapEnvelope(contactsResponse);
+        record = await fetchById(draft.id);
+      }
       _clearPendingRequest(signature, requestId);
       return record;
     } on PostgrestException catch (error) {
@@ -363,7 +381,8 @@ Map<String, Object?> _institutionEditCorePayload(InstitutionRecord record) {
 }
 
 Map<String, Object?> _readOnlyEditValues(InstitutionRecord record) {
-  // Spec 042 owns only core/address. Never silently drop edits to other fields.
+  // Spec 042 owns only core/address; documento e contato passaram ao contrato
+  // de contatos (lote 28). Never silently drop edits to other fields.
   final values = record.toRpcPayload()
     ..removeWhere(
       (key, _) => const {
@@ -374,15 +393,15 @@ Map<String, Object?> _readOnlyEditValues(InstitutionRecord record) {
         'locale',
         'institution_type_name',
         'address',
+        'document_ref',
+        'document_type',
+        'contact',
       }.contains(key),
     );
+  // owner_* derivam do representante principal, que agora persiste pelo
+  // contrato de contatos: nao entram mais na comparacao.
   return {
     ...values,
-    'owner_first_name': record.ownerFirstName,
-    'owner_last_name': record.ownerLastName,
-    'owner_display_name': record.ownerDisplayName,
-    'owner_email': record.ownerEmail,
-    'owner_mobile_phone': record.ownerMobilePhone,
     'has_logo': record.hasSimulatedLogo,
     'has_cover': record.hasSimulatedCover,
     'secondary_surface_color': record.secondarySurfaceColor,
@@ -439,3 +458,86 @@ String _nextRequestId() {
       '${hex(bytes[8])}${hex(bytes[9])}-'
       '${hex(bytes[10])}${hex(bytes[11])}${hex(bytes[12])}${hex(bytes[13])}${hex(bytes[14])}${hex(bytes[15])}';
 }
+
+/// Payload de superadmin_institution_contacts_edit_v1, ou nulo quando nada
+/// alem do core mudou em relacao ao detalhe recem-lido.
+Map<String, Object?>? _institutionContactsPayload(
+  InstitutionRecord draft, {
+  required InstitutionRecord current,
+}) {
+  final payload = <String, Object?>{};
+  final digits = draft.document.replaceAll(RegExp(r'\D'), '');
+  if (digits != current.document.replaceAll(RegExp(r'\D'), '')) {
+    payload['document'] = {'document_type': 'cnpj', 'document_ref': digits};
+  }
+  final contact = _contactPayload(draft);
+  if (jsonEncode(contact) != jsonEncode(_contactPayload(current))) {
+    payload['contact'] = contact;
+  }
+  final representatives = [
+    for (final item in draft.legalRepresentatives)
+      {
+        ..._personPayload(item.person, personId: item.personId),
+        'is_primary': item.isPrimary,
+      },
+  ];
+  if (jsonEncode(representatives) != jsonEncode(_representativesSnapshot(current))) {
+    payload['representatives'] = representatives;
+  }
+  final administrators = [
+    for (final item in draft.administrators)
+      {
+        ..._personPayload(item.person, personId: item.personId),
+        'level': switch (item.level) {
+          InstitutionAdministratorLevel.adminMaster => 'admin_master',
+          InstitutionAdministratorLevel.authorizedAdministrator => 'authorized_administrator',
+          InstitutionAdministratorLevel.coordinator => 'coordinator',
+        },
+      },
+  ];
+  if (jsonEncode(administrators) != jsonEncode(_administratorsSnapshot(current))) {
+    payload['administrators'] = administrators;
+  }
+  return payload.isEmpty ? null : payload;
+}
+
+List<Map<String, Object?>> _representativesSnapshot(InstitutionRecord record) => [
+  for (final item in record.legalRepresentatives)
+    {..._personPayload(item.person, personId: item.personId), 'is_primary': item.isPrimary},
+];
+
+List<Map<String, Object?>> _administratorsSnapshot(InstitutionRecord record) => [
+  for (final item in record.administrators)
+    {
+      ..._personPayload(item.person, personId: item.personId),
+      'level': switch (item.level) {
+        InstitutionAdministratorLevel.adminMaster => 'admin_master',
+        InstitutionAdministratorLevel.authorizedAdministrator => 'authorized_administrator',
+        InstitutionAdministratorLevel.coordinator => 'coordinator',
+      },
+    },
+];
+
+Map<String, Object?> _contactPayload(InstitutionRecord record) => {
+  'email': _nullIfBlank(record.contactEmail),
+  'phone': _nullIfBlank(record.contactPhone),
+  'mobile_phone': _nullIfBlank(record.contactMobilePhone),
+  'website_url': _nullIfBlank(record.websiteUrl),
+  'whatsapp_number': _nullIfBlank(record.whatsappNumber),
+};
+
+/// Dados pessoais minimizados: o detalhe devolve e-mail, celular e CPF
+/// mascarados (com '*'); um valor mascarado nunca volta ao servidor.
+Map<String, Object?> _personPayload(InstitutionPersonDraft person, {String? personId}) => {
+  'person_id': ?personId,
+  'first_name': _nullIfBlank(person.firstName),
+  'last_name': _nullIfBlank(person.lastName),
+  'display_name': _nullIfBlank(person.displayName),
+  if (_isPlain(person.email)) 'email': person.email.trim(),
+  if (_isPlain(person.mobilePhone)) 'mobile_phone': person.mobilePhone.trim(),
+  if (_isPlain(person.cpf)) 'cpf': person.cpf.trim(),
+};
+
+bool _isPlain(String value) => value.trim().isNotEmpty && !value.contains('*');
+
+String? _nullIfBlank(String value) => value.trim().isEmpty ? null : value.trim();

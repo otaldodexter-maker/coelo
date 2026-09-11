@@ -56,13 +56,28 @@ final class InstitutionPersonDraft {
 }
 
 final class InstitutionLegalRepresentative {
-  const InstitutionLegalRepresentative({required this.id, required this.person});
+  const InstitutionLegalRepresentative({
+    required this.id,
+    required this.person,
+    this.personId,
+    this.isPrimary = false,
+  });
 
   final String id;
   final InstitutionPersonDraft person;
 
-  InstitutionLegalRepresentative copyWith({InstitutionPersonDraft? person}) =>
-      InstitutionLegalRepresentative(id: id, person: person ?? this.person);
+  /// Pessoa do realm ja persistida (institution_contacts_v1). Nulo para quem
+  /// foi digitado no assistente e ainda nao existe no servidor.
+  final String? personId;
+  final bool isPrimary;
+
+  InstitutionLegalRepresentative copyWith({InstitutionPersonDraft? person, bool? isPrimary}) =>
+      InstitutionLegalRepresentative(
+        id: id,
+        person: person ?? this.person,
+        personId: personId,
+        isPrimary: isPrimary ?? this.isPrimary,
+      );
 }
 
 final class InstitutionInvitationHistoryEntry {
@@ -83,10 +98,15 @@ final class InstitutionAdministratorDraft {
     this.sourceRepresentativeId,
     this.avatarBytes,
     this.avatarFileName,
+    this.personId,
   });
 
   final String id;
   final InstitutionPersonDraft person;
+
+  /// Pessoa do realm ja persistida (institution_contacts_v1); nulo para quem
+  /// ainda nao existe no servidor.
+  final String? personId;
   final String handle;
   final InstitutionAdministratorLevel level;
   final InstitutionInvitationStatus invitationStatus;
@@ -118,5 +138,6 @@ final class InstitutionAdministratorDraft {
         : sourceRepresentativeId ?? this.sourceRepresentativeId,
     avatarBytes: clearAvatar ? null : avatarBytes ?? this.avatarBytes,
     avatarFileName: clearAvatar ? null : avatarFileName ?? this.avatarFileName,
+    personId: personId,
   );
 }
