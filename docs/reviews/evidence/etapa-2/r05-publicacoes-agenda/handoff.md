@@ -1,6 +1,6 @@
 ---
 title: "Handoff R05 — publicacoes-agenda (Agenda, Avisos, Circulares)"
-source: "comunicacao/publicacoes-agenda.json rev 31–36; branch work/etapa2-r05-publicacoes-agenda; prova-producao-r05.js; capturas ui/"
+source: "comunicacao/publicacoes-agenda.json rev 31–41; branch work/etapa2-r05-publicacoes-agenda; prova-producao-r05.js; capturas ui/"
 status: "entrega da frente ao coordenador; nada aqui certifica producao"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
@@ -36,14 +36,14 @@ Prova limpa no descartável `coelo_pa_r05` (db 60522): baseline + seed + 107 mig
 
 - `circulars.attach` FE/E2E: anexar pela tela (composer real, FilePicker nativo não é dirigível por CDP; injetar `filePicker` no host de QA) com um Chrome.
 - `circulars.respond` FE: não existe tela de resposta no Superadmin (fluxo do Principal); decidir se `respond` no Superadmin é só o resumo (já verified) — pergunta ao coordenador.
-- `agenda.location` FE: achado de produto no wizard (ui-51/52): "Contexto principal" só escolhe o nível e o formulário usa o primeiro contexto daquele nível (`_selectedContext`), sem seletor da unidade/turma concreta — propor seletor antes do verified.
+- `agenda.location` FE: achado de produto no wizard (ui-51/52): "Contexto principal" só escolhia o nível e o formulário usava o primeiro contexto daquele nível. `4b9483148` acrescenta o campo "Qual Instituição/Unidade/Turma" (default = primeiro); goldens `agenda_create_*` regravados → A+ pendente do Owner (`duvidas-visuais-agenda-create.html`). Prova pela tela fica para a próxima rodada.
 - Aprovação visual do Owner: P33/P34 em `duvidas-visuais.html` (R iPhone / A atual; detalhe: manter 48 px?).
 - Delete do anexo após publicar responde `media_remove_denied` — comportamento correto (mídia publicada é imutável); coberto na prova como negativa.
 
 # Achados fora do recorte
 
 - Pastilha "Aviso" esticada no diretório de Avisos após o composto `11c4bfbef` (ui-19) — corrigida em `28acbe8c3` (altura própria da pastilha).
-- Balão de chat sobre o compositor de Circular enquanto carrega o seletor de instituição (ui-22) — shell/Decisão 7.
+- Balão de chat sobre o compositor de Circular enquanto carrega o seletor de instituição (ui-22) — corrigido em `002dddd95` (host suprime o balão desde o carregamento).
 - `agenda_internal_realm_compat_v1_test` falha 4/22 sobre a ordem real após o lote 29 (ponte do Principal): expectativas antigas de ator interno sem pessoa; falta asserção cross-tenant — G4/G5.
 - Testes históricos `circulars_authorization_behavior_test` (fixture inválida) — pós-MVP.
 
