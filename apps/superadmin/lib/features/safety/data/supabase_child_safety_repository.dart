@@ -7,10 +7,18 @@ import '../domain/child_safety.dart';
 import '../domain/child_safety_contract.dart';
 import 'child_safety_response_decoder.dart';
 
-final class SupabaseChildSafetyRepository implements ChildSafetyRepository {
+final class SupabaseChildSafetyRepository
+    implements ChildSafetyRepository, ChildSafetyMutationSupport {
   const SupabaseChildSafetyRepository(this._client);
 
   final SupabaseClient _client;
+
+  /// O contrato de escrita foi qualificado em producao (child_safety_request_
+  /// authorization, edit_pending, decide e change_lifecycle; decisao pelo
+  /// Superadmin com auditoria, P32 B, pacote 171800). Sem esta adesao o
+  /// controlador escondia Criar/Gerenciar mesmo com can_create do servidor.
+  @override
+  bool get mutationsEnabled => true;
 
   @override
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query) async {
