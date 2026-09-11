@@ -6,9 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 
-import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
-import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
-import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../../shared/presentation/widgets/publication_surface.dart';
 import '../domain/agenda_models.dart';
 import '../domain/agenda_repository.dart';
 import 'agenda_reservation_conflict_dialog.dart';
@@ -101,7 +99,6 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
   late final List<_AgendaQuestionDraft> _questions;
   var _nextQuestionId = 1;
   String? _feedback;
-  int _step = 0;
   bool _saving = false;
   bool _completionFailed = false;
   String? _completionOperation;
@@ -470,39 +467,22 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
     };
   }
 
+  // Familia Publicacao (Owner, 11/09/2026 17:19): o evento e uma publicacao
+  // em superficie unica (titulo, data e horario, local, descricao, categoria,
+  // publico e contexto, lembrete), sem wizard de etapas; o restante do
+  // contrato (dia inteiro, fuso, recorrencia, prioridade, resposta, perguntas)
+  // fica em "Mais opcoes" na mesma superficie. Referencia:
+  // evidence/etapa-2/referencias/publicacao/aprovadas-20260911/evento-*.png.
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => SuperadminFormFrame(
-      viewportWidth: constraints.maxWidth,
-      navigation: SuperadminFormStepNavigation(
-        steps: [
-          for (var index = 0; index < 4; index++)
-            SuperadminFormStep(
-              key: Key('agenda-form-step-$index'),
-              label: const ['Dados básicos', 'Período', 'Respostas', 'Revisão'][index],
-              status: index == _step
-                  ? SuperadminFormStepStatus.current
-                  : index < _step
-                  ? SuperadminFormStepStatus.complete
-                  : SuperadminFormStepStatus.incomplete,
-              enabled: index <= _step,
-            ),
-        ],
-        currentIndex: _step,
-        onStepSelected: (value) {
-          if (value <= _step) setState(() => _step = value);
-        },
-      ),
+  Widget build(BuildContext context) {
+    final enabled = widget.actionsAvailable && !_saving && !_completionFailed;
+    return PublicationSurface(
+      subtitle: widget.eventId == null ? 'Publicar Evento' : 'Editar Evento',
       scrollKey: const Key('agenda-event-form-scroll'),
-      body: Column(
+      form: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(
-            widget.eventId == null ? 'Criar evento' : 'Editar evento',
-            style: Theme.of(context).textTheme.headlineMedium,
-          ),
-          if (_feedback != null) ...[
-            const SizedBox(height: CoeloSpacing.space2),
+          if (_feedback != null)
             Semantics(
               liveRegion: true,
               child: Text(
@@ -511,120 +491,236 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
                 style: TextStyle(color: Theme.of(context).colorScheme.error),
               ),
             ),
-          ],
+          ..._publicationFields(),
+          const PublicationLabel('Mais opções'),
+          ..._spaced([..._periodFields(), ..._responseFields()]),
           const SizedBox(height: CoeloSpacing.space4),
-          _content(),
+          _questionBuilder(),
+          if (!widget.canPublish)
+            const Padding(
+              padding: EdgeInsets.only(top: CoeloSpacing.space3),
+              child: PublicationNote(
+                'Sem permissão de publicação: o evento será salvo como rascunho e enviado para aprovação.',
+              ),
+            ),
+          if (!widget.actionsAvailable)
+            const CoeloStatePanel(
+              key: Key('agenda-event-actions-unavailable'),
+              icon: Icons.cloud_off_outlined,
+              title: 'Integração indisponível',
+              message:
+                  'A composição está disponível, mas salvar e publicar permanecem bloqueados nesta rota.',
+            ),
         ],
       ),
-      footer: SuperadminFormActionFooter(
-        tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
-        continuationActions: [
-          if (_step > 0)
-            OutlinedButton(
-              key: const Key('agenda-wizard-previous'),
-              onPressed: () => setState(() => _step--),
-              child: const Text('Anterior'),
-            ),
-          if (_step < 3)
-            OutlinedButton(
-              key: const Key('agenda-wizard-continue'),
-              onPressed: () => setState(() => _step++),
-              child: const Text('Continuar'),
+      preview: _AgendaEventPreview(
+        key: const Key('agenda-event-preview'),
+        title: _title.text,
+        start: _start,
+        end: _end,
+        allDay: _allDay,
+        location: _location.text,
+        context: _selectedContext()?.name ?? _context,
+        audience: _audience,
+      ),
+      tertiaryAction: TextButton(onPressed: widget.onCancel, child: const Text('Cancelar')),
+      continuationActions: [
+        OutlinedButton(
+          key: const Key('agenda-wizard-save-draft'),
+          onPressed: enabled ? () => _save(AgendaItemStatus.draft) : null,
+          child: const Text('Salvar rascunho'),
+        ),
+        FilledButton(
+          key: const Key('agenda-wizard-publish'),
+          onPressed: enabled ? () => _save(AgendaItemStatus.published) : null,
+          child: Text(widget.canPublish ? 'Publicar evento' : 'Solicitar publicação'),
+        ),
+      ],
+    );
+  }
+
+  List<Widget> _publicationFields() => [
+    const PublicationLabel('Título do evento'),
+    PublicationTextField(
+      fieldKey: const Key('agenda-event-title'),
+      controller: _title,
+      hintText: 'Festa junina do 3º ano',
+      // O banco recusa titulo acima de 240 caracteres em superadmin_agenda_save.
+      maxLength: 240,
+      onChanged: (_) => setState(() {}),
+    ),
+    const SizedBox(height: CoeloSpacing.space3),
+    LayoutBuilder(
+      builder: (context, constraints) {
+        final fields = [
+          if (_allDay)
+            CoeloDateRangeField(
+              key: const Key('agenda-event-all-day-range'),
+              value: DateTimeRange(start: _start, end: _end),
+              firstDate: DateTime(2025),
+              lastDate: DateTime(2030, 12, 31),
+              labelText: 'Período',
+              onChanged: (value) {
+                if (value != null) {
+                  setState(() {
+                    _start = value.start;
+                    _end = value.end;
+                  });
+                }
+              },
             )
           else ...[
-            OutlinedButton(
-              key: const Key('agenda-wizard-save-draft'),
-              onPressed: widget.actionsAvailable && !_saving && !_completionFailed
-                  ? () => _save(AgendaItemStatus.draft)
-                  : null,
-              child: const Text('Salvar rascunho'),
+            CoeloDateTimeField(
+              key: const Key('agenda-event-start'),
+              value: _start,
+              firstDate: DateTime(2025),
+              lastDate: DateTime(2030, 12, 31),
+              labelText: 'Data e início',
+              onChanged: (value) {
+                if (value != null) setState(() => _start = value);
+              },
             ),
-            FilledButton(
-              key: const Key('agenda-wizard-publish'),
-              onPressed: widget.actionsAvailable && !_saving && !_completionFailed
-                  ? () => _save(AgendaItemStatus.published)
-                  : null,
-              child: Text(widget.canPublish ? 'Publicar' : 'Solicitar publicação'),
+            CoeloDateTimeField(
+              key: const Key('agenda-event-end'),
+              value: _end,
+              firstDate: DateTime(2025),
+              lastDate: DateTime(2030, 12, 31),
+              labelText: 'Fim',
+              onChanged: (value) {
+                if (value != null) setState(() => _end = value);
+              },
             ),
           ],
+        ];
+        if (constraints.maxWidth < 600 || fields.length == 1) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var index = 0; index < fields.length; index++) ...[
+                if (index > 0) const SizedBox(height: CoeloSpacing.space3),
+                fields[index],
+              ],
+            ],
+          );
+        }
+        return Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Expanded(child: fields[0]),
+            const SizedBox(width: CoeloSpacing.space3),
+            Expanded(child: fields[1]),
+          ],
+        );
+      },
+    ),
+    const SizedBox(height: CoeloSpacing.space3),
+    PublicationCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CoeloFormTextField(
+            controller: _location,
+            labelText: 'Local (opcional)',
+            prefixIcon: Icons.place_outlined,
+            onChanged: (_) => setState(() {}),
+            // Limite da coluna location de agenda_events.
+            inputFormatters: [LengthLimitingTextInputFormatter(500)],
+          ),
+          _LocationPreview(location: _location.text.trim()),
         ],
       ),
     ),
-  );
-
-  Widget _content() => _Group(
-    title: const ['1. Dados básicos', '2. Período', '3. Respostas', '4. Revisão'][_step],
-    children: switch (_step) {
-      0 => _basicFields(),
-      1 => _periodFields(),
-      2 => _responseFields(),
-      _ => _reviewFields(),
-    },
-  );
-
-  List<Widget> _basicFields() => [
-    CoeloFormTextField(
-      controller: _title,
-      labelText: 'Título',
-      prefixIcon: Icons.title_rounded,
-      // O banco recusa titulo acima de 240 caracteres em
-      // superadmin_agenda_save, e a recusa volta como 22023, que o repositorio
-      // traduz para indisponibilidade generica: o usuario nao descobre que o
-      // problema e o tamanho e tenta de novo para sempre. Limitar a entrada
-      // impede montar um payload invalido, e nao trunca o que ja esta salvo,
-      // porque o formatador so age na digitacao.
-      inputFormatters: [LengthLimitingTextInputFormatter(240)],
-    ),
-    CoeloAdminSingleSelectField<AgendaItemType>(
-      key: const Key('agenda-event-type'),
-      label: 'Tipo',
-      value: _type,
-      options: AgendaItemType.values,
-      optionLabel: (value) => value.label,
-      onChanged: (value) => setState(() => _type = value),
-    ),
-    CoeloAdminSingleSelectField<String>(
-      key: const Key('agenda-event-context'),
-      label: 'Contexto principal',
-      value: _context,
-      options: _contexts,
-      optionLabel: (value) => value,
-      onChanged: (value) => setState(() {
-        _context = value;
-        _contextId = null;
-      }),
-      prefixIcon: Icons.account_tree_outlined,
-    ),
-    // Achado R05 (agenda.location): o nível sozinho escolhia o primeiro
-    // contexto daquele nível; com mais de um, o operador escolhe qual.
-    if (_contextsOfLevel().length > 1)
-      CoeloAdminSingleSelectField<AgendaContext>(
-        key: const Key('agenda-event-context-target'),
-        label: 'Qual $_context',
-        value: _selectedContext()!,
-        options: _contextsOfLevel(),
-        optionLabel: (value) => value.name,
-        onChanged: (value) => setState(() => _contextId = value.id),
-        prefixIcon: Icons.place_outlined,
-      ),
-    CoeloAdminMultiSelectField<String>(
-      key: const Key('agenda-event-audience'),
-      label: 'Audiência',
-      options: _audiences,
-      selectedValues: _audience,
-      optionLabel: (value) => value,
-      onChanged: (value) => setState(() => _audience = value),
-      prefixIcon: Icons.groups_outlined,
-    ),
-    CoeloFormTextField(
+    const PublicationLabel('Descrição'),
+    PublicationTextField(
+      fieldKey: const Key('agenda-event-description'),
       controller: _details,
-      labelText: 'Descrição (opcional)',
-      prefixIcon: Icons.notes_rounded,
+      hintText: 'Conte o que vai acontecer…',
       maxLines: 4,
       // Limite da coluna description de agenda_events.
-      inputFormatters: [LengthLimitingTextInputFormatter(10000)],
+      maxLength: 10000,
     ),
-    _questionBuilder(),
+    const PublicationLabel('Categoria'),
+    Wrap(
+      key: const Key('agenda-event-type'),
+      spacing: CoeloSpacing.space2,
+      runSpacing: CoeloSpacing.space2,
+      children: [
+        for (final type in AgendaItemType.values)
+          PublicationChip(
+            key: Key('agenda-event-type-${type.name}'),
+            label: type.label,
+            icon: Icons.event_outlined,
+            selected: _type == type,
+            onTap: () => setState(() => _type = type),
+          ),
+      ],
+    ),
+    const PublicationLabel('Público e contexto'),
+    PublicationCard(
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          CoeloAdminSingleSelectField<String>(
+            key: const Key('agenda-event-context'),
+            label: 'Contexto principal',
+            value: _context,
+            options: _contexts,
+            optionLabel: (value) => value,
+            onChanged: (value) => setState(() {
+              _context = value;
+              _contextId = null;
+            }),
+            prefixIcon: Icons.account_tree_outlined,
+          ),
+          // Achado R05 (agenda.location): o nível sozinho escolhia o primeiro
+          // contexto daquele nível; com mais de um, o operador escolhe qual.
+          if (_contextsOfLevel().length > 1)
+            CoeloAdminSingleSelectField<AgendaContext>(
+              key: const Key('agenda-event-context-target'),
+              label: 'Qual $_context',
+              value: _selectedContext()!,
+              options: _contextsOfLevel(),
+              optionLabel: (value) => value.name,
+              onChanged: (value) => setState(() => _contextId = value.id),
+              prefixIcon: Icons.place_outlined,
+            ),
+        ],
+      ),
+    ),
+    const SizedBox(height: CoeloSpacing.space3),
+    Wrap(
+      key: const Key('agenda-event-audience'),
+      spacing: CoeloSpacing.space2,
+      runSpacing: CoeloSpacing.space2,
+      children: [
+        for (final audience in _audiences)
+          PublicationChip(
+            key: Key('agenda-event-audience-$audience'),
+            label: audience,
+            selected: _audience.contains(audience),
+            onTap: () => setState(() {
+              final next = {..._audience};
+              if (!next.add(audience)) next.remove(audience);
+              _audience = next;
+            }),
+          ),
+      ],
+    ),
+    const SizedBox(height: CoeloSpacing.space2),
+    PublicationToggleRow(
+      icon: Icons.notifications_none_rounded,
+      label: 'Lembrar 1 dia antes',
+      value: _reminders.contains('24 horas antes'),
+      onChanged: (value) => setState(() {
+        final next = {..._reminders};
+        if (value) {
+          next.add('24 horas antes');
+        } else {
+          next.remove('24 horas antes');
+        }
+        _reminders = next;
+      }),
+    ),
   ];
 
   List<Widget> _periodFields() => [
@@ -635,44 +731,6 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       label: 'Dia inteiro',
       description: 'Eventos de dia inteiro não exibem horário.',
     ),
-    if (_allDay)
-      CoeloDateRangeField(
-        key: const Key('agenda-event-all-day-range'),
-        value: DateTimeRange(start: _start, end: _end),
-        firstDate: DateTime(2025),
-        lastDate: DateTime(2030, 12, 31),
-        labelText: 'Período',
-        onChanged: (value) {
-          if (value != null) {
-            setState(() {
-              _start = value.start;
-              _end = value.end;
-            });
-          }
-        },
-      )
-    else ...[
-      CoeloDateTimeField(
-        key: const Key('agenda-event-start'),
-        value: _start,
-        firstDate: DateTime(2025),
-        lastDate: DateTime(2030, 12, 31),
-        labelText: 'Início',
-        onChanged: (value) {
-          if (value != null) setState(() => _start = value);
-        },
-      ),
-      CoeloDateTimeField(
-        key: const Key('agenda-event-end'),
-        value: _end,
-        firstDate: DateTime(2025),
-        lastDate: DateTime(2030, 12, 31),
-        labelText: 'Fim',
-        onChanged: (value) {
-          if (value != null) setState(() => _end = value);
-        },
-      ),
-    ],
     CoeloAdminSingleSelectField<String>(
       key: const Key('agenda-event-timezone'),
       label: 'Fuso horário IANA',
@@ -682,15 +740,6 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       onChanged: (value) => setState(() => _timeZoneId = value),
       prefixIcon: Icons.public_outlined,
     ),
-    CoeloFormTextField(
-      controller: _location,
-      labelText: 'Local (opcional)',
-      prefixIcon: Icons.place_outlined,
-      onChanged: (_) => setState(() {}),
-      // Limite da coluna location de agenda_events.
-      inputFormatters: [LengthLimitingTextInputFormatter(500)],
-    ),
-    _LocationPreview(location: _location.text.trim()),
     CoeloAdminSingleSelectField<String>(
       key: const Key('agenda-event-recurrence'),
       label: 'Recorrência',
@@ -784,43 +833,13 @@ final class _AgendaEventFormPageState extends State<_AgendaEventFormBody> {
       onChanged: (value) => setState(() => _reminders = value),
       prefixIcon: Icons.notifications_active_outlined,
     ),
-    const _Fact(
-      label: 'Entrega',
-      value: 'Defina apenas quando lembrar; os canais serão configurados pela plataforma.',
-    ),
   ];
 
-  List<Widget> _reviewFields() => [
-    _Fact(label: 'Evento', value: '${_title.text} · ${_type.label}'),
-    _Fact(label: 'Contexto e audiência', value: '$_context · ${_audience.join(', ')}'),
-    _Fact(
-      label: 'Período',
-      value: _allDay
-          ? '${_shortDate(_start)} — ${_shortDate(_end)} · dia inteiro'
-          : '${_date(_start)} — ${_date(_end)} · $_timeZoneId',
-    ),
-    _Fact(label: 'Recorrência', value: _recurrence),
-    _Fact(label: 'Resposta', value: _responseLabel(_responseMode)),
-    _Fact(
-      label: 'Perguntas',
-      value: _questions.isEmpty
-          ? 'Nenhuma pergunta adicional'
-          : '${_questions.length} adicionada(s)',
-    ),
-    _Fact(label: 'Lembretes', value: _reminders.join(', ')),
-    if (!widget.canPublish)
-      const _Fact(
-        label: 'Publicação',
-        value: 'Sem capability de publicação: será salvo como rascunho e enviado para aprovação.',
-      ),
-    if (!widget.actionsAvailable)
-      const CoeloStatePanel(
-        key: Key('agenda-event-actions-unavailable'),
-        icon: Icons.cloud_off_outlined,
-        title: 'Integração indisponível',
-        message:
-            'A composição está disponível, mas salvar e publicar permanecem bloqueados nesta rota.',
-      ),
+  static List<Widget> _spaced(List<Widget> fields) => [
+    for (var index = 0; index < fields.length; index++) ...[
+      if (index > 0) const SizedBox(height: CoeloSpacing.space4),
+      fields[index],
+    ],
   ];
 
   Widget _questionBuilder() => _AgendaQuestionsEditor(
@@ -977,29 +996,98 @@ final class _LocationPreview extends StatelessWidget {
   );
 }
 
-final class _Group extends StatelessWidget {
-  const _Group({required this.title, required this.children});
+/// "Prévia na Agenda": o evento como card do calendário (mês, dia, título,
+/// horário · local) e a nota de onde ele aparece.
+final class _AgendaEventPreview extends StatelessWidget {
+  const _AgendaEventPreview({
+    required this.title,
+    required this.start,
+    required this.end,
+    required this.allDay,
+    required this.location,
+    required this.context,
+    required this.audience,
+    super.key,
+  });
   final String title;
-  final List<Widget> children;
+  final DateTime start;
+  final DateTime end;
+  final bool allDay;
+  final String location;
+  final String context;
+  final Set<String> audience;
+
+  static const _months = ['JAN', 'FEV', 'MAR', 'ABR', 'MAI', 'JUN', 'JUL', 'AGO', 'SET', 'OUT', 'NOV', 'DEZ'];
 
   @override
-  Widget build(BuildContext context) => Center(
-    child: ConstrainedBox(
-      constraints: const BoxConstraints(maxWidth: 880),
+  Widget build(BuildContext buildContext) {
+    final colors = Theme.of(buildContext).colorScheme;
+    final textTheme = Theme.of(buildContext).textTheme;
+    String hm(DateTime v) =>
+        '${v.hour.toString().padLeft(2, '0')}:${v.minute.toString().padLeft(2, '0')}';
+    final when = allDay ? 'Dia inteiro' : '${hm(start)} – ${hm(end)}';
+    final detail = location.trim().isEmpty ? when : '$when · ${location.trim()}';
+    return PublicationPreviewPanel(
+      title: 'Prévia na Agenda',
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
-          Text(title, style: Theme.of(context).textTheme.titleLarge),
-          const SizedBox(height: CoeloSpacing.space5),
-          for (var index = 0; index < children.length; index++) ...[
-            children[index],
-            if (index < children.length - 1) const SizedBox(height: CoeloSpacing.space4),
-          ],
-          const SizedBox(height: CoeloSpacing.space6),
+          Container(
+            padding: const EdgeInsets.all(CoeloSpacing.space3),
+            decoration: BoxDecoration(
+              border: Border(left: BorderSide(color: colors.primary, width: 4)),
+              borderRadius: BorderRadius.circular(CoeloRadius.sm),
+              color: colors.surface,
+              boxShadow: [
+                BoxShadow(color: colors.shadow.withValues(alpha: 0.06), blurRadius: 8, offset: const Offset(0, 2)),
+              ],
+            ),
+            child: Row(
+              children: [
+                Column(
+                  children: [
+                    Text(
+                      _months[start.month - 1],
+                      style: textTheme.labelSmall?.copyWith(color: colors.primary, fontWeight: FontWeight.w700),
+                    ),
+                    Text(
+                      '${start.day}',
+                      style: textTheme.titleLarge?.copyWith(color: colors.primary, fontWeight: FontWeight.w800),
+                    ),
+                  ],
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        title.trim().isEmpty ? 'Título do evento' : title,
+                        style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      Text(
+                        detail,
+                        style: textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          Text(
+            'Aparece no calendário de ${audience.isEmpty ? 'ninguém ainda' : audience.join(', ').toLowerCase()} em $context e no sino no dia anterior.',
+            style: textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+          ),
         ],
       ),
-    ),
-  );
+    );
+  }
 }
 
 final class _Fact extends StatelessWidget {
@@ -1060,12 +1148,6 @@ String _occurrenceEditScopeLabel(AgendaOccurrenceEditScope value) => switch (val
   AgendaOccurrenceEditScope.thisAndFollowing => 'Esta e as próximas',
   AgendaOccurrenceEditScope.series => 'Toda a série',
 };
-
-String _shortDate(DateTime value) =>
-    '${value.day.toString().padLeft(2, '0')}/${value.month.toString().padLeft(2, '0')}/${value.year}';
-
-String _date(DateTime value) =>
-    '${_shortDate(value)} ${value.hour.toString().padLeft(2, '0')}:${value.minute.toString().padLeft(2, '0')}';
 
 String _label(String value) =>
     '${value[0].toUpperCase()}${value.substring(1).replaceAllMapped(RegExp(r'([A-Z])'), (match) => ' ${match.group(1)!.toLowerCase()}')}';

@@ -1,15 +1,15 @@
 {
-  "revision": 44,
+  "revision": 45,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "ca60b096b (base; esta revisao vira o head novo)",
+  "head": "87c449d93 (+ commit desta revisao)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T19:46:00-03:00",
+  "updatedAt": "2026-09-11T20:09:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -57,10 +57,10 @@
     "evidence": "commits da branch, flutter test por familia, goldens comparados as referencias aprovadas, rota real com qa-r06-publicacoes quando a credencial existir."
   },
   "environment": {
-    "credencial": "C:/Users/adrie/Documents/Coelo-backups/qa-r06-publicacoes.env NAO existe na abertura (19:40); rota real espera o coordenador. Chrome com --user-data-dir %TEMP%/coelo-chrome-publicacoes, um por vez; um flutter test por vez.",
+    "credencial": "Coelo-backups/qa-r06-publicacoes.env existe desde ~19:55; rota real comeca agora (build web-qa + Chrome proprio).",
     "note": "Comeco pelo que nao depende de credencial: reconstrucao das telas de Circular e Evento na familia Publicacao e o toggle web da lista da Agenda (V-8)."
   },
-  "firstGate": "credencial qa-r06-publicacoes ausente -> rota real dos itens 1, 2, 3 e 6 espera; trabalho de UI segue.",
+  "firstGate": "rota real: build web -t test_driver/qa_main.dart, Chrome --user-data-dir %TEMP%/coelo-chrome-publicacoes, provar circulars.create/attach/respond e agenda.create/location pela tela",
   "status": "em-andamento",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
@@ -69,22 +69,65 @@
   "packages": [],
   "compositionKeys": [],
   "tests": {
-    "passed": null,
-    "failed": null,
-    "blocked": null,
-    "skipped": null,
-    "evidence": [],
-    "unknown": "nenhum teste rodado ainda nesta rodada"
+    "passed": "circulars 66 + agenda 293 + goldens",
+    "failed": 0,
+    "blocked": 0,
+    "skipped": 0,
+    "evidence": [
+      "flutter test test/features/circulars 66/66",
+      "flutter test test/features/agenda 293/293",
+      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)"
+    ],
+    "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
   "blocked": "rota real ate existir qa-r06-publicacoes.env",
-  "next": "(6) reconstruir compositor de Circular sobre circular-{mobile-375,web-1440}.png",
-  "changes": [],
+  "next": "(1) circulars.attach pela tela com o gancho no qa_main; (2) circulars.respond tela (P50=B); (3) agenda.location pela tela; rota real com o build novo",
+  "changes": [
+    {
+      "sha": "41a4b4dcf",
+      "actionIds": [
+        "circulars.create",
+        "circulars.edit",
+        "circulars.attach",
+        "circulars.respond"
+      ],
+      "what": "Compositor de Circular reconstruido sobre a familia Publicacao (item 6): \"Sua publicacao / Publicar Circular\", campos com rotulo acima, Anexos ate 4 com tile + e chips, Publico e contexto (card + chips Familias/Alunos/Equipe escolar/Somente responsaveis), Resposta esperada (So leitura / Confirmar ciencia / Aceitar-recusar mapeados a uma pergunta obrigatoria de escolha unica do dominio), Agendamento \"Publicar agora\", Opcoes, previa da circular a direita >=1200, rodape em card. Componente compartilhado apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart (PublicationSurface, Label, TextField, Card, Row, Chip, ToggleRow, Note, PreviewPanel) para G3/G4 reutilizarem.",
+      "tests": "flutter test test/features/circulars 66/66 (+1 golden novo circular_composer_{light,dark}_{375,1440} = 4 imagens comparadas a circular-{mobile-375,web-1440}.png); analyze limpo"
+    },
+    {
+      "sha": "0322e511d",
+      "actionIds": [
+        "agenda.create",
+        "agenda.edit",
+        "agenda.location"
+      ],
+      "what": "Criar/editar evento reconstruido sobre a familia Publicacao (item 6; substitui o wizard do V-7): superficie unica com titulo, data e horario em dois cards, Local (campo + previa), Descricao, Categoria em chips (9 tipos do dominio), Publico e contexto (nivel + \"Qual <nivel>\" concreto + chips de audiencia), Lembrar 1 dia antes, previa na Agenda >=1200, \"Mais opcoes\" com dia inteiro/fuso/recorrencia/prioridade/resposta/lembretes/perguntas. Chaves agenda-wizard-save-draft/publish preservadas; agenda-wizard-continue/previous deixam de existir.",
+      "tests": "flutter test test/features/agenda 293/293 (testes do wizard adaptados; goldens agenda_create_{light,dark}_{375,768,1440} regravados = comparar a evento-{mobile-375,web-1440}.png)"
+    },
+    {
+      "sha": "87c449d93",
+      "actionIds": [
+        "agenda.view"
+      ],
+      "what": "V-8 (A+): no web (>=840) o par Calendario/Lista volta ao R (dois botoes de 88 px a direita da toolbar); no mobile/tablet fica o toggle 50/50 novo. Goldens agenda_calendar_*_1440 e agenda_list_*_1440 regravados.",
+      "tests": "agenda 291/291"
+    }
+  ],
   "pendingForCoordinator": [
+    {
+      "actionIds": [
+        "circulars.create",
+        "circulars.edit",
+        "agenda.create",
+        "agenda.edit"
+      ],
+      "pending": "Pagina R/A para o Owner (referencia aprovada x golden novo) sera entregue em docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/duvidas-visuais-publicacao.html ao fim; aprovacao nao vira verified."
+    },
     {
       "actionIds": [
         "*"
       ],
-      "pending": "Gravar T0 e criar qa-r06-publicacoes@coelo.me (credencial em Coelo-backups/qa-r06-publicacoes.env); ate la a frente nao abre rota real."
+      "pending": "publication_surface.dart e o componente da familia Publicacao; G3 (Lancar chamada) e G4 (Agora/Acontece/Momentos) podem consumi-lo em vez de reimplementar. Avisar as frentes na integracao."
     }
   ],
   "proposedDeltas": [

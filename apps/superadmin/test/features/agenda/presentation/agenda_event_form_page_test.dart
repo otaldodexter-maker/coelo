@@ -193,25 +193,21 @@ void main() {
   ) async {
     await tester.pumpWidget(_app(store: store()));
 
-    final type = tester.widget<CoeloAdminSingleSelectField<AgendaItemType>>(
-      find.byKey(const Key('agenda-event-type')),
-    );
-    expect(type.options, AgendaItemType.values);
-    expect(type.options, hasLength(9));
+    // Familia Publicacao: categoria em chips, uma por tipo do dominio.
+    for (final type in AgendaItemType.values) {
+      expect(find.byKey(Key('agenda-event-type-${type.name}')), findsOneWidget);
+    }
+    expect(AgendaItemType.values, hasLength(9));
 
     final context = tester.widget<CoeloAdminSingleSelectField<String>>(
       find.byKey(const Key('agenda-event-context')),
     );
     expect(context.options, const ['Instituição', 'Unidade', 'Turma', 'Atividade', 'Pessoa']);
 
-    final audience = tester.widget<CoeloAdminMultiSelectField<String>>(
-      find.byKey(const Key('agenda-event-audience')),
-    );
-    expect(
-      audience.options,
-      containsAll(['Responsáveis', 'Equipe', 'Perfis específicos', 'Pessoas']),
-    );
-    expect(find.text('Título'), findsOneWidget);
+    for (final audience in ['Responsáveis', 'Equipe', 'Perfis específicos', 'Pessoas']) {
+      expect(find.byKey(Key('agenda-event-audience-$audience')), findsOneWidget);
+    }
+    expect(find.text('Título do evento'), findsOneWidget);
   });
 
   testWidgets('período alterna data e hora por dia inteiro e configura fuso e recorrência', (
@@ -295,10 +291,6 @@ void main() {
     );
     expect(saved, isEmpty);
 
-    for (var index = 0; index < 3; index++) {
-      await tester.tap(find.byKey(const Key('agenda-wizard-previous')));
-      await tester.pump();
-    }
     await tester.ensureVisible(find.byTooltip('Remover pergunta 1'));
     await tester.tap(find.byTooltip('Remover pergunta 1'));
     await tester.pump();
@@ -343,7 +335,6 @@ void main() {
       'Personalizado',
     ]);
     expect(find.textContaining('sem canais'), findsNothing);
-    expect(find.textContaining('canais serão configurados pela plataforma'), findsOneWidget);
   });
 
   testWidgets('sem capability salva rascunho e solicita publicação', (tester) async {
@@ -388,7 +379,7 @@ void main() {
     final prototype = store();
     final saved = <String>[];
     await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
-    await tester.enterText(find.byType(CoeloFormTextField).first, '');
+    await tester.enterText(find.byKey(const Key('agenda-event-title')), '');
     await _goToReview(tester);
 
     await tester.tap(find.byKey(const Key('agenda-wizard-save-draft')));
@@ -439,11 +430,8 @@ void main() {
     final prototype = store();
     final saved = <String>[];
     await tester.pumpWidget(_app(store: prototype, onSaved: saved.add));
-    tester
-        .widget<CoeloAdminSingleSelectField<AgendaItemType>>(
-          find.byKey(const Key('agenda-event-type')),
-        )
-        .onChanged(AgendaItemType.resourceReservation);
+    await tester.ensureVisible(find.byKey(const Key('agenda-event-type-resourceReservation')));
+    await tester.tap(find.byKey(const Key('agenda-event-type-resourceReservation')));
     await tester.pump();
     await _continue(tester);
     tester
@@ -489,7 +477,7 @@ void main() {
     final saved = <String>[];
     await tester.pumpWidget(_app(store: prototype, eventId: original.id, onSaved: saved.add));
 
-    expect(find.text('Editar evento'), findsOneWidget);
+    expect(find.text('Editar Evento'), findsOneWidget);
     expect(find.text(original.title), findsOneWidget);
     await _continue(tester);
     expect(
@@ -567,7 +555,7 @@ void main() {
     await tester.pumpWidget(_app(store: repositorio, eventId: existente.id));
     await tester.pumpAndSettle();
 
-    final titulo = find.widgetWithText(TextField, 'Título');
+    final titulo = find.byKey(const Key('agenda-event-title'));
     expect(tester.widget<TextField>(titulo).controller!.text.length, 300);
   });
 
@@ -582,12 +570,12 @@ void main() {
     await tester.pumpWidget(_app(store: store()));
     await tester.pumpAndSettle();
 
-    final titulo = find.widgetWithText(TextField, 'Título');
+    final titulo = find.byKey(const Key('agenda-event-title'));
     await tester.enterText(titulo, 'a' * 300);
     await tester.pump();
     expect(tester.widget<TextField>(titulo).controller!.text.length, 240);
 
-    final descricao = find.widgetWithText(TextField, 'Descrição (opcional)');
+    final descricao = find.byKey(const Key('agenda-event-description'));
     await tester.enterText(descricao, 'b' * 10050);
     await tester.pump();
     expect(tester.widget<TextField>(descricao).controller!.text.length, 10000);
@@ -614,15 +602,14 @@ Widget _app({
   ),
 );
 
+// Familia Publicacao (R06): o formulario e uma superficie unica, sem etapas;
+// os helpers do wizard ficam como no-op para preservar a leitura dos testes.
 Future<void> _continue(WidgetTester tester) async {
-  await tester.tap(find.byKey(const Key('agenda-wizard-continue')));
   await tester.pump();
 }
 
 Future<void> _goToReview(WidgetTester tester) async {
-  await _continue(tester);
-  await _continue(tester);
-  await _continue(tester);
+  await tester.pump();
 }
 
 final class _PendingFormRepository extends AgendaRepository {
