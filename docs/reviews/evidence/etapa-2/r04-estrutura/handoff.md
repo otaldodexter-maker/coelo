@@ -33,12 +33,20 @@ do edit_core reutilizado, handle pelo trigger, sempre `draft`, recibo por
 Catálogo mínimo de tipos (180320), porque produção tem zero
 `institution_types`.
 
+**Avaliações.** Nenhum objeto `superadmin_assessment_*` existe em produção e a
+migration histórica nunca aplicou em lugar nenhum (parêntese a menos em
+`superadmin_assessment_context_options`; ambiguidade variável × coluna em
+`assessment_v2_save_configuration`). Recarimbada como 180350 com as duas
+correções, pgTAP 47/47; a suíte usa o marcador interno da cadeia de Atividades
+v2 e vem depois de 180120. Chave do cliente: `COELO_ENABLE_ASSESSMENT_MUTATIONS`.
+
 **Cliente.** P5 (filtros de Turmas degradam de forma honesta, com teste), P6
 (widget morto do diálogo de importar removido; o botão já era honesto), P15
 (respiro `space10` no fim do conteúdo do `SuperadminFormFrame`, regra gravada em
 `coelo-ui/references/form-layout-contracts.md`), `test_driver/main_driver.dart`
 para a rota normal dirigida, sete goldens de formulário regravados (diferenças
-só das regras transversais).
+só das regras transversais) e os três goldens de detalhe de Locais regravados
+após o texto sem "prévia" (decisão A do Owner).
 
 **Rota normal.** App de produção em `localhost:3020` com `qa-r03@coelo.me`,
 credencial injetada pelo driver via VM Service (nunca passou pelo chat).
