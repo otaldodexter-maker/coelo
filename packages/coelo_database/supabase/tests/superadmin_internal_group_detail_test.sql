@@ -429,9 +429,11 @@ select is((select array_agg(body#>>'{data,status}' order by sequence_number)
 -- Owner AAL1/AAL2 and platform scope across Institutions.
 select set_config('request.jwt.claims',jsonb_build_object('sub','82000000-0000-4000-8000-000000000003','session_id','83000000-0000-4000-8000-000000000003','aal','aal1','role','authenticated')::text,true);
 set local role authenticated; insert into group_detail_acceptance_responses values(12,public.superadmin_group_detail_v2('81000000-0000-4000-8000-000000000001')); reset role;
-select ok((select body#>>'{error,code}'='SAI_MFA_REQUIRED' from group_detail_acceptance_responses where sequence_number=12)
- and (select count(*)=1 from audit.audit_logs l join group_detail_acceptance_responses r on r.sequence_number=12 and l.correlation_id=(r.body#>>'{error,correlation_id}')::uuid where l.hash_version=2 and l.reason_code='SAI_MFA_REQUIRED'),
- 'Owner AAL1 is denied with one correlated v2 audit');
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): groups.read nao exige MFA e
+-- require_superadmin_internal_context nao nega AAL1; o Owner em AAL1 le a turma com um evento de sucesso.
+select ok((select (body->>'ok')::boolean from group_detail_acceptance_responses where sequence_number=12)
+ and (select count(*)=1 from audit.audit_logs where actor_internal_membership_id='86000000-0000-4000-8000-000000000003' and action_code='group.detail' and outcome='success'),
+ 'Owner AAL1 reads in the MVP and appends one success audit');
 select set_config('request.jwt.claims',jsonb_build_object('sub','82000000-0000-4000-8000-000000000003','session_id','83000000-0000-4000-8000-000000000004','aal','aal2','role','authenticated')::text,true);
 set local role authenticated; insert into group_detail_acceptance_responses values
  (13,public.superadmin_group_detail_v2('81000000-0000-4000-8000-000000000001')),
@@ -602,10 +604,10 @@ select ok(
       and log_record.outcome='denied'
       and log_record.reason_code='SAI_PERMISSION_DENIED'),
   'deny effect on groups.read denies with exactly one correlated v2 audit');
-select ok((select count(*)=12 from audit.audit_logs where action_code='group.detail' and outcome='success')
+select ok((select count(*)=13 from audit.audit_logs where action_code='group.detail' and outcome='success')
  and not exists(select 1 from audit.audit_logs where action_code='group.detail' and outcome='success' and (hash_version<>2 or payload_contract_version<>2 or permission_code<>'groups.read' or reason_code is not null or reason is not null or before_json is not null or after_json is not null or octet_length(session_id_hash)<>32 or object_type<>'group' or object_id is null or institution_id is null or not app_private.audit_verify_entry(id))),
  'all successes have 1:1 minimized digest-valid v2 audit');
-select ok((select count(*)=14 from audit.audit_logs where action_code='group.detail' and outcome='denied' and hash_version=2)
+select ok((select count(*)=13 from audit.audit_logs where action_code='group.detail' and outcome='denied' and hash_version=2)
  and (select count(*)=1 from audit.audit_logs where action_code='group.detail' and outcome='denied' and hash_version=3)
  and not exists(select 1 from audit.audit_logs where action_code='group.detail' and outcome='denied' and (reason_code is null or reason is distinct from reason_code or before_json is not null or after_json is not null or institution_id is not null or object_id is not null or octet_length(session_id_hash)<>32 or not app_private.audit_verify_entry(id))),
  'all identified denials are 1:1 minimized digest-valid v2/v3 audit');

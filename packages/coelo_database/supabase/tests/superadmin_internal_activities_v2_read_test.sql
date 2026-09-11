@@ -15,11 +15,11 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
 -- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL
 -- (a coluna institution_type_id nao existe em producao).
 insert into public.unit_types(id,code,name,status) values
- ('8a1000f0-0000-4000-8000-000000000901','activities-v2-read-test-u0','Tipo de unidade da fixture','active');
+ ('8a0000f0-0000-4000-8000-000000000903','activities-v2-read-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
- ('8a100000-0000-4000-8000-000000000011','8a100000-0000-4000-8000-000000000010','8a1000f0-0000-4000-8000-000000000901','A Norte','activities-v2-read-a-norte','active','activities.v2.read.a.norte'),
- ('8a100000-0000-4000-8000-000000000012','8a100000-0000-4000-8000-000000000010','8a1000f0-0000-4000-8000-000000000901','A Sul','activities-v2-read-a-sul','active','activities.v2.read.a.sul'),
- ('8a100000-0000-4000-8000-000000000021','8a100000-0000-4000-8000-000000000020','8a1000f0-0000-4000-8000-000000000901','B Única','activities-v2-read-b-unica','active','activities.v2.read.b.unica');
+ ('8a100000-0000-4000-8000-000000000011','8a100000-0000-4000-8000-000000000010','8a0000f0-0000-4000-8000-000000000903','A Norte','activities-v2-read-a-norte','active','u.000000000011'),
+ ('8a100000-0000-4000-8000-000000000012','8a100000-0000-4000-8000-000000000010','8a0000f0-0000-4000-8000-000000000903','A Sul','activities-v2-read-a-sul','active','u.000000000012'),
+ ('8a100000-0000-4000-8000-000000000021','8a100000-0000-4000-8000-000000000020','8a0000f0-0000-4000-8000-000000000903','B Única','activities-v2-read-b-unica','active','u.000000000021');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('8a100000-0000-4000-8000-000000000013','8a100000-0000-4000-8000-000000000010','8a100000-0000-4000-8000-000000000011','Turma A1','active'),
  ('8a100000-0000-4000-8000-000000000014','8a100000-0000-4000-8000-000000000010','8a100000-0000-4000-8000-000000000012','Turma A2 irmã','active'),
@@ -145,7 +145,8 @@ select ok((select (body->'error')-'correlation_id' from read_results where label
 select is((select body#>>'{error,code}' from read_results where label='scoped_sensitive'),'SAI_PERMISSION_DENIED','sensitive sections require independent capabilities');
 select is((select body#>>'{error,code}' from read_results where label='anonymous'),'SAI_AUTH_REQUIRED','missing Auth fails closed');
 select is((select body#>>'{error,code}' from read_results where label='expired'),'SAI_SESSION_INVALID','expired session fails closed');
-select is((select body#>>'{error,code}' from read_results where label='aal1_owner'),'SAI_MFA_REQUIRED','Owner AAL1 fails closed');
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nao nega AAL1; o Owner em AAL1 nao recebe SAI_MFA_REQUIRED.
+select ok((select (body->>'ok')::boolean from read_results where label='aal1_owner'),'Owner AAL1 reads in the MVP');
 select is((select body#>>'{error,code}' from read_results where label='revoked'),'SAI_MEMBERSHIP_REVOKED','revoked membership fails closed');
 select is((select body#>>'{error,code}' from read_results where label='people_only'),'SAI_INTERNAL_CONTEXT_DENIED','people-only cross-app identity is denied');
 select is((select body#>>'{error,code}' from read_results where label='cap_denied'),'SAI_PERMISSION_DENIED','explicit capability deny fails closed');

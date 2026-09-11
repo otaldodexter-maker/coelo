@@ -59,6 +59,25 @@ void main() {
 
     expect(viewModel.state, GroupDirectoryLoadState.unauthorized);
   });
+
+  test('P5: lists groups and degrades the filters honestly when filter options fail', () async {
+    final repository = _FilterOptionsFailureGroupRepository();
+    final viewModel = GroupDirectoryViewModel(repository);
+    addTearDown(viewModel.dispose);
+
+    await viewModel.load().timeout(const Duration(milliseconds: 250));
+
+    expect(viewModel.state, GroupDirectoryLoadState.success);
+    expect(viewModel.filterOptionsUnavailable, isTrue);
+    expect(viewModel.filterOptions.units, isEmpty);
+
+    await viewModel.setUnits({'unit-1'});
+    await viewModel.setInstitutions({'inst-1'});
+
+    expect(viewModel.state, GroupDirectoryLoadState.success);
+    expect(viewModel.query.institutionIds, {'inst-1'});
+    expect(viewModel.query.unitIds, {'unit-1'}, reason: 'sem opcoes nao ha como podar a selecao');
+  });
 }
 
 final class _MixedFailureGroupRepository implements GroupDirectoryRepository {
@@ -91,4 +110,16 @@ final class _MixedFailureGroupRepository implements GroupDirectoryRepository {
 
   @override
   Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) => _unavailable();
+}
+
+final class _FilterOptionsFailureGroupRepository extends _MixedFailureGroupRepository {
+  @override
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) async {
+    final delegate = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
+    return delegate.fetchPage(query);
+  }
+
+  @override
+  Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
+      Future<GroupDirectoryFilterOptions>.error(StateError('filter options unavailable'));
 }

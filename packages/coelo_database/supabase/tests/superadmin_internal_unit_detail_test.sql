@@ -361,8 +361,8 @@ select set_config('request.jwt.claims',jsonb_build_object('sub','72000000-0000-4
 set local role authenticated;
 insert into unit_detail_acceptance_responses values(12,public.superadmin_unit_detail_v2('71000000-0000-4000-8000-000000000001'));
 reset role;
--- MVP (ADR 0034, Decisao 12): platform.read tem requires_mfa=false em producao, entao
--- o Owner em AAL1 le a unidade e gera um evento de sucesso, nao SAI_MFA_REQUIRED.
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): platform.read tem requires_mfa=false em producao e
+-- require_superadmin_internal_context nao nega AAL1; o Owner em AAL1 le a unidade com um evento de sucesso.
 select ok((select (body->>'ok')::boolean from unit_detail_acceptance_responses where sequence_number=12)
  and (select count(*)=1 from audit.audit_logs where actor_internal_membership_id='76000000-0000-4000-8000-000000000003' and action_code='unit.detail' and outcome='success'),
  'Owner AAL1 reads in the MVP and appends one success audit');

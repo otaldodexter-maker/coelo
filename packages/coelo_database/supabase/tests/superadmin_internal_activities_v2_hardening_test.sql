@@ -21,9 +21,9 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
 insert into public.unit_types(id,code,name,status) values
  ('740000f0-0000-4000-8000-000000000901','activities-v2-hardening-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
- ('74000000-0000-4000-8000-000000000011','74000000-0000-4000-8000-000000000010','740000f0-0000-4000-8000-000000000901','A Norte','activities-v2-hardening-a-norte','active','activities.v2.hardening.a.norte'),
- ('74000000-0000-4000-8000-000000000012','74000000-0000-4000-8000-000000000010','740000f0-0000-4000-8000-000000000901','A Sul','activities-v2-hardening-a-sul','active','activities.v2.hardening.a.sul'),
- ('74000000-0000-4000-8000-000000000021','74000000-0000-4000-8000-000000000020','740000f0-0000-4000-8000-000000000901','B Única','activities-v2-hardening-b-unica','active','activities.v2.hardening.b.unica');
+ ('74000000-0000-4000-8000-000000000011','74000000-0000-4000-8000-000000000010','740000f0-0000-4000-8000-000000000901','A Norte','activities-v2-hardening-a-norte','active','u.000000000011'),
+ ('74000000-0000-4000-8000-000000000012','74000000-0000-4000-8000-000000000010','740000f0-0000-4000-8000-000000000901','A Sul','activities-v2-hardening-a-sul','active','u.000000000012'),
+ ('74000000-0000-4000-8000-000000000021','74000000-0000-4000-8000-000000000020','740000f0-0000-4000-8000-000000000901','B Única','activities-v2-hardening-b-unica','active','u.000000000021');
 insert into public.groups(id,institution_id,unit_id,name,status) values
  ('74000000-0000-4000-8000-000000000013','74000000-0000-4000-8000-000000000010','74000000-0000-4000-8000-000000000011','Turma Norte','active'),
  ('74000000-0000-4000-8000-000000000014','74000000-0000-4000-8000-000000000010','74000000-0000-4000-8000-000000000012','Turma Sul','active'),
@@ -220,9 +220,11 @@ select set_config('request.jwt.claims',jsonb_build_object('sub','74000000-0000-4
 insert into hardening_results select 'operator_aal1_read',public.superadmin_activity_directory_v2(jsonb_build_object('institution_id','74000000-0000-4000-8000-000000000010'),10,0,'name',true);
 select set_config('request.jwt.claims',jsonb_build_object('sub','74000000-0000-4000-8000-000000000081','session_id','74000000-0000-4000-8000-000000000092','aal','aal1','role','authenticated')::text,true);
 insert into hardening_results select 'owner_aal1_read',public.superadmin_activity_directory_v2('{}',10,0,'name',true);
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): require_superadmin_internal_context em producao nao nega AAL1;
+-- Owner e operador leem o diretorio em AAL1.
 select ok((select (body->>'ok')::boolean from hardening_results where label='operator_aal1_read')
- and (select body#>>'{error,code}'='SAI_MFA_REQUIRED' from hardening_results where label='owner_aal1_read'),
- 'non-Owner AAL1 uses a non-MFA active capability while Owner AAL1 remains denied');
+ and (select (body->>'ok')::boolean from hardening_results where label='owner_aal1_read'),
+ 'non-Owner and Owner AAL1 read the directory in the MVP');
 
 -- Resume the Owner's AAL2 session for lifecycle and replay probes.
 select set_config('request.jwt.claims',jsonb_build_object('sub','74000000-0000-4000-8000-000000000081','session_id','74000000-0000-4000-8000-000000000091','aal','aal2','role','authenticated')::text,true);

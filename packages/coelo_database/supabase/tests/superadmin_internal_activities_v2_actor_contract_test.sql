@@ -118,7 +118,7 @@ from public.activity_capabilities where code='conversation';
 insert into public.unit_types(id,code,name,status) values
  ('7a0000f0-0000-4000-8000-000000000901','activities-v2-actor-contract-test-u0','Tipo de unidade da fixture','active');
 insert into public.units(id,institution_id,unit_type_id,name,slug,handle) values
- ('7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000003','7a0000f0-0000-4000-8000-000000000901','Actor unit','actor-unit','actor.unit');
+ ('7a100000-0000-4000-8000-000000000031','7a100000-0000-4000-8000-000000000003','7a0000f0-0000-4000-8000-000000000901','Actor unit','actor-unit','u.000000000031');
 insert into public.groups(id,institution_id,unit_id,name) values
  ('7a100000-0000-4000-8000-000000000032','7a100000-0000-4000-8000-000000000003','7a100000-0000-4000-8000-000000000031','Actor group');
 insert into public.institution_memberships(id,person_id,institution_id,role_code) values
