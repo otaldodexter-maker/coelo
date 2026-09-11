@@ -853,7 +853,9 @@ GoRouter createSuperadminRouter({
     Widget child, {
     bool development = true,
     String? currentDestination,
+    bool showChatLauncher = true,
   }) => AgendaModuleShell(
+    showChatLauncher: showChatLauncher,
     logout: development ? _previewLogout : logout,
     selectedArea: area,
     onAreaSelected: (value) => openAgendaArea(context, value, development: development),
@@ -2954,6 +2956,9 @@ GoRouter createSuperadminRouter({
               ),
               development: false,
               currentDestination: 'agenda-create',
+              // Decisao 7: sem balao de chat em criar/editar/publicar (cobria
+              // o botao Publicar evento na rota real, R06).
+              showChatLauncher: false,
             ),
           ),
           GoRoute(
@@ -2973,6 +2978,7 @@ GoRouter createSuperadminRouter({
                 ),
               ),
               development: false,
+              showChatLauncher: false,
             ),
           ),
           GoRoute(
@@ -5735,6 +5741,11 @@ GoRouter createSuperadminRouter({
                 repository: circularRepository,
                 institutionRepository: institutionDirectoryRepository,
                 filePicker: SuperadminQaHooks.circularFilePicker,
+                // circulars.attach (R06): sem o repositorio de midia o host
+                // respondia "Envio de anexos indisponivel" na rota real; a
+                // capacidade ja estava composta no auth scope (R2 via
+                // circular-media), so nao chegava ao compositor.
+                mediaRepository: principalCircularMediaRepository,
                 onCancel: () => context.goNamed(SuperadminRoutes.circularsName),
                 onDone: () => _returnToCircularsRefreshed(context),
               ),
@@ -5802,6 +5813,11 @@ GoRouter createSuperadminRouter({
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
                   filePicker: SuperadminQaHooks.circularFilePicker,
+                // circulars.attach (R06): sem o repositorio de midia o host
+                // respondia "Envio de anexos indisponivel" na rota real; a
+                // capacidade ja estava composta no auth scope (R2 via
+                // circular-media), so nao chegava ao compositor.
+                mediaRepository: principalCircularMediaRepository,
                   circularId: circularId,
                   onCancel: () => context.goNamed(
                     SuperadminRoutes.circularDetailName,

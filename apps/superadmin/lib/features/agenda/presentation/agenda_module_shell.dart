@@ -28,6 +28,7 @@ final class AgendaModuleShell extends StatelessWidget {
     this.compactActions = const [],
     this.onDestinationSelected,
     this.currentDestination,
+    this.showChatLauncher = true,
     super.key,
   });
 
@@ -39,6 +40,9 @@ final class AgendaModuleShell extends StatelessWidget {
   final List<Widget> compactActions;
   final ValueChanged<String>? onDestinationSelected;
   final String? currentDestination;
+
+  /// Decisao 7: criar/editar evento nao mostra o balao de chat.
+  final bool showChatLauncher;
 
   @override
   Widget build(BuildContext context) => SuperadminShell(
@@ -56,6 +60,7 @@ final class AgendaModuleShell extends StatelessWidget {
     actions: actions,
     compactActions: compactActions,
     onDestinationSelected: onDestinationSelected,
+    showChatLauncher: showChatLauncher,
     child: child,
   );
 }
