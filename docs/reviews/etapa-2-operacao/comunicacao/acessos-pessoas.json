@@ -1,7 +1,7 @@
 {
-  "revision": 98,
-  "updated_at": "2026-09-11T02:15:18.975Z",
-  "relogio_local": "Thu Sep 10 2026 23:15:18 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 99,
+  "updated_at": "2026-09-11T03:19:58.125Z",
+  "relogio_local": "Fri Sep 11 2026 00:19:58 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "d26a9f65c (publicado)",
+  "head": "873cb9aee (publicado; rebase sobre 93bedcf4e, lote 10)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "Convites: criar/detalhe/reenviar/revogar com dado sintetico; corrigir o 'nao autorizado' de Usuarios internos no fluxo login->navegacao; depois D1",
+  "proximo_passo": "consolidar os relatorios dos subagentes por action_id; conferir por REST se o caminho legado de Seguranca infantil passou a responder com a ponte (se sim, avaliar voltar a composicao legada que tem escrita); dar perfil interno ao qa-r03 para provar Usuarios internos listar/detalhe/editar; JSON as 00:50.",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -63,12 +63,18 @@
   "pacotesProntos": [
     {
       "id": "AP-P7-HAS-PLATFORM-PERMISSION-INSTITUTION",
-      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171000_has_platform_permission_institution_membership_v1.sql",
-      "pgTAP": "packages/coelo_database/supabase/tests/has_platform_permission_institution_membership_v1_test.sql - 20/20 PASS no projeto descartavel coelo_acessos (baseline + seed + 44 migrations + 230021 + candidato)",
-      "o_que_faz": "has_platform_permission(text) passa a contar platform_memberships com scope_kind='institution'; nova sobrecarga has_platform_permission(text, uuid) em que a membership de instituicao so vale para a instituicao informada (negativa cross-tenant provada). Deny-by-default e deny>allow preservados; ACL igual a da baseline (authenticated executa, anon nao). Nao toca no realm interno (pacote do coordenador).",
-      "chave_de_composicao": "nenhuma no cliente. Os 188 chamadores e as 69 policies continuam com a assinatura (text).",
-      "commit": "3bfbe8a47",
-      "acoes_afetadas": "nenhuma acao fecha sozinha com ele: e pre-requisito da Decisao 12/P7 para perfis por instituicao; Pessoas/Perfis para o realm interno dependem da ponte do coordenador"
+      "migration": "20260910171000_has_platform_permission_institution_membership_v1.sql",
+      "estado": "APLICADO EM PRODUCAO pelo coordenador no lote 10 (23:24); movido para migrations/"
+    },
+    {
+      "id": "AP-D1-FOLLOW-LINKS",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171100_follow_links_automatic_hierarchy_v1.sql",
+      "pgTAP": "packages/coelo_database/supabase/tests/follow_links_automatic_hierarchy_v1_test.sql - 24/24 PASS no descartavel coelo_acessos com baseline + seed + todas as migrations/ ate o lote 10 (240500)",
+      "o_que_faz": "public.follow_links (tabela materializada com procedencia; RLS forcado, sem grant direto); app_private.follow_links_sync_child_context recalcula o automatico por contexto de crianca (crianca + responsaveis ativos x instituicao/unidade/turma ativas) e gatilhos AFTER INSERT/UPDATE em child_contexts, child_unit_links, child_group_links e guardian_links; RPCs public.follow_summary(kind,id) [contagens, exige sessao], follow_following_list(person,..) [a propria pessoa ou people.read], follow_followers_list(kind,id,..) [people.read, porque expoe pessoas/criancas], follow_set(kind,id,follow) [botao Acompanhar, origin manual, ator = current_person_id()]. Manual e automatico coexistem; mudanca de estrutura nunca toca o manual.",
+      "decisoes_assumidas_por_falta_de_resposta_do_principal_chat": "target_kind inclui person (pessoa->pessoa) alem de institution/unit/group; contagem e lista disponiveis (lista exige people.read); o automatico aparece em Seguindo com origin=automatic; escrita materializada entregue junto da leitura. Se o grupo do Perfil preferir outra leitura, a assinatura das RPCs de leitura e o ponto de ajuste.",
+      "chave_de_composicao": "nenhuma neste grupo; principal-chat-sistema liga Acompanhar/Seguidores/Seguindo no Perfil consumindo follow_summary/follow_set/follow_following_list",
+      "commit": "873cb9aee",
+      "acoes_afetadas": "principal_profile (grupo principal-chat); em acessos-pessoas, people.create/people.links passam a gerar o acompanhamento automatico ao cadastrar crianca com vinculos"
     }
   ],
   "TESTES_P_F": "flutter test (auth scope, sanitizacao, safety, platform_users) 290 P / 8 F antes das regravacoes; as 5 falhas de golden eram pre-existentes em dev (conferido com o escopo de auth de origin/dev) e foram regravadas; as 3 de composicao sao testes obsoletos das chaves ligadas (fora do recorte, repassado). Rerun apos regravacao pendente.",
@@ -102,6 +108,10 @@
     "acao": "nao vou tocar o composto sem o dono (Fase 0/coordenador); registro por tela"
   },
   "PACOTES_PRONTOS": "AP-P7 171000 (pgTAP 20/20) — o coordenador informou que esta no preflight do espelho dele junto com a ponte 220400.",
+  "ordem_do_owner_00h15": "nao parar por nada ate a entrega (~04:00), usar o maximo de subagentes e rtk. Dois subagentes abertos as 00:20: rota real Pessoas/Perfis/Modelos (Chrome 9412) e Convites criar/detalhe/reenviar/revogar (Chrome 9413).",
+  "CORRECAO_DA_REV_98": "o 'Acesso nao autorizado' de Usuarios internos no fluxo login->navegacao NAO reproduz no build release (2 tentativas: tela abre vazia e honesta); ocorreu 2x so no build debug (DDC, mais lento). Fica como pendencia de code review nao bloqueante: o repositorio invalida a revisao de cache a cada notificacao da sessao e trata a resposta em voo como 'unauthorized' (supabase_platform_user_repository.dart _requireCurrentCache + auth scope session.addListener(clearSessionCache)).",
+  "AMBIENTE_DE_PROVA_ATUALIZADO": "o /invites/new 'em branco' era o CanvasKit sem GPU no Chrome dirigido por CDP (erro de shader no console); com --use-angle=swiftshader a tela renderiza normalmente. Nao e defeito da tela. ui.sh agora parametrizado por CDP_PORT com chrome_open/login_qa/go/shot para os subagentes.",
+  "LOTE_10": "recebido do coordenador (23:24): P7 e ponte de ator (220400) em producao; qa-r03 passa a ter ator no realm de pessoas. Rerun de Pessoas/Perfis/Modelos em curso pelo subagente.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
