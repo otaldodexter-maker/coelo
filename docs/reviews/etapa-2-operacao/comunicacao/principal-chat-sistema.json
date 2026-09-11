@@ -1,6 +1,6 @@
 {
-  "revision": 18,
-  "updated_at": "2026-09-11T08:33:00-03:00",
+  "revision": 20,
+  "updated_at": "2026-09-11T08:35:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code), sessao coelo-11 (renomeada coelo-f9 apos novo reinicio das sessoes)",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
   "base": "origin/dev 0376a0446 (worktree avancada por rebase; nada da branch ficou fora de dev)",
-  "head": "87fb238d7",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 87fb238d7",
-  "status": "VALIDACAO DE ENTREGA (08:30 de 11/09, ordem do Owner): branch inteira em origin/dev; 8 pacotes (190300..191000) aplicados e movidos para migrations/; rev 17 + handoff integrados; rastreadores refletem os deltas aceitos; perguntas P23/P26/P27/P28/P35/P37 registradas. Esta revisao consolida a mini-revisao no formato pedido, reconcilia pendencias que ficaram velhas e entrega o delta das tres skills (aplicado nesta branch) para o coordenador integrar.",
+  "head": "ebcec86f3",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em ebcec86f3",
+  "status": "FECHADO. Duas sessoes do grupo (coelo-b7 e a irma que gravou as revs 18 dcee6e7ca e 19 b0b7237db) fizeram a validacao de entrega em paralelo na MESMA worktree; a rev 18 de coelo-b7 (c25e0abe3) rebaixou o numero e o status da rev 19 sem querer. Esta rev 20 reconcilia: mantem as chaves da rev 19 (validacao_entrega_0830, mini_revisao_final_0850, ferramentas, skills_deltas) e as de coelo-b7 (mini_revisao_final, skills_delta_proposto). Nada do grupo esta fora de origin; coordenador coelo-04 nao consta no ListAgents, entrega pelo Git.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -88,7 +88,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Parado por ordem do Owner (validacao concluida). Proxima rodada: P35 -> rota real do Principal; Criar grupo pela UI por semantica; CRUD de Cardapios; goldens de Perfil/galeria.",
+  "next_step": "Parado por ordem do Owner. Recomendacao: manter UMA sessao por grupo/worktree; a proxima rodada parte de P35 (contexto do Principal), Criar grupo pela UI por semantica, CRUD de Cardapios e goldens de Perfil/galeria.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -413,7 +413,7 @@
     "pergunta_owner": "P35 (contexto da pessoa de servico) registrada pelo coordenador",
     "ambiente": "Chrome 9409, servidor 3009 e dart encerrados"
   },
-  "skills_deltas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (proposta; o coordenador aplica nas skills coelo-frontend, coelo-backend e coelo-frontend-backend)",
+  "skills_deltas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (secoes 1-3: proposta da sessao irma; secao 4: complementos de coelo-b7 JA APLICADOS nas tres SKILL.md nesta branch, commit da rev 20)",
   "ferramentas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/ (cdp_sem, cdp_net, cdp_eval, cdp_console, cdp_close, serve.py, qa.sh, README; sem credencial)",
   "mini_revisao_final_0850": {
     "sha_final_publicado": "dcee6e7ca em origin/work/etapa2-r04-principal-chat-sistema (rev 18 + ferramentas + skills-deltas-r04.md); este commit da rev 19 vem em seguida. Em origin/dev ate 889e289a8 (coordenacao rev 30)",
@@ -510,7 +510,7 @@
   "mini_revisao_final": {
     "quando": "2026-09-11T08:33:00-03:00",
     "para": "coordenador coelo-04 (nao listado no ListAgents desta sessao coelo-b7; gravado no JSON e publicado por Git, como o Owner mandou)",
-    "sha_publicado": "87fb238d7 (branch work/etapa2-r04-principal-chat-sistema; tudo anterior a 889e289a8 ja esta em origin/dev 0376a0446)",
+    "sha_publicado": "ebcec86f3 (rev 20; c25e0abe3 e b0b7237db abaixo dele)",
     "fechado_por_action_id_com_prova": [
       "auth.login, auth.logout: verified-e2e (login/Sair pela tela real com qa-r03, reload; capturas 00-14)",
       "shell.load, shell.navigate, shell.reload, shell.unauthorized: frontend verified (rota real; launcher Decisao 7 corrigido 7322260c5/1e34eb9f4/dcfcb9e41; shell 124/124)",
@@ -544,7 +544,7 @@
     ]
   },
   "skills_delta_proposto": {
-    "documento": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-delta-r04.md",
+    "documento": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/skills-deltas-r04.md (secao 4)",
     "aplicado_nesta_branch": [
       ".agents/skills/coelo-supabase/SKILL.md",
       ".agents/skills/coelo-flutter-review/SKILL.md",

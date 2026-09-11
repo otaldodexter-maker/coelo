@@ -226,3 +226,33 @@ antes da ponte.
 Provas exaustivas por ação (ADR 0034: sessões concorrentes, ID adulterado por
 tela, auditoria com retry, golden por estado); coletor de órfãos do R2; Stream
 HOT do Agora; revisão dos grants CRUD de `authenticated`.
+
+## 4. Complementos da sessão coelo-b7 (08:30–09:00) e aplicação nas skills
+
+Os itens abaixo não estavam nas seções 1 a 3 e foram **aplicados** nas três
+`SKILL.md` na branch do grupo (commit da rev 20), para o coordenador integrar
+em `dev` junto com o restante deste documento:
+
+- **Back-end.** Presença do nome não prova o corpo: para migration que só faz
+  `create or replace function`, a aplicabilidade se decide comparando
+  `pg_get_functiondef` em produção com o texto esperado (caso do feed misto do
+  Acontece, 1/1 no mapa e sem `can_withdraw` em produção). Padrão de mídia
+  nova no modelo de Circulares (default `r2`, bucket por MIME, chave opaca,
+  `NOT VALID` condicionado ao legado, `finalize` sem `storage.objects` no R2,
+  descritor com `storage_provider`, sem bucket novo). Causa raiz do `anon`
+  (privilégio padrão do Supabase) e as 12 funções invoker que restam. pgTAP:
+  aspas duplas viram identificador e derrubam o arquivo; asserções por
+  substring de `pg_get_functiondef` quebram a cada hardening; helper
+  `pg_temp` security definer para ler ids antes de trocar de papel. Pendência 1
+  do token R2 marcada como feita (`happens-media` e `now-media` no lote 9).
+- **Front-end.** D3 sem "prévia"; ao estender uma interface de repositório,
+  `flutter analyze test` lista os fakes a completar no mesmo commit; Momentos
+  por largura (tela cheia até 768, moldura a partir de 840, aside a partir de
+  1200, mídia `contain`); diálogo dependente de dados de produção não se dirige
+  por coordenadas.
+- **Front-end + Back-end.** `localhost` x `127.0.0.1` na mesma porta; negativa
+  cross-tenant pela própria RPC de produção como prova; E2E que depende de
+  fixture de outro grupo registra o que criou e entra na limpeza (P37).
+- Dados sintéticos desta frente em produção: conversa
+  `355a3403-26bf-4f0c-9f76-9c0ba0bb04f6` na instituição `9f04…0010` com uma
+  mensagem revogada e duas vivas (uma editada).
