@@ -266,4 +266,11 @@ comment on function public.superadmin_create_scoped_activity_template(
 
 notify pgrst, 'reload schema';
 
+-- Candidato de estrutura (R04, 11/09/2026), recarimbo de 20260901165125 sobre a baseline.
+-- Producao concede ALL a anon/authenticated em public.activity_templates por privilegio
+-- padrao do schema public (mesmo achado de activity_locations no lote 5). O cliente nunca
+-- le a tabela direto, so por RPC; a escrita passa por funcoes security definer. Fica so o
+-- SELECT de authenticated, que a politica de leitura ja governa.
+revoke all on table public.activity_templates from public, anon;
+revoke insert, update, delete, truncate, references, trigger on table public.activity_templates from authenticated;
 commit;
