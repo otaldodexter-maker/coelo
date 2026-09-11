@@ -11,6 +11,7 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import '../../core/qa/superadmin_qa_hooks.dart';
 import '../../core/guards/superadmin_session.dart';
 import '../../core/config/superadmin_media_scope.dart';
 import '../../core/config/superadmin_app_config.dart';
@@ -3314,7 +3315,8 @@ GoRouter createSuperadminRouter({
                 // auditor so le. A capacidade vem do contexto autorizado, nunca
                 // do botao (Decisao 12: tudo mediante perfis e permissoes).
                 final canRead = codes.contains('platform.member.read');
-                final canManage = canRead &&
+                final canManage =
+                    canRead &&
                     codes.contains('platform.member.update') &&
                     codes.contains('platform.member.suspend');
                 return PlatformUserDirectoryPage(
@@ -3356,7 +3358,9 @@ GoRouter createSuperadminRouter({
               }
               final id = state.pathParameters['internalUserId']!;
               return PlatformUserFormPage(
-                key: ValueKey('internal-user-edit-$id-${session.authorizationInvalidationRevision}'),
+                key: ValueKey(
+                  'internal-user-edit-$id-${session.authorizationInvalidationRevision}',
+                ),
                 repository: repository,
                 internalUserId: id,
                 capability: PlatformUserCapability.owner,
@@ -3386,7 +3390,8 @@ GoRouter createSuperadminRouter({
                 }
                 final codes = session.authContext?.permissionCodes ?? const <String>{};
                 final canRead = codes.contains('platform.member.read');
-                final canManage = canRead &&
+                final canManage =
+                    canRead &&
                     codes.contains('platform.member.update') &&
                     codes.contains('platform.member.suspend');
                 return PlatformUserDetailPage(
@@ -3454,7 +3459,8 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.personEdit,
             name: SuperadminRoutes.personEditName,
-            builder: (context, state) => !hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
+            builder: (context, state) =>
+                !hasAuthoritativeMutationCapability(SuperadminRoutes.personEdit)
                 ? blockedProductionMutationPage(context)
                 : PersonEditRoutePage(
                     personId: state.pathParameters['personId']!,
@@ -5728,6 +5734,7 @@ GoRouter createSuperadminRouter({
               child: ProductionCircularComposerHost(
                 repository: circularRepository,
                 institutionRepository: institutionDirectoryRepository,
+                filePicker: SuperadminQaHooks.circularFilePicker,
                 onCancel: () => context.goNamed(SuperadminRoutes.circularsName),
                 onDone: () => _returnToCircularsRefreshed(context),
               ),
@@ -5785,6 +5792,7 @@ GoRouter createSuperadminRouter({
                 child: ProductionCircularComposerHost(
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
+                  filePicker: SuperadminQaHooks.circularFilePicker,
                   circularId: circularId,
                   onCancel: () => context.goNamed(
                     SuperadminRoutes.circularDetailName,
@@ -6334,10 +6342,8 @@ void _closePrincipalViewer(BuildContext context) {
 
 /// Volta ao diretorio de Circulares forcando releitura: o extra (inteiro,
 /// serializavel no historico do navegador) muda a chave do host.
-void _returnToCircularsRefreshed(BuildContext context) => context.goNamed(
-  SuperadminRoutes.circularsName,
-  extra: DateTime.now().millisecondsSinceEpoch,
-);
+void _returnToCircularsRefreshed(BuildContext context) =>
+    context.goNamed(SuperadminRoutes.circularsName, extra: DateTime.now().millisecondsSinceEpoch);
 
 void _returnFromCircularReader(BuildContext context, {required String fallbackRouteName}) {
   if (context.canPop()) {
