@@ -1,15 +1,15 @@
 {
-  "revision": 14,
+  "revision": 15,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "4219b810f",
+  "head": "a63e80eec (rebaseado em origin/dev 836c63215)",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-10T22:40:00-03:00",
+  "updatedAt": "2026-09-10T22:26:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -58,15 +58,16 @@
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
     "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador)."
   },
-  "firstGate": "Circulares: rota normal com sessao qa-r03 (diretorio, criar, agendar inline, encerrar, excluir) depende de o coordenador aplicar 200100+200200 em producao; enquanto isso, Agenda (composto + readers) no cliente.",
-  "status": "pacotes-avisos-circulares-verdes-no-descartavel; prova limpa em execucao",
+  "firstGate": "Cliente: Agenda de eventos e Comunicacoes no composto CoeloAdminDirectory (_EventTable na allowlist do teste de arquitetura) e rota normal; rota real de Circulares/Avisos/Agenda com qa-r03 depende de o coordenador aplicar 200000-200300.",
+  "status": "quatro pacotes verdes no descartavel (prova limpa 117/117); cliente em seguida",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
     "superadmin_agenda_list_v2/get_v2/contexts_v2 (SupabaseAgendaReadRepository) não existem em produção e não estão compostos no app; o app usa SupabaseAgendaRepository (v1) que existe em produção.",
     "20260909191100 (métricas por geração) depende de colunas de 220500 (publication_job_id) ausentes em produção: fica fora até existir worker; sem regressão (reach conta todos os recibos).",
     "Teste historico superadmin_internal_circular_delete_v1_test era so estrutural (strings em pg_get_functiondef) e nao pegava a violacao de circulars_check1 ao excluir rascunho; o comportamental novo pega.",
-    "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal."
+    "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
+    "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento)."
   ],
   "packages": [
     {
@@ -131,6 +132,28 @@
       ],
       "compositionKey": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
       "sha": "4219b810f"
+    },
+    {
+      "order": 4,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200300_agenda_internal_realm_compat_v1.sql",
+      "actionIds": [
+        "agenda.view",
+        "agenda.create",
+        "agenda.detail",
+        "agenda.edit",
+        "agenda.request",
+        "agenda.permissions",
+        "agenda.location"
+      ],
+      "pgtap": "supabase/tests/agenda_internal_realm_compat_v1_test.sql 22/22 (Owner interno cria/edita/publica/relê; content le e nao cria; identidade escopada em instituicao negada; pessoa sem membership negada; contexto de unidade fora do tenant recusado; trigger roteia ator; grants fechados)",
+      "fixes": [
+        "RPCs de producao sao people-based (current_person_id + FKs para people): colunas *_internal_identity_id + trigger de roteamento + agenda_actor_id/agenda_has_permission + assert_agenda_permission; 7 RPCs recriadas do texto de producao trocando so has_platform_permission -> agenda_has_permission (has_platform_permission intocado: e do grupo acessos-pessoas/P7)",
+        "superadmin_agenda_contexts inclui instituicoes do membership interno",
+        "producao NAO tinha nenhuma concessao de agenda.* a papel algum: concede read a owner/content/operations e o resto ao owner",
+        "SEGURANCA (baseline): anon/authenticated tinham SELECT/INSERT nas 5 tabelas agenda_* e PUBLIC tinha EXECUTE nas 7 RPCs; o pacote revoga e concede so a authenticated"
+      ],
+      "compositionKey": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
+      "sha": "a63e80eec"
     }
   ],
   "compositionKeys": [
@@ -143,20 +166,17 @@
     }
   ],
   "tests": {
-    "passed": 95,
+    "passed": 117,
     "failed": 0,
     "blocked": 0,
     "skipped": 0,
     "evidence": [
-      "notices_v2_baseline 38/38",
-      "circulars_v2_baseline 32/32",
-      "circular_delete_v1 10/10",
-      "circular_delete_v2_behavior 15/15",
-      "prova limpa (db reset+seed+44+3) em execucao as 22:40; resultado na revisao seguinte"
+      "prova limpa 22:23: db reset + seed + 46 migrations/ (inclui 220300 e 230021) + 4 candidatos + 5 pgTAP = 117/117",
+      "historicos superadmin_agenda_production_test (row_security_active nao existe em PG17) e superadmin_agenda_contexts_test (units.institution_type_id; literal de proconfig) falham pela forma de producao, nao pelo pacote: pendencia de reescrita"
     ]
   },
   "blocked": "nenhum",
-  "next": "Agenda: compatibilizar contexto interno (superadmin_agenda_* v1 em producao usa assert_agenda_permission; conferir com realm interno), composto CoeloAdminDirectory em Agenda de eventos e Comunicacoes, rota normal.",
+  "next": "apps/superadmin: Agenda de eventos + Comunicacoes no composto; flutter test das familias; goldens conforme listas do Owner.",
   "changes": [],
   "pendingForCoordinator": [
     {
@@ -189,6 +209,18 @@
         "notices.publish"
       ],
       "pending": "20260909191100 (metricas por geracao) fica fora: depende de colunas de 20260820220500 ausentes em producao; sem worker nao ha geracoes."
+    },
+    {
+      "actionIds": [
+        "agenda.view",
+        "agenda.create",
+        "agenda.detail",
+        "agenda.edit",
+        "agenda.request",
+        "agenda.permissions",
+        "agenda.location"
+      ],
+      "pending": "aplicar 20260910200300 depois de 200200 (independente dos anteriores, mas na ordem da faixa); avisar acessos-pessoas: agenda_has_permission chama has_platform_permission, entao o P7 (membership por instituicao) se propaga sem conflito; membership interno escopado em instituicao continua sem Agenda (deny-by-default, decisao registrada)."
     }
   ],
   "proposedDeltas": [],
@@ -473,5 +505,65 @@
         "reason": "ligar somente após migration aplicada e gateway verificado"
       }
     ]
-  }
+  },
+  "pacotesProntos": [
+    {
+      "ordem": 1,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200000_superadmin_internal_notices_v2_baseline.sql",
+      "pgtap": "supabase/tests/superadmin_internal_notices_v2_baseline_test.sql 38/38 PASS (descartavel coelo_baseline_pa, 22:20)",
+      "actionIds": [
+        "notices.list",
+        "notices.create",
+        "notices.edit",
+        "notices.schedule",
+        "notices.publish",
+        "notices.archive"
+      ],
+      "chave": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
+      "sha": "a5251ed7d"
+    },
+    {
+      "ordem": 2,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200100_superadmin_internal_circulars_v2_baseline.sql",
+      "pgtap": "supabase/tests/superadmin_internal_circulars_v2_baseline_test.sql 32/32 PASS (inclui negativa cross-tenant, identidade escopada e revogada)",
+      "actionIds": [
+        "circulars.list",
+        "circulars.filter",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.detail",
+        "circulars.schedule",
+        "circulars.publish",
+        "circulars.close"
+      ],
+      "chave": "nenhuma (gateway ja composto)",
+      "sha": "28a2e1dd4"
+    },
+    {
+      "ordem": 3,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200200_superadmin_internal_circular_delete_v2.sql",
+      "pgtap": "superadmin_internal_circular_delete_v1_test.sql 10/10 (estrutural) + superadmin_internal_circular_delete_v2_behavior_test.sql 15/15 (persistencia, idempotencia, conflito, negativa de escopo, auditoria)",
+      "actionIds": [
+        "circulars.delete"
+      ],
+      "chave": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
+      "sha": "4219b810f"
+    },
+    {
+      "ordem": 4,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200300_agenda_internal_realm_compat_v1.sql",
+      "pgtap": "supabase/tests/agenda_internal_realm_compat_v1_test.sql 22/22 (Owner interno cria/edita/publica/relê; content le e nao cria; identidade escopada em instituicao negada; pessoa sem membership negada; contexto de unidade fora do tenant recusado; trigger roteia ator; grants fechados)",
+      "actionIds": [
+        "agenda.view",
+        "agenda.create",
+        "agenda.detail",
+        "agenda.edit",
+        "agenda.request",
+        "agenda.permissions",
+        "agenda.location"
+      ],
+      "chave": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
+      "sha": "a63e80eec"
+    }
+  ]
 }
