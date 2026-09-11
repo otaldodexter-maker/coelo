@@ -1,7 +1,7 @@
 {
-  "revision": 101,
-  "updated_at": "2026-09-11T05:06:15.154Z",
-  "relogio_local": "Fri Sep 11 2026 02:06:15 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 102,
+  "updated_at": "2026-09-11T05:13:53.219Z",
+  "relogio_local": "Fri Sep 11 2026 02:13:53 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "732354e72 (publicado)",
+  "head": "ver git log da branch (commit das correcoes de composicao publicado apos 7e56626bd)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "ligar onOpen/onCreate/onEdit de Pessoas no router de producao + capacidade de mutacao para /people; prova de Convites (contexto/destinatario/entrega/revisao); esperar o subagente do 171300; JSON as 03:00",
+  "proximo_passo": "esperar 171300 do subagente (pacotesProntos), handoff da R04 em docs/reviews/evidence/etapa-2/r04-acessos-pessoas/, deltas FE/BE/E2E por action_id na mini-revisao das 04:00",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -139,6 +139,28 @@
     "child-safety.*": "com a ponte, o repositorio legado responde leitura e escrita (REST 200 em directory/get/search com a crianca sintetica); composicao revertida ao legado em e17b0ee84; prova na UI depende de build novo"
   },
   "AMBIENTE": "1 Chrome (porta 9411, SwiftShader), build web de 22:55 servido por Node em :3000; Docker de volta; descartavel coelo_acessos religado (container preservado).",
+  "ROTA_NORMAL_03h00_por_action_id": {
+    "internal-users.list": "P: /internal-users lista 'QA R04 Sintetico' (perfil semeado pelo 171200 em producao, lote 14); busca, filtros Perfil/Vinculo/Alcance, toggle, Arquivos; reload mantem (9411-r-iu-list.png). Sem card Criar: rota de criar bloqueada e sem RPC de criacao em producao.",
+    "internal-users.detail (parte de list/edit)": "P: detalhe abre com identidade/contato mascarados (9411-r-invite-perfil2.png, captura intercalada) — mas em modo 'somente leitura' porque o router de producao dava capability auditor a todo leitor; corrigido no commit desta revisao (owner quando o contexto tem platform.member.update+suspend). Prova de editar/suspender depende de build novo.",
+    "internal-users.create": "N: rota internalUserCreate e blockedProductionMutationPage e nao existe RPC de criacao em producao (so update/change_status). Gate BE: pacote de criacao de usuario interno (identidade + auth user via Edge Function) — fora do MVP salvo decisao.",
+    "invites.list": "P (rota, vazio honesto, card Criar).",
+    "invites.create": "F (gate de dados): o passo Contexto e perfil lista contextos (2 instituicoes e 1 unidade sinteticas) mas superadmin_invite_options_v2 devolve profiles=[] porque producao tem 0 institution_roles (nenhum modelo de sistema semeado). Sem perfil o convite nao avanca. Desbloqueio: criar um perfil Admin (institution role) em Perfis e permissoes > Admin, que por sua vez depende do catalogo 171300; ou semear modelos de sistema de institution_roles (decisao de produto: quais papeis padrao).",
+    "invites.detail/resend/revoke": "N ate existir convite (dependem de invites.create).",
+    "people.list": "P (dados reais, 9411-r-people.png).",
+    "people.create/people.edit": "composicao ligada neste commit; people.create ainda passa pelo PersonIdentityLookupGate com UnavailablePersonIdentityRepository (nao existe implementacao Supabase nem RPC de resolucao de identidade) — vai mostrar indisponibilidade honesta; people.edit abre o formulario com superadmin_people_update. Prova depende de build novo.",
+    "people.links/people.reload": "N na UI: diretorio sem callback para o detalhe (so onEdit); backend superadmin_person_detail_v2 responde. Pendencia FE: abrir /people/:id a partir do card.",
+    "access-profiles.list": "P (9411-r-profiles.png).",
+    "access-profiles.create/edit e access-models.*": "F: superadmin_access_permission_catalog ausente em producao (PGRST202). Pacote 171300 em preparacao por subagente.",
+    "child-safety.list": "backend legado responde com a ponte; composicao revertida ao legado (e17b0ee84); prova na UI depende de build novo (o build servido e o de 22:55, v2 somente leitura, que abre a tela vazia).",
+    "profile-files.*": "P (adiados e honestos): botao Arquivos visivel em Pessoas, Usuarios internos, Perfis, Convites e Seguranca; sem picker/parser/job/RPC (conferido no codigo: person_file_actions.dart e platform_user_file_actions.dart nao chamam repositorio)."
+  },
+  "PENDENCIAS_DE_CODE_REVIEW_REGISTRADAS": [
+    "supabase_platform_user_repository: invalidacao de cache por notificacao de sessao trata resposta em voo como 'unauthorized' (reproduz so em debug).",
+    "Router: capability de Usuarios internos derivada de codigos de permissao no cliente; o servidor continua autoridade (RPCs internas exigem platform.member.*).",
+    "Convites: sem perfis institucionais em producao, o formulario deixa avancar? (nao: Continuar habilitado sem perfil selecionado — verificar validacao do passo 1).",
+    "Testes obsoletos em test/core/config (repassado ao coordenador)."
+  ],
+  "MEMORIA": "1,1 GB livres; flutter analyze e build web adiados; um Chrome (9411). O coordenador valida analyze na base conjunta.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
