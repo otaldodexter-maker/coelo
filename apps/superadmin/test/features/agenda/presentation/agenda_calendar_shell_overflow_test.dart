@@ -17,43 +17,39 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   for (final brightness in [Brightness.light, Brightness.dark]) {
     testWidgets(
-      'calendario no shell a 375 nao transborda em ${brightness.name} '
-      '(aberto: altura da celula insuficiente, aguarda decisao visual)',
+      'calendario no shell a 375 nao transborda em ${brightness.name}',
       (tester) async {
-      await tester.binding.setSurfaceSize(const Size(375, 900));
-      addTearDown(() => tester.binding.setSurfaceSize(null));
-      final session = SuperadminSession()..signInForTesting();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        allowDevelopmentPreview: true,
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
+        await tester.binding.setSurfaceSize(const Size(375, 900));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final session = SuperadminSession()..signInForTesting();
+        final router = createSuperadminRouter(
+          session: session,
+          login: unavailableSuperadminLogin,
+          logout: unavailableSuperadminLogout,
+          requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+          allowDevelopmentPreview: true,
+          onThemeModeChanged: (_) {},
+        );
+        addTearDown(router.dispose);
+        addTearDown(session.dispose);
 
-      router.go('/dev/agenda');
-      await tester.pumpWidget(
-        MaterialApp.router(
-          theme: brightness == Brightness.dark ? CoeloTheme.dark : CoeloTheme.light,
-          routerConfig: router,
-        ),
-      );
-      await tester.pumpAndSettle();
+        router.go('/dev/agenda');
+        await tester.pumpWidget(
+          MaterialApp.router(
+            theme: brightness == Brightness.dark ? CoeloTheme.dark : CoeloTheme.light,
+            routerConfig: router,
+          ),
+        );
+        await tester.pumpAndSettle();
 
-      expect(tester.takeException(), isNull);
+        expect(tester.takeException(), isNull);
       },
-      // Defeito aberto e reproduzido por este caso. A celula de dia tem 39,6 de
-      // altura dentro do shell a 375 e transborda 4,4 pixels em dez celulas,
-      // mais 42 em uma. Reduzir as marcas de duas para uma, estendendo a
-      // condicao largeText que a tela ja usa, foi MEDIDO e nao resolve: nem o
-      // numero do dia com uma marca cabe. Fechar exige mudar a geometria da
-      // celula, que e contrato visual com baseline aprovada. Marcado como skip
-      // com o motivo no nome para que a suite reporte S em vez de vermelho
-      // permanente, seguindo o mesmo tratamento dos goldens 409.
-      skip: true,
+      // Fechado em 11/09/2026 pela decisao do Owner de 10/09
+      // (agenda_calendar_light_375, A: "retangulos muito amassados"): em
+      // largura compacta a celula mostra o numero do dia e marcas em linha,
+      // e a largura compacta passou a ser medida pelo LayoutBuilder da pagina
+      // (dentro do shell o MediaQuery nao refletia os 375). Antes, a celula
+      // tinha 39,6 de altura e transbordava 4,4 px em dez celulas e 42 em uma.
     );
   }
 }
