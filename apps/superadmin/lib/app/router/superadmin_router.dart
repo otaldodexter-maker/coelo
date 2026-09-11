@@ -205,6 +205,7 @@ import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/data/forms_directory_reader.dart';
+import '../../features/forms/data/forms_editor_context.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
@@ -2604,6 +2605,11 @@ GoRouter createSuperadminRouter({
               child: FormsDirectoryPage(
                 api: null,
                 reader: formsDirectoryReader,
+                // F-R04-FCR-010a: o card Criar nunca aparecia em producao porque
+                // dependia do contexto do realm de pessoas, que o reader interno
+                // nao consulta. A rota /forms/new ja abre e o servidor nega ao
+                // salvar quem nao tem forms.manage.
+                canManage: true,
                 onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
                 onOpen: (form) => context.goNamed(
                   SuperadminRoutes.formOverviewName,
@@ -2660,6 +2666,20 @@ GoRouter createSuperadminRouter({
                     SuperadminRoutes.formFilesName,
                     pathParameters: {'formId': formId},
                   ),
+                  // Distribuir (publico + agendamento) e o unico caminho
+                  // produtivo que gera ocorrencias; sem ele monitor, responder
+                  // e respostas nunca tem o que mostrar. O dialogo so oferece
+                  // ids devolvidos por RPCs autorizadas e o servidor revalida.
+                  onDistribute: formsApi is FormsEditorContextApi
+                      ? (reload) => showFormsProductionScheduleDialog(
+                          context: context,
+                          api: formsApi!,
+                          contextApi: formsApi as FormsEditorContextApi,
+                          formId: formId,
+                          formTitle: 'formulário',
+                          onSaved: reload,
+                        )
+                      : null,
                 ),
               );
             },
@@ -2717,10 +2737,23 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formRespond,
             name: SuperadminRoutes.formRespondName,
+            // F-R04-FCR-010b: a rota montava a pagina de resposta sem api
+            // nem ocorrencia, entao responder era sempre "indisponivel" em
+            // producao. A pagina produtiva ja le a ocorrencia pela projecao
+            // autorizada (form_get_occurrence_for_response) e o servidor
+            // decide se a resposta pode ser aberta, salva ou enviada.
             builder: (context, state) => formsShell(
               title: 'Responder formulário',
               subtitle: 'Retome, revise e envie uma resposta.',
-              child: const FormResponsePage(),
+              child: withFormsAuthorization(
+                () => FormResponsePage(
+                  key: ValueKey(
+                    'respond-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  api: formsApi,
+                  occurrenceId: state.pathParameters['occurrenceId'],
+                ),
+              ),
             ),
           ),
           GoRoute(

@@ -65,9 +65,13 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   int _contextGeneration = 0;
   FormsEditorContext? _authorizedContext;
 
+  // O card Criar aparece sempre que a composicao o oferece (Owner, estado
+  // vazio; ADR 0034): a tela so pede, e o servidor revalida forms.manage ao
+  // salvar o rascunho. O contexto autorizado do realm de pessoas continua
+  // sendo consultado apenas sem o reader interno, que e exclusivo.
   bool get _canManage =>
-      widget.reader == null &&
-      (widget.canManage ||
+      widget.canManage ||
+      (widget.reader == null &&
           (_authorizedContext?.institutions.any((institution) => institution.canManageForms) ??
               false));
   bool get _canManageLifecycle =>
