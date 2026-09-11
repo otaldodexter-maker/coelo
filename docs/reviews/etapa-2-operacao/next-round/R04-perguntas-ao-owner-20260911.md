@@ -157,6 +157,18 @@ valor. **B:** você mesmo roda os comandos do passo 1 no seu PowerShell e me
 avisa; eu faço os passos 2 e 3. Até lá, publicar imediato funciona e
 agendado fica enfileirado sem executar.
 
+## P31 — Papéis padrão de instituição para Convites (acessos-pessoas)
+
+Produção tem 0 `institution_roles` (nenhum modelo de sistema semeado), então
+`superadmin_invite_options_v2` devolve `profiles=[]` e nenhum convite passa
+do passo 1. Decisão de produto: quais papéis padrão de instituição existem no
+MVP? Proposta: semear por migration idempotente os modelos de sistema
+"Administrador da instituição", "Coordenação", "Professor(a)" e
+"Secretaria", cada um com o conjunto mínimo de capacidades de instituição já
+catalogadas (o grupo lista as capacidades por papel no JSON). Alternativa:
+criar um perfil Admin pela tela de Modelos (depende do catálogo 171300, em
+curso). Recomendação: semear os quatro modelos e permitir editar pela tela.
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote
