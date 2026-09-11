@@ -1,5 +1,4 @@
 -- Prova do candidato 20260911170200_follow_links_safeupdate_fix_v1.
--- Reproduz a sessao do PostgREST (pg_safeupdate carregado): antes da correcao,
 -- Reproduz a sessao do PostgREST (pg_safeupdate carregado): rodar como supabase_admin
 -- (psql -U supabase_admin), porque supautils nega 'load' ao postgres comum. Antes da
 -- correcao, inserir vinculo de unidade/turma de crianca falha com 21000.
