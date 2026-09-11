@@ -287,15 +287,44 @@ export async function handleFormMediaRequest(
   const url = dependencies.envGet("SUPABASE_URL") ?? "";
   const anon = dependencies.envGet("SUPABASE_ANON_KEY") ?? "";
   const service = serviceKey(dependencies);
-  const authorization = request.headers.get("authorization") ?? "";
-  if (!url || !anon || !service || !authorization.startsWith("Bearer ")) {
-    return response(origin, 401, { error: "unauthorized" });
-  }
   let body: FormMediaEnvelope;
   try {
     body = await readFormMediaEnvelope(request);
   } catch {
     return response(origin, 400, { error: "invalid_request" });
+  }
+  if (body.action === "expire") {
+    // Cron (Vault forms_media_worker_secret) -> expira pendentes e apaga no R2 o
+    // que a fila de limpeza entregar; sem JWT de usuario.
+    const secret = dependencies.envGet("FORMS_MEDIA_WORKER_SECRET") ?? "";
+    if (!url || !service || !secret || request.headers.get("x-worker-secret") !== secret) {
+      return response(origin, 401, { error: "unauthorized" });
+    }
+    try {
+      const serviceClient = dependencies.createClient(url, service, { auth: { persistSession: false } });
+      const expired = await serviceClient.rpc("form_media_expire_question_r2_v1", { p_limit: 100 });
+      const claimed = await serviceClient.rpc("form_media_claim_cleanup_r2_v1", { p_limit: 50 });
+      if (expired.error || claimed.error) throw new Error("expire_failed");
+      const items = (unwrapEnvelope(claimed.data).items ?? []) as Record<string, unknown>[];
+      let purged = 0;
+      for (const item of items) {
+        const writer = r2Writer(dependencies, String(item.bucket));
+        await writer.delete(String(item.object_key));
+        const marked = await serviceClient.rpc("form_media_mark_purged_r2_v1", { p_cleanup_id: item.cleanup_id });
+        if (marked.error) throw new Error("expire_failed");
+        purged++;
+      }
+      return response(origin, 200, {
+        expired: unwrapEnvelope(expired.data).expired ?? 0,
+        purged,
+      });
+    } catch {
+      return response(origin, 400, { error: "media_request_failed" });
+    }
+  }
+  const authorization = request.headers.get("authorization") ?? "";
+  if (!url || !anon || !service || !authorization.startsWith("Bearer ")) {
+    return response(origin, 401, { error: "unauthorized" });
   }
   try {
     const userClient = dependencies.createClient(url, anon, {

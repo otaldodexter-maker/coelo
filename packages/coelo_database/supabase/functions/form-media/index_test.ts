@@ -793,3 +793,36 @@ Deno.test("question_resolve e question_delete passam pelas RPCs internas", async
   assertEquals(deleted.status, 200);
   assertEquals(harness.calls, ["superadmin_form_media_resolve_v2", "superadmin_form_media_delete_v2"]);
 });
+
+Deno.test("expire exige o segredo do worker, expira pendentes e apaga a fila no R2", async () => {
+  const calls: string[] = [];
+  const r2: string[] = [];
+  const client = {
+    rpc: (name: string) => {
+      calls.push(name);
+      if (name === "form_media_expire_question_r2_v1") return Promise.resolve({ data: { ok: true, data: { expired: 2 } } });
+      if (name === "form_media_claim_cleanup_r2_v1") {
+        return Promise.resolve({ data: { ok: true, data: { items: [{ cleanup_id: id, bucket: "coelo-media-prod", object_key: questionKey }] } } });
+      }
+      if (name === "form_media_mark_purged_r2_v1") return Promise.resolve({ data: { ok: true, data: { purged: true } } });
+      throw new Error(`unexpected rpc ${name}`);
+    },
+  };
+  const dependencies: FormMediaDependencies = {
+    envGet: (key) => ({ ...r2Environment, FORMS_MEDIA_WORKER_SECRET: "synthetic-worker-secret" })[key],
+    createClient: (() => client) as unknown as FormMediaDependencies["createClient"],
+    createR2Writer: () => ({
+      presignPut: () => Promise.reject(new Error("no")), presignGet: () => Promise.reject(new Error("no")),
+      head: () => Promise.reject(new Error("no")), get: () => Promise.reject(new Error("no")),
+      delete: (key: string) => { r2.push(`delete:${key}`); return Promise.resolve(); },
+    }) as never,
+  };
+  const denied = await handleFormMediaRequest(new Request("https://gateway.example.test", { method: "POST", body: JSON.stringify({ action: "expire" }) }), dependencies);
+  assertEquals(denied.status, 401);
+  const ok = await handleFormMediaRequest(new Request("https://gateway.example.test", { method: "POST",
+    headers: { "x-worker-secret": "synthetic-worker-secret" }, body: JSON.stringify({ action: "expire" }) }), dependencies);
+  assertEquals(ok.status, 200);
+  assertEquals(await ok.json(), { expired: 2, purged: 1 });
+  assertEquals(calls, ["form_media_expire_question_r2_v1", "form_media_claim_cleanup_r2_v1", "form_media_mark_purged_r2_v1"]);
+  assertEquals(r2, [`delete:${questionKey}`]);
+});

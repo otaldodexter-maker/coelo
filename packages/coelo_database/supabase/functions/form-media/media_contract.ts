@@ -55,6 +55,7 @@ export type FormMediaRead = {
 
 export type FormMediaEnvelope =
   | { action: "read"; payload: FormMediaRead }
+  | { action: "expire" }
   | { action: "question_prepare"; request_id: string; payload: QuestionPrepare }
   | {
     action: "question_finalize" | "question_resolve" | "question_delete";
@@ -119,6 +120,12 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
     throw new Error("invalid_envelope");
   }
   const data = value as Record<string, unknown>;
+  if (data.action === "expire") {
+    if (Object.keys(data).some((key) => key !== "action")) {
+      throw new Error("invalid_envelope");
+    }
+    return { action: "expire" };
+  }
   if (data.action === "read") {
     if (
       Object.keys(data).some((key) => key !== "action" && key !== "payload")
