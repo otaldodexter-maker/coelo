@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 55,
+ "revision": 57,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T20:01:00-03:00",
+ "updatedAt": "2026-09-11T20:58:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
  "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
  "branch": "work/etapa2-r06-estrutura",
- "head": "0434548b9 + merge de origin/dev fcdded416 (lote 49)",
+ "head": "102a80b58 + este commit (handoff)",
  "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
   "abertura": "2026-09-11T19:36:45-03:00",
@@ -154,7 +154,7 @@
   {
    "n": 1,
    "item": "@ no cliente de Unidades, Turmas e Atividades: handle no payload dos RPCs v2 de criacao (211100) e acao Alterar @ na edicao com superadmin_structure_handle_set_v1 (trava de 30 dias com mensagem honesta); prova na rota real",
-   "estado": "CLIENTE FEITO (0434548b9, analyze limpo, test/features/units 179/179): Unidades: Identificador = @ (regex do @ sem hifen, tolerante ao valor legado), handle no payload do create_unit_for_superadmin, Alterar @ por set_v1; Turmas: campo Identificador (@) novo na etapa Identidade com disponibilidade enquanto digita, handle no payload do superadmin_group_save na criacao, Alterar @; Atividades: definition.handle no save_v2 so na criacao + Alterar @ no controller/secao. FALTA: pacote SQL (save_v2 aceitar definition.handle na criacao; group_management_payload devolver handle/handle_last_changed_at para a edicao mostrar o @ atual), testes de widget de Turmas/Atividades para o @, prova na rota real com qa-r06-estrutura",
+   "estado": "FECHADO na rota real com qa-r06-estrutura (capturas em evidence/etapa-2/r06-estrutura/rota-real/): Unidades: Identificador mostra o @ atual, \"Alterar @\" trocou para @centro.r04estrutura por set_v1 em producao, segunda troca negada com a mensagem honesta \"O @ so pode ser alterado uma vez a cada 30 dias.\", reload mantem; Turmas: campo Identificador (@) novo na Identidade com disponibilidade enquanto digita, turma \"Turma R06 Arroba\" criada com @arroba.centro.r06 (handle no payload do group_save), \"Alterar @\" -> @arroba.r06.centro, reload mantem; Atividades: \"Alterar @\" -> @estrutura-r06 (set_v1 kind=activity). Pacote SQL 20260912180000_structure_handles_client_v1 em candidatos/estrutura (save_v2 aceita definition.handle na criacao; group_management_payload devolve handle): pgTAP 9/9 + regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33 no espelho coelo_estrutura_r06 (baseline + 197 lotes). LIMITES: criacao de atividade com @ escolhido pelo cliente so funciona depois de o coordenador aplicar o pacote (ate la o servidor recusa a chave e o formulario mostra a falha honesta); o campo \"@ da atividade\" abre vazio na edicao porque o detail_v2 do cliente nao expoe handle_stem (pendencia de code review da R05).",
    "action_ids": [
     "units.create",
     "units.edit",
@@ -167,12 +167,12 @@
   {
    "n": 2,
    "item": "groups.list, groups.members, groups.location; units.list/error/access-denied",
-   "estado": "pendente"
+   "estado": "PARCIAL: units.list e groups.list provados na rota real com qa-r06-estrutura (deltas BE done + E2E). groups.members, groups.location, units.error e units.access-denied nao alcancados."
   },
   {
    "n": 3,
    "item": "Avaliacoes: pacote em candidatos/estrutura com vinculo profissional do qa-r06-estrutura numa turma sintetica; provar assessments.entry/gradebook/close/reopen/detail e activities.assessment/publish (P36)",
-   "estado": "pendente"
+   "estado": "GATE ENCONTRADO, sem pacote: nao e vinculo profissional (context_options lista os activity_group_links ativos; o Owner de plataforma ja ve a atribuicao Escola R04 Estrutura / Unidade Centro R04 / Turma R05 Estrutura / Atividade R05 Estrutura em /assessments/entry). O gate e \"Nenhum periodo avaliativo\": periodos nascem de superadmin_assessment_save_configuration + activate_configuration (activities.assessment). Pela tela: Salvar rascunho com avaliacao habilitada falha antes do HTTP (_supportsAggregateSave exige enabled=false; mensagem enganosa \"Confira a conexao\"); a rota /activities/:id/assessment-settings abre \"Nao foi possivel carregar\" (configuration_read a inspecionar). Primeiro gate: corrigir a tela de configuracao avaliativa e provar salvar+ativar; depois assessments.*"
   },
   {
    "n": 4,
@@ -182,45 +182,74 @@
   {
    "n": 5,
    "item": "9 goldens de activity_golden_test pre-existentes: causa nas imagens de falha; regravar so por regra transversal aprovada",
-   "estado": "pendente"
+   "estado": "ANALISADO, nada regravado: 31 imagens em 9 testes. Diretorio: so a pilula do chat (\"Mens.\" truncado na referencia vs \"Mensagens\" inteiro) - regravar quando o coordenador confirmar que o launcher atual e o aprovado; formularios e detalhe 375: cabecalho mobile (MENU-M retido), sem balao (Decisao 7) e etapas 1 de 4 -> 1 de 6 - ficam retidos."
   },
   {
    "n": 6,
    "item": "institutions.status/files/error/access-denied",
-   "estado": "pendente"
+   "estado": "nao iniciado"
   }
  ],
- "primeiroGate": "pacote SQL 2026091218xxxx em candidatos/estrutura (save_v2 + group_management_payload) ainda nao escrito; rota real ainda nao iniciada",
+ "primeiroGate": "pacote 20260912180000_structure_handles_client_v1 aguarda aplicacao pelo coordenador; Avaliacoes: tela de configuracao avaliativa nao carrega em producao (configuration_read)",
  "criteriosFechados": [
   "Plumbing StructureHandleSetter (auth scope -> main -> app -> router -> UnitFormPage/GroupFormPage/ActivityFormPage) com SupabaseStructureHandleAvailability.set -> superadmin_structure_handle_set_v1; codigos SAI_HANDLE_COOLDOWN/TAKEN/INVALID_ARGUMENT/CONCURRENT_CHANGE viram mensagens honestas (StructureHandleChange.message)",
-  "unit_form_page_test: dois testes reescritos para a regra nova (hifen recusado; edicao mostra @ e Alterar @ chama set_v1 com kind/id/versao e trata taken/changed)"
+  "unit_form_page_test: dois testes reescritos para a regra nova (hifen recusado; edicao mostra @ e Alterar @ chama set_v1 com kind/id/versao e trata taken/changed)",
+  "Rota real do @ (Unidades, Turmas, Atividades) com o usuario sintetico da rodada; 13 capturas em evidence/etapa-2/r06-estrutura/rota-real/",
+  "Pacote structure_handles_client_v1 verde (9/9) e regressao vizinha verde no espelho R06"
  ],
  "testes": {
-  "P": "flutter analyze lib limpo; test/features/units 179/179; test/features/groups verde; test/features/activities verde exceto os 9 goldens pre-existentes (item 5)",
-  "F": "9 activity_golden_test (pre-existentes, base tambem falha)",
+  "P": "flutter analyze lib limpo; test/features/units 179/179; groups e activities verdes exceto os 9 goldens pre-existentes; pgTAP: novo 9/9, save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33",
+  "F": "9 activity_golden_test (pre-existentes; item 5 ainda nao analisado)",
   "B": 0,
   "S": 0,
   "U": 0,
-  "evidencia": "commit 0434548b9"
+  "evidencia": "commits 0434548b9, 9c14eddeb"
  },
- "pacotesProntos": [],
- "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json (a criar)",
+ "pacotesProntos": [
+  {
+   "carimbo": "20260912180000_structure_handles_client_v1",
+   "origem": "candidatos/estrutura, sobre 180110 + 211100 + 180000",
+   "mudanca": "superadmin_activity_save_v2 aceita definition.handle na criacao (repassa ao create_v2) e recusa troca na edicao com ACTIVITY_INVALID_INPUT; app_private.group_management_payload devolve handle e handle_last_changed_at",
+   "pgTAP": "supabase/tests/structure_handles_client_v1_test.sql 9/9; regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33",
+   "estado": "verde no espelho coelo_estrutura_r06 (baseline + 197 lotes da ordem real); commit 9c14eddeb publicado; sem chave de composicao a ligar"
+  }
+ ],
+ "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json: 16 entradas; ensaio apply + validate PASS (E2E 105 -> 107, BE done 132 -> 134), revertido",
  "pedidosAoCoordenador": [
-  "ACK da rev 54/55"
+  "Aplicar candidatos/estrutura/20260912180000_structure_handles_client_v1.sql (pgTAP verde; sem ALTER TYPE)",
+  "Aplicar os 16 deltas de deltas-r06-estrutura.json",
+  "Integrar work/etapa2-r06-estrutura (0434548b9 codigo, 9c14eddeb candidato, docs)"
  ],
  "avisosParaOutrosGrupos": [],
  "perguntasParaOOwner": [],
- "pendenciasDeCodeReview": [],
+ "pendenciasDeCodeReview": [
+  "Campo \"@ da atividade\" abre vazio na edicao: mapear handle_stem do detail_v2 no cliente (ActivityDetail item.handleStem vem nulo); Alterar @ funciona mesmo assim",
+  "Taps do Flutter Driver web (tap por Key/texto) falham de forma intermitente em botoes logo apos digitar num campo; clique por coordenada via CDP resolve. Registrar na skill coelo-frontend",
+  "Ao usar enter_text do driver, o texto vai para o campo focado no momento: em 20:10 a senha do qa-r06-estrutura foi digitada no campo de e-mail e apareceu numa captura temporaria (apagada, nao versionada). Tratar como credencial exposta: rotacionar a senha de qa-r06-estrutura@coelo.me no fim da rodada (roteiro na skill coelo-backend: painel Supabase -> Authentication -> Users -> reset password, ou Admin API; gravar so em Coelo-backups/qa-r06-estrutura.env)",
+  "save_v2: codigo de recusa da troca de @ na edicao e ACTIVITY_INVALID_INPUT porque activity_v2_normalize_error tem lista fechada; se quiser SAI_HANDLE_USE_SET como em Turmas, incluir na lista (funcao compartilhada, pos-MVP)"
+ ],
  "bloqueio": null,
  "wip": {
   "estado": "nenhum"
  },
  "recursos": {
-  "processos": [],
-  "portas": [],
-  "encerramento": ""
+  "processos": [
+   "Chrome CDP 9571 (user-data-dir coelo-chrome-estrutura)",
+   "node serve.js 3001 (tarefa em segundo plano)",
+   "espelho docker coelo_estrutura_r06 (61722)"
+  ],
+  "portas": [
+   9571,
+   3001,
+   61721,
+   61722
+  ],
+  "encerramento": "pendente (fecho no fim da rodada)"
  },
  "ack": null,
- "proximoPasso": "escrever candidatos/estrutura/20260912180000_structure_handles_client_v1.sql (save_v2 definition.handle na criacao; SAI_HANDLE_USE_SET na edicao; group_management_payload com handle) + pgTAP; depois build qa_main e rota real do @ com qa-r06-estrutura",
- "estado": "em andamento"
+ "proximoPasso": "ate 21:36: capturar o envelope de superadmin_assessment_configuration_read na rota real e, se for parser, corrigir; senao registrar; 21:36 responder a revisao de 10 min",
+ "estado": "em andamento",
+ "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26). R06: groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro, Escola R04 Estrutura / Unidade Centro R04); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 11/09 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42).",
+ "chavesCriadas": "nenhuma",
+ "handoff": "docs/reviews/evidence/etapa-2/r06-estrutura/handoff.md"
 }
