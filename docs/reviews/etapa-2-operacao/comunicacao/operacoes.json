@@ -1,13 +1,13 @@
 {
-  "revision": 29,
-  "updated_at": "2026-09-11T14:28:00-03:00",
+  "revision": 30,
+  "updated_at": "2026-09-11T14:36:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "7b644fa07 (+ este commit)",
+  "head": "3471321a5 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -256,6 +256,28 @@
       "status": "pendencia de responsaveis fechada na rota real (pacote 200100 em producao)",
       "delta": "R05 (11/09 14:25, rota real com qa-r03, pacote 20260911200100 em producao): Responsaveis deixam de ser lista fixa: superadmin_support_team_members 200 lista a equipe real (pessoas de servico da ponte + Owner), Responsaveis -> Operador interno 41462594 -> superadmin_support_set_assignee 200; reload e reabertura do chamado mostram o responsavel persistido (superadmin_support_get 200 com assignee_membership_id). pgTAP superadmin_support_assignees_v1_test 28/28. Pendencia 'Responsaveis sao prototipo (defaultTeamMembers, sem RPC)' fechada.",
       "proof": "capturas 80-84; RPCs superadmin_support_team_members/set_assignee/get 200"
+    },
+    {
+      "action_ids": [
+        "imports.list",
+        "imports.create",
+        "imports.upload",
+        "imports.preview",
+        "imports.confirm",
+        "imports.status",
+        "imports.download"
+      ],
+      "status": "diretorio migrado ao composto (local-green; adiamento honesto mantido)",
+      "commits": [
+        "3471321a5"
+      ],
+      "changed": [
+        "apps/superadmin/lib/features/imports/presentation/import_directory_page.dart",
+        "apps/superadmin/test/features/imports/import_directory_page_test.dart",
+        "apps/superadmin/test/features/imports/goldens/import_hub_* (13 regravados)"
+      ],
+      "delta": "ImportDirectoryPage deixa de declarar CoeloAdminListingToolbar/ResizableTable/Pagination proprias e passa ao CoeloAdminDirectory: busca, filtros Entidade/Arquivo, Limpar filtros, Arquivos honestos (Importar, Exportar CSV/XLSX: Disponivel depois do MVP), Criar (Nova importacao: Disponivel depois do MVP sem picker/parser/job), toggle cards/tabela, cards, tabela, paginacao por cursor; estados vazio/sem resultados/falha/nao autorizado/adiado do composto. Regra do Owner (estado vazio mantem busca, filtros, toggle, Arquivos e card Criar) atendida. Pendencia 'ImportDirectoryPage fora do composto' fechada. Aberto: o harness de golden de Importacoes ainda renderiza sem a shell (FUNDO/MENU da decisao import_hub_wizard_light_375=R): os goldens regravados nao valem como aprovacao visual; pagina R/A ao Owner na proxima rodada.",
+      "proof": "flutter test test/features/imports test/architecture 38/38 (+1 skip pre-existente); goldens regravados no SDK 3.44.2; captura na rota real apos o rebuild (pendente)"
     }
   ],
   "tests": {
@@ -346,7 +368,10 @@
     "36474dc92",
     "ca040ba49 (pacote + lookups seguros)",
     "44c556630",
-    "7b644fa07"
+    "7b644fa07",
+    "2a5fe6fbd",
+    "78283f81b (merge)",
+    "3471321a5"
   ],
   "r04_history": {
     "revision": 20,
@@ -946,11 +971,6 @@
       "o_que": "parser do cliente exige as 13 chaves de entitlements e DateTime.parse(starts_at) com starts_at nulavel em institution_subscriptions: plano criado fora do cliente ou assinatura sem data quebraria a tela com Resposta de planos invalida (achado do subagente)."
     },
     {
-      "action_id": "imports.list",
-      "tipo": "composto",
-      "o_que": "ImportDirectoryPage ainda declara CoeloAdminListingToolbar/ResizableTable/Pagination proprios (fora do CoeloAdminDirectory); sem toggle cards/tabela nem abas no vazio. Familia adiada (ADR 0034); migrar ao composto na revisao profunda."
-    },
-    {
       "action_id": "plans.create",
       "tipo": "residuo-sintetico",
       "o_que": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (code r05-qa-plano-teste, nome [R05-QA] Plano de teste editado, 2 recibos em plan_change_receipts) fica em producao; sem RPC de exclusao (arquivar existe). Limpeza no fim da Etapa 2 (P42)."
@@ -964,6 +984,11 @@
       "action_id": "support.close",
       "tipo": "fechada",
       "o_que": "Responsaveis de lista fixa sem RPC: fechada (pacote 200100 + cliente 36474dc92/ca040ba49); a antiga chamada antes da sessao (401 em /login) tambem fechada em 13be50ae8."
+    },
+    {
+      "action_id": "imports.list",
+      "tipo": "golden-harness",
+      "o_que": "import_hub_golden_test monta a pagina em Scaffold avulso (sem SuperadminShell): FUNDO cinza e sem cabecalho, contra a decisao R do Owner para import_hub_wizard_light_375. Migrar o harness para a shell (como Planos) e regravar com pagina R/A."
     }
   ],
   "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
