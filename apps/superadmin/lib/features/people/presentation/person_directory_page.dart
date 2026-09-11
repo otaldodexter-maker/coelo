@@ -20,6 +20,7 @@ final class PersonDirectoryPage extends StatefulWidget {
     required this.logout,
     this.onCreate,
     this.onEdit,
+    this.onOpen,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -33,6 +34,9 @@ final class PersonDirectoryPage extends StatefulWidget {
   final LogoutAction logout;
   final VoidCallback? onCreate;
   final ValueChanged<String>? onEdit;
+
+  /// Abre o detalhe (vinculos) da pessoa; sem ele, o card abre o editor.
+  final ValueChanged<String>? onOpen;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
@@ -113,7 +117,7 @@ final class _PersonDirectoryPageState extends State<PersonDirectoryPage> {
           onImport: widget.onImport,
           onExport: widget.onExport,
           onCreate: widget.onCreate,
-          onEdit: widget.onEdit,
+          onEdit: widget.onOpen ?? widget.onEdit,
           onFooterHeightChanged: (height) {
             if ((_paginationFooterHeight - height).abs() < .5) return;
             setState(() => _paginationFooterHeight = height);
