@@ -10,7 +10,9 @@ import '../domain/activity_command.dart';
 import '../domain/activity_directory.dart';
 
 /// Production mutations stay closed unless one Flutter command maps to one
-/// approved internal transaction. Template creation has that equivalence.
+/// approved internal transaction. Template creation and the aggregate draft
+/// save (create and edit through `superadmin_activity_save_v2`) have that
+/// equivalence; publishing is still closed on the client.
 final class SupabaseActivityCommandRepository implements ActivityCommandRepository {
   const SupabaseActivityCommandRepository(
     this._client, {
@@ -28,7 +30,11 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
   Future<ActivitySaveResult> save(ActivitySaveCommand command) async {
     if (!_supportsAggregateSave(command)) return _unavailable();
     if (command.locationSelection != null || command.reservation != null) {
-      if (!activityLocationCreateAvailable || command.locationSelection == null) {
+      // O comando atomico com local catalogado so existe para a criacao: a
+      // RPC nao recebe p_activity_id nem p_expected_version.
+      if (!activityLocationCreateAvailable ||
+          command.locationSelection == null ||
+          command.activityId != null) {
         return _unavailable();
       }
       return _saveWithCataloguedLocation(command);
@@ -51,24 +57,31 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
       final activityId = data['activity_id'];
       final managementVersion = data['management_version'];
       final statusValue = data['status'];
+      final expectedActivityId = command.activityId?.trim().toLowerCase();
       if (activityId is! String ||
           activityId.trim().isEmpty ||
-          (command.activityId != null && activityId != command.activityId) ||
+          (expectedActivityId != null && activityId.toLowerCase() != expectedActivityId) ||
           managementVersion is! int ||
           managementVersion < 1 ||
+          // Toda edicao aceita incrementa a versao ao menos uma vez; uma
+          // resposta na versao esperada ou abaixo dela nao descreve este save.
+          (expectedActivityId != null && managementVersion <= command.expectedVersion) ||
           statusValue is! String) {
         throw const ActivityCommandUnavailableException();
       }
       final status = ActivityStatus.values
           .where((item) => item.databaseValue == statusValue)
           .firstOrNull;
-      if (status == null || status != ActivityStatus.draft) {
+      // A criacao de rascunho devolve `draft`. A edicao devolve o status
+      // corrente, que o servidor nao altera sem p_publish: um rascunho segue
+      // rascunho e uma atividade ativa segue ativa.
+      if (status == null || (expectedActivityId == null && status != ActivityStatus.draft)) {
         throw const ActivityCommandUnavailableException();
       }
       return ActivitySaveResult(
         activityId: activityId,
         managementVersion: managementVersion,
-        status: ActivityStatus.draft,
+        status: status,
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
@@ -262,11 +275,23 @@ Map<String, dynamic> _atomicMap(Object? value, Set<String> keys) {
 
 Never _invalidAtomic() => throw const ActivityCommandUnavailableException();
 
+/// Recorte que o cliente sabe mapear para `superadmin_activity_save_v2`.
+///
+/// A criacao envia `p_activity_id` nulo com versao 0; a edicao envia o id com
+/// a versao corrente (>= 1), que o servidor compara e rejeita com
+/// `SAI_CONCURRENT_CHANGE` quando obsoleta. A instituicao viaja no mesmo
+/// payload nos dois casos e o servidor recusa troca-la numa edicao
+/// (`ACTIVITY_INVALID_REFERENCE`). Publicar fica fechado:
+/// `superadmin_activity_publish_v2` exige status `draft` e o formulario de
+/// edicao envia `publish` sem saber o status corrente.
 bool _supportsAggregateSave(ActivitySaveCommand command) {
   final pedagogical = command.pedagogicalConfiguration;
+  final activityId = command.activityId;
+  final versionMatchesTarget = activityId == null
+      ? command.expectedVersion == 0
+      : activityId.trim().isNotEmpty && command.expectedVersion >= 1;
   return command.intent == ActivityCommandIntent.saveDraft &&
-      command.activityId == null &&
-      command.expectedVersion == 0 &&
+      versionMatchesTarget &&
       command.governance == ActivityGovernance.optional &&
       command.templateId == null &&
       command.unitId == null &&
