@@ -122,6 +122,14 @@ Duplicar aparece como ícone no card **e** como item no menu do card, ou só com
 ícone. Recomendação: ícone no card e item no menu (o menu é o caminho
 acessível por teclado e leitor de tela; o ícone é o atalho).
 
+## P28 — Foto do Perfil do Principal recortada (principal-chat-sistema)
+
+A frente montou a página lado a lado em
+`docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/perfil-foto/` para
+você apontar qual foto do Perfil está recortada de forma errada (capa, brasão
+ou avatar) e qual enquadramento vale. Resposta em lista "arquivo - decisão,
+observação".
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote

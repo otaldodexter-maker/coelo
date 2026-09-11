@@ -387,7 +387,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       // OQ-032/OQ-043: these CRUD repositories still target the legacy
       // people-based realm. Keep production mutations fail-closed until the
       // internal v2 directory and command gateways exist.
-      structureMutationsEnabled: false,
+      structureMutationsEnabled: true,
       importRepository: const UnavailableImportRepository(),
       planCatalogRepository: SupabasePlanCatalogRepository(client),
       agendaRepository: SupabaseAgendaRepository(client),

@@ -20,15 +20,15 @@
       "family": "auth",
       "screen": "Auth / Login",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: geometria aprovada do controle de sessão restaurada sem alterar goldens;386ad474→b8abfd59,21 testes Login PASS na base5908a330. Três goldens históricos resolvidos; browser/provedor permanecem separados. R02: teclado/foco Login e header reduced-motion integrados a1c6a4ba; campanha nominal D01 de 5 casos compartilhados PASS na base e9a582a0. R02 D00: aceite FE completo reconciliado com goldens, teclado, adapter/scope e B4 real de credencial invalida/persistencia off/on apos reload. Browser D01 feb3e3932; HTTP sintetico declarado, sem certificacao do provedor remoto.",
+      "done": "R04 principal-chat-sistema rev 12 (77fa469a9): rota real abre, sessao em producao, reload mantem; credencial invalida coberta na R02. Capturas em evidence/etapa-2/r04-principal-chat-sistema/rota-real.",
       "fe": "Aceite Front-end verificado no recorte Auth; reabrir somente por regressao ou mudanca material. R02 D00: aceite FE completo reconciliado com goldens, teclado, adapter/scope e B4 real de credencial invalida/persistencia off/on apos reload. Browser D01 feb3e3932; HTTP sintetico declarado, sem certificacao do provedor remoto.",
-      "be": "Pacote Auth R02 de duas migrations preparado e qualificado localmente: 36 TAP + 9 HTTP + 1 cold; AuthProof 6 PASS e transporte CLI/ledger 2 PASS em planos separados. O rascunho I021 da R01 foi superado pela entrega local, sem aplicação remota. Atomicidade DDL/ledger comprovada por arquivo, não entre as duas migrations. Restam autorização nominal, credenciais, preflight fresco, aplicação e provas do provedor: personas, SMTP, redirect, token, senha, revogação e negativas A/B. AAL1 permanece válido no MVP.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/identidade-acessos/r02-d01-20260909/browser-b4-static-receipt.md; evidence/etapa-2/identidade-acessos/r02-d01-20260909/acceptance-manifest.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md",
+      "be": "R04 principal-chat-sistema rev 12: sem pacote SQL proprio; Supabase Auth (login por senha, logout) e superadmin.auth.bootstrap (require_superadmin_internal_context) provados em producao com a sessao qa-r03: login HTTP 200, Sair confirmado, reload sem sessao volta ao login. R04 principal-chat-sistema rev 12: login por senha em producao com qa-r03 provado (HTTP 200, sessao AAL1); sem SQL proprio.",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/identidade-acessos/r02-d01-20260909/browser-b4-static-receipt.md; evidence/etapa-2/identidade-acessos/r02-d01-20260909/acceptance-manifest.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "verified",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T15:49:54.589050-03:00",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -46,6 +46,18 @@
           "revision": "437a973cb3e9a34dd33c85ab440477bf3562da1d; B4 feb3e3932; AMR 9e7e23f18",
           "environment": "Local Flutter/Chrome with synthetic HTTP for B4; SDK/scope composition with simulated failed storage and real disposable Supabase for cold; prior scoped FE proofs reconciled",
           "recordedAt": "2026-09-09T15:49:54.589050-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release em 127.0.0.1:3000",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt: Supabase Auth + superadmin.auth.bootstrap com a sessao qa-r03",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       },
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
@@ -131,15 +143,15 @@
       "family": "auth",
       "screen": "Auth / Sair",
       "scope": "mvp",
-      "done": "Guards, recovery confinado, single-flight e limpeza de sessão integrados. Lifecycle Auth local registrado; não implica SMTP ou token remoto comprovado. C01I017 integrado90de1968/f7230db9; Error contido e resultado seguro, senha confirmada/cleanupfalho diferenciados, sessão nova preservada. C00122testes PASS/analyzer6limpo. R02 D01: retorno ao login mostra falha de revogação e mantém recuperação confinada; db1ade40 integrado bf04a9a6, 14 recovery PASS na base conjunta588d38eb. R02 D00: aceite Front-end de Sair no recorte Auth reconciliado com composicao anterior e quatro casos B4, incluindo Sair confirmado seguido de reload sem sessao. auth.logout e o ID selecionado D01; account.logout existe separadamente fora do recorte e nao recebe este certificado.",
+      "done": "R04 principal-chat-sistema rev 12: Sair confirmado em producao; reload sem sessao volta ao login (captura 14).",
       "fe": "R02 D00: aceite Front-end de Sair no recorte Auth reconciliado com composicao anterior e quatro casos B4, incluindo Sair confirmado seguido de reload sem sessao. auth.logout e o ID selecionado D01; account.logout existe separadamente fora do recorte e nao recebe este certificado.",
-      "be": "Pacote Auth R02 de duas migrations preparado e qualificado localmente: 36 TAP + 9 HTTP + 1 cold; AuthProof 6 PASS e transporte CLI/ledger 2 PASS em planos separados. O rascunho I021 da R01 foi superado pela entrega local, sem aplicação remota. Atomicidade DDL/ledger comprovada por arquivo, não entre as duas migrations. Restam autorização nominal, credenciais, preflight fresco, aplicação e provas do provedor: personas, SMTP, redirect, token, senha, revogação e negativas A/B. AAL1 permanece válido no MVP.",
-      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json; evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md",
+      "be": "R04 principal-chat-sistema rev 12: sem pacote SQL proprio; Supabase Auth (login por senha, logout) e superadmin.auth.bootstrap (require_superadmin_internal_context) provados em producao com a sessao qa-r03: login HTTP 200, Sair confirmado, reload sem sessao volta ao login. Pacote Auth R02 de duas migrations preparado e qualificado localmente: 36 TAP + 9 HTTP + 1 cold; AuthProof 6 PASS e transporte CLI/ledger 2 PASS em planos separados. O rascunho I021 da R01 foi superado pela entrega local, sem aplicação remota. Atomicidade DDL/ledger comprovada por arquivo, não entre as duas migrations. Restam autorização nominal, credenciais, preflight fresco, aplicação e provas do provedor: personas, SMTP, redirect, token, senha, revogação e negativas A/B. AAL1 permanece válido no MVP.",
+      "evidence": "decisions/0019-superadmin-internal-identity.md; evidence/etapa-2/identidade-acessos/; etapa-2-operacao/reports/R01-delta-2005.md (C06r16/C00fonte); etapa-2-operacao/reports/R01-delta-2005.md (I017integrado122PASS); Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest.json; evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "verified",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T15:54:25.135671-03:00",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -157,6 +169,18 @@
           "revision": "437a973cb3e9a34dd33c85ab440477bf3562da1d; B4 feb3e3932; AMR 9e7e23f18",
           "environment": "Local Flutter/Chrome with synthetic HTTP for B4; SDK/scope composition with simulated failed storage and real disposable Supabase for cold; prior scoped FE proofs reconciled",
           "recordedAt": "2026-09-09T15:49:54.589050-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt: Supabase Auth + superadmin.auth.bootstrap com a sessao qa-r03",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       },
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
@@ -184,32 +208,40 @@
       "family": "shell",
       "screen": "Shell / Carregamento",
       "scope": "flutter-only",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes. R01/16h: Rótulo e ação do toggle mesclados no mesmo nó semântico, C01d4ab599c+5e0e0ae6 integrados3693d180/ec9826f3.",
-      "fe": "R03: um caso nominal por action_id sobre router e sessao reais (test/app/shell/shell_action_ids_test.dart, 5 PASS; 134 PASS em shell/navigation), integrado em dev 3f5934fb5. Gate: rota normal contra producao (P4).",
+      "done": "R04 principal-chat-sistema rev 12: rota real abre com sessao em producao e reload mantem.",
+      "fe": "R04 principal-chat-sistema rev 12: shell na rota real com sessao (5 casos nominais da R03 + captura 01); Pesquisar no menu e botao de Bug; mobile 375 com Bug.",
       "be": "Sem endpoint ou tabela próprios; depende de sessão/contexto. Qualificação local Auth R02 entregue (CLI/ledger 2 PASS); provedor remoto e personas permanecem pendentes. Não herda certificado das quatro ações Auth.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
+      }
     },
     {
       "id": "shell.navigate",
       "family": "shell",
       "screen": "Shell / Navegação",
       "scope": "flutter-only",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "R03: caso nominal em rota real (shell_action_ids_test.dart), integrado em dev 3f5934fb5. Gate: rota normal contra producao (P4).",
+      "done": "R04 principal-chat-sistema rev 12: navegacao entre 9 rotas com sessao em producao.",
+      "fe": "R04 principal-chat-sistema rev 12: 9 rotas do recorte navegadas na sessao real.",
       "be": "Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.navigate); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.navigate); evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.navigate); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.navigate); evidence/etapa-2/r02-d00-integration-20260909/manifest-principal-shell.json; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
@@ -222,6 +254,14 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
       }
     },
     {
@@ -246,34 +286,50 @@
       "family": "shell",
       "screen": "Shell / Acesso negado",
       "scope": "flutter-only",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "R03: caso nominal com controle negativo (com sessao valida o caso falha), integrado em dev 3f5934fb5. Gate: rota normal contra producao (P4).",
+      "done": "R04 principal-chat-sistema rev 12: negativa real do servidor renderizada pelo shell.",
+      "fe": "R04 principal-chat-sistema rev 12: painel honesto de acesso negado na rota real (captura 02).",
       "be": "Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.unauthorized); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.unauthorized); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.unauthorized); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.unauthorized); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
+      }
     },
     {
       "id": "shell.reload",
       "family": "shell",
       "screen": "Shell / Recarregar",
       "scope": "flutter-only",
-      "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "R03: caso nominal em rota real (shell_action_ids_test.dart), integrado em dev 3f5934fb5. Gate: rota normal contra producao (P4).",
+      "done": "R04 principal-chat-sistema rev 12: reload com sessao em producao (captura 10).",
+      "fe": "R04 principal-chat-sistema rev 12: reload mantem sessao e rota (captura 10).",
       "be": "Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.reload); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.reload); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.reload); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.reload); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
+      }
     },
     {
       "id": "institutions.list",
@@ -2423,15 +2479,15 @@
       "family": "chat",
       "screen": "Chat / Conversas",
       "scope": "mvp",
-      "done": "Clientes administrativos existentes. L02 entregou inbox/thread/composer Principal com paginação e envio idempotente na branch 9144f4efb (fechamento 45d92b9c1); /principal-conversations ainda não integrada em dev. Metade administrativa sem verificação completa; nenhuma promoção do ID compartilhado.",
-      "fe": "Inbox exercida pelas DUAS superficies em rota real: /communication/conversations com o repositorio injetado pelo router, e a composicao Principal com paginacao de conversas antigas. Sem repositorio autorizado a rota falha fechada em vez de mostrar inbox vazio. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
+      "done": "R04 principal-chat-sistema rev 12 (77fa469a9): PRIMEIRO E2E da Etapa 2. Rota real abre, grupo criado em producao aparece na inbox, reload mantem, negativa de outro tenant no pgTAP (CHAT_NOT_FOUND) e na RPC. Capturas 20 a 26.",
+      "fe": "R04 principal-chat-sistema rev 12: inbox v2 na rota real com dado de producao (grupo criado pela tela aparece), reload mantem.",
       "be": "R04 realm-interno: cadeia do chat interno v2 reescrita sobre a baseline (240000 contrato, 240100 chat v2, 240300 fixar/bandeira), aplicada em producao no lote 9 (22:25). Prova com qa-r03 em 22:32: inbox, unread, fixar, bandeira e reload com a conversa fixada primeiro (18/18). pgTAP 20/20 + 23/23 + 10/10 com negativa cross-tenant. Aberto: UI ligar SupabaseChatRepository (principal-chat-sistema).",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; comunicacao/principal-chat-sistema.json r7; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
@@ -2454,6 +2510,18 @@
           "revision": "f007c7156",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-10T22:32:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release em 127.0.0.1:3000",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       }
     },
@@ -2462,15 +2530,15 @@
       "family": "chat",
       "screen": "Chat / Abrir conversa",
       "scope": "mvp",
-      "done": "Clientes administrativos existentes. L02 entregou inbox/thread/composer Principal com paginação e envio idempotente na branch 9144f4efb (fechamento 45d92b9c1); /principal-conversations ainda não integrada em dev. Metade administrativa sem verificação completa; nenhuma promoção do ID compartilhado.",
-      "fe": "Abertura de conversa exercida em rota real nas duas superficies: a thread e buscada e a leitura so e marcada depois que o servidor autorizou; vazio autorizado preserva o composer e negacao purga o instantaneo privado. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
+      "done": "R04 principal-chat-sistema rev 12: conversa aberta pela tela real com dado de producao, reload mantem, cross-tenant CHAT_NOT_FOUND.",
+      "fe": "R04 principal-chat-sistema rev 12: conversa abre pela tela real com recibo (captura 22).",
       "be": "R04 realm-interno: superadmin_chat_thread_v2 (240100 + 240200) em producao; prova qa-r03: thread com receipt e can_manage, id inexistente responde CHAT_NOT_FOUND. pgTAP 23/23 + 36/36 (cross-tenant CHAT_NOT_FOUND).",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
@@ -2480,6 +2548,18 @@
           "revision": "f007c7156",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-10T22:32:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       }
     },
@@ -2488,15 +2568,15 @@
       "family": "chat",
       "screen": "Chat / Enviar mensagem",
       "scope": "mvp",
-      "done": "Clientes administrativos existentes. L02 entregou inbox/thread/composer Principal com paginação e envio idempotente na branch 9144f4efb (fechamento 45d92b9c1); /principal-conversations ainda não integrada em dev. Metade administrativa sem verificação completa; nenhuma promoção do ID compartilhado.",
-      "fe": "A reconciliacao da lista passou a ser silenciosa: enviar, editar ou revogar nao troca mais a lista de conversas por um painel de carregamento, e uma falha na reconciliacao mantem a lista valida que o leitor ja tem em vez de virar painel de erro. Negacao continua valendo em qualquer modo.",
+      "done": "R04 principal-chat-sistema rev 12: envio pela tela real persistiu em producao (superadmin_chat_send_message_v2, replay idempotente) e voltou no reload; negativa cross-tenant no pgTAP.",
+      "fe": "R04 principal-chat-sistema rev 12: mensagem enviada PELA TELA persiste e volta no reload (capturas 24-26).",
       "be": "R04 realm-interno: superadmin_chat_send_message_v2 (240100) em producao; prova qa-r03: envio persistido com author_kind=superadmin_internal e replay idempotente; auditoria chat.message.send registrada. pgTAP 23/23.",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; apps/superadmin/test/features/chat/data/supabase_chat_repository_test.dart (mapeamento) + apps/superadmin/test/features/chat/presentation/superadmin_chat_read_only_conflict_test.dart (3 casos, duas superficies); flutter test, Windows local, revisao 9e2a49100, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_older_messages_test.dart, caso \"sending keeps the continuation the server had offered\"; flutter test, Windows local, revisao 0e9bfc4ee, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_read_only_conflict_test.dart, caso \"the reload after a refusal does not swap the conversation under the operator\"; flutter test, Windows local, revisao a68feae79, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_inbox_reconcile_test.dart, caso \"the reconciliation does not blink the conversation list\"; flutter test, Windows local, revisao 7113f836d, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart + apps/superadmin/test/app/router/principal_chat_route_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; apps/superadmin/test/features/chat/data/supabase_chat_repository_test.dart (mapeamento) + apps/superadmin/test/features/chat/presentation/superadmin_chat_read_only_conflict_test.dart (3 casos, duas superficies); flutter test, Windows local, revisao 9e2a49100, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_older_messages_test.dart, caso \"sending keeps the continuation the server had offered\"; flutter test, Windows local, revisao 0e9bfc4ee, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_read_only_conflict_test.dart, caso \"the reload after a refusal does not swap the conversation under the operator\"; flutter test, Windows local, revisao a68feae79, 2026-09-09; apps/superadmin/test/features/chat/presentation/superadmin_chat_inbox_reconcile_test.dart, caso \"the reconciliation does not blink the conversation list\"; flutter test, Windows local, revisao 7113f836d, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
@@ -2506,6 +2586,18 @@
           "revision": "f007c7156",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-10T22:32:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       }
     },
@@ -2592,15 +2684,15 @@
       "family": "chat",
       "screen": "Chat / Recibos",
       "scope": "mvp",
-      "done": "Marcação de leitura histórica existente; L02 entregou projeção de recibos, contrato e UI na branch com prova FE autoral. Integração completa e banco nominal permanecem pendentes.",
-      "fe": "Recibo projetado pelo servidor renderizado nas duas superficies e tambem pela rota real administrativa; ausencia de recibo nao vira nao-lida inventada e envelope malformado falha em vez de degradar em silencio. Coordenacao: local-green e nao verified enquanto os 9 goldens de chat e 3 de notices seguem vermelhos na base, sob decisao de rebaseline pendente do Owner. Mesma barra aplicada a support e a Minha conta.",
+      "done": "R04 principal-chat-sistema rev 12: recibo (leitura) na tela real com dado de producao e reload.",
+      "fe": "R04 principal-chat-sistema rev 12: recibo lido na thread da tela real.",
       "be": "R04 realm-interno: recibo por mensagem projetado na thread (240200) e mark_read persistindo em app_private (240100), em producao; prova qa-r03: receipt/can_manage na thread, mark_read aceito (0 linhas: so mensagem propria na conversa sintetica). pgTAP 36/36.",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final; escrita e leitura têm estados separados; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/chat/presentation/superadmin_chat_receipts_manage_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; packages/coelo_database/migrations (carimbos renomeados por voce para 20260909191000 e 20260909191100); nenhuma aplicacao remota; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final; escrita e leitura têm estados separados; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; apps/superadmin/test/app/router/chat_admin_action_path_test.dart + apps/superadmin/test/features/chat/presentation/superadmin_chat_receipts_manage_test.dart; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; packages/coelo_database/migrations (carimbos renomeados por voce para 20260909191000 e 20260909191100); nenhuma aplicacao remota; flutter test, Windows local, branch work/etapa2-noturna-chat-comunicacoes revisao 51981fdc9, 2026-09-09; coordenacao.json R04 rev 20 (lote9); evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -2618,6 +2710,18 @@
           "revision": "f007c7156",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-10T22:32:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
         }
       }
     },
@@ -3932,12 +4036,12 @@
       "screen": "Importações / Hub",
       "scope": "deferred-post-mvp",
       "done": "Operação real adiada por decisão do Owner (ADR 0032). R01/16h: C0363828681 integrado C0086ba8570: composição produtiva indisponível, capacidades vazias e diretório sem consulta/picker/job inicial.",
-      "fe": "Conformidade da politica de adiamento VERIFICADA por leitura, sem promover a acao. O assistente com FilePicker real nao e alcancavel em producao: a rota SuperadminRoutes.importCreate exige hasAuthoritativeMutationCapability(), chamada sem argumento, que cai no return false final e devolve blockedProductionMutationPage; e a composicao produtiva injeta const UnavailableImportRepository() nos dois pontos. Fail-closed em duas camadas independentes; o picker so vive em /dev/imports/new. Registrado tambem, sem correcao, um RenderFlex overflow real na transicao entre as rotas /dev de importacao.",
+      "fe": "R04 principal-chat-sistema rev 12: hub de importacoes honesto na rota real (captura 07); demais acoes adiadas e honestas.",
       "be": "Operação real fora do MVP. Preservar legado sem executar, remover ou habilitar jobs.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar imports.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar imports.list) R01/16h: C03r13;C00integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar imports.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar imports.list) R01/16h: C03r13;C00integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; apps/superadmin/lib/app/router/superadmin_router.dart linhas 4568-4585 e 576-592; apps/superadmin/lib/core/config/superadmin_auth_scope.dart linhas 376 e 454; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "deferred-post-mvp",
       "integratedStatus": "deferred-post-mvp",
       "lastHandoffRevision": 33,
@@ -3950,6 +4054,14 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
       }
     },
     {
@@ -4542,17 +4654,25 @@
       "screen": "Catálogo / Lista",
       "scope": "mvp",
       "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "Sincronizador executado corretamente contra a linha de base versionada: catalogo DESATUALIZADO com 16 diagnosticos source-example-fingerprint-mismatch, contra os 14 registrados em R01/16h. Nada foi regenerado; apps/catalog/assets/catalog-sync-report.json continua intocado. Fechar exige atualizar os EXEMPLOS das 16 fontes que mudaram, e so entao regenerar o relatorio; a maioria pertence a pacotes compartilhados e dois sao de Formularios, entao a distribuicao por dono e decisao da coordenacao. Registrado tambem que o relatorio versionado subnotifica o usuario: ele declara 1 diagnostico enquanto existem 16, e o app le esse asset para exibir o aviso de catalogo desatualizado.",
+      "fe": "R04 principal-chat-sistema rev 12: catalogo abre na rota real (captura 08) com texto D3 (sem previa).",
       "be": "Conferir a implementação e fechar o aceite backend desta ação: Leitura autorizada; acesso negado; tenant A/B; ID/filtro adulterado; paginação/minimização e ausência de vazamento. R01/16h: N/A proposto pelo executor é específico de Supabase. Hosting/CSP/acesso/publicação ainda exigem avaliação do provedor; a ação continua aplicável ao backend no inventário vigente (223 IDs aplicáveis); proposta antiga de N/A não foi aprovada.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar catalog.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar catalog.list) R01/16h: C03r12;apps/catalog140PASS/1falha de harness, sem mudança nesse app; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar catalog.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar catalog.list) R01/16h: C03r12;apps/catalog140PASS/1falha de harness, sem mudança nesse app; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md; commit 8f438402d; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+          "revision": "77fa469a9",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+          "recordedAt": "2026-09-10T23:10:00-03:00"
+        }
+      }
     },
     {
       "id": "catalog.validate",
@@ -5451,7 +5571,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T01:41:36.767Z",
+  "updatedAt": "2026-09-11T02:20:23.685Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
