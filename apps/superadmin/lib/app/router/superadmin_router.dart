@@ -412,9 +412,6 @@ GoRouter createSuperadminRouter({
           ? null
           : SupportPrototypeController(repository: supportRepository));
   final developmentSupportController = _createDevelopmentSupportController();
-  if (productionSupportController != null) {
-    unawaited(productionSupportController.loadFromRepository());
-  }
   final accountActivities = SuperadminActivityController();
   final productionAccountController = AccountController(
     repository: accountProfileRepository,
@@ -444,7 +441,22 @@ GoRouter createSuperadminRouter({
   );
   var productionPreferencesLoadStarted = productionPreferencesController.loaded;
   unawaited(developmentAccountController.load());
-  unawaited(productionAccountController.load());
+  // Suporte e Perfil so consultam producao com sessao: antes do login as RPCs
+  // respondiam 401 na propria pagina /login (medido na R05). Carrega na
+  // criacao se ja houver sessao e de novo quando a sessao abrir.
+  void loadProductionOperationalData() {
+    if (!session.isAuthenticated) return;
+    if (productionSupportController != null &&
+        productionSupportController.loadState == SupportLoadState.idle) {
+      unawaited(productionSupportController.loadFromRepository());
+    }
+    if (productionAccountController.state.phase == AccountControllerPhase.idle) {
+      unawaited(productionAccountController.load());
+    }
+  }
+
+  loadProductionOperationalData();
+  session.addListener(loadProductionOperationalData);
   unawaited(developmentPreferencesController.load());
   FakeInstitutionDirectoryRepository? cachedInstitutionPreviewRepository;
   FakeInstitutionDirectoryRepository institutionPreviewRepository() =>
