@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 24,
+  "revision": 25,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T13:42-03:00",
+  "updatedAt": "2026-09-11T13:43-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "4c441d9a3 (origin/dev mesclada sem conflito)",
+  "head": "cb9f0d03d",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -197,7 +197,7 @@
   "primeiroGate": "(7) code review R04: 180060 create or replace e sobrecarga de 14 args de audit_append_superadmin_internal (so se sobrar tempo); antes, revisar o pacote 2 contra a producao real via coordenador e escrever handoff",
   "provaLocal": "projeto descartavel coelo_realm_r05 (portas 625xx) em preparacao: baseline + seed + ordem-de-aplicacao-producao.txt via psql do container",
   "testes": {
-    "pgTAP": "166 PASS / 0 FAIL nesta rodada (11 suites novas: + media_expire_dispatch 6, r05_realm_interno_hardening 6)",
+    "pgTAP": "170 PASS / 0 FAIL nesta rodada (12 suites novas)",
     "deno": "chat-media 5/5, image_dimensions 2/2, form-media 38/38"
   },
   "bloqueio": null,
@@ -303,6 +303,16 @@
       "dependeDe": "210300/210800 e deploy de form-media",
       "chaveDeComposicao": "coordenador grava forms_media_worker_url/secret no Vault e FORMS_MEDIA_WORKER_SECRET + COELO_FORMS_MEDIA_PROVIDER=r2 nos secrets de form-media",
       "estado": "pronto"
+    },
+    {
+      "ordem": 11,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911211000_plans_select_for_institution_directory_v1.sql",
+      "assunto": "item 6 da varredura R04: grant SELECT em public.plans para authenticated (a policy plans_platform_read ja existia; RLS forcada decide as linhas) para a view institution_directory deixar de falhar por privilegio em leitura direta; nenhum outro comando",
+      "pgTAP": "supabase/tests/plans_select_for_institution_directory_v1_test.sql 4/4",
+      "commit": "cb9f0d03d",
+      "dependeDe": "nada",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "OPCIONAL: o cliente le por RPC; aplicar se o coordenador concordar com a decisao de code review (alternativa era remover o grant da view)"
     }
   ],
   "pendenciasRegistradas": [
@@ -310,7 +320,8 @@
     "superadmin_internal_chat_groups_v1_test: erro 'activity actor provenance denied' na fixture de atividades, pre-existente no espelho (180020-180080 mudaram a provenance); suite precisa de fixture nova",
     "institution_directory (view) continua sem SELECT em plans para authenticated: leitura direta falha; cliente le por RPC; decisao de code review (grant em plans ou remover grant da view)",
     "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
-    "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)"
+    "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)",
+    "210200: superadmin_chat_attachment_finalize_v1/expire_v1 fazem coalesce(current_setting('request.jwt.claims',true),'')::jsonb; sem claims (nunca via PostgREST) cai em SAI_INTERNAL_ERROR em vez de SAI_PERMISSION_DENIED - falha fechada, corrigir com nullif na revisao profunda"
   ],
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
