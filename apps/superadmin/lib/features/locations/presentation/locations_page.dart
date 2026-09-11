@@ -231,6 +231,9 @@ final class _LocationsPageState extends State<LocationsPage> {
         subtitle: locationScopeLabel(widget.scope),
         currentDestination: widget.currentDestination,
         onDestinationSelected: widget.onDestinationSelected,
+        // Decisao 7: sem balao de chat em criar/editar. Na rota real o balao
+        // cobria o botao Salvar do formulario de local (11/09, R04).
+        showChatLauncher: _directoryOpen,
         actions: [
           if (widget.scope is UnitLocationScope && canBring)
             OutlinedButton.icon(

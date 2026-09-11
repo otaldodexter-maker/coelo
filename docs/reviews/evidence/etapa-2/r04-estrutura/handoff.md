@@ -88,3 +88,30 @@ Instituições lista e filtra contra produção com estado vazio honesto.
 - Worktrees: `e2-r04-estrutura` (branch) e `e2-r04-estrutura-base` (detached,
   só medição; pode ser removida). Projeto descartável
   `coelo_baseline_estrutura` pode ser parado.
+
+## Continuação depois do fechamento (11/09, por ordem do Owner)
+
+Resumo por action_id; o detalhe por revisão está em
+`comunicacao/estrutura.json` (rev 33 a 37) e os deltas em
+`deltas-r04-estrutura-continuacao.json` (8, aplicados) e
+`deltas-r04-estrutura-continuacao-2.json` (13, pendentes de aplicação).
+
+| action_id | Rota real em produção (qa-r03) | Persistência | Negativa (pgTAP no espelho de produção) |
+| --- | --- | --- | --- |
+| `groups.create` / `groups.edit` | criar e renomear turma | `public.groups` 368a5cea | group_detail 33/33, group_location_create 46/46 |
+| `institutions.create` | assistente completo, tipo por nome (180360, lote 24) | `public.institutions` 190dd028 + endereço | institution_create_v2 31/31, institution_detail 25/25 |
+| `units.create` | assistente de 10 etapas, tipo Filial (180320) | `public.units` f5284f2f + endereço/contatos | units_rpcs_versioned 13 RPCs, unit_detail 31/31 |
+| `locations.create-edit` | criar "Sala R04 Estrutura" e editar o andar | `public.activity_locations` 82e92854, versão 2 | location_catalog_v2_authorization 26/26, catalog 30/30, update_status 28/28, isolation 6/6 |
+| `units.list`, `groups.list`, `activities.list`, `locations.list`, `assessments.entry` | leitura e reload | n/a | conforme cada família |
+
+Correções feitas no caminho: `SupabaseLocationConsumerSelectionReader`
+ligado (180150/180200 em produção); cards das unidades na tela de Locais da
+instituição; balão de chat removido do formulário de Locais (Decisão 7, cobria
+Salvar); cliente de Instituições manda o tipo por nome; Unidades lê e explica
+o `@` gerado pelo servidor (o Identificador é o slug e é gravado como
+digitado); fixture da suíte de autorização de Locais corrigida para a forma de
+produção (`unit_type_id`/`handle`).
+
+Dados sintéticos em produção a remover no fechamento (P37): groups 368a5cea,
+institutions 190dd028 (+ endereço), units f5284f2f (+ endereço/contatos),
+activity_locations 82e92854.

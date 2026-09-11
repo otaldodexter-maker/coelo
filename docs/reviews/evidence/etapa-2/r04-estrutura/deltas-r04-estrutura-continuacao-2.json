@@ -1,0 +1,165 @@
+[
+ {
+  "action_id": "groups.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 09:48): /groups/<id>/edit em producao carrega a turma pelo superadmin_group_detail_v2 (180310) com hierarquia e identidade preenchidas; nome alterado para \"Turma QA R04 Estrutura (editada)\" e Salvar turma aceito.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/groups-edit-identidade.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-edit-identidade.jpg",
+   "revision": "estrutura.json rev 34",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: groups-edit-hierarquia.jpg, groups-edit-identidade.jpg",
+   "recordedAt": "2026-09-11T09:49:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_group_save (update) pela ponte de ator; public.groups 368a5cea... renomeada as 12:48:52Z com audit.audit_logs group.update success; leitura por superadmin_group_detail_v2 (180310, 33/33 com negativa cross-tenant).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 34",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt) | provas: supabase db query --linked somente leitura em 11/09 09:49 (public.groups name/updated_at; audit group.update success); pgTAP group_detail 33/33",
+   "recordedAt": "2026-09-11T09:49:00-03:00"
+  }
+ },
+ {
+  "action_id": "groups.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal de edicao abre com dados de producao, a alteracao persiste (nome e updated_at), RLS por pgTAP de group_detail e a lista recarregada mostra o nome novo.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/groups-edit-identidade.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-edit-identidade.jpg",
+   "revision": "estrutura.json rev 34",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: groups-edit-identidade.jpg; public.groups 368a5cea (editada) 12:48:52Z; reload da lista",
+   "recordedAt": "2026-09-11T09:49:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 10:22): assistente /institutions/new em producao, sete etapas (identidade, perfil com tipo Escola digitado, CEP 01001000 resolvido por viacep/IBGE, representante e administradora sinteticas, plano, revisao) e Criar instituicao -> \"Instituicao criada com sucesso\"; diretorio recarregado mostra Escola R04 Estrutura com tipo Escola e Se, Sao Paulo/SP.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/institutions-create-salvo.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/institutions-create-salvo.jpg",
+   "revision": "estrutura.json rev 35",
+   "environment": "producao coelo pelo build release de qa_main (cliente com tipo por nome) com qa-r03@coelo.me | provas: institutions-create-cep.jpg, institutions-create-representante.jpg, institutions-create-revisao.jpg, institutions-create-salvo.jpg, institutions-list-apos-reload.jpg",
+   "recordedAt": "2026-09-11T10:23:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_institution_create_v2 (180340) + tipo por nome (180360, lote 24) em producao; public.institutions 190dd028-3125-452d-8502-612bfa1029de \"Escola R04 Estrutura\" slug qa-r04-escola, draft, tipo Escola, criada 13:22:20Z com audit institution.create success; pgTAP 31/31 inclui negativas de escopo, tipo desconhecido/inativo, handle repetido e replay.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 35",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt), lotes 10-11 e 24 | provas: supabase db query --linked somente leitura em 11/09 10:23 (institutions + institution_types + audit); pgTAP superadmin_internal_institution_create_v2_test 31/31",
+   "recordedAt": "2026-09-11T10:23:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal, CRUD em producao, RLS/escopo por pgTAP (26 negativas) e reload do diretorio e da edicao mantendo a instituicao (regua do MVP). Gap declarado: documento, contato, representantes, administradores e plano nao persistem (so ROOT+ADDRESS+handle+tipo).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/institutions-list-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/institutions-list-apos-reload.jpg",
+   "revision": "estrutura.json rev 35",
+   "environment": "producao coelo pelo build release de qa_main (cliente com tipo por nome) com qa-r03@coelo.me | provas: institutions-create-salvo.jpg; institutions-list-apos-reload.jpg; institutions-edit-carregada.jpg; public.institutions 190dd028",
+   "recordedAt": "2026-09-11T10:23:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.edit",
+  "camada": "frontend",
+  "estado_proposto": "blocked-decision",
+  "delta": "R04 continuacao: /institutions/<id>/edit carrega a instituicao criada (detail_v2 em producao), mas o assistente exige CNPJ, representantes e administradores que a criacao v2 nao persiste; o cliente recusa salvar campos sem contrato (UnsupportedRelation). Editar so fecha quando o realm interno persistir documento/contato/pessoas. Gate: pacote novo de estrutura (institution_contacts_v2), decisao de escopo do Owner.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/institutions-edit-documento-vazio.jpg"
+ },
+ {
+  "action_id": "units.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 10:34): assistente /units/new em producao (identidade herdada de Escola R04 Estrutura, hierarquia com tipo Filial do catalogo 180320, CEP por viacep, plano herdado) e Criar unidade -> lista recarregada mostra Unidade Centro R04 (Se, Sao Paulo/SP, Filial, Essencial).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-create-hierarquia.jpg, units-create-localizacao.jpg, units-create-revisao.jpg, units-list-apos-criar.jpg",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: create_unit_for_superadmin (people-based) pela ponte de ator 220400; public.units f5284f2f-b487-4100-bc0b-ffbcbb7d3db3 \"Unidade Centro R04\" draft, handle normalizado pelo servidor para unidadecentror04_f5284f2f (o identificador com hifens digitado no cliente nao e o gravado: o CHECK de handle nao aceita hifen), audit unit.create success 13:34:01Z; contrato das 13 RPCs em units_rpcs_versioned_from_production_v1_test.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt) | provas: supabase db query --linked somente leitura em 11/09 10:35 (public.units, audit unit.create); pgTAP units_rpcs_versioned_from_production_v1_test (lote 1) e unit_detail 31/31",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal, CRUD em producao, RLS/hierarquia pelas RPCs versionadas e reload mantendo a unidade (regua do MVP). Achado: identificador digitado com hifens vira handle sem hifens + sufixo no servidor; o cliente deveria aceitar ponto/underscore (CHECK) ou mostrar o handle final.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-create-revisao.jpg; units-list-apos-criar.jpg; public.units f5284f2f",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 10:49-10:52): rota normal do catalogo da instituicao 190dd028 em producao com qa-r03 (build release de qa_main + CDP): Criar local -> \"Sala R04 Estrutura\" (interno, andar Terreo) salvo e detalhe aberto; Editar local -> andar \"1o andar\" salvo; detalhe recarregado por Page.navigate mantem os dados. Correcao no caminho: o balao de chat cobria o botao Salvar do formulario (Decisao 7), removido em a276f15a8 com teste.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+   "revision": "estrutura.json rev 37",
+   "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me | provas: locations-create-form.jpg; locations-detail-apos-criar.jpg; locations-edit-form.jpg; locations-detail-apos-reload.jpg",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_location_create_v2 (lote 47) e superadmin_location_update_v2 (lote 48) em producao alcancados pela sessao interna do qa-r03: public.activity_locations 82e92854-8229-4a9d-a890-042e17d669d3 criado 13:49:32Z (audit location.create success) e editado 13:52:08Z (audit location.update success, management_version 2). Negativas medidas no espelho de producao (baseline + 102 lotes): superadmin_location_catalog_v2_authorization_test 26/26 (cross-institution unit is denied; cross-scope and nonexistent ids are indistinguishable; sessao externa nao vira ator interno), catalog_v2 30/30, update_status_v2 28/28, isolation 6/6. A suite de autorizacao tinha fixture com units.institution_type_id (coluna inexistente em producao); corrigida para unit_type_id/handle nesta continuacao.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 37",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt), lotes 46-49 e 81-95 aplicados | provas: supabase db query --linked somente leitura em 11/09 10:52 (public.activity_locations, audit location.create/location.update); pgTAP authorization 26/26, catalog 30/30, update_status 28/28, isolation 6/6 no espelho supabase_db_coelo_baseline_estrutura",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.create-edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal abre, criar e editar persistem em producao, RLS/escopo nega outra instituicao por pgTAP e o reload do detalhe mantem o local (regua do MVP, ADR 0034). Fora desta prova: agenda semanal (locations.schedule), copia Trazer da instituicao e midia do local.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-detail-apos-reload.jpg",
+   "revision": "estrutura.json rev 37",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: locations-create-form.jpg; locations-detail-apos-criar.jpg; locations-edit-form.jpg; locations-detail-apos-reload.jpg; public.activity_locations 82e92854",
+   "recordedAt": "2026-09-11T11:05:00-03:00"
+  }
+ }
+]

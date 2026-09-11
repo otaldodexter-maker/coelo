@@ -1,4 +1,5 @@
 import 'package:coelo_domain/locations.dart';
+import 'package:coelo_superadmin/app/shell/superadmin_shell.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_capabilities.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_writer.dart';
@@ -220,6 +221,21 @@ void main() {
       );
       expect(find.byKey(_status), findsOneWidget);
       expect(find.byKey(_edit), findsNothing, reason: 'the explicit grant is the whole grant');
+    });
+  });
+
+  group('chat launcher (Decisao 7)', () {
+    testWidgets('the directory shows the launcher and the create form hides it', (tester) async {
+      await pump(tester, canCreate: true);
+      expect(tester.widget<SuperadminShell>(find.byType(SuperadminShell)).showChatLauncher, isTrue);
+      await tester.tap(find.byKey(_create));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('locations-form')), findsOneWidget);
+      expect(
+        tester.widget<SuperadminShell>(find.byType(SuperadminShell)).showChatLauncher,
+        isFalse,
+        reason: 'sem balao de chat em criar/editar; ele cobria o botao Salvar na rota real',
+      );
     });
   });
 
