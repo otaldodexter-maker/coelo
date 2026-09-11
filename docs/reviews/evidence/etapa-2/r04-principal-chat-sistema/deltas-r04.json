@@ -1,0 +1,112 @@
+{
+  "grupo": "principal-chat-sistema",
+  "round": "E2-R04-20260911",
+  "revisao_json": 16,
+  "gerado_em": "2026-09-11T03:10:00-03:00",
+  "formato": "[{action_id, camada, estado_proposto, delta, evidencia, certificacao}]; certificacao = quem/como provou; 'proposto' significa que o coordenador decide a promocao no inventario",
+  "deltas": [
+    {
+      "action_id": "shell.load",
+      "camada": "fe",
+      "estado_proposto": "verified",
+      "delta": "regressao transversal do launcher (Decisao 7) corrigida: flag da pagina embutida chega ao hospedeiro; SuperadminFormFrame suprime o balao em qualquer largura; destinos do Principal (Agora aberto, Momentos aberto, publicar) sem balao",
+      "evidencia": "commits 7322260c5 + 1e34eb9f4 + dcfcb9e41 (integrados em dev 7d128b3a6); superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124",
+      "certificacao": "coelo-11, teste de widget; rota real do shell ja verificada na rev 12 (capturas 01, 10)"
+    },
+    {
+      "action_id": "meal-plans.create",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "assistente de Cardapios sem balao (showChatLauncher=false + frame)",
+      "evidencia": "7322260c5, teste 12/12",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "meal-plans.edit",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "idem",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "plans.create",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "formulario de Planos sem balao",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "plans.edit",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "idem",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "agora.view",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "Agora aberto sem balao (destino principal-now)",
+      "evidencia": "7322260c5, teste 12/12",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "momentos.view",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "Momentos aberto sem balao (destino principal-moments)",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "acontece.publish",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "publicar sem balao (destino principal-happens-publish)",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "momentos.publish",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "publicar sem balao",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    },
+    {
+      "action_id": "agora.publish",
+      "camada": "fe",
+      "estado_proposto": "sem mudanca",
+      "delta": "publicar sem balao",
+      "evidencia": "7322260c5",
+      "certificacao": "coelo-11, teste de widget"
+    }
+  ],
+  "pendentes_sem_prova_nesta_retomada": [
+    "meal-plans.list",
+    "meal-plans.create",
+    "meal-plans.edit",
+    "meal-plans.model-create",
+    "meal-plans.model-edit",
+    "meal-plans.publish",
+    "acontece.feed",
+    "acontece.create",
+    "acontece.publish",
+    "acontece.remove",
+    "agora.view",
+    "agora.create",
+    "agora.publish",
+    "agora.expire",
+    "momentos.view",
+    "momentos.create",
+    "momentos.publish",
+    "momentos.remove",
+    "principal_profile.*",
+    "chat.create-group (dialogo com o diretorio de Pessoas)"
+  ],
+  "primeiro_gate_dos_pendentes": "ambiente da rota real em debug (flutter run com .env.local) subindo as 03:10; sem bloqueio de produto conhecido depois da ponte de ator (lote 10)"
+}
