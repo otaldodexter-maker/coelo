@@ -22,8 +22,11 @@ final class MedicationPlanSummary {
     required this.route,
     required this.validFrom,
     this.validUntil,
+    this.childContextId,
+    this.childDisplayName = '',
   });
-  final String id, childPersonId, medicationName, doseUnit, route;
+  final String id, childPersonId, medicationName, doseUnit, route, childDisplayName;
+  final String? childContextId;
   final MedicationPlanStatus status;
   final int version;
   final num doseAmount;
@@ -130,9 +133,19 @@ final class MedicationPlanDetail {
     this.validUntil,
     this.routeDetails,
     this.instructions,
+    this.childContextId,
+    this.institutionId,
+    this.unitId,
+    this.groupId,
+    this.scopeKind,
+    this.childDisplayName = '',
   }) : schedules = List.unmodifiable(schedules);
   final String id, childPersonId, medicationName, doseUnit, administrationRoute, timezone;
   final String? routeDetails, instructions;
+  // Contexto do agregado em produção (a instituição é derivada da criança no
+  // servidor; aqui só para a edição preservar escopo e o formulário rotular).
+  final String? childContextId, institutionId, unitId, groupId, scopeKind;
+  final String childDisplayName;
   final MedicationPlanStatus status;
   final int currentVersion;
   final num doseAmount;

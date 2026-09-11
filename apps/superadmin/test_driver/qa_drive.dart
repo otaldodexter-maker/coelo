@@ -110,12 +110,18 @@ Future<void> main(List<String> args) async {
         // carga completa da pagina.
         await driver({'command': 'tap', ...key('superadmin-login-keep-session-hit-target')});
         await driver({'command': 'tap', ...text('Entrar')});
-        await driver({
-          'command': 'waitForAbsent',
-          ...key('superadmin-login-email'),
-          'timeout': '30000',
-        });
-        stdout.writeln('login: tela de login saiu');
+        // A confirmacao e a URL sair de /login: o driver pode ficar preso no
+        // meio da transicao de rota se esperar pela ausencia do campo.
+        final deadline = DateTime.now().add(const Duration(seconds: 40));
+        while (DateTime.now().isBefore(deadline)) {
+          await Future<void>.delayed(const Duration(seconds: 1));
+          final href = await _eval('location.href') as String? ?? '';
+          if (!href.contains('/login')) {
+            stdout.writeln('login: sessao aberta em $href');
+            return;
+          }
+        }
+        throw TimeoutException('login nao saiu de /login');
       case 'cmd':
         // Pares chave=valor, porque o PowerShell descarta aspas de JSON ao
         // repassar argumentos a executaveis nativos.

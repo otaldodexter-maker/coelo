@@ -1,12 +1,12 @@
 {
- "revision": 24,
+ "revision": 25,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T22:04-03:00",
+ "updatedAt": "2026-09-10T22:34-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
  "head": "f3fefa306",
@@ -35,9 +35,10 @@
   ]
  },
  "currentGate": {
-  "gate": "ligar criar/editar/detalhe de Perfis de cuidado e as quatro rotas de Medicacao ao repositorio Supabase no router de producao; depois CRUD com sessao",
+  "gate": "pacote 20260910220400 (ator do realm interno como pessoa de servico) verde no descartavel e aplicado pelo coordenador; ate la nenhuma acao do recorte passa da regua",
   "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Perfis de cuidado / Medicacao",
   "actionIds": [
+   "health-care.list",
    "health-care.create",
    "health-care.detail",
    "health-care.edit",
@@ -47,7 +48,7 @@
    "medication.edit",
    "medication.evidence"
   ],
-  "note": "health-care.list abriu na rota normal com sessao (lista vazia em producao)."
+  "note": "composicao de producao de Cuidado/Medicacao feita no cliente (commit desta revisao); bloqueio remanescente e o ator no servidor (F-R04-FCR-002)."
  },
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
@@ -62,10 +63,15 @@
  "blocking": [],
  "deltaProposals": [],
  "packages": [],
- "commits": [],
+ "commits": [
+  {
+   "o_que": "composicao de producao de Perfis de cuidado (criar/editar/detalhe) e Medicacao (lista/criar/detalhe/editar) + guarda de mutacao do router aberta para /health-care, /students, /attendance, /daily-routine quando o repositorio real esta composto",
+   "prova": "dart analyze lib limpo; flutter test test/features/health_care verde"
+  }
+ ],
  "pendenciasRegistradas": [],
  "duvidasParaOOwner": [],
- "nextStep": "composicao de Cuidado/Medicacao no router; criar perfil sintetico em producao; reload; depois Alunos",
+ "nextStep": "escrever e provar o pacote 20260910220400 no descartavel; rebase em origin/dev 836c63215; depois criar dados sinteticos e provar Perfis de cuidado",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -713,6 +719,16 @@
    "medido": "apps/superadmin/lib/app/router/superadmin_router.dart @ 98cc0529d, linhas 2730-2783",
    "evidencia": "healthCareProfileCreate/Edit montam HealthCareProfileFormPage sem onSaved, loadDraft nem childOptions (a pagina cai em 'Cadastro indisponivel'); healthCareProfileDetail redireciona para mutation-capability-unavailable; as quatro rotas de Medicacao montam _unavailableMedicationPlans. O repositorio Supabase e a chave existem, mas nao chegam a essas rotas.",
    "consequencia": "health-care.create/detail/edit e medication.* nao passam da regua do MVP por composicao, nao por backend. Assumido por este grupo: ligar as rotas ao SupabaseHealthCareRepository/SupabaseMedicationPlanRepository (criar perfil = save_profile com profile_id nulo e child_context_id; opcoes de crianca pelo leitor superadmin_child_context_directory_v2)."
+  },
+  {
+   "id": "F-R04-FCR-002",
+   "severity": "estrutural: bloqueia a regua do MVP em TODAS as familias do recorte (e em qualquer familia people-based) para a sessao qa-r03",
+   "titulo": "A sessao qa-r03 nao existe no realm people-based: as RPCs dos lotes 2/3/5 resolvem o ator por app_private.current_person_id() e a tratam como nao autenticada",
+   "medido": "producao, 2026-09-10 ~23:30, supabase db query --linked somente leitura",
+   "evidencia": "auth.users qa-r03@coelo.me tem 0 person_auth_links ativos e 0 platform_memberships; so existe em app_private.superadmin_internal_memberships (realm interno v2). app_private.current_person_id() le person_auth_links; app_private.has_platform_permission() le platform_memberships. require_health_care_actor, routine_*, can_access_attendance_child e student_link_require_scope usam essas duas funcoes; as tabelas de recibo, created_by_person_id e audit.audit_logs.actor_person_id tem FK para people(id). Formularios (form_command_receipts.actor_person_id) esta no mesmo caso. Producao tambem tem 0 instituicoes e 0 criancas.",
+   "consequencia": "nenhuma rota de Cuidado, Medicacao, Rotina, Assiduidade, Alunos ou Formularios passa da regua com qa-r03 hoje, mesmo com a composicao ligada; o servidor responde 'authentication required'. Estrutura/Acessos nao sentem isso porque as RPCs v2 usam require_superadmin_internal_context.",
+   "acao": "assumido por este grupo: pacote candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql que espelha cada identidade do realm interno v2 numa pessoa de servico (people.person_type='service') com platform_membership no mesmo papel de plataforma, e faz current_person_id() cair nesse espelho quando nao ha person_auth_link. Assim todas as RPCs people-based (inclusive Formularios e as de outros grupos) reconhecem a sessao interna sem reescrever cada funcao. Nao cria person_auth_link (o guard do realm impede e nao e necessario).",
+   "para_o_coordenador": "e uma mudanca transversal em app_private.current_person_id(): aplicar cedo na fila para as outras frentes people-based (Principal/Chat, Publicacoes) tambem passarem a funcionar com qa-r03. Se preferir outro desenho (ex.: pessoa de servico criada pelo Auth admin), avisar no coordenacao.json."
   }
  ]
 }

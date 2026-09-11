@@ -6,6 +6,7 @@ import '../../features/units/presentation/unit_detail_page.dart';
 import 'dart:math' as math;
 import 'package:flutter/material.dart';
 import 'package:go_router/go_router.dart';
+import 'package:coelo_api/children.dart' show ChildDirectoryRequest;
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -123,6 +124,9 @@ import '../../features/groups/domain/group_directory.dart' hide GroupDirectoryPa
 import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
+import '../../features/health_care/data/supabase_health_care_repository.dart';
+import '../../features/health_care/data/supabase_medication_plan_health_care_repository.dart';
+import '../../features/health_care/domain/health_care.dart';
 import '../../features/health_care/domain/health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_health_care_repository.dart';
 import '../../features/health_care/data/dev/dev_medication_plan_health_care_repository.dart';
@@ -249,7 +253,6 @@ SupportPrototypeController _createDevelopmentSupportController() => SupportProto
 
 LocationCapabilities _noLocationCapabilities(SuperadminAuthContext? _) => LocationCapabilities.none;
 
-
 /// D7: publica um lancamento de rotina pelo comando que ja existe.
 ///
 /// Nada aqui decide autorizacao. O servidor recalcula ator, capacidade, escopo
@@ -277,18 +280,14 @@ Future<bool> _publishRoutineLaunch(
     return true;
   } on RoutineRepositoryException catch (error) {
     if (context.mounted) {
-      showSuperadminNotice(
-        context,
-        switch (error.kind) {
-          RoutineRepositoryFailureKind.unauthorized =>
-            'Seu acesso nao permite publicar este lancamento.',
-          RoutineRepositoryFailureKind.notFound => 'Lancamento indisponivel.',
-          RoutineRepositoryFailureKind.conflict =>
-            'O lancamento mudou desde que a lista foi carregada. Atualize e tente de novo.',
-          RoutineRepositoryFailureKind.unavailable => error.message,
-        },
-        icon: Icons.error_outline_rounded,
-      );
+      showSuperadminNotice(context, switch (error.kind) {
+        RoutineRepositoryFailureKind.unauthorized =>
+          'Seu acesso nao permite publicar este lancamento.',
+        RoutineRepositoryFailureKind.notFound => 'Lancamento indisponivel.',
+        RoutineRepositoryFailureKind.conflict =>
+          'O lancamento mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.unavailable => error.message,
+      }, icon: Icons.error_outline_rounded);
     }
     return false;
   }
@@ -397,8 +396,11 @@ GoRouter createSuperadminRouter({
   final developmentChildSafetyController = ChildSafetyController(
     DevChildSafetyRepository.content(catalog: accessHealthFixtures),
   );
-  final productionSupportController = supportController ??
-      (supportRepository == null ? null : SupportPrototypeController(repository: supportRepository));
+  final productionSupportController =
+      supportController ??
+      (supportRepository == null
+          ? null
+          : SupportPrototypeController(repository: supportRepository));
   final developmentSupportController = _createDevelopmentSupportController();
   if (productionSupportController != null) {
     unawaited(productionSupportController.loadFromRepository());
@@ -498,6 +500,59 @@ GoRouter createSuperadminRouter({
   // Antes era sempre indisponivel. Agora vem da composicao: fica indisponivel
   // enquanto a chave do pacote de Cuidado, Medicacao e Rotina estiver desligada.
   final careProfilesRepository = healthCareRepository;
+  // O ator produtivo so orienta o desenho (botoes e estados); a autorizacao
+  // real e refeita nas RPCs com a sessao. Sem ele o controlador trata a tela
+  // como sem permissao antes de consultar o servidor.
+  final productionHealthCareActor = HealthCareActor(
+    id: 'session',
+    profile: HealthCareAccessProfile.owner,
+  );
+  final productionCareProfiles = healthCareRepository is SupabaseHealthCareRepository
+      ? healthCareRepository
+      : null;
+  final productionMedicationPlans = medicationPlanRepository is UnavailableMedicationPlanRepository
+      ? null
+      : medicationPlanRepository;
+  final medicationPlanDirectoryRepository = productionMedicationPlans == null
+      ? null
+      : SupabaseMedicationPlanHealthCareRepository(productionMedicationPlans);
+  final medicationPlanDraftSaver = productionMedicationPlans == null
+      ? null
+      : SupabaseMedicationPlanDraftSaver(productionMedicationPlans);
+  // Opcoes de crianca para criar perfil ou plano: o mesmo leitor autorizado do
+  // diretorio de Alunos (superadmin_child_context_directory_v2); o id e o
+  // contexto infantil, que e o que o comando de criacao recebe.
+  Future<List<HealthCareProfileChildOption>> loadChildOptions() async {
+    final page = await childDirectoryRead(const ChildDirectoryRequest(limit: 50));
+    return [
+      for (final item in page.items)
+        HealthCareProfileChildOption(
+          id: item.contextId,
+          label: item.institutionName.isEmpty
+              ? item.personName
+              : '${item.personName} · ${item.institutionName}',
+        ),
+    ];
+  }
+
+  Widget withChildOptions(
+    BuildContext context,
+    Widget Function(List<HealthCareProfileChildOption> options) builder, {
+    required String title,
+  }) => FutureBuilder<List<HealthCareProfileChildOption>>(
+    future: loadChildOptions(),
+    builder: (context, snapshot) {
+      if (snapshot.connectionState != ConnectionState.done) {
+        return SuperadminShell(
+          logout: logout,
+          currentDestination: 'health-care-profiles',
+          title: title,
+          child: const Center(child: CircularProgressIndicator()),
+        );
+      }
+      return builder(snapshot.data ?? const []);
+    },
+  );
   DevHealthCareRepository? cachedCareProfilesPreviewRepository;
   DevHealthCareRepository careProfilesPreviewRepository() => cachedCareProfilesPreviewRepository ??=
       DevHealthCareRepository.content(catalog: accessHealthFixtures);
@@ -668,6 +723,22 @@ GoRouter createSuperadminRouter({
     // closed until a real About repository is composed.
     if (location.startsWith(SuperadminRoutes.principalProfile)) {
       return profileAboutRepository != null;
+    }
+    // Saude e Cuidado, Alunos, Assiduidade e Rotina: as RPCs de producao
+    // (lote 2, 3 e 5 de 10/09) revalidam ator, capacidade, tenant, hierarquia
+    // e versao esperada no servidor. A rota abre quando o repositorio real
+    // esta composto; o cliente nao e fronteira de autorizacao.
+    if (location.startsWith('/health-care/')) {
+      return healthCareRepository is! UnavailableHealthCareRepository;
+    }
+    if (location.startsWith('/students/')) {
+      return studentLinkRepository is! UnavailableStudentLinkRepository;
+    }
+    if (location.startsWith('/attendance')) {
+      return attendanceRepository is! UnavailableAttendanceRepository;
+    }
+    if (location.startsWith('/daily-routine')) {
+      return routineRepository is! UnavailableRoutineRepository;
     }
     return false;
   }
@@ -2730,7 +2801,10 @@ GoRouter createSuperadminRouter({
             path: SuperadminRoutes.healthCareProfiles,
             name: SuperadminRoutes.healthCareProfilesName,
             builder: (context, state) => HealthCareProfileDirectoryPage(
-              controller: HealthCareController(careProfilesRepository),
+              controller: HealthCareController(
+                careProfilesRepository,
+                actor: productionHealthCareActor,
+              ),
               logout: logout,
               onCreate: () => context.goNamed(SuperadminRoutes.healthCareProfileCreateName),
               onChildSelected: (childId) => context.pushNamed(
@@ -2742,44 +2816,155 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.healthCareProfileCreate,
             name: SuperadminRoutes.healthCareProfileCreateName,
-            builder: (context, state) => HealthCareProfileFormPage(
-              logout: logout,
-              onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+            builder: (context, state) => withChildOptions(
+              context,
+              title: 'Criar perfil de cuidado',
+              (options) => HealthCareProfileFormPage(
+                logout: logout,
+                childOptions: options,
+                onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+                onSaved: productionCareProfiles == null
+                    ? null
+                    : (draft) => productionCareProfiles.createCareProfile(draft),
+                onSaveSucceeded: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+              ),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileDetail,
             name: SuperadminRoutes.healthCareProfileDetailName,
-            redirect: (context, state) => _productionMutationUnavailablePath,
+            // O detalhe do perfil e a mesma leitura autorizada que a edicao
+            // carrega; a tela de edicao mostra o perfil e permite alterar.
+            redirect: (context, state) => context.namedLocation(
+              SuperadminRoutes.healthCareProfileEditName,
+              pathParameters: {'childId': state.pathParameters['childId']!},
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthCareProfileEdit,
             name: SuperadminRoutes.healthCareProfileEditName,
             builder: (context, state) => HealthCareProfileFormPage(
+              key: ValueKey('health-care-profile-edit-${state.pathParameters['childId']}'),
               logout: logout,
               childId: state.pathParameters['childId']!,
-              onCancel: () => context.pop(),
+              childOptions: [
+                HealthCareProfileChildOption(
+                  id: state.pathParameters['childId']!,
+                  label: 'Perfil de cuidado',
+                ),
+              ],
+              loadDraft: productionCareProfiles?.loadCareProfileDraft,
+              onCancel: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
+              onSaved: productionCareProfiles == null
+                  ? null
+                  : (draft) => productionCareProfiles.saveCareProfileDraft(draft),
+              onSaveSucceeded: () => context.goNamed(SuperadminRoutes.healthCareProfilesName),
             ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlans,
             name: SuperadminRoutes.healthMedicationPlansName,
-            builder: (context, state) => _unavailableMedicationPlans(context),
+            builder: (context, state) => medicationPlanDirectoryRepository == null
+                ? _unavailableMedicationPlans(context)
+                : HealthMedicationPlanDirectoryPage(
+                    controller: HealthCareController(
+                      medicationPlanDirectoryRepository,
+                      actor: productionHealthCareActor,
+                    ),
+                    logout: logout,
+                    onCreate: () =>
+                        context.goNamed(SuperadminRoutes.healthMedicationPlanCreateName),
+                    onPlanSelected: (medicationId) => context.goNamed(
+                      SuperadminRoutes.healthMedicationPlanEditName,
+                      pathParameters: {'medicationId': medicationId},
+                    ),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanCreate,
             name: SuperadminRoutes.healthMedicationPlanCreateName,
-            builder: (context, state) => _unavailableMedicationPlans(context),
+            builder: (context, state) => medicationPlanDraftSaver == null
+                ? _unavailableMedicationPlans(context)
+                : withChildOptions(
+                    context,
+                    title: 'Criar plano de medicação',
+                    (options) => HealthMedicationPlanFormPage(
+                      logout: logout,
+                      childOptions: [
+                        for (final option in options)
+                          HealthCareFormChoice(id: option.id, label: option.label),
+                      ],
+                      onCancel: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                      onDraftSaved: medicationPlanDraftSaver.call,
+                      onSaved: () async =>
+                          context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                    ),
+                  ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanDetail,
             name: SuperadminRoutes.healthMedicationPlanDetailName,
-            builder: (context, state) => _unavailableMedicationPlans(context),
+            redirect: (context, state) => context.namedLocation(
+              SuperadminRoutes.healthMedicationPlanEditName,
+              pathParameters: {'medicationId': state.pathParameters['medicationId']!},
+            ),
           ),
           GoRoute(
             path: SuperadminRoutes.healthMedicationPlanEdit,
             name: SuperadminRoutes.healthMedicationPlanEditName,
-            builder: (context, state) => _unavailableMedicationPlans(context),
+            builder: (context, state) {
+              final plans = productionMedicationPlans;
+              final saver = medicationPlanDraftSaver;
+              if (plans == null || saver == null) return _unavailableMedicationPlans(context);
+              final medicationId = state.pathParameters['medicationId']!;
+              return FutureBuilder<MedicationPlanDetail>(
+                future: plans.fetchDetail(medicationId),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState != ConnectionState.done) {
+                    return SuperadminShell(
+                      logout: logout,
+                      currentDestination: 'health-medication-plans',
+                      title: 'Editar plano de medicação',
+                      child: const Center(child: CircularProgressIndicator()),
+                    );
+                  }
+                  final detail = snapshot.data;
+                  if (detail == null) {
+                    return SuperadminShell(
+                      logout: logout,
+                      currentDestination: 'health-medication-plans',
+                      title: 'Editar plano de medicação',
+                      child: CoeloStatePanel(
+                        title: 'Não foi possível carregar o plano',
+                        message: 'O plano não está disponível para esta sessão.',
+                        actionLabel: 'Voltar',
+                        onAction: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                      ),
+                    );
+                  }
+                  final draft = medicationPlanFormDraft(detail);
+                  return HealthMedicationPlanFormPage(
+                    key: ValueKey('medication-plan-edit-$medicationId'),
+                    logout: logout,
+                    medicationId: medicationId,
+                    childId: draft.childId,
+                    initialDraft: draft,
+                    childOptions: [
+                      HealthCareFormChoice(
+                        id: draft.childId,
+                        label:
+                            medicationPlanDirectoryRepository?.childLabelFor(medicationId) ??
+                            'Criança do plano',
+                      ),
+                    ],
+                    onCancel: () => context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                    onDraftSaved: saver.call,
+                    onSaved: () async =>
+                        context.goNamed(SuperadminRoutes.healthMedicationPlansName),
+                  );
+                },
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.people,

@@ -59,10 +59,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
   }
 
   @override
-  Future<HealthCareChild?> findChild(
-    String childId, {
-    required HealthCareActor actor,
-  }) async {
+  Future<HealthCareChild?> findChild(String childId, {required HealthCareActor actor}) async {
     final Object? payload;
     try {
       payload = await _rpc('superadmin_health_care_profile_detail', {'profile_id': childId});
@@ -147,11 +144,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
         },
       }),
     );
-    return _acknowledgement(
-      childId,
-      HealthCareAcknowledgementSubject.allergyOrRestriction,
-      saved,
-    );
+    return _acknowledgement(childId, HealthCareAcknowledgementSubject.allergyOrRestriction, saved);
   }
 
   // Medicação é um agregado irmão, não parte do perfil (spec 020). Falhar
@@ -185,6 +178,76 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     'Medicação é um plano próprio: use Planos de medicação, não o perfil de cuidado.',
   );
 
+  /// Cria o perfil de cuidado de uma criança. [HealthCareProfileDraft.childId]
+  /// é o contexto infantil (a instituição é derivada dele no servidor);
+  /// devolve o id do perfil criado.
+  Future<String> createCareProfile(HealthCareProfileDraft draft) async {
+    final saved = _map(
+      await _rpc('superadmin_health_care_save_profile', {
+        'request_id': _requestId(),
+        'profile_id': null,
+        'expected_version': 0,
+        'payload': {'child_context_id': draft.childId, ..._draftPayload(draft, null)},
+      }),
+    );
+    return saved['id']! as String;
+  }
+
+  /// Edita um perfil existente. Aqui [HealthCareProfileDraft.childId] é o id
+  /// do perfil (a rota de edição carrega por perfil), e a versão esperada vem
+  /// da mesma leitura que informa a alergia ativa a atualizar.
+  Future<void> saveCareProfileDraft(HealthCareProfileDraft draft) async {
+    final detail = _map(
+      await _rpc('superadmin_health_care_profile_detail', {'profile_id': draft.childId}),
+    );
+    final activeAllergy = _rows(
+      detail['allergies'],
+    ).where((row) => row['active'] as bool? ?? true).firstOrNull;
+    await _rpc('superadmin_health_care_save_profile', {
+      'request_id': _requestId(),
+      'profile_id': draft.childId,
+      'expected_version': _asInt(detail['management_version']),
+      'payload': _draftPayload(draft, activeAllergy?['id'] as String?),
+    });
+  }
+
+  /// Lê o perfil na forma que o formulário de edição consome; `null` quando o
+  /// servidor nega (negativa opaca, sem confirmar existência).
+  Future<HealthCareProfileDraft?> loadCareProfileDraft(String profileId) async {
+    final Object? payload;
+    try {
+      payload = await _rpc('superadmin_health_care_profile_detail', {'profile_id': profileId});
+    } on StateError {
+      return null;
+    }
+    final detail = _map(payload);
+    if (detail.isEmpty) return null;
+    final allergy = _rows(
+      detail['allergies'],
+    ).where((row) => row['active'] as bool? ?? true).firstOrNull;
+    final lastEpisode = allergy?['last_episode_at'] as String?;
+    return HealthCareProfileDraft(
+      childId: profileId,
+      careItemIds: {for (final row in _rows(detail['items'])) row['catalog_item_id']! as String},
+      importantSigns: detail['important_signs'] as String? ?? '',
+      adaptations: detail['adaptations'] as String? ?? '',
+      allergyType: allergy == null
+          ? HealthCareAllergyType.food
+          : _allergyTypeFromDatabase(allergy['allergy_type'] as String?),
+      allergyStatus: allergy == null
+          ? HealthCareAllergyStatus.active
+          : _allergyStatusFromDatabase(allergy['status'] as String?),
+      severity: allergy == null
+          ? HealthCareEpisodeSeverity.moderate
+          : _severityFromDatabase(allergy['episode_severity'] as String?) ??
+                HealthCareEpisodeSeverity.moderate,
+      lastEpisode: lastEpisode == null ? '' : lastEpisode.substring(0, 10),
+      observedReaction: allergy?['observed_reaction'] as String? ?? '',
+      allergyGuidance: allergy?['guidance'] as String? ?? '',
+      allergyNotes: allergy?['notes'] as String? ?? '',
+    );
+  }
+
   /// A versão esperada vem de uma leitura autorizada imediatamente antes da
   /// escrita. O servidor recusa a escrita se a versão tiver mudado, então uma
   /// leitura obsoleta vira conflito, nunca sobrescrita silenciosa.
@@ -208,10 +271,73 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
       if (error.code == '40001' || error.code == '55P03') {
         throw StateError('O perfil foi alterado. Atualize e tente novamente.');
       }
+      if (error.code == '23514' || error.code == '23502' || error.code == '22023') {
+        throw StateError('Informe a justificativa e os dados obrigatórios do perfil.');
+      }
       throw StateError('Saúde e cuidado estão indisponíveis.');
     }
   }
 }
+
+/// Corpo do comando de salvar a partir do rascunho do formulário. A alergia só
+/// entra quando o formulário descreveu alguma; com [activeAllergyId] ela
+/// atualiza a alergia ativa em vez de criar outra.
+Map<String, Object?> _draftPayload(HealthCareProfileDraft draft, String? activeAllergyId) {
+  final describesAllergy = [
+    draft.lastEpisode,
+    draft.observedReaction,
+    draft.allergyGuidance,
+    draft.allergyNotes,
+  ].any((value) => value.trim().isNotEmpty);
+  final lastEpisode = DateTime.tryParse(draft.lastEpisode.trim());
+  return {
+    'subject': 'care_profile',
+    'justification': draft.justification,
+    'important_signs': draft.importantSigns,
+    'adaptations': draft.adaptations,
+    'items': [
+      for (final id in draft.careItemIds) {'catalog_item_id': id, 'other_text': null},
+    ],
+    if (describesAllergy)
+      'allergies': [
+        {
+          'id': ?activeAllergyId,
+          'label': _allergyTypeLabel(draft.allergyType),
+          'allergy_type': _allergyTypeToDatabase(draft.allergyType),
+          'status': _allergyStatusToDatabase(draft.allergyStatus),
+          'active': true,
+          if (lastEpisode != null) 'last_episode_at': lastEpisode.toUtc().toIso8601String(),
+          'episode_severity': _severityToDatabase(draft.severity),
+          'observed_reaction': draft.observedReaction,
+          'guidance': draft.allergyGuidance,
+          'notes': draft.allergyNotes,
+        },
+      ],
+  };
+}
+
+String _allergyTypeLabel(HealthCareAllergyType type) => switch (type) {
+  HealthCareAllergyType.medication => 'Alergia a medicamento',
+  HealthCareAllergyType.food => 'Alergia alimentar',
+  HealthCareAllergyType.restriction => 'Restrição',
+  HealthCareAllergyType.other => 'Outra alergia',
+};
+
+String _allergyStatusToDatabase(HealthCareAllergyStatus status) => switch (status) {
+  HealthCareAllergyStatus.active => 'active',
+  HealthCareAllergyStatus.monitoring => 'monitoring',
+  HealthCareAllergyStatus.history => 'history',
+};
+
+String _severityToDatabase(HealthCareEpisodeSeverity severity) => switch (severity) {
+  HealthCareEpisodeSeverity.mild => 'mild',
+  HealthCareEpisodeSeverity.moderate => 'moderate',
+  HealthCareEpisodeSeverity.severe => 'severe',
+};
+
+/// Identificador de intenção (UUID v4) para comandos de Saúde e Cuidado que
+/// nascem fora deste repositório, como o plano de medicação.
+String newHealthCareRequestId() => _requestId();
 
 HealthCareChildSummary _summary(Map<String, Object?> row) => HealthCareChildSummary(
   id: row['id']! as String,
@@ -230,9 +356,9 @@ HealthCareChild _child(Map<String, Object?> payload) {
     personId: payload['child_person_id'] as String? ?? '',
     displayName: payload['display_name'] as String? ?? '',
     operationalStatus: _statusFromDatabase(payload['operational_status'] as String?),
-    allergies: _rows(payload['allergies'])
-        .map((row) => _allergy(profileId, row))
-        .toList(growable: false),
+    allergies: _rows(
+      payload['allergies'],
+    ).map((row) => _allergy(profileId, row)).toList(growable: false),
     careProfile: _rows(payload['items']).map(_profileItem).toList(growable: false),
   );
 }
