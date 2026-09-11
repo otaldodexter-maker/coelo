@@ -169,6 +169,30 @@ catalogadas (o grupo lista as capacidades por papel no JSON). Alternativa:
 criar um perfil Admin pela tela de Modelos (depende do catálogo 171300, em
 curso). Recomendação: semear os quatro modelos e permitir editar pela tela.
 
+## P32 — Segurança infantil: decisão de retirada exige revisor da unidade? (acessos-pessoas)
+
+Na rota real, a decisão de retirada de uma autorização em Segurança infantil
+exige um revisor com vínculo na unidade da criança; o usuário de teste é Owner
+de plataforma sem vínculo de unidade e a ação nega. Pergunta: o Owner de
+plataforma pode decidir sem revisor de unidade (MVP) ou a regra de revisor
+fica? Recomendação do coordenador: manter a regra e semear o vínculo do
+usuário de teste na unidade sintética para a prova; a exceção para o Owner de
+plataforma volta na revisão profunda.
+
+## P33 — `agenda_calendar_light_375`: células compactas ou rótulos truncados (publicações)
+
+A sua observação "retângulos muito amassados" foi lida como célula quase
+quadrada com marcas coloridas e "+N" (render atual) em vez de rótulos
+truncados. Confirmar pela página lado a lado
+`docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/duvidas-visuais.html`
+(R = referência guardada, A = render atual). Recomendação: A.
+
+## P34 — `agenda_detail_light_375/768/1440` (R): indicador de status com alvo de 48 px ou círculo de 24 px?
+
+O render atual usa o indicador do composto com alvo de toque de 48 px; a
+referência guardada tem o círculo de 24 px. Mesma página lado a lado.
+Recomendação: 48 px (acessibilidade WCAG 2.2 AA, alvo mínimo), regravar A.
+
 ## Atualização P22 (23:05)
 
 A frente formularios-cuidado-rotina escreveu, na própria sessão, o pacote
