@@ -29,7 +29,9 @@ final class PersonHandle {
 
 enum PersonHandleAvailability {
   available('Disponível'),
-  invalidFormat('Use de 3 a 30 caracteres: letras minúsculas, números, ponto ou sublinhado.'),
+  invalidFormat(
+    'Use de 3 a 30 caracteres: letras minúsculas, números, sublinhado e no máximo um ponto.',
+  ),
   reserved('Este @ é reservado.'),
   taken('Este @ já está em uso.');
 
