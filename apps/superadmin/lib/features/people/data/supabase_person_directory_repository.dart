@@ -15,7 +15,11 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
         'superadmin_people_list',
         params: {
           'p_search': query.search.trim(),
-          'p_types': query.types.map((item) => item.databaseValue).toList(growable: false),
+          // A aba Criancas e o unico segmento que o servidor filtra hoje (tipo);
+          // Equipe/Responsaveis/Perfil duplo dependem de um p_segment na RPC.
+          'p_types': query.segment == PersonDirectorySegment.children
+              ? const ['child']
+              : query.types.map((item) => item.databaseValue).toList(growable: false),
           'p_statuses': query.statuses.map((item) => item.databaseValue).toList(growable: false),
           'p_institution_ids': query.institutionIds.toList(growable: false),
           'p_unit_ids': query.unitIds.toList(growable: false),
