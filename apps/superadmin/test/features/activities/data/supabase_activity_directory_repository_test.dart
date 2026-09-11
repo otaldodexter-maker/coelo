@@ -86,7 +86,7 @@ void main() {
     'SAI_PERMISSION_DENIED',
     'SAI_MFA_REQUIRED',
   ]) {
-    test('both v2 reads preserve HTTP 200 authorization denial $code', () async {
+    test('v2 reads preserve HTTP 200 authorization denial $code', () async {
       final repository = _repository(
         (_) => {
           'ok': false,
@@ -100,6 +100,14 @@ void main() {
       );
       await expectLater(
         repository.fetchFilterOptions(),
+        throwsA(isA<ActivityDirectoryUnauthorizedException>()),
+      );
+      await expectLater(
+        repository.fetchFormOptions(institutionId: 'institution-1'),
+        throwsA(isA<ActivityDirectoryUnauthorizedException>()),
+      );
+      await expectLater(
+        repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
         throwsA(isA<ActivityDirectoryUnauthorizedException>()),
       );
     });
@@ -122,7 +130,7 @@ void main() {
       'error': {'code': 'SAI_PERMISSION_DENIED'},
     },
   ]) {
-    test('both reads fail safely for invalid envelope $payload', () async {
+    test('v2 reads fail safely for invalid envelope $payload', () async {
       final repository = _repository((_) => payload);
       await expectLater(
         repository.fetchPage(ActivityDirectoryQuery()),
@@ -130,6 +138,14 @@ void main() {
       );
       await expectLater(
         repository.fetchFilterOptions(),
+        throwsA(isA<ActivityDirectoryUnavailableException>()),
+      );
+      await expectLater(
+        repository.fetchFormOptions(institutionId: 'institution-1'),
+        throwsA(isA<ActivityDirectoryUnavailableException>()),
+      );
+      await expectLater(
+        repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
         throwsA(isA<ActivityDirectoryUnavailableException>()),
       );
     });
@@ -234,7 +250,7 @@ void main() {
     }
   });
 
-  test('falha de rede vira indisponibilidade nos tres metodos remotos', () async {
+  test('falha de rede vira indisponibilidade em todos os metodos remotos', () async {
     // Os status HTTP acima ja eram mapeados. O que escapava era a falha de
     // TRANSPORTE: o repositorio capturava PostgrestException, FormatException,
     // TypeError e StateError, e um ClientException chegava cru a UI.
@@ -256,6 +272,14 @@ void main() {
     );
     await expectLater(
       repository.fetchTemplateOptions(),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
+    await expectLater(
+      repository.fetchFormOptions(institutionId: 'institution-1'),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
+    await expectLater(
+      repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
       throwsA(isA<ActivityDirectoryUnavailableException>()),
     );
   });
@@ -284,7 +308,7 @@ void main() {
     });
   }
 
-  test('non-equivalent activity reads fail closed before any legacy RPC', () async {
+  test('non-equivalent activity detail read fails closed before any legacy RPC', () async {
     var requestCount = 0;
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -298,19 +322,189 @@ void main() {
     final repository = SupabaseActivityDirectoryRepository(client);
 
     await expectLater(
-      repository.fetchFormOptions(institutionId: 'institution-1'),
-      throwsA(isA<ActivityDirectoryUnavailableException>()),
-    );
-    await expectLater(
-      repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
-      throwsA(isA<ActivityDirectoryUnavailableException>()),
-    );
-    await expectLater(
       repository.fetchById('activity-1'),
       throwsA(isA<ActivityDirectoryUnavailableException>()),
     );
 
     expect(requestCount, 0);
+  });
+
+  test('form options use v2 with the structure sections and map every collection', () async {
+    Request? captured;
+    final repository = _repository((request) {
+      captured = request;
+      return _ok(_formOptions());
+    });
+
+    final options = await repository.fetchFormOptions(institutionId: 'institution-1');
+
+    expect(captured!.url.path, '/rest/v1/rpc/superadmin_activity_form_options_v2');
+    expect(jsonDecode(captured!.body), {
+      'p_institution_id': 'institution-1',
+      'p_sections': ['structure', 'participants', 'professionals'],
+      'p_limit': 100,
+    });
+    expect(options.institutions, isEmpty);
+    expect(options.locations, isEmpty);
+    // Taxonomia e modelos ficam vazios de proposito: o controller preserva a
+    // arvore e os modelos carregados por superadmin_activity_template_options.
+    expect(options.taxonomy, isEmpty);
+    expect(options.templates, isEmpty);
+
+    expect(options.units.map((unit) => unit.id), ['unit-1', 'unit-2']);
+    expect(options.units.first.institutionId, 'institution-1');
+    expect(options.units.first.name, 'Unidade Centro');
+    expect(options.unitsFor('institution-1').length, 2);
+
+    expect(options.groups.map((group) => group.id), ['group-1', 'group-2']);
+    expect(options.groups.first.unitId, 'unit-1');
+    expect(options.groups.first.name, 'Turma A');
+    expect(options.groups.first.participantCount, 2);
+    expect(options.groups.last.participantCount, 0);
+
+    expect(options.students.map((student) => student.childGroupLinkId), ['link-1', 'link-2']);
+    expect(options.students.first.id, 'link-1');
+    expect(options.students.first.groupId, 'group-1');
+    expect(options.students.first.name, 'Criança Um');
+    expect(options.students.first.age, isNull);
+    expect(options.students.first.gender, isNull);
+
+    expect(options.professionals.single.id, 'membership-1');
+    expect(options.professionals.single.name, 'Marina Sintética');
+    expect(options.professionals.single.role, 'teacher');
+    expect(options.professionals.single.personId, isNull);
+  });
+
+  test('professional search sends the trimmed query and the limit', () async {
+    Request? captured;
+    final repository = _repository((request) {
+      captured = request;
+      return _ok({
+        'professionals': [
+          {
+            'membership_id': 'membership-1',
+            'display_name': 'Marina Sintética',
+            'role_code': 'teacher',
+          },
+          {
+            'membership_id': 'membership-2',
+            'display_name': 'Mariana Sintética',
+            'role_code': 'owner',
+          },
+        ],
+      });
+    });
+
+    final results = await repository.searchProfessionals(
+      institutionId: 'institution-1',
+      query: '  Mari  ',
+      limit: 7,
+    );
+
+    expect(captured!.url.path, '/rest/v1/rpc/superadmin_activity_form_options_v2');
+    expect(jsonDecode(captured!.body), {
+      'p_institution_id': 'institution-1',
+      'p_sections': ['professionals'],
+      'p_search': 'Mari',
+      'p_limit': 7,
+    });
+    expect(results.map((item) => item.id), ['membership-1', 'membership-2']);
+    expect(results.first.name, 'Marina Sintética');
+    expect(results.first.role, 'teacher');
+    expect(results.last.role, 'owner');
+  });
+
+  test('professional search sends null for a blank query and keeps the limit in 1..100', () async {
+    final bodies = <Map<String, dynamic>>[];
+    final repository = _repository((request) {
+      bodies.add(jsonDecode(request.body) as Map<String, dynamic>);
+      return _ok({'professionals': <Object?>[]});
+    });
+
+    expect(
+      await repository.searchProfessionals(institutionId: 'institution-1', query: '   ', limit: 0),
+      isEmpty,
+    );
+    expect(
+      await repository.searchProfessionals(
+        institutionId: 'institution-1',
+        query: 'x' * 130,
+        limit: 500,
+      ),
+      isEmpty,
+    );
+
+    expect(bodies.first, {
+      'p_institution_id': 'institution-1',
+      'p_sections': ['professionals'],
+      'p_search': null,
+      'p_limit': 1,
+    });
+    expect(bodies.last['p_search'], 'x' * 120);
+    expect(bodies.last['p_limit'], 100);
+  });
+
+  test('form options and professional search tolerate missing collections', () async {
+    for (final data in <Map<String, dynamic>>[
+      <String, Object?>{},
+      {'structure': null, 'participants': null, 'professionals': null},
+      {'structure': <String, Object?>{}, 'participants': <Object?>[], 'professionals': <Object?>[]},
+      {
+        'structure': {'units': null, 'groups': null},
+      },
+      {'structure': 'invalid', 'participants': 'invalid', 'professionals': 'invalid'},
+    ]) {
+      final repository = _repository((_) => _ok(data));
+      final options = await repository.fetchFormOptions(institutionId: 'institution-1');
+      expect(options.units, isEmpty, reason: '$data');
+      expect(options.groups, isEmpty, reason: '$data');
+      expect(options.students, isEmpty, reason: '$data');
+      expect(options.professionals, isEmpty, reason: '$data');
+      expect(
+        await repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
+        isEmpty,
+        reason: '$data',
+      );
+    }
+  });
+
+  test('form options reject rows without the required identifiers', () async {
+    for (final data in <Map<String, dynamic>>[
+      {
+        'structure': {
+          'units': [
+            {'name': 'Sem id'},
+          ],
+        },
+      },
+      {
+        'structure': {
+          'groups': [
+            {'group_id': 'group-1', 'name': 'Sem unidade'},
+          ],
+        },
+      },
+      {
+        'participants': [
+          {'child_group_link_id': 'link-1', 'group_id': 'group-1', 'display_name': ' '},
+        ],
+      },
+      {
+        'professionals': [
+          {'display_name': 'Sem membership', 'role_code': 'teacher'},
+        ],
+      },
+      {
+        'professionals': ['invalid'],
+      },
+    ]) {
+      final repository = _repository((_) => _ok(data));
+      await expectLater(
+        repository.fetchFormOptions(institutionId: 'institution-1'),
+        throwsA(isA<ActivityDirectoryUnavailableException>()),
+        reason: '$data',
+      );
+    }
   });
 
   test('keeps internal template options with institution and unit scope', () async {
@@ -413,6 +607,26 @@ Map<String, dynamic> _options() => {
   ],
   'groups': [
     {'id': 'group-1', 'label': 'Grupo sintético', 'parent_id': 'unit-1'},
+  ],
+};
+
+Map<String, dynamic> _formOptions() => {
+  'structure': {
+    'units': [
+      {'unit_id': 'unit-1', 'name': 'Unidade Centro'},
+      {'unit_id': 'unit-2', 'name': 'Unidade Norte'},
+    ],
+    'groups': [
+      {'group_id': 'group-1', 'unit_id': 'unit-1', 'name': 'Turma A'},
+      {'group_id': 'group-2', 'unit_id': 'unit-2', 'name': 'Turma B'},
+    ],
+  },
+  'participants': [
+    {'child_group_link_id': 'link-1', 'group_id': 'group-1', 'display_name': 'Criança Um'},
+    {'child_group_link_id': 'link-2', 'group_id': 'group-1', 'display_name': 'Criança Dois'},
+  ],
+  'professionals': [
+    {'membership_id': 'membership-1', 'display_name': 'Marina Sintética', 'role_code': 'teacher'},
   ],
 };
 
