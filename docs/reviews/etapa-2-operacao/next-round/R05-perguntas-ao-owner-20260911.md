@@ -35,6 +35,7 @@ skills no mesmo turno em que chegarem.
 | P48 (numerada P44 no JSON de principal-chat) | principal-chat-sistema | Sincronizador do P35: todo usuário interno com `platform_membership` ativa recebe `institution_admin` em toda instituição ativa. Distinguir owner de operations? | Sim: owner → `institution_admin`; operations → papel de leitura, na próxima rodada, junto da correção da raiz da ponte (lote 44) |
 | PEND-ARROBAS (pendência do Owner, 15:20) | coordenação | No encerramento do MVP, perguntar ao Owner as duas listas de arrobas: palavras proibidas como @ (e talvez na escrita) e palavras que só o Owner pode usar como @. Não perguntar antes; hoje só `coelo` e `coelo.me` são reservados. | Registrar em `reserved_handles` por migration quando as listas chegarem |
 | P49 (numerada P45 no JSON de operações) | operacoes | Suporte e Implantação: hoje o Status é um filtro (dropdown) e a visão volta a cards a cada reload; a regra "estado vazio mantém abas de estado" pede abas por tela (Todos / Novo / Em andamento / Aguardando solicitante / Concluído na tabela). | A) abas no lugar do filtro Status + persistir a visão cards/tabela (recomendado); B) manter filtro e não persistir |
+| P50 | publicacoes-agenda | `circulars.respond`: o Superadmin tem tela de resposta à circular ou só o resumo das respostas (o backend já responde por RPC)? | Só o resumo no Superadmin; responder é ação do Principal (recomendado) |
 
 ## Registro
 
