@@ -170,3 +170,5 @@
 20260911170300_institution_profile_system_model_create_v1.sql
 # lote 40 (11/09 13:50) - R05 formularios-cuidado-rotina: can_manage no diretorio de Rotina
 20260911220000_daily_routine_directory_can_manage_v1.sql
+# lote 41 (11/09 13:50) - R05 publicacoes-agenda: ponte de ator interno nas Circulares (attach/respond)
+20260911190000_circular_actor_internal_bridge_v1.sql

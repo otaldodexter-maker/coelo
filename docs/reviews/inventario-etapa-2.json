@@ -3381,9 +3381,9 @@
       "screen": "Formulários / Diretório",
       "scope": "mvp",
       "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "fe": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
+      "fe": "R05: card \"Criar formulario\" aparece em producao (F-R04-FCR-010a corrigido em f17c2fa15); diretorio com busca/filtros/toggle/Arquivos.",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png; card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
+      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png; card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/06-forms-list-card-criar.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -3413,10 +3413,10 @@
           "recordedAt": "2026-09-11T03:40:53-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
-          "revision": "formularios-cuidado-rotina r36",
-          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
-          "recordedAt": "2026-09-11T13:00:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/06-forms-list-card-criar.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
@@ -3674,15 +3674,15 @@
       "family": "forms_responses",
       "screen": "Respostas / Monitor",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): Adapter v2, anonimato, retry e quatro leituras SQL incluindo monitor agregado. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Conferir monitor completo e gate visual operacional; preservar contratos reais.",
-      "be": "I01070 PASS local encerra a espera desse replay específico. Hierarchy/people não implementados; provedor remoto e cadeia real ainda abertos.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r39-i014,r39-jobs",
+      "done": "Distribuir -> cron -> monitor com contagens reais e reload; FE verified + BE done.",
+      "fe": "R05 (13:03-13:20, rota real com qa-r03): /forms/4555ba07.../monitor abre pela projecao autorizada com a ocorrencia materializada pelo cron (4 elegiveis, 0/1 responderam); reload apos a resposta mostra 1 de 4.",
+      "be": "form_get_monitor em producao com a ocorrencia 6b0bd1ef gerada por form_run_periodic_maintenance a partir da distribuicao a0ee4530 (form_save_application/form_save_schedule 200); RLS/negativas pelas suites forms_superadmin_operations_read_v2 70/70 e forms_internal_provenance_guards 39/39.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r39-i014,r39-jobs; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/13-forms-monitor.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
@@ -3695,6 +3695,26 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/13-forms-monitor.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/20-forms-monitor-reload.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
       }
     },
     {
@@ -3702,15 +3722,15 @@
       "family": "forms_responses",
       "screen": "Responder Formulário",
       "scope": "mvp",
-      "done": "Retry08315450, autosave/reviewde51d4e7 e seção por página21efc6cc integrados. R01/16h: C028ebf74f9 valida correlação de ocorrência/resposta/status e itens duplicados;31 testes de adapter passam, ainda não integrado. Galeria valida contagem e omite respostas vazias (57357cc8).",
-      "fe": "Mais tres correcoes de leitura na tela de resposta, todas encontradas comparando-a com o detalhe de resposta em operacoes, que ja fazia certo. Dinheiro reaberto em notacao civil; data com o mesmo formato no campo e no resumo da enviada; e escolha mostrando o rotulo em vez do ID interno da opcao, o que alem de ilegivel expunha identificador interno ao respondente. O teste do detalhe de resposta ja proibia esse ID na outra superficie.",
-      "be": "CORRECAO de descricao minha: eu havia escrito que o servidor nao valida faixa. Ele valida. app_private.form_replace_response_answers ja recusa texto acima do max_length, numero fora de min_value e max_value, data fora do intervalo, escala fora de scale_min e scale_max, contagem de selecoes fora de min_selections e max_selections e contagem de arquivos fora de min_images e max_images, com check_violation. Para dinheiro compara money_minor_units, ou seja o servidor sempre exigiu o limite em minorUnits. O meu lote 1 nao adicionou uma regra nova: alinhou o cliente ao contrato que o banco ja tinha, e falha cedo em vez de deixar o servidor recusar.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc R01/16h: C02r29 fonte16:06:28;SQL20260825193120 linhas503–543;reserva20260908191327; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; Fechamento R01 C02/r48; C00173Flutter/110DTO; fonteC02r48 distingue teste anterior de SHA final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 94b9fa18dda26b328d655009b0b9f401d45923c4, integrado em dev por bfb6a7c00; form_response_page_test 97/97; ambiente local Windows; 2026-09-09; commit 5ec63374c3aebdf5977b79534687180d0d47bd3f; form_response_page_test 100/100; RED verificado antes da correcao com 10.5 observado; 2026-09-09; packages/coelo_database/migrations/20260908191327_forms_response_edit_validation_v1.sql; packages/coelo_database/supabase/tests/forms_response_edit_validation_v1_test.sql; 2026-09-09; migrations/20260813155121_forms_commands_and_projections.sql linhas 1637 a 1668; preservado em 20260825193120_final_review_forms_runtime_hardening.sql linhas 292 a 306; 2026-09-09; commit d4c9973751abc58adbeb7347b60ceb4039fd789b; coelo_domain 62/62; form_response_page_test 102/102; RED confirmado em cada um antes da correcao; 2026-09-09; commits 32373e94744b71a02f5707200e6bf0e3835031a2 e 1d589503e1700b500a75ccaff37269ae97ced12a; form_response_page_test 107/107; RED confirmado em cada um; 2026-09-09; commits 5ec63374c, 021fcfbdb89ff292695bfaa31fc3f8a65ef44e15 e 515c12d1724f84fa1daebe2f93b14c38f758e85e; form_response_page_test 110/110; RED provado em cada um, no caso da data guardando a correcao para confirmar; 2026-09-09",
+      "done": "resposta enviada pela rota normal e relida em /responses e no detalhe; monitor recarregado 1/4.",
+      "fe": "R05: rota /forms/:id/occurrences/:occ/respond composta com api e ocorrencia (F-R04-FCR-010b); abre a ocorrencia real, autosave \"Rascunho salvo.\", Revisar -> Enviar -> \"Resposta enviada\".",
+      "be": "form_get_occurrence_for_response, form_save_response_draft e form_submit_response 200 em producao (resposta 1f365626, status submitted, texto persistido); participacao da pessoa de servico da ponte 220400 reconciliada pelo cron.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc R01/16h: C02r29 fonte16:06:28;SQL20260825193120 linhas503–543;reserva20260908191327; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; Fechamento R01 C02/r48; C00173Flutter/110DTO; fonteC02r48 distingue teste anterior de SHA final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 94b9fa18dda26b328d655009b0b9f401d45923c4, integrado em dev por bfb6a7c00; form_response_page_test 97/97; ambiente local Windows; 2026-09-09; commit 5ec63374c3aebdf5977b79534687180d0d47bd3f; form_response_page_test 100/100; RED verificado antes da correcao com 10.5 observado; 2026-09-09; packages/coelo_database/migrations/20260908191327_forms_response_edit_validation_v1.sql; packages/coelo_database/supabase/tests/forms_response_edit_validation_v1_test.sql; 2026-09-09; migrations/20260813155121_forms_commands_and_projections.sql linhas 1637 a 1668; preservado em 20260825193120_final_review_forms_runtime_hardening.sql linhas 292 a 306; 2026-09-09; commit d4c9973751abc58adbeb7347b60ceb4039fd789b; coelo_domain 62/62; form_response_page_test 102/102; RED confirmado em cada um antes da correcao; 2026-09-09; commits 32373e94744b71a02f5707200e6bf0e3835031a2 e 1d589503e1700b500a75ccaff37269ae97ced12a; form_response_page_test 107/107; RED confirmado em cada um; 2026-09-09; commits 5ec63374c, 021fcfbdb89ff292695bfaa31fc3f8a65ef44e15 e 515c12d1724f84fa1daebe2f93b14c38f758e85e; form_response_page_test 110/110; RED provado em cada um, no caso da data guardando a correcao para confirmar; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
@@ -3722,6 +3742,26 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/17-forms-respond-enviado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
       }
     },
     {
@@ -3729,38 +3769,78 @@
       "family": "forms_responses",
       "screen": "Respostas / Lista",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): Lista interna com identidade explícita, cursor anônimo ID-only, correlação/negativa antes de data; API real conectada a UI em teste local. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Revalidar o aceite específico desta ação: Ida/volta e estados locais testados; cursor autoritativo remoto pendente.",
-      "be": "RPC interna de lista auditada em I01070 local; aplicação nominal e negativas do provedor real ainda não certificadas.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r39-i014,r39-jobs",
+      "done": "lista real apos envio; reload mantem.",
+      "fe": "R05: /forms/:id/responses lista a resposta real (operador interno, versao, ocorrencia, data) com paginacao; botao XLSX honesto nesta superficie (a exportacao real vive em Arquivos).",
+      "be": "superadmin_form_responses_v2/listResponses em producao devolvendo a resposta submetida.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r39-i014,r39-jobs; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/18-forms-responses.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.response-detail",
       "family": "forms_responses",
       "screen": "Resposta / Detalhe",
       "scope": "mvp",
-      "done": "Fluxos locais, retry08315450, autosave/revisãode51d4e7 e navegação por seção21efc6cc implementados; não é persistência real certificada. R36-r39 (origem C02; integração por lote): DTO/adapter/UI preservam grafo da versão respondida, ordem/branching/identityMode e clique explícito de mídia. I010 valida o grafo completo mesmo sem respostas e captura projeção no mesmo snapshot. C00 f1073f45 preserva SQL I01070 e dependências nominais; UI correspondente ainda aguarda integração.",
-      "fe": "Sem correcao de defeito nesta tela: o formatador de dinheiro dela ja estava correto. Passa a usar a mesma guarda compartilhada do editor e da resposta, removendo a segunda implementacao da regra de dinheiro que foi como as telas divergiram. Cobertura nova onde nao havia nenhuma: dinheiro em 10,50, em 10,00 com centavos zerados e em -3,05 negativo. Esta e uma superficie PRODUTIVA: main.dart compoe, existe SupabaseFormsApi de producao, e a rota /forms/:formId/responses/:responseId monta a pagina com api real sob withFormsAuthorization. As tres perguntas passam, mas nao promovo estado porque isto e guarda de regressao, nao acao concluida.",
-      "be": "Grafo completo corrigido e exercitado no I01070; não manter como implementação/correção ausente. Mídia depende I013 e catálogo R2 real.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r37-viewer,r39-i014; commit 94d28c8f28ff6850c67b0f8cd6b1c9a98b61e719; forms_original_response_detail_test 5/5; 2026-09-09",
+      "done": "detalhe real lido pela rota normal.",
+      "fe": "R05: /forms/:id/responses/:rid abre o detalhe com a secao e a resposta \"Resposta R05 rota real\".",
+      "be": "form_get_response_detail em producao com a resposta 1f365626.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r37-original,r37-viewer,r39-i014; commit 94d28c8f28ff6850c67b0f8cd6b1c9a98b61e719; forms_original_response_detail_test 5/5; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-08T19:13:49-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/19-forms-response-detail.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.responses.export",
@@ -3768,19 +3848,27 @@
       "screen": "Formulário / Exportar respostas",
       "scope": "mvp",
       "done": "Adapter restringe formatos e gerador puro XLSX passou14/14; não certifica worker nem arquivo real. R36-r39 (origem C02; integração por lote): WriterR2/multipart sintético, serializer com schema explícito e tipos numérico/booleano/data civil, reader de jobs com versão autorizada e UI solicitando XLSX único do formulário com retry idempotente. R40: a9d0bd42 implementa clique explícito de download XLSX, reautoriza/ticket/session/expiração; 45 testes pai e112 agente sobrepostos. I005172 PASS local confirmado C00 e posteriormente integrado 882c1655. SQLnominalI005172/I01382 integrado882c1655/b82157a4; quatroblobs iguais ao perfil testado. Mensagens de erros seguros do job XLSX integradas1b8462fe; schema313 e writer128Deno já integrados no histórico.",
-      "fe": "Sem mudanca de estado. O item de ligar resolver e opener na composicao produtiva JA esta feito em dev: a rota de arquivos passa downloadResolver e openDownloadUrl, e o clique resolve o ticket, reconfere sessao e expiracao no ponto de uso e tem guarda de geracao. O que resta e backend e remoto.",
-      "be": "SQL I005172/I01382 e schema313 + writer128Deno integrados e provados localmente no histórico. A falha anterior de fixture não revoga essas provas; o claim/ciclo completo ainda exige reconciliação nominal. Restam versões sem respostas, jobs antigos, erro terminal/reconcile, arquivo XLSX real único por formulário, expiração e limpeza física R2, aplicação nominal e E2E. Sem deploy/cutover.",
-      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09",
+      "fe": "R05: em /forms/:id/files o botao \"Exportar respostas em XLSX\" solicita o job (superadmin_form_request_xlsx_v2 200) e a lista de jobs mostra pending; o download so depois do worker.",
+      "be": "job 09f86ec7 e worker job export_xlsx_r2_v1 ficam pending: a Edge Function form-operations implantada (v11, 2026-08-20) nao conhece export_xlsx_r2_v1 (repo desde 08/09). Gate: deploy de form-operations pelo coordenador; depois provar download no R2.",
+      "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-07-export-adapter-policy.md; evidence/etapa-2/formularios-cuidado/2026-09-07-xlsx-column-identity.md R01/16h: C02r27/r28;I008;último replay real49PASS/abort anterior à correção de fixture; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 56TAPedição e132TAPXLSX0b596c85 comprovados;novoSQL314fd92a172NÃOEXECUTADOS. multipart22Deno/motor26Deno;writerreal,cleanup,zerorespostas/limite de linhas expandidas abertos. Não transferirGREEN antigo ao novo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-api,r36-writer,r37-schema,r38-civil,r39-i014,r39-jobs; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; d8e6f841; r48; C00173Flutter; pgTAP313 histórico nominal, não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; superadmin_router.dart linhas 1886-1893 e forms_operations_page.dart em _downloadAction, base d784462c1; 2026-09-09; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png",
       "historicalFrontend": "audited",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "blocked-environment",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/22-xlsx-solicitado.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.location-answer",
@@ -4311,12 +4399,12 @@
       "screen": "Segurança infantil / Lista",
       "scope": "mvp",
       "done": "Cadeia Safety da R01 preservada; sucessor funcional D04 adc902eaf entregue na R02 permanece retido por golden falho. Adapter 963796ddf testado (34 PASS autorais) não ativado. SQL 48141c195 e teste legado f84db0412 preparados; 43 casos não executados. Não é ausência de trabalho nem integração concluída.",
-      "fe": "R04: com a composicao legada (e17b0ee84) /safety lista a crianca sintetica com 1 autorizacao e abas com contagem; reload mantem.",
+      "fe": "R05: /safety lista a crianca sintetica com abas e contagens no build com criar/editar ligados; reload mantem.",
       "be": "R04: superadmin_child_safety_directory (legado) responde 200 ao usuario interno com a ponte de ator; v2 (lote 4, pgTAP 43/43) tambem responde.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.list) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-CHILD-SAFETY-INTERNAL-READS); coordenacao.json R03 rev 10; capturas 9411-b2-safety-list (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r100",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.list) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;f4dd600ff/safety-accessibility/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-CHILD-SAFETY-INTERNAL-READS); coordenacao.json R03 rev 10; capturas 9411-b2-safety-list (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r100; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/12-child-safety-list.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 48,
@@ -4329,6 +4417,12 @@
           "revision": "ce6f061cc",
           "environment": "producao, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-11T00:20:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/12-child-safety-list.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+          "recordedAt": "2026-09-11T13:25:00-03:00"
         }
       }
     },
@@ -6783,7 +6877,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T16:14:40.442Z",
+  "updatedAt": "2026-09-11T16:46:46.346Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
