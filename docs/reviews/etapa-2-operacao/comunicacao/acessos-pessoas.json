@@ -1,7 +1,7 @@
 {
-  "revision": 109,
-  "updated_at": "2026-09-11T06:04:57.741Z",
-  "relogio_local": "Fri Sep 11 2026 03:04:57 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 110,
+  "updated_at": "2026-09-11T06:07:46.957Z",
+  "relogio_local": "Fri Sep 11 2026 03:07:46 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "finalizado_com_adendos",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "ver git log (commit desta revisao); mini-revisao final na rev 108",
+  "head": "ver git log (commit desta revisao)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -301,6 +301,18 @@
     "internal-users.edit (BE)": "done por REST: superadmin_internal_user_update com o payload do cliente persistiu job_title (version 1->2) no perfil sintetico de qa-r03; detalhe relido confirma; historico auditado",
     "deltas": "36 entradas (o integrado de access-models.create agora em camada integrated / verified-e2e)",
     "handoff": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/handoff.md alinhado aos lotes 18 e 19"
+  },
+  "ADENDO_03h12": {
+    "pacotesProntos_novo": {
+      "id": "AP-OWNER-CHILD-SAFETY-REVIEW-GRANT-172000",
+      "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910172000_owner_child_safety_review_grant_v1.sql",
+      "estado": "VERDE — PRONTO PARA APLICAR",
+      "pgTAP": "owner_child_safety_review_grant_v1_test 4/4",
+      "o_que_faz": "concede child_safety.review ao papel owner (idempotente, com postflight que exige Owner com 135/135). Motivo: superadmin_access_profile_save (update), delete_and_reassign e assignment_unlink falham em producao com 23514 'active full-authority MFA replacement required' porque a guarda assert_full_authority_remains exige um papel com TODAS as permissoes ativas e o Owner tem 134/135. Nao muda quem decide autorizacoes de retirada (revisor exato da unidade; P32).",
+      "code_review": "a guarda ainda exige membership.mfa_required (ha 1 linha em producao); alinhar a Decisao 12 depois"
+    },
+    "access-models.detail (BE)": "done por REST (p_model_id)",
+    "access-profiles.edit": "F em producao pelo motivo acima; deltas atualizados (38 entradas); FE de access-models.create alinhado a verified com o coordenador"
   },
   "historico_r03": {
     "revision": 94,
