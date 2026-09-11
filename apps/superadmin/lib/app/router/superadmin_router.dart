@@ -3191,7 +3191,35 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.internalUserEdit,
             name: SuperadminRoutes.internalUserEditName,
-            builder: (context, state) => blockedProductionMutationPage(context),
+            builder: (context, state) {
+              final repository = platformUserRepository;
+              final codes = session.authContext?.permissionCodes ?? const <String>{};
+              final canManage =
+                  codes.contains('platform.member.read') &&
+                  codes.contains('platform.member.update') &&
+                  codes.contains('platform.member.suspend');
+              if (repository == null || repository.isDemo || !canManage) {
+                return blockedProductionMutationPage(context);
+              }
+              final id = state.pathParameters['internalUserId']!;
+              return PlatformUserFormPage(
+                key: ValueKey('internal-user-edit-$id-${session.authorizationInvalidationRevision}'),
+                repository: repository,
+                internalUserId: id,
+                capability: PlatformUserCapability.owner,
+                logout: logout,
+                onCancel: () => context.goNamed(
+                  SuperadminRoutes.internalUserDetailName,
+                  pathParameters: {'internalUserId': id},
+                ),
+                onUpdated: (_) => context.goNamed(
+                  SuperadminRoutes.internalUserDetailName,
+                  pathParameters: {'internalUserId': id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.internalUserDetail,
