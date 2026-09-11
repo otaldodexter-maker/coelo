@@ -2,6 +2,7 @@ import 'dart:math';
 
 import 'package:supabase_flutter/supabase_flutter.dart';
 
+import '../domain/support_team_member.dart';
 import '../domain/support_ticket.dart';
 
 abstract interface class SupportRepository {
@@ -14,6 +15,13 @@ abstract interface class SupportRepository {
     SupportTicketStatus status,
     int expectedRevision,
   );
+
+  /// Equipe que pode responder por um chamado (memberships de plataforma
+  /// ativas com support.manage; pacote 20260911200100).
+  Future<List<SupportTeamMember>> listTeamMembers();
+
+  /// Um responsável por chamado (coluna assigned_to_membership_id); nulo limpa.
+  Future<SupportTicket> setAssignee(String ticketId, String? membershipId, int expectedRevision);
 }
 
 final class SupabaseSupportRepository implements SupportRepository {
@@ -92,6 +100,38 @@ final class SupabaseSupportRepository implements SupportRepository {
     ),
   );
 
+  @override
+  Future<List<SupportTeamMember>> listTeamMembers() async {
+    final json = _map(await _rpc('superadmin_support_team_members', const {}));
+    return _list(json['items'])
+        .map((raw) {
+          final item = _map(raw);
+          return SupportTeamMember(
+            id: _string(item, 'membership_id'),
+            name: _string(item, 'display_name'),
+            initials: item['initials']?.toString() ?? 'EQ',
+            role: SupportTeamRole.support,
+          );
+        })
+        .toList(growable: false);
+  }
+
+  @override
+  Future<SupportTicket> setAssignee(
+    String ticketId,
+    String? membershipId,
+    int expectedRevision,
+  ) async => _ticket(
+    _map(
+      await _rpc('superadmin_support_set_assignee', {
+        'p_request_id': _uuidV4(),
+        'p_session_id': ticketId,
+        'p_expected_revision': expectedRevision,
+        'p_assignee_membership_id': membershipId,
+      }),
+    ),
+  );
+
   Future<Object?> _rpc(String function, Map<String, Object?> params) async {
     try {
       return await _client.rpc<Object?>(function, params: params);
@@ -141,6 +181,7 @@ final class SupabaseSupportRepository implements SupportRepository {
     updatedAt: _date(json, 'updated_at'),
     status: _ticketStatus(_string(json, 'status')),
     revision: _int(json, 'revision'),
+    ownerId: json['assignee_membership_id']?.toString(),
     messages: _list(json['messages']).map(_message).toList(growable: false),
     activities: _list(json['activities']).map(_activity).toList(growable: false),
   );
@@ -164,6 +205,7 @@ final class SupabaseSupportRepository implements SupportRepository {
       kind: switch (_string(json, 'action')) {
         'support.reply' => SupportActivityKind.replySent,
         'support.status' => SupportActivityKind.statusChanged,
+        'support.assign' => SupportActivityKind.assignmentChanged,
         _ => SupportActivityKind.created,
       },
       label: _string(json, 'action'),

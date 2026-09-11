@@ -1,13 +1,13 @@
 {
-  "revision": 26,
-  "updated_at": "2026-09-11T13:46:00-03:00",
+  "revision": 27,
+  "updated_at": "2026-09-11T14:05:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "58e3977cc (+ este commit)",
+  "head": "ca040ba49 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -211,6 +211,32 @@
       "status": "rota-real-verificada -> FE verified proposto",
       "delta": "Aparencia Claro persiste em localStorage e sobrevive a carga completa; restaurado Sistema.",
       "proof": "capturas 70-72"
+    },
+    {
+      "action_ids": [
+        "support.close",
+        "support.detail",
+        "support.kanban"
+      ],
+      "status": "cliente ligado ao contrato de responsaveis (local-green); pacote SQL em candidatos",
+      "commits": [
+        "36474dc92 (cliente)",
+        "ca040ba49 (pacote + lookups seguros)"
+      ],
+      "changed": [
+        "apps/superadmin/lib/features/support/data/support_repository.dart (listTeamMembers, setAssignee, assignee_membership_id no get, support.assign)",
+        "apps/superadmin/lib/features/support/presentation/view_models/support_prototype_controller.dart (equipe do servidor; responsavel persistido com revisao)",
+        "apps/superadmin/test/features/support/presentation/screens/support_page_production_test.dart (+1 teste)",
+        "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_support_assignees_v1_test.sql"
+      ],
+      "delta": "Pendencia da R04 (Responsaveis de lista fixa, setAssignees sem RPC): contrato superadmin_support_team_members() e superadmin_support_set_assignee(p_request_id, p_session_id, p_expected_revision, p_assignee_membership_id) com recibo por request_id, revisao otimista, auditoria support.assign e superadmin_support_get devolvendo assignee_membership_id. Cliente: com repositorio produtivo a equipe vem do servidor (nunca da lista do prototipo) e o responsavel escolhido persiste; um responsavel por chamado. Depois de aplicado o pacote: rebuild e prova do responsavel na rota real (Em andamento exige responsavel: hoje o menu lista a equipe real).",
+      "proof": "flutter test test/features/support 70/70; pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
+      "criteria": {
+        "frontend": "local-green (rota real do responsavel depende do pacote em producao)",
+        "backend": "local-green (candidato 200100 na fila)",
+        "e2e": "N ate o coordenador aplicar"
+      }
     }
   ],
   "tests": {
@@ -251,6 +277,12 @@
       "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
       "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
       "state": "pronto para o coordenador aplicar; depois: plans.list/create/edit BE done e E2E verified-e2e (FE ja provado)"
+    },
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200100_superadmin_support_assignees_v1.sql",
+      "pgtap": "pgTAP superadmin_support_assignees_v1_test 28/28; support_production 23/23; support_create_internal_scope 17/17 (descartavel coelo_ops_r05)",
+      "composition_key": "nenhuma (cliente ja consome; ate aplicar, a lista de equipe vem vazia e o menu de responsaveis fica sem opcoes, honesto)",
+      "state": "pronto para o coordenador aplicar depois do 200000; depois: support.close E2E reconfirmado com responsavel persistido"
     }
   ],
   "questions_to_owner": [
@@ -286,7 +318,11 @@
     "4371853e1",
     "60b415707",
     "13be50ae8",
-    "58e3977cc"
+    "58e3977cc",
+    "4707876e3",
+    "0a7507fee",
+    "36474dc92",
+    "ca040ba49 (pacote + lookups seguros)"
   ],
   "r04_history": {
     "revision": 20,
