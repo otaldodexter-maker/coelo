@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 29,
+ "revision": 30,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T23:20:55-03:00",
+ "updatedAt": "2026-09-10T23:24:34-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -116,7 +116,7 @@
   {
    "n": 1,
    "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-   "estado": "CONCLUIDO: 17 candidatos verdes na prova integral; aguardando o coordenador aplicar",
+   "estado": "CONCLUIDO: 21 candidatos verdes na prova integral 3 (inclui Instituicoes detail/create v2, catalogo de tipos e Avaliacoes v2); aguardando o coordenador aplicar e ligar as chaves",
    "action_ids": [
     "locations.detail-links",
     "locations.schedule",
@@ -148,7 +148,7 @@
   {
    "n": 5,
    "item": "Goldens do recorte conforme as tres listas do Owner (activity_form_create_light_375 RODAPE, activity_detail_*, group_form_*), no SDK 3.44.2; espacamento de Turmas ja decidido",
-   "estado": "pendente"
+   "estado": "feito no que o Owner decidiu A e cujas observacoes estao aplicadas: 7 goldens de formulario e 3 de detalhe de Locais regravados (commits 20f497709 e 64afc1f0a); activity_form_create_light_375, activity_detail_light_375 e activity_form_location_dialog_light_375 passam hoje (sem diff); espacamento de Turmas ja decidido"
   }
  ],
  "primeiroGate": "nenhum bloqueio: coordenador aplicar os candidatos de estrutura na ordem dos carimbos quando esta frente marcar cada um como verde",
@@ -162,12 +162,12 @@
   "P5: filtros de Turmas degradam de forma honesta quando fetchFilterOptions falha (view model, rotulo \"(indisponivel)\", teste)"
  ],
  "testes": {
-  "P": null,
-  "F": null,
-  "B": null,
-  "S": null,
-  "U": null,
-  "evidencia": "pgTAP: 16 suites verdes no espelho (contagens em pacotesProntos); prova integral e flutter test em execucao"
+  "P": "pgTAP 692; Flutter 1079 (seis familias + shared) + 37 repositorio de Instituicoes + 5 view model de Turmas",
+  "F": "Flutter 11 pre-existentes de widgets compartilhados (fora do recorte)",
+  "B": 0,
+  "S": 0,
+  "U": 0,
+  "evidencia": "prova-integral-3.log; tarefas b32mhzji2/brvpnzs6w desta sessao"
  },
  "pacotesProntos": [
   {
@@ -175,147 +175,147 @@
    "origem": "20260909165000",
    "mudanca": "assinatura real de audit_append_superadmin_internal (13 args) no preflight e no override; teste sem after_json",
    "pgTAP": "49/49",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180020_activities_v2_actor_attribution",
    "origem": "20260831192831",
    "mudanca": "recarimbo",
    "pgTAP": "actor_contract 39/39 (fixture units na forma de producao; asserção de colunas internal_identity_id restrita ao agregado de Atividades, porque o catalogo de Locais em producao as expoe de proposito)",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180030_activities_v2_actor_provenance_hardening",
    "origem": "20260831195118",
    "mudanca": "recarimbo",
    "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "verde na prova integral"
+   "estado": "aplica na prova integral 3"
   },
   {
    "carimbo": "20260910180040_activities_v2_actor_provenance_semantics",
    "origem": "20260831195944",
    "mudanca": "recarimbo",
    "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "verde na prova integral"
+   "estado": "aplica na prova integral 3"
   },
   {
    "carimbo": "20260910180050_activities_v2_permissions_receipts",
    "origem": "20260831203645",
    "mudanca": "recarimbo",
    "pgTAP": "permissions_publish 18/18",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180060_activities_v2_internal_gateways",
    "origem": "20260831211945",
    "mudanca": "recarimbo; ATENCAO: create or replace em audit_activity_change, has_activity_capability e audit_mask_payload (existem em producao com outro corpo) e cria a sobrecarga de 14 args de audit_append_superadmin_internal",
    "pgTAP": "commands 28/28, read 28/28, relationships 24/24 (AAL1 do Owner na regua do MVP)",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180070_activities_v2_rls_grants",
    "origem": "20260831231645",
    "mudanca": "recarimbo",
    "pgTAP": "security_contract 37/37",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180080_activities_v2_final_review_hardening",
    "origem": "20260831234307",
    "mudanca": "recarimbo",
    "pgTAP": "hardening 25/25",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180090_activity_template_unit_scope",
    "origem": "20260901165125",
    "mudanca": "recarimbo + revoke de escrita de anon/authenticated em public.activity_templates (privilegio padrao do schema public; o cliente nao le a tabela direto)",
    "pgTAP": "31/31 (has_fk/has_check trocados por pg_constraint: a pgTAP 1.3 do espelho nao tem essas assinaturas)",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180100_superadmin_activity_directory_v2_client_contract",
    "origem": "20260907222911",
    "mudanca": "recarimbo",
    "pgTAP": "directory_contract 97/97",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180110_superadmin_activity_save_v2",
    "origem": "20260908154257",
    "mudanca": "recarimbo (activity_v2_denied_envelope vem de 180060)",
    "pgTAP": "46/46",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180120_superadmin_activity_link_end_clock_v1",
    "origem": "20260908235110",
    "mudanca": "recarimbo",
    "pgTAP": "sem suite propria",
-   "estado": "verde na prova integral"
+   "estado": "aplica na prova integral 3"
   },
   {
    "carimbo": "20260910180140_superadmin_location_consumer_bindings_v2",
    "origem": "era 180000",
    "mudanca": "recarimbo (teste usa superadmin_activity_create_v2)",
    "pgTAP": "30/30",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180150_superadmin_activity_location_create_v2",
    "origem": "era 180100",
    "mudanca": "recarimbo",
    "pgTAP": "33/33",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180200_superadmin_group_location_create_v2",
    "origem": "inalterado",
    "mudanca": "nenhuma",
    "pgTAP": "46/46",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180300_superadmin_internal_unit_detail_v2_baseline",
    "origem": "inalterado",
    "mudanca": "fixture: inherit_plan=false com plan_override_id; Owner AAL1 le no MVP",
    "pgTAP": "31/31",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180310_superadmin_internal_group_detail_v2_baseline",
    "origem": "20260828003500",
    "mudanca": "recarimbo; Owner AAL1 le no MVP",
    "pgTAP": "33/33",
-   "estado": "verde na prova integral"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180320_structure_type_catalog_seed_v1",
    "origem": "novo",
    "mudanca": "catalogo minimo de tipos (institution_types: Escola, Colegio, Creche; unit_types: Sede, Filial), idempotente por code; nomes sao dados, o Owner renomeia se quiser",
    "pgTAP": "sem suite propria (pos-condicao no proprio pacote); aplica no espelho",
-   "estado": "aplica"
+   "estado": "aplica na prova integral 3"
   },
   {
    "carimbo": "20260910180330_superadmin_internal_institution_detail_v2_baseline",
    "origem": "20260827234500",
    "mudanca": "so recarimbo; teste: Owner AAL1 ja leu antes (MVP), contagem 2 -> 3",
    "pgTAP": "25/25",
-   "estado": "verde"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180340_superadmin_internal_institution_create_v2",
    "origem": "novo",
    "mudanca": "superadmin_institution_create_v2(p_request_id uuid, p_payload jsonb): realm interno v2, capacidade institution.activate, so escopo de plataforma (owner/operations), reutiliza o validador ROOT+ADDRESS do edit_core + slug pelo trigger de handle, sempre draft, recibo por request_id (replay sem novo evento), envelope e auditoria internos, helpers privados sem grant a clientes",
    "pgTAP": "26/26 (validador, criacao, replay, request_id reutilizado, handle repetido, tipo inativo, escopo de instituicao, support, sessao expirada, sem claims, contagens de auditoria)",
-   "estado": "verde"
+   "estado": "verde na prova integral 3"
   },
   {
    "carimbo": "20260910180350_superadmin_assessments_internal_v2",
    "origem": "20260901182838",
    "mudanca": "recarimbo com DUAS correcoes de sintaxe que impediam a migration de aplicar em qualquer lugar: superadmin_assessment_context_options nao fechava o jsonb_build_object externo antes do INTO (parentese a menos) e assessment_v2_save_configuration tinha ambiguidade variavel x coluna (institution_id/unit_id/activity_id): recebe #variable_conflict use_variable. Nenhum objeto de Avaliacoes existe em producao (12 RPCs superadmin_assessment_* e 8 tabelas). Teste: fixture na forma de producao (unit_type_id, handle), definicoes de atividade inseridas com o marcador interno da cadeia v2 (criador people-based nulo), version na revogacao da membership e Owner AAL1 na regua do MVP",
    "pgTAP": "47/47",
-   "estado": "verde; prova integral com 21 candidatos em execucao"
+   "estado": "verde na prova integral 3"
   }
  ],
  "deltasPropostos": [],
@@ -328,7 +328,13 @@
   }
  ],
  "perguntasParaOOwner": [],
- "pendenciasDeCodeReview": [],
+ "pendenciasDeCodeReview": [
+  "180060 (gateways de Atividades v2) faz create or replace em audit_activity_change, has_activity_capability e audit_mask_payload, que existem em producao com outro corpo, e cria a sobrecarga de 14 argumentos de audit_append_superadmin_internal (md5 antes/depois medidos)",
+  "Assercoes que esperavam SAI_MFA_REQUIRED do Owner em AAL1 foram trocadas pela regra do MVP em 9 suites (lista em regraDosTestesAAL1); revisar quando MFA voltar",
+  "assessment_v2_save_configuration recebeu #variable_conflict use_variable: conferir as demais funcoes plpgsql de 180350 quanto a nomes de variaveis iguais a colunas (o pgTAP cobre os 12 RPCs, mas nao todo caminho)",
+  "institutions.create persiste so ROOT+ADDRESS+handle; representantes, administradores, contato, documento, plano e marca ficam vazios ate o proximo pacote",
+  "Cards das unidades dentro da tela de Locais da instituicao (desenho aprovado pelo Owner na R03) continuam por fazer: exigem injetar o diretorio de Unidades em LocationsPage"
+ ],
  "bloqueio": null,
  "wip": [],
  "recursos": {
@@ -336,7 +342,7 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "prova integral 21; goldens de detalhe de Locais; rev 30 com o resultado; mini-revisao as 04:20",
+ "proximoPasso": "coordenador aplica os 21 e liga structureMutationsEnabled/assessmentMutationsEnabled; enquanto isso: relancar o app dirigido e provar leitura de Locais/Turmas; mini-revisao as 04:20",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -369,7 +375,8 @@
    "180300": "superadmin_internal_unit_detail_test",
    "180310": "superadmin_internal_group_detail_test"
   },
-  "resultado2": "2026-09-10T23:06:36-03:00: espelho novo + 46 lotes + 20 candidatos: todos aplicam; 18 suites verdes (594 + 25 + 26 = 645 assercoes, 0 falhas) - o create_v2 foi reexecutado apos duas correcoes de fixture (grants de anon na tabela temporaria; caso anonimo passa a ser sessao autenticada sem claims porque anon nem executa o wrapper, o que a suite ja afirma)"
+  "resultado2": "2026-09-10T23:06:36-03:00: espelho novo + 46 lotes + 20 candidatos: todos aplicam; 18 suites verdes (594 + 25 + 26 = 645 assercoes, 0 falhas) - o create_v2 foi reexecutado apos duas correcoes de fixture (grants de anon na tabela temporaria; caso anonimo passa a ser sessao autenticada sem claims porque anon nem executa o wrapper, o que a suite ja afirma)",
+  "resultado3": "23:21-23:23: espelho novo (baseline + seed) + 46 lotes por psql + os 21 candidatos de estrutura na ordem dos carimbos: todos aplicam; 19 suites verdes (692 assercoes, 0 falhas): reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33, institution_detail 25, institution_create_v2 26, assessments_internal_v2 47. Log: prova-integral-3.log no scratchpad desta sessao."
  },
  "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
  "flutter": {
@@ -443,6 +450,15 @@
    "group_form_members_dark_1440"
   ],
   "motivo": "diferencas exclusivamente das regras transversais aplicadas depois da referencia (Pesquisar no menu, sem chat em editar, MENU-M, rodape ancorado); o render atual esta conforme as decisoes",
-  "ressalva": "os dois em 375 congelam o cabecalho mobile atual; reverter se MENU-M mudar"
+  "ressalva": "os dois em 375 congelam o cabecalho mobile atual; reverter se MENU-M mudar",
+  "locais": {
+   "commit": "64afc1f0a",
+   "arquivos": [
+    "location_detail_light_375",
+    "location_detail_focus_light_375",
+    "location_detail_dark_1440"
+   ],
+   "motivo": "texto \"Planta, marcadores e fotos ainda nao estao disponiveis.\" sem a palavra previa (D3); decisao A do Owner"
+  }
  }
 }
