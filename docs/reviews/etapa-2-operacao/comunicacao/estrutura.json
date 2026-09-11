@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 47,
+ "revision": 48,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T15:06:44-03:00",
+ "updatedAt": "2026-09-11T15:11:41-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -173,7 +173,8 @@
   "institutions.list/filter/detail/reload e units.filter/reload/locations-map/copy-institution-location na rota real (institutions-list.jpg, institutions-filter-*.jpg, units-filter-*.jpg, units-locations-*.jpg, units-copy-*.jpg)",
   "Achado corrigido (regressao causada pelo lote 211100): parsers estritos de unit_detail_v2/group_detail_v2/activity detail exigiam contagem exata de chaves e quebravam Locais da unidade e Editar turma no deep link quando o servidor passou a devolver handle; tolerancia a chaves aditivas + testes (01a8c3e27)",
   "activities.publish backend em producao (turma 4214106c criada pelo assistente em Escola R04/Unidade Centro; vinculo salvo pela edicao mv 17; publish por save_v2 mv 24)",
-  "Regra do @ no cliente (parcial): verificacao de disponibilidade enquanto digita no Identificador de Unidades (3983c2443)"
+  "Regra do @ no cliente (parcial): verificacao de disponibilidade enquanto digita no Identificador de Unidades (3983c2443)",
+  "Verificacao de @ em Unidades PROVADA na rota real (disponivel / invalido com hifen / reservado coelo em uso) com superadmin_structure_handle_availability_v1 em producao (units-handle-*.jpg)"
  ],
  "testes": {
   "P": "flutter: activity_form_page 31, activity_form_controller 18, activity_routes 11, institutions repositorio 29, suite de Instituicoes 227/228, unit_detail/group_detail/activity_read_detail 236 (com 2 testes novos de tolerancia); pgTAP no espelho: handles 24/24, Locais 226, regressao 224",
@@ -192,7 +193,7 @@
    "estado": "verde no espelho coelo_estrutura_r05; commit 57cd4b5b3 publicado; coordenador avisado 14:0x"
   }
  ],
- "deltasPropostos": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 49 entradas (1-21 ja em dev; 22-45 leituras/filtros/reload/locais/copia -> E2E; 46 activities.publish BE done; 47-49 activities.publish FE, groups.members e groups.location local-green com gate). Ensaio apply + validate PASS (E2E 63)",
+ "deltasPropostos": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 50 entradas (1-21 ja em dev; 22-50 novas). Ensaio apply + validate PASS (E2E 63)",
  "pedidosAoCoordenador": [
   "Aplicar as entradas 22-45 de deltas-r05-estrutura.json (as 21 primeiras ja estao em dev)",
   "Integrar 5a4a0213c (no-op do edit_core), 01a8c3e27 (parsers tolerantes: corrige regressao do lote 211100 em Locais da unidade e Editar turma), 00056abaa/fa1b5996d/este commit (docs)",
@@ -229,24 +230,24 @@
  "recursos": {
   "processos": [],
   "portas": [],
-  "encerramento": "Chrome 9561, servidor 3001 e espelho coelo_estrutura_r05 fechados as 14:56; worktree e2-r05-estrutura-base (detached, so medicao) pode ser removida pelo coordenador"
+  "encerramento": "Chrome 9561, servidor 3001 e espelho coelo_estrutura_r05 fechados (15:13); worktree e2-r05-estrutura-base (detached) pode ser removida"
  },
  "ack": null,
  "proximoPasso": "responder a revisao de 10 min do coordenador (15:50-16:00) no JSON; depois de 16:00 nao retomar por conta propria",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
- "estado": "finalizado (entrega principal as 14:58; complemento da regra do @ no cliente de Unidades as 15:06, prova de rota real em andamento ate 15:45)",
+ "estado": "finalizado (15:13): entrega completa; Chrome, servidor e espelho fechados; respondo a revisao do coordenador ate 16:00",
  "cliente": {
   "activitiesEdit": "activity_form_page._load em modo edicao busca form_options_v2 + template_options e monta ActivityFormOptions com taxonomia; ActivityFormController.edit recebe initialCatalogError; _hydrateEdit sobe do subtipo ao pai",
   "helpersDaRotaReal": "scratchpad: serve.js (SPA), cdp.js (login/goto/click/type/shot/eval), net.js (grava RPCs), rpc.js (chama RPC com a sessao do app sem imprimir token)"
  },
  "miniRevisao": {
-  "shaPublicado": "3983c2443 (rev 46 em f62f9a350; depois: 3983c2443 verificacao de @ em Unidades) - status limpo, sem WIP",
+  "shaPublicado": "(commit desta revisao); codigo ate 3983c2443 - status limpo, sem WIP",
   "fechouPorActionId": [
    "E2E (FE verified + BE done): activities.create, activities.location, activities.detail, activities.edit, units.edit, units.status, units.filter, units.reload, units.locations-map, units.copy-institution-location, institutions.edit, institutions.list, institutions.filter, institutions.detail, institutions.reload (15 acoes)",
    "BE done sem FE: activities.publish",
    "Pacote SQL structure_handles_v1 (24/24) aplicado pelo coordenador (lote 42)",
    "pgTAP de Locais dos lotes 46-49 reexecutado (226 assercoes) e regressao de Turmas/Atividades/Unidades/Instituicoes com o candidato (224)",
-   "units.edit/units.create FE: verificacao de disponibilidade do @ enquanto digita (local-green; rota real em prova ate 15:45)"
+   "units.edit FE: verificacao de disponibilidade do @ enquanto digita provada na rota real (delta 50)"
   ],
   "abertoComPrimeiroGate": [
    "activities.publish FE: decidir p_publish pelo status do detalhe e nao congelar o rascunho apos falha local",
