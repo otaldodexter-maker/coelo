@@ -1,13 +1,13 @@
 {
-  "revision": 17,
-  "updated_at": "2026-09-11T02:23:00-03:00",
+  "revision": 18,
+  "updated_at": "2026-09-11T03:00:12-03:00",
   "round": "E2-R04-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M) ate a rev 16; rev 17 por subagente do coordenador (Claude Fable 5.1) apos o reinicio de 00:27",
+  "tool_model": "Claude, Opus 5 (1M) ate a rev 16; rev 17 por subagente do coordenador (Claude Fable 5.1) apos o reinicio de 00:27; rev 18 por subagente do coordenador (Claude Fable 5.1), prova na rota real",
   "conversation": "R04 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
   "branch": "work/etapa2-r04-operacoes",
-  "head": "1ad67a2e3",
+  "head": "af294783f (origin/dev mesclado em work/etapa2-r04-operacoes; sem conflitos)",
   "base": {
     "requested": "origin/dev",
     "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
@@ -64,6 +64,25 @@
   },
   "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes de 04:20)",
   "changes": [
+    {
+      "action_ids": [
+        "account.profile",
+        "account.settings",
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.create",
+        "support.reply",
+        "support.close"
+      ],
+      "status": "rota-real-verificada",
+      "changed": [
+        "docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/*.png (23 capturas)",
+        "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json"
+      ],
+      "delta": "Prova na rota real com sessao qa-r03 sobre o build web release desta branch: Conta e Suporte com CRUD em producao, RLS ja coberta pelo pgTAP dos lotes 7/10 (superadmin_support_production 23/23, superadmin_account_profile_v1 16/16, support_create_internal_scope 17/17) e reload mantendo estado. Nenhuma alteracao de codigo.",
+      "proof": "ver ROTA_REAL_03h00_por_action_id (metodo, corpo e status de cada RPC capturados por Network)"
+    },
     {
       "action_ids": [
         "support.create",
@@ -228,12 +247,14 @@
     }
   ],
   "tests": {
-    "P": 69,
-    "F": 2,
+    "P": 8,
+    "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
     "evidence": [
+      "rev 18 (subagente): 8 acoes na rota real com qa-r03 (P); RPCs superadmin_account_profile_get/save/email_change_cancel, superadmin_support_list/get/create/reply/set_status todas 200 em producao",
+      "rev 18: flutter test nao executado nesta revisao (regra: nenhum flutter test em paralelo com o app); estado dos testes segue a rev 17",
       "rev 17 (subagente): flutter analyze lib test sem issues; flutter test test/features/support test/architecture 69/71 (2 F = testes golden por pixel: 24 goldens padrao + 8 escalados divergentes)",
       "rev 17 (subagente): support_page_golden_test \"keeps scaled\" com --update-goldens temporario: 1/1 sem excecao; PNGs revertidos",
       "ate a rev 16: pgTAP 210000 17/17; 210100 37/37; support_production 23/23; account 16/16; support_page_production_test 7/7; account_pages_golden_test 8/8; audit 62/62"
@@ -246,37 +267,26 @@
   },
   "blocked": [
     {
-      "kind": "integration",
-      "what": "CRUD real de Conta e Suporte com qa-r03 depende da ponte realm interno -> people do coordenador (current_person_id devolve nulo em producao para todos os usuarios)",
-      "owner": "coordenador (candidatos/coordenador)",
-      "unblocks": "aplicacao do pacote de ponte; depois rodo editar/recarregar em Conta e criar/responder/status em Suporte na rota real"
-    },
-    {
       "kind": "environment",
       "what": "classificador do modo automatico bloqueia supabase db query --linked (leitura) nesta sessao; medicao de producao vem do coordenador ou do proprio app na rota real",
       "owner": "operacoes",
       "unblocks": "n/a: contorno pelo app real"
-    },
-    {
-      "kind": "environment",
-      "what": "rota real de Suporte com sessao qa-r03 (support.table/kanban/detail/create/reply/close) nao provada nesta revisao: subagente sem Chrome e sem flutter run (maquina reiniciou por falta de memoria)",
-      "owner": "operacoes (conversa com Chrome) / coordenador",
-      "unblocks": "conversa com Chrome abre /support com qa-r03 apos a ponte de ator; ate la a prova e local-green"
     }
   ],
-  "resolved": [],
+  "resolved": [
+    {
+      "what": "CRUD real de Conta e Suporte com qa-r03 (bloqueio de integracao da rev 17)",
+      "how": "ponte de ator 220400 em producao (lote 10) + candidato 210000 aplicado; provado na rota real nesta revisao"
+    },
+    {
+      "what": "rota real de Suporte sem Chrome (bloqueio de ambiente da rev 17)",
+      "how": "build web release + Chrome CDP 9407 nesta revisao"
+    }
+  ],
   "proposed_deltas": [
     {
-      "action_ids": [
-        "support.table",
-        "support.kanban",
-        "support.detail",
-        "support.create"
-      ],
-      "frontend": "local-green (composto CoeloAdminDirectory, arquitetura verde, 69 testes)",
-      "backend": "sem mudanca",
-      "e2e": "N",
-      "visual": "goldens divergentes registrados; aprovacao visual pendente (nao vira verified)"
+      "file": "docs/reviews/evidence/etapa-2/r04-operacoes/deltas-r04-ops.json",
+      "summary": "account.profile FE verified / BE done / E2E verified-e2e; account.settings FE verified (BE not-applicable e E2E flutter-only mantidos); support.table/kanban/detail/create/reply/close FE verified / BE done / E2E verified-e2e"
     }
   ],
   "packages_ready": [
@@ -294,7 +304,7 @@
     }
   ],
   "questions_to_owner": [],
-  "next_step": "conversa com Chrome: rota real de Suporte com qa-r03 apos a ponte de ator; pagina lado a lado dos 32 goldens support_* para o Owner; depois regravar no SDK 3.44.2. Planos/Auditoria seguem como na rev 16.",
+  "next_step": "coordenador: aplicar deltas-r04-ops.json, limpar os residuos sinteticos por SQL e avaliar as pendencias registradas (sigla/e-mail/celular do perfil, balao de chat na edicao e no detalhe, responsaveis do Suporte sem persistencia). Planos e Auditoria continuam como na rev 17.",
   "commits": [
     "e96b640c8",
     "480728d7f",
@@ -562,7 +572,7 @@
     ],
     "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real"
   },
-  "app_port": "localhost:3007 (3000 deixado livre para as outras frentes; nenhuma acao do recorte usa R2)",
+  "app_port": "localhost:3007 (build web release servido por Node; CDP 9407)",
   "pacotesProntos": [
     {
       "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
@@ -577,7 +587,7 @@
       "state": "na fila do coordenador (lote 10)"
     }
   ],
-  "author_note": "Revisao 17 gravada pelo subagente do coordenador apos o reinicio da maquina de 00:27 (a conversa R04 - Operacoes caiu). Recorte do subagente: somente o front-end de Suporte no composto (WIP e2c8dcca2). Sem Chrome, sem flutter run, um flutter test por vez.",
+  "author_note": "Revisao 18 gravada pelo subagente do coordenador (a conversa R04 - Operacoes caiu no reinicio da maquina). Recorte: prova na rota real de Conta (/profile, /settings) e Suporte (/support) com a sessao qa-r03@coelo.me sobre o build web release desta branch. Um Chrome, nenhum flutter test em paralelo; Chrome e servidor fechados ao fim.",
   "goldens_divergentes": {
     "family": "support",
     "reason": "toolbar, banner Criar, tabela e rodape de paginacao passaram ao composto CoeloAdminDirectory (recuo 40/24/16, busca 300/216/100%, filtros 160 px, rodape fixo); decisao do Owner de 10/09: A (regravar apos aplicar a observacao) em todos os claros exceto support_detail_light_1024 (R); escuros seguem o claro",
@@ -626,6 +636,70 @@
     "Composto: CoeloAdminPaginationFooter compacto (_CompactPageAction) nao expoe chaves coelo-admin-pagination-previous/next; testes de Suporte localizam por Semantics.label. Sugestao de correcao no composto (nao aplicada: fora do recorte do subagente).",
     "Composto: CoeloAdminListingToolbar troca Row/Column por largura e recria a subarvore dos filtros quando um painel de detalhe abre no corpo do workspace (perde foco de teclado nos filtros). Suporte contorna na feature (foco no detalhe ao abrir + nextFocus no fallback); Auditoria pode ter o mesmo efeito.",
     "Composto: estado loading nao mostra o Criar (so o spinner); a regra do Owner cita vazio/falha/antes da primeira carga para busca/filtros (mantidos). Registrado, nao alterado.",
-    "Commits 6360c93b5 e 00c57bc42 (goldens de Planos: tabela na rota real dentro da shell; cards com shell + ARQUIVO) estao na branch, feitos pela conversa caida sem revisao no JSON; sem prova registrada alem do proprio commit."
+    "Commits 6360c93b5 e 00c57bc42 (goldens de Planos: tabela na rota real dentro da shell; cards com shell + ARQUIVO) estao na branch, feitos pela conversa caida sem revisao no JSON; sem prova registrada alem do proprio commit.",
+    "rev 18: prova na rota real de Conta e Suporte concluida (8/8 P); ver ROTA_REAL_03h00_por_action_id, pendencias_registradas_rev18 e deltas-r04-ops.json. Nenhum SQL executado em producao por esta revisao; apenas RPCs pelo app com a sessao qa-r03."
+  ],
+  "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04ops (115 s) servido por serve.js (Node, fallback de SPA) em http://localhost:3007; Chrome dedicado --remote-debugging-port=9407 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial do Coelo-backups/qa-r03.env exportada no shell, nunca impressa) com Manter sessao aberta. Metodo: o comando tap do Flutter Driver trava (timeout 45 s) neste build release em botoes que abrem dialogo/rede; cliques por CDP Input.dispatchMouseEvent (cdp.js clickxy) e texto pelo driver enter_text; RPCs capturadas por Network (cdp.js net). O Chrome sob SwiftShader caiu duas vezes (apos reload em /settings e apos Uncaught Error do CanvasKit no dialogo de Bug); reaberto direto na rota, a sessao persistiu e a prova continuou (memoria fisica livre 1,8-2,4 GB durante a prova).",
+  "ROTA_REAL_03h00_por_action_id": {
+    "account.profile": "/profile abre com dados reais da RPC superadmin_account_profile_get (pessoa de servico da ponte 220400: Operador interno / 41462594, e-mail e celular vazios). Editado Sobrenome para \"41462594 [R04-QA]\"; salvar exigiu preencher e-mail (validador do cliente \"Informe o e-mail.\"), celular (RPC exige 7-40 caracteres) e sigla (o valor derivado \"O4\" e invalido no cliente: \"Use uma ou duas letras.\"); superadmin_account_profile_save -> 200; reload manteve \"41462594 [R04-QA]\" e o celular; restaurado \"41462594\" (save 200) e solicitacao de e-mail cancelada (superadmin_account_email_change_cancel 200). P. Capturas 01-04.",
+    "account.settings": "/settings abre; Claro + Reduzir animacoes gravados em localStorage (coelo.superadmin.theme-mode=light, reduce-motion=true); carga completa nova (Chrome reaberto) manteve os dois (switch checked=true, tema claro renderizado); restaurado Sistema + desligado. Persistencia local por desenho (SharedPreferences), sem backend. P. Capturas 05-08.",
+    "support.table": "visao tabela com colunas Chamado/Origem/Solicitante/Responsavel/Status/Anexos, banner Criar suporte, chip de status, paginacao (Itens por pagina 9, Pagina 1 de 1); chamado sintetico listado apos reload via superadmin_support_list -> 200. P. Capturas 17 e 22.",
+    "support.kanban": "/support abre em cards (padrao) com busca, Status, Menu, Responsavel, Leitura, toggle cards/tabela, Arquivos e card Criar suporte no vazio (\"Ainda nao ha chamados na operacao.\"); colunas Novo/Em andamento/Aguardando solicitante/Concluido; o card moveu de coluna a cada status. P. Capturas 10, 13, 18, 21.",
+    "support.detail": "clique no card abre o painel lateral (superadmin_support_get -> 200) com id, assunto, chip de status, Equipe, Relatorio original, Historico e compositor. P. Captura 14.",
+    "support.create": "card Criar suporte -> dialogo Novo chamado (menu Outros, assunto \"[R04-QA] Chamado de teste\", descricao) -> superadmin_support_create -> 200 (id 48e02ab0-fa60-4e7c-86b6-78f75565dc57, status new, revision 1, actor_person_id 007a4ca5-31bd-4a77-956f-ce879695042e); lista recarregada com total_items 1. P. Capturas 11-13.",
+    "support.reply": "compositor \"Responder ao chamado\" -> superadmin_support_reply -> 200 (revision 2, mensagem author support); reload manteve revision 2 e o item support.reply no Historico. P. Captura 15.",
+    "support.close": "chip de status -> Em andamento (exigiu escolher responsavel) -> superadmin_support_set_status in_progress -> 200 (revision 3); depois Concluido -> superadmin_support_set_status completed -> 200 (revision 4); reload: superadmin_support_list devolve status completed e o card esta na coluna Concluido (1 item). P. Capturas 16, 20, 21."
+  },
+  "pendencias_registradas_rev18": [
+    {
+      "action_id": "account.profile",
+      "tipo": "defeito-cliente",
+      "o_que": "sigla derivada pelo servidor (\"O4\", sobrenome numerico da pessoa de servico) reprova no validador do cliente (uma ou duas letras): o formulario nao salva sem trocar a sigla; a sigla nao e persistida (p_avatar_initials so validado)."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "dado-da-ponte",
+      "o_que": "e-mail vazio na projecao porque a pessoa de servico da ponte 220400 nao tem person_auth_links ativo; o validador exige e-mail e cada salvamento cria account_email_change_requests pendente (cancelado ao fim). Com pessoa real vinculada o campo vem preenchido."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "backend",
+      "o_que": "superadmin_account_profile_save exige celular 7-40 caracteres sem validador no cliente: celular vazio cai em \"Nao foi possivel salvar o perfil\" generico."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "ui-decisao-7",
+      "o_que": "balao Mensagens sobrepoe o botao Salvar alteracoes em 1440x1000 (formulario de edicao: sem balao pela Decisao 7). Captura 02-profile-save-click."
+    },
+    {
+      "action_id": "support.detail",
+      "tipo": "ui",
+      "o_que": "balao Mensagens sobrepoe o Historico e o compositor do painel lateral em 1440x1000. Captura 14."
+    },
+    {
+      "action_id": "support.close",
+      "tipo": "prototipo",
+      "o_que": "Responsaveis vem de defaultTeamMembers (lista fixa) e setAssignees nao persiste (sem RPC): apos reload \"Sem responsavel\". Mudar para Em andamento exige escolher responsavel dessa lista fixa."
+    },
+    {
+      "action_id": "support.kanban",
+      "tipo": "composto",
+      "o_que": "\"abas de status\" nao existem em Suporte: Status e filtro em dropdown; a visao (cards/tabela) volta a cards apos reload (preferencia nao persistida)."
+    },
+    {
+      "action_id": "support.create",
+      "tipo": "residuo-sintetico",
+      "o_que": "chamado 48e02ab0-fa60-4e7c-86b6-78f75565dc57 ([R04-QA], status completed, 1 mensagem, 4 recibos) fica em producao: nao ha RPC de exclusao. Coordenador remove por SQL (support_sessions e dependentes) ao fim da rodada."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "residuo-sintetico",
+      "o_que": "people.mobile_phone da pessoa de servico 007a4ca5-31bd-4a77-956f-ce879695042e ficou \"11999990000\" (a RPC nao aceita vazio); account_email_change_requests cancelada e 3 recibos em account_profile_command_receipts. Coordenador limpa por SQL se quiser o estado anterior."
+    },
+    {
+      "action_id": "support.*",
+      "tipo": "ferramenta",
+      "o_que": "Flutter Driver tap trava neste build release (timeout); manter cliques por CDP no metodo de prova."
+    }
   ]
 }
