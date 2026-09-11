@@ -1,6 +1,6 @@
 {
-  "revision": 43,
-  "updated_at": "2026-09-11T20:40:00-03:00",
+  "revision": 44,
+  "updated_at": "2026-09-11T20:46:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -234,7 +234,7 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "pagina lado a lado (SUP-R06, DEF-R06) para o Owner; handoff; (6) audit.export so se sobrar tempo (Edge Function audit-export sem deploy: nao iniciado)",
+  "next_step": "ate 21:36: (6) audit.export — verificar se cabe sem deploy (nao); senao, revisar goldens de outras familias afetados pelo texto 503? (nao: so /imports/new); fechar Chrome/servidor ao fim; revisao de 10 min as 21:36",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -1069,5 +1069,11 @@
       "o_que": "a 1424px de largura util a toolbar quebra o filtro Leitura para a segunda linha (golden 1440 fica em uma linha)."
     }
   ],
-  "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (16 deltas; ensaiado com apply-tracker-delta.cjs + validate-trackers.cjs PASS e revertido)"
+  "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (16 deltas; ensaiado com apply-tracker-delta.cjs + validate-trackers.cjs PASS e revertido)",
+  "pagina_aprovacao_owner": {
+    "url": "https://claude.ai/code/artifact/1d18a357-f2ed-40ee-827b-63798967a700",
+    "copia": "docs/reviews/evidence/etapa-2/r06-operacoes/aprovacao-r06-ops/pagina-lado-a-lado-r06-ops.html",
+    "itens": "SUP-R06 (6 pares de Suporte), DEF-R06 (2 pares), SES-R06 (captura da rota real)"
+  },
+  "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
 }
