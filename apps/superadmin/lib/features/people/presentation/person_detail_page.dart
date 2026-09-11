@@ -7,7 +7,9 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../auth/domain/logout_action.dart';
 import '../domain/person_detail_reader.dart';
 import '../domain/person_directory.dart';
+import '../domain/person_handle.dart';
 import 'person_detail_controller.dart';
+import 'person_handle_section.dart';
 
 final class PersonDetailPage extends StatefulWidget {
   const PersonDetailPage({
@@ -16,6 +18,7 @@ final class PersonDetailPage extends StatefulWidget {
     required this.logout,
     required this.onBack,
     this.onEdit,
+    this.handleRepository,
     this.onDestinationSelected,
     super.key,
   });
@@ -26,6 +29,9 @@ final class PersonDetailPage extends StatefulWidget {
 
   /// Abre o editor da pessoa quando a composicao autoriza escrita.
   final VoidCallback? onEdit;
+
+  /// @ da pessoa (Decisão 16); sem repositório a seção não aparece.
+  final PersonHandleRepository? handleRepository;
   final ValueChanged<String>? onDestinationSelected;
   @override
   State<PersonDetailPage> createState() => _PersonDetailPageState();
@@ -90,6 +96,8 @@ final class _PersonDetailPageState extends State<PersonDetailPage> {
                           'Status cadastral': detail.status.label,
                           'Vínculo Auth': detail.authLink.label,
                         }),
+                        if (widget.handleRepository case final handles?)
+                          PersonHandleSection(repository: handles, personId: detail.id),
                         if (detail.type == PersonType.adult) ...[
                           if (detail.memberships.isEmpty)
                             _section(context, 'Vínculos institucionais', {
