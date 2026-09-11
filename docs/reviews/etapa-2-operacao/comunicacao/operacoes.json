@@ -1,13 +1,13 @@
 {
-  "revision": 32,
-  "updated_at": "2026-09-11T14:56:00-03:00",
+  "revision": 34,
+  "updated_at": "2026-09-11T15:03:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "30a589972 (+ este commit)",
+  "head": "c1ad2560c (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -289,6 +289,34 @@
       ],
       "delta": "harness import_hub_golden_test passa a montar o diretorio dentro do SuperadminShell (como Planos); 13 goldens regravados; rota real (capturas 52-53): cabecalho, busca, filtros, toggle, Arquivos com Importar/CSV/XLSX honestos e card Criar no estado adiado. Pagina R/A (8 claros): https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7 e docs/reviews/evidence/etapa-2/r05-operacoes/imports-ra/.",
       "proof": "suite imports 36/36 (+1 skip); capturas 52-53"
+    },
+    {
+      "action_ids": [
+        "account.profile"
+      ],
+      "status": "pendencias da R04 corrigidas (cliente)",
+      "commits": [
+        "092977592"
+      ],
+      "changed": [
+        "apps/superadmin/lib/features/account/domain/account_profile.dart (AccountAvatar.lettersOnlyInitials)",
+        "apps/superadmin/lib/features/account/data/supabase_account_profile_repository.dart",
+        "apps/superadmin/lib/features/account/presentation/screens/profile_page.dart (validador de celular)",
+        "apps/superadmin/test/features/account/account_avatar_initials_test.dart"
+      ],
+      "delta": "Sigla derivada com digito (O4) deixa de reprovar: o cliente deriva das letras do nome quando a projecao nao e so letras; celular ganha validador honesto (Informe o celular / 7 a 40 caracteres) em vez do erro generico do servidor. E-mail vazio da pessoa de servico continua (dado da ponte, nao do cliente). flutter analyze lib test sem issues; suite account 121/121.",
+      "proof": "flutter test test/features/account 121/121"
+    },
+    {
+      "action_ids": [
+        "account.profile"
+      ],
+      "status": "Decisao 7 aplicada",
+      "commits": [
+        "c1ad2560c"
+      ],
+      "delta": "Meu perfil (formulario de edicao) deixa de mostrar o balao Mensagens (cobria Salvar alteracoes em 1440x1000). Suites account 126/126 e shell 127/127.",
+      "proof": "flutter test"
     }
   ],
   "tests": {
@@ -367,7 +395,7 @@
       "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
     }
   ],
-  "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
+  "next_step": "15:30 aviso ao coordenador; 15:35 prova de account.logout (Sair do menu da conta em /profile -> /login; reload permanece no login); 15:45 finalizado + mini-revisao",
   "commits": [
     "7df495615",
     "0e4b2f27c",
@@ -393,7 +421,11 @@
     "cb64ca5cc",
     "33684e476",
     "72c4ccedc",
-    "30a589972"
+    "30a589972",
+    "6285d69fd",
+    "092977592",
+    "134068c55",
+    "c1ad2560c"
   ],
   "r04_history": {
     "revision": 20,
@@ -1011,6 +1043,16 @@
       "action_id": "imports.create",
       "tipo": "ux-transversal",
       "o_que": "/imports/new (e toda rota de mutacao bloqueada) mostra SuperadminErrorScreen 503 'temporariamente indisponivel' para recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP'. Mudanca transversal do erro generico; decisao de UI."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "fechadas",
+      "o_que": "sigla derivada O4 e celular sem validador (R04) fechadas em 092977592; ficam: e-mail vazio na projecao da pessoa de servico (dado da ponte 220400) e balao Mensagens sobre Salvar em 1440x1000 (Decisao 7, frame)."
+    },
+    {
+      "action_id": "support.detail",
+      "tipo": "ui-decisao-7",
+      "o_que": "balao Mensagens sobre o compositor do painel lateral em 1440x1000 continua: esconder o balao com o detalhe aberto exige rebuild da shell pelo controller e quebrou os testes de foco do detalhe (Escape/Enter); tentativa revertida. Alternativa: chatLauncherBottomInset maior ou deslocar o balao quando o workspace tem painel aberto (no composto/shell)."
     }
   ],
   "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
