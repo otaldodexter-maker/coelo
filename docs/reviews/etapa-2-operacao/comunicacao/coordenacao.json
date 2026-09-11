@@ -1,12 +1,12 @@
 {
- "revision": 47,
+ "revision": 48,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:50:00-03:00",
+ "updatedAt": "2026-09-11T16:00:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -237,6 +237,7 @@
   "45": "14:48 lote 44 (seguranca da Agenda); deltas de G2/G6/G3 aplicados (FE 106 / BE done 107 / E2E 78); origens locais liberadas nas Edge Functions; G4 cobrada",
   "46": "15:04 lotes 45-46; form-export-download implantada; allowlists de origem alinhadas; deltas finais de G1/G3/G4/G6 aplicados (FE 131 / BE done 128 / E2E 99); P47/P48 e IMP-R05 registrados",
   "47": "15:50 pedido de revisao final as sete frentes; lotes 47-48; moments-media corrigida; todas as frentes finalizadas (FE 138 / BE done 132 / E2E 105)",
+  "48": "16:00 FECHAMENTO da R05: sete frentes integradas e worktrees removidas; 21 lotes/34 pacotes; rastreadores, skills, ADR, conhecimento e fechamento publicados; percentuais finais",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -1355,5 +1356,39 @@
   "e2eVerified": "105/199",
   "feAprovacaoVisual": "53/231",
   "base": "validate-trackers PASS sobre 4d9c2364d"
+ },
+ "fechamentoR05": {
+  "quando": "2026-09-11T16:00:00-03:00 (relogio da maquina)",
+  "devPublicado": "45a110063 + commit desta revisao",
+  "janela": "abertura 12:03; frentes ate 15:45; revisao final pedida 15:50 e respondida pelas sete ate 15:52; consolidacao 15:50-16:10",
+  "frentes": {
+   "estrutura": "rev 53 (48fb00f06; codigo c3e1ee639): 51 deltas aplicados; @ de estrutura em producao; sem WIP; worktree removida",
+   "acessos-pessoas": "rev 137 (d6ceff4be): 41 deltas; 4 pacotes (170100-170400); sem WIP; worktree removida",
+   "formularios-cuidado-rotina": "rev 46 (395f4552f; codigo 6457387ff): 65 deltas em 6 arquivos; 3 pacotes; form-media question-image; sem WIP; worktree removida",
+   "principal-chat-sistema": "rev 29 (45d3e681d): 22 deltas; 4 pacotes (130000-130300); sem WIP; worktree removida",
+   "realm-interno": "rev 38 (f30516f31): 16 pacotes; chat-media e form-media; 215 pgTAP + 58 Deno; sem WIP; worktree removida",
+   "publicacoes-agenda": "rev 43 (a371fce6d): 16 deltas; 4 pacotes (190000-190300); P33/P34 aprovados; sem WIP; worktree removida",
+   "operacoes": "rev 38 (4c9101fe5): deltas em 5 arquivos; 2 pacotes (200000/200100); G-SUP e Importacoes aprovados; sem WIP; worktree removida"
+  },
+  "producao": "21 lotes (28 a 48), 34 pacotes; ledger +34; dumps por lote em Coelo-backups; candidatos restantes: nenhum; Edge Functions chat-media (nova), form-operations, form-media, form-export-download e moments-media (reimplantadas)",
+  "integracao": "sete branches work/etapa2-r05-* integradas por merge (~100 merges), 0 commits fora de dev, status limpo, sem stash; worktrees e2-r05-* das frentes, e2-r04-coordenacao e e2-r04-estrutura removidas (branches preservadas); e2-r05-estrutura-base ja tinha sido removida pela G1; a worktree e2-r05-coordenacao fica; checkout principal continua em 9bf60463b (dev local atras de origin/dev; o coordenador nao edita o checkout principal: git pull pelo Owner)",
+  "docker": "descartaveis das frentes parados por elas; espelho coelo_baseline mantido (reconstruido as 13:05 na ordem real)",
+  "rastreadores": "validate-trackers PASS; bloco Estado vigente — Rodada 5 nos tres md (R04 virou Estado anterior); inventario 231 acoes com 53 ownerVisualApproval",
+  "skills": "coelo-backend (regras da R05 + segredos: HMAC e CHAT_MEDIA_WORKER_SECRET + arrobas reservados no fim do MVP), coelo-frontend, coelo-frontend-backend e baselines de coelo-ui (G-SUP, Agenda, Importacoes) atualizadas em dev",
+  "adr": "ADR 0034 Decisao 17",
+  "conhecimento": "artigo team coelo-handles.md novo; supabase-production-environment.md atualizado; Test-CoeloKnowledge PASS (63)",
+  "percentuais": {
+   "feVerified": "138/231 (59,74%)",
+   "feLocalGreen": "23/231 (9,96%)",
+   "feAprovacaoVisualDoOwner": "53/231 (22,94%)",
+   "beLocalGreen": "46/224 (20,54%)",
+   "beSqlEmProducao": "178/224 (79,46%)",
+   "beDone": "132/224 (58,93%)",
+   "e2eVerified": "105/199 (52,76%)",
+   "base": "inventario validado as 15:53 de 11/09 sobre 1f19d52db; ambiente repositorio + producao medida nos lotes 28 a 48"
+  },
+  "suiteCompleta": "flutter test do superadmin na base integrada: 6692 aprovados / 53 falhos / 11 pulados (segunda execucao para listar as falhas em curso ao fechar); falhas conhecidas pre-existentes em origin/dev: test/app 18, test/core/config 4, activity_golden 9, institution pagination 1, test/shared 11",
+  "perguntasAoOwner": "P43-P50, agenda_create_* A+, IMP-R05-2 e arrobas reservados em next-round/R05-perguntas-ao-owner-20260911.md",
+  "fechamento": "next-round/R05-fechamento.md (dados sinteticos, chaves, recomendacoes para a R06)"
  }
 }
