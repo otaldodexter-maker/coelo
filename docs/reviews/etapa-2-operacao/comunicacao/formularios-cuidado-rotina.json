@@ -1,18 +1,18 @@
 {
- "revision": 48,
+ "revision": 49,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T20:02-03:00",
+ "updatedAt": "2026-09-11T20:42-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "03ccdbf41",
+ "head": "2164739b3 + este commit",
  "base": "origin/dev ca60b096b",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -63,17 +63,11 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "rota real: build web-r06fcr2 em andamento (Medicacao + Rotina); em seguida Chrome dedicado",
-  "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Planos de medicacao / Acompanhamento -> Rotina diaria",
+  "gate": "itens 0-3 fechados na rota real; seguindo para forms.location-question/answer (item 5); itens 4, 6 e 7 registrados com o primeiro gate",
+  "screen": "Etapa 2 -> apps/superadmin -> Comunicacao -> Formularios -> editor (pergunta Local)",
   "actionIds": [
-   "medication.create",
-   "medication.detail",
-   "medication.edit",
-   "medication.evidence",
-   "health-care.list",
-   "daily-routine.list",
-   "daily-routine.edit",
-   "daily-routine.publish"
+   "forms.location-question",
+   "forms.location-answer"
   ]
  },
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
@@ -81,7 +75,7 @@
  "reservedFiles": [],
  "blocking": [],
  "deltaProposals": [
-  "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (a criar)"
+  "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (25 deltas; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido): health-care.list BE done + E2E; medication.create/detail/edit/evidence FE verified + BE done + E2E; daily-routine.list FE/BE/E2E; daily-routine.edit E2E; daily-routine.publish FE/BE/E2E; child-safety.list E2E; child-safety.child FE/BE/E2E"
  ],
  "packages": [],
  "commits": [
@@ -103,6 +97,11 @@
    "sha": "03ccdbf41",
    "o_que": "feat(rotina): V-15 A+: card Criar nas tres abas (cards e tabela, com dados), seletor de origem (rotina nasce de modelo, lancamento de rotina), acoes da tabela iguais ao card (icones com tooltip), Lancar hoje = superadmin_routine_save_launch_draft (D7) e troca para Lancamentos; golden daily_routine_directory_table_light_1440 regravado apos aplicar a observacao",
    "prova": "daily_routine_create_everywhere_test 1/1; suite daily_routine + rotas verde"
+  },
+  {
+   "sha": "2164739b3",
+   "o_que": "fix(rotina): editar modelo/rotina/lancamento envia o id sempre que existe (23505 medido na rota real: modelo 176882c5 com management_version 0 era tratado como criacao)",
+   "prova": "supabase_routine_data_test 6/6; rota real: save_model 200 versao 2"
   }
  ],
  "pendenciasRegistradas": [
@@ -125,12 +124,63 @@
    "action_id": "daily-routine.list",
    "o_que": "Arquivar (pedido do Owner em V-15) nao tem comando no servidor (routine_models/applications tem status archived, mas nenhuma RPC superadmin_routine_* muda status); candidato SQL se sobrar tempo, senao pendencia de contrato",
    "gate": "BE contrato"
+  },
+  {
+   "action_id": "medication.detail",
+   "o_que": "apos reload direto na URL o campo Crianca mostra \"Crianca do plano\" (childLabelFor so conhece planos ja listados); ler o nome do detalhe",
+   "gate": "FE"
+  },
+  {
+   "action_id": "medication.evidence",
+   "o_que": "segmento Administrada quebra em duas linhas no dialogo de 420 px (showSelectedIcon/largura)",
+   "gate": "FE visual"
+  },
+  {
+   "action_id": "attendance.mark",
+   "o_que": "texto \"Sentimento (demonstracao local)\" e \"Nao persistido nesta etapa\" aparecem na chamada de producao (D3: sem texto de demonstracao)",
+   "gate": "FE"
+  },
+  {
+   "action_id": "forms.upload/resolve-file/expire-file/delete-file",
+   "o_que": "nao coube: o editor nao tem UI de imagem da pergunta (picker, PUT com required_headers, finalize, resolve na exibicao, delete); a pagina /forms/media/:assetId so le pelo action read; question-image em R2 implantada sem cliente. Primeiro gate: implementar o cliente da question-image no editor (FE do grupo)",
+   "gate": "FE"
+  },
+  {
+   "action_id": "attendance.entry/complete (item 7)",
+   "o_que": "nao coube: reconstrucao de Lancar chamada na familia Publicacao (referencias lancar-chamada-{mobile-375,web-1440}.png) exige tela nova + golden + prova; a tela atual (assistente Contexto/Rotina/Chamada) segue sem balao de chat",
+   "gate": "FE (proxima rodada)"
+  },
+  {
+   "action_id": "politicas macro da unidade (item 6)",
+   "o_que": "nao coube (superadmin_unit_care_policy_get_v1/set_v1 do lote 36 sem tela)",
+   "gate": "FE"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "item 0",
+ "nextStep": "forms.location-question/answer na rota real; depois mini-revisao",
  "finalizado": false,
- "dadosSinteticosCriados": [],
+ "dadosSinteticosCriados": [
+  {
+   "tabela": "public.medication_plans",
+   "id": "12f816e8-a178-4dea-b1a5-1aa039206673",
+   "nota": "Dipirona R06, crianca d0c4...03, versao 2"
+  },
+  {
+   "tabela": "public.medication_plan_evidence",
+   "id": "42e77772-b6d1-4c83-99bc-d1c7a6fbf3ce",
+   "nota": "dose recusada"
+  },
+  {
+   "tabela": "public.routine_launches",
+   "id": "880b12a8-876b-417a-aa24-7467fb4e09a0",
+   "nota": "lancamento 11/09 da rotina 3d9f0a32, publicado"
+  },
+  {
+   "tabela": "public.routine_models",
+   "id": "176882c5-e35f-4db9-b763-dc7ffe31b276",
+   "nota": "renomeado para \"Modelo R05 rota real (R06)\" (versao 2)"
+  }
+ ],
  "chavesCriadas": "nenhuma",
  "historicoR05": {
   "revision": 46,
@@ -1736,5 +1786,98 @@
    "working_tree": "limpo, tudo commitado e publicado",
    "wip_retido": "nenhum"
   }
+ },
+ "rotaReal": {
+  "ambiente": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r06fcr2 (03ccdbf41) e web-r06fcr3 (2164739b3) servidos por serve.py em 127.0.0.1:3018; Chrome dedicado --remote-debugging-port=9418 --user-data-dir=%TEMP%/coelo-chrome-formularios --use-angle=swiftshader; login qa-r06-formularios pelo driver (credencial so no ambiente do processo); cliques por CDP (Aplicar do seletor de data e botoes preenchidos so respondem ao clique com hover de 300 ms e press de 250 ms: a \"falha\" do seletor de hora/data da R05 era do harness); texto por enter_text do driver apos foco por CDP; RPCs pela aba Network (cdp_net)",
+  "health-care.list": {
+   "resultado": "P",
+   "prova": "superadmin_health_care_directory 200, perfil 5712371e listado, reload mantem",
+   "capturas": [
+    "01-health-care-list.png",
+    "02-health-care-list-reload.png"
+   ]
+  },
+  "medication.create": {
+   "resultado": "P",
+   "prova": "superadmin_medication_plan_save 200 -> 12f816e8 versao 1; lista mostra o plano",
+   "capturas": [
+    "03..10"
+   ]
+  },
+  "medication.detail": {
+   "resultado": "P",
+   "prova": "detail 200 no editor; reload mantem",
+   "capturas": [
+    "11"
+   ]
+  },
+  "medication.edit": {
+   "resultado": "P",
+   "prova": "save 200 versao 2 (dose 5 ml); reload mantem",
+   "capturas": [
+    "12",
+    "15"
+   ]
+  },
+  "medication.evidence": {
+   "resultado": "P",
+   "prova": "record_evidence 200 -> 42e77772 (refused, motivo); detail relido com evidence",
+   "capturas": [
+    "13",
+    "14"
+   ]
+  },
+  "daily-routine.list": {
+   "resultado": "P",
+   "prova": "tres abas com card Criar e acoes na tabela; directory 200 no reload",
+   "capturas": [
+    "20",
+    "21",
+    "22",
+    "28"
+   ]
+  },
+  "daily-routine.edit": {
+   "resultado": "P apos correcao",
+   "prova": "primeira tentativa 23505 (model_id nulo); 2164739b3; save_model 200 versao 2; lista recarregada com o nome novo",
+   "capturas": [
+    "26",
+    "27",
+    "28"
+   ]
+  },
+  "daily-routine.publish": {
+   "resultado": "P",
+   "prova": "save_launch_draft 200 -> 880b12a8; publish_launch 200 published v2; reload mantem",
+   "capturas": [
+    "23",
+    "24",
+    "25"
+   ]
+  },
+  "child-safety.list": {
+   "resultado": "P",
+   "prova": "child_safety_directory 200; reload mantem",
+   "capturas": [
+    "30"
+   ]
+  },
+  "child-safety.child": {
+   "resultado": "P",
+   "prova": "child_safety_get 200 no reload direto",
+   "capturas": [
+    "31",
+    "32"
+   ]
+  },
+  "attendance (Decisao 7)": {
+   "resultado": "P",
+   "prova": "/attendance/new e /attendance/calls/d3821901 sem balao de chat (fac31c7c4 provado na rota real)",
+   "capturas": [
+    "40",
+    "42"
+   ]
+  },
+  "negativas": "superadmin_medication_plan_detail e record_evidence com plano inexistente/alheio -> P0002 medication plan unavailable (rpc6.py, sessao qa-r06)"
  }
 }
