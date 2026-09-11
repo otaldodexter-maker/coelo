@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 24,
+ "revision": 25,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T22:01:49-03:00",
+ "updatedAt": "2026-09-10T22:11:48-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -11,7 +11,7 @@
  "branch": "work/etapa2-r04-estrutura",
  "head": "(commit desta revisao)",
  "upstream": "origin/work/etapa2-r04-estrutura",
- "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex), com a baseline 20260910000000 e os lotes 1 a 7 em migrations/",
+ "base": "origin/dev 836c63215 (rebaseada; lote 8 MFA fora do MVP em producao)",
  "horario": {
   "inicio": "2026-09-10T21:44:19-03:00",
   "corte": "2026-09-11T04:20:00-03:00",
@@ -116,7 +116,7 @@
   {
    "n": 1,
    "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-   "estado": "em andamento: 4 pacotes de Locais verdes no espelho; cadeia de Atividades v2 (11 migrations) aplica sobre a baseline e activity_save_v2 46/46; corrigindo fixtures dos testes v2 e unit_detail",
+   "estado": "concluido no espelho: 17 candidatos aplicam em ordem e todos os pgTAP verdes; prova integral (espelho novo + 46 lotes + 17 candidatos) em execucao",
    "action_ids": [
     "locations.detail-links",
     "locations.schedule",
@@ -134,7 +134,7 @@
   {
    "n": 3,
    "item": "P5 (Turmas com filtro por unidade degradando de forma honesta) e P6 (importar de Unidades vira indisponibilidade honesta)",
-   "estado": "pendente",
+   "estado": "P5 feito (view model + pagina + teste); P6 feito (widget morto do dialogo removido; botao ja era honesto)",
    "action_ids": [
     "groups.list",
     "units.import"
@@ -143,7 +143,7 @@
   {
    "n": 4,
    "item": "P15 no SuperadminFormFrame: rodape ancorado + respiro no fim do conteudo; avisar formularios-cuidado-rotina sobre medication_form_mobile_light",
-   "estado": "pendente"
+   "estado": "feito no frame (space6 -> space10); testes Flutter em execucao"
   },
   {
    "n": 5,
@@ -157,7 +157,9 @@
   "Bindings, activity_location_create e group_location_create verdes no espelho: 30/30, 33/33, 46/46",
   "Cadeia de Atividades v2 aplica integralmente sobre baseline + 44 lotes",
   "P15: respiro no fim do conteudo no frame compartilhado",
-  "P6: diálogo de importar de Unidades (widget morto com FilePicker e previa) removido; o botao ja mostrava indisponibilidade honesta"
+  "P6: diálogo de importar de Unidades (widget morto com FilePicker e previa) removido; o botao ja mostrava indisponibilidade honesta",
+  "Cadeia de Atividades v2 (11) + Locais (4) + detalhes de Unidade e Turma (2): 17 candidatos aplicam em ordem sobre baseline + 46 lotes e 16 suites pgTAP verdes",
+  "P5: filtros de Turmas degradam de forma honesta quando fetchFilterOptions falha (view model, rotulo \"(indisponivel)\", teste)"
  ],
  "testes": {
   "P": null,
@@ -165,34 +167,104 @@
   "B": null,
   "S": null,
   "U": null,
-  "evidencia": "nenhuma medicao nesta rodada ainda"
+  "evidencia": "pgTAP: 16 suites verdes no espelho (contagens em pacotesProntos); prova integral e flutter test em execucao"
  },
  "pacotesProntos": [
   {
    "carimbo": "20260910180000_superadmin_location_reservations_v2",
    "origem": "20260909165000",
-   "mudanca": "preflight e auditoria do override na assinatura real de audit_append_superadmin_internal (13 args); teste deixa de exigir after_json",
+   "mudanca": "assinatura real de audit_append_superadmin_internal (13 args) no preflight e no override; teste sem after_json",
    "pgTAP": "49/49",
    "estado": "verde"
   },
   {
-   "carimbo": "20260910180020..180120 (11 arquivos) cadeia de Atividades v2",
-   "origem": "20260831192831..20260908235110",
-   "mudanca": "so recarimbo; fixtures de 7 testes corrigidas para a forma de producao",
-   "pgTAP": "save_v2 46/46, security_contract 37/37; demais em reexecucao",
-   "estado": "aplica; testes em andamento"
+   "carimbo": "20260910180020_activities_v2_actor_attribution",
+   "origem": "20260831192831",
+   "mudanca": "recarimbo",
+   "pgTAP": "actor_contract 39/39 (fixture units na forma de producao; asserção de colunas internal_identity_id restrita ao agregado de Atividades, porque o catalogo de Locais em producao as expoe de proposito)",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180030_activities_v2_actor_provenance_hardening",
+   "origem": "20260831195118",
+   "mudanca": "recarimbo",
+   "pgTAP": "coberto pelos testes v2 abaixo",
+   "estado": "aplica"
+  },
+  {
+   "carimbo": "20260910180040_activities_v2_actor_provenance_semantics",
+   "origem": "20260831195944",
+   "mudanca": "recarimbo",
+   "pgTAP": "coberto pelos testes v2 abaixo",
+   "estado": "aplica"
+  },
+  {
+   "carimbo": "20260910180050_activities_v2_permissions_receipts",
+   "origem": "20260831203645",
+   "mudanca": "recarimbo",
+   "pgTAP": "permissions_publish 18/18",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180060_activities_v2_internal_gateways",
+   "origem": "20260831211945",
+   "mudanca": "recarimbo; ATENCAO: create or replace em audit_activity_change, has_activity_capability e audit_mask_payload (existem em producao com outro corpo) e cria a sobrecarga de 14 args de audit_append_superadmin_internal",
+   "pgTAP": "commands 28/28, read 28/28, relationships 24/24 (AAL1 do Owner na regua do MVP)",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180070_activities_v2_rls_grants",
+   "origem": "20260831231645",
+   "mudanca": "recarimbo",
+   "pgTAP": "security_contract 37/37",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180080_activities_v2_final_review_hardening",
+   "origem": "20260831234307",
+   "mudanca": "recarimbo",
+   "pgTAP": "hardening 25/25",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180090_activity_template_unit_scope",
+   "origem": "20260901165125",
+   "mudanca": "recarimbo + revoke de escrita de anon/authenticated em public.activity_templates (privilegio padrao do schema public; o cliente nao le a tabela direto)",
+   "pgTAP": "31/31 (has_fk/has_check trocados por pg_constraint: a pgTAP 1.3 do espelho nao tem essas assinaturas)",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180100_superadmin_activity_directory_v2_client_contract",
+   "origem": "20260907222911",
+   "mudanca": "recarimbo",
+   "pgTAP": "directory_contract 97/97",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180110_superadmin_activity_save_v2",
+   "origem": "20260908154257",
+   "mudanca": "recarimbo (activity_v2_denied_envelope vem de 180060)",
+   "pgTAP": "46/46",
+   "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180120_superadmin_activity_link_end_clock_v1",
+   "origem": "20260908235110",
+   "mudanca": "recarimbo",
+   "pgTAP": "sem suite propria",
+   "estado": "aplica"
   },
   {
    "carimbo": "20260910180140_superadmin_location_consumer_bindings_v2",
    "origem": "era 180000",
-   "mudanca": "so recarimbo (o teste usa superadmin_activity_create_v2 dos gateways, por isso vem depois da cadeia)",
+   "mudanca": "recarimbo (teste usa superadmin_activity_create_v2)",
    "pgTAP": "30/30",
    "estado": "verde"
   },
   {
    "carimbo": "20260910180150_superadmin_activity_location_create_v2",
    "origem": "era 180100",
-   "mudanca": "so recarimbo (exige activity_save_v2 antes)",
+   "mudanca": "recarimbo",
    "pgTAP": "33/33",
    "estado": "verde"
   },
@@ -206,16 +278,16 @@
   {
    "carimbo": "20260910180300_superadmin_internal_unit_detail_v2_baseline",
    "origem": "inalterado",
-   "mudanca": "fixture do teste: inherit_plan=false quando ha plan_override_id (units_plan_inheritance_check) e Owner AAL1 le no MVP",
-   "pgTAP": "27/4 antes da correcao; reexecutando",
-   "estado": "em prova"
+   "mudanca": "fixture: inherit_plan=false com plan_override_id; Owner AAL1 le no MVP",
+   "pgTAP": "31/31",
+   "estado": "verde"
   },
   {
    "carimbo": "20260910180310_superadmin_internal_group_detail_v2_baseline",
    "origem": "20260828003500",
-   "mudanca": "recarimbo; em prova",
-   "pgTAP": "pendente",
-   "estado": "em prova"
+   "mudanca": "recarimbo; Owner AAL1 le no MVP",
+   "pgTAP": "33/33",
+   "estado": "verde"
   }
  ],
  "deltasPropostos": [],
@@ -236,11 +308,12 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "fechar unit_detail/group_detail e os 7 testes v2; commitar candidatos; depois P5 no view model de Turmas e a rota normal com sessao",
+ "proximoPasso": "publicar SHA; esperar prova integral e Flutter; rota normal com sessao (app em localhost:3000 com .env.local copiado do checkout principal); goldens do recorte",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
-  "licao": "colocar os lotes em supabase/migrations/ nao funciona: rodam antes do seed, com o catalogo vazio, e 170100 aborta no preflight de people.read"
+  "licao": "colocar os lotes em supabase/migrations/ nao funciona: rodam antes do seed, com o catalogo vazio, e 170100 aborta no preflight de people.read",
+  "lotes": "46 (44 + lote 8: 220300 student_links_read_v1 e 230021 mfa_fora_do_mvp_v1)"
  },
  "achadoDaRodada": {
   "titulo": "A cadeia inteira de Atividades v2 nao existe em producao",
@@ -249,5 +322,6 @@
   "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
   "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
  },
- "ordemDeAplicacao": "pelo carimbo: 180000, 180020, 180030, 180040, 180050, 180060, 180070, 180080, 180090, 180100, 180110, 180120, 180140, 180150, 180200, 180300, 180310. Chave de composicao: structureMutationsEnabled (gate maior) e adapters de Locais/Atividades; lista exata sera dada quando o cliente for ligado nesta rodada."
+ "ordemDeAplicacao": "pelo carimbo: 180000, 180020, 180030, 180040, 180050, 180060, 180070, 180080, 180090, 180100, 180110, 180120, 180140, 180150, 180200, 180300, 180310. Chave de composicao: structureMutationsEnabled (gate maior) e adapters de Locais/Atividades; lista exata sera dada quando o cliente for ligado nesta rodada.",
+ "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas."
 }

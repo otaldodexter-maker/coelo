@@ -32,9 +32,11 @@ insert into public.institution_types(id,code,name,status) values
 insert into public.institutions(id,public_name,slug,status,institution_type_id) values
  ('8c100000-0000-4000-8000-000000000010','Template Tenant A','template-unit-scope-a','active','8c100000-0000-4000-8000-000000000001'),
  ('8c100000-0000-4000-8000-000000000020','Template Tenant B','template-unit-scope-b','active','8c100000-0000-4000-8000-000000000001');
-insert into public.units(id,institution_id,institution_type_id,name,slug,status) values
- ('8c100000-0000-4000-8000-000000000011','8c100000-0000-4000-8000-000000000010','8c100000-0000-4000-8000-000000000001','Unidade A','template-unit-scope-a-unit','active'),
- ('8c100000-0000-4000-8000-000000000021','8c100000-0000-4000-8000-000000000020','8c100000-0000-4000-8000-000000000001','Unidade B','template-unit-scope-b-unit','active');
+-- Forma de producao: units.unit_type_id -> public.unit_types e handle NOT NULL.
+insert into public.unit_types(id,code,name,status) values ('7b0000f0-0000-4000-8000-000000000901','activity-template-unit-scope-test-u0','Tipo de unidade da fixture','active');
+insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle) values
+ ('8c100000-0000-4000-8000-000000000011','8c100000-0000-4000-8000-000000000010','7b0000f0-0000-4000-8000-000000000901','Unidade A','template-unit-scope-a-unit','active','u.000000000011'),
+ ('8c100000-0000-4000-8000-000000000021','8c100000-0000-4000-8000-000000000020','7b0000f0-0000-4000-8000-000000000901','Unidade B','template-unit-scope-b-unit','active','u.000000000021');
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('8c100000-0000-4000-8000-000000000101','authenticated','authenticated','template-owner@invalid.test',now(),now(),now(),'{}','{}'),
@@ -147,11 +149,12 @@ select throws_ok($call$select public.superadmin_create_scoped_activity_template(
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8c100000-0000-4000-8000-000000000101','session_id','8c100000-0000-4000-8000-000000000209',
  'aal','aal1','role','authenticated')::text,true);
-select throws_ok($call$select public.superadmin_create_scoped_activity_template(
+-- MVP (ADR 0034, Decisao 12, MFA fora do MVP): o ator em AAL1 nao e negado por MFA.
+select lives_ok($call$select public.superadmin_create_scoped_activity_template(
  '8c100000-0000-4000-8000-000000000010',null,'Sem MFA','',
  (select id from public.activity_taxonomies where code='robotica' and taxonomy_kind='subtype' and status='active' limit 1),
  'optional','8c100000-0000-4000-8000-000000000804')$call$,
- '42501','internal authorization denied','AAL1 actor is denied');
+ 'AAL1 actor creates a template in the MVP');
 
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','8c100000-0000-4000-8000-000000000103','session_id','8c100000-0000-4000-8000-000000000203',
