@@ -1,6 +1,6 @@
 {
-  "revision": 10,
-  "updated_at": "2026-09-10T22:40:00-03:00",
+  "revision": 11,
+  "updated_at": "2026-09-10T22:50:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -8,10 +8,10 @@
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
-  "base": "origin/dev 98cc0529d",
-  "head": "18309123d (antes do rebase sobre origin/dev 836c63215; SHA final na revisao 11)",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema (push apos o rebase)",
-  "status": "Itens 1 a 4 fechados e committados (pacote 1 verde; WIP da Fase 0 com testes e goldens; veu do Destaque; D3 sem previa); cliente do Agora ja fala o envelope R2. Entrando no item 5 (rota real com sessao qa-r03) apos rebase sobre dev 836c63215 (lote 8 MFA fora do MVP em producao).",
+  "base": "origin/dev 836c63215 (rebase feito 22:47)",
+  "head": "a7f114251",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em a7f114251",
+  "status": "Pacote 1 EM PRODUCAO (lote 9, 22:24, ledger 59) e chat v2 do realm-interno tambem. Itens 1 a 4 fechados; Criar grupo (P8) ligado na UI sobre superadmin_chat_create_group_v2; rota real com sessao qa-r03 percorrida (login, shell, reload, mobile, Sair, Cardapios, Chat, Acontece, Para voce, Importacoes, Catalogo, Agora, Momentos) com capturas em evidence/etapa-2/r04-principal-chat-sistema/rota-real; prova de producao pelas RPCs.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -19,15 +19,17 @@
   ],
   "action_ids_status": "55 IDs: acontece 4, agora 4, momentos 4, principal_profile 3, chat 7, meal_plans 6, plans 5 (composto), imports 7, catalog 4, error_pages 6, auth 5, shell 5. Nenhum promovido nesta revisao; propostas de delta chegam com a rota real (item 5).",
   "historico_r03_lido": "Revisao 8 e handoff da R03 lidos; R03-fase0-handoff.md lido (WIP wip/fase0-arquivo-chat 91e011dc6 e veu-destaque-orange950.patch agora sao meus).",
-  "primeiro_gate": "Coordenador aplicar o pacote 1 em producao (6 arquivos, ordem abaixo) e fazer o deploy de happens-media e now-media. Ate la, sigo no cliente (itens 2, 3, 4) e na rota real do que ja esta em producao (Auth, Shell, Cardapios, Momentos).",
+  "primeiro_gate": "P22 (coordenador): ponte de ator entre o realm interno e o realm de pessoas, ou instituicao + vinculo sinteticos em producao. Sem isso, qa-r03 nao tem contexto Principal (Acontece/Momentos/Agora/Perfil: \"nao conseguimos validar seu contexto\") nem has_platform_permission em Cardapios (\"Acesso nao autorizado\"). Chat interno v2 funciona (inbox vazia; fixture sintetica do realm-interno pendente).",
   "ordem_de_trabalho": [
-    "1. migrations R2 happens/now + fundacao do Agora + retirada do Acontece: FEITO f54809201",
-    "2. WIP da Fase 0: mesclado 0f398b1c9, testes do launcher + Duplicar de volta no flyout do card + 18 goldens regravados apos observacao: FEITO 314317ecf",
-    "3. veu do Destaque orange950 16% (a mao, patch nao aplicava) + 8 goldens do Para voce: FEITO d6d1b5448 + 059d81141",
-    "4. D3 sem previa: 14 ocorrencias trocadas por 'ainda nao esta disponivel': FEITO 059d81141",
-    "4b. Agora: cliente envia midia pelo envelope R2 do now-media (agora.create): FEITO 18309123d",
-    "5. rota normal com sessao qa-r03 por action_id: EM CURSO (app em localhost:3000)",
-    "6. goldens conforme as tres listas: launcher, Cardapios, Planos, Para voce feitos; Acontece galeria mobile (redesenho), Momentos IMG, Perfil FOTO/SHELL e Chat MENU pendentes"
+    "1. migrations R2 happens/now + fundacao do Agora + retirada do Acontece: FEITO f54809201 -> EM PRODUCAO (lote 9)",
+    "2. WIP da Fase 0 fechado (launcher, ARQUIVO, goldens): FEITO ca2f86531",
+    "3. veu do Destaque + goldens do Para voce: FEITO 87693f4bb + 03f8bc0b8",
+    "4. D3 sem previa (14 textos) + Catalogo sem \"Preview\": FEITO 03f8bc0b8 + commit desta revisao",
+    "4b. Agora envia midia pelo envelope R2: FEITO d0de564f1",
+    "5a. Criar grupo (P8) na UI: FEITO 626915ae4 (+ cabecalho no estado vazio nesta revisao)",
+    "5b. rota real com sessao qa-r03: FEITA com capturas; verified so onde a regua fecha (ver proposta_delta_por_action_id)",
+    "6. goldens: launcher 5, Cardapios 5, Planos 8, Para voce 8, Chat 6 regravados apos observacao; galeria mobile do Acontece (redesenho), Momentos IMG, Perfil FOTO/SHELL ficam abertos",
+    "7. erro 409: imagens candidatas + pagina lado a lado para o Owner (2335ea3c1)"
   ],
   "pacote_1_candidatos": {
     "commit": "f54809201",
@@ -57,15 +59,21 @@
     "now: substituicao de ativo (mesma publicacao/kind com metadados novos) gera chave nova e deixa o objeto anterior orfao no R2; coletor claim_stale para Agora/Acontece fica para depois (Momentos ja tem o dele).",
     "now: agendador da expiracao (pg_cron/worker) nao esta neste pacote; agora.expire so transiciona por expire_due_now_publications acionada pela UI ou pelo sweep.",
     "acontece: curtir e comentar nao existem no banco (nenhuma tabela); ficam visiveis e inertes (regra D3/MAIS da R03).",
-    "acontece: list_visible_happens_posts (feed direto/legado) fica em 4 argumentos como producao; a paginacao 20260910150000 continua historica porque o caminho de producao e o feed misto, que ja pagina."
+    "acontece: list_visible_happens_posts (feed direto/legado) fica em 4 argumentos como producao; a paginacao 20260910150000 continua historica porque o caminho de producao e o feed misto, que ja pagina.",
+    "chat: Criar grupo nasce no escopo da instituicao; escopo por unidade/turma/atividade fica para quando a tela pedir (o servidor ja aceita).",
+    "chat: sem instituicao/pessoas em producao, o dialogo de Criar grupo lista zero instituicoes; a prova positiva depende da fixture sintetica do realm-interno.",
+    "dev: test/app/dev_menu/development_dataset_contract_test.dart ja falha em dev (5 instituicoes contra 8..14 esperadas); nao e desta rodada.",
+    "seguranca (para o revoke em lote): anon com EXECUTE em 200 funcoes security definer de public; pacote nao entregue nesta rodada."
   ],
   "tests": {
     "pgTAP_pacote_1": "supabase test db, descartavel coelo_baseline_pcs, reset limpo, 22:12: 8 arquivos, 194 casos, PASS (now_publication_mvp 70, now_custom_role_audience_hardening 13, now_publication_expiry_transition 16, now_media_private_r2_v1 23, happens_media_private_r2_v1 18, happens_media_security_closure 7, happens_post_withdrawal 33, happens_mixed_feed_withdrawal 10).",
-    "analyze": "flutter analyze lib test em apps/superadmin: No issues found (22:25, apos o merge do WIP; rerun apos os commits na revisao 11)",
-    "suites_cliente": "chat (launcher + goldens), meal_plans/presentation, plans, principal_for_you, app/shell, principal_now preview: 533 PASS / 0 FAIL (22:36); principal_now_publication: 95 PASS; goldens regravados: 43 (chat 5, meal_plans 5, plans 8, for_you 8 + 17 escuros/estados)"
+    "analyze": "flutter analyze lib test: No issues found (22:57, apos Criar grupo); rerun apos o cabecalho do estado vazio: ver tests.analyze_final",
+    "suites_cliente": "chat (launcher + goldens), meal_plans/presentation, plans, principal_for_you, app/shell, principal_now preview: 533 PASS / 0 FAIL (22:36); principal_now_publication: 95 PASS; goldens regravados: 43 (chat 5, meal_plans 5, plans 8, for_you 8 + 17 escuros/estados)",
+    "chat_apos_criar_grupo": "chat + principal_chat + catalogo apos Criar grupo e cabecalho no vazio: 246 PASS / 0 FAIL (23:12); analyze No issues (23:10)",
+    "rota_logout": "captura 13 (dialogo) e 14 (login apos confirmar Sair e recarregar): sessao encerrada"
   },
   "blocker": null,
-  "next_step": "Rebase sobre 836c63215, push, app em localhost:3000 com a sessao qa-r03: Auth/Shell -> Cardapios -> Momentos -> Chat (leitura) -> Acontece; propor deltas por action_id conforme a regua.",
+  "next_step": "Commit do cabecalho no estado vazio + Catalogo; JSON rev 12 com o resultado de Sair; pacote de revoke em lote (anon) com pgTAP se sobrar janela; handoff e mini-revisao ate 04:20.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -117,9 +125,98 @@
         "agora.create"
       ],
       "prova": "teste de repositorio com PUT assinado e Storage nunca chamado"
+    },
+    {
+      "commit": "2335ea3c1",
+      "titulo": "Imagens candidatas do erro 409 e pagina lado a lado",
+      "action_ids": [
+        "errors.409"
+      ],
+      "prova": "render atual do SuperadminErrorScreen; nao e golden"
+    },
+    {
+      "commit": "626915ae4",
+      "titulo": "Criar grupo no Chat (P8) sobre superadmin_chat_create_group_v2",
+      "action_ids": [
+        "chat.list"
+      ],
+      "prova": "chat + chat Principal + router 244 PASS; goldens do Chat regravados (A)"
     }
   ],
-  "proposta_delta_por_action_id": {},
+  "proposta_delta_por_action_id": {
+    "regra": "regua do MVP (ADR 0034): rota normal abre + CRUD em producao + RLS nega outro tenant + reload mantem. Onde nao ha CRUD (auth/shell), rota real + reload + negativa bastam. Nada e promovido a verified-e2e sem os quatro gates.",
+    "auth.login": {
+      "fe": "verified (mantem)",
+      "be": "pending-verification -> local-green (login por senha em producao provado, HTTP 200)",
+      "e2e": "pending-verification -> verified-e2e (rota real abre, sessao em producao, reload mantem, credencial invalida ja coberta na R02)"
+    },
+    "auth.logout": {
+      "fe": "verified (mantem)",
+      "e2e": "pending-verification -> verified-e2e (Sair confirmado em producao; reload sem sessao volta ao login; captura 14)"
+    },
+    "shell.load": {
+      "fe": "pending-verification -> verified (rota real, 5 casos nominais da R03 + captura 01)",
+      "e2e": "pending-verification -> verified-e2e"
+    },
+    "shell.navigate": {
+      "fe": "pending-verification -> verified",
+      "e2e": "pending-verification -> verified-e2e (9 rotas do recorte na sessao real)"
+    },
+    "shell.reload": {
+      "fe": "pending-verification -> verified",
+      "e2e": "pending-verification -> verified-e2e (captura 10)"
+    },
+    "shell.unauthorized": {
+      "fe": "pending-verification -> verified (painel honesto na rota real, captura 02)",
+      "e2e": "pending-verification -> verified-e2e (negativa real do servidor)"
+    },
+    "shell.switch-context": {
+      "fe": "pending-verification (mantem; sem segundo contexto)"
+    },
+    "chat.list": {
+      "fe": "local-green -> verified (rota real com inbox v2 de producao; launcher e goldens A)",
+      "be": "local-green -> done (240100+240300 em producao; inbox/unread provados com qa-r03; negativa CHAT_NOT_FOUND)",
+      "e2e": "pending-verification -> verified-e2e apos a fixture do realm-interno mostrar uma conversa e o reload mante-la; ate la pending"
+    },
+    "chat.open/send/edit/receipts/revoke": {
+      "be": "local-green -> done quando o realm-interno provar com a fixture (pacotes em producao)",
+      "e2e": "pending (depende da fixture)"
+    },
+    "chat.attach": {
+      "be": "blocked-environment (mantem: sem gateway chat-media)"
+    },
+    "acontece.remove": {
+      "be": "blocked-environment -> local-green + SQL em producao (190800 aplicado; pgTAP 33+10 com negativa)",
+      "e2e": "pending (P22)"
+    },
+    "acontece.create / acontece.publish": {
+      "be": "pending-verification -> local-green + SQL em producao (190700 aplicado; happens-media deploy pelo coordenador)",
+      "e2e": "pending (P22)"
+    },
+    "acontece.feed": {
+      "fe": "pending-verification (mantem: rota real bloqueada por contexto, P22)"
+    },
+    "agora.view / agora.create / agora.publish / agora.expire": {
+      "be": "pending-verification -> local-green + SQL em producao (190300..190600 aplicados; pgTAP 70+13+16+23; now-media deploy pelo coordenador)",
+      "fe": "pending-verification (agora.create ja fala o envelope R2, d0de564f1)",
+      "e2e": "pending (P22)"
+    },
+    "meal-plans.*": {
+      "e2e": "pending (P22: has_platform_permission nega qa-r03)"
+    },
+    "imports.*": {
+      "fe": "pending-verification -> verified para imports.list (hub honesto na rota real, captura 07); demais acoes continuam adiadas e honestas (deferred)"
+    },
+    "catalog.list": {
+      "fe": "pending-verification -> verified (rota real abre, captura 08; texto D3)"
+    },
+    "errors.409": {
+      "fe": "blocked-decision (mantem) ate o Owner aprovar as imagens candidatas"
+    },
+    "plans.list": {
+      "fe": "local-green (mantem; ARQUIVO no card e goldens R+ARQUIVO regravados)"
+    }
+  },
   "pacotesProntos": [
     {
       "grupo": "principal-chat-sistema",
@@ -146,5 +243,29 @@
         "acontece.remove"
       ]
     }
+  ],
+  "rota_real": {
+    "ambiente": "build web de release servido em http://127.0.0.1:3000 (python serve.py com fallback de rota); ATENCAO: localhost:3000 resolve para [::1], onde outra frente serve um app Dart; as capturas de 23:00 foram refeitas contra 127.0.0.1",
+    "sessao": "qa-r03@coelo.me, login por senha na tela real (00-login, 01-apos-login), \"manter sessao aberta\" marcado; reload mantem a sessao (10-reload-meal-plans); cabecalho mobile 375 com Bug e launcher circular (11-mobile-375); menu da conta com Perfil/Configuracoes/Sair (12-menu-conta); dialogo \"Sair do Coelo?\" (13-apos-sair)",
+    "capturas": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real/00..14",
+    "observado": {
+      "auth.login": "rota real abre e autentica em producao (HTTP 200 no token, shell carrega com \"Owner Coelo / Superadmin\")",
+      "auth.logout": "menu da conta > Sair > dialogo \"Sair do Coelo?\" > confirmar: volta a tela de login; reload apos sair continua na tela de login (capturas 13 e 14). Sessao encerrada de verdade.",
+      "shell.load / shell.navigate / shell.reload": "shell persistente carrega, navega por 9 rotas do recorte e mantem a sessao no reload",
+      "shell.switch-context": "nao ha segundo contexto para qa-r03 (um unico realm interno); nao exercitado",
+      "shell.unauthorized": "Cardapios devolve o painel \"Acesso nao autorizado\" honesto (has_platform_permission nega qa-r03 sem ponte de ator, P22)",
+      "meal-plans.*": "BLOQUEADO por P22: Acesso nao autorizado (02, 10, 11)",
+      "chat.list": "Conversas abre na rota real com a inbox v2 de producao: vazia (\"Ainda nao ha conversas\"); RPC superadmin_chat_inbox_v2 ok=true total 0",
+      "chat.create-group (P8)": "botao ao lado da busca; RPC superadmin_chat_create_group_v2 em producao responde CHAT_NOT_FOUND para tenant inexistente (negativa cross-tenant provada); criacao positiva depende da fixture sintetica do realm-interno (instituicao + pessoas)",
+      "acontece.* / momentos.* / agora.* / principal_profile.*": "BLOQUEADO por P22: \"Nao foi possivel carregar. Nao conseguimos validar seu contexto agora.\" (03, 05, 06, 09); RPCs load_happens_draft/withdraw_happens_post/load_now_draft/expire_due_now_publications existem em producao e negam com 42501 (happens_permission_denied/now_permission_denied): pacote aplicado e fail-closed",
+      "imports.*": "hub honesto: \"Importacoes adiadas. Importacao e exportacao reais estarao disponiveis depois do MVP. Nenhum arquivo sera selecionado ou processado nesta etapa.\" (07); card Criar \"Disponivel depois do MVP\"",
+      "catalog.*": "Catalogo local abre (08); texto \"Preview local\" trocado por \"Catalogo local disponivel\" (D3)",
+      "errors.409": "imagens candidatas geradas; aguarda decisao do Owner"
+    },
+    "prova_rpc_producao_2245": "scratchpad/prova_rpc.py (credencial em memoria): login 200; superadmin_chat_unread_total_v2 ok total_unread 0; superadmin_chat_inbox_v2 ok total 0; superadmin_chat_create_group_v2 com tenant inexistente -> CHAT_NOT_FOUND 404 (nao enumera); load_happens_draft/withdraw_happens_post -> 42501 happens_permission_denied; load_now_draft/expire_due_now_publications -> 42501 now_permission_denied"
+  },
+  "perguntas_ao_owner_via_coordenador": [
+    "P-409: aprovar error_409_light e error_409_dark como golden oficial (mesma composicao das outras variantes)? Pagina lado a lado: evidence/etapa-2/r04-principal-chat-sistema/erro-409-candidatos.html",
+    "P-CHAT-DUP: no card de Cardapios, Duplicar aparece como icone ARQUIVO no cabecalho E no menu de acoes (as duas decisoes de 10/09 pediam cada uma). Manter os dois ou so o icone?"
   ]
 }

@@ -188,6 +188,34 @@ final class SupabaseChatRepository implements ChatRepository {
     'p_flag': flag.name,
   });
 
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) async {
+    try {
+      final payload = _data(
+        await _client.rpc<Object?>(
+          'superadmin_chat_create_group_v2',
+          params: {
+            'p_request_id': command.requestId,
+            'p_institution_id': command.institutionId,
+            'p_title': command.title.trim(),
+            'p_person_ids': command.personIds,
+            'p_unit_id': command.unitId,
+            'p_group_id': command.groupId,
+            'p_activity_id': command.activityId,
+          },
+        ),
+      );
+      return ChatGroupCreated(
+        conversationId: _string(payload, 'conversation_id'),
+        title: _string(payload, 'title'),
+        memberCount: _int(payload['member_count']),
+        replayed: _bool(payload['replayed']),
+      );
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
   Future<ChatConversationPreference> _preference(
     String rpc,
     Map<String, Object?> params,
@@ -315,6 +343,7 @@ Exception _mapError(Object error) {
   if (error is ChatOfflineException) return error;
   if (error is ChatConflictException) return error;
   if (error is ChatFailureException) return error;
+  if (error is ChatMemberInvalidException) return error;
   if (error is PostgrestException &&
       (error.code == '42501' || error.code == 'PGRST301' || error.code == 'PGRST116')) {
     return const ChatUnauthorizedException();
@@ -337,6 +366,7 @@ Map<String, dynamic> _data(Object? value) {
     if (code == 'CHAT_EDIT_WINDOW_CLOSED') {
       throw const ChatConflictException(ChatConflictReason.editWindowClosed);
     }
+    if (code == 'CHAT_MEMBER_INVALID') throw const ChatMemberInvalidException();
     if (code == 'CHAT_ALREADY_REVOKED') {
       throw const ChatConflictException(ChatConflictReason.alreadyRevoked);
     }

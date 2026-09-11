@@ -93,6 +93,9 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _PagedRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _PagedRepository({this.dropRecentOnReload = false});
 
   final bool dropRecentOnReload;
@@ -179,6 +182,9 @@ final class _PagedRepository implements ChatRepository {
 
 /// Inbox com duas paginas, para separar a primeira do que o leitor acumulou.
 final class _PagedInboxRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   @override
   Future<int> fetchUnreadTotal() async => 0;
 

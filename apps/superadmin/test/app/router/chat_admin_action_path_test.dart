@@ -136,6 +136,9 @@ void _viewport(WidgetTester tester) {
 }
 
 final class _RecordingChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _RecordingChatRepository({this.denySend = false});
 
   final bool denySend;

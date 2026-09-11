@@ -386,6 +386,9 @@ ChatConversationSummary _summary(String id, String title) => ChatConversationSum
 );
 
 final class _PrincipalChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _PrincipalChatRepository({
     ChatInboxPage? inbox,
     this.inboxError,

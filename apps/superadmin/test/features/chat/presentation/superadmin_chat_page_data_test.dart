@@ -38,7 +38,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.textContaining('conversas'), findsOneWidget);
+    // O cabecalho com a busca ('Buscar conversas') acompanha o estado vazio
+    // desde Criar grupo (P8); a asserção mira o painel, nao a palavra.
+    expect(find.text('Ainda não há conversas'), findsOneWidget);
     expect(find.text('Atualizar'), findsOneWidget);
   });
 
@@ -136,6 +138,9 @@ void main() {
 }
 
 final class _ChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _ChatRepository({required this.inbox, this.thread = const ChatThreadPage(items: [])});
 
   final ChatInboxPage inbox;

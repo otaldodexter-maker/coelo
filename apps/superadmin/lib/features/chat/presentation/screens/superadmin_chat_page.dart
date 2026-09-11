@@ -10,8 +10,10 @@ import 'package:flutter/material.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import '../../../auth/domain/logout_action.dart';
+import '../../../people/domain/person_directory.dart';
 import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
+import '../widgets/superadmin_chat_create_group_dialog.dart';
 import '../widgets/superadmin_chat_composer.dart';
 
 final class _PendingChatSend {
@@ -37,6 +39,7 @@ final class SuperadminChatPage extends StatefulWidget {
   const SuperadminChatPage({
     required this.logout,
     this.chatRepository,
+    this.personDirectoryRepository,
     this.mediaReader,
     this.mediaSession,
     this.currentDestination = 'conversations',
@@ -47,6 +50,11 @@ final class SuperadminChatPage extends StatefulWidget {
 
   final LogoutAction logout;
   final ChatRepository? chatRepository;
+
+  /// Diretorio de Pessoas autorizado, de onde saem os membros de Criar grupo
+  /// (P8). Sem ele o botao continua visivel e avisa que ainda nao esta
+  /// disponivel (D3).
+  final PersonDirectoryRepository? personDirectoryRepository;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
   final String currentDestination;
@@ -659,6 +667,43 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     );
   }
 
+  /// Criar grupo (P8): o dialogo monta o comando; o servidor cria, deriva o
+  /// escopo e valida os vinculos. Sem backend a resposta e honesta (D3).
+  Future<void> _createGroup() async {
+    final people = widget.personDirectoryRepository;
+    if (people == null) {
+      _showNotice('Criar grupo ainda não está disponível.');
+      return;
+    }
+    final command = await SuperadminChatCreateGroupDialog.show(
+      context,
+      people: people,
+      requestId: _requestId(),
+    );
+    if (command == null || !mounted) return;
+    setState(() => _managing = true);
+    try {
+      final created = await _repository.createGroup(command);
+      if (!mounted) return;
+      _showNotice(
+        created.replayed
+            ? 'Grupo "${created.title}" já existia.'
+            : 'Grupo "${created.title}" criado com ${created.memberCount} membros.',
+      );
+      await _loadInbox(reset: true);
+    } on ChatMemberInvalidException {
+      _showNotice('Uma das pessoas escolhidas não tem vínculo ativo nesta instituição.');
+    } on ChatUnauthorizedException {
+      _showNotice('Seu perfil não permite criar grupos.');
+    } on ChatFailureException {
+      _showNotice('Criar grupo ainda não está disponível.');
+    } on ChatOfflineException {
+      _showNotice('Sem conexão. Tente novamente.');
+    } finally {
+      if (mounted) setState(() => _managing = false);
+    }
+  }
+
   Widget _body() {
     return switch (_inboxState.kind) {
       ChatInboxLoadState.loading => const CoeloStatePanel(
@@ -666,12 +711,21 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         message: 'Aguarde enquanto buscamos suas conversas.',
         loading: true,
       ),
-      ChatInboxLoadState.empty => CoeloStatePanel(
-        title: 'Ainda n\u00e3o h\u00e1 conversas',
-        message: 'Quando uma conversa autorizada existir, ela aparecera aqui.',
-        icon: Icons.forum_outlined,
-        actionLabel: 'Atualizar',
-        onAction: _loadInbox,
+      // Sem conversa ainda e justamente quando Criar grupo (P8) precisa estar
+      // ao alcance: o cabecalho da inbox acompanha o estado vazio.
+      ChatInboxLoadState.empty => Column(
+        children: [
+          _inboxHeader(),
+          Expanded(
+            child: CoeloStatePanel(
+              title: 'Ainda n\u00e3o h\u00e1 conversas',
+              message: 'Quando uma conversa autorizada existir, ela aparecera aqui.',
+              icon: Icons.forum_outlined,
+              actionLabel: 'Atualizar',
+              onAction: _loadInbox,
+            ),
+          ),
+        ],
       ),
       ChatInboxLoadState.noResults => CoeloStatePanel(
         title: 'Nenhuma conversa encontrada',
@@ -724,13 +778,11 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     );
   }
 
-  Widget _inbox(ChatInboxPage page, {required bool compact}) {
-    final colors = Theme.of(context).colorScheme;
-    final totalPages = math.max(1, (page.totalCount / _inboxPageSize).ceil());
-    return Column(
+  Widget _inboxHeader() => Padding(
+    padding: const EdgeInsets.all(CoeloSpacing.space3),
+    child: Row(
       children: [
-        Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.space3),
+        Expanded(
           child: CoeloSearchField(
             key: const Key('superadmin-chat-search'),
             controller: _search,
@@ -739,6 +791,27 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             hintText: 'Buscar conversas',
           ),
         ),
+        const SizedBox(width: CoeloSpacing.space2),
+        IconButton(
+          key: const Key('superadmin-chat-create-group'),
+          tooltip: 'Criar grupo',
+          onPressed: _managing ? null : _createGroup,
+          constraints: const BoxConstraints.tightFor(
+            width: CoeloSize.touchMin,
+            height: CoeloSize.touchMin,
+          ),
+          icon: const Icon(Icons.group_add_outlined),
+        ),
+      ],
+    ),
+  );
+
+  Widget _inbox(ChatInboxPage page, {required bool compact}) {
+    final colors = Theme.of(context).colorScheme;
+    final totalPages = math.max(1, (page.totalCount / _inboxPageSize).ceil());
+    return Column(
+      children: [
+        _inboxHeader(),
         Expanded(
           child: ListView.separated(
             itemCount: page.items.length,

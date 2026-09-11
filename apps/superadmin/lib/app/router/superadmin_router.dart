@@ -3503,6 +3503,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => SuperadminChatPage(
               logout: logout,
               chatRepository: chatRepository,
+              personDirectoryRepository: personDirectoryRepository,
               mediaReader: mediaReader,
               mediaSession: mediaSession,
               onBack: () {
@@ -5618,6 +5619,7 @@ GoRouter createSuperadminRouter({
               return SuperadminChatPage(
                 logout: _previewLogout,
                 chatRepository: developmentChatRepository,
+                personDirectoryRepository: peoplePreviewRepository,
                 // A preview precisa exercer a mesma capacidade da rota real;
                 // sem estas dependências o tile de anexo nunca abre imagem e a
                 // preview vira evidência falsa de que está tudo bem.

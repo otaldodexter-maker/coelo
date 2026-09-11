@@ -2,6 +2,9 @@ import '../../features/chat/domain/chat_repository.dart';
 
 /// Deterministic, stateful repository used exclusively by `/dev/conversations`.
 final class DevelopmentChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   DevelopmentChatRepository.content()
     : _summaries = [
         ChatConversationSummary(
