@@ -93,15 +93,86 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
     }
   }
 
+  /// Secoes pedidas ao carregar a etapa "Estrutura e locais". A secao
+  /// `taxonomy` fica de fora de proposito: a v2 devolve uma lista plana
+  /// (categorias e subtipos misturados, sem `subtypes` e sem "Outros") e o
+  /// controller substituiria a arvore carregada por
+  /// `superadmin_activity_template_options`, regredindo a etapa Identidade.
+  /// Com `taxonomy` vazia o controller preserva a arvore ja carregada, do
+  /// mesmo modo que faz com `templates`.
+  static const _formOptionSections = ['structure', 'participants', 'professionals'];
+
   @override
-  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) => _unavailable();
+  Future<ActivityFormOptions> fetchFormOptions({required String institutionId}) async {
+    try {
+      final data = _v2Data(
+        await _client.rpc<Object?>(
+          'superadmin_activity_form_options_v2',
+          params: {
+            'p_institution_id': institutionId,
+            'p_sections': _formOptionSections,
+            'p_limit': _formOptionLimit,
+          },
+        ),
+      );
+      final structure = _mapOrEmpty(data['structure']);
+      final students = _v2Students(data['participants']);
+      final participantCountByGroup = <String, int>{};
+      for (final student in students) {
+        participantCountByGroup.update(student.groupId, (count) => count + 1, ifAbsent: () => 1);
+      }
+      return ActivityFormOptions(
+        units: _v2Units(structure['units'], institutionId: institutionId),
+        groups: _v2Groups(structure['groups'], participantCountByGroup: participantCountByGroup),
+        professionals: _v2Professionals(data['professionals']),
+        students: students,
+      );
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
+    } on TypeError {
+      throw const ActivityDirectoryUnavailableException();
+    }
+  }
 
   @override
   Future<List<ActivityFormProfessionalOption>> searchProfessionals({
     required String institutionId,
     required String query,
     int limit = 20,
-  }) => _unavailable();
+  }) async {
+    try {
+      final data = _v2Data(
+        await _client.rpc<Object?>(
+          'superadmin_activity_form_options_v2',
+          params: {
+            'p_institution_id': institutionId,
+            'p_sections': const ['professionals'],
+            'p_search': _v2Search(query),
+            'p_limit': limit.clamp(1, _formOptionLimit),
+          },
+        ),
+      );
+      return _v2Professionals(data['professionals']);
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
+    } on TypeError {
+      throw const ActivityDirectoryUnavailableException();
+    }
+  }
 
   @override
   Future<ActivityDetail?> fetchById(String activityId) => _unavailable();
@@ -233,6 +304,74 @@ List<ActivityFilterOption> _filterOptions(Object? value, {bool requireParent = f
 List<Map<String, dynamic>> _rows(Object? value) => value is List
     ? value.map((row) => Map<String, dynamic>.from(row as Map)).toList(growable: false)
     : const [];
+
+/// Teto de `p_limit` aceito por `superadmin_activity_form_options_v2`.
+const _formOptionLimit = 100;
+
+/// Teto de `p_search` aceito por `superadmin_activity_form_options_v2`.
+const _formOptionSearchLength = 120;
+
+Map<String, dynamic> _mapOrEmpty(Object? value) =>
+    value is Map ? Map<String, dynamic>.from(value) : const {};
+
+String? _v2Search(String query) {
+  final trimmed = query.trim();
+  if (trimmed.isEmpty) return null;
+  return trimmed.length > _formOptionSearchLength
+      ? trimmed.substring(0, _formOptionSearchLength)
+      : trimmed;
+}
+
+// As colecoes abaixo toleram lista ausente (viram vazias), mas uma linha
+// presente sem os campos obrigatorios e projecao malformada e falha fechada.
+List<ActivityFormUnitOption> _v2Units(Object? value, {required String institutionId}) =>
+    _rows(value)
+        .map(
+          (row) => ActivityFormUnitOption(
+            id: _requiredText(row['unit_id']),
+            institutionId: institutionId,
+            name: _requiredText(row['name']),
+          ),
+        )
+        .toList(growable: false);
+
+List<ActivityFormGroupOption> _v2Groups(
+  Object? value, {
+  required Map<String, int> participantCountByGroup,
+}) => _rows(value)
+    .map(
+      (row) => ActivityFormGroupOption(
+        id: _requiredText(row['group_id']),
+        unitId: _requiredText(row['unit_id']),
+        name: _requiredText(row['name']),
+        participantCount: participantCountByGroup[row['group_id']] ?? 0,
+      ),
+    )
+    .toList(growable: false);
+
+List<ActivityFormStudentOption> _v2Students(Object? value) => _rows(value)
+    .map((row) {
+      // A RPC nao expoe o id da crianca (minimizacao); o vinculo turma-crianca
+      // e o unico identificador que os comandos usam.
+      final childGroupLinkId = _requiredText(row['child_group_link_id']);
+      return ActivityFormStudentOption(
+        childGroupLinkId: childGroupLinkId,
+        id: childGroupLinkId,
+        groupId: _requiredText(row['group_id']),
+        name: _requiredText(row['display_name']),
+      );
+    })
+    .toList(growable: false);
+
+List<ActivityFormProfessionalOption> _v2Professionals(Object? value) => _rows(value)
+    .map(
+      (row) => ActivityFormProfessionalOption(
+        id: _requiredText(row['membership_id']),
+        name: _requiredText(row['display_name']),
+        role: _requiredText(row['role_code']),
+      ),
+    )
+    .toList(growable: false);
 
 List<ActivityTaxonomyOption> _taxonomyOptions(Object? value) => _rows(value)
     .map(
