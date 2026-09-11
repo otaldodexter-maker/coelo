@@ -55,7 +55,54 @@ export type FormMediaRead = {
 
 export type FormMediaEnvelope =
   | { action: "read"; payload: FormMediaRead }
+  | { action: "question_prepare"; request_id: string; payload: QuestionPrepare }
+  | {
+    action: "question_finalize" | "question_resolve" | "question_delete";
+    request_id: string;
+    payload: { asset_id: string };
+  }
   | LegacyFormMediaEnvelope;
+
+// R05 realm-interno: imagem de pergunta (autoria do Superadmin) no R2.
+export type QuestionPrepare = {
+  form_id: string;
+  form_version_id: string;
+  item_id: string;
+  mime_type: string;
+  byte_length: number;
+  checksum: string;
+};
+
+export function parseQuestionPrepare(value: unknown): QuestionPrepare {
+  if (!value || typeof value !== "object" || Array.isArray(value)) {
+    throw new Error("invalid_payload");
+  }
+  const payload = value as Record<string, unknown>;
+  const allowed = new Set([
+    "form_id",
+    "form_version_id",
+    "item_id",
+    "mime_type",
+    "byte_length",
+    "checksum",
+  ]);
+  if (Object.keys(payload).some((key) => !allowed.has(key))) {
+    throw new Error("unknown_key");
+  }
+  if (
+    typeof payload.form_id !== "string" || !UUID.test(payload.form_id) ||
+    typeof payload.form_version_id !== "string" ||
+    !UUID.test(payload.form_version_id) ||
+    typeof payload.item_id !== "string" || !UUID.test(payload.item_id) ||
+    typeof payload.mime_type !== "string" ||
+    !ALLOWED_IMAGE_TYPES.has(payload.mime_type) ||
+    typeof payload.byte_length !== "number" ||
+    !Number.isSafeInteger(payload.byte_length) ||
+    payload.byte_length < 1 || payload.byte_length > 4 * 1024 * 1024 ||
+    typeof payload.checksum !== "string" || !SHA256.test(payload.checksum)
+  ) throw new Error("invalid_payload");
+  return payload as QuestionPrepare;
+}
 
 type LegacyFormMediaEnvelope =
   & {
@@ -98,6 +145,38 @@ export function parseFormMediaEnvelope(value: unknown): FormMediaEnvelope {
         asset_id: read.asset_id.toLowerCase(),
         rendition: read.rendition,
       },
+    };
+  }
+  if (
+    data.action === "question_prepare" || data.action === "question_finalize" ||
+    data.action === "question_resolve" || data.action === "question_delete"
+  ) {
+    if (
+      Object.keys(data).some((key) =>
+        key !== "action" && key !== "request_id" && key !== "payload"
+      ) || typeof data.request_id !== "string" || !UUID.test(data.request_id)
+    ) {
+      throw new Error("invalid_envelope");
+    }
+    if (data.action === "question_prepare") {
+      return {
+        action: "question_prepare",
+        request_id: data.request_id,
+        payload: parseQuestionPrepare(data.payload),
+      };
+    }
+    const payload = data.payload as Record<string, unknown> | null;
+    if (
+      !payload || typeof payload !== "object" || Array.isArray(payload) ||
+      Object.keys(payload).some((key) => key !== "asset_id") ||
+      typeof payload.asset_id !== "string" || !UUID.test(payload.asset_id)
+    ) {
+      throw new Error("invalid_payload");
+    }
+    return {
+      action: data.action,
+      request_id: data.request_id,
+      payload: { asset_id: payload.asset_id.toLowerCase() },
     };
   }
   const keys = new Set(["action", "request_id", "expected_version", "payload"]);

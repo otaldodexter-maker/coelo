@@ -706,3 +706,90 @@ Deno.test("R2 download exige legado finalized e espelho ready e assina o GET por
   assertEquals(harness.r2, [`get:${r2Key}:60`]);
   assertEquals(await response.json(), { signed_url: "https://r2.example.test/get", expires_in: 60 });
 });
+
+// Imagem de pergunta (Superadmin) no R2.
+const questionKey =
+  `tenants/${id}/forms/form/${id}/question-image/${mediaId}/original/${readToken}.png`;
+
+function questionHarness(options: { finalizeOk?: boolean } = {}) {
+  const calls: string[] = [];
+  const r2: string[] = [];
+  let finalizeParameters: unknown;
+  const client = {
+    auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
+    from: () => { throw new Error("question branch must not query People"); },
+    storage: { from: () => { throw new Error("question branch must not use Storage"); } },
+    rpc: (name: string, parameters: unknown) => {
+      calls.push(name);
+      const ok = (data: unknown) => Promise.resolve({ data: { ok: true, data, error: null } });
+      if (name === "superadmin_form_media_prepare_v2") {
+        return ok({ asset_id: mediaId, bucket: "coelo-media-prod", object_key: questionKey, expires_at: "2026-09-08T16:30:00Z", status: "pending" });
+      }
+      if (name === "superadmin_form_media_authorize_finalize_v2") {
+        return ok({ asset_id: mediaId, bucket: "coelo-media-prod", object_key: questionKey, mime_type: "image/png", finalize_ticket: readToken });
+      }
+      if (name === "form_media_finalize_question_r2_v1") {
+        finalizeParameters = parameters;
+        return options.finalizeOk === false
+          ? Promise.resolve({ data: { ok: false, data: null, error: { code: "FORM_MEDIA_MISMATCH" } } })
+          : ok({ asset_id: mediaId, status: "ready" });
+      }
+      if (name === "superadmin_form_media_resolve_v2") {
+        return ok({ asset_id: mediaId, bucket: "coelo-media-prod", object_key: questionKey, mime_type: "image/png", ttl_seconds: 300 });
+      }
+      if (name === "superadmin_form_media_delete_v2") return ok({ asset_id: mediaId, status: "deleted", replayed: false });
+      throw new Error(`unexpected rpc ${name}`);
+    },
+  };
+  const writer = {
+    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: {}, expiresAt: new Date() } as never); },
+    presignGet: (key: string, ttl: number) => { r2.push(`get:${key}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/get"), requiredHeaders: {}, expiresAt: new Date() } as never); },
+    head: (key: string) => { r2.push(`head:${key}`); return Promise.resolve({ byteSize: pngBytes.length, mimeType: "image/png", etag: "e" } as never); },
+    get: (key: string) => { r2.push(`read:${key}`); return Promise.resolve(pngBytes); },
+    delete: (key: string) => { r2.push(`delete:${key}`); return Promise.resolve(); },
+  };
+  const dependencies: FormMediaDependencies = {
+    envGet: (key) => r2Environment[key],
+    createClient: (() => client) as unknown as FormMediaDependencies["createClient"],
+    createR2Writer: () => writer,
+  };
+  return { calls, r2, dependencies, finalizeParameters: () => finalizeParameters };
+}
+
+Deno.test("question_prepare valida o payload, chama a RPC interna e assina o PUT", async () => {
+  const harness = questionHarness();
+  const bad = await handleFormMediaRequest(request({ action: "question_prepare", request_id: id,
+    payload: { form_id: id, form_version_id: id, item_id: id, mime_type: "image/png", byte_length: 5_000_000, checksum: "a".repeat(64) } }), harness.dependencies);
+  assertEquals(bad.status, 400);
+  const response = await handleFormMediaRequest(request({ action: "question_prepare", request_id: id,
+    payload: { form_id: id, form_version_id: id, item_id: id, mime_type: "image/png", byte_length: 1000, checksum: "a".repeat(64) } }), harness.dependencies);
+  assertEquals(response.status, 200);
+  assertEquals(harness.calls, ["superadmin_form_media_prepare_v2"]);
+  assertEquals(harness.r2, [`put:${questionKey}:image/png:300`]);
+  assertEquals((await response.json()).asset_id, mediaId);
+});
+
+Deno.test("question_finalize mede os bytes e finaliza com o ticket pelo service_role", async () => {
+  const harness = questionHarness();
+  const response = await handleFormMediaRequest(request({ action: "question_finalize", request_id: id, payload: { asset_id: mediaId } }), harness.dependencies);
+  assertEquals(response.status, 200);
+  assertEquals(harness.calls, ["superadmin_form_media_authorize_finalize_v2", "form_media_finalize_question_r2_v1"]);
+  const parameters = harness.finalizeParameters() as Record<string, unknown>;
+  assertEquals(parameters.p_finalize_ticket, readToken);
+  assertEquals(parameters.p_pixel_width, 640);
+  assertEquals(parameters.p_byte_size, pngBytes.length);
+  const mismatch = questionHarness({ finalizeOk: false });
+  const failed = await handleFormMediaRequest(request({ action: "question_finalize", request_id: id, payload: { asset_id: mediaId } }), mismatch.dependencies);
+  assertEquals(failed.status, 400);
+  assertEquals(mismatch.r2.at(-1), `delete:${questionKey}`);
+});
+
+Deno.test("question_resolve e question_delete passam pelas RPCs internas", async () => {
+  const harness = questionHarness();
+  const resolved = await handleFormMediaRequest(request({ action: "question_resolve", request_id: id, payload: { asset_id: mediaId } }), harness.dependencies);
+  assertEquals(resolved.status, 200);
+  assertEquals(await resolved.json(), { asset_id: mediaId, signed_url: "https://r2.example.test/get", mime_type: "image/png", expires_in: 300 });
+  const deleted = await handleFormMediaRequest(request({ action: "question_delete", request_id: id, payload: { asset_id: mediaId } }), harness.dependencies);
+  assertEquals(deleted.status, 200);
+  assertEquals(harness.calls, ["superadmin_form_media_resolve_v2", "superadmin_form_media_delete_v2"]);
+});
