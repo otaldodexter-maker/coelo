@@ -161,5 +161,44 @@
    "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: locations-create-form.jpg; locations-detail-apos-criar.jpg; locations-edit-form.jpg; locations-detail-apos-reload.jpg; public.activity_locations 82e92854",
    "recordedAt": "2026-09-11T11:05:00-03:00"
   }
+ },
+ {
+  "action_id": "locations.schedule",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 11:15-11:25): no detalhe do local 82e92854 em producao (qa-r03, build release de qa_main + CDP): Ver agenda carrega vazio honesto; Adicionar janela (Segunda 08:00-12:00) e Publicar semana; a secao volta a Ver agenda e ao pedir de novo mostra a janela publicada; reload completo do detalhe (Page.navigate) + Ver agenda mantem a janela. Observacao de ferramental: a roda do mouse via CDP nao rola a lista do detalhe (gesto sintetizado rola); nao reproduzido com mouse real.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+   "revision": "estrutura.json rev 38",
+   "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me | provas: locations-schedule-vazia.jpg; locations-schedule-janela-antes-de-publicar.jpg; locations-schedule-apos-reload.jpg",
+   "recordedAt": "2026-09-11T11:30:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.schedule",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: superadmin_locations_schedule_v2 (lote 49) em producao alcancado pela sessao interna do qa-r03: semana publicada para activity_locations 82e92854 e lida de volta apos reload. Negativas no espelho de producao: superadmin_locations_schedule_v2_test 38/38 (anonimo nao le nem publica; leitura e publicacao exigem sessao validada; semana canonica com hash igual).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 38",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt), lote 49 aplicado | provas: rota real 11/09 11:20 (publicacao e releitura da semana); pgTAP superadmin_locations_schedule_v2_test 38/38 no espelho supabase_db_coelo_baseline_estrutura",
+   "recordedAt": "2026-09-11T11:30:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.schedule",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal abre, a semana publicada persiste em producao, anonimo/sessao invalida negados por pgTAP e o reload mantem a janela (regua do MVP, ADR 0034).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-schedule-apos-reload.jpg",
+   "revision": "estrutura.json rev 38",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: locations-schedule-vazia.jpg; locations-schedule-janela-antes-de-publicar.jpg; locations-schedule-apos-reload.jpg; activity_locations 82e92854",
+   "recordedAt": "2026-09-11T11:30:00-03:00"
+  }
  }
 ]

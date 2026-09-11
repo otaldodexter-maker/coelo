@@ -141,6 +141,7 @@ class SuperadminApp extends StatefulWidget {
     this.unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.structureMutationsEnabled = false,
+    this.activityLocationCreateEnabled = false,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.platformUserRepository,
     this.importRepository = const UnavailableImportRepository(),
@@ -213,6 +214,11 @@ class SuperadminApp extends StatefulWidget {
   final UnitDirectoryRepository unitDirectoryRepository;
   final UnitBackendCommandsGateway unitBackendCommands;
   final bool structureMutationsEnabled;
+
+  /// Chave de composicao: a selecao de local ao criar uma atividade so aparece
+  /// quando superadmin_activity_location_create_v2 (180150) esta no projeto
+  /// ligado; ligar a chave nao autoriza o ator, o servidor continua decidindo.
+  final bool activityLocationCreateEnabled;
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
   final ImportRepository importRepository;
@@ -309,6 +315,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitDirectoryRepository: widget.unitDirectoryRepository,
       unitBackendCommands: widget.unitBackendCommands,
       enableStructureMutations: widget.structureMutationsEnabled,
+      enableActivityLocationCreate: widget.activityLocationCreateEnabled,
       accessProfileRepository: widget.accessProfileRepository,
       platformUserRepository: widget.platformUserRepository,
       importRepository: widget.importRepository,
