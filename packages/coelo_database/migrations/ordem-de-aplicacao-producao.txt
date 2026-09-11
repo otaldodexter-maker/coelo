@@ -126,3 +126,7 @@
 20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql
 # lote 22 (11/09 03:50)
 20260910191000_principal_runtime_contexts_baseline.sql
+# lote 23 (11/09 08:42)
+20260910220600_child_context_directory_v2_baseline.sql
+20260910220700_attendance_dashboard_access_and_context_options_v1.sql
+20260910220800_forms_location_snapshot_v1_route.sql
