@@ -14,7 +14,8 @@ Recorte: people, access_profiles, access_models, invites, internal_users,
 students (32 acoes). Canal oficial:
 `docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json` (revisoes 119
 a 124). Deltas por action_id: `deltas-r05.json` (26, aplicados pelo coordenador
-em dev 530613fb5) e `deltas-r05-2.json` (7, a aplicar). Capturas em `capturas/`.
+em dev 530613fb5), `deltas-r05-2.json` (7) e `deltas-r05-3.json` (7, Modelos de
+acesso na rota real), os dois ultimos a aplicar. Capturas em `capturas/`.
 
 ## Como a prova foi feita
 
@@ -37,6 +38,7 @@ producao + candidato), encerrado no fechamento. A maquina ficou entre 0,01 e
 | 20260911170100 person_handles_v1 (@ de pessoas: trava de 30 dias, reservados, geracao ao nascer, backfill, RPCs get/availability/set) | 31 | pgTAP 22/22 |
 | 20260911170200 follow_links_safeupdate_fix_v1 (DELETE sem WHERE no sync do acompanhamento bloqueado pelo pg_safeupdate: toda escrita de vinculo de crianca pela API falhava desde o lote 12) | 34 | pgTAP 3/3 como supabase_admin, RED reproduzido |
 | 20260911170300 institution_profile_system_model_create_v1 (perfil Admin criado pela plataforma nasce modelo do sistema; com institution_id e da instituicao; modelos de Admin editaveis pela plataforma) | 38-42 | pgTAP 8/8, RED reproduzido (23514) |
+| 20260911170400 people_list_segment_v1 (abas do diretorio de Pessoas filtradas no servidor por p_segment; chave `segmentFilterAvailable`) | PRONTO | pgTAP 8/8 |
 
 ## Cliente (commits 3b4aaa5b6, 677d95682, c227e531f, bf9c2f186, b64bd9bf9)
 
@@ -51,6 +53,8 @@ producao + candidato), encerrado no fechamento. A maquina ficou entre 0,01 e
   motivo e editar vigencia, com as turmas do diretorio de Turmas.
 - Goldens regravados apos o composto de tabela (G-SUP): 8 de Perfis
   (tambem regravados pela G7) e 4 escuros de Pessoas.
+- Codigo do perfil aceita hifen (0aeb9b729): os codigos gerados pelo servidor
+  bloqueavam a edicao de perfis e modelos na rota real.
 
 ## O que fechou na rota real (sessao qa-r03)
 
@@ -68,10 +72,10 @@ producao + candidato), encerrado no fechamento. A maquina ficou entre 0,01 e
 | --- | --- |
 | invites.create/detail/resend/revoke pela UI | Chrome estavel (passos 2-4 nao concluidos por repintura); BE done por REST |
 | students.link/edit/transfer pela UI | build novo com bf9c2f186 + Chrome; transfer positivo exige segunda unidade na mesma instituicao sintetica (estrutura) |
-| access-models.list/filter/detail/edit/duplicate pela UI | rota real nao revisitada nesta rodada (BE done desde a R04) |
+| access-models.edit/duplicate pela UI | list/filter/detail provados na rota real (deltas-r05-3); salvar a edicao pela UI depende de build novo com 0aeb9b729 |
 | internal-users.edit/suspend pela UI; internal-users.create | suspender o unico usuario interno derruba a sessao de teste; criar exige Edge Function com a API de administracao do Auth |
 | people.create | resolvedor de identidade sem implementacao Supabase |
-| people.list: clique no card nao abre o detalhe; abas nao filtram | code review do diretorio de Pessoas |
+| people.list: clique no card nao abre o detalhe (o teste de widget passa; conferir na rota real com Chrome estavel); abas filtram so com o 170400 aplicado + chave | code review do diretorio de Pessoas |
 | @ de usuarios internos e edicao pela instituicao (Owner 12:15) | pendencia de modelo: identidade interna nao e public.people; contexto do app Admin |
 
 ## Dados sinteticos desta rodada
