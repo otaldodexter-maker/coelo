@@ -155,12 +155,18 @@ final class RoutineModel {
     this.institutionId,
     this.originUnitId,
     this.canManage = false,
+    this.versionId,
   });
 
   final String id;
   final String name;
   final String description;
   final int version;
+
+  /// Uuid da versao atual do modelo (routine_model_versions.id), como o
+  /// servidor projeta em definition.model_version_id. Uma aplicacao aponta
+  /// para esta versao; o rotulo `<id>:v<n>` nao e aceito pelo banco (22P02).
+  final String? versionId;
   final RoutineModelStatus status;
   final List<RoutineSection> sections;
   final int expectedVersion;

@@ -92,6 +92,7 @@ void main() {
         'origin_unit_id': null,
         'can_manage': true,
         'definition': {
+          'model_version_id': 'version-2',
           'version': 2,
           'sections': [
             {
@@ -124,6 +125,9 @@ void main() {
     addTearDown(client.dispose);
 
     final model = await SupabaseRoutineRepository(client).fetchModel('model-1');
+    // O uuid da versao vem da projecao; a aplicacao criada a partir do modelo
+    // envia este valor (o rotulo id:vN e recusado pelo banco com 22P02).
+    expect(model.versionId, 'version-2');
 
     expect(model.expectedVersion, 7, reason: 'a versão esperada é a do agregado');
     expect(model.version, 2, reason: 'a versão do conteúdo é a da definição');

@@ -57,6 +57,7 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       name: payload['name'] as String? ?? '',
       description: payload['description'] as String? ?? '',
       version: _asInt(definition['version']),
+      versionId: definition['model_version_id'] as String?,
       status: _modelStatus(payload['status'] as String?),
       sections: _rows(definition['sections']).map(_section).toList(growable: false),
       expectedVersion: _asInt(payload['management_version']),

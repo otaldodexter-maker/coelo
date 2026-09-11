@@ -307,9 +307,12 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       if (source.id != applicationModelId) {
         throw const FormatException('O modelo de origem não pôde ser validado.');
       }
+      // O servidor exige o uuid da versao (22P02 medido na rota real com o
+      // rotulo "<id>:v1"); o rotulo fica so como fallback dos repositorios
+      // de desenvolvimento, que nao projetam model_version_id.
       return RoutineApplication(
         id: '',
-        modelVersionId: '${source.id}:v${source.version}',
+        modelVersionId: source.versionId ?? '${source.id}:v${source.version}',
         institutionId: source.institutionId ?? '',
         unitId: source.originUnitId,
         status: RoutineApplicationStatus.draft,
