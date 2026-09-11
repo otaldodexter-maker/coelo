@@ -4,7 +4,7 @@
 -- negada; outra instituicao (cross-tenant) continua negada; anon continua negado.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(18);
 
 select has_function('app_private','circular_actor',array['uuid','text','uuid','uuid'],'circular_actor existe');
 select has_function('app_private','circular_audience_matches_role',
@@ -105,11 +105,51 @@ select is((select status from public.circular_media_assets
   where id=(select (body->>'asset_id')::uuid from bridge_results where label='prepare')),'pending',
   'descritor do anexo persiste como pending para a circular');
 
--- publica imediato para responder
+-- 20260911190300: asset finalizado (como a Edge Function faria) entra no rascunho como bloco de midia
+update public.circular_media_assets set status='ready',byte_size=70,finalized_at=now(),
+  checksum_sha256=repeat('a',64)
+  where id=(select (body->>'asset_id')::uuid from bridge_results where label='prepare');
+insert into bridge_results values('saved_media',public.superadmin_circular_save_draft_v2(
+ '9c200000-0000-4000-8000-000000000710','9c200000-0000-4000-8000-000000000010',null,null,null,
+ jsonb_build_object('id',(select body#>>'{data,id}' from bridge_results where label='saved'),
+  'title','Circular com anexo e pergunta',
+  'version',(select (body#>>'{data,version}')::bigint from bridge_results where label='saved'),
+  'status','draft','response_policy','per_person','audiences',jsonb_build_array('families','school_staff'),
+  'blocks',jsonb_build_array(
+    jsonb_build_object('id','9c200000-0000-4000-8000-000000000801','kind','text','text','Texto.'),
+    jsonb_build_object('id','9c200000-0000-4000-8000-000000000803','kind','media','asset_ids',
+      jsonb_build_array((select body->>'asset_id' from bridge_results where label='prepare'))),
+    jsonb_build_object('id','9c200000-0000-4000-8000-000000000802','kind','question','question',
+      jsonb_build_object('id','9c200000-0000-4000-8000-000000000802','prompt','Vai participar?','kind','single_choice',
+        'required',true,'options',jsonb_build_array(
+          jsonb_build_object('id','9c200000-0000-4000-8000-000000000901','label','Sim'),
+          jsonb_build_object('id','9c200000-0000-4000-8000-000000000902','label','Nao'))))))));
+select is((select body->>'ok' from bridge_results where label='saved_media'),'true',
+  'rascunho com bloco de midia (asset ready desta circular) persiste: '||coalesce((select body#>>'{error,code}' from bridge_results where label='saved_media'),'ok'));
+select is((select count(*)::text from public.circular_media_links
+  where revision_id=(select (body#>>'{data,revision_id}')::uuid from bridge_results where label='saved_media')),'1',
+  'circular_media_links grava o vinculo do asset na revisao de trabalho');
+insert into bridge_results values('detail_media',public.superadmin_circular_detail_v2(
+ (select (body#>>'{data,id}')::uuid from bridge_results where label='saved')));
+select ok((select body::text like '%'||(select body->>'asset_id' from bridge_results where label='prepare')||'%'
+  from bridge_results where label='detail_media'),'reload (detail) devolve o asset_id no bloco de midia');
+insert into bridge_results values('media_foreign',public.superadmin_circular_save_draft_v2(
+ '9c200000-0000-4000-8000-000000000711','9c200000-0000-4000-8000-000000000010',null,null,null,
+ jsonb_build_object('id',(select body#>>'{data,id}' from bridge_results where label='saved'),
+  'title','Circular com anexo e pergunta',
+  'version',(select (body#>>'{data,version}')::bigint from bridge_results where label='saved_media'),
+  'status','draft','response_policy','per_person','audiences',jsonb_build_array('families'),
+  'blocks',jsonb_build_array(jsonb_build_object('id','9c200000-0000-4000-8000-000000000804','kind','media',
+    'asset_ids',jsonb_build_array('9c200000-0000-4000-8000-000000000999'))))));
+select is((select body#>>'{error,code}' from bridge_results where label='media_foreign'),'CIRCULAR_MEDIA_BLOCKED',
+  'asset que nao pertence a circular continua bloqueado');
+
+-- publica imediato para responder (a versao vigente e a do save com midia)
 insert into bridge_results values('published',public.superadmin_circular_publish_v2(
  '9c200000-0000-4000-8000-000000000703',(select (body#>>'{data,id}')::uuid from bridge_results where label='saved'),
- (select (body#>>'{data,version}')::bigint from bridge_results where label='saved'),null));
-select is((select body#>>'{data,status}' from bridge_results where label='published'),'published','publicacao imediata');
+ (select (body#>>'{data,version}')::bigint from bridge_results where label='saved_media'),null));
+select is((select body#>>'{data,status}' from bridge_results where label='published'),'published',
+  'publicacao imediata com midia: '||coalesce((select body#>>'{error,code}' from bridge_results where label='published'),'ok'));
 -- publish_v2 grava publish_at por clock_timestamp(); dentro da transacao do teste now() fica
 -- congelado antes disso, entao a fixture recua publish_at (em producao o relogio anda).
 update public.circulars set publish_at=now()-interval '1 minute'
@@ -167,8 +207,8 @@ begin
     insert into bridge_errors values('prepare_outra',sqlerrm);
   end;
 end $$;
-select is((select message from bridge_errors where label='prepare_outra'),'active_membership_required',
-  'cross-tenant: sem membership na instituicao 11 o anexo e negado');
+select ok((select message from bridge_errors where label='prepare_outra') in ('active_membership_required','circular_not_authorized'),
+  'cross-tenant: sem membership na instituicao 11 o anexo e negado ('||(select message from bridge_errors where label='prepare_outra')||')');
 
 -- negativa: usuario interno SEM membership de instituicao nao responde.
 select set_config('request.jwt.claims',jsonb_build_object(

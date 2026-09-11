@@ -97,7 +97,9 @@ insert into circular_results values('media',public.superadmin_circular_save_draf
  '9c100000-0000-4000-8000-000000000704','9c100000-0000-4000-8000-000000000010',null,null,null,
  jsonb_build_object('id','','title','Circular com mídia','version',0,'response_policy','per_person',
   'audiences',jsonb_build_array('families'),'blocks',jsonb_build_array(jsonb_build_object(
-   'id','9c100000-0000-4000-8000-000000000802','kind','media','asset_ids','[]'::jsonb)))));
+   'id','9c100000-0000-4000-8000-000000000802','kind','media',
+   -- 20260911190300: midia so entra com asset desta circular em 'ready'; id desconhecido continua bloqueado
+   'asset_ids',jsonb_build_array('9c100000-0000-4000-8000-000000000999'))))));
 
 select set_config('request.jwt.claims',jsonb_build_object(
  'sub','9c100000-0000-4000-8000-000000000101','session_id','9c100000-0000-4000-8000-000000000201',
@@ -137,7 +139,7 @@ select is((select body#>>'{data,draft,status}' from circular_results where label
 select is((select jsonb_array_length(body#>'{data,items}')::text from circular_results where label='directory'),'1','directory filters persisted data');
 select is((select body#>>'{data,response_count}' from circular_results where label='summary'),'0','response summary is minimized aggregate');
 select is((select body#>>'{data,status}' from circular_results where label='closed'),'closed','close is persisted');
-select is((select body#>>'{error,code}' from circular_results where label='media'),'CIRCULAR_MEDIA_BLOCKED','media fails closed');
+select is((select body#>>'{error,code}' from circular_results where label='media'),'CIRCULAR_MEDIA_BLOCKED','media fails closed (asset desconhecido)');
 select is((select body#>>'{ok}' from circular_results where label='owner_aal1'),'true','Owner AAL1 reads: MFA fora do MVP (ADR 0034, Decisao 12)');
 select is((select body#>>'{ok}' from circular_results where label='content_read'),'true','Content can read');
 select is((select body#>>'{error,code}' from circular_results where label='content_write'),'SAI_PERMISSION_DENIED','Content cannot mutate');

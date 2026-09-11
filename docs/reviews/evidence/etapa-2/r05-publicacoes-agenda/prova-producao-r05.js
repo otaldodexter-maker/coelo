@@ -43,7 +43,7 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
   const institutions = contexts.filter((c) => c.level === 'institution');
   const units = contexts.filter((c) => c.level === 'unit');
   // Preferir a instituicao sintetica qa-r04-escola quando existir.
-  const inst = institutions.find((c) => /qa-r04-escola/i.test(c.name || '')) || institutions[0] || {};
+  const inst = institutions.find((c) => units.some((u) => (u.institutionId || u.institution_id) === c.id)) || institutions[0] || {};
   const institutionId = inst.institutionId || inst.institution_id || inst.id;
   check('agenda.permissions', 'contexts do operador interno listam instituicoes e unidades', !!institutionId, `${institutions.length} instituicoes, ${units.length} unidades; usando ${inst.name || institutionId}`);
   const unit = units.find((u) => (u.institutionId || u.institution_id) === institutionId);
@@ -96,9 +96,16 @@ const PNG = Buffer.from('iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR
     if (ok(r)) cVer = r.body.data.version;
     let d = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
     check('circulars.schedule', 'reload mantem scheduled com publish_at', ok(d) && JSON.stringify(d.body.data).includes('scheduled'), ok(d) ? 'ok' : short(d));
-    // publicar imediato (republicar a agendada)
+    // agendada nao republica (CIRCULAR_INVALID_STATE e o comportamento do gateway); para responder,
+    // encerra e exclui a agendada e publica imediato uma nova com a mesma pergunta
+    r = await rpc('superadmin_circular_close_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
+    if (ok(r)) cVer = r.body.data.version;
+    r = await rpc('superadmin_circular_delete_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer });
+    check('circulars.delete', 'limpeza da agendada', ok(r) && r.body.data.deleted === true, ok(r) ? 'ok' : short(r));
+    r = await rpc('superadmin_circular_save_draft_v2', { p_request_id: uuid(), p_institution_id: institutionId, p_unit_id: null, p_group_id: null, p_activity_id: null, p_payload: { id: '', title: `${tag} Circular publicada para responder`, version: 0, status: 'draft', response_policy: 'per_person', audiences: ['families', 'school_staff'], blocks: [{ id: uuid(), kind: 'text', text: 'x' }, { id: uuid(), kind: 'question', question: { id: uuid(), prompt: 'Vai participar?', kind: 'single_choice', required: true, options: [{ id: uuid(), label: 'Sim' }, { id: uuid(), label: 'Nao' }] } }] } });
+    circularId = ok(r) ? r.body.data.id : circularId; cVer = ok(r) ? r.body.data.version : cVer;
     r = await rpc('superadmin_circular_publish_v2', { p_request_id: uuid(), p_circular_id: circularId, p_expected_version: cVer, p_publish_at: null });
-    check('circulars.publish', 'publicar imediato a agendada persiste', ok(r) && r.body.data.status === 'published', ok(r) ? r.body.data.status : short(r));
+    check('circulars.publish', 'publicar imediato persiste', ok(r) && r.body.data.status === 'published', ok(r) ? r.body.data.status : short(r));
     if (ok(r)) cVer = r.body.data.version;
     d = await rpc('superadmin_circular_detail_v2', { p_circular_id: circularId });
     const detail = ok(d) ? d.body.data : {};
