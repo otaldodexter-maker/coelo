@@ -1,0 +1,93 @@
+[
+ {
+  "action_id": "forms.publish",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "rota normal, publicacao pelo repository produtivo, reload mantem",
+  "evidencia": "rota normal, publicacao pelo repository produtivo, reload mantem",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.publish",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)",
+  "evidencia": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.publish",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "FE verified + BE done na mesma prova",
+  "evidencia": "FE verified + BE done na mesma prova",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.overview",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "rota normal, leitura real, reload",
+  "evidencia": "rota normal, leitura real, reload",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.overview",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "form_get_overview em producao; leitura autorizada",
+  "evidencia": "form_get_overview em producao; leitura autorizada",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.overview",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "leitura ponta a ponta com sessao qa-r03",
+  "evidencia": "leitura ponta a ponta com sessao qa-r03",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
+  "evidencia": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+   "revision": "formularios-cuidado-rotina r36",
+   "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+   "recordedAt": "2026-09-11T13:00:00-03:00"
+  }
+ }
+]

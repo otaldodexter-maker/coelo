@@ -3381,9 +3381,9 @@
       "screen": "Formulários / Diretório",
       "scope": "mvp",
       "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "fe": "R04 (subagente do coordenador, rota real com qa-r03): frontend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
+      "fe": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
-      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png",
+      "evidence": "commitb61eba6e; commitce320f55; evidence/etapa-2/engenheiro-1/; commit 2e39ec739b47e5268b4fd960dd51ed93e03ba594; forms_backend_gateway_test novo, prova de transporte sem rede externa apontando o cliente para 127.0.0.1:1; 51/51 com supabase_forms_api_test; 2026-09-09; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/24-forms-list-with-form.png; card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -3413,10 +3413,10 @@
           "recordedAt": "2026-09-11T03:40:53-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
@@ -3485,19 +3485,39 @@
       "family": "forms_authoring",
       "screen": "Formulário / Visão geral",
       "scope": "mvp",
-      "done": "Editor, contexto1178b54e, callbacks74b56804, autosave e9e7a282 e branches a4d8be57/c0b20ccd integrados. SQL autoria é candidato. R36-r39 (origem C02; integração por lote): Overview rejeita ID divergente/erro inesperado e invalida retornos em mudança de contexto ou dispose.",
-      "fe": "Sem mudanca de estado. Conferido por leitura: guarda de geracao, guarda de identidade de api e formId, fail-closed quando a api e nula e teste de resposta fora de ordem entre rotas ja existem. Nao ha implementacao ausente; nao reimplementar.",
-      "be": "Nenhum equivalente interno overview identificado neste corte; editor de rascunho não substitui overview/publicar/testar.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; forms_overview_page_test com 7 casos, base d784462c1; 2026-09-09",
+      "done": "leitura ponta a ponta com sessao qa-r03",
+      "fe": "rota normal, leitura real, reload",
+      "be": "form_get_overview em producao; leitura autorizada",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; forms_overview_page_test com 7 casos, base d784462c1; 2026-09-09; rota normal, leitura real, reload; form_get_overview em producao; leitura autorizada; leitura ponta a ponta com sessao qa-r03",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.edit",
@@ -3558,19 +3578,39 @@
       "family": "forms_authoring",
       "screen": "Formulário / Publicar",
       "scope": "mvp",
-      "done": "Editor, contexto1178b54e, callbacks74b56804, autosave e9e7a282 e branches a4d8be57/c0b20ccd integrados. SQL autoria é candidato. R36-r39 (origem C02; integração por lote): Nenhuma implementação nova da ação: investigação r39 distingue publicar/overview legados e ausência de preview produtivo sem resposta real.",
-      "fe": "Publicar deixa de falhar em silencio. Um formulario que passa na validacao de titulo e ordem mas nunca foi salvo tinha definicao nula e a confirmacao retornava sem publicar e sem explicar; agora responde que e preciso salvar o rascunho antes de publicar, e a falta de servico ou de permissao tambem passa a ser dita. O restante da acao ja estava implementado e coberto: validacao, dialogo, capability, RPC com requestId e expectedVersion e guarda de contexto.",
-      "be": "Diagnóstico não prova ausência de todas as implementações históricas: preserva código legado; nenhum novoRPC interno correspondente encontrado pelaC02.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit do lote 4 nesta branch; RED verificado removendo a correcao e confirmando zero ocorrencias da mensagem; forms_editor_context_isolation_test 120/120; 2026-09-09",
+      "done": "FE verified + BE done na mesma prova",
+      "fe": "rota normal, publicacao pelo repository produtivo, reload mantem",
+      "be": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-overview; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit do lote 4 nesta branch; RED verificado removendo a correcao e confirmando zero ocorrencias da mensagem; forms_editor_context_isolation_test 120/120; 2026-09-09; rota normal, publicacao pelo repository produtivo, reload mantem; form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70); FE verified + BE done na mesma prova",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/04-forms-overview-reload.png",
+          "revision": "formularios-cuidado-rotina r36",
+          "environment": "producao evvbomzejfijozbtgvpt + repositorio dev",
+          "recordedAt": "2026-09-11T13:00:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.test",
@@ -6743,7 +6783,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T15:58:59.879Z",
+  "updatedAt": "2026-09-11T16:04:38.807Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
