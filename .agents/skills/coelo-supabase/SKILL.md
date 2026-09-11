@@ -147,6 +147,13 @@ rodado no fechamento da rodada seguinte à demonstração (P37, opção A).
   de 30 dias em unidades, turmas, atividades e pessoas. Pessoas sem login
   (funcionários, responsáveis, crianças) também têm @; a edição do @ de uma
   criança é autorizada aos seus responsáveis e à instituição, com auditoria.
+- **Lista de arrobas reservados fica para o encerramento do MVP (Owner,
+  11/09/2026 15:20):** hoje só `coelo` e `coelo.me` estão reservados
+  (`public.reserved_handles`, lote 38). No fechamento formal do MVP, perguntar
+  ao Owner duas listas: palavras proibidas como @ para qualquer usuário (e se a
+  proibição vale também para a escrita) e palavras que só o Owner pode usar
+  como @. Não ampliar a lista antes; ao receber, entra por migration
+  idempotente com flag "somente Owner" e na validação do cliente.
 - **Segredos sem custo não pedem autorização (P30):** token, chave, segredo
   de Edge Function, valor no Vault e similares que não gerem custo são criados
   e gravados no secret store pelo agente; o valor nunca aparece em chat,
