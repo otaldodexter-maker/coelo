@@ -1,0 +1,3 @@
+(async()=>{ const list=await (await fetch('http://127.0.0.1:'+(process.env.CDP_PORT||'9333')+'/json')).json(); const page=list.find(t=>t.type==='page'&&/3006/.test(t.url)); const ws=new WebSocket(page.webSocketDebuggerUrl); await new Promise(r=>ws.onopen=r);
+ ws.onmessage=(m)=>{const d=JSON.parse(m.data); if(d.id===1){ require('fs').writeFileSync(process.argv[2],Buffer.from(d.result.data,'base64')); console.log('shot ok'); ws.close(); process.exit(0);} };
+ ws.send(JSON.stringify({id:1,method:'Page.captureScreenshot',params:{format:'png'}})); setTimeout(()=>{console.log('timeout');process.exit(1)},15000); })();

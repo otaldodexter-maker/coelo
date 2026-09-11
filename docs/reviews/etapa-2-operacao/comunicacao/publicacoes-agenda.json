@@ -1,5 +1,5 @@
 {
-  "revision": 28,
+  "revision": 29,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
@@ -9,7 +9,7 @@
   "head": "c6b5d47a0",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-11T03:12:00-03:00",
+  "updatedAt": "2026-09-11T03:25:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -1186,5 +1186,67 @@
     "head": "c6b5d47a0",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (52 png)"
+  },
+  "deliveryValidation": {
+    "at": "2026-09-11T03:20:00-03:00",
+    "branchHead": "f0b3b72e4",
+    "commitsForaDeDev": 0,
+    "arvoreLimpa": true,
+    "pacotesEmMigrations": [
+      "20260910200000",
+      "20260910200100",
+      "20260910200200",
+      "20260910200300",
+      "20260910200400",
+      "20260910200500"
+    ],
+    "candidatosRestantes": 0,
+    "coordenacaoRecibo": "rev 30 registra publicacoes-agenda rev 28 (finalizado)",
+    "inventarioRecorte": {
+      "feVerified": 16,
+      "beDone": 20,
+      "e2eVerified": 16,
+      "total": 24
+    },
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda sem WIP; pode ser removida (branch preservada)",
+    "processos": "nenhum Chrome/servidor/descartavel meu rodando"
+  },
+  "skillDeltas": {
+    "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/skill-deltas.md",
+    "resumo": {
+      "coelo-backend": [
+        "ADD VALUE em arquivo proprio (db query -f e transacional)",
+        "audit_logs.reason_code exige codigo maiusculo; helper normaliza",
+        "forma de producao: labels, revision_id NOT NULL, circulars_check1, unit_type_id, analytics.notice_events, sem row_security_active, proconfig search_path=\"\"",
+        "pgTAP comportamental obrigatorio (42702, record nao atribuido, CTE com coluna extra)",
+        "grants default do Supabase: revoke explicito em todo pacote + varredura",
+        "realm interno em RPC people-based: colunas internas + trigger + has_permission somado; nunca people para interno",
+        "catalogo: conferir platform_role_permissions (agenda.* nao tinha)",
+        "descartavel: reset so com baseline, resto por psql; portas proprias; script de prova limpa",
+        "prova BE por RPC com sessao (GoTrue+PostgREST)",
+        "worker v2: so service_role; disparo = P30"
+      ],
+      "coelo-frontend": [
+        "rota real por build web + servidor estatico + CDP quando dwds falha; porta CDP por conversa; deep link por pushState",
+        "tap por ByValueKey, nao por coordenada; frame sync off com animacao; balao de chat intercepta (Decisao 7, corrigido em dcfcb9e41)",
+        "composto: pumpAndSettle antes de interagir; titulo no shell; Arquivos honesto; teste de estado vazio por diretorio",
+        "regras de tela: diretorio rele ao voltar de mutacao; acao so quando servidor aceita; detalhe carrega contextos",
+        "goldens A/R aplicados; FUNDO depende do SuperadminFormFrame; P33/P34 lado a lado",
+        "um flutter test por vez (--concurrency=1)"
+      ],
+      "coelo-frontend-backend": [
+        "regua do MVP por action_id e sequencia pacote→aplicacao→RPC→UI→deltas",
+        "instituicao sintetica e pre-requisito; dados [R04-QA] em producao para limpeza",
+        "achados abertos com gate: balao, deep link frio, picker, respond/attach, request/permissions/location, notices.schedule pela tela"
+      ]
+    },
+    "posMvp": [
+      "cadeia legada de Avisos e metricas por geracao",
+      "disparo do worker (P30) e reach>0",
+      "pgTAP historicos de Agenda",
+      "revisao profunda de seguranca (concorrencia, IDOR por tela, grants default)",
+      "membership interno escopado na Agenda",
+      "cleanup de jobs e available_at apos editar starts_at"
+    ]
   }
 }
