@@ -1,7 +1,7 @@
 {
-  "revision": 110,
-  "updated_at": "2026-09-11T06:07:46.957Z",
-  "relogio_local": "Fri Sep 11 2026 03:07:46 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 111,
+  "updated_at": "2026-09-11T06:11:29.573Z",
+  "relogio_local": "Fri Sep 11 2026 03:11:29 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -314,6 +314,20 @@
     "access-models.detail (BE)": "done por REST (p_model_id)",
     "access-profiles.edit": "F em producao pelo motivo acima; deltas atualizados (38 entradas); FE de access-models.create alinhado a verified com o coordenador"
   },
+  "ADENDO_03h12_provas_por_REST_apos_lote_20": {
+    "access-profiles.edit": "BE done: save (update) com capabilities persistiu descricao e concessao people.read (version 2); detalhe v3 confirma selected",
+    "access-profiles.delete": "BE done: delete_and_reassign apagou o perfil sintetico (reatribuicao ao owner, 0 vinculos); detalhe P0002, lista vazia — o dado sintetico do perfil ja foi limpo",
+    "access-profiles.assign": "BE done via internal-users.edit (profile_id no update do usuario interno); sem RPC propria no cliente",
+    "access-models.edit": "BE done: model_update version 1->2 com capabilities",
+    "access-models.duplicate": "BE done: copia qa-r04-modelo-sintetico-copia-a2dcc439 (60fb9586-8e4c-46b8-8f1a-f8bdc396e2d4), inactive",
+    "deltas": "42 entradas em deltas-r04.json"
+  },
+  "dados_sinteticos_atualizados": [
+    "perfil qa-r04-perfil-sintetico-7f6f8d16: APAGADO pela prova de delete",
+    "modelo qa-r04-modelo-sintetico-b6f3958c (cc322488-...) e a copia 60fb9586-8e4c-46b8-8f1a-f8bdc396e2d4: apagar ao fim",
+    "perfil interno de qa-r03 (job_title editado): apaga com o usuario",
+    "autorizacao 34d29829-...: apagar ao fim"
+  ],
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",

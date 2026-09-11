@@ -483,14 +483,66 @@
   {
     "action_id": "access-profiles.edit",
     "camada": "backend",
-    "estado_proposto": "fail-closed",
-    "delta": "R04: superadmin_access_profile_save (update) devolve 23514 'active full-authority MFA replacement required' em producao: a guarda assert_full_authority_remains exige uma membership de plataforma cujo papel conceda TODAS as permissoes ativas e o Owner tem 134/135 (falta child_safety.review, criada no lote 4 sem concessao). Candidato 172000 (grant idempotente ao Owner, pgTAP 4/4) destrava editar/excluir/reatribuir perfis.",
-    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura)",
+    "estado_proposto": "done",
+    "delta": "R04: apos o 172000 (lote 20), superadmin_access_profile_save (update) persistiu descricao e a concessao people.read no perfil sintetico (version 1->2) com o payload capabilities que o cliente passa a enviar (3682673da); detalhe v3 relido devolve selected=[people.read]. pgTAP do pacote 4/4 + governanca historica.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
     "certificacao": {
       "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
-      "revision": "af7f3b9fb",
-      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
-      "recordedAt": "2026-09-11T03:10:00-03:00"
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_delete_and_reassign apagou o perfil sintetico reatribuindo ao owner (reassigned_count 0); detalhe devolve P0002 e a lista nao o traz mais. Guarda de autoridade plena passou (172000).",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: a atribuicao de perfil no MVP e o profile_id do comando superadmin_internal_user_update (provado em internal-users.edit, version 1->2 com profile_id owner); nao existe RPC de atribuicao separada no cliente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109/111)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_update persistiu descricao e capabilities do modelo sintetico (version 1->2, envelope ok) com o payload do cliente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-models.duplicate",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R04: superadmin_access_profile_model_duplicate criou a copia qa-r04-modelo-sintetico-copia-a2dcc439 (inactive, version 1) a partir do modelo sintetico, envelope ok.",
+    "evidencia": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST)",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
     }
   }
 ]
