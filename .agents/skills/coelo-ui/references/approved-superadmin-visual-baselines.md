@@ -228,3 +228,49 @@ O que ela define para o detalhe de dia da Agenda:
 
 As duas capturas juntas fixam a navegação ano → mês → dia da Agenda e o
 tratamento de evento cancelado (hachurado no mês, riscado no dia).
+
+## Respostas do Owner de 2026-09-11 às dúvidas visuais da Rodada 4
+
+Fonte: página de decisões da R04 (artefato "Decisões R04", respondida às
+10:40 de 11/09). Convenção: **R** referência guardada, **A** regravar, **A+**
+regravar depois de aplicar a observação.
+
+- **P26 error_409_light / error_409_dark: A.** As duas imagens candidatas
+  viram golden oficial da família de erro.
+- **G-FORM forms_editor_* 1440 (5 arquivos): A.** Regravar no SDK 3.44.2.
+- **G-SUP support_kanban/table/detail (32 arquivos): A+.** "Ficou muito
+  bom", mas a tabela de Suporte e a de Em implantação ainda têm colunas
+  desalinhadas: o conteúdo alinha à esquerda, porém colunas como Origem ficam
+  no canto superior esquerdo da célula. Alinhar igual à tabela de
+  Instituições (alinhamento vertical e horizontal das células no composto),
+  depois regravar; support_detail_light_1024 continua R.
+- **P34 agenda_detail_light_375/768/1440: A+.** "Não está legal": fundo cinza
+  fora dos tokens; cancelar/excluir fica à esquerda e salvar/continuar à
+  direita; o rodapé precisa ser igual ao de criar/editar Instituição
+  (SuperadminFormFrame). Corrigir e regravar.
+- **P33 agenda_calendar_light_375: R.** "Ficou legal, mas faltam ajustes
+  pequenos; tem de ficar mais próximo do calendário do iPhone": canto
+  arredondado menos redondo; a fonte da data um pouco menor, colada ao canto
+  superior esquerdo da célula com respiro; provavelmente o problema é o
+  calendário estar dentro de um contêiner. O par de botões calendário/lista
+  divide 50% cada, maior e centralizado. Regra de conteúdo: o calendário
+  mostra tudo a que a hierarquia dá direito (eventos, aniversários de amigos
+  de turma, de funcionários se a unidade liberar, provas); responsável vê
+  todas as crianças e filtra pela opção de perfil; funcionário filtra por
+  turma, instituição e outros; híbrido escolhe.
+- **P28 principal_profile_light_1440: R**, com quatro correções antes de
+  qualquer regravação:
+  1. o círculo do avatar está "cortado" embaixo, como se o nome o cortasse;
+  2. o cabeçalho (Bug, sino, perfil, logo) está diferente do contexto mobile:
+     a logo não é a nossa e o espaçamento parece incorreto;
+  3. o @ do perfil deve aparecer;
+  4. os avatares de vínculos sobrepostos (laranja por padrão) ficam bonitos,
+     mas precisam de contorno (branco no claro, preto ou outro tom do laranja
+     no escuro) para não parecer uma coisa só.
+  Regras de produto que acompanham: a opção de perfil no cabeçalho do
+  Principal faz filtragem (responsável por criança, funcionário por turma e
+  instituição, híbrido por "ver como responsável", "como funcionário" ou
+  ambos), com até 5 perfis inline e "ver todos" abrindo um popup simples de
+  lista; responsável não tem "+ Agora", que adiciona no Acontece e só aparece
+  para quem pode publicar; ao publicar fora do perfil selecionado, o app
+  pergunta em qual perfil vai publicar.
