@@ -5385,6 +5385,9 @@ GoRouter createSuperadminRouter({
               subtitle: 'Crie, publique e acompanhe Circulares institucionais.',
               destination: 'circulars',
               child: ProductionCircularDirectoryHost(
+                // Ao voltar de uma mutacao (publicar, excluir) o router entrega
+                // um extra novo: a chave muda, o host renasce e le de novo.
+                key: ValueKey(state.extra),
                 repository: circularRepository,
                 onCreate: () => context.goNamed(SuperadminRoutes.circularCreateName),
                 onOpen: (id) => context.pushNamed(
@@ -5406,7 +5409,7 @@ GoRouter createSuperadminRouter({
                 repository: circularRepository,
                 institutionRepository: institutionDirectoryRepository,
                 onCancel: () => context.goNamed(SuperadminRoutes.circularsName),
-                onDone: () => context.goNamed(SuperadminRoutes.circularsName),
+                onDone: () => _returnToCircularsRefreshed(context),
               ),
             ),
           ),
@@ -5436,7 +5439,7 @@ GoRouter createSuperadminRouter({
                     expectedVersion: detail.managementVersion,
                   );
                 },
-                onDeleted: () => context.goNamed(SuperadminRoutes.circularsName),
+                onDeleted: () => _returnToCircularsRefreshed(context),
                 onBack: () => _returnFromCircularReader(
                   context,
                   fallbackRouteName: SuperadminRoutes.circularsName,
@@ -6005,6 +6008,13 @@ void _closePrincipalViewer(BuildContext context) {
   }
   context.goNamed(SuperadminRoutes.devPrincipalHappensName);
 }
+
+/// Volta ao diretorio de Circulares forcando releitura: o extra (inteiro,
+/// serializavel no historico do navegador) muda a chave do host.
+void _returnToCircularsRefreshed(BuildContext context) => context.goNamed(
+  SuperadminRoutes.circularsName,
+  extra: DateTime.now().millisecondsSinceEpoch,
+);
 
 void _returnFromCircularReader(BuildContext context, {required String fallbackRouteName}) {
   if (context.canPop()) {

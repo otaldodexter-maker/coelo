@@ -12,6 +12,7 @@ import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circ
 import 'package:coelo_superadmin/features/circulars/presentation/superadmin_circular_detail_page.dart';
 import 'package:coelo_superadmin/features/circulars/domain/superadmin_circular_repository.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
+import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_superadmin/features/errors/presentation/screens/superadmin_error_screen.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +21,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
 
 void main() {
+  _deleteReloadTests();
   test('keeps production and development Circular routes explicit', () {
     expect(SuperadminRoutes.circulars, '/circulars');
     expect(SuperadminRoutes.circularCreate, '/circulars/new');
@@ -247,4 +249,81 @@ final class _SuperadminRepository implements SuperadminCircularRepository {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+// Rodada 4 (publicacoes-agenda): ao voltar da exclusao no detalhe, o diretorio
+// de producao precisa reler o servidor; antes ele mostrava o rascunho excluido
+// ate um reload manual (capturas ui-23/ui-24 da prova em producao).
+final class _DeletingRepository extends _SuperadminRepository {
+  var directoryReads = 0;
+  var deleted = false;
+
+  @override
+  Future<SuperadminCircularDirectoryPage> fetchDirectory(
+    SuperadminCircularDirectoryQuery query,
+  ) async {
+    directoryReads += 1;
+    final page = await super.fetchDirectory(query);
+    return deleted ? const SuperadminCircularDirectoryPage(items: []) : page;
+  }
+
+  @override
+  Future<CircularDetail> getVisible(String circularId, {String? childContextId}) async =>
+      CircularDetail(
+        id: 'circular-real',
+        revisionId: 'circular-real-revision-1',
+        title: 'Renovação institucional 2027',
+        authorName: 'Equipe Coelo',
+        contextLabel: 'Colégio Horizonte',
+        publishedAt: DateTime.utc(2026, 9, 1),
+        blocks: [],
+        status: CircularStatus.draft,
+        responseState: CircularResponseState.unanswered,
+      );
+
+  @override
+  Future<SuperadminCircularDeleteResult> delete({
+    required String requestId,
+    required String circularId,
+    required int expectedVersion,
+  }) async {
+    deleted = true;
+    return SuperadminCircularDeleteResult(
+      id: circularId,
+      version: expectedVersion + 1,
+      status: CircularStatus.draft,
+      deleted: true,
+    );
+  }
+}
+
+void _deleteReloadTests() {
+  testWidgets('excluir no detalhe recarrega o diretorio de producao ao voltar', (tester) async {
+    final repository = _DeletingRepository();
+    final fixture = await _pumpRouter(
+      tester,
+      size: const Size(1440, 900),
+      authenticated: true,
+      circularRepository: repository,
+    );
+    fixture.router.go(SuperadminRoutes.circulars);
+    await tester.pumpAndSettle();
+    expect(find.text('Renovação institucional 2027'), findsWidgets);
+    final readsBefore = repository.directoryReads;
+
+    fixture.router.pushNamed(
+      SuperadminRoutes.circularDetailName,
+      pathParameters: {'circularId': 'circular-real'},
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-detail-delete')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('circular-detail-confirm-action')));
+    await tester.pumpAndSettle();
+
+    expect(fixture.router.routeInformationProvider.value.uri.path, SuperadminRoutes.circulars);
+    expect(repository.directoryReads, greaterThan(readsBefore),
+        reason: 'o diretorio deve reler o servidor depois da exclusao');
+    expect(find.text('Renovação institucional 2027'), findsNothing);
+  });
 }
