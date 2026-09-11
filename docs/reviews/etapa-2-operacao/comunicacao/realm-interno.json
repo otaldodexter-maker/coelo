@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 39,
+  "revision": 40,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T19:50-03:00",
+  "updatedAt": "2026-09-11T20:31-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "ca60b096b (origin/dev na abertura)",
+  "head": "fc8094553",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "coordenacao.json ainda em rev 51 (sem T0 da R06) as 19:37; assumo T0 = 19:37 (abertura desta conversa); T0+2h = 21:37, revisao ate 21:47; ajusto se o coordenador gravar outro T0",
   "escopo": {
@@ -26,17 +26,42 @@
     ],
     "foraDoRecorte": "UI, aplicacao em producao (coordenador), Cloudflare com custo, MCP dart"
   },
-  "primeiroGate": "(1) medir no descartavel como 220400/130000 espelham a membership escopada e quais dos 12 helpers concedem a identidade escopada acesso a outra instituicao",
-  "provaLocal": "projeto descartavel coelo_realm_r06 (portas 626xx) a criar: baseline + seed + ordem-de-aplicacao-producao.txt (ate o lote 48) + candidatos",
+  "primeiroGate": "coordenador aplicar 20260912210000 (realm-interno) e 20260912230000 (coordenador, apos criar os auth users qa-r06 pela API do Auth); em seguida (3) 180060",
+  "provaLocal": "descartavel coelo_realm_r06 (portas 626xx): baseline + seed + as 141 migrations de ordem-de-aplicacao-producao.txt (ate o lote 48) por psql do container + candidatos; pgTAP por psql -qtA",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
-  "pacotesProntos": [],
-  "pendenciasRegistradas": [],
+  "pacotesProntos": [
+    {
+      "ordem": 1,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260912210000_internal_actor_scope_root_v1.sql",
+      "assunto": "SEGURANCA (raiz da ponte de ator): R1 superadmin_internal_actor_institution_access_sync (130000) dava membership owner + institution_admin em TODAS as instituicoes a qualquer espelho interno ativo, sem olhar o escopo -> passa a respeitar o escopo (plataforma: todas; instituicao: so a propria) e desativa (inactive + revoked_at) memberships de espelho fora do escopo; R2 has_platform_permission(text,uuid) (171000/P7): para identidade INTERNA, a membership espelhada com escopo de instituicao so conta quando institution_id e informado e coincide (generaliza o 211200 aos 12 helpers, 188 chamadores e 69 policies); pessoas do realm people-based mantem P7. Nenhum helper reescrito. Helper novo app_private.superadmin_internal_actor_scope_targets(). Backfill: sync reconciliado (0 linhas esperadas em producao: 0 escopadas)",
+      "pgTAP": "supabase/tests/internal_actor_scope_root_v1_test.sql 44/44 (antes da correcao: 16 vermelhos = 12 helpers + sync + um argumento); prova por familia: Rotina e Cuidado aceitam a escopada SO pelo contexto da propria instituicao (has_context_permission em A true, em B false); Pessoas, Seguranca infantil, Formularios (2), Suporte, Conta, Perfis (2), Arquivos e Identidade da instituicao negam 42501; controle: identidade de plataforma passa nos 12; P7 people-based intacto; ACL preservada",
+      "commit": "fc8094553",
+      "dependeDe": "171000, 220400, 130000, 211200 (todos em producao)",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto para o coordenador aplicar (regressao das 201 suites em curso; resultado na proxima revisao)",
+      "avisoG4": "P48 (item 6 da G4) muda o MESMO sync do 130000 (owner -> institution_admin, operations -> leitura): o pacote da G4 deve nascer sobre o corpo do 20260912210000 (manter app_private.superadmin_internal_actor_scope_targets() como fonte do escopo) e ser aplicado DEPOIS dele; combinado pelo JSON, nao pelo chat"
+    },
+    {
+      "ordem": 2,
+      "arquivo": "packages/coelo_database/candidatos/coordenador/20260912230000_qa_r06_group_users_seed_v1.sql",
+      "assunto": "semente dos sete usuarios qa-r06-<grupo>@coelo.me: identidade interna + vinculo de auth + membership owner de PLATAFORMA + perfil interno sintetico (padrao 171200); a ponte 220400 espelha por gatilho e o sync do 130000 (com escopo) da owner nas instituicoes ativas; repete o padrao do lote 27 para as qa-r04-*. Idempotente por e-mail; auth user ausente -> NOTICE e no-op (rodar de novo depois de criar pela API do Auth). Sem segredo",
+      "pgTAP": "supabase/tests/qa_r06_group_users_seed_v1_test.sql 12/12 (2 usuarios presentes, 5 ausentes, ponte, memberships, idempotencia, ACL)",
+      "commit": "fc8094553",
+      "dependeDe": "20260912210000 (para o sync com escopo; sem ele a semente tambem funciona, pois os qa-r06 sao de plataforma)",
+      "chaveDeComposicao": "coordenador: criar os sete auth users pela API de administracao do Auth (senha so em Coelo-backups/qa-r06-<grupo>.env) ANTES de aplicar; depois supabase db query --linked -f; a saida NOTICE lista ok/ausente por e-mail",
+      "estado": "escrita para o coordenador (item 2 do meu recorte); ele aplica"
+    }
+  ],
+  "pendenciasRegistradas": [
+    "P7 para pessoas do realm people-based: has_platform_permission(text) sem instituicao continua contando membership de instituicao (decisao 12 do Owner); RPC de plataforma que nao filtra por instituicao pode expor outra instituicao a uma pessoa people-based escopada — nao ha pessoa assim em producao; revisao profunda: RPCs de plataforma passarem institution_id (forma de dois argumentos)",
+    "identidade interna escopada, apos o 20260912210000, e negada nas familias people-based que so usam has_platform_permission(text) (Pessoas, Seguranca infantil, Formularios, Suporte, Conta, Perfis, Arquivos, Identidade da instituicao): fail-closed por desenho; ate existir a primeira identidade escopada, decidir com produto se essas familias devem aceitar por contexto (como Rotina e Cuidado ja fazem via has_context_permission)"
+  ],
   "deltaPropostoBE": {},
   "loop": "a agendar: /loop 15m",
-  "status": "aberta; lendo 220400/130000 e os helpers",
-  "proximoPasso": "criar o descartavel em paralelo; ler as pontes; escrever o pgTAP negativo por familia antes da correcao",
+  "status": "item (1) e (2) prontos no descartavel; regressao das 201 suites em curso",
+  "proximoPasso": "fechar a regressao (201 suites) e comparar as falhas com o espelho pre-correcao; depois item (3) 180060",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
