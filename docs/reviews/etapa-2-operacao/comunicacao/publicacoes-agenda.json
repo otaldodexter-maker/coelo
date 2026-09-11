@@ -6,7 +6,7 @@
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "596bf05ea (branch = dev 58bfe1fed + wip do coordenador)",
+  "head": "ca70dd552",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
   "updatedAt": "2026-09-11T03:40:00-03:00",
@@ -70,6 +70,8 @@
     "Padrao de defeito repetido nas cadeias historicas: audit_logs.reason_code (^[A-Z][A-Z0-9_]{0,79}$) recebia texto livre/minusculo e derrubava a RPC com SAI_INTERNAL_ERROR. Vale conferir nos outros grupos que passam p_reason ao audit_append_superadmin_internal.",
     "SEGURANCA medida na baseline: tabelas agenda_* com RLS forcado e zero policies, mas SELECT/INSERT concedidos a anon/authenticated; superadmin_agenda_* executaveis por anon/service_role. Fechado no 200300. Recomendo ao coordenador varrer o mesmo padrao nas outras familias (grants default do Supabase em tabelas/funcoes criadas antes do endurecimento).",
     "UI real: balao de chat \"Mensagens\" visivel em /notices/new (criar) — Decisao 7 exige sem chat em criar/editar/publicar; regra do shell, nao da feature. Registrado para o coordenador/principal-chat-sistema.",
+    "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
+    "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona.",
     "FE: diretorio de Circulares nao recarrega apos excluir (mostra o rascunho ate recarregar); \"Editar circular\" oferecido em Encerrada (servidor recusa).",
     "FE bloqueante: em /circulars/new a 1440 o balao de chat cobre inteiramente o botao Publicar (centro 1330x856); a 1024 o rodape empilha e funciona."
   ],
@@ -1093,7 +1095,7 @@
   },
   "finalizado": {
     "at": "2026-09-11T03:40:00-03:00",
-    "head": "ver campo head apos push",
+    "head": "ca70dd552",
     "handoff": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
     "capturas": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/ui/ (27 png)"
   }
