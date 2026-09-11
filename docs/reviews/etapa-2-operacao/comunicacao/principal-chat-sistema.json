@@ -1,17 +1,17 @@
 {
-  "revision": 13,
-  "updated_at": "2026-09-10T23:27:00-03:00",
+  "revision": 14,
+  "updated_at": "2026-09-11T02:25:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
-  "tool": "Claude Code (VS Code)",
-  "model": "claude-opus-5 (prompt G4, R04)",
+  "tool": "Claude Code (VS Code), sessao coelo-11",
+  "model": "claude-fable-5-1 (retomada apos o reinicio da maquina as 00:27; prompt G4 herdado, coordenador coelo-04)",
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
-  "base": "origin/dev 5bb7c5648 (rebase 23:19; sete branches integradas pelo coordenador)",
-  "head": "a41940180",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em a41940180",
-  "status": "Chat fechou a regua pela tela real tambem para editar e revogar (capturas 34 a 42). Handoff da R04 publicado. Aguardando o lote 10 (ponte de ator, P22) para refazer Cardapios, Principal e o dialogo de Criar grupo.",
+  "base": "origin/dev f51233023 (rebase 02:05; a branch ja estava integrada em dev por 1641e09cf, o rebase so carregou o WIP)",
+  "head": "f51233023 + WIP (launcher, Decisao 7) ainda nao commitado",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 64db08980 (rev 13); push desta revisao junto com o commit do launcher",
+  "status": "Retomada as 02:00 por coelo-11 depois da queda da maquina (00:27). WIP que sobreviveu: superadmin_shell.dart (flag showChatLauncher da pagina embutida chega ao hospedeiro) e o teste novo superadmin_shell_chat_visibility_test.dart. Completado nesta revisao: conjunto SuperadminShell.chatLauncherHiddenDestinations (Agora aberto, Momentos aberto e as tres telas de publicar) porque as paginas do Principal nao embutem shell proprio, e showChatLauncher=false no assistente de Cardapios e nos formularios de Planos via productionOperationalPage. Teste em execucao (um flutter test por vez).",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -31,7 +31,11 @@
     "6. goldens: launcher 5, Cardapios 5, Planos 8, Para voce 8, Chat 6 regravados apos observacao; galeria mobile do Acontece (redesenho), Momentos IMG, Perfil FOTO/SHELL ficam abertos",
     "7. erro 409: imagens candidatas + pagina lado a lado para o Owner (2335ea3c1)",
     "8. pacote de revoke de anon em 199 funcoes security definer + privilegio padrao: FEITO c3f31b64b (pgTAP 7; suite do grupo 9 arquivos / 201 PASS)",
-    "9. Momentos: moldura a partir de 840, aside a partir de 1200, midia contain: FEITO (commit desta revisao); goldens 1024/1440/like_hover/text_200_dark regravados apos observacao"
+    "9. Momentos: moldura a partir de 840, aside a partir de 1200, midia contain: FEITO (commit desta revisao); goldens 1024/1440/like_hover/text_200_dark regravados apos observacao",
+    "10. (R04 retomada, coelo-11) regressao transversal do launcher (Decisao 7): flag da pagina embutida chega ao host + destinos do Principal sem balao + Cardapios/Planos criar/editar sem balao: EM CURSO (teste rodando; commit e push na sequencia)",
+    "11. (R04 retomada) Cardapios e Principal na rota real com a ponte de ator em producao (lote 10): A FAZER depois do item 10",
+    "12. (R04 retomada) dialogo de Criar grupo com o diretorio de Pessoas pela tela real: A FAZER",
+    "13. (R04 retomada) goldens conforme as tres listas do Owner (Perfil FOTO/SHELL, galeria mobile do Acontece, imports FUNDO): A FAZER"
   ],
   "pacote_1_candidatos": {
     "commit": "f54809201",
@@ -81,7 +85,7 @@
     "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Aguardar o lote 10 (P22) e refazer a rota real de Cardapios, Principal (Acontece/Momentos/Agora/Para voce) e o dialogo de Criar grupo; mini-revisao ate 04:20.",
+  "next_step": "Terminar o item 10 (teste verde, commit, push), depois Cardapios e Principal na rota real com qa-r03 (um Chrome), Criar grupo com o diretorio de Pessoas, goldens; mini-revisao no JSON as 04:00.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -327,5 +331,12 @@
     "P-409: aprovar error_409_light e error_409_dark como golden oficial (mesma composicao das outras variantes)? Pagina lado a lado: evidence/etapa-2/r04-principal-chat-sistema/erro-409-candidatos.html",
     "P-CHAT-DUP: no card de Cardapios, Duplicar aparece como icone ARQUIVO no cabecalho E no menu de acoes (as duas decisoes de 10/09 pediam cada uma). Manter os dois ou so o icone?",
     "P-FOTO: no Perfil Principal (principal_profile_light_1440, R com FOTO), qual foto aparece recortada: a capa (BoxFit.cover, corta em altura) ou o avatar redondo? Imagens: evidence/etapa-2/r04-principal-chat-sistema/perfil-foto/ (a montar na revisao 13 se houver janela)"
-  ]
+  ],
+  "retomada_0027": {
+    "motivo": "maquina reiniciou as 00:27 por falta de memoria; todas as conversas cairam",
+    "sessao_nova": "coelo-11 (Claude Fable 5.1) assumiu o grupo por ordem do coordenador coelo-04 as 01:58",
+    "wip_sobrevivente": "apps/superadmin/lib/app/shell/superadmin_shell.dart modificado (+25/-1) e test/app/shell/superadmin_shell_chat_visibility_test.dart novo; nenhum stash; commitados nesta revisao",
+    "regras_da_retomada": "no maximo dois Chrome/flutter run por frente, um flutter test por vez, fechar Chrome e dart ao fim de cada prova; subagentes so para trabalho sem Chrome; rtk nos comandos",
+    "observacao": "ao retomar havia 29 processos chrome.exe e 10 dart.exe de outras frentes/sessoes na maquina; nao encerrei processos que nao sao meus"
+  }
 }
