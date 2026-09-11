@@ -1,16 +1,16 @@
 {
-  "revision": 14,
-  "updated_at": "2026-09-10T21:47:00-03:00",
+  "revision": 15,
+  "updated_at": "2026-09-10T22:34:00-03:00",
   "round": "E2-R04-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M)",
   "conversation": "R04 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-operacoes",
   "branch": "work/etapa2-r04-operacoes",
-  "head": "98cc0529d",
+  "head": "a208e1d6c",
   "base": {
     "requested": "origin/dev",
-    "resolved": "98cc0529d6ca66195d6b05e1591666ff21a37b89",
+    "resolved": "836c63215 (origin/dev com lote 8; branch rebaseada)",
     "note": "HEAD que contem R04-prompts.md (posterior a a4af2b198)"
   },
   "scope": {
@@ -63,27 +63,118 @@
     "time_estimate": "nao calculavel ainda; calibrar apos a primeira tela (Conta) na rota real"
   },
   "loop": "/loop 15m agendado na abertura (retomar o recorte, atualizar operacoes.json, nao encerrar antes de 04:20)",
-  "changes": [],
+  "changes": [
+    {
+      "action_ids": [
+        "support.create",
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.reply",
+        "support.close"
+      ],
+      "status": "backend-candidate-local-green",
+      "changed": [
+        "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_support_create_internal_scope_test.sql"
+      ],
+      "commit_sha": "480728d7f",
+      "delta": "superadmin_support_create: aceita p_institution_id nulo (o cliente envia nulo no botao de Bug; a coluna ja era nula) e preenche support_sessions.reason_code (NOT NULL sem default na baseline, o lote 7 nao preenchia: nenhum chamado podia ser criado). scope_kind platform quando sem instituicao; unidade sem instituicao rejeitada.",
+      "proof": "projeto descartavel proprio (coelo_baseline_ops, portas 64xxx): baseline + seed + lotes 1-8 (46 migrations) + candidato; pgTAP superadmin_support_create_internal_scope_test 17/17 (anonimo 28000, sem support.manage 42501, criar sem instituicao, idempotencia por request_id, reason_code, auditoria, responder rev 2, status, listar); superadmin_support_production_test 23/23 e superadmin_account_profile_v1_test 16/16 continuam verdes",
+      "criteria": {
+        "frontend": "P(wiring: main.dart ja passa SupabaseSupportRepository e o router cria productionSupportController; rota real pendente)",
+        "backend": "local-green (candidato; aplicacao pelo coordenador)",
+        "e2e": "N (ator do realm interno: ponte e pacote do coordenador)"
+      }
+    },
+    {
+      "action_ids": [
+        "account.profile",
+        "account.settings",
+        "account.theme",
+        "support.create",
+        "support.table",
+        "support.kanban",
+        "support.detail",
+        "support.reply",
+        "support.close",
+        "plans.list",
+        "plans.create",
+        "plans.edit",
+        "audit.list",
+        "audit.filter",
+        "audit.detail"
+      ],
+      "status": "finding-cross-group",
+      "changed": [],
+      "delta": "ACHADO: superadmin_support_* e superadmin_account_* (e tambem Unidades 160000, Rotina, Assiduidade, Cuidado, Cardapios, Seguranca infantil) resolvem o ator por app_private.current_person_id()/has_platform_permission (realm people). O coordenador mediu em producao: person_auth_links tem 0 linhas e todos os auth users (inclusive o qa-r03) so existem no realm interno v2. Logo essas RPCs devolvem 42501 internal_actor_required para qualquer sessao real. Decisao do coordenador (22:12): a ponte entre realms e pacote unico dele em candidatos/coordenador; eu NAO altero a resolucao do ator. Meu esboco de resolver (superadmin_actor_resolve) foi descartado.",
+      "gate": "pacote de ponte do coordenador aplicado em producao (acompanhar coordenacao.json); ate la, rota real de Conta/Suporte so prova login, shell e abertura das telas"
+    },
+    {
+      "action_ids": [
+        "auth.login",
+        "shell.load"
+      ],
+      "status": "real-route-proof-in-progress",
+      "changed": [
+        "apps/superadmin/pubspec.yaml (flutter_driver em dev_dependencies)",
+        "apps/superadmin/test_driver/driver_main.dart"
+      ],
+      "commit_sha": "a208e1d6c",
+      "delta": "entrypoint do Flutter Driver sobre o composition root real; login do qa-r03 na rota normal provado: superadmin_auth_bootstrap_context devolve ok=true, papel owner, escopo platform, aal1, 1 identidade interna; shell abre em / (Home). Credencial lida de Coelo-backups/qa-r03.env por script local, nunca impressa.",
+      "proof": "log do flutter run (bootstrap-diag, diagnostico temporario nao commitado) + arvore de widgets via DTD mostrando SuperadminShell + SuperadminHelpCenterPage",
+      "note": "Chrome pausava frames com a janela oculta atras das outras frentes (Windows occlusion); relancado com --disable-backgrounding-occluded-windows e afins"
+    }
+  ],
   "tests": {
-    "P": 0,
+    "P": 56,
     "F": 0,
     "B": 0,
     "S": 0,
     "U": 0,
-    "evidence": [],
+    "evidence": [
+      "pgTAP superadmin_support_create_internal_scope_test.sql 17/17 (descartavel coelo_baseline_ops sobre lotes 1-8)",
+      "pgTAP superadmin_support_production_test.sql 23/23",
+      "pgTAP superadmin_account_profile_v1_test.sql 16/16",
+      "login real qa-r03: bootstrap ok=true (owner/platform/aal1)"
+    ],
     "planned": [
-      "flutter test features/account, features/support, features/plans, features/audit",
-      "rota real Conta/Suporte/Planos/Auditoria com sessao qa-r03 em localhost:3000",
-      "pgTAP de AUDIT-READ-V2 no projeto descartavel"
+      "flutter test features/account, support, plans, audit na base rebaseada",
+      "rota real Conta/Suporte/Planos/Auditoria (abrir telas; CRUD depende da ponte do coordenador)",
+      "goldens conforme listas do Owner"
     ]
   },
-  "blocked": [],
+  "blocked": [
+    {
+      "kind": "integration",
+      "what": "CRUD real de Conta e Suporte com qa-r03 depende da ponte realm interno -> people do coordenador (current_person_id devolve nulo em producao para todos os usuarios)",
+      "owner": "coordenador (candidatos/coordenador)",
+      "unblocks": "aplicacao do pacote de ponte; depois rodo editar/recarregar em Conta e criar/responder/status em Suporte na rota real"
+    },
+    {
+      "kind": "environment",
+      "what": "classificador do modo automatico bloqueia supabase db query --linked (leitura) nesta sessao; medicao de producao vem do coordenador ou do proprio app na rota real",
+      "owner": "operacoes",
+      "unblocks": "n/a: contorno pelo app real"
+    }
+  ],
   "resolved": [],
   "proposed_deltas": [],
-  "packages_ready": [],
+  "packages_ready": [
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+      "pgtap": "supabase/tests/superadmin_support_create_internal_scope_test.sql 17/17",
+      "composition_key": "nenhuma (RPC ja consumida pelo cliente; supportRepository ja ligado em main.dart)",
+      "order": "depois da ponte de realms do coordenador ou antes: independente"
+    }
+  ],
   "questions_to_owner": [],
-  "next_step": "ler as tres listas de decisao de goldens do Owner no recorte; abrir o app em localhost:3000 com a sessao qa-r03 e provar account.profile/account.settings; em seguida ligar supportController no router",
-  "commits": [],
+  "next_step": "abrir Conta (/conta/perfil, /conta/configuracoes) e Suporte na rota real com a shell logada; conferir supportController no botao de Bug; flutter test das quatro familias; Planos e Auditoria sobre o composto; goldens",
+  "commits": [
+    "66f17c323 (abertura, reescrito no rebase como e96b640c8)",
+    "480728d7f",
+    "a208e1d6c"
+  ],
   "r03_history": {
     "revision": 13,
     "round": "E2-R03-20260910",
@@ -333,5 +424,14 @@
       "d7ca27d93"
     ],
     "next_step": "coordenador deve ler este checkpoint e, quando a janela de replay e o gate P1 forem liberados, executar pgTAP nominal dos 20 action_ids ativos; depois aplicar a fila SQL forward-only e executar E2E Supabase real"
-  }
+  },
+  "app_port": "localhost:3007 (3000 deixado livre para as outras frentes; nenhuma acao do recorte usa R2)",
+  "pacotesProntos": [
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260910210000_support_create_internal_scope_v1.sql",
+      "pgtap": "supabase/tests/superadmin_support_create_internal_scope_test.sql 17/17",
+      "composition_key": "nenhuma (RPC ja consumida pelo cliente; supportRepository ja ligado em main.dart)",
+      "order": "depois da ponte de realms do coordenador ou antes: independente"
+    }
+  ]
 }
