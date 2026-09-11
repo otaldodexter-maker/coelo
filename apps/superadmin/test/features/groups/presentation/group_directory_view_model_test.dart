@@ -71,12 +71,13 @@ void main() {
     expect(viewModel.filterOptionsUnavailable, isTrue);
     expect(viewModel.filterOptions.units, isEmpty);
 
-    await viewModel.setUnits({'unit-1'});
-    await viewModel.setInstitutions({'inst-1'});
+    final first = repository.delegate.records.first;
+    await viewModel.setUnits({first.unitId});
+    await viewModel.setInstitutions({first.institutionId});
 
     expect(viewModel.state, GroupDirectoryLoadState.success);
-    expect(viewModel.query.institutionIds, {'inst-1'});
-    expect(viewModel.query.unitIds, {'unit-1'}, reason: 'sem opcoes nao ha como podar a selecao');
+    expect(viewModel.query.institutionIds, {first.institutionId});
+    expect(viewModel.query.unitIds, {first.unitId}, reason: 'sem opcoes nao ha como podar a selecao');
   });
 }
 
@@ -113,11 +114,12 @@ final class _MixedFailureGroupRepository implements GroupDirectoryRepository {
 }
 
 final class _FilterOptionsFailureGroupRepository extends _MixedFailureGroupRepository {
+  final FakeGroupDirectoryRepository delegate = FakeGroupDirectoryRepository(
+    FakeInstitutionDirectoryRepository(),
+  );
+
   @override
-  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) async {
-    final delegate = FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository());
-    return delegate.fetchPage(query);
-  }
+  Future<GroupDirectoryPage> fetchPage(GroupDirectoryQuery query) => delegate.fetchPage(query);
 
   @override
   Future<GroupDirectoryFilterOptions> fetchFilterOptions({Set<String> institutionIds = const {}}) =>
