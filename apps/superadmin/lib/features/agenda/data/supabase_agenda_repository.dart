@@ -645,6 +645,11 @@ AgendaHistoryEntry? _history(Object? raw) {
   );
 }
 
+String? _label(Map<String, Object?> json, String key) {
+  final value = json[key]?.toString().trim();
+  return value == null || value.isEmpty ? null : value;
+}
+
 AgendaPublicationRequest _publicationRequest(Object? raw) {
   final json = _map(raw);
   final itemId = _required(json, 'event_id');
@@ -652,11 +657,19 @@ AgendaPublicationRequest _publicationRequest(Object? raw) {
     id: _required(json, 'id'),
     itemId: itemId,
     title: json['title']?.toString() ?? 'Evento $itemId',
-    contextLabel: json['institution_id']?.toString() ?? 'Contexto institucional',
-    requestedBy: json['requested_by_person_id']?.toString() ?? 'Usuário interno',
+    // Rotulos legiveis vem de 20260911190100 (agenda_requests_labels_v1); os
+    // UUIDs continuam como reserva para uma producao anterior ao pacote.
+    contextLabel:
+        _label(json, 'institution_name') ??
+        json['institution_id']?.toString() ??
+        'Contexto institucional',
+    requestedBy:
+        _label(json, 'requested_by_name') ??
+        json['requested_by_person_id']?.toString() ??
+        'Usuário interno',
     requestedAt: _date(json, 'requested_at'),
     status: _enum(AgendaPublicationRequestStatus.values, json['status']?.toString() ?? 'pending'),
-    decidedBy: json['decided_by_person_id']?.toString(),
+    decidedBy: _label(json, 'decided_by_name') ?? json['decided_by_person_id']?.toString(),
     decidedAt: _nullableDate(json['decided_at']),
     reason: json['reason']?.toString(),
   );
