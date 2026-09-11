@@ -2,14 +2,13 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/activity_directory.dart';
 
-/// Directory reads use the nominal internal v2 contract. Editor reads remain
-/// closed until their projections are equivalent; no legacy fallback is used.
+/// Directory and editor reads use the nominal internal v2 contract; no legacy
+/// fallback is used. `fetchById` projects `superadmin_activity_detail_v2` and
+/// leaves in a declared default whatever that RPC does not expose.
 final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepository {
   const SupabaseActivityDirectoryRepository(this._client);
 
   final SupabaseClient _client;
-
-  Future<T> _unavailable<T>() => Future.error(const ActivityDirectoryUnavailableException());
 
   @override
   Future<ActivityDirectoryResult> fetchPage(ActivityDirectoryQuery query) async {
@@ -174,8 +173,40 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
     }
   }
 
+  /// Secoes pedidas ao abrir a edicao, numa unica chamada. `permissions`
+  /// entra junto de proposito: o controller hidrata cada capacidade ausente
+  /// como `both`, entao sem as acoes reais um "salvar" da edicao reescreveria
+  /// as permissoes de todos os profissionais. Quem pode salvar ja precisa de
+  /// `activities.manage_permissions` no save_v2, a mesma capacidade que a
+  /// secao exige na leitura.
+  static const _detailSections = ['participants', 'professionals', 'permissions'];
+
   @override
-  Future<ActivityDetail?> fetchById(String activityId) => _unavailable();
+  Future<ActivityDetail?> fetchById(String activityId) async {
+    try {
+      final envelope = await _client.rpc<Object?>(
+        'superadmin_activity_detail_v2',
+        params: {'p_activity_id': activityId, 'p_sections': _detailSections},
+      );
+      // ACTIVITY_NOT_FOUND cobre o id inexistente e o de outro tenant, sem
+      // distinguir; a pagina trata `null` como "nao encontrado".
+      if (_v2ErrorCode(envelope) == 'ACTIVITY_NOT_FOUND') return null;
+      return _v2Detail(_v2Data(envelope), requestedId: activityId);
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    } on ActivityDirectoryUnauthorizedException {
+      // A negacao de autorizacao precisa sobreviver ao catch amplo abaixo. Ela
+      // e lancada de dentro do parsing, por _v2Data, e e Exception: sem este
+      // rethrow ela viraria indisponibilidade e o motivo real se perderia.
+      rethrow;
+    } on Exception {
+      throw const ActivityDirectoryUnavailableException();
+    } on TypeError {
+      throw const ActivityDirectoryUnavailableException();
+    } on StateError {
+      throw const ActivityDirectoryUnavailableException();
+    }
+  }
 
   @override
   Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
@@ -243,9 +274,224 @@ Map<String, dynamic> _v2Data(Object? value) {
   return _asMap(envelope['data']);
 }
 
+/// Codigo de erro de um envelope v2 negado, ou `null` quando o envelope nao e
+/// uma negacao bem formada. Nao substitui `_v2Data`: apenas permite tratar um
+/// codigo especifico antes de o parsing generico decidir entre negacao e
+/// indisponibilidade.
+String? _v2ErrorCode(Object? value) {
+  if (value is! Map || value['ok'] != false) return null;
+  final error = value['error'];
+  if (error is! Map) return null;
+  final code = error['code'];
+  return code is String ? code : null;
+}
+
 List<Map<String, dynamic>> _v2Rows(Object? value) {
   if (value is! List) throw const ActivityDirectoryUnavailableException();
   return value.map(_asMap).toList(growable: false);
+}
+
+/// Rotulo que `ActivityDirectoryItem.fromJson` ja usa quando a projecao nao
+/// traz o nome da instituicao; o detalhe v2 identifica a instituicao apenas
+/// pelo id.
+const _unknownInstitutionName = 'Instituição não identificada';
+
+/// Projeta `superadmin_activity_detail_v2` (com as secoes de edicao) em
+/// `ActivityDetail`. O que a RPC nao expoe fica no default declarado aqui e
+/// nunca e inventado a partir de outro campo:
+/// - `item.institutionName`, `origin`, `distribution`, `governance`,
+///   `handleStem`, `canonicalHandle`, `locationNames` e
+///   `activeProfessionalCount` nao vem na resposta;
+/// - `subtypeId`, `templateId`, `taxonomyOtherDescription`,
+///   `pedagogicalConfiguration`, `originUnitName` e `archivedAt` idem;
+/// - `identity.color` e `identity.storageRef` idem;
+/// - `ActivityUnitLink.startsAt` recebe `created_at` da atividade porque a RPC
+///   nao devolve a data do vinculo.
+/// As secoes pedidas precisam estar presentes: uma lista ausente de
+/// profissionais ou participantes nao pode virar "nenhum", senao o proximo
+/// salvar removeria todos.
+ActivityDetail _v2Detail(Map<String, dynamic> data, {required String requestedId}) {
+  final activity = _asMap(data['activity']);
+  final id = _requiredText(activity['activity_id']);
+  if (id.toLowerCase() != requestedId.trim().toLowerCase()) {
+    throw const ActivityDirectoryUnavailableException();
+  }
+  final institutionId = _requiredText(activity['institution_id']);
+  final managementVersion = _nonNegativeInt(activity['management_version']);
+  if (managementVersion == 0) throw const ActivityDirectoryUnavailableException();
+  final createdAt = DateTime.parse(_requiredText(activity['created_at']));
+  final counts = _asMap(data['counts']);
+
+  final unitNames = <String, String>{};
+  final units = _v2Rows(data['units'])
+      .map((row) {
+        final unitId = _requiredText(row['unit_id']);
+        final name = _requiredText(row['name']);
+        if (unitNames.containsKey(unitId)) throw const ActivityDirectoryUnavailableException();
+        unitNames[unitId] = name;
+        return ActivityUnitLink(
+          id: unitId,
+          name: name,
+          status: _v2Status(row['status']),
+          startsAt: createdAt,
+        );
+      })
+      .toList(growable: false);
+
+  final groupUnits = <String, String>{};
+  final groupRows = _v2Rows(data['groups'])
+      .map((row) {
+        final groupId = _requiredText(row['group_id']);
+        final unitId = _requiredText(row['unit_id']);
+        if (groupUnits.containsKey(groupId) || !unitNames.containsKey(unitId)) {
+          throw const ActivityDirectoryUnavailableException();
+        }
+        groupUnits[groupId] = unitId;
+        return row;
+      })
+      .toList(growable: false);
+  if (_nonNegativeInt(counts['units']) != units.length ||
+      _nonNegativeInt(counts['groups']) != groupRows.length) {
+    throw const ActivityDirectoryUnavailableException();
+  }
+
+  final participants = _v2Rows(data['participants'])
+      .map((row) {
+        final groupId = _requiredText(row['group_id']);
+        if (!groupUnits.containsKey(groupId)) throw const ActivityDirectoryUnavailableException();
+        return ActivityDetailParticipant(
+          groupId: groupId,
+          childGroupLinkId: _requiredText(row['child_group_link_id']),
+          belongs: _requiredText(row['status']) == ActivityStatus.active.databaseValue,
+        );
+      })
+      .toList(growable: false);
+
+  final capabilities = <String, Map<String, String>>{};
+  for (final row in _v2Rows(_asMap(data['permissions'])['professional_actions'])) {
+    final actions = _asMap(row['actions']);
+    capabilities[_v2AssignmentKey(row)] = {
+      for (final entry in actions.entries) entry.key: _v2AccessLevel(entry.value),
+    };
+  }
+  final professionals = _v2Rows(data['professionals'])
+      .map((row) {
+        final role = switch (row['role']) {
+          'instructor' => ActivityDetailProfessionalRole.instructor,
+          'activity_admin' => ActivityDetailProfessionalRole.activityAdmin,
+          _ => throw const ActivityDirectoryUnavailableException(),
+        };
+        final groupId = _nullableText(row['group_id']);
+        final scopedToGroup = role == ActivityDetailProfessionalRole.instructor;
+        if (scopedToGroup ? !groupUnits.containsKey(groupId) : groupId != null) {
+          throw const ActivityDirectoryUnavailableException();
+        }
+        _requiredText(row['status']);
+        return ActivityDetailProfessionalAssignment(
+          groupId: groupId,
+          membershipId: _requiredText(row['membership_id']),
+          role: role,
+          capabilities: capabilities[_v2AssignmentKey(row)] ?? const {},
+        );
+      })
+      .toList(growable: false);
+
+  final groups = groupRows
+      .map((row) {
+        final groupId = row['group_id'] as String;
+        return ActivityGroupLink(
+          id: groupId,
+          name: _requiredText(row['name']),
+          unitName: unitNames[row['unit_id']]!,
+          status: _v2Status(row['status']),
+          participation: _v2Participation(row['participation_mode']),
+          assigneeCount: professionals.where((item) => item.groupId == groupId).length,
+          participantCount: participants
+              .where((item) => item.groupId == groupId && item.belongs)
+              .length,
+        );
+      })
+      .toList(growable: false);
+
+  final initials = _nullableText(activity['initials']);
+  final icon = _nullableText(activity['icon_key']);
+  return ActivityDetail(
+    item: ActivityDirectoryItem(
+      id: id,
+      institutionId: institutionId,
+      institutionName: _unknownInstitutionName,
+      name: _requiredText(activity['name']),
+      description: _nullableText(activity['description']),
+      status: _v2Status(activity['status']),
+      origin: ActivityOrigin.institution,
+      distribution: ActivityDistribution.unitLocal,
+      governance: ActivityGovernance.optional,
+      activeUnitCount: units.length,
+      activeGroupCount: groups.length,
+      activeParticipantCount: _nonNegativeInt(counts['participants']),
+      linkedUnits: [
+        for (final unit in units)
+          ActivityDirectoryUnitSummary(id: unit.id, name: unit.name, institutionId: institutionId),
+      ],
+      linkedGroups: [
+        for (final group in groups)
+          ActivityDirectoryGroupSummary(
+            id: group.id,
+            name: group.name,
+            unitId: groupUnits[group.id]!,
+            unitName: group.unitName,
+          ),
+      ],
+      managementVersion: managementVersion,
+      updatedAt: DateTime.parse(_requiredText(activity['updated_at'])),
+    ),
+    createdAt: createdAt,
+    units: units,
+    groups: groups,
+    taxonomyId: _nullableText(activity['taxonomy_id']),
+    identity: ActivityDetailIdentity(
+      kind: initials != null && initials.trim().isNotEmpty
+          ? ActivityDetailIdentityKind.initials
+          : icon != null && icon.trim().isNotEmpty
+          ? ActivityDetailIdentityKind.icon
+          : ActivityDetailIdentityKind.initials,
+      initials: initials,
+      icon: icon,
+    ),
+    participants: participants,
+    professionalAssignments: professionals,
+  );
+}
+
+String _v2AssignmentKey(Map<String, dynamic> row) =>
+    '${_requiredText(row['role'])}|${_requiredText(row['membership_id'])}|'
+    '${_nullableText(row['group_id']) ?? ''}';
+
+String _v2AccessLevel(Object? value) {
+  if (value is! String || !const {'none', 'view', 'edit', 'both'}.contains(value)) {
+    throw const ActivityDirectoryUnavailableException();
+  }
+  return value;
+}
+
+ActivityStatus _v2Status(Object? value) {
+  final status = ActivityStatus.values.where((item) => item.databaseValue == value).firstOrNull;
+  if (status == null) throw const ActivityDirectoryUnavailableException();
+  return status;
+}
+
+ActivityParticipation _v2Participation(Object? value) {
+  final participation = ActivityParticipation.values
+      .where((item) => item.databaseValue == value)
+      .firstOrNull;
+  if (participation == null) throw const ActivityDirectoryUnavailableException();
+  return participation;
+}
+
+String? _nullableText(Object? value) {
+  if (value == null) return null;
+  if (value is! String) throw const ActivityDirectoryUnavailableException();
+  return value;
 }
 
 int _nonNegativeInt(Object? value) {
