@@ -242,12 +242,16 @@ create function app_private.child_care_notification_recipients_v1(
     where g.child_person_id = child.child_person_id and g.status = 'active' and g.revoked_at is null
       and (select notify_other_guardians from policy)
   )
-  select distinct person_id from (
+  select distinct all_people.person_id from (
     select person_id from unit_people
     union select person_id from hierarchy_people
     union select guardian_person_id from guardian_people
   ) all_people
-  where person_id is distinct from p_actor_person_id
+  join public.people person on person.id = all_people.person_id
+  -- pessoas de servico (espelho das identidades internas do Superadmin/Principal,
+  -- 220400 e 20260911130000) nao recebem sino: o Superadmin nao e a unidade
+  where person.person_type = 'adult' and person.deleted_at is null and person.status = 'active'
+    and all_people.person_id is distinct from p_actor_person_id
 $$;
 
 create function app_private.notify_child_care_event_v1(
