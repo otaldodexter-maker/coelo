@@ -1,13 +1,13 @@
 {
-  "revision": 23,
-  "updated_at": "2026-09-11T12:57:00-03:00",
+  "revision": 24,
+  "updated_at": "2026-09-11T13:40:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "3b6ef24d3 (+ este commit)",
+  "head": "4371853e1 (merge de origin/dev 1b0c2c5ff incluido)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -97,6 +97,58 @@
         "backend": "done (proposto)",
         "e2e": "verified-e2e (proposto)"
       }
+    },
+    {
+      "action_ids": [
+        "plans.list",
+        "plans.create",
+        "plans.edit"
+      ],
+      "status": "rota-real-verificada; FE verified proposto; BE local-green (candidato na fila)",
+      "commits": [
+        "fab9b9fd0 (router: gate de Planos + candidato 20260911200000 + pgTAP; o pacote entrou neste commit por corrida com a cadeia em segundo plano)"
+      ],
+      "changed": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (hasAuthoritativeMutationCapability: /plans segue planCatalogRepository)",
+        "apps/superadmin/test/app/router/plan_mutation_routes_test.dart",
+        "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
+        "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+        "packages/coelo_database/supabase/tests/superadmin_plans_production_test.sql (row_security_active -> pg_class)",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-47*.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json (6)"
+      ],
+      "delta": "GATE ENCONTRADO: /plans/new e /plans/:id/edit caiam em mutation-capability-unavailable porque hasAuthoritativeMutationCapability nao tinha ramo para /plans; as RPCs estao na baseline de producao, entao a rota passa a seguir o repositorio composto (teste de rota fechado/aberto). Rota real: criar, editar e reload provados (RPCs 200). ACHADO DE SEGURANCA (subagente, pgTAP no descartavel): apos o P7 (171000) has_platform_permission conta membership de instituicao e assert_plan_permission usava essa forma: perfil de instituicao com plan.change criava plano da plataforma. Candidato 20260911200000 troca para has_scoped_platform_permission(p, null), corrige status padrao no save (23502) e revoga grants diretos herdados no espelho. pgTAP 40/40 + 13/13.",
+      "proof": "capturas 40-47; RPCs por performance.getEntriesByType; pgTAP no descartavel coelo_ops_r05 (parado ao fim)",
+      "criteria": {
+        "frontend": "verified (proposto)",
+        "backend": "local-green (candidato na fila; done apos aplicar e RLS negando outro tenant em producao)",
+        "e2e": "N ate BE done"
+      }
+    },
+    {
+      "action_ids": [
+        "imports.list"
+      ],
+      "status": "correcao-visual",
+      "changed": [
+        "apps/superadmin/lib/app/router/superadmin_router.dart (rota /imports envolvida em productionOperationalPage)"
+      ],
+      "delta": "/imports na rota real abria sem cabecalho da tela (titulo, Bug, sino, conta): regra MENU do Owner. Envolvida como as demais telas. Nova importacao segue Disponivel depois do MVP sem picker/parser/job (captura 50).",
+      "proof": "captura 50-imports-open.png (antes); captura depois do rebuild pendente"
+    },
+    {
+      "action_ids": [
+        "access-profiles.list",
+        "forms.list",
+        "daily-routine.list",
+        "imports.list"
+      ],
+      "status": "goldens-regravados (tarefa do coordenador)",
+      "commits": [
+        "4371853e1"
+      ],
+      "delta": "29 goldens de tabelas de outras familias + Importacoes regravados apos o merge de origin/dev, causa unica = alinhamento das celulas no composto; diferenca conferida nas imagens de falha. G2 e G3 avisadas por mensagem; G2 informou que ja regravara os 8 de perfis (c227e531f), mesmo SDK.",
+      "proof": "4 suites verdes"
     }
   ],
   "tests": {
@@ -121,9 +173,20 @@
     {
       "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
       "summary": "audit.list/filter/detail FE verified / BE done / E2E verified-e2e (9 deltas)"
+    },
+    {
+      "file": "docs/reviews/evidence/etapa-2/r05-operacoes/deltas-r05-ops-plans.json",
+      "summary": "plans.list/create/edit FE verified; BE local-green (6 deltas)"
     }
   ],
-  "packages_ready": [],
+  "packages_ready": [
+    {
+      "path": "packages/coelo_database/candidatos/operacoes/20260911200000_superadmin_plans_platform_scope_v1.sql",
+      "pgtap": "superadmin_plans_behavior_v1_test 40/40; superadmin_plans_production_test 13/13 (descartavel coelo_ops_r05: baseline + 107 migrations na ordem de producao)",
+      "composition_key": "nenhuma (gate do cliente ja ligado em fab9b9fd0 pelo repositorio composto)",
+      "state": "pronto para o coordenador aplicar; depois: plans.list/create/edit BE done e E2E verified-e2e (FE ja provado)"
+    }
+  ],
   "questions_to_owner": [
     {
       "id": "G-SUP-R05",
@@ -133,12 +196,16 @@
       "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
     }
   ],
-  "next_step": "(4) plans.list/create/edit na rota real (/plans) com qa-r03; subagente prova o pgTAP comportamental de Planos no descartavel coelo_ops_r05; depois catalog.* e imports/profile_files honestos; account.sessions/logout apos 15:30",
+  "next_step": "rebuild web com o cabecalho de Importacoes e captura; catalog.validate/sync/publish (registrar gate real); profile_files.* na rota real (Pessoas/Usuarios internos: botao Arquivos honesto); account.sessions/logout apos 15:30 com aviso; mini-revisao",
   "commits": [
     "7df495615",
     "0e4b2f27c",
     "3b6ef24d3",
-    "89d64c068"
+    "89d64c068",
+    "fab9b9fd0",
+    "b08b6b91d",
+    "1b0c2c5ff (merge)",
+    "4371853e1"
   ],
   "r04_history": {
     "revision": 20,
@@ -726,6 +793,31 @@
       "action_id": "account.logout",
       "tipo": "regra-de-rodada",
       "o_que": "coordenador (13:00): Sair global e revogacao de sessao do qa-r03 derrubam as sessoes das outras frentes; account.logout e account.sessions ficam para depois de 15:30, com aviso 5 min antes no JSON e por mensagem. Ate la, fechar a aba em vez de Sair."
+    },
+    {
+      "action_id": "plans.create",
+      "tipo": "ui-P15",
+      "o_que": "na Revisao, o campo Motivo de auditoria (ultimo do formulario) fica escondido sob o rodape ancorado ate rolar; PlanFormPage nao usa o respiro do SuperadminFormFrame (P15)."
+    },
+    {
+      "action_id": "plans.list",
+      "tipo": "cliente",
+      "o_que": "parser do cliente exige as 13 chaves de entitlements e DateTime.parse(starts_at) com starts_at nulavel em institution_subscriptions: plano criado fora do cliente ou assinatura sem data quebraria a tela com Resposta de planos invalida (achado do subagente)."
+    },
+    {
+      "action_id": "imports.list",
+      "tipo": "composto",
+      "o_que": "ImportDirectoryPage ainda declara CoeloAdminListingToolbar/ResizableTable/Pagination proprios (fora do CoeloAdminDirectory); sem toggle cards/tabela nem abas no vazio. Familia adiada (ADR 0034); migrar ao composto na revisao profunda."
+    },
+    {
+      "action_id": "plans.create",
+      "tipo": "residuo-sintetico",
+      "o_que": "plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 (code r05-qa-plano-teste, nome [R05-QA] Plano de teste editado, 2 recibos em plan_change_receipts) fica em producao; sem RPC de exclusao (arquivar existe). Limpeza no fim da Etapa 2 (P42)."
+    },
+    {
+      "action_id": "shell.navigate",
+      "tipo": "teste-pre-existente",
+      "o_que": "prototype_navigation_routes_test falha com Bad state: No element tambem em origin/dev limpo (worktree detach 11/09 13:20); nao e do composto."
     }
   ]
 }

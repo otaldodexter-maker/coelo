@@ -1,0 +1,97 @@
+[
+  {
+    "action_id": "plans.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:35:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/40-plans-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+      ]
+    }
+  },
+  {
+    "action_id": "plans.list",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): /plans abre pela rota normal (superadmin_plans_list 200; catalogo vazio com busca, toggle, Arquivos, abas Todos/Ativos/Arquivados e card Novo plano); apos criar, lista o plano; reload mantem. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+    "evidencia": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+    "certificacao": {
+      "evidence": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "projeto descartavel coelo_ops_r05 (baseline + 107 migrations na ordem de producao + candidato 20260911200000), pgTAP 40/40 e 13/13",
+      "recordedAt": "2026-09-11T13:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "plans.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:35:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/41-plan-create-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/42-plan-create-step2.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43-plan-create-review.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/43b-plan-motivo.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/44-plan-created.png"
+      ]
+    }
+  },
+  {
+    "action_id": "plans.create",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): card Novo plano -> /plans/new (gate de mutacao ligado em fab9b9fd0 pelo repositorio composto) -> Identificacao, Capacidades (6), Limites, Revisao com motivo de auditoria -> superadmin_plan_save 200 -> plano 5b0fc76b-51cd-4361-8d4f-e7033853eba6 listado (superadmin_plans_list 200). Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+    "evidencia": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+    "certificacao": {
+      "evidence": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "projeto descartavel coelo_ops_r05 (baseline + 107 migrations na ordem de producao + candidato 20260911200000), pgTAP 40/40 e 13/13",
+      "recordedAt": "2026-09-11T13:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (fab9b9fd0) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:35:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/45-plan-edit-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/46-plan-edit-review.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/47-plan-edited-reload.png"
+      ]
+    }
+  },
+  {
+    "action_id": "plans.edit",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 (11/09 13:30, rota real com qa-r03): card -> /plans/<id>/edit (superadmin_plan_get 200), nome alterado para [R05-QA] Plano de teste editado, Revisao + motivo -> superadmin_plan_save 200 (revisao 2); reload de /plans mostra o nome editado. Backend: superadmin_plans_list/plan_get/plan_save na baseline de producao; pgTAP comportamental superadmin_plans_behavior_v1_test 40/40 no descartavel (anonimo 28000, sem plan.change 42501, ator escopado a instituicao 42501, authenticated sem leitura direta, replay por request_id, conflito 40001) exige o candidato 20260911200000_superadmin_plans_platform_scope_v1 (escopo de plataforma) ainda NAO aplicado em producao: BE fica local-green ate o coordenador aplicar.",
+    "evidencia": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+    "certificacao": {
+      "evidence": "packages/coelo_database/supabase/tests/superadmin_plans_behavior_v1_test.sql",
+      "revision": "comunicacao/operacoes.json rev 24",
+      "environment": "projeto descartavel coelo_ops_r05 (baseline + 107 migrations na ordem de producao + candidato 20260911200000), pgTAP 40/40 e 13/13",
+      "recordedAt": "2026-09-11T13:35:00-03:00"
+    }
+  }
+]
