@@ -483,6 +483,7 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
             onPublished: widget.onDone,
             onPickFiles: () => _pickAttachments(controller),
             onChooseSchedule: _chooseSchedule,
+            contextLabel: _selectedInstitution?.publicName,
           ),
         ),
       ],
