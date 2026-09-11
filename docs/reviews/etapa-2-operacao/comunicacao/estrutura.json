@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 25,
+ "revision": 26,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T22:11:48-03:00",
+ "updatedAt": "2026-09-10T22:22:15-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -116,7 +116,7 @@
   {
    "n": 1,
    "item": "Locais: corrigir 180000/180100/180200/180300 em candidatos/estrutura para a assinatura real de audit_append_superadmin_internal (13 argumentos) e a forma canonica (unit_type_id); trazer reservations_v2 como candidato sobre a baseline; fixture activity_v2_denied_envelope de activity_save_v2; provar no projeto descartavel com pgTAP",
-   "estado": "concluido no espelho: 17 candidatos aplicam em ordem e todos os pgTAP verdes; prova integral (espelho novo + 46 lotes + 17 candidatos) em execucao",
+   "estado": "CONCLUIDO: 17 candidatos verdes na prova integral; aguardando o coordenador aplicar",
    "action_ids": [
     "locations.detail-links",
     "locations.schedule",
@@ -129,7 +129,7 @@
   {
    "n": 2,
    "item": "Rota normal com sessao qa-r03@coelo.me em localhost:3000: Instituicoes -> Unidades -> Turmas -> Atividades -> Locais -> Avaliacoes; verified so com CRUD em producao + RLS nega outro tenant em pgTAP + reload",
-   "estado": "pendente"
+   "estado": "em andamento: app de producao subindo em Chrome na porta 3020 (3000 e 3010 ocupadas por outras frentes; minhas familias nao usam o CORS do R2) com lib/main_driver.dart (extensao do Flutter Driver sobre o main() de producao) para dirigir a rota normal pelo MCP do Dart"
   },
   {
    "n": 3,
@@ -175,119 +175,119 @@
    "origem": "20260909165000",
    "mudanca": "assinatura real de audit_append_superadmin_internal (13 args) no preflight e no override; teste sem after_json",
    "pgTAP": "49/49",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180020_activities_v2_actor_attribution",
    "origem": "20260831192831",
    "mudanca": "recarimbo",
    "pgTAP": "actor_contract 39/39 (fixture units na forma de producao; asserção de colunas internal_identity_id restrita ao agregado de Atividades, porque o catalogo de Locais em producao as expoe de proposito)",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180030_activities_v2_actor_provenance_hardening",
    "origem": "20260831195118",
    "mudanca": "recarimbo",
    "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "aplica"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180040_activities_v2_actor_provenance_semantics",
    "origem": "20260831195944",
    "mudanca": "recarimbo",
    "pgTAP": "coberto pelos testes v2 abaixo",
-   "estado": "aplica"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180050_activities_v2_permissions_receipts",
    "origem": "20260831203645",
    "mudanca": "recarimbo",
    "pgTAP": "permissions_publish 18/18",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180060_activities_v2_internal_gateways",
    "origem": "20260831211945",
    "mudanca": "recarimbo; ATENCAO: create or replace em audit_activity_change, has_activity_capability e audit_mask_payload (existem em producao com outro corpo) e cria a sobrecarga de 14 args de audit_append_superadmin_internal",
    "pgTAP": "commands 28/28, read 28/28, relationships 24/24 (AAL1 do Owner na regua do MVP)",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180070_activities_v2_rls_grants",
    "origem": "20260831231645",
    "mudanca": "recarimbo",
    "pgTAP": "security_contract 37/37",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180080_activities_v2_final_review_hardening",
    "origem": "20260831234307",
    "mudanca": "recarimbo",
    "pgTAP": "hardening 25/25",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180090_activity_template_unit_scope",
    "origem": "20260901165125",
    "mudanca": "recarimbo + revoke de escrita de anon/authenticated em public.activity_templates (privilegio padrao do schema public; o cliente nao le a tabela direto)",
    "pgTAP": "31/31 (has_fk/has_check trocados por pg_constraint: a pgTAP 1.3 do espelho nao tem essas assinaturas)",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180100_superadmin_activity_directory_v2_client_contract",
    "origem": "20260907222911",
    "mudanca": "recarimbo",
    "pgTAP": "directory_contract 97/97",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180110_superadmin_activity_save_v2",
    "origem": "20260908154257",
    "mudanca": "recarimbo (activity_v2_denied_envelope vem de 180060)",
    "pgTAP": "46/46",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180120_superadmin_activity_link_end_clock_v1",
    "origem": "20260908235110",
    "mudanca": "recarimbo",
    "pgTAP": "sem suite propria",
-   "estado": "aplica"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180140_superadmin_location_consumer_bindings_v2",
    "origem": "era 180000",
    "mudanca": "recarimbo (teste usa superadmin_activity_create_v2)",
    "pgTAP": "30/30",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180150_superadmin_activity_location_create_v2",
    "origem": "era 180100",
    "mudanca": "recarimbo",
    "pgTAP": "33/33",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180200_superadmin_group_location_create_v2",
    "origem": "inalterado",
    "mudanca": "nenhuma",
    "pgTAP": "46/46",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180300_superadmin_internal_unit_detail_v2_baseline",
    "origem": "inalterado",
    "mudanca": "fixture: inherit_plan=false com plan_override_id; Owner AAL1 le no MVP",
    "pgTAP": "31/31",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   },
   {
    "carimbo": "20260910180310_superadmin_internal_group_detail_v2_baseline",
    "origem": "20260828003500",
    "mudanca": "recarimbo; Owner AAL1 le no MVP",
    "pgTAP": "33/33",
-   "estado": "verde"
+   "estado": "verde na prova integral"
   }
  ],
  "deltasPropostos": [],
@@ -308,7 +308,7 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "publicar SHA; esperar prova integral e Flutter; rota normal com sessao (app em localhost:3000 com .env.local copiado do checkout principal); goldens do recorte",
+ "proximoPasso": "separar falhas Flutter (P15 x pre-existentes) com a baseline; rota normal com sessao qa-r03; goldens do recorte",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -323,5 +323,28 @@
   "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
  },
  "ordemDeAplicacao": "pelo carimbo: 180000, 180020, 180030, 180040, 180050, 180060, 180070, 180080, 180090, 180100, 180110, 180120, 180140, 180150, 180200, 180300, 180310. Chave de composicao: structureMutationsEnabled (gate maior) e adapters de Locais/Atividades; lista exata sera dada quando o cliente for ligado nesta rodada.",
- "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas."
+ "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas.",
+ "provaIntegral": {
+  "quando": "2026-09-10T22:22:15-03:00",
+  "log": "scratchpad da sessao (prova-integral.log); resumo abaixo",
+  "metodo": "supabase db reset (baseline + seed) -> 46 lotes de producao por psql (inclui lote 8) -> os 17 candidatos de estrutura na ordem dos carimbos, cada suite pgTAP logo apos a ultima migration que ela cobre",
+  "resultado": "17 aplicam sem erro; 16 suites verdes: reservations 49, actor_contract 39, commands 28, read 28, relationships 24, permissions_publish 18, hardening 25, security_contract 37, template_unit_scope 31, directory_contract 97, activity_save_v2 46, consumer_bindings 30, activity_location_create 33, group_location_create 46, unit_detail 31, group_detail 33 (total 594 assercoes, 0 falhas)",
+  "mapaDeTestesPorMigration": {
+   "180000": "superadmin_location_reservations_v2_test",
+   "180080": "superadmin_internal_activities_v2_{actor_contract,commands,read,relationships,permissions_publish,hardening,security_contract}_test (so depois de 180080, porque as suites cobrem grants de 180070 e hardening de 180080)",
+   "180090": "activity_template_unit_scope_test",
+   "180100": "superadmin_internal_activities_v2_directory_contract_test",
+   "180120": "superadmin_activity_save_v2_test (cobre link_end_clock de 180120)",
+   "180140": "superadmin_location_consumer_bindings_v2_test",
+   "180150": "superadmin_activity_location_create_v2_test",
+   "180200": "superadmin_group_location_create_v2_test",
+   "180300": "superadmin_internal_unit_detail_test",
+   "180310": "superadmin_internal_group_detail_test"
+  }
+ },
+ "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
+ "flutter": {
+  "analyze": "limpo apos correcao de dois infos de interpolacao",
+  "testesRecorte": "groups, units, shared, activity_form_page, institutions/presentation: 429 PASS / 17 FAIL na primeira medicao; o teste novo de P5 foi corrigido (5/5); 7 goldens de formulario (institution_form_create_light_375, unit_form_create_light_375, institution_form_bio_light_1440, institution_form_edit_dark_1440, institution_form_identity_unavailable_light_1440, group_form_edit_dark_1440, group_form_members_dark_1440) e 11 testes de widgets compartilhados (superadmin_underline_tabs_test, superadmin_form_action_footer_adoption_test) falham; baseline em origin/dev sem minhas mudancas esta sendo medida para separar o que e P15 (regravar apos a observacao) do que e pre-existente"
+ }
 }
