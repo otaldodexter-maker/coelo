@@ -5,6 +5,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 
+import '../../../app/shell/superadmin_shell.dart';
 import '../../institutions/domain/institution_directory_item.dart';
 import '../../institutions/domain/institution_directory_query.dart';
 import '../../institutions/domain/institution_directory_repository.dart';
@@ -207,11 +208,22 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
   var _uploading = false;
   String? _attachmentStatus;
   var _attachmentFailed = false;
+  VoidCallback? _releaseChatLauncher;
 
   @override
   void initState() {
     super.initState();
     _prepare();
+  }
+
+  // Decisao 7 (sem balao de chat em criar/editar/publicar): o frame do
+  // compositor so entra depois de escolher a instituicao; enquanto carrega ou
+  // mostra o seletor, o host suprime o balao por conta propria (achado R05,
+  // ui-22).
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    _releaseChatLauncher ??= SuperadminShell.suppressChatLauncher(context);
   }
 
   @override
@@ -436,6 +448,7 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
   @override
   void dispose() {
     _pickGeneration++;
+    _releaseChatLauncher?.call();
     _controller?.dispose();
     super.dispose();
   }
