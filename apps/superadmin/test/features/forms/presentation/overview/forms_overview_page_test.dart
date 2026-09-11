@@ -98,6 +98,41 @@ void main() {
     expect(monitorOpened, isTrue);
   });
 
+  testWidgets('Distribuir aparece so com callback e recarrega a visao geral ao salvar', (
+    tester,
+  ) async {
+    VoidCallback? reload;
+    final api = _CountingOverviewApi();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormsOverviewPage(
+            api: api,
+            formId: 'form-1',
+            onDistribute: (callback) => reload = callback,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(api.calls, 1);
+    await tester.tap(find.byKey(const Key('forms-overview-distribute')));
+    await tester.pump();
+    expect(reload, isNotNull);
+    reload!();
+    await tester.pumpAndSettle();
+    // O que o servidor confirmou depois da distribuicao e relido, nao suposto.
+    expect(api.calls, 2);
+
+    await tester.pumpWidget(
+      const MaterialApp(
+        home: Scaffold(body: FormsOverviewPage.development(formId: 'form-fixture')),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('forms-overview-distribute')), findsNothing);
+  });
+
   testWidgets('uses responsive insets and canonical card gaps', (tester) async {
     for (final (size, expectedInset) in [
       (const Size(375, 800), CoeloSpacing.space4),
@@ -227,6 +262,34 @@ final class _Api implements FormsApi {
     occurrenceCount: 12,
     responseCount: 28,
   );
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _CountingOverviewApi implements FormsApi {
+  var calls = 0;
+
+  @override
+  Future<FormOverview> getOverview(String formId) async {
+    calls++;
+    return FormOverview(
+      definition: FormDefinition(
+        id: formId,
+        institutionId: 'inst-1',
+        title: 'Contado',
+        kind: FormKind.form,
+        status: FormStatus.published,
+        identityMode: FormIdentityMode.identified,
+        responseUnit: FormResponseUnit.person,
+        sections: const [],
+        managementVersion: 1,
+      ),
+      applicationCount: 0,
+      occurrenceCount: 0,
+      responseCount: 0,
+    );
+  }
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);

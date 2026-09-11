@@ -39,6 +39,7 @@ final class AccessProfileFormPage extends StatefulWidget {
     required this.onCancel,
     required this.onSaved,
     this.profileId,
+    this.sourceProfileId,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -51,6 +52,10 @@ final class AccessProfileFormPage extends StatefulWidget {
   final LogoutAction logout;
   final AccessProfileDomain domain;
   final String? profileId;
+
+  /// Perfil (normalmente um modelo do sistema, P31) cujas permissões e escopo
+  /// preenchem o rascunho de criação. Só vale sem [profileId].
+  final String? sourceProfileId;
   final VoidCallback onCancel;
   final ValueChanged<AccessProfile> onSaved;
   final ValueChanged<String>? onDestinationSelected;
@@ -180,9 +185,14 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
   Future<void> _load() async {
     final revision = _contextRevision;
     try {
-      final profile = _editing
+      var profile = _editing
           ? await widget.repository.fetchDetail(widget.domain, widget.profileId!)
           : await widget.repository.fetchTemplate(widget.domain);
+      final sourceProfileId = widget.sourceProfileId;
+      if (!_editing && sourceProfileId != null) {
+        final source = await widget.repository.fetchDetail(widget.domain, sourceProfileId);
+        profile = _draftFromSource(profile, source);
+      }
       if (!_isCurrent(revision)) return;
       _original = profile;
       _nameController.text = profile.name;
@@ -207,6 +217,22 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
         _loading = false;
       });
     }
+  }
+
+  /// Rascunho novo (id vazio) com as permissões e o escopo do modelo de
+  /// origem; nome e código ficam em branco para o operador definir.
+  static AccessProfile _draftFromSource(AccessProfile template, AccessProfile source) {
+    final selected = source.permissions
+        .where((permission) => permission.selected)
+        .map((permission) => permission.code)
+        .toSet();
+    return template.copyWith(
+      description: source.description,
+      maxScope: source.maxScope,
+      permissions: template.permissions
+          .map((permission) => permission.withSelection(selected.contains(permission.code)))
+          .toList(growable: false),
+    );
   }
 
   Future<void> _requestExit() => _confirmExit(widget.onCancel);
@@ -290,6 +316,10 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     _activityController.dispose();
     super.dispose();
   }
+
+  /// Rascunho atual, para testes de widget.
+  @visibleForTesting
+  AccessProfile get debugDraft => _draft();
 
   AccessProfile _draft() => _original!.copyWith(
     name: _nameController.text.trim(),

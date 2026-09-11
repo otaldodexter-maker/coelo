@@ -110,6 +110,10 @@ void main() {
         repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
         throwsA(isA<ActivityDirectoryUnauthorizedException>()),
       );
+      await expectLater(
+        repository.fetchById(_detailId),
+        throwsA(isA<ActivityDirectoryUnauthorizedException>()),
+      );
     });
   }
 
@@ -146,6 +150,10 @@ void main() {
       );
       await expectLater(
         repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
+        throwsA(isA<ActivityDirectoryUnavailableException>()),
+      );
+      await expectLater(
+        repository.fetchById(_detailId),
         throwsA(isA<ActivityDirectoryUnavailableException>()),
       );
     });
@@ -282,10 +290,14 @@ void main() {
       repository.searchProfessionals(institutionId: 'institution-1', query: 'Marina'),
       throwsA(isA<ActivityDirectoryUnavailableException>()),
     );
+    await expectLater(
+      repository.fetchById(_detailId),
+      throwsA(isA<ActivityDirectoryUnavailableException>()),
+    );
   });
 
   for (final status in [401, 403, 500]) {
-    test('v2 transport error $status is mapped for both reads', () async {
+    test('v2 transport error $status is mapped for every read', () async {
       final client = SupabaseClient(
         'https://example.supabase.co',
         'publishable-key',
@@ -305,29 +317,230 @@ void main() {
           : isA<ActivityDirectoryUnauthorizedException>();
       await expectLater(repository.fetchPage(ActivityDirectoryQuery()), throwsA(matcher));
       await expectLater(repository.fetchFilterOptions(), throwsA(matcher));
+      await expectLater(repository.fetchById(_detailId), throwsA(matcher));
     });
   }
 
-  test('non-equivalent activity detail read fails closed before any legacy RPC', () async {
-    var requestCount = 0;
-    final client = SupabaseClient(
-      'https://example.supabase.co',
-      'publishable-key',
-      httpClient: MockClient((request) async {
-        requestCount++;
-        return Response('{}', 200, request: request);
-      }),
-    );
-    addTearDown(client.dispose);
-    final repository = SupabaseActivityDirectoryRepository(client);
+  test('detail read uses v2 with the editor sections and maps the complete projection', () async {
+    Request? captured;
+    final repository = _repository((request) {
+      captured = request;
+      return _ok(_detail());
+    });
 
-    await expectLater(
-      repository.fetchById('activity-1'),
-      throwsA(isA<ActivityDirectoryUnavailableException>()),
-    );
+    final detail = (await repository.fetchById(_detailId))!;
 
-    expect(requestCount, 0);
+    expect(captured!.url.path, '/rest/v1/rpc/superadmin_activity_detail_v2');
+    expect(captured!.url.query, isEmpty);
+    expect(jsonDecode(captured!.body), {
+      'p_activity_id': _detailId,
+      'p_sections': ['participants', 'professionals', 'permissions'],
+    });
+
+    expect(detail.item.id, _detailId);
+    expect(detail.item.institutionId, 'institution-1');
+    expect(detail.item.name, 'Robótica');
+    expect(detail.item.description, 'Descrição preservada');
+    expect(detail.item.status, ActivityStatus.active);
+    expect(detail.item.managementVersion, 6);
+    expect(detail.item.updatedAt, DateTime.parse('2026-09-11T12:00:00Z'));
+    expect(detail.createdAt, DateTime.parse('2026-09-10T12:00:00Z'));
+    expect(detail.item.activeUnitCount, 2);
+    expect(detail.item.activeGroupCount, 2);
+    expect(detail.item.activeParticipantCount, 2);
+    expect(detail.item.linkedUnits.map((unit) => unit.id), ['unit-1', 'unit-2']);
+    expect(detail.item.linkedUnits.first.institutionId, 'institution-1');
+    expect(detail.item.linkedGroups.map((group) => group.unitName), [
+      'Unidade Centro',
+      'Unidade Norte',
+    ]);
+    expect(detail.taxonomyId, 'taxonomy-1');
+
+    expect(detail.units.map((unit) => unit.name), ['Unidade Centro', 'Unidade Norte']);
+    expect(detail.units.first.status, ActivityStatus.active);
+    expect(detail.units.first.startsAt, detail.createdAt);
+    expect(detail.units.first.endsAt, isNull);
+
+    expect(detail.groups.map((group) => group.id), ['group-1', 'group-2']);
+    expect(detail.groups.first.unitName, 'Unidade Centro');
+    expect(detail.groups.first.participation, ActivityParticipation.selected);
+    expect(detail.groups.first.participantCount, 2);
+    expect(detail.groups.first.assigneeCount, 1);
+    expect(detail.groups.last.participation, ActivityParticipation.all);
+    expect(detail.groups.last.participantCount, 0);
+    expect(detail.groups.last.assigneeCount, 0);
+
+    expect(detail.participants.map((item) => item.childGroupLinkId), ['link-1', 'link-2']);
+    expect(detail.participants.every((item) => item.groupId == 'group-1'), isTrue);
+    expect(detail.participants.every((item) => item.belongs), isTrue);
+
+    expect(detail.professionalAssignments, hasLength(2));
+    final instructor = detail.professionalAssignments.first;
+    expect(instructor.role, ActivityDetailProfessionalRole.instructor);
+    expect(instructor.groupId, 'group-1');
+    expect(instructor.membershipId, 'membership-1');
+    expect(instructor.capabilities, {
+      'attendance': 'both',
+      'chat': 'view',
+      'happens': 'edit',
+      'moments': 'none',
+      'now': 'both',
+    });
+    final admin = detail.professionalAssignments.last;
+    expect(admin.role, ActivityDetailProfessionalRole.activityAdmin);
+    expect(admin.groupId, isNull);
+    expect(admin.membershipId, 'membership-2');
+    expect(admin.capabilities['chat'], 'both');
+
+    expect(detail.identity.kind, ActivityDetailIdentityKind.initials);
+    expect(detail.identity.initials, 'RO');
+    expect(detail.identity.icon, 'science');
+    expect(detail.identity.color, isNull);
+    expect(detail.identity.storageRef, isNull);
+
+    // Campos que a RPC nao expoe ficam no default declarado, nunca inferidos.
+    expect(detail.item.institutionName, 'Instituição não identificada');
+    expect(detail.item.origin, ActivityOrigin.institution);
+    expect(detail.item.distribution, ActivityDistribution.unitLocal);
+    expect(detail.item.governance, ActivityGovernance.optional);
+    expect(detail.item.handleStem, isNull);
+    expect(detail.item.canonicalHandle, isNull);
+    expect(detail.item.activeProfessionalCount, isNull);
+    expect(detail.item.locationNames, isEmpty);
+    expect(detail.subtypeId, isNull);
+    expect(detail.templateId, isNull);
+    expect(detail.taxonomyOtherDescription, isEmpty);
+    expect(detail.pedagogicalConfiguration, isNull);
+    expect(detail.originUnitName, isNull);
+    expect(detail.archivedAt, isNull);
   });
+
+  test('detail read keeps nullable activity fields and empty sections honest', () async {
+    final data = _detail();
+    final activity = data['activity'] as Map<String, Object?>;
+    for (final key in ['description', 'taxonomy_id', 'taxonomy_name', 'icon_key', 'initials']) {
+      activity[key] = null;
+    }
+    activity['status'] = 'draft';
+    data['units'] = <Object?>[];
+    data['groups'] = <Object?>[];
+    data['participants'] = <Object?>[];
+    data['professionals'] = <Object?>[];
+    data['permissions'] = {
+      'policies': <Object?>[],
+      'group_settings': <Object?>[],
+      'professional_actions': <Object?>[],
+    };
+    data['counts'] = {
+      'units': 0,
+      'groups': 0,
+      'participants': 0,
+      'instructors': 0,
+      'activity_admins': 0,
+    };
+    final repository = _repository((_) => _ok(data));
+
+    final detail = (await repository.fetchById(_detailId))!;
+
+    expect(detail.item.description, isNull);
+    expect(detail.item.status, ActivityStatus.draft);
+    expect(detail.taxonomyId, isNull);
+    expect(detail.identity.initials, isNull);
+    expect(detail.identity.icon, isNull);
+    expect(detail.identity.kind, ActivityDetailIdentityKind.initials);
+    expect(detail.units, isEmpty);
+    expect(detail.groups, isEmpty);
+    expect(detail.participants, isEmpty);
+    expect(detail.professionalAssignments, isEmpty);
+    expect(detail.item.activeUnitCount, 0);
+  });
+
+  test('detail read derives the icon identity when only the icon key exists', () async {
+    final data = _detail();
+    (data['activity'] as Map<String, Object?>)['initials'] = null;
+    final detail = (await _repository((_) => _ok(data)).fetchById(_detailId))!;
+    expect(detail.identity.kind, ActivityDetailIdentityKind.icon);
+    expect(detail.identity.icon, 'science');
+  });
+
+  test(
+    'detail read leaves capabilities empty when the permissions section has no actions',
+    () async {
+      final data = _detail();
+      (data['permissions'] as Map<String, Object?>)['professional_actions'] = <Object?>[];
+      final detail = (await _repository((_) => _ok(data)).fetchById(_detailId))!;
+      expect(
+        detail.professionalAssignments.map((item) => item.capabilities),
+        everyElement(isEmpty),
+      );
+    },
+  );
+
+  test('detail read returns null for ACTIVITY_NOT_FOUND without a second request', () async {
+    var requestCount = 0;
+    final repository = _repository((_) {
+      requestCount++;
+      return {
+        'ok': false,
+        'data': null,
+        'error': {
+          'code': 'ACTIVITY_NOT_FOUND',
+          'message': 'Mensagem não confiável',
+          'correlation_id': _detailId,
+          'http_status': 404,
+        },
+      };
+    });
+    expect(await repository.fetchById(_detailId), isNull);
+    expect(requestCount, 1);
+  });
+
+  for (final change in <String, void Function(Map<String, Object?>)>{
+    'missing activity': (d) => d.remove('activity'),
+    'uncorrelated activity id': (d) => (d['activity'] as Map<String, Object?>)['activity_id'] = 'x',
+    'blank name': (d) => (d['activity'] as Map<String, Object?>)['name'] = ' ',
+    'unknown status': (d) => (d['activity'] as Map<String, Object?>)['status'] = 'deleted',
+    'zero version': (d) => (d['activity'] as Map<String, Object?>)['management_version'] = 0,
+    'fractional version': (d) =>
+        (d['activity'] as Map<String, Object?>)['management_version'] = 1.5,
+    'bad created_at': (d) => (d['activity'] as Map<String, Object?>)['created_at'] = 'ontem',
+    'missing counts': (d) => d.remove('counts'),
+    'units count mismatch': (d) => (d['counts'] as Map<String, Object?>)['units'] = 3,
+    'groups count mismatch': (d) => (d['counts'] as Map<String, Object?>)['groups'] = 1,
+    'units not a list': (d) => d['units'] = null,
+    'duplicate unit': (d) => (d['units'] as List).add((d['units'] as List).first),
+    'group without unit': (d) => ((d['groups'] as List).first as Map)['unit_id'] = 'unit-9',
+    'invalid participation': (d) =>
+        ((d['groups'] as List).first as Map)['participation_mode'] = 'none',
+    'missing participants section': (d) => d.remove('participants'),
+    'participant of unknown group': (d) =>
+        ((d['participants'] as List).first as Map)['group_id'] = 'group-9',
+    'participant without link id': (d) =>
+        ((d['participants'] as List).first as Map)['child_group_link_id'] = null,
+    'missing professionals section': (d) => d.remove('professionals'),
+    'professional with unknown role': (d) =>
+        ((d['professionals'] as List).first as Map)['role'] = 'owner',
+    'instructor without group': (d) =>
+        ((d['professionals'] as List).first as Map)['group_id'] = null,
+    'activity admin with group': (d) =>
+        ((d['professionals'] as List).last as Map)['group_id'] = 'group-1',
+    'professional without membership': (d) =>
+        ((d['professionals'] as List).first as Map)['membership_id'] = '',
+    'missing permissions section': (d) => d.remove('permissions'),
+    'invalid access level': (d) =>
+        ((((d['permissions'] as Map)['professional_actions'] as List).first as Map)['actions']
+                as Map)['chat'] =
+            'admin',
+  }.entries) {
+    test('detail read rejects malformed projection ${change.key}', () async {
+      final data = _detail();
+      change.value(data);
+      await expectLater(
+        _repository((_) => _ok(data)).fetchById(_detailId),
+        throwsA(isA<ActivityDirectoryUnavailableException>()),
+      );
+    });
+  }
 
   test('form options use v2 with the structure sections and map every collection', () async {
     Request? captured;
@@ -598,6 +811,117 @@ SupabaseActivityDirectoryRepository _repository(Object? Function(Request) respon
 
 Map<String, dynamic> _ok(Object? data) => {'ok': true, 'data': data, 'error': null};
 
+const _detailId = '8b200000-0000-4000-8000-000000000701';
+
+/// Projecao de `superadmin_activity_detail_v2` com as tres secoes de edicao.
+Map<String, Object?> _detail() => {
+  'activity': <String, Object?>{
+    'activity_id': _detailId,
+    'institution_id': 'institution-1',
+    'name': 'Robótica',
+    'description': 'Descrição preservada',
+    'taxonomy_id': 'taxonomy-1',
+    'taxonomy_name': 'Robótica',
+    'status': 'active',
+    'management_version': 6,
+    'icon_key': 'science',
+    'initials': 'RO',
+    'created_at': '2026-09-10T12:00:00Z',
+    'updated_at': '2026-09-11T12:00:00Z',
+  },
+  'units': <Object?>[
+    <String, Object?>{'unit_id': 'unit-1', 'name': 'Unidade Centro', 'status': 'active'},
+    <String, Object?>{'unit_id': 'unit-2', 'name': 'Unidade Norte', 'status': 'active'},
+  ],
+  'groups': <Object?>[
+    <String, Object?>{
+      'group_id': 'group-1',
+      'unit_id': 'unit-1',
+      'name': 'Turma A',
+      'status': 'active',
+      'participation_mode': 'selected',
+    },
+    <String, Object?>{
+      'group_id': 'group-2',
+      'unit_id': 'unit-2',
+      'name': 'Turma B',
+      'status': 'active',
+      'participation_mode': 'all',
+    },
+  ],
+  'counts': <String, Object?>{
+    'units': 2,
+    'groups': 2,
+    'participants': 2,
+    'instructors': 1,
+    'activity_admins': 1,
+  },
+  'participants': <Object?>[
+    <String, Object?>{
+      'child_group_link_id': 'link-1',
+      'group_id': 'group-1',
+      'display_name': 'Criança Um',
+      'status': 'active',
+    },
+    <String, Object?>{
+      'child_group_link_id': 'link-2',
+      'group_id': 'group-1',
+      'display_name': 'Criança Dois',
+      'status': 'active',
+    },
+  ],
+  'professionals': <Object?>[
+    <String, Object?>{
+      'membership_id': 'membership-1',
+      'role': 'instructor',
+      'group_id': 'group-1',
+      'display_name': 'Marina Sintética',
+      'status': 'active',
+    },
+    <String, Object?>{
+      'membership_id': 'membership-2',
+      'role': 'activity_admin',
+      'group_id': null,
+      'display_name': 'Mariana Sintética',
+      'status': 'active',
+    },
+  ],
+  'permissions': <String, Object?>{
+    'policies': <Object?>[
+      {'code': 'chat', 'mode': 'optional'},
+    ],
+    'group_settings': <Object?>[
+      {'group_id': 'group-1', 'code': 'chat', 'enabled': true},
+    ],
+    'professional_actions': <Object?>[
+      <String, Object?>{
+        'membership_id': 'membership-2',
+        'role': 'activity_admin',
+        'group_id': null,
+        'actions': <String, Object?>{
+          'attendance': 'both',
+          'chat': 'both',
+          'happens': 'both',
+          'moments': 'both',
+          'now': 'both',
+        },
+      },
+      <String, Object?>{
+        'membership_id': 'membership-1',
+        'role': 'instructor',
+        'group_id': 'group-1',
+        'actions': <String, Object?>{
+          'attendance': 'both',
+          'chat': 'view',
+          'happens': 'edit',
+          'moments': 'none',
+          'now': 'both',
+        },
+      },
+    ],
+  },
+};
+
 Map<String, dynamic> _options() => {
   'institutions': [
     {'id': 'institution-1', 'label': 'Instituição sintética'},
@@ -613,8 +937,8 @@ Map<String, dynamic> _options() => {
 Map<String, dynamic> _formOptions() => {
   'structure': {
     'units': [
-      {'unit_id': 'unit-1', 'name': 'Unidade Centro'},
-      {'unit_id': 'unit-2', 'name': 'Unidade Norte'},
+      <String, Object?>{'unit_id': 'unit-1', 'name': 'Unidade Centro'},
+      <String, Object?>{'unit_id': 'unit-2', 'name': 'Unidade Norte'},
     ],
     'groups': [
       {'group_id': 'group-1', 'unit_id': 'unit-1', 'name': 'Turma A'},

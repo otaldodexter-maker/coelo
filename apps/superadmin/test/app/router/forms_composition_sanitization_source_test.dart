@@ -45,8 +45,13 @@ void main() {
   // composicao delas passa por withFormsAuthorization. Nao reverter para as
   // literais const sem antes mudar forms_fail_closed_routes_test.
   test('production routes use real fail-closed Forms surfaces', () {
-    // Continua fail-closed por contrato: monta a pagina real sem api.
-    expect(router, contains('const FormResponsePage()'));
+    // F-R04-FCR-010b (R05): responder deixou de ser fail-closed. A rota
+    // compoe a pagina real com api e ocorrencia sob withFormsAuthorization;
+    // a projecao autorizada da ocorrencia e lida no servidor, que decide se a
+    // resposta pode ser aberta. O contrato de comportamento vive em
+    // forms_fail_closed_routes_test (respond declara readsFromApi).
+    expect(router, isNot(contains('const FormResponsePage()')));
+    expect(router, contains('FormResponsePage('));
 
     // D6, decisao do Owner em 10/09/2026: Testar deixou de ser fail-closed.
     // Quem pode editar o formulario pode testa-lo preenchivel, por capacidade,

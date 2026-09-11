@@ -414,7 +414,151 @@ void main() {
     expect(requestCount, 1);
   });
 
-  test('edits fail closed before HTTP until complete snapshots are available', () async {
+  test('edits an activity snapshot through the same aggregate v2 RPC', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              // O servidor devolve o status corrente: uma atividade ativa
+              // editada sem p_publish segue ativa (pgTAP `edit`, 6 -> 12).
+              'activity_id': _editActivityId,
+              'management_version': 12,
+              'status': 'active',
+              'correlation_id': 'correlation-3',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).save(_editSaveCommand);
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_activity_save_v2'));
+    expect(captured!.url.query, isEmpty);
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body['p_request_id'], '8b200000-0000-4000-8000-000000000903');
+    expect(body['p_activity_id'], _editActivityId);
+    expect(body['p_expected_version'], 6);
+    expect(body['p_publish'], isFalse);
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['institution_id'], 'institution-1');
+    expect(payload['unit_ids'], ['unit-1']);
+    expect(payload['group_ids'], <Object?>[]);
+    expect(result.activityId, _editActivityId);
+    expect(result.managementVersion, 12);
+    expect(result.status, ActivityStatus.active);
+  });
+
+  test('edit keeps a draft status when the server leaves it as draft', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': _editActivityId.toUpperCase(),
+              'management_version': 7,
+              'status': 'draft',
+              'correlation_id': 'correlation-4',
+              'replayed': true,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).save(_editSaveCommand);
+
+    expect(result.status, ActivityStatus.draft);
+    expect(result.managementVersion, 7);
+  });
+
+  for (final mutate in <String, void Function(Map<String, Object?>)>{
+    'another activity id': (d) => d['activity_id'] = '8b200000-0000-4000-8000-000000000999',
+    'version not incremented': (d) => d['management_version'] = 6,
+    'version below expected': (d) => d['management_version'] = 5,
+    'unknown status': (d) => d['status'] = 'deleted',
+  }.entries) {
+    test('edit rejects an aggregate response with ${mutate.key}', () async {
+      final data = <String, Object?>{
+        'activity_id': _editActivityId,
+        'management_version': 12,
+        'status': 'active',
+        'correlation_id': 'correlation-5',
+        'replayed': false,
+      };
+      mutate.value(data);
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (request) async => Response(
+            jsonEncode({'ok': true, 'data': data, 'error': null}),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+
+      await expectLater(
+        SupabaseActivityCommandRepository(client).save(_editSaveCommand),
+        throwsA(isA<ActivityCommandUnavailableException>()),
+      );
+    });
+  }
+
+  test('edit maps the aggregate concurrency envelope to a conflict', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => Response(
+          jsonEncode({
+            'ok': false,
+            'data': null,
+            'error': {
+              'code': 'SAI_CONCURRENT_CHANGE',
+              'message': 'O estado mudou.',
+              'http_status': 409,
+              'correlation_id': 'correlation-6',
+            },
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_editSaveCommand),
+      throwsA(isA<ActivityCommandConflictException>()),
+    );
+  });
+
+  test('edits without a current version and publishes fail closed before HTTP', () async {
     var requestCount = 0;
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -425,13 +569,25 @@ void main() {
       }),
     );
     addTearDown(client.dispose);
+    final repository = SupabaseActivityCommandRepository(client);
 
+    // Um id sem a versao corrente nao pode virar criacao nem edicao.
     await expectLater(
-      SupabaseActivityCommandRepository(client).save(_editSaveCommand),
+      repository.save(_editSaveCommandWithoutVersion),
       throwsA(isA<ActivityCommandUnavailableException>()),
     );
     await expectLater(
-      SupabaseActivityCommandRepository(client).save(_publishSaveCommand),
+      repository.save(_blankEditSaveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    // Publicar segue fora do recorte do cliente: publish_v2 exige rascunho e
+    // o formulario de edicao nao sabe o status corrente ao escolher p_publish.
+    await expectLater(
+      repository.save(_publishSaveCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+    await expectLater(
+      repository.save(_publishCreateCommand),
       throwsA(isA<ActivityCommandUnavailableException>()),
     );
     expect(requestCount, 0);
@@ -703,11 +859,76 @@ const _unsupportedSaveCommand = ActivitySaveCommand(
   ),
 );
 
+const _editActivityId = '8b200000-0000-4000-8000-000000000905';
+
 const _editSaveCommand = ActivitySaveCommand(
   requestId: '8b200000-0000-4000-8000-000000000903',
   intent: ActivityCommandIntent.saveDraft,
-  activityId: 'activity-expected',
+  activityId: _editActivityId,
   expectedVersion: 6,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _editSaveCommandWithoutVersion = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000906',
+  intent: ActivityCommandIntent.saveDraft,
+  activityId: _editActivityId,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _blankEditSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000907',
+  intent: ActivityCommandIntent.saveDraft,
+  activityId: '  ',
+  expectedVersion: 6,
+  name: 'Natação',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _publishCreateCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000908',
+  intent: ActivityCommandIntent.publish,
   name: 'Natação',
   description: '',
   taxonomyId: 'taxonomy-1',
@@ -728,7 +949,7 @@ const _editSaveCommand = ActivitySaveCommand(
 const _publishSaveCommand = ActivitySaveCommand(
   requestId: '8b200000-0000-4000-8000-000000000904',
   intent: ActivityCommandIntent.publish,
-  activityId: 'activity-expected',
+  activityId: _editActivityId,
   expectedVersion: 6,
   name: 'Natação',
   description: '',
