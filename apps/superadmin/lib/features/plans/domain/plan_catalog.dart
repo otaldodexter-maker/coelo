@@ -71,7 +71,7 @@ final class PlanLinkedInstitution {
   final String id;
   final String name;
   final String subscriptionStatus;
-  final DateTime startsAt;
+  final DateTime? startsAt;
   final int unitsWithOverride;
 }
 

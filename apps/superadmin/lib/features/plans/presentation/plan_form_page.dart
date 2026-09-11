@@ -769,7 +769,11 @@ final class _LinkedInstitutionTile extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(institution.name, style: Theme.of(context).textTheme.titleSmall),
-                Text('${institution.subscriptionStatus} · desde ${_date(institution.startsAt)}'),
+                Text(
+                  institution.startsAt == null
+                      ? institution.subscriptionStatus
+                      : '${institution.subscriptionStatus} · desde ${_date(institution.startsAt!)}',
+                ),
                 Text(
                   institution.unitsWithOverride == 0
                       ? 'Nenhuma unidade com override'
