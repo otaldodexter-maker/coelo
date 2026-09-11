@@ -171,13 +171,21 @@ curso). Recomendação: semear os quatro modelos e permitir editar pela tela.
 
 ## P32 — Segurança infantil: decisão de retirada exige revisor da unidade? (acessos-pessoas)
 
-Na rota real, a decisão de retirada de uma autorização em Segurança infantil
-exige um revisor com vínculo na unidade da criança; o usuário de teste é Owner
-de plataforma sem vínculo de unidade e a ação nega. Pergunta: o Owner de
-plataforma pode decidir sem revisor de unidade (MVP) ou a regra de revisor
-fica? Recomendação do coordenador: manter a regra e semear o vínculo do
-usuário de teste na unidade sintética para a prova; a exceção para o Owner de
-plataforma volta na revisão profunda.
+Quem decide (aprova/rejeita) uma autorização de retirada? Hoje o banco exige
+revisor exato da unidade (`child_safety_has_exact_unit_review`) e nega ao
+Superadmin (P0002). Opções: **(a)** só a unidade decide, o Superadmin apenas
+cadastra e acompanha (como está); **(b)** o Superadmin com
+`child_safety.manage` também decide, com auditoria; **(c)** o Superadmin
+decide só em instituições sem revisor cadastrado. Recomendação da frente:
+**(b)** no MVP, porque não existe revisor de unidade cadastrado em nenhuma
+instituição e a demonstração precisa fechar o ciclo; volta a (a) quando o
+Admin da instituição existir. O coordenador concorda com (b).
+
+Complemento à P31: o candidato `20260910171600` (quatro papéis de sistema de
+instituição: Administrador com todas as permissões institucionais,
+Coordenação, Professor(a), Secretaria; idempotente; pgTAP 7/7) está pronto e
+RETIDO em `candidatos/acessos-pessoas/`; com "P31 aprovado" o coordenador
+renomeia e aplica no lote seguinte.
 
 ## P33 — `agenda_calendar_light_375`: células compactas ou rótulos truncados (publicações)
 
