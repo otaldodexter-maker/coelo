@@ -3,7 +3,7 @@ title: "Handoff — grupo principal-chat-sistema, Rodada 4"
 grupo: "principal-chat-sistema"
 branch: "work/etapa2-r04-principal-chat-sistema"
 generated_at: "2026-09-11"
-status: "em fechamento (mini-revisão às 04:20 ou ao finalizar)"
+status: "fechado na mini-revisão das 04:00 de 11/09 (retomada coelo-11 após o reinício de 00:27)"
 ---
 
 # Handoff — principal-chat-sistema (R04)
@@ -79,3 +79,33 @@ Capturas em `evidence/etapa-2/r04-principal-chat-sistema/rota-real/`.
 ## WIP não commitado
 
 Nenhum. Projeto descartável `coelo_baseline_pcs` (portas 623xx) pode ser parado.
+
+## Retomada 02:00-04:00 de 11/09 (coelo-11, depois do reinicio da maquina)
+
+Fonte por `action_id`: JSON do grupo, revisoes 14 a 17, e
+`evidence/etapa-2/r04-principal-chat-sistema/deltas-r04.json`.
+
+**Fechado com prova.** Launcher/Decisao 7: a flag `showChatLauncher` da pagina
+embutida chega ao shell hospedeiro; `SuperadminFormFrame` suprime o balao em
+qualquer largura enquanto montado; Agora aberto, Momentos aberto e as tres telas
+de publicar ficam sem balao pelo destino; Cardapios, Planos, Circulares e Avisos
+passam a flag (7322260c5, 1e34eb9f4, dcfcb9e41; teste 12/12, suite do shell
+124/124). Cardapios abre na rota real para `qa-r03` depois da ponte de ator e o
+reload mantem (capturas 51 e 52 em `rota-real-r04b/`). O dialogo Criar grupo do
+Chat carrega instituicao e pessoas de producao pelo diretorio (54 a 61, 67a).
+
+**Aberto, com o primeiro gate.** As cinco telas do Principal falham porque
+`public.list_my_principal_contexts` nao existe em producao (PostgREST PGRST202):
+a historica 20260901161700 nunca chegou a baseline. Candidato entregue em
+`candidatos/principal-chat-sistema/20260910191000_principal_runtime_contexts_baseline.sql`
+(pgTAP existente no repositorio, nao rodado nesta retomada). Depois de aplicar,
+`qa-r03` ainda precisa de `institution_membership` ativa para ter contexto
+(P25, pergunta ao Owner). Criar grupo pela UI nao fechou (dialogo fechou sem
+grupo novo, 67b/67c). CRUD de Cardapios pela UI e goldens das tres listas nao
+foram tocados.
+
+**Ambiente que funcionou.** `flutter build web --release -t test_driver/qa_main.dart
+--dart-define-from-file=.env.local`, servido com fallback de SPA em
+`127.0.0.1:3009`; Chrome com `--remote-debugging-port` e `--use-angle=swiftshader`;
+login e `enter_text` pelo `qa_drive.dart`; cliques por CDP. Sem o `.env.local`
+o app morre em `Supabase.instance` antes de registrar `$flutterDriver`.
