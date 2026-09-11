@@ -26,6 +26,8 @@ skills no mesmo turno em que chegarem.
 | --- | --- | --- | --- |
 | P43 | operacoes | `account.sessions` (listar e revogar as próprias sessões) não tem tela nem API de cliente; exigiria Edge Function sobre o Admin API do Auth. Entra no MVP? | A) pós-MVP (recomendado; Sair já encerra a sessão e MFA está fora do MVP); B) tela mínima no MVP (lista + revogar todas) com Edge Function |
 | P44 | operacoes | Catálogo (`catalog.validate/sync`): 5 componentes do composto da Fase 0 sem entrada no índice e 7 exemplos com fingerprint desatualizado. Atualizar agora ou depois do MVP? | A) depois do MVP, junto da revisão de UI (recomendado); B) agora, por uma frente de UI |
+| P45 (numerada P43 no JSON de acessos) | acessos-pessoas | Modelo de sistema de perfil criado pelo Superadmin pode ser excluído ou só inativado? Hoje o delete é protegido. | Manter protegido; só inativar (recomendado) |
+| P46 (numerada P44 no JSON de acessos) | acessos-pessoas | Usuários internos (Superadmin) também têm @? Hoje o @ vive em `public.people` (pessoas), e a pessoa de serviço da ponte já recebe um. | Sim, na próxima rodada, reutilizando `person_handles` pela pessoa de serviço (recomendado) |
 
 ## Registro
 
