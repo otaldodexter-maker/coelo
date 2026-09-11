@@ -108,6 +108,24 @@ class SuperadminShell extends StatefulWidget {
     'principal-moments',
     'principal-moments-publish',
   };
+
+  /// Registra uma supressao do balao "Mensagens" no shell hospedeiro mais
+  /// proximo e devolve o callback que a libera. Usado pelo SuperadminFormFrame
+  /// para que nenhuma tela de criar, editar ou publicar mostre o balao
+  /// (Decisao 7) nem o deixe cobrir o rodape ancorado, em largura nenhuma.
+  /// Sem hospedeiro (shell isolado) devolve null: a pagina ja decide por
+  /// [showChatLauncher]. O callback devolvido e seguro em dispose porque nao
+  /// consulta ancestrais.
+  static VoidCallback? suppressChatLauncher(BuildContext context) {
+    final scope = context
+        .getElementForInheritedWidgetOfExactType<_SuperadminShellHostScope>()
+        ?.widget as _SuperadminShellHostScope?;
+    if (scope == null) return null;
+    final notify = scope.onChatLauncherSuppressionChanged;
+    notify(true);
+    return () => notify(false);
+  }
+
   final CoeloNavigationCapabilityCheck? canAccessCapability;
 
   @override
@@ -123,6 +141,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   late bool _ownsActivityController;
   double _embeddedChatLauncherBottomInset = 0;
   bool _embeddedChatLauncherVisible = true;
+  int _chatLauncherSuppressors = 0;
   _SuperadminShellHostScope? _hostScope;
 
   @override
@@ -187,6 +206,18 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) {
       if (!mounted || _embeddedChatLauncherVisible == visible) return;
       setState(() => _embeddedChatLauncherVisible = visible);
+    });
+  }
+
+  /// Componentes de criar/editar/publicar (SuperadminFormFrame) se registram
+  /// aqui enquanto estao montados; com um registrado, o balao nao aparece em
+  /// largura nenhuma, independentemente da flag da pagina embutida.
+  void _handleChatLauncherSuppression(bool suppressed) {
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      if (!mounted) return;
+      final next = (_chatLauncherSuppressors + (suppressed ? 1 : -1)).clamp(0, 1 << 20);
+      if (next == _chatLauncherSuppressors) return;
+      setState(() => _chatLauncherSuppressors = next);
     });
   }
 
@@ -467,6 +498,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       chatLauncherPositionController: _chatLauncherPositionController,
       onChatLauncherBottomInsetChanged: _handleEmbeddedChatLauncherBottomInset,
       onChatLauncherVisibilityChanged: _handleEmbeddedChatLauncherVisibility,
+      onChatLauncherSuppressionChanged: _handleChatLauncherSuppression,
       child: KeyedSubtree(key: const Key('superadmin-content-transition'), child: child),
     );
   }
@@ -521,7 +553,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   }) {
     final destinationHandler = onDestinationSelected ?? widget.onDestinationSelected;
     if (!widget.showChatLauncher ||
-        (widget.isHost && !_embeddedChatLauncherVisible) ||
+        (widget.isHost && (!_embeddedChatLauncherVisible || _chatLauncherSuppressors > 0)) ||
         SuperadminShell.chatLauncherHiddenDestinations.contains(widget.currentDestination)) {
       return child;
     }
@@ -565,6 +597,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
     required this.chatLauncherPositionController,
     required this.onChatLauncherBottomInsetChanged,
     required this.onChatLauncherVisibilityChanged,
+    required this.onChatLauncherSuppressionChanged,
     required super.child,
   });
 
@@ -573,6 +606,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
   final SuperadminChatLauncherPositionController chatLauncherPositionController;
   final ValueChanged<double> onChatLauncherBottomInsetChanged;
   final ValueChanged<bool> onChatLauncherVisibilityChanged;
+  final ValueChanged<bool> onChatLauncherSuppressionChanged;
 
   static _SuperadminShellHostScope? maybeOf(BuildContext context) {
     return context.dependOnInheritedWidgetOfExactType<_SuperadminShellHostScope>();
@@ -584,7 +618,8 @@ class _SuperadminShellHostScope extends InheritedWidget {
         onDestinationSelected != oldWidget.onDestinationSelected ||
         chatLauncherPositionController != oldWidget.chatLauncherPositionController ||
         onChatLauncherBottomInsetChanged != oldWidget.onChatLauncherBottomInsetChanged ||
-        onChatLauncherVisibilityChanged != oldWidget.onChatLauncherVisibilityChanged;
+        onChatLauncherVisibilityChanged != oldWidget.onChatLauncherVisibilityChanged ||
+        onChatLauncherSuppressionChanged != oldWidget.onChatLauncherSuppressionChanged;
   }
 }
 

@@ -643,11 +643,13 @@ GoRouter createSuperadminRouter({
     required String subtitle,
     required String destination,
     required Widget child,
+    bool showChatLauncher = true,
   }) => SuperadminShell(
     logout: _previewLogout,
     title: title,
     subtitle: subtitle,
     currentDestination: destination,
+    showChatLauncher: showChatLauncher,
     activityController: operationalActivities,
     chatUnreadCountLoader: developmentChatRepository.fetchUnreadTotal,
     chatRecentConversationsLoader: () => _recentConversations(developmentChatRepository),
@@ -5379,6 +5381,7 @@ GoRouter createSuperadminRouter({
                     title: 'Novo aviso',
                     subtitle: 'Revise a prévia e o público antes de publicar.',
                     destination: 'notices',
+                    showChatLauncher: false,
                     child: NoticeFormPage(
                       repository: noticeRepository,
                       onSaved: (_) => context.goNamed(SuperadminRoutes.noticesName),
@@ -5397,6 +5400,7 @@ GoRouter createSuperadminRouter({
                     title: 'Editar aviso',
                     subtitle: 'Altere um aviso dentro do ciclo permitido.',
                     destination: 'notices',
+                    showChatLauncher: false,
                     child: NoticeFormPage(
                       repository: noticeRepository,
                       noticeId: state.pathParameters['noticeId'],
@@ -5433,6 +5437,7 @@ GoRouter createSuperadminRouter({
               title: 'Novo aviso',
               subtitle: 'Revise a pr\u00e9via e o p\u00fablico antes de publicar.',
               destination: 'notices',
+              showChatLauncher: false,
               child: NoticeFormPage(
                 repository: developmentNoticeRepository,
                 onSaved: (_) => context.goNamed(SuperadminRoutes.devNoticesName),
@@ -5448,6 +5453,7 @@ GoRouter createSuperadminRouter({
               title: 'Editar aviso',
               subtitle: 'Altere um aviso dentro do ciclo permitido.',
               destination: 'notices',
+              showChatLauncher: false,
               child: NoticeFormPage(
                 repository: developmentNoticeRepository,
                 noticeId: state.pathParameters['noticeId'],
@@ -5482,6 +5488,7 @@ GoRouter createSuperadminRouter({
               title: 'Publicar Circular',
               subtitle: 'Prepare o conteúdo, o público e a publicação.',
               destination: 'circular-create',
+              showChatLauncher: false,
               child: ProductionCircularComposerHost(
                 repository: circularRepository,
                 institutionRepository: institutionDirectoryRepository,
@@ -5538,6 +5545,8 @@ GoRouter createSuperadminRouter({
                 title: 'Editar Circular',
                 subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
                 destination: 'circular-create',
+                showChatLauncher: false,
+              showChatLauncher: false,
                 child: ProductionCircularComposerHost(
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
@@ -5613,6 +5622,8 @@ GoRouter createSuperadminRouter({
                 title: 'Editar Circular',
                 subtitle: 'Atualize o conteúdo e publique uma nova revisão.',
                 destination: 'circular-create',
+                showChatLauncher: false,
+              showChatLauncher: false,
                 child: DevelopmentCircularComposerHost(
                   repository: circularPreviewRepository(),
                   circularId: circularId,
@@ -5636,6 +5647,7 @@ GoRouter createSuperadminRouter({
               title: 'Publicar Circular',
               subtitle: 'Prepare o conteúdo, o público e a publicação.',
               destination: 'circular-create',
+              showChatLauncher: false,
               child: DevelopmentCircularComposerHost(
                 repository: circularPreviewRepository(),
                 onCancel: () => context.goNamed(SuperadminRoutes.devCircularsName),
