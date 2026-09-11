@@ -146,6 +146,9 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
     subtitle: 'Selecione o contexto antes de registrar a presença.',
     currentDestination: 'attendance',
     activityController: widget.activityController,
+    // Decisao 7: sem balao de chat em telas de criar/editar; na rota real ele
+    // cobria o botao "Lancar chamada" do rodape (R05).
+    showChatLauncher: false,
     child: _options == null
         ? _loadingOrFailure()
         : !_hasSelection
@@ -810,6 +813,9 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
       subtitle: '${call.institutionName} · ${call.unitName} · ${call.groupName}',
       currentDestination: 'attendance',
       activityController: widget.activityController,
+      // Decisao 7: a chamada e uma tela de edicao (marcar, corrigir, concluir);
+      // o balao cobria "Concluir chamada" na rota real (R05).
+      showChatLauncher: false,
       child: LayoutBuilder(
         builder: (context, constraints) {
           final wide = constraints.maxWidth >= CoeloBreakpoints.medium.minWidth;
@@ -1044,6 +1050,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     subtitle: 'Consulte o registro autorizado da chamada.',
     currentDestination: 'attendance',
     activityController: widget.activityController,
+    showChatLauncher: false,
     child: child,
   );
 

@@ -1,15 +1,15 @@
 {
- "revision": 43,
+ "revision": 44,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:34-03:00",
+ "updatedAt": "2026-09-11T15:38-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "0b8ee7a75 de codigo + rev 43 (publicado)",
+ "head": "fac31c7c4 de codigo + rev 44 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -155,6 +155,11 @@
    "sha": "0b8ee7a75",
    "o_que": "fix(rotina): visibilidade da rotina aplicada com os valores do servidor (23514 na rota real)",
    "prova": "analyzer limpo; test/features/daily_routine 112 verdes + golden do composto pre-existente"
+  },
+  {
+   "sha": "fac31c7c4",
+   "o_que": "fix(assiduidade): showChatLauncher=false em AttendanceNewCallPage e AttendanceCallPage (Decisao 7)",
+   "prova": "analyzer limpo; test/features/attendance 89/89; sem prova na rota real (Chrome encerrado as 15:34)"
   }
  ],
  "pendenciasRegistradas": [
@@ -225,8 +230,8 @@
   },
   {
    "action_id": "attendance.create",
-   "o_que": "balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape da chamada (Decisao 7: sem chat em criar/editar)",
-   "gate": "FE (shell/launcher)"
+   "o_que": "balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape da chamada (Decisao 7: sem chat em criar/editar) — corrigido em fac31c7c4 (local-green; rota real na proxima rodada)",
+   "gate": "FE prova"
   },
   {
    "action_id": "attendance.mark",
@@ -1599,7 +1604,7 @@
  ],
  "miniRevisao": {
   "quando": "2026-09-11T15:34-03:00",
-  "sha_final": "0b8ee7a75 (codigo) + este commit (rev 43), branch publicada, status limpo, sem WIP",
+  "sha_final": "fac31c7c4 (codigo) + este commit (rev 44), publicados; status limpo",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
