@@ -130,3 +130,5 @@
 20260910220600_child_context_directory_v2_baseline.sql
 20260910220700_attendance_dashboard_access_and_context_options_v1.sql
 20260910220800_forms_location_snapshot_v1_route.sql
+# lote 24 (11/09 09:5x)
+20260910180360_superadmin_institution_create_v2_type_by_name.sql

@@ -1,12 +1,12 @@
 {
- "revision": 31,
+ "revision": 32,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T08:52:00-03:00",
+ "updatedAt": "2026-09-11T09:55:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -221,6 +221,7 @@
   "29": "03:46 lotes 20 e 21; acessos finalizada; rota real de operacoes e formularios por subagentes (E2E 37/199); pacotes de backend de formularios em curso",
   "30": "03:52 lote 22 (contextos do Principal); mini-revisoes de 04:00 recebidas de seis frentes; estrutura sem retorno; P35/P36",
   "31": "08:52 FECHAMENTO da R04: sete frentes integradas e worktrees removidas; lote 23; rastreadores e skills consolidados; percentuais finais",
+  "32": "09:55 lote 24 (180360); continuacao da estrutura integrada (primeiro E2E da Estrutura); worktree quebrada da R03 removida; artefato de decisoes publicado",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -638,14 +639,14 @@
   "docker": "10 projetos descartaveis das frentes parados; espelho do coordenador coelo_baseline mantido",
   "rastreadores": "validate-trackers PASS; bloco Estado vigente R04 nos tres md; inventario 231 acoes",
   "percentuais": {
-   "feVerified": "56/231 (24,24%)",
-   "feLocalGreen": "34/231 (14,72%)",
+   "feVerified": "61/231 (26,41%)",
+   "feLocalGreen": "32/231 (13,85%)",
    "feAprovacaoVisualDoOwner": "52/231 (22,51%)",
-   "beLocalGreen": "96/224 (42,86%)",
-   "beSqlEmProducao": "129/224 (57,59%)",
-   "beDone": "63/224 (28,13%)",
-   "e2eVerified": "37/199 (18,59%)",
-   "base": "inventario validado sobre fab697d6c (+ commit da rev 31) as 08:50; ambiente repositorio + producao medida"
+   "beLocalGreen": "95/224 (42,41%)",
+   "beSqlEmProducao": "130/224 (58,04%)",
+   "beDone": "64/224 (28,57%)",
+   "e2eVerified": "38/199 (19,10%)",
+   "base": "inventario validado as 09:55 sobre a base conjunta apos a continuacao da estrutura"
   },
   "perguntasAoOwner": "P22 a P37 em next-round/R04-perguntas-ao-owner-20260911.md (P22 resolvida pela ponte; P24 corrigida; P26/P28/P33/P34 com pagina lado a lado; P30 disparo do worker; P31/P32 pacotes retidos; P35 contexto do Principal; P37 limpeza dos dados sinteticos)",
   "pendenciasDeCodeReview": [
@@ -658,5 +659,15 @@
    "Responsaveis do Suporte sem RPC; preferencia cards/tabela nao persiste",
    "goldens divergentes registrados (32 support_*, forms 1440, activity/institution 375)"
   ]
- }
+ },
+ "lote24": {
+  "aplicadoEm": "2026-09-11T09:5x -03:00; ledger 103",
+  "dump": "schema-producao-20260911-lote24.sql",
+  "conteudo": [
+   "estrutura 20260910180360 superadmin_institution_create_v2_type_by_name (tipo por nome ao criar instituicao; pgTAP 31/31)"
+  ]
+ },
+ "continuacaoEstrutura": "a sessao coelo-b3 seguiu depois do fechamento (337fb911c, f99c2279b): rota real com turma criada em producao (groups.create verified-e2e, primeiro E2E da Estrutura), Unidades/Turmas/Atividades/Locais listar verified, cards das unidades em Locais, leitor de selecao de Locais ligado; worktree e2-r04-estrutura recriada por ela (removida de novo no fechamento)",
+ "worktreeR03": "e2-r03-realm-interno destravada e removida pelo coordenador as 09:47 a pedido do Owner; branch preservada",
+ "artefatoDeDecisoes": "https://claude.ai/code/artifact/f98e8848-2349-49e1-a74a-7bcf4375511b (P20-P37 + 21 pares R/A; o Owner grava as respostas na propria pagina)"
 }

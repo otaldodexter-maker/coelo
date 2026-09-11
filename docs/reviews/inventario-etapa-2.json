@@ -659,12 +659,12 @@
       "screen": "Unidades / Diretório",
       "scope": "mvp",
       "done": "Diretórios/formulários locais e adapters existentes; detalhe READ possui página/rota/DI com guards D01. Writes não herdam conclusão do detalhe. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão. R02: 85f82c88+00e69e3a→950ac4674+cdf9f532f invalidam repository anterior e preservam paginação tabela8; 1 caso integrado PASS. Expectativa legada de gate corrigida em 5d1217297; dois gates explícitos PASS, sem habilitar writes.",
-      "fe": "R03: diretorio de Unidades no composto, goldens regravados; repositorio real composto pelo grupo estrutura (RPCs em producao). Gate para verified: rota normal com sessao (P17).",
+      "fe": "R04 continuacao: /units em producao lista Unidade QA R04 com instituicao, tipo, plano, filtros e card Criar; reload (Page.navigate) mantem.",
       "be": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; evidence/etapa-2/r03-estrutura/units-rpc-catalog-probe.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6 (aplicadoEmProducao); goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; evidence/etapa-2/r04-estrutura/handoff.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit e14718844; apps/superadmin/test/contracts/rpc_contract_test.dart 3 PASS; relatorio E2-noturna-contrato-rpc-20260910.md; evidence/etapa-2/r03-estrutura/units-rpc-catalog-probe.md; comunicacao/coordenacao.json R03 rev 4 (producao.unidades); coordenacao.json R03 rev 6 (aplicadoEmProducao); goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
@@ -693,6 +693,14 @@
         "referencia": 4,
         "atual": 4,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/units-list.jpg",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        }
       }
     },
     {
@@ -971,12 +979,12 @@
       "screen": "Turmas / Diretório",
       "scope": "mvp",
       "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R01/16h: C04r15–17 entregou acessibilidade/estados e consumidor UnitDetail opt-in84a05151; pacote ainda em revisão.",
-      "fe": "R04 P5: GroupDirectoryViewModel.filterOptionsUnavailable + rotulo \"(indisponivel)\" quando fetchFilterOptions falha; 5/5 no view model; diretorio no composto.",
+      "fe": "R04 continuacao: /groups em producao abre vazio honesto com filtros carregados (ponte de ator) e card Criar; depois da criacao lista a turma; reload mantem.",
       "be": "R04: superadmin_group_directory (baseline) + ponte de ator em producao; P5 no cliente (filtro degrada). superadmin_group_detail_v2 (180310, 33/33) no lote 10.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; evidence/etapa-2/r04-estrutura/handoff.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
@@ -1007,6 +1015,14 @@
         "referencia": 0,
         "atual": 17,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-list-vazio.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        }
       }
     },
     {
@@ -1014,15 +1030,15 @@
       "family": "groups",
       "screen": "Criar Turma",
       "scope": "mvp",
-      "done": "Detalhe READ com adapter, página, rota/DI e logout D01 já composto; diretório, membros e writes têm gates próprios. R02 D02:2e563e8a→b185a481 confirma só uma etapa agregada real;3 testes repository PASS na base conjuntae9fdd88d. Persistência real não certificada. R02: 583bfd0d→6865fe18 recupera formulário após Error e conserva draft; 1 caso novo PASS na base e9a582a0.",
-      "fe": "A unica falha nao-golden da familia, 'shows compact localized invite rows without overflow', foi RESOLVIDA pela mesma classe: group-form-continue fora da area visivel impedia a etapa de avancar e group-invite-add nunca era montado. Treze toques corrigidos, sem alteracao de produto. Suite 156 PASS com as 8 falhas restantes todas goldens. Nao promovo: aceite visual aberto.",
-      "be": "R04: superadmin_group_save (baseline people-based) alcancavel pela ponte de ator (220400); deixa de ser blocked-environment. superadmin_group_location_create_v2 (180200, 46/46) em producao.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json;24c8de168 group-retry-intent-manifest.json;6bad96b68 group-initial-context-manifest.json; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; 24c8de168 group-retry-intent-manifest.json; 6bad96b68 group-initial-context-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; commit 9a5081dfc; suite de Turmas 156 PASS; evidence/etapa-2/r04-estrutura/handoff.md",
+      "done": "R04 continuacao: rota normal abre, CRUD persiste em producao, RLS nega outro tenant por pgTAP e o reload mantem a turma (regua do MVP, ADR 0034).",
+      "fe": "R04 continuacao (11/09 09:40): rota normal /groups/new em producao com qa-r03 pelo build de qa_main + CDP: Hierarquia pre-preenchida (QA R04 Cuidado / Unidade QA R04), Identidade digitada, Salvar turma -> 'Turma criada com sucesso'; lista recarregada mostra a turma.",
+      "be": "R04 continuacao: superadmin_group_save (baseline, people-based) alcancado pela ponte de ator 220400; public.groups 368a5cea-2bcf-4fa4-ad1f-18da58694551 'Turma QA R04 Estrutura' criada as 12:40:58Z com audit.audit_logs group.create success; negativa cross-tenant coberta por pgTAP superadmin_internal_group_detail_test (33/33) e superadmin_group_location_create_v2_test (46/46) na prova integral 3.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; ; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json;24c8de168 group-retry-intent-manifest.json;6bad96b68 group-initial-context-manifest.json; 6797ae7667a07e2b1d799811321e8fc1b4a96fe6 group-write-freeze-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; 24c8de168 group-retry-intent-manifest.json; 6bad96b68 group-initial-context-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; commit 9a5081dfc; suite de Turmas 156 PASS; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T13:37:29.319567-03:00",
@@ -1042,6 +1058,26 @@
         "referencia": 0,
         "atual": 1,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "Chrome 152 (CDP 9556) contra o build release de test_driver/qa_main.dart servido em localhost:3020 com .env.local de producao; usuario qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao coelo (evvbomzejfijozbtgvpt), lotes 10-11 aplicados | provas: supabase db query --linked (somente leitura) em 11/09 09:41: public.groups e audit.audit_logs; pgTAP group_detail 33/33 e group_location_create 46/46 (prova-integral-3)",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-create-salvo.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg; public.groups 368a5cea-2bcf-4fa4-ad1f-18da58694551",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        }
       }
     },
     {
@@ -1778,12 +1814,12 @@
       "screen": "Atividades / Diretório",
       "scope": "mvp",
       "done": "Adapter v2 51c02b75 e negativa225c8867 integrados. A01GREEN55 executou97/97 pgTAP reais locais com cleanup. C00 integrou troca de repositório1816a0e8, catálogo assíncrono1ee3ac18 e correlação de sujeitoabcf96ca.",
-      "fe": "R03: diretorio (Atividades e Modelos) no composto, goldens regravados apos as decisoes do Owner; aprovacao visual registrada. Gate para verified: rota normal com sessao (P17).",
+      "fe": "R04 continuacao: /activities em producao lista os modelos Coelo (2 paginas) com filtros e card Criar modelo; reload mantem.",
       "be": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
-      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
@@ -1812,6 +1848,14 @@
         "referencia": 11,
         "atual": 5,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        }
       }
     },
     {
@@ -1981,12 +2025,12 @@
       "screen": "Avaliações / Lançamento",
       "scope": "mvp",
       "done": "Migration interna v2 20260901182838 já existe (831fb5a8); erros/contexto/fechamento do cliente receberam correções. C00 integrou recuperação de Error no decode/fila de fechamento (0c74648d/3f0bf140). R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
-      "fe": "Aceite funcional EXERCITADO e integralmente verde na base conjunta: 42 PASS, 0 FAIL, 0 SKIP em test/features/assessments. A cobertura inclui as guardas que importam: rejeita gradebook cujo ID difere do requisitado, rejeita gradebook salvo que atravessa a instituicao carregada, rejeita diario retomado fora do contexto de lancamento, ignora resposta antiga depois de troca A para B, e compartilha um unico comando em voo entre salvar e submeter. Nao promovo por um motivo estrutural: o criterio menciona 'goldens restantes' e a familia NAO TEM NENHUM golden — nao existe diretorio goldens nem arquivo *golden*_test em assessments, e conferi no historico que dev nunca teve. Criar baseline visual exige aprovacao nominal, como no caso dos goldens 409. Entao o criterio visual nao esta pendente de verificacao: esta pendente de existir.",
+      "fe": "R04 continuacao: /assessments/entry em producao abre pelo superadmin_assessment_context_options (180350) com 'Sem atribuicoes' honesto; sem vinculo profissional do qa-r03 nao ha lancamento a provar.",
       "be": "R04: superadmin_assessment_* (12 RPCs, 180350, pgTAP 47/47) em producao no lote 11; assessmentMutationsEnabled ligada em dev 1eef48ee5.",
-      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; 32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json; flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev; coordenacao.json R04 rev 22 (lote11); evidence/etapa-2/r04-estrutura/handoff.md",
+      "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; 32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json; flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev; coordenacao.json R04 rev 22 (lote11); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/assessments-entry.jpg",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
@@ -5969,12 +6013,12 @@
       "screen": "Locais / Diretório",
       "scope": "mvp",
       "done": "Catálogo, reader, writer, seleção, cópia, status e disponibilidade semanal integrados no histórico. R02 acrescentou fechamento por capacidade/revogação e modal com descarte de callback antigo; catálogo local 165 PASS. Rotas/consumidores completos e mídia ainda pendentes; não é aceite integral da ação.",
-      "fe": "Catalogo recebeu composicao por proprietario e rotas normais a partir dos candidatos R02. Os 165 casos historicos foram reutilizados; entrada produtiva navegavel e pacote remoto seguem pendentes.",
+      "fe": "R04 continuacao: catalogo de Locais da instituicao (1 local, Criar por grupo) e da unidade (vazio honesto, Trazer da instituicao) em producao; reload mantem.",
       "be": "R04: catalogo v2 (lote 5) em producao; capacidades locations.* provisionadas (230012).",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-copy-integrated.json; evidence/etapa-2/r02-d00-integration-20260909/location-catalog-third-replay.log; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; f87543b6c+4528c42df+fc8287c57+846622381; docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json; coordenacao.json R03 rev 12 (lote5); evidence/etapa-2/r04-estrutura/handoff.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-08-location-read-adapter.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-2005.md; R01-locations-integration-manifest.json; Fechamento R01 C04/r61; C04r61/estado47;188cf2ba histórico266Flutter+36DTO; não rerun; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-location-copy-integrated.json; evidence/etapa-2/r02-d00-integration-20260909/location-catalog-third-replay.log; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; f87543b6c+4528c42df+fc8287c57+846622381; docs/reviews/evidence/etapa-2/noturna-estrutura/candidates-manifest.json; coordenacao.json R03 rev 12 (lote5); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T15:57:45.129531-03:00",
@@ -5987,7 +6031,15 @@
         "note": "R02 D00: modal de copia7777/192/b5a integrado ate89a29d6d9; tres novos casos PASS para troca de contexto, revisao/ID e invalidacao antes do primeiro frame. Catalogo57SQL bloqueado na fixture030958 por baseline drift, antes dos sete arquivos TAP; causa em verificacao. Copia permanece subtela sem action_id proprio no inventario.",
         "certifiesWholeAction": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg",
+          "revision": "estrutura.json rev 33",
+          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/locations-instituicao.jpg; evidence/etapa-2/r04-estrutura/rota-real/locations-unidade.jpg",
+          "recordedAt": "2026-09-11T09:41:00-03:00"
+        }
+      }
     },
     {
       "id": "locations.create-edit",
@@ -6492,7 +6544,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T11:43:35.996Z",
+  "updatedAt": "2026-09-11T12:46:25.644Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
