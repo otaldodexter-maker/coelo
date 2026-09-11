@@ -1,13 +1,13 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-11T20:07:00-03:00",
+  "revision": 42,
+  "updated_at": "2026-09-11T20:21:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
   "conversation": "R06 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
   "branch": "work/etapa2-r06-operacoes",
-  "head": "5408bd710",
+  "head": "8776eb424",
   "base": {
     "requested": "origin/dev",
     "resolved": "ca60b096b",
@@ -90,6 +90,33 @@
       ],
       "what": "(5) IMP-R05-2: /imports/new (recurso adiado por decisao) passa a dizer \"Este recurso fica disponivel depois do MVP.\" com acao Voltar ao inicio (SuperadminErrorKind.deferred, mesma familia visual e codigo 503; blockedProductionMutationPage das demais rotas continua 503 \"temporariamente\"). Goldens error_503_deferred_{light,dark} novos e import_hub_wizard_unavailable_light_1440_200 regravado. errors+imports 73/73. Reversivel; entra na pagina de aprovacao do Owner como DEF-R06.",
       "commit": "5408bd710"
+    },
+    {
+      "when": "20:12",
+      "action_ids": [
+        "account.sessions"
+      ],
+      "what": "ROTA REAL (qa-r06-operacoes, build release qa_main em 127.0.0.1:3021, Chrome CDP 9421 com user-data-dir proprio): /settings -> card Sessoes lista a sessao real (superadmin_account_sessions_list_v1 200 em producao, lote 50); segunda sessao aberta pela API do Auth (token?grant_type=password, User-Agent proprio) aparece apos Atualizar; \"Encerrar as outras sessoes (1)\" -> GoTrue scope=others -> lista volta a 1 e aviso; reload mantem 1 sessao. Capturas rota-real/01-04.",
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/01-settings-open.png … 04-settings-sessions-reload.png"
+    },
+    {
+      "when": "20:15",
+      "action_ids": [
+        "account.settings",
+        "account.theme"
+      ],
+      "what": "ROTA REAL: Aparencia = Claro grava coelo.superadmin.theme-mode=light; reload mantem Claro (captura 05). Reconfirmado com o usuario da R06.",
+      "evidence": "rota-real/05-settings-theme-light-reload.png"
+    },
+    {
+      "when": "20:19",
+      "action_ids": [
+        "support.table",
+        "support.kanban"
+      ],
+      "what": "ROTA REAL: /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido na tabela (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela. Achado corrigido: lista vazia com filtro ativo mostrava a mensagem de vazio (o repositorio filtra no servidor) -> agora sem resultados na tabela; kanban mantem colunas vazias.",
+      "commit": "8776eb424",
+      "evidence": "rota-real/10-14"
     }
   ],
   "tests": [
@@ -120,7 +147,27 @@
   ],
   "blocked": [],
   "resolved": [],
-  "proposed_deltas": [],
+  "proposed_deltas": [
+    {
+      "action_id": "account.sessions",
+      "frontend": "verified",
+      "backend": "done",
+      "integrated": "verified-e2e",
+      "nota": "pacote 200200 em producao (lote 50), pgTAP 14/14 com negativa cross-user; RPC nunca aceita user_id; revogacao pelo GoTrue nativo"
+    },
+    {
+      "action_id": "support.kanban",
+      "frontend": "verified (P49 aplicado: abas + persistencia)",
+      "backend": "done",
+      "integrated": "verified-e2e (recertificado)"
+    },
+    {
+      "action_id": "support.table",
+      "frontend": "verified (P49)",
+      "backend": "done",
+      "integrated": "verified-e2e (recertificado)"
+    }
+  ],
   "packages_ready": [
     {
       "path": "packages/coelo_database/candidatos/operacoes/20260911200200_superadmin_account_sessions_v1.sql",
@@ -130,7 +177,7 @@
     }
   ],
   "questions_to_owner": [],
-  "next_step": "(4) Catalogo P44=B: indice + fingerprints; em paralelo build web para a rota real de Conta (settings/theme/sessions), Suporte (abas) e Planos",
+  "next_step": "(4) Catalogo: registry dos 5 componentes + fingerprints; (3) Planos activate/assign na rota real",
   "commits": [],
   "r04_history": {
     "revision": 20,
