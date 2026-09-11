@@ -174,9 +174,9 @@ também na saída pelo menu, e `daily_routine_dirty_exit_test`).
 
 Em 11/09/2026 (10:13), ao responder as dúvidas visuais da Rodada 4, o Owner
 enviou uma captura do calendário nativo do iPhone (visão mensal, setembro de
-2026) como **referência de agenda/calendário**. O arquivo deve ser guardado em
-`docs/reviews/evidence/etapa-2/referencias/agenda-calendario-mensal-ios-2026-09-11.png`;
-até lá esta descrição é o registro. O que a referência define, e que a Agenda
+2026) como **referência de agenda/calendário**. O arquivo está guardado em
+`docs/reviews/evidence/etapa-2/referencias/agenda-calendario-mensal-ios-2026-09-11.png`
+(versionado em 11/09 às 14:30 a pedido do Owner); esta descrição resume o que ele fixa. O que a referência define, e que a Agenda
 do Coelo (`agenda.view`, `agenda_calendar_*`) segue em todas as larguras:
 
 - **Cabeçalho**: navegação de volta para o ano à esquerda ("< 2026"), ações à
@@ -206,7 +206,7 @@ Owner responder P33; a regravação só acontece depois de aplicar o padrão aci
 ### Segunda captura (10:17): visão diária
 
 O Owner enviou também a **visão diária** do mesmo calendário (terça-feira, 8
-de setembro de 2026), a guardar em
+de setembro de 2026), guardada em
 `docs/reviews/evidence/etapa-2/referencias/agenda-calendario-diario-ios-2026-09-11.png`.
 O que ela define para o detalhe de dia da Agenda:
 
