@@ -1,12 +1,12 @@
 {
- "revision": 39,
+ "revision": 40,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T12:27:00-03:00",
+ "updatedAt": "2026-09-11T12:35:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -229,6 +229,7 @@
   "37": "12:15 complemento do Owner: @ tambem para funcionarios, responsaveis e criancas sem perfil, visivel e editavel por quem responde por eles; prompts da R05 atualizados",
   "38": "12:03 posse da R05 (worktree e2-r05-coordenacao sobre 9bf60463b); frentes R05 aguardando primeira revisao; achado: e2-r04-estrutura recriada com rev 40",
   "39": "12:25 ACK das sete revisoes de abertura da R05; branch estrutura R04 rev 40 integrada (1d99104be); alerta de memoria; G3 conferiu o 404 do cron (sem correcao)",
+  "40": "12:35 lote 28 (institution_contacts_v1) em producao; composto de tabela do G7 integrado; sessoes das sete frentes identificadas",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -812,12 +813,12 @@
   },
   "realm-interno": {
    "branch": "work/etapa2-r05-realm-interno",
-   "rev": 16,
-   "head": "0c3668f07",
+   "rev": 17,
+   "head": "7ff65075b",
    "sessao": "coelo-dd (por exclusao; sem resposta)",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida"
+   "estado": "pacote 1 aplicado (lote 28); item 2 (revoke de grants CRUD de authenticated) em curso"
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r05-publicacoes-agenda",
@@ -831,11 +832,11 @@
   "operacoes": {
    "branch": "work/etapa2-r05-operacoes",
    "rev": 21,
-   "head": "7df495615",
+   "head": "0e4b2f27c",
    "sessao": "coelo-af",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida",
+   "estado": "composto de tabela corrigido e integrado (dev 11c4bfbef)",
    "resposta": "G-SUP: correcao do alinhamento vertical no composto CoeloAdminResizableTable (coelo_ui_admin) muda goldens de varias familias: pedido que entre em commit proprio cedo para o coordenador integrar em dev antes das outras frentes regravarem"
   }
  },
@@ -881,16 +882,46 @@
    "revisaoRecebida": 21,
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 17,
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:31:00-03:00",
+   "integradoEm": "b303bddf9"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": "21 + 0e4b2f27c",
+   "ack": true,
+   "recebidoEm": "2026-09-11T12:28:00-03:00",
+   "integradoEm": "11c4bfbef"
   }
  ],
  "filaSqlR05": {
   "regra": "pacote verde em candidatos/<grupo> -> preflight no espelho (aplicar + pgTAP) -> dump por lote -> supabase db query --linked -f <caminho relativo ao workdir> -> insert no ledger -> move para migrations/ -> chave de composicao",
-  "aplicados": [],
+  "aplicados": [
+   "lote 28: 20260911210000 (realm-interno)"
+  ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
   ]
  },
  "alertaDeMemoria1220": "12:20: RAM livre 0,02 GB de 15,6; 6 dartaotruntime (analysis servers, ~700-900 MB cada, um por sessao/worktree), 28 dart, 24 chrome (139 MB no total), vmmemWSL 688 MB. Causa provavel: um servidor de analise Dart por conversa (8 conversas). Pedido ao Owner: fechar janelas do VS Code/MCP dart que nao estejam em uso; frentes so um flutter test por vez e sem build web simultaneo. Coordenador nao mata processo de outra conversa.",
  "sessoesR05": "coelo-46 = coordenacao R04 encerrada (worktree e2-r04-coordenacao removivel no fechamento); a conversa R04 Estrutura nao esta viva",
- "devPublicado1222": "62f284d9c: merge de work/etapa2-r04-estrutura (631f9de52 activities.edit, 189cbb852 rev 40), coordenacao revs 38-39, rastreadores 12:30; analyze limpo (340 s); test/features/activities 343 P / 9 F (goldens pre-existentes em origin/dev)"
+ "devPublicado1222": "62f284d9c: merge de work/etapa2-r04-estrutura (631f9de52 activities.edit, 189cbb852 rev 40), coordenacao revs 38-39, rastreadores 12:30; analyze limpo (340 s); test/features/activities 343 P / 9 F (goldens pre-existentes em origin/dev)",
+ "lote28": {
+  "aplicadoEm": "2026-09-11T12:33 -03:00; ledger +1 (20260911210000)",
+  "dump": "schema-producao-20260911-lote28.sql (12:32, 3.802.938 bytes)",
+  "preflight": "espelho coelo_baseline: aplicou OK; institution_contacts_v1_test 38/38",
+  "conteudo": [
+   "realm-interno 20260911210000_institution_contacts_v1 (RPC superadmin_institution_contacts_edit_v1 com document/contact/representatives/administrators; superadmin_institution_detail_v2 devolve representatives[]/administrators[] mascarados; HMAC do CPF por chave no Vault)"
+  ],
+  "verificadoEmProducao": "rpc=1, person_identity_hmac_v1=1, vault.secrets coelo_person_identity_hmac_v1=1, ledger=1",
+  "chaveCriada": "segredo Vault coelo_person_identity_hmac_v1 (gerado no banco por gen_random_bytes, nunca impresso) - registrar para rotacao futura",
+  "destrava": "institutions.edit (G1 liga o cliente sobre o contrato de realm-interno.json rev 17)"
+ },
+ "chavesCriadasR05": [
+  "vault.secrets coelo_person_identity_hmac_v1 (HMAC v1 do catalogo app_private.person_identity_identifiers; lote 28; rotacao exige migration que troque a versao da chave e refaca os HMAC)"
+ ]
 }

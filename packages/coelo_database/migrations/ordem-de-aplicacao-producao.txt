@@ -139,3 +139,5 @@
 20260910230023_notice_worker_dispatch_v1.sql
 # lote 27 (11/09 10:48) - P35 membership owner do usuario de teste nas instituicoes sinteticas
 20260910230024_qa_r03_synthetic_institution_memberships_v1.sql
+# lote 28 (11/09 12:33) - R05 realm-interno: contatos/documento/representantes/administradores da instituicao
+20260911210000_institution_contacts_v1.sql
