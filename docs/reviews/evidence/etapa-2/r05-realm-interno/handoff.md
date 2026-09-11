@@ -21,7 +21,7 @@ pgTAP; nenhum cliente, nenhuma Edge Function implantada, nenhum Cloudflare.
 Projeto descartável `coelo_realm_r05` (portas 625xx): baseline + `seed.sql` +
 as 141 migrations de `migrations/ordem-de-aplicacao-producao.txt` via `psql`
 do container, depois os seis candidatos na ordem. pgTAP desta rodada:
-**154 PASS / 0 FAIL** (38 + 12 + 28 + 25 + 13 + 20 + 4 + 14). Regressão de 25 suítes
+**188 PASS / 0 FAIL** (38 + 12 + 28 + 25 + 13 + 20 + 4 + 14 + 6 + 6 + 4 + 18). Regressão de 25 suítes
 existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 (as falhas listadas abaixo já existem lá sem os pacotes).
 
@@ -38,7 +38,9 @@ existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 | 7 | `20260911210600_institution_people_handles_v1.sql` | Decisão 16: `detail_v2` devolve `handle` (@ de `person_handles`) em representantes e administradores | `institution_people_handles_v1_test.sql` 4/4 | pronto |
 | 8 | `20260911210700_chat_media_expire_dispatch_v1.sql` | cron `coelo-chat-media-expire` (*/5) → chat-media `expire`; Vault `chat_media_worker_url/secret` | padrão 230023 | pronto |
 | 9 | `20260911210800_forms_answer_media_r2_v1.sql` | answer-image no R2: `form_prepare_asset_upload_r2_v1` (legado + espelho), `form_asset_r2_descriptor_v1`, `form_media_finalize_answer_r2_v1`, gatilho de discard → fila de limpeza | `forms_answer_media_r2_v1_test.sql` 14/14 | pronto |
-| 10 | `20260911210900_forms_media_expire_dispatch_v1.sql` | cron `coelo-forms-media-expire` (*/10) → form-media `expire`; Vault `forms_media_worker_url/secret` | padrão 230023 | pronto |
+| 10 | `20260911210900_forms_media_expire_dispatch_v1.sql` | cron `coelo-forms-media-expire` (*/10) → form-media `cleanup` com o Bearer do worker de Formulários já no Vault; URL nova `forms_media_worker_url` | `media_expire_dispatch_v1_test.sql` 6/6 | pronto |
+| 11 | `20260911211000_plans_select_for_institution_directory_v1.sql` | SELECT em `plans` para `authenticated` (policy já existia) para a view `institution_directory` responder | `plans_select_for_institution_directory_v1_test.sql` 4/4 | opcional; aplicado (lote 28-42) |
+| 12 | `20260911211100_structure_handles_create_payload_v1.sql` | Decisão 16 sobre o `180000` da G1: `handle` opcional na criação de turma/unidade/atividade, padrão hierárquico, disponibilidade global, handle nos `detail_v2` de Unidades e Turmas | `structure_handles_create_payload_v1_test.sql` 18/18 (+ suítes de detalhe atualizadas) | pronto; após o 180000 |
 
 ## Edge Functions escritas (deploy do coordenador)
 
@@ -46,7 +48,7 @@ existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 | --- | --- | --- |
 | `chat-media` (nova) | prepare (PUT assinado), finalize (ticket do usuário + bytes relidos + sha256 + RPC service_role), read (GET assinado), expire (x-worker-secret); `COELO_R2_*`, `CHAT_MEDIA_ALLOWED_ORIGINS`, `CHAT_MEDIA_WORKER_SECRET`; `config.toml` `verify_jwt=false` | Deno 5/5 |
 | `_shared/image_dimensions.ts` (novo) | largura/altura do cabeçalho JPEG/PNG/WebP para preencher `pixel_width/height` a partir dos bytes | Deno 2/2 |
-| `form-media` | ramos R2 de prepare/finalize/download atrás de `COELO_FORMS_MEDIA_PROVIDER=r2` (legado intacto); ações `question_prepare/finalize/resolve/delete`; ação `expire` (`FORMS_MEDIA_WORKER_SECRET`) | Deno 38/38 (30 legados + 8) |
+| `form-media` | reconciliada com a versão da G3 (question-image e worker dela mantidos); acrescentados só os ramos R2 de RESPOSTAS (prepare/finalize/download) atrás de `COELO_FORMS_MEDIA_PROVIDER=r2` | Deno 51/51 (47 da G3 + 4) |
 
 Contratos completos (assinaturas, envelopes, códigos, limites) em
 `comunicacao/realm-interno.json`: `contratoInstitutionContacts`,
