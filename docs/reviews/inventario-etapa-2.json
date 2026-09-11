@@ -3177,15 +3177,15 @@
       "family": "daily_routine",
       "screen": "Rotina / Aplicar",
       "scope": "mvp",
-      "done": "R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): Depende de daily-routine.create (bloqueada); \"Criar rotina por este modelo\" nao e composto no router.",
-      "fe": "Coberta pelas mesmas duas correcoes: guarda de saida com rascunho sujo e intencao de salvamento estavel; o editor e compartilhado entre modelo e rotina aplicada.",
-      "be": "R03 (10/09 16:05): fundacao da Rotina aplicada em producao; pgTAP 40 na baseline. Gate para done: repositorio Supabase no cliente, persistencia e reload.",
-      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; ce4ee94c4, 752fbcdd9, 8d68219a0; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png",
+      "done": "aplicacao criada pela rota normal a partir do modelo, persistida e listada apos recarga.",
+      "fe": "R05 (15:33): card do modelo -> Criar rotina por este modelo -> /daily-routine/new?applicationFrom=176882c5 (heranca, escopo instituicao, validade/horario) -> Salvar rotina; a aba Rotinas lista a aplicacao. Duas recusas corrigidas no cliente antes: model_version_id como rotulo id:vN (22P02, 518d15953) e visibility=institution (23514, 0b8ee7a75). Pendencias: rotulos crus (institution/inherited) no card; acoes do card invisiveis a tecnologia assistiva (ExcludeSemantics no composto).",
+      "be": "superadmin_routine_save_application 200 (aplicacao 3d9f0a32, revisao 1, revision_id ae32076c) ligada ao modelo 176882c5/versao 83c48a8e; escopo institution, herdada; RLS/negativas pelas suites de rotina (foundation, scope_closure, directory_can_manage).",
+      "evidence": "commit76f7fdf9; evidence/etapa-2/agenda-operacoes/plano-por-tela.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: 5bc29739+2a01c785 integrados como0a01769f+ee2efb40. C00:7/7 testes application_editor e análise2arquivos sem problemas; logTEMP coelo-c00-daily-routine-1815.log/-analyze.log. IDs reais retornados liberam segundo save; isolamento A→B mantido. Backend produtivo unavailable e E2E continuam abertos.; R01/C00 2026-09-08T19:00:55-03:00 15b6a2dd: Valida identidade/tipo/fonte do retorno em edição e herança. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-e9a582a0-4041bd81.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; ce4ee94c4, 752fbcdd9, 8d68219a0; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/10-daily-routine-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/76-routine-apply-saved.png",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -3195,6 +3195,26 @@
         "recordedAt": "2026-09-09T14:08:34.021718-03:00",
         "note": "R02: 2070ab8fd valida draft antes de salvar e0d6d1ca6a também antes de alterar herança;2 negativas de validade/horário e1 negativa nova de herança PASS; sucesso existente revalidado, sem duplicação.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+          "recordedAt": "2026-09-11T15:34:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/76-routine-apply-saved.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+          "recordedAt": "2026-09-11T15:34:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+          "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+          "recordedAt": "2026-09-11T15:34:00-03:00"
+        }
       }
     },
     {
@@ -8066,7 +8086,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-11T18:20:59.754Z",
+  "updatedAt": "2026-09-11T18:34:04.330Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
