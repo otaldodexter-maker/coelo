@@ -142,18 +142,39 @@ Map<String, Object?> _encodeItem(FormItem item) => {
 
 FormOption _decodeOption(Map<String, Object?> json) {
   const context = 'form_option';
-  requireOnlyKeys(json, const {'id', 'label', 'position'}, context: context);
+  requireOnlyKeys(json, const {
+    'id',
+    'label',
+    'position',
+    'location_id',
+    'location_status',
+    'location_available',
+  }, context: context);
+  final locationAvailable = json['location_available'];
+  if (locationAvailable != null && locationAvailable is! bool) {
+    throw const WireFormatException('form_option.location_available must be a boolean or null.');
+  }
   return FormOption(
     id: requireString(json, 'id', context: context),
     label: requireString(json, 'label', context: context),
     position: requireInt(json, 'position', context: context),
+    locationId: _nullableString(json, 'location_id', context),
+    locationStatus: _nullableString(json, 'location_status', context),
+    locationAvailable: locationAvailable as bool?,
   );
 }
 
+// O servidor so aceita as chaves de Local em itens `location`, e resolve as
+// opcoes sozinho: por isso elas viajam apenas quando vieram da projecao.
 Map<String, Object?> _encodeOption(FormOption option) => {
   'id': option.id,
   'label': option.label,
   'position': option.position,
+  if (option.locationId != null) ...{
+    'location_id': option.locationId,
+    'location_status': option.locationStatus,
+    'location_available': option.locationAvailable,
+  },
 };
 
 FormCondition _decodeCondition(Map<String, Object?> json) {
@@ -375,4 +396,5 @@ const _itemKinds = {
   FormItemKind.photo: 'photo',
   FormItemKind.gallery: 'gallery',
   FormItemKind.information: 'information',
+  FormItemKind.location: 'location',
 };
