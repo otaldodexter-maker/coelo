@@ -1,6 +1,6 @@
 {
   "revision": 15,
-  "updated_at": "2026-09-10T23:04:00-03:00",
+  "updated_at": "2026-09-10T22:34:00-03:00",
   "round": "E2-R04-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M)",
@@ -107,7 +107,7 @@
       ],
       "status": "finding-cross-group",
       "changed": [],
-      "delta": "ACHADO: superadmin_support_* e superadmin_account_* (e tambem Unidades 160000, Rotina, Assiduidade, Cuidado, Cardapios, Seguranca infantil) resolvem o ator por app_private.current_person_id()/has_platform_permission (realm people). O coordenador mediu em producao: person_auth_links tem 0 linhas e todos os auth users (inclusive o qa-r03) so existem no realm interno v2. Logo essas RPCs devolvem 42501 internal_actor_required para qualquer sessao real. Decisao do coordenador (23:00): a ponte entre realms e pacote unico dele em candidatos/coordenador; eu NAO altero a resolucao do ator. Meu esboco de resolver (superadmin_actor_resolve) foi descartado.",
+      "delta": "ACHADO: superadmin_support_* e superadmin_account_* (e tambem Unidades 160000, Rotina, Assiduidade, Cuidado, Cardapios, Seguranca infantil) resolvem o ator por app_private.current_person_id()/has_platform_permission (realm people). O coordenador mediu em producao: person_auth_links tem 0 linhas e todos os auth users (inclusive o qa-r03) so existem no realm interno v2. Logo essas RPCs devolvem 42501 internal_actor_required para qualquer sessao real. Decisao do coordenador (22:12): a ponte entre realms e pacote unico dele em candidatos/coordenador; eu NAO altero a resolucao do ator. Meu esboco de resolver (superadmin_actor_resolve) foi descartado.",
       "gate": "pacote de ponte do coordenador aplicado em producao (acompanhar coordenacao.json); ate la, rota real de Conta/Suporte so prova login, shell e abertura das telas"
     },
     {
