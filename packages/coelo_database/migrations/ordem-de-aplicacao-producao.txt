@@ -116,3 +116,5 @@
 20260910171500_follow_links_backfill_v1.sql
 # lote 17 (11/09 02:29)
 20260910220500_forms_location_question_v1.sql
+# lote 18 (11/09 02:49)
+20260910171700_access_profile_detail_v3_draft_and_matrix.sql
