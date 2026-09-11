@@ -307,7 +307,10 @@ Map<String, Object?> _draftPayload(HealthCareProfileDraft draft, String? activeA
           'status': _allergyStatusToDatabase(draft.allergyStatus),
           'active': true,
           if (lastEpisode != null) 'last_episode_at': lastEpisode.toUtc().toIso8601String(),
-          'episode_severity': _severityToDatabase(draft.severity),
+          // A gravidade descreve um episodio registrado (spec 020): sem data de
+          // episodio o servidor recusa com 23514 (health_care_allergies_severity_check,
+          // medido na rota real da R05). Sem data, a gravidade vai nula.
+          'episode_severity': lastEpisode == null ? null : _severityToDatabase(draft.severity),
           'observed_reaction': draft.observedReaction,
           'guidance': draft.allergyGuidance,
           'notes': draft.allergyNotes,
