@@ -1,7 +1,7 @@
 {
-  "revision": 134,
-  "updated_at": "2026-09-11T18:27:07.599Z",
-  "relogio_local": "Fri Sep 11 2026 15:27:07 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 135,
+  "updated_at": "2026-09-11T18:28:03.504Z",
+  "relogio_local": "Fri Sep 11 2026 15:28:03 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -198,6 +198,7 @@
   "CONFERENCIA_DO_COORDENADOR_15h25": "rev 131 integrada em dev 6418194db; deltas r05-2/3/4 aplicados; 170400 lote 46; P43/P44 viraram P45/P46; defeito do @ de unidade corrigido pela G5 (lote 47). flutter analyze do app inteiro na branch: 1 aviso pre-existente (test_driver/qa_login.dart strict_raw_type), nada meu.",
   "INTERNAL_USERS_SUSPEND_15h30": "negativa por REST: superadmin_internal_user_change_status (p_request_id, p_internal_identity_id inexistente, p_expected_version, p_status suspended, p_reason) devolve SAI_PERMISSION_DENIED 403 nao enumeravel. Caminho positivo continua sem prova: o unico usuario interno em producao e o qa-r03 e suspende-lo derruba a sessao de teste; BE fica local-green ate existir um segundo interno (exige internal-users.create: Edge Function com a API de administracao do Auth).",
   "PEOPLE_CREATE_GATE_15h32": "gate confirmado: producao nao tem RPC de resolucao de identidade (so superadmin_people_create_draft/detail/filter_options/list/update); PersonIdentityRepository.resolve (CPF/e-mail/telefone com minimizacao LGPD) exige pacote proprio na proxima rodada. Parte ja coberta: PersonIdentityRepository.checkHandle pode usar superadmin_person_handle_availability (170100) - proposta para a proxima rodada: implementar SupabasePersonIdentityRepository com checkHandle pelo 170100 e resolve por uma RPC nova superadmin_people_identity_lookup (candidatos/acessos-pessoas 2026091117xxxx), destravando people.create.",
+  "D1_APOS_170200_15h35": "acompanhamento automatico da hierarquia (171100) volta a sincronizar em producao depois do 170200: a crianca d0c4...0003, apos link -> transfer -> transfer de volta, segue instituicao, unidade (Unidade QA R04) e turma (368a5cea) + 1 pessoa (follow_following_list: institution 1, unit 1, group 1, person 1; a unidade sintetica de transferencia cce78909 saiu do acompanhamento). Evidencia de que o sync nao apaga sem WHERE e revoga o que a estrutura nao justifica mais.",
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
