@@ -4,6 +4,7 @@ import 'package:coelo_superadmin/features/institutions/data/supabase_institution
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_item.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_query.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/institutions/domain/institution_people.dart';
 import 'package:coelo_superadmin/features/institutions/domain/institution_record.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart';
@@ -12,14 +13,8 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
   for (final (field, draft) in <(String, InstitutionRecord)>[
-    ('documentType', _draft().copyWith(documentType: 'sentinel-documentType')),
-    ('document', _draft().copyWith(document: 'sentinel-document')),
     ('slug', _draft().copyWith(slug: 'sentinel-slug')),
     ('primaryDomain', _draft().copyWith(primaryDomain: 'sentinel-primaryDomain')),
-    ('contactPhone', _draft().copyWith(contactPhone: 'sentinel-contactPhone')),
-    ('contactMobilePhone', _draft().copyWith(contactMobilePhone: 'sentinel-contactMobilePhone')),
-    ('websiteUrl', _draft().copyWith(websiteUrl: 'sentinel-websiteUrl')),
-    ('whatsappNumber', _draft().copyWith(whatsappNumber: 'sentinel-whatsappNumber')),
     ('ownerFirstName', _draft().copyWith(ownerFirstName: 'sentinel-ownerFirstName')),
     ('ownerLastName', _draft().copyWith(ownerLastName: 'sentinel-ownerLastName')),
     ('ownerDisplayName', _draft().copyWith(ownerDisplayName: 'sentinel-ownerDisplayName')),
@@ -77,24 +72,166 @@ void main() {
     expect(writes, 1);
   });
 
-  test('does not discard contact edits while reporting core save success', () async {
-    var writes = 0;
+  test('persists contact, document and people by the contacts contract after the core', () async {
+    // R05 (lote 28): superadmin_institution_contacts_edit_v1 recebe o que o
+    // edit_core nao cobre, com a versao devolvida pelo detalhe recarregado.
+    final calls = <String>[];
+    Map<String, Object?>? contactsParams;
+    var detailVersion = 7;
     final repository = _repository((request) async {
-      if (request.url.pathSegments.contains('superadmin_institution_edit_core_v2')) {
-        writes++;
+      final rpc = request.url.pathSegments.last;
+      calls.add(rpc);
+      if (rpc == 'superadmin_institution_edit_core_v2') {
+        detailVersion = 8;
         return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
       }
-      return _json(request, _ok(_detailRow()));
+      if (rpc == 'superadmin_institution_contacts_edit_v1') {
+        contactsParams = Map<String, Object?>.from(jsonDecode(request.body) as Map);
+        detailVersion = 9;
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 9}));
+      }
+      return _json(request, _ok({
+        ..._detailRow(version: detailVersion),
+        if (detailVersion == 9) 'document_type': 'cnpj',
+        if (detailVersion == 9) 'document_ref': '12345678000195',
+        if (detailVersion == 9)
+          'representatives': [
+            {
+              'id': 'rep-1',
+              'person_id': 'person-1',
+              'is_primary': true,
+              'first_name': 'Ana',
+              'last_name': 'Lima',
+              'display_name': 'Ana Lima',
+              'email_masked': 'a***@example.test',
+            },
+          ],
+        if (detailVersion == 9)
+          'administrators': [
+            {
+              'membership_id': 'mem-1',
+              'person_id': 'person-1',
+              'level': 'admin_master',
+              'first_name': 'Ana',
+              'last_name': 'Lima',
+              'display_name': 'Ana Lima',
+              'invitation_status': 'not_sent',
+              'source_representative_id': 'rep-1',
+            },
+          ],
+      }));
     });
 
-    await expectLater(
-      repository.update(
-        _draft().copyWith(contactEmail: 'changed@example.test'),
-        expectedVersion: 7,
+    final saved = await repository.update(
+      _draft().copyWith(
+        document: '12.345.678/0001-95',
+        contactEmail: 'changed@example.test',
+        legalRepresentatives: const [
+          InstitutionLegalRepresentative(
+            id: 'local-rep',
+            isPrimary: true,
+            person: InstitutionPersonDraft(
+              firstName: 'Ana',
+              lastName: 'Lima',
+              displayName: 'Ana Lima',
+              email: 'ana@example.test',
+              cpf: '529.982.247-25',
+            ),
+          ),
+        ],
+        administrators: const [
+          InstitutionAdministratorDraft(
+            id: 'local-adm',
+            person: InstitutionPersonDraft(
+              firstName: 'Ana',
+              lastName: 'Lima',
+              displayName: 'Ana Lima',
+              email: 'ana@example.test',
+            ),
+            handle: '',
+            level: InstitutionAdministratorLevel.adminMaster,
+            invitationStatus: InstitutionInvitationStatus.notSent,
+            invitationHistory: [],
+            sourceRepresentativeId: 'local-rep',
+          ),
+        ],
       ),
-      throwsA(isA<InstitutionDirectoryUnsupportedRelationException>()),
+      expectedVersion: 7,
     );
-    expect(writes, 0);
+
+    expect(calls.where((rpc) => rpc == 'superadmin_institution_edit_core_v2').length, 1);
+    expect(calls.where((rpc) => rpc == 'superadmin_institution_contacts_edit_v1').length, 1);
+    expect(contactsParams!['p_expected_version'], 8);
+    final payload = contactsParams!['p_payload'] as Map;
+    expect(payload['document'], {'document_type': 'cnpj', 'document_ref': '12345678000195'});
+    expect((payload['contact'] as Map)['email'], 'changed@example.test');
+    final representative = (payload['representatives'] as List).single as Map;
+    expect(representative['is_primary'], true);
+    expect(representative['email'], 'ana@example.test');
+    expect(representative['cpf'], '529.982.247-25');
+    expect(representative.containsKey('person_id'), isFalse);
+    expect(((payload['administrators'] as List).single as Map)['level'], 'admin_master');
+
+    // O detalhe recarregado traz as pessoas com person_id e contatos mascarados.
+    expect(saved.documentType, 'CNPJ');
+    expect(saved.legalRepresentatives.single.personId, 'person-1');
+    expect(saved.legalRepresentatives.single.person.email, 'a***@example.test');
+    expect(saved.administrators.single.level, InstitutionAdministratorLevel.adminMaster);
+    expect(saved.administrators.single.sourceRepresentativeId, 'rep-1');
+  });
+
+  test('masked contacts of persisted people never travel back to the server', () async {
+    Map<String, Object?>? contactsParams;
+    final row = {
+      ..._detailRow(),
+      'representatives': [
+        {
+          'id': 'rep-1',
+          'person_id': 'person-1',
+          'is_primary': false,
+          'first_name': 'Ana',
+          'last_name': 'Lima',
+          'display_name': 'Ana Lima',
+          'email_masked': 'a***@example.test',
+          'cpf_masked': '***.982.***-25',
+        },
+      ],
+    };
+    final repository = _repository((request) async {
+      final rpc = request.url.pathSegments.last;
+      if (rpc == 'superadmin_institution_edit_core_v2') {
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      if (rpc == 'superadmin_institution_contacts_edit_v1') {
+        contactsParams = Map<String, Object?>.from(jsonDecode(request.body) as Map);
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 9}));
+      }
+      return _json(request, _ok({...row, 'management_version': 8}));
+    });
+    final current = InstitutionRecord.fromRpcPayload(row);
+    final draft = current.copyWith(
+      legalRepresentatives: [current.legalRepresentatives.single.copyWith(isPrimary: true)],
+    );
+    await repository.update(draft, expectedVersion: 7);
+    final representative =
+        ((contactsParams!['p_payload'] as Map)['representatives'] as List).single as Map;
+    expect(representative['person_id'], 'person-1');
+    expect(representative['is_primary'], true);
+    expect(representative.containsKey('email'), isFalse);
+    expect(representative.containsKey('cpf'), isFalse);
+  });
+
+  test('skips the contacts contract when only core fields changed', () async {
+    final calls = <String>[];
+    final repository = _repository((request) async {
+      calls.add(request.url.pathSegments.last);
+      if (request.url.pathSegments.last == 'superadmin_institution_edit_core_v2') {
+        return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 8}));
+      }
+      return _json(request, _ok(_detailRow(version: calls.length > 1 ? 8 : 7)));
+    });
+    await repository.update(_draft().copyWith(legalName: 'Novo nome'), expectedVersion: 7);
+    expect(calls, isNot(contains('superadmin_institution_contacts_edit_v1')));
   });
 
   test('keeps existing non-core values while editing approved core fields', () async {
