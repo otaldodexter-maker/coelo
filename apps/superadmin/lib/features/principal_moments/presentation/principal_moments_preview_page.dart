@@ -801,13 +801,18 @@ final class _MomentSurface extends StatelessWidget {
     if (moment.media.isEmpty) {
       return _SpriteImage(index: moment.imageIndex, count: 5);
     }
-    return Image.network(
-      moment.media.first.signedUrl,
-      key: const Key('principal-moments-media'),
-      fit: BoxFit.cover,
-      alignment: Alignment.topCenter,
-      excludeFromSemantics: true,
-      errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+    // IMG (decisao do Owner de 10/09/2026): a midia nao pode ser perdida nem
+    // cortada; ela cabe inteira sobre o preto em vez de preencher cortando.
+    return ColoredBox(
+      color: Colors.black,
+      child: Image.network(
+        moment.media.first.signedUrl,
+        key: const Key('principal-moments-media'),
+        fit: BoxFit.contain,
+        alignment: Alignment.center,
+        excludeFromSemantics: true,
+        errorBuilder: (context, error, stackTrace) => const ColoredBox(color: Colors.black),
+      ),
     );
   }
 }
