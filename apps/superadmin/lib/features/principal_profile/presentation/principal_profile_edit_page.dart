@@ -140,7 +140,9 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     try {
       final page = await widget.repository.load(_subject);
       if (!mounted || generation != _generation) return;
-      _replace(_Editing(ProfileAboutEditorController(page: page ?? ProfileAboutPage.empty(_subject))));
+      _replace(
+        _Editing(ProfileAboutEditorController(page: page ?? ProfileAboutPage.empty(_subject))),
+      );
     } on ProfileAboutUnauthorizedException {
       if (!mounted || generation != _generation) return;
       _replace(const _Denied());

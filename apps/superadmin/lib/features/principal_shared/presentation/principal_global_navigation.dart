@@ -171,6 +171,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
   final PrincipalDestination selected;
   final VoidCallback onHome;
   final VoidCallback onForYou;
+
   /// Abre o publicador do Acontece (P28: o "+" adiciona no Acontece).
   final VoidCallback onPublishNow;
 
@@ -266,41 +267,41 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
                       ),
                     ),
                     if (canPublish)
-                    Positioned(
-                      top: 0,
-                      child: SizedBox(
-                        width: 68,
-                        child: Column(
-                          children: [
-                            Semantics(
-                              button: true,
-                              label: 'Publicar no Acontece',
-                              child: IconButton.filled(
-                                key: const Key('principal-global-publish-now'),
-                                tooltip: 'Publicar no Acontece',
-                                onPressed: onPublishNow,
-                                icon: const Icon(Icons.add_rounded, size: 24),
-                                style: IconButton.styleFrom(
-                                  minimumSize: const Size.square(54),
-                                  maximumSize: const Size.square(54),
-                                  backgroundColor: scheme.primary,
-                                  foregroundColor: scheme.onPrimary,
+                      Positioned(
+                        top: 0,
+                        child: SizedBox(
+                          width: 68,
+                          child: Column(
+                            children: [
+                              Semantics(
+                                button: true,
+                                label: 'Publicar no Acontece',
+                                child: IconButton.filled(
+                                  key: const Key('principal-global-publish-now'),
+                                  tooltip: 'Publicar no Acontece',
+                                  onPressed: onPublishNow,
+                                  icon: const Icon(Icons.add_rounded, size: 24),
+                                  style: IconButton.styleFrom(
+                                    minimumSize: const Size.square(54),
+                                    maximumSize: const Size.square(54),
+                                    backgroundColor: scheme.primary,
+                                    foregroundColor: scheme.onPrimary,
+                                  ),
                                 ),
                               ),
-                            ),
-                            Text(
-                              'Publicar',
-                              key: const Key('principal-global-publish-now-label'),
-                              maxLines: 1,
-                              style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                color: scheme.primary,
-                                fontWeight: FontWeight.w700,
+                              Text(
+                                'Publicar',
+                                key: const Key('principal-global-publish-now-label'),
+                                maxLines: 1,
+                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                                  color: scheme.primary,
+                                  fontWeight: FontWeight.w700,
+                                ),
                               ),
-                            ),
-                          ],
+                            ],
+                          ),
                         ),
                       ),
-                    ),
                   ],
                 ),
               ),

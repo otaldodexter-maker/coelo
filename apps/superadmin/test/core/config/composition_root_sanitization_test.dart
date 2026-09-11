@@ -49,58 +49,31 @@ void main() {
     expect(RegExp(r'repository:\s*invitePreviewRepository\(\),').allMatches(router), hasLength(3));
   });
 
-  test('Activities roots are fail-closed and never construct Supabase adapters', () {
-    for (final source in [authScope, app, mainSource, router]) {
+  test('Activities roots compose the Supabase adapters only in the auth scope (ADR 0034)', () {
+    // Desde a R04 (structureMutationsEnabled ligada) a composicao real de
+    // Atividades vive so em superadmin_auth_scope.dart; app, main e router
+    // nao instanciam adapter Supabase diretamente.
+    for (final source in [app, mainSource, router]) {
       expect(source, isNot(contains('SupabaseActivityDirectoryRepository')));
       expect(source, isNot(contains('SupabaseActivityCommandRepository')));
-      expect(source, isNot(contains('supabase_activity_directory_repository.dart')));
-      expect(source, isNot(contains('supabase_activity_command_repository.dart')));
     }
-    expect(
-      RegExp(
-        r'activityDirectoryRepository:\s*const UnavailableActivityDirectoryRepository\(\)',
-      ).allMatches(authScope),
-      hasLength(2),
-    );
-    expect(
-      RegExp(
-        r'activityCommandRepository:\s*const UnavailableActivityCommandRepository\(\)',
-      ).allMatches(authScope),
-      hasLength(2),
-    );
+    expect(authScope, contains('SupabaseActivityDirectoryRepository('));
+    expect(authScope, contains('SupabaseActivityCommandRepository('));
     expect(router, contains('DevActivitySessionStore.content()'));
     expect(router, contains('DevActivityDirectoryRepository'));
     expect(router, contains('DevActivityCommandRepository'));
     expect(router, contains('DevelopmentActivityProfileAboutRepository'));
   });
 
-  test('basic Access routes stay statically unavailable without page composition', () {
+  test('Access routes are composed with the real pages (lote 4 em producao)', () {
     for (final page in const [
       'AccessProfileDirectoryPage',
       'AccessProfileFormPage',
       'AccessProfileDetailPage',
     ]) {
-      expect(router, isNot(contains(page)), reason: page);
-    }
-    for (final route in const {
-      'profiles': 'profilesName',
-      'profileCreate': 'profileCreateName',
-      'profileDetail': 'profileDetailName',
-      'profileEdit': 'profileEditName',
-    }.entries) {
-      expect(
-        RegExp(
-          'path:\\s*SuperadminRoutes\\.${route.key},\\s*'
-          'name:\\s*SuperadminRoutes\\.${route.value},\\s*'
-          'builder:\\s*\\(context, state\\) =>\\s*'
-          '_unavailableCompositionRootRoute\\(context\\)',
-        ).hasMatch(router),
-        isTrue,
-        reason: route.key,
-      );
+      expect(router, contains(page), reason: page);
     }
     expect(router, isNot(contains('extendedRepository:')));
-    expect(router, contains('GroupDirectoryRepository groupDirectoryRepository'));
   });
 
   test('model and media route declarations stay fail-closed without missing pages', () {

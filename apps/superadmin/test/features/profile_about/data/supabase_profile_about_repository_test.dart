@@ -378,6 +378,12 @@ void main() {
       );
     });
 
+    test('resposta nula da RPC (sujeito sem pagina Sobre) e ausencia de conteudo', () {
+      // Medido na rota real do Perfil (R05, 11/09): get_profile_about devolve
+      // null, nao um envelope, para a instituicao sintetica sem Sobre.
+      expect(parseProfileAboutReadResponse(subject: _institution, response: null), isNull);
+    });
+
     test('retorno que nao e objeto vira FormatException, que o load traduz em Unavailable', () {
       expect(
         () => parseProfileAboutReadResponse(subject: _institution, response: 'nao e json'),

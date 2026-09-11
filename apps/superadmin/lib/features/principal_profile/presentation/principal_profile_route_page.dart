@@ -177,11 +177,7 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
 
   String get _contextLabel {
     final context = widget.runtimeContext;
-    return [
-      context.institutionName,
-      ?context.unitName,
-      ?context.groupName,
-    ].join(' · ');
+    return [context.institutionName, ?context.unitName, ?context.groupName].join(' · ');
   }
 
   PrincipalProfilePreviewData get _data {

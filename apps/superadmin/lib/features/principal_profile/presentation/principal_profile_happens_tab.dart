@@ -254,11 +254,7 @@ final class _ProfileHappensPostCard extends StatelessWidget {
     return Semantics(
       button: true,
       label: 'Abrir publicação de ${item.author}',
-      child: GestureDetector(
-        behavior: HitTestBehavior.opaque,
-        onTap: onOpen,
-        child: card,
-      ),
+      child: GestureDetector(behavior: HitTestBehavior.opaque, onTap: onOpen, child: card),
     );
   }
 }
