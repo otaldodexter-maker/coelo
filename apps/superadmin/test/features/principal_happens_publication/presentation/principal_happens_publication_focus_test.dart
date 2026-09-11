@@ -43,11 +43,9 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    // The chips live on the audience step. Walk there the way an operator does.
-    for (var step = 0; step < 2; step++) {
-      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
-      await tester.pumpAndSettle();
-    }
+    // Familia Publicacao: os chips ficam na mesma coluna, sem etapas.
+    await tester.ensureVisible(find.byIcon(Icons.group_outlined).first);
+    await tester.pumpAndSettle();
 
     final chip = find
         .ancestor(of: find.byIcon(Icons.group_outlined).first, matching: find.byType(TextButton))

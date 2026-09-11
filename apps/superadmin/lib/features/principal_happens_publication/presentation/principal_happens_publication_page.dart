@@ -44,7 +44,6 @@ class PrincipalHappensPublicationPage extends StatefulWidget {
 
 class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublicationPage> {
   late HappensPublicationController controller;
-  var _step = 0;
   var _pageGeneration = 0;
   var _pickerInFlight = false;
 
@@ -70,7 +69,6 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
     }
     _pageGeneration += 1;
     controller.dispose();
-    _step = 0;
     _pickerInFlight = false;
     _createController();
   }
@@ -186,94 +184,60 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
                 onOpenNotifications: () => _prototypeMessage('Notificações'),
                 onOpenContext: () => _prototypeMessage('Troca de contexto'),
               ),
-        body: LayoutBuilder(
-          builder: (context, constraints) => PrincipalPublicationFrame(
-            scrollKey: Key('happens-publication-step-$_step'),
-            navigation: ExcludeFocus(
-              excluding: surfaceLocked,
-              child: AbsorbPointer(
-                absorbing: surfaceLocked,
-                child: PrincipalPublicationStepNavigation(
-                  steps: [
-                    for (var index = 0; index < _publicationSteps.length; index++)
-                      PrincipalPublicationStep(
-                        label: _publicationSteps[index],
-                        status: index == _step
-                            ? PrincipalPublicationStepStatus.current
-                            : index < _step
-                            ? PrincipalPublicationStepStatus.complete
-                            : PrincipalPublicationStepStatus.incomplete,
-                        enabled: actionsEnabled && index <= _step,
-                      ),
-                  ],
-                  currentIndex: _step,
-                  onStepSelected: (index) {
-                    if (actionsEnabled) setState(() => _step = index);
-                  },
-                ),
+        body: PrincipalPublicationSheet(
+          scrollKey: const Key('happens-publication-scroll'),
+          subtitle: 'Publicar no Acontece',
+          body: ExcludeFocus(
+            key: const Key('happens-publication-body-focus-lock'),
+            excluding: surfaceLocked,
+            child: AbsorbPointer(
+              key: const Key('happens-publication-body-lock'),
+              absorbing: surfaceLocked,
+              child: _PublicationBody(
+                controller: controller,
+                onPick: _pick,
+                publicationContext: widget.publicationContext,
               ),
             ),
-            body: ExcludeFocus(
-              key: const Key('happens-publication-body-focus-lock'),
-              excluding: surfaceLocked,
-              child: AbsorbPointer(
-                key: const Key('happens-publication-body-lock'),
-                absorbing: surfaceLocked,
-                child: _WizardBody(
-                  controller: controller,
-                  step: _step,
-                  onPick: _pick,
-                  publicationContext: widget.publicationContext,
-                ),
-              ),
+          ),
+          asideKey: const Key('happens-publication-desktop-preview'),
+          aside: _FeedPreview(state: state, publicationContext: widget.publicationContext),
+          footer: PrincipalPublicationActionFooter(
+            surfaceKey: const Key('happens-publication-footer'),
+            tertiaryAction: TextButton(
+              onPressed: actionsEnabled
+                  ? widget.onClose ?? () => Navigator.maybePop(context)
+                  : null,
+              child: const Text('Cancelar'),
             ),
-            footer: PrincipalPublicationActionFooter(
-              tertiaryAction: TextButton(
+            continuationActions: [
+              OutlinedButton(
+                key: const Key('happens-publication-save'),
+                onPressed: actionsEnabled ? controller.saveDraft : null,
+                child: const Text('Salvar rascunho'),
+              ),
+              FilledButton.icon(
+                key: const Key('happens-publication-publish'),
                 onPressed: actionsEnabled
-                    ? widget.onClose ?? () => Navigator.maybePop(context)
+                    ? () async {
+                        FocusManager.instance.primaryFocus?.unfocus();
+                        final generation = _pageGeneration;
+                        final requestedController = controller;
+                        final result = await controller.publish();
+                        if (!mounted ||
+                            generation != _pageGeneration ||
+                            !identical(controller, requestedController)) {
+                          return;
+                        }
+                        if (result != null) widget.onCompleted?.call(result);
+                      }
                     : null,
-                child: const Text('Cancelar'),
+                icon: const Icon(Icons.send_outlined),
+                label: Text(
+                  state.draft.publishAt == null ? 'Publicar no Acontece' : 'Agendar publicação',
+                ),
               ),
-              continuationActions: [
-                if (_step > 0)
-                  OutlinedButton(
-                    onPressed: actionsEnabled ? () => setState(() => _step--) : null,
-                    child: const Text('Anterior'),
-                  ),
-                if (_step < _publicationSteps.length - 1)
-                  FilledButton(
-                    onPressed: actionsEnabled ? () => setState(() => _step++) : null,
-                    child: const Text('Continuar'),
-                  )
-                else ...[
-                  OutlinedButton.icon(
-                    onPressed: actionsEnabled ? controller.saveDraft : null,
-                    icon: const Icon(Icons.save_outlined),
-                    label: const Text('Salvar rascunho'),
-                  ),
-                  FilledButton.icon(
-                    onPressed: actionsEnabled
-                        ? () async {
-                            FocusManager.instance.primaryFocus?.unfocus();
-                            final generation = _pageGeneration;
-                            final requestedController = controller;
-                            final result = await controller.publish();
-                            if (!mounted ||
-                                generation != _pageGeneration ||
-                                !identical(controller, requestedController)) {
-                              return;
-                            }
-                            if (result != null) widget.onCompleted?.call(result);
-                          }
-                        : null,
-                    icon: const Icon(Icons.send_outlined),
-                    label: Text(
-                      state.draft.publishAt == null ? 'Publicar no Acontece' : 'Agendar publicação',
-                    ),
-                  ),
-                ],
-              ],
-            ),
+            ],
           ),
         ),
       );
@@ -295,16 +259,17 @@ class _PrincipalHappensPublicationPageState extends State<PrincipalHappensPublic
       a.groupName == b.groupName;
 }
 
-class _WizardBody extends StatelessWidget {
-  const _WizardBody({
+/// Familia Publicacao (Owner, 11/09/2026 17:19): midia primeiro, depois
+/// Legenda, Publico e contexto (com chips), Agendamento e Opcoes, todos em uma
+/// coluna; a previa vive na coluna lateral do sheet no desktop.
+class _PublicationBody extends StatelessWidget {
+  const _PublicationBody({
     required this.controller,
-    required this.step,
     required this.onPick,
     required this.publicationContext,
   });
 
   final HappensPublicationController controller;
-  final int step;
   final VoidCallback onPick;
   final HappensPublicationContext publicationContext;
 
@@ -312,21 +277,10 @@ class _WizardBody extends StatelessWidget {
   Widget build(BuildContext context) {
     final state = controller.state;
     final draft = state.draft;
-    final colors = Theme.of(context).colorScheme;
-    final useDesktopPreview =
-        MediaQuery.sizeOf(context).width >= 840 && MediaQuery.textScalerOf(context).scale(1) <= 1.5;
-    final editor = Column(
+    final labelStyle = Theme.of(context).textTheme.labelLarge;
+    return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Text('Sua publicação', style: Theme.of(context).textTheme.headlineSmall),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text('Publicar no Acontece', style: Theme.of(context).textTheme.titleMedium),
-        const SizedBox(height: CoeloSpacing.space1),
-        Text(
-          'Etapa ${step + 1} de ${_publicationSteps.length} · ${_publicationSteps[step]}',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(color: colors.onSurfaceVariant),
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
         if (state.message != null) ...[
           CoeloStatePanel(
             title: 'Revise a publicação',
@@ -335,75 +289,36 @@ class _WizardBody extends StatelessWidget {
           ),
           const SizedBox(height: CoeloSpacing.space4),
         ],
-        if (step == 0) ...[
-          const Text('Mídia', style: TextStyle(fontWeight: FontWeight.w800)),
-          const SizedBox(height: CoeloSpacing.space2),
-          Align(
-            child: ConstrainedBox(
-              constraints: const BoxConstraints(maxWidth: 700),
-              child: _MediaStage(
-                draft: draft,
-                onPick: onPick,
-                onRemove: controller.removeMedia,
-                onReorder: controller.reorderMedia,
-              ),
-            ),
-          ),
-        ] else if (step == 1) ...[
-          Row(
-            children: [
-              const Expanded(
-                child: Text('Legenda', style: TextStyle(fontWeight: FontWeight.w800)),
-              ),
-              const SizedBox(width: CoeloSpacing.space2),
-              Text(
-                '${draft.caption.length}/2.200',
-                style: TextStyle(color: colors.onSurfaceVariant, fontSize: 12),
-              ),
-            ],
-          ),
-          const SizedBox(height: CoeloSpacing.space2),
-          _CaptionField(value: draft.caption, onChanged: controller.setCaption),
-          const SizedBox(height: CoeloSpacing.space4),
-          _AutosaveToggle(
-            label: 'Salvar como rascunho',
-            description: 'Ative para salvar automaticamente.',
-            value: state.autosave,
-            onChanged: controller.setAutosave,
-          ),
-        ] else if (step == 2) ...[
-          const Text('Público e contexto', style: TextStyle(fontWeight: FontWeight.w800)),
-          const SizedBox(height: CoeloSpacing.space2),
-          _ContextCard(contextData: controller.context),
-          const SizedBox(height: CoeloSpacing.space3),
-          _AudienceSelector(selected: draft.audiences, onToggle: controller.toggleAudience),
-        ] else ...[
-          const Text('Agendamento', style: TextStyle(fontWeight: FontWeight.w800)),
-          const SizedBox(height: CoeloSpacing.space2),
-          _ScheduleField(value: draft.publishAt, onChanged: controller.setPublishAt),
-          if (!useDesktopPreview) ...[
-            const SizedBox(height: CoeloSpacing.space6),
-            _FeedPreview(state: state, publicationContext: publicationContext),
-          ],
-        ],
+        Text('Mídia', style: labelStyle),
+        const SizedBox(height: CoeloSpacing.space2),
+        _MediaStage(
+          draft: draft,
+          onPick: onPick,
+          onRemove: controller.removeMedia,
+          onReorder: controller.reorderMedia,
+        ),
+        const SizedBox(height: CoeloSpacing.space5),
+        Text('Legenda', style: labelStyle),
+        const SizedBox(height: CoeloSpacing.space2),
+        _CaptionField(value: draft.caption, onChanged: controller.setCaption),
+        const SizedBox(height: CoeloSpacing.space5),
+        Text('Público e contexto', style: labelStyle),
+        const SizedBox(height: CoeloSpacing.space2),
+        _ContextCard(contextData: controller.context),
+        const SizedBox(height: CoeloSpacing.space3),
+        _AudienceSelector(selected: draft.audiences, onToggle: controller.toggleAudience),
+        const SizedBox(height: CoeloSpacing.space4),
+        _ScheduleField(value: draft.publishAt, onChanged: controller.setPublishAt),
+        const SizedBox(height: CoeloSpacing.space5),
+        Text('Opções', style: labelStyle),
+        const SizedBox(height: CoeloSpacing.space2),
+        _AutosaveToggle(
+          label: 'Salvar como rascunho',
+          description: 'Ative para salvar automaticamente.',
+          value: state.autosave,
+          onChanged: controller.setAutosave,
+        ),
       ],
-    );
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        if (!useDesktopPreview || constraints.maxWidth < 840) return editor;
-        return Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Expanded(child: editor),
-            const SizedBox(width: CoeloSpacing.space5),
-            SizedBox(
-              key: const Key('happens-publication-desktop-preview'),
-              width: 320,
-              child: _FeedPreview(state: state, publicationContext: publicationContext),
-            ),
-          ],
-        );
-      },
     );
   }
 }
@@ -557,7 +472,7 @@ class _CaptionFieldState extends State<_CaptionField> {
     fieldKey: const Key('happens-caption'),
     controller: _controller,
     labelText: 'Legenda',
-    hintText: 'Aprender juntos é crescer juntos. 🌱',
+    hintText: 'Aprender juntos é crescer juntos.',
     prefixIcon: Icons.notes_rounded,
     maxLength: 2200,
     maxLines: 5,
@@ -582,45 +497,54 @@ class _MediaStage extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Column(
       children: [
-        AspectRatio(
-          aspectRatio: 16 / 9,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            child: Container(
-              color: colors.surfaceContainerLow,
-              child: media == null
-                  ? TextButton(
-                      onPressed: onPick,
-                      child: Center(
-                        child: Column(
-                          mainAxisSize: MainAxisSize.min,
+        // Referencia aprovada (acontece-web-1440): carrossel largo, ate 300 px
+        // de altura no desktop; no mobile mantem a proporcao da largura.
+        LayoutBuilder(
+          builder: (context, constraints) => ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: 300),
+            child: AspectRatio(
+              aspectRatio: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+                  ? 16 / 7
+                  : 16 / 9,
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                child: Container(
+                  color: colors.surfaceContainerLow,
+                  child: media == null
+                      ? TextButton(
+                          onPressed: onPick,
+                          child: Center(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.add_photo_alternate_outlined,
+                                  size: 42,
+                                  color: colors.primary,
+                                ),
+                                const SizedBox(height: CoeloSpacing.space2),
+                                const Text(
+                                  'Adicionar fotos ou vídeos',
+                                  style: TextStyle(fontWeight: FontWeight.w700),
+                                ),
+                              ],
+                            ),
+                          ),
+                        )
+                      : Stack(
+                          fit: StackFit.expand,
                           children: [
-                            Icon(
-                              Icons.add_photo_alternate_outlined,
-                              size: 42,
-                              color: colors.primary,
+                            _media(context, media),
+                            Positioned(
+                              top: 12,
+                              right: 12,
+                              child: _Pill(text: '1/${draft.media.length}'),
                             ),
-                            const SizedBox(height: CoeloSpacing.space2),
-                            const Text(
-                              'Adicionar fotos ou vídeos',
-                              style: TextStyle(fontWeight: FontWeight.w700),
-                            ),
+                            Positioned(right: 12, bottom: 12, child: _Pill(text: 'Editar capa')),
                           ],
                         ),
-                      ),
-                    )
-                  : Stack(
-                      fit: StackFit.expand,
-                      children: [
-                        _media(context, media),
-                        Positioned(
-                          top: 12,
-                          right: 12,
-                          child: _Pill(text: '1/${draft.media.length}'),
-                        ),
-                        Positioned(left: 12, bottom: 12, child: _Pill(text: 'Editar capa')),
-                      ],
-                    ),
+                ),
+              ),
             ),
           ),
         ),
@@ -910,7 +834,6 @@ String _audienceLabel(HappensAudienceKind value) => switch (value) {
   HappensAudienceKind.schoolStaff => 'Equipe escolar',
   HappensAudienceKind.guardiansOnly => 'Somente responsáveis',
 };
-const _publicationSteps = ['Mídia', 'Conteúdo', 'Público', 'Revisão'];
 String _mime(String? extension) => switch (extension?.toLowerCase()) {
   'jpg' || 'jpeg' => 'image/jpeg',
   'png' => 'image/png',
