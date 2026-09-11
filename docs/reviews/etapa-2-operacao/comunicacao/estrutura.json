@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 28,
+ "revision": 29,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T23:06:36-03:00",
+ "updatedAt": "2026-09-10T23:20:55-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -309,6 +309,13 @@
    "mudanca": "superadmin_institution_create_v2(p_request_id uuid, p_payload jsonb): realm interno v2, capacidade institution.activate, so escopo de plataforma (owner/operations), reutiliza o validador ROOT+ADDRESS do edit_core + slug pelo trigger de handle, sempre draft, recibo por request_id (replay sem novo evento), envelope e auditoria internos, helpers privados sem grant a clientes",
    "pgTAP": "26/26 (validador, criacao, replay, request_id reutilizado, handle repetido, tipo inativo, escopo de instituicao, support, sessao expirada, sem claims, contagens de auditoria)",
    "estado": "verde"
+  },
+  {
+   "carimbo": "20260910180350_superadmin_assessments_internal_v2",
+   "origem": "20260901182838",
+   "mudanca": "recarimbo com DUAS correcoes de sintaxe que impediam a migration de aplicar em qualquer lugar: superadmin_assessment_context_options nao fechava o jsonb_build_object externo antes do INTO (parentese a menos) e assessment_v2_save_configuration tinha ambiguidade variavel x coluna (institution_id/unit_id/activity_id): recebe #variable_conflict use_variable. Nenhum objeto de Avaliacoes existe em producao (12 RPCs superadmin_assessment_* e 8 tabelas). Teste: fixture na forma de producao (unit_type_id, handle), definicoes de atividade inseridas com o marcador interno da cadeia v2 (criador people-based nulo), version na revogacao da membership e Owner AAL1 na regua do MVP",
+   "pgTAP": "47/47",
+   "estado": "verde; prova integral com 21 candidatos em execucao"
   }
  ],
  "deltasPropostos": [],
@@ -329,7 +336,7 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "fechar a regravacao dos goldens; JSON + handoff; depois Locais/Turmas na rota normal (leitura) quando o driver voltar a ser permitido; 04:20 mini-revisao",
+ "proximoPasso": "prova integral 21; goldens de detalhe de Locais; rev 30 com o resultado; mini-revisao as 04:20",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -343,7 +350,7 @@
   "decisao": "recarimbar a cadeia como candidatos de estrutura (180020..180120), provados no espelho: os 11 aplicam sem erro sobre baseline + lotes; superadmin_activity_save_v2_test 46/46 e superadmin_internal_activities_v2_security_contract_test 37/37 verdes; os outros 7 testes v2 usavam units.institution_type_id na fixture (corrigido para unit_type_id + unit_types + handle) e estao sendo reexecutados",
   "atencaoDeSeguranca": "180060 (gateways) faz create or replace em tres funcoes que JA existem em producao com corpo diferente: app_private.audit_activity_change (trigger das tabelas legadas de Atividades), app_private.has_activity_capability (usada por policies contextuais) e app_private.audit_mask_payload; alem de criar a sobrecarga de 14 argumentos de audit_append_superadmin_internal. md5 antes/depois medidos no espelho do coordenador x meu espelho. E o comportamento da cadeia historica revisada (R02), mas e mudanca de funcao compartilhada em producao: registrado como pendencia de code review, nao bloqueia o MVP (sem clientes)."
  },
- "ordemDeAplicacao": "pelo carimbo: 180000, 180020..180120, 180140, 180150, 180200, 180300, 180310, 180320, 180330, 180340. Mapa de testes por migration em provaIntegral; 180330 -> superadmin_internal_institution_detail_test, 180340 -> superadmin_internal_institution_create_v2_test.",
+ "ordemDeAplicacao": "pelo carimbo: 180000, 180020..180120, 180140, 180150, 180200, 180300, 180310, 180320, 180330, 180340, 180350. Testes: ver provaIntegral.mapaDeTestesPorMigration mais 180330 -> institution_detail_test, 180340 -> institution_create_v2_test, 180350 -> superadmin_assessments_internal_v2_test (depende da cadeia de Atividades v2 para o marcador).",
  "regraDosTestesAAL1": "Em producao app_private.require_superadmin_internal_context devolve requires_mfa no contexto mas nunca negou AAL1, e o lote 8 (230021) zera requires_mfa e faz has_mfa_aal2 aceitar aal1. As asserções que esperavam SAI_MFA_REQUIRED do Owner em AAL1 (unit_detail 12, group_detail 12, commands 23, read 19, relationships 22/24, hardening 13, template_unit_scope 29) passaram a afirmar o comportamento de producao, com comentario no proprio teste. Negativas cross-tenant, anon, sessao expirada e permissao revogada continuam intactas.",
  "provaIntegral": {
   "quando": "2026-09-10T22:22:15-03:00",
@@ -367,7 +374,7 @@
  "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
  "flutter": {
   "analyze": "limpo apos correcao de dois infos de interpolacao",
-  "testesRecorte": "429 PASS / 17 FAIL na primeira medicao; o teste novo de P5 corrigido (5/5). As outras 16 falhas sao PRE-EXISTENTES em origin/dev 836c63215, medidas na worktree limpa e2-r04-estrutura-base com os mesmos arquivos: 7 goldens de formulario com os mesmos percentuais de diff (institution_form_create_light_375 20,38%, institution_form_bio_light_1440 5,49%, institution_form_edit_dark_1440 7,77%, institution_form_identity_unavailable_light_1440 2,03%, unit_form_create_light_375 5,78%, group_form_edit_dark_1440 e group_form_members_dark_1440 0,35%) e 9 casos de superadmin_underline_tabs_test + 2 de superadmin_form_action_footer_adoption_test (widgets compartilhados, fora do meu recorte). Meu delta nao introduz falha nova."
+  "testesRecorte": "apos a regravacao: groups, units, shared, activity_form_page, institutions, locations = 1079 PASS / 14 FAIL; 11 pre-existentes de widgets compartilhados (underline tabs, footer adoption) e 3 goldens de detalhe de Locais (location_detail_light_375, location_detail_focus_light_375, location_detail_dark_1440) que ja falhavam antes (R03) e tem decisao A do Owner: em analise"
  },
  "rotaNormal": {
   "app": "lib/main_driver.dart em Chrome, http://localhost:3020, .env.local de producao (copiado do checkout principal, ignorado pelo Git)",
@@ -409,7 +416,8 @@
     "fato": "Unidades (13 RPCs people-based) e Turmas negam qa-r03; aviso do coordenador",
     "efeito": "units.* e groups.* ficam com o primeiro gate em P22"
    }
-  ]
+  ],
+  "estado": "o Chrome do app foi fechado fora desta sessao (a porta 3020 segue com o flutter run); depois de dois bloqueios do classificador em toques de navegacao, a rota normal dirigida fica retomavel mas nao e o caminho principal ate a chave subir"
  },
  "cliente": {
   "institutionsCreate": "SupabaseInstitutionDirectoryRepository.create() deixa de lancar Unavailable e chama superadmin_institution_create_v2 com ROOT+ADDRESS+slug, omite endereco em branco, rejeita tipo sem id de catalogo (local-type-*) com excecao honesta e recarrega o detalhe autoritativo; 3 testes novos no repositorio (37/37 no arquivo)",
@@ -417,5 +425,24 @@
   "driver": "ponto de entrada movido de lib/main_driver.dart para test_driver/main_driver.dart (lint depend_on_referenced_packages); flutter run -t test_driver/main_driver.dart"
  },
  "regraCriarSempre": "Regra do Owner (via coordenador, 23:0x): busca, filtros (mesmo sem opcoes), toggle grade/lista, Arquivos, abas de status e card Criar aparecem sempre, inclusive no vazio. No composto CoeloAdminDirectory a toolbar e as abas sao renderizadas em todos os estados e _withCreate poe o Criar em vazio/sem resultados/falha; Instituicoes, Unidades, Turmas e Atividades passam create quando onCreate existe (gate structureMutationsEnabled); Locais ja tem o Criar por grupo (R03). Conferencia visual em producao depende da chave ligada.",
- "goldens": "7 goldens de formulario do recorte que ja falhavam em dev: as diferencas sao so as regras transversais aplicadas depois da referencia (Pesquisar no menu, sem balao de chat em editar, cabecalho MENU-M, rodape ancorado); regravacao em andamento nos tres arquivos de teste; os 375 (institution_form_create, unit_form_create) so ficam se MENU-M estiver fechado pela Fase 0 - pergunta ao coordenador."
+ "goldens": "7 goldens de formulario do recorte que ja falhavam em dev: as diferencas sao so as regras transversais aplicadas depois da referencia (Pesquisar no menu, sem balao de chat em editar, cabecalho MENU-M, rodape ancorado); regravacao em andamento nos tres arquivos de teste; os 375 (institution_form_create, unit_form_create) so ficam se MENU-M estiver fechado pela Fase 0 - pergunta ao coordenador.",
+ "chavesDeComposicao": {
+  "structureMutationsEnabled": "ligar na composicao (coordenador); cobre institutions/units/groups/activities",
+  "assessmentMutationsEnabled": "SuperadminAppConfig.assessmentMutationsEnabled (bool.fromEnvironment): ligar por dart-define no build quando 180350 estiver em producao; o repositorio SupabaseAssessmentRepository ja e composto",
+  "locais": "catalogo v2 ja em producao; SupabaseLocationConsumerSelectionReader(available:false) em main.dart vira available:true quando 180140/180150/180200 subirem"
+ },
+ "goldensRegravados": {
+  "commit": "20f497709",
+  "arquivos": [
+   "institution_form_create_light_375",
+   "institution_form_bio_light_1440",
+   "institution_form_edit_dark_1440",
+   "institution_form_identity_unavailable_light_1440",
+   "unit_form_create_light_375",
+   "group_form_edit_dark_1440",
+   "group_form_members_dark_1440"
+  ],
+  "motivo": "diferencas exclusivamente das regras transversais aplicadas depois da referencia (Pesquisar no menu, sem chat em editar, MENU-M, rodape ancorado); o render atual esta conforme as decisoes",
+  "ressalva": "os dois em 375 congelam o cabecalho mobile atual; reverter se MENU-M mudar"
+ }
 }
