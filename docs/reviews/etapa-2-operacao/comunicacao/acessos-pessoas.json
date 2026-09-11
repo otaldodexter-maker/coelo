@@ -1,15 +1,15 @@
 {
-  "revision": 99,
-  "updated_at": "2026-09-11T03:19:58.125Z",
-  "relogio_local": "Fri Sep 11 2026 00:19:58 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 100,
+  "updated_at": "2026-09-11T05:00:35.832Z",
+  "relogio_local": "Fri Sep 11 2026 02:00:35 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "R04_EM_CURSO",
+  "status": "R04_EM_CURSO_APOS_REINICIO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "873cb9aee (publicado; rebase sobre 93bedcf4e, lote 10)",
+  "head": "e17b0ee84 (publicado)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "consolidar os relatorios dos subagentes por action_id; conferir por REST se o caminho legado de Seguranca infantil passou a responder com a ponte (se sim, avaliar voltar a composicao legada que tem escrita); dar perfil interno ao qa-r03 para provar Usuarios internos listar/detalhe/editar; JSON as 00:50.",
+  "proximo_passo": "rota real Pessoas/Perfis/Modelos e Convites com um unico Chrome; pgTAP da semente; JSON as 02:30",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -112,6 +112,15 @@
   "CORRECAO_DA_REV_98": "o 'Acesso nao autorizado' de Usuarios internos no fluxo login->navegacao NAO reproduz no build release (2 tentativas: tela abre vazia e honesta); ocorreu 2x so no build debug (DDC, mais lento). Fica como pendencia de code review nao bloqueante: o repositorio invalida a revisao de cache a cada notificacao da sessao e trata a resposta em voo como 'unauthorized' (supabase_platform_user_repository.dart _requireCurrentCache + auth scope session.addListener(clearSessionCache)).",
   "AMBIENTE_DE_PROVA_ATUALIZADO": "o /invites/new 'em branco' era o CanvasKit sem GPU no Chrome dirigido por CDP (erro de shader no console); com --use-angle=swiftshader a tela renderiza normalmente. Nao e defeito da tela. ui.sh agora parametrizado por CDP_PORT com chrome_open/login_qa/go/shot para os subagentes.",
   "LOTE_10": "recebido do coordenador (23:24): P7 e ponte de ator (220400) em producao; qa-r03 passa a ter ator no realm de pessoas. Rerun de Pessoas/Perfis/Modelos em curso pelo subagente.",
+  "INCIDENTE": "a maquina reiniciou as 00:27 por falta de memoria (20 MB livres medidos as 00:25); esta sessao caiu com os dois subagentes de UI e o build2 em curso. Retomada as 01:58 a partir da branch: o WIP sobrevivente (composicao legada de Seguranca infantil + candidato 171200 + pgTAP) foi commitado em e17b0ee84. Sem perda de commits. Regras novas do coordenador aceitas: um Chrome por vez, subagentes so sem Chrome, fechar Chrome/dart ao fim de cada prova.",
+  "pacotesProntos_adicional": {
+    "id": "AP-QA-R03-INTERNAL-PROFILE-SEED",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260910171200_qa_r03_internal_profile_seed_v1.sql",
+    "pgTAP": "packages/coelo_database/supabase/tests/qa_r03_internal_profile_seed_v1_test.sql (6 testes) — resultado registrado na proxima revisao",
+    "o_que_faz": "app_private.seed_qa_r03_internal_profile(): insere o perfil interno sintetico 'QA R04 Sintetico' (CPF invalido 00000000000, e-mail do proprio usuario sintetico) para a identidade ligada a qa-r03@coelo.me, so se ela existir e ainda nao tiver perfil; idempotente. Destrava internal-users.list/detail/edit na rota normal (a lista faz join com superadmin_internal_profiles e producao tem 0 perfis). Sai com o usuario ao fim da rodada.",
+    "motivo": "o coordenador e esta sessao tiveram a escrita direta em producao bloqueada; nao existe RPC de criacao de usuario interno em producao (so update e change_status)."
+  },
+  "COMPOSICAO_SEGURANCA_INFANTIL_DEFINITIVA": "voltou ao SupabaseChildSafetyRepository (legado) em e17b0ee84: com a ponte de ator (lote 10) qa-r03 recebe 200 em superadmin_child_safety_directory/get/search_children (crianca sintetica 'Crianca QA R04' do grupo formularios) e as RPCs de escrita legadas existem em producao; o v2 interno do lote 4 e somente leitura. Prova na rota normal depende de novo build web (4-5 min, ~2 GB RAM) — vou tentar quando a memoria permitir.",
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
