@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 51,
+ "revision": 52,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T15:28:51-03:00",
+ "updatedAt": "2026-09-11T15:49:52-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -238,7 +238,7 @@
  "ack": null,
  "proximoPasso": "responder a revisao de 10 min do coordenador (15:50-16:00) no JSON; depois de 16:00 nao retomar por conta propria",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
- "estado": "finalizado (15:29): branch integrada em dev pelo coordenador ate c3e1ee639; sem trabalho pendente executavel sem reabrir Chrome; aguardo a revisao das 15:50",
+ "estado": "finalizado (resposta a revisao final gravada as 15:50; depois de 16:00 nao retomo por conta propria)",
  "cliente": {
   "activitiesEdit": "activity_form_page._load em modo edicao busca form_options_v2 + template_options e monta ActivityFormOptions com taxonomia; ActivityFormController.edit recebe initialCatalogError; _hydrateEdit sobe do subtipo ao pai",
   "helpersDaRotaReal": "scratchpad: serve.js (SPA), cdp.js (login/goto/click/type/shot/eval), net.js (grava RPCs), rpc.js (chama RPC com a sessao do app sem imprimir token)"
@@ -271,5 +271,21 @@
   "coelo-frontend-backend": "Contrato aditivo no servidor exige parser tolerante no cliente: em 11/09 o lote 211100 (handle nos detail_v2 de Unidades/Turmas) derrubou Locais da unidade e Editar turma porque os parsers exigiam contagem exata de chaves; antes de aplicar um pacote que acrescenta campo a um detail_v2 consumido, conferir os parsers _map da familia (people/agenda/forms ainda sao estritos)",
   "coelo-frontend": "Prova de rota real: (1) o flutter build web apaga build/web e derruba o servidor estatico no meio da prova, religar depois do build; (2) net.js/CDP Network.getResponseBody mostra o envelope real da RPC e economiza horas (icon_key, no-op do edit_core, SAI_SESSION_INVALID); (3) o logout global de outra frente (Conta > Sair) encerra a sessao do qa-r03 de todas as conversas: combinar horario pelo coordenador",
   "coelo-backend": "save_v2 e create_v2 de Atividades devolvem SAI_INTERNAL_ERROR sem SQLSTATE para CHECKs (caso icon_key): registrar o detail da excecao no reason da auditoria de negativa; superadmin_institution_edit_core_v2 rejeita no-op com SAI_INVALID_ARGUMENT generico (o cliente contorna pulando o core); espelho descartavel so com o db: supabase start -x gotrue,realtime,storage-api,imgproxy,kong,mailpit,postgrest,postgres-meta,studio,edge-runtime,logflare,vector,supavisor + db reset + lotes por psql (3 min para 116 lotes)"
+ },
+ "respostaARevisaoFinal": {
+  "quando": "15:50-16:00 (antecipada as 15:50)",
+  "entregouTudoMesmo": "Sim, no que cabia ao recorte executavel: todo o codigo esta publicado em work/etapa2-r05-estrutura ate c3e1ee639 e ja integrado em dev (1da5c3e3c e posteriores); status limpo, nenhum WIP retido; 51 deltas ensaiados (apply + validate PASS) em deltas-r05-estrutura.json; pacote structure_handles_v1 em producao (lote 42); handoff em evidence/etapa-2/r05-estrutura/handoff.md; 33 capturas em rota-real/; Chrome, servidor e espelho fechados; worktree base removida.",
+  "fechado": "E2E propostas: activities.create/location/detail/edit, units.edit/status/filter/reload/locations-map/copy-institution-location, institutions.edit/list/filter/detail/reload (15). BE done sem FE: activities.publish. FE verified extra: verificacao de @ em Unidades e Atividades. Correcoes: icon_key, catalogo na edicao, botao Editar, no-op do edit_core, owner_*, parsers tolerantes (regressao do lote 211100), D3 em Instituicoes.",
+  "oQueFicouEmAberto": [
+   "activities.publish no cliente (fecha antes do HTTP; decidir p_publish pelo status; nao congelar o rascunho apos falha)",
+   "groups.location escrita (sem UI; repositorio sem consumidor) e groups.members (so estado vazio)",
+   "assessments.entry/gradebook/close/reopen/detail e activities.assessment (qa-r03 sem vinculo profissional; pacote nao escrito)",
+   "institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links (nao exercidos)",
+   "Regra do @: envio de handle no payload (211100), troca por set_v1 com trava de 30 dias, campo @ em Turmas",
+   "Goldens do composto de tabela: 9 activity_golden_test + 1 institution_directory_page",
+   "Code review: pendenciasDeCodeReview (parsers estritos em Pessoas/Agenda/Forms, SAI_INTERNAL_ERROR sem SQLSTATE, no-op do edit_core, carencia de 15 dias no RPC legado de handle de Unidades, card de previa da turma ilegivel no escuro)"
+  ],
+  "duvidasAoOwner": "nenhuma nova; observacao visual do card de previa da turma registrada para a lista de decisao",
+  "dadosSinteticos": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26)."
  }
 }
