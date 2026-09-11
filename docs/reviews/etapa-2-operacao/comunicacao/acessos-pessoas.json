@@ -1,7 +1,7 @@
 {
-  "revision": 129,
-  "updated_at": "2026-09-11T18:10:35.533Z",
-  "relogio_local": "Fri Sep 11 2026 15:10:35 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 130,
+  "updated_at": "2026-09-11T18:11:14.827Z",
+  "relogio_local": "Fri Sep 11 2026 15:11:14 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R05-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -186,6 +186,7 @@
       "Fixture sintetica de aluno: transferir ida e volta para nao alterar o estado que as outras frentes usam (link_id reaproveitado)."
     ]
   },
+  "P44_COMPLEMENTO_15h12": "Usuarios internos nao tem coluna de @ (superadmin_internal_identities/profiles), mas cada um tem uma pessoa de servico em public.people pela ponte de ator (220400), que o 170100 deixa sem @ de proposito (person_type service). Se o Owner quiser @ para internos, o caminho menor e permitir 'service' em enforce_person_handle_rules/ensure_person_handle e mostrar o @ na tela de Usuarios internos (pacote pequeno + FE). Recomendo perguntar antes: o @ e identidade publica no Principal e o interno nao aparece la.",
   "historico_r04": {
     "revision": 118,
     "updated_at": "2026-09-11T11:31:19.648Z",
