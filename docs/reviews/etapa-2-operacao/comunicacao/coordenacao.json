@@ -1,12 +1,12 @@
 {
- "revision": 42,
+ "revision": 43,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T13:10:00-03:00",
+ "updatedAt": "2026-09-11T13:18:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -232,6 +232,7 @@
   "40": "12:35 lote 28 (institution_contacts_v1) em producao; composto de tabela do G7 integrado; sessoes das sete frentes identificadas",
   "41": "12:57 lotes 29-32 em producao (ponte do Principal, revoke de authenticated, @ de pessoas, anexos do chat); G-SUP concluido pela G7; branches de G2/G4/G5/G7 integradas",
   "42": "13:10 lotes 33-35 em producao (forms media R2, hotfix safeupdate, P36); deltas de Auditoria aplicados; regra de Sair/sessoes",
+  "43": "13:18 lote 36 (P32) em producao apos correcao; espelho reconstruido; deltas de formularios (7) e realm-interno (7) aplicados: FE 71 / BE done 74 / E2E 48; goldens afetados pelo composto atribuidos a G7",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -795,12 +796,12 @@
   },
   "formularios-cuidado-rotina": {
    "branch": "work/etapa2-r05-formularios-cuidado-rotina",
-   "rev": 34,
-   "head": "f6b536aa0",
+   "rev": 36,
+   "head": "7fe204565+",
    "sessao": "coelo-8b",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida",
+   "estado": "forms.publish/overview E2E; candidato 220000 (rotina can_manage) com pgTAP pendente; subagentes: Edge Function form-media e contrato de Assiduidade",
    "resposta": "Cron de Formularios: achado da frente (um unico 404 as 10:41; Vault ja aponta form-operations): sem correcao necessaria; registrar no rastreador."
   },
   "principal-chat-sistema": {
@@ -815,21 +816,21 @@
   },
   "realm-interno": {
    "branch": "work/etapa2-r05-realm-interno",
-   "rev": 20,
-   "head": "d8e5f9b48",
+   "rev": 21,
+   "head": "1c5aa804b",
    "sessao": "coelo-dd (por exclusao; sem resposta)",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "pacotes 1-5 em producao (lotes 28, 30, 32, 33, 35); item 6 (P32) em curso"
+   "estado": "finalizado (mini-revisao rev 21): 6 pacotes em producao (lotes 28,30,32,33,35,36); segue em trabalho independente ate 15:45"
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r05-publicacoes-agenda",
-   "rev": 31,
-   "head": "ddde588ac",
+   "rev": 32,
+   "head": "38b0b1f2e",
    "sessao": "coelo-11",
    "ack": true,
    "recebidoEm": "2026-09-11T12:25:00-03:00",
-   "estado": "aberta; primeira revisao da R05 lida"
+   "estado": "P33/P34 aplicados, goldens agenda_* regravados (291/291), pagina lado a lado duvidas-visuais.html; agenda.request/permissions/location em curso"
   },
   "operacoes": {
    "branch": "work/etapa2-r05-operacoes",
@@ -926,6 +927,27 @@
    "ack": true,
    "recebidoEm": "2026-09-11T12:53:00-03:00",
    "integradoEm": "fe9a8b36f"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 36,
+   "ack": true,
+   "recebidoEm": "2026-09-11T13:08:00-03:00",
+   "integradoEm": "47357aea0"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 32,
+   "ack": true,
+   "recebidoEm": "2026-09-11T13:02:00-03:00",
+   "integradoEm": "0da52ac19"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 21,
+   "ack": true,
+   "recebidoEm": "2026-09-11T13:15:00-03:00",
+   "integradoEm": "(esta revisao)"
   }
  ],
  "filaSqlR05": {
@@ -938,7 +960,8 @@
    "lote 32: 20260911210200 (realm-interno)",
    "lote 33: 20260911210300 (realm-interno)",
    "lote 34: 20260911170200 (acessos-pessoas, hotfix)",
-   "lote 35: 20260911210400 (realm-interno)"
+   "lote 35: 20260911210400 (realm-interno)",
+   "lote 36: 20260911210500 (realm-interno)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
@@ -1008,6 +1031,13 @@
    "pagina": "https://claude.ai/code/artifact/7737ccf7-1489-4d67-ba5f-858c051150d2",
    "copia": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/",
    "texto": "Suporte e Implantacao alinhados como Instituicoes: aprovar os 16 goldens claros (R referencia, A render atual)"
+  },
+  {
+   "id": "P33-P34-R05",
+   "frente": "publicacoes-agenda",
+   "tipo": "visual",
+   "pagina": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html",
+   "texto": "calendario da Agenda conforme o iPhone (P33) e rodape do detalhe (P34): aprovar os goldens regravados (R iPhone, A atual)"
   }
  ],
  "lote33": {
@@ -1046,7 +1076,32 @@
    "arquivo": "evidence/etapa-2/r05-operacoes/deltas-r05-ops-audit.json",
    "n": 9,
    "efeito": "audit.list/filter/detail FE verified, BE done, E2E verified-e2e; totais FE 69 / BE done 72 / E2E 46"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "arquivo": "evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-1.json",
+   "n": 7,
+   "efeito": "forms.publish e forms.overview FE verified / BE done / E2E; normalizado pelo coordenador a partir de deltaProposals da rev 36 (certificacao aponta captura 04-forms-overview-reload.png)"
+  },
+  {
+   "grupo": "realm-interno",
+   "arquivo": "evidence/etapa-2/r05-realm-interno/deltas-be-r05.json",
+   "n": 7,
+   "efeito": "BE local-green em institutions.edit, chat.attach, forms.upload/resolve-file/download/expire-file/delete-file (SQL em producao; gateway/Edge Function ainda ausente)"
   }
  ],
- "sessaoUnicaNaoExiste": "13:00: G1 relatou SAI_SESSION_INVALID e suspeitou de sessao unica por usuario; medido em producao: auth.sessions do qa-r03 com 2 sessoes vivas (12:43 e 12:50). Causa: Sair global / revogacao de sessoes por outra frente. Regra do dia: account.logout e account.sessions so depois de 15:30 com aviso; frentes fecham a aba em vez de Sair."
+ "sessaoUnicaNaoExiste": "13:00: G1 relatou SAI_SESSION_INVALID e suspeitou de sessao unica por usuario; medido em producao: auth.sessions do qa-r03 com 2 sessoes vivas (12:43 e 12:50). Causa: Sair global / revogacao de sessoes por outra frente. Regra do dia: account.logout e account.sessions so depois de 15:30 com aviso; frentes fecham a aba em vez de Sair.",
+ "notaDeRelogioR05": "os carimbos 12:57-13:10 das revs 41-42 e dos lotes 32-35 estavam ~8 min adiantados (relogio real: lote 32 12:48, 33 12:52, 34 12:55, 35 12:57, rev 42 12:59). Daqui em diante o carimbo vem de date.",
+ "lote36": {
+  "aplicadoEm": "13:16; ledger 20260911210500",
+  "dump": "schema-producao-20260911-lote36.sql",
+  "preflight": "primeira versao 19/20 no espelho (asserção 16: pessoas de servico da ponte entravam como destinatarias); devolvida a G5, corrigida (child_care_notification_recipients_v1 so pessoas adultas ativas) e 20/20 + child_safety 25/25 no espelho reconstruido (115 migrations na ordem real)",
+  "conteudo": [
+   "realm-interno 20260911210500_unit_care_policies_notifications_v1 (public.unit_care_policies com modos de Seguranca infantil e Medicacao, RPCs superadmin_unit_care_policy_get_v1/set_v1, gatilhos de notificacao no sino para unidade, hierarquia da crianca e demais responsaveis)"
+  ],
+  "verificadoEmProducao": "tabela 1; rpcs 2; ledger 1",
+  "aberto": "tela de politicas macro da unidade e consumo do sino no cliente (frente formularios-cuidado / acessos)"
+ },
+ "espelhoLocalR05": "coelo_baseline reconstruido as 13:05-13:13 (db reset baseline+seed + psql das 115 migrations de ordem-de-aplicacao-producao.txt) para descartar a primeira versao do 210500; script rebuild-espelho.sh no scratchpad da sessao",
+ "goldensAfetadosPeloComposto": "a correcao do composto de tabela (G-SUP, 0e4b2f27c) muda goldens de diretorios de outras familias na base integrada: access_profile_golden_test (1), forms_directory_golden_test (3), daily_routine_golden_test (1); todos passavam em origin/dev 9bf60463b. Atribuido a G7 regravar em um unico commit apos conferir que a diferenca e so o alinhamento das celulas"
 }
