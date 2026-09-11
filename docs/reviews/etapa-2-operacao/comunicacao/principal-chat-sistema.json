@@ -1,6 +1,6 @@
 {
-  "revision": 12,
-  "updated_at": "2026-09-10T23:13:00-03:00",
+  "revision": 13,
+  "updated_at": "2026-09-10T23:27:00-03:00",
   "round": "E2-R04-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -8,10 +8,10 @@
   "coordinator": "R04 · Coordenacao noturna (Claude, Fable)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-principal-chat-sistema",
   "branch": "work/etapa2-r04-principal-chat-sistema",
-  "base": "origin/dev 836c63215 (rebase feito 22:47)",
-  "head": "7c6181469",
-  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em 7c6181469",
-  "status": "Chat interno v2 provado ponta a ponta com a fixture sintetica do realm-interno (Criar grupo, inbox, conversa, envio pela tela real, reload, recibo, negativas). Pacote de revoke de anon (190900) verde. Momentos: composicao larga restaurada (R do Owner) e midia inteira sobre o preto; goldens regravados apos observacao. Perfil (Acompanhar/Seguidores) e o Principal continuam presos em P22/D1.",
+  "base": "origin/dev 5bb7c5648 (rebase 23:19; sete branches integradas pelo coordenador)",
+  "head": "a41940180",
+  "publicada": "origin/work/etapa2-r04-principal-chat-sistema em a41940180",
+  "status": "Chat fechou a regua pela tela real tambem para editar e revogar (capturas 34 a 42). Handoff da R04 publicado. Aguardando o lote 10 (ponte de ator, P22) para refazer Cardapios, Principal e o dialogo de Criar grupo.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil",
     "apps/superadmin -> Chat administrativo e Principal",
@@ -77,10 +77,11 @@
     "rota_logout": "captura 13 (dialogo) e 14 (login apos confirmar Sair e recarregar): sessao encerrada",
     "momentos_apos_moldura": "test/features/principal_moments: ver campo momentos_final; goldens 1024/1440/like_hover/text_200_dark regravados apos observacao (preto preenche a largura; aside em 1440)",
     "momentos_final": "test/features/principal_moments + dialogo de Criar grupo: 63 PASS (23:2x); goldens de Momentos regravados 11/11 apos observacao; analyze lib test: No issues found",
-    "analyze_final": "flutter analyze lib test: No issues found (apos Momentos e dialogo)"
+    "analyze_final": "flutter analyze lib test: No issues found (apos Momentos e dialogo)",
+    "rota_chat_final": "capturas 20 a 42 em evidence/etapa-2/r04-principal-chat-sistema/rota-real/: inbox, thread, reload, envio, edicao, revogacao, dialogo de Criar grupo"
   },
   "blocker": null,
-  "next_step": "Handoff da R04 e mini-revisao; se sobrar janela: pergunta P-FOTO com imagens, e nova passada da rota real quando o coordenador aplicar a ponte de ator (P22).",
+  "next_step": "Aguardar o lote 10 (P22) e refazer a rota real de Cardapios, Principal (Acontece/Momentos/Agora/Para voce) e o dialogo de Criar grupo; mini-revisao ate 04:20.",
   "ack": null,
   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md (R03; sera reescrito no fechamento da R04)",
   "lotes": [
@@ -242,13 +243,19 @@
       "be": "done pelo realm-interno (240400) e provado por RPC com a fixture",
       "e2e": "pending: a UI precisa da ponte de ator para listar instituicoes/pessoas"
     },
-    "chat.edit / chat.revoke": {
-      "be": "blocked-environment -> done (240200 em producao; realm-interno provou edit/revoke)",
-      "e2e": "pending (nao exercitado pela tela nesta rodada)"
-    },
     "momentos.view": {
       "fe": "pending-verification -> local-green (composicao larga restaurada conforme R + observacoes; midia contain; suite de Momentos verde)",
       "e2e": "pending (P22)"
+    },
+    "chat.edit": {
+      "fe": "local-green -> verified",
+      "be": "blocked-environment -> done (240200 em producao; edicao persistida e janela de 15 min negando)",
+      "e2e": "pending-verification -> verified-e2e (editada pela tela real, reload mantem, negativa da janela observada)"
+    },
+    "chat.revoke": {
+      "fe": "local-green -> verified",
+      "be": "blocked-environment -> done (240200 em producao)",
+      "e2e": "pending-verification -> verified-e2e (revogada pela tela real com confirmacao; some da conversa e continua ausente apos reload)"
     }
   },
   "pacotesProntos": [
@@ -313,7 +320,8 @@
     "chat_com_fixture_2259": {
       "rpc": "superadmin_chat_create_group_v2 com a instituicao 9f04...0010 e as pessoas ...0061/...0062: ok member_count 2; replay com o mesmo request_id -> replayed true; inbox apos reload lista o grupo; group_members 2; send_message ok; thread com receipt recipient_count 2; pessoa sem vinculo -> CHAT_MEMBER_INVALID 422",
       "tela_real": "Conversas mostra o grupo (20-chat-inbox), abre a conversa com a mensagem e \"Lida por 0 de 2\" (21), reload mantem (22), mensagem enviada PELA TELA persiste e volta apos reload (24, 25); dialogo Criar grupo abre (26) mas o diretorio de Pessoas nega o ator interno (P22): instituicoes nao carregam, mensagem honesta"
-    }
+    },
+    "chat_edit_revoke_2330": "Revogar pela tela: menu \"...\" > Revogar > dialogo \"Revogar mensagem\" > confirmar: a mensagem sai da conversa (34, 35). Editar pela tela: nova mensagem enviada (36), menu > Editar > dialogo \"Editar mensagem\" com o texto, alterado e salvo (40, 41a, 41); apos reload a mensagem aparece com o texto novo e o marcador \"editada\" (42). Tentativa de editar a mensagem de 02:03 as 02:19 (16 min) nao persistiu: janela de 15 min do servidor (CHAT_EDIT_WINDOW_CLOSED), comportamento esperado (30, 31)."
   },
   "perguntas_ao_owner_via_coordenador": [
     "P-409: aprovar error_409_light e error_409_dark como golden oficial (mesma composicao das outras variantes)? Pagina lado a lado: evidence/etapa-2/r04-principal-chat-sistema/erro-409-candidatos.html",
