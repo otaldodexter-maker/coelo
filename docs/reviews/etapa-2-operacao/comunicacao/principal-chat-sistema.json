@@ -1,200 +1,72 @@
 {
-  "revision": 29,
-  "updated_at": "2026-09-11T15:46-03:00",
-  "round": "E2-R05-20260911",
+  "revision": 30,
+  "updated_at": "2026-09-11T19:40-03:00",
+  "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
   "model": "claude-opus-5 (esforco medio)",
-  "coordinator": "R05 · Coordenacao da tarde (Claude, Opus)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-principal-chat-sistema",
-  "branch": "work/etapa2-r05-principal-chat-sistema",
-  "base": "origin/dev 2f6a6114f",
-  "head": "828b9c69f (+ commit desta rev)",
-  "status": "FINALIZADO as 15:45. Revisao final de 10 minutos abaixo (responde ao pedido das 15:50 do coordenador). Nenhum trabalho retomado por conta propria depois das 16:00.",
+  "coordinator": "R06 · Coordenacao (Claude, Opus 5)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-principal-chat-sistema",
+  "branch": "work/etapa2-r06-principal-chat-sistema",
+  "base": "origin/dev ca60b096b",
+  "head": "ca60b096b (+ commit desta rev)",
+  "status": "ABERTA 19:37. Prompt colado antes de coordenacao.json registrar T0 e 'usuarios qa-r06 prontos' (rev 51 ainda e da R05; Coelo-backups nao tem qa-r06-principal.env). Assumo T0=19:17 (abertura da frente 19:37 = T0+20): T0+2h=21:17, revisao ate 21:27. Trabalho local (item 0, item 1 cliente, item 2 telas, item 6 pacote) nao depende do usuario; a rota real espera o .env ou usa qa-r03 como fallback declarado.",
+  "T0_assumido": "2026-09-11T19:17-03:00 (corrigir quando coordenacao.json gravar)",
   "scope": [
-    "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil, Para voce",
-    "apps/superadmin -> Chat (attach, create-group E2E)",
-    "apps/superadmin -> Cardapios (create/edit/model/publish)",
-    "apps/superadmin -> paginas de erro (409 rota real, retry)",
-    "composicao/shell: falhas pre-existentes em composition_root_sanitization_test e superadmin_auth_scope_test"
+    "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
+    "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
+    "apps/superadmin -> Cardapios (P47=A: remover fail-closed de tenant no cliente; list/create/edit/model-create/model-edit/publish)",
+    "apps/superadmin -> paginas de erro 403/404/409/500/503/retry pela rota real",
+    "backend: P48=A pacote 130000 owner->institution_admin, operations->leitura; Edge Functions happens-media, now-media, moments-media"
   ],
-  "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal_profile 3, chat 8, meal_plans 6, error_pages 6. Estado de partida (inventario 11:50): chat 6 E2E; chat.create-group FE verified/BE done/E2E pending; chat.attach blocked-environment FE+BE; acontece/agora FE pending-verification BE local-green (SQL em producao); momentos.view FE local-green; principal.for-you e profile-edit blocked-decision (P28/P35 agora respondidos); meal-plans.create/edit/model-*/publish FE pending BE local-green; errors.409 FE local-green (golden aprovado P26); errors.retry pending.",
-  "primeiro_gate": "nenhum bloqueio do coordenador pendente; gates registrados por acao em mini_revisao_final.aberto_com_primeiro_gate",
+  "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
   "ordem_de_trabalho": [
-    "1. acontece/agora/momentos na rota real: FEITO no que a regua permite (Acontece 4 acoes E2E; agora.view/momentos.view FE verified + BE done; create com midia fica com gate)",
-    "2. P28 no cliente: FEITO 1da47a1cc; P35 B: pacotes 130000/130100 em producao",
-    "3. meal-plans.create/edit/model-create/model-edit/publish: BLOQUEADO por composicao (503, ver gate); Duplicar (P27) nao tocado",
-    "4. chat.attach: gate registrado (chat-media implantada pelo coordenador as 14:1x; falta o picker no cliente); chat.create-group E2E: nao retomado",
-    "5. errors.retry FE verified na rota real; errors.409 gate registrado",
-    "6. composition_root_sanitization_test e superadmin_auth_scope_test: FEITO 5599f41da"
+    "0. principal_real_route_test 'offers the profile selector (P28)': EM ANDAMENTO",
+    "1. Cardapios P47=A: pendente",
+    "2. Publicadores na familia Publicacao (agora/acontece/momentos, mobile-375 e web-1440) + create/publish com midia: pendente",
+    "3. chat.create-group pela UI + chat.attach no cliente: pendente",
+    "4. principal.profile-edit e principal.for-you rota real + V-1/V-2/V-3: pendente",
+    "5. errors.* pela rota real: pendente",
+    "6. P48=A pacote candidatos/principal-chat-sistema 2026091213xxxx: pendente"
   ],
-  "tests": {
-    "pgTAP_20260911130000": "22/22 PASS (13:0x) no coelo_pcs5",
-    "build_web": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local: OK (12:5x)",
-    "cliente_1da47a1cc": "flutter analyze lib test: No issues; principal_shared 19 PASS; principal_profile 137 PASS (goldens regravados apos P28); goldens for_you/happens/publicadores 73 PASS regravados (cabecalho)",
-    "pre_existentes_em_origin_dev": "principal_real_route_test 'never uses demo fixtures' e 'keeps its host' falham tambem sem minhas alteracoes (git stash, 13:5x): Bad state: No element; person_detail_golden_test 2 e structure_detail_golden_test 4 (composto de tabela do G-SUP em dev 11c4bfbef), import_development_routes, people_creation_requirements_red, prototype_navigation_routes, persistent_shell_routes (launcher/limites do Momentos), superadmin_error_routes '503': fora do meu delta; registrados"
-  },
-  "lotes": [
-    {
-      "commit": "321d6bc1c",
-      "titulo": "Ponte de ator do Principal + Superadmin ve tudo (130000)",
-      "action_ids": [
-        "acontece.*",
-        "agora.*",
-        "momentos.*",
-        "principal.*"
-      ],
-      "prova": "pgTAP 22/22; EM PRODUCAO (conferido 14:05: 3 contextos para qa-r03)"
-    },
-    {
-      "commit": "45b443f05",
-      "titulo": "@ no contexto, arrobas reservados e perfil Coelo (130100)",
-      "action_ids": [
-        "principal.profile-view",
-        "principal.profile-edit",
-        "principal.for-you"
-      ],
-      "prova": "pgTAP 14/14 no descartavel; aguarda aplicacao"
-    },
-    {
-      "commit": "1da47a1cc",
-      "titulo": "P28 no Perfil (avatar, cabecalho, @, contorno), seletor de perfil (ate 5 + Ver todos + hibrido), + publica no Acontece, unidade/turma opcionais nos publicadores",
-      "action_ids": [
-        "principal.profile-view",
-        "principal.for-you",
-        "acontece.create",
-        "agora.create",
-        "momentos.create"
-      ],
-      "prova": "principal_shared 19/19, principal_profile 137/137, goldens 73/73 regravados apos a observacao; composition_gaps e principal_real_route atualizados"
-    }
-  ],
-  "proposta_delta_por_action_id": {},
-  "pacotesProntos": [
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "06264f92d",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130000_principal_internal_actor_bridge_v1.sql",
-      "assunto": "P35: (1) app_private.person_id_for_auth_user(uuid) e as seis funcoes do Principal resolvendo o ator pelo espelho interno (people-based mantem precedencia); (2) app_private.superadmin_internal_actor_institution_access_sync(): membership owner + institution_role_assignment ao papel de sistema institution_admin (P31) para todo espelho interno com platform_membership ativa em toda instituicao ativa, backfill agora e gatilhos em institutions (insert/status active) e superadmin_internal_actor_people. 'Superadmin ve tudo' sem reescrever RPC por familia.",
-      "pgTAP": "supabase/tests/principal_internal_actor_bridge_v1_test.sql 22/22 no descartavel coelo_pcs5 (baseline + 107 migrations na ordem de producao + candidato); regressao: principal_runtime_contexts 13/13, internal_actor_service_person 17/17, happens_post_withdrawal 33/33, happens_mixed_feed 10/10, now_custom_role_audience 13/13, now_publication_mvp 69/70 (1 pre-existente), qa_r03_synthetic_memberships 2/2",
-      "chave_de_composicao": "nenhuma",
-      "depois_de_aplicar": "conferir em producao: select count(*) from public.list_my_principal_contexts() com a sessao qa-r03 = 3 (qa-r04-chat, qa-r04-cuidado-sintetico, qa-r04-escola); a frente prova a rota real em seguida",
-      "risco": "baixo-medio: concede ao espelho interno de cada usuario Superadmin com platform_membership ativa o papel institution_admin em toda instituicao ativa (regra de produto P35 do Owner). Pendencia registrada: refinar por papel interno (operations vs owner) se o Owner quiser distinguir.",
-      "action_ids": [
-        "acontece.feed",
-        "acontece.create",
-        "acontece.publish",
-        "acontece.remove",
-        "agora.view",
-        "agora.create",
-        "agora.publish",
-        "agora.expire",
-        "momentos.view",
-        "momentos.create",
-        "momentos.publish",
-        "momentos.remove",
-        "principal.for-you",
-        "principal.profile-view",
-        "principal.profile-edit"
-      ]
-    },
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "45b443f05",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130100_principal_context_handles_and_coelo_profile_v1.sql",
-      "assunto": "P28/P35: list_my_principal_contexts recriada (drop+create) com institution_handle (=slug) e unit_handle; public.reserved_handles (coelo, coelo.me; RLS, sem grant) com gatilhos BEFORE em institutions.slug e units.handle (check_violation handle_reserved); pessoa de servico Coelo c0e10000-0000-4000-8000-000000000001 que segue e e seguida por toda pessoa ativa em follow_links (origem manual; backfill + gatilho AFTER INSERT em people).",
-      "pgTAP": "supabase/tests/principal_context_handles_and_coelo_profile_v1_test.sql 14/14; principal_runtime_contexts_test 13/13 (asserção do tipo de retorno atualizada); principal_internal_actor_bridge_v1_test 22/22 apos o 130100",
-      "chave_de_composicao": "nenhuma (cliente le os campos novos como opcionais desde 1da47a1cc)",
-      "risco": "baixo: drop/create de funcao usada so pelo cliente do Principal; gatilho em people executa um sync idempotente por insert",
-      "pendencias": [
-        "avatar (logo laranja/coelho branco) e capa da marca do perfil Coelo: nao ha catalogo de midia de perfil de pessoa; fica registrado",
-        "origem 'system' no enum follow_origin em vez de 'manual' para os vinculos da Coelo (ALTER TYPE em arquivo proprio)",
-        "@ de pessoas: quando acessos-pessoas criar person_handles, reaproveitar app_private.is_reserved_handle no gatilho"
-      ],
-      "action_ids": [
-        "principal.profile-view",
-        "principal.profile-edit",
-        "principal.for-you"
-      ]
-    },
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "06d3753f9",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130200_happens_feed_owner_visibility_v1.sql",
-      "assunto": "P35: app_private.circular_feed_post_visible reconhece role_code owner (ve qualquer publico do escopo) e secretary (equipe escolar); medido na rota real: publish_happens_post 200 e feed [] porque owner caia em else false",
-      "pgTAP": "happens_feed_owner_visibility_v1_test 6/6; happens_mixed_feed_withdrawal 10/10",
-      "chave_de_composicao": "nenhuma",
-      "action_ids": [
-        "acontece.feed",
-        "acontece.remove"
-      ]
-    },
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "becd1a50d",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130300_moments_feed_and_withdrawal_baseline.sql",
-      "assunto": "recarimbo identico da historica 20260909216000 (list_visible_moments + withdraw_moment), nunca aplicada: rota real de Momentos responde PGRST202",
-      "pgTAP": "moments_feed_and_withdrawal_test 23/23 no espelho (apos 130000/130200)",
-      "chave_de_composicao": "nenhuma (cliente ja chama list_visible_moments)",
-      "action_ids": [
-        "momentos.view",
-        "momentos.remove"
-      ]
-    }
-  ],
+  "tests": {},
+  "lotes": [],
+  "pacotesProntos": [],
   "perguntas_ao_owner_via_coordenador": [],
-  "pendencias_registradas_sem_bloquear": [
-    "testes pgTAP happens_media_private_r2_v1 e now_media_private_r2_v1: helper pg_temp sem EXECUTE para authenticated apos 190900 (pre-existente); corrigir grant no proprio teste",
-    "P35: sincronizador da ponte concede institution_admin a todo espelho interno com platform_membership ativa; distinguir owner de operations fica para decisao do Owner se ele quiser",
-    "chat.attach: contrato 210200 do realm-interno EM PRODUCAO (lote 32); gate real = deploy da Edge Function chat-media + cron (coordenador, pacote 210700) e, no cliente, ligar o picker do compositor a prepare/finalize/read (esta frente, proxima rodada); FE continua visivel e inerte",
-    "errors.409: sem fluxo de producao que abra a pagina 409 (ver rota_real.observado); revisar se a familia deve ser alcancavel por conflito real ou se o inventario deve tratar como estado de composicao",
-    "agora.expire: agendador da expiracao continua ausente (pg_cron/worker), como na R04",
-    "Principal hospedado: a pagina do Acontece em embedded=true ainda desenha o proprio cabecalho (Coelo/bug/sino/AM) e o dock dentro do shell (01); pre-existente, registrar para a revisao de UI",
-    "moments-media: teste Deno 26/26 da R04 nao cobre o fallback COELO_R2_* (momentsR2Config le so MOMENTS_R2_*); acrescentar caso de teste com so COELO_R2_* no ambiente"
-  ],
+  "pendencias_registradas_sem_bloquear": [],
   "blocker": null,
-  "next_step": "responder a revisao final do coordenador as 15:50 neste JSON",
+  "perguntas_ao_coordenador": [
+    "T0 e usuario qa-r06-principal: nao encontrados na abertura (19:37); gravar em coordenacao.json / Coelo-backups. Ate la uso T0 assumido 19:17 e, para a rota real, qa-r03 se o .env nao aparecer."
+  ],
+  "next_step": "item 0",
   "ack": null,
   "loop": "/loop 15m agendado na abertura",
-  "regras_operacionais": "max 2 Chrome, 1 flutter test por vez; nenhum segredo em Git/chat/JSON; credencial de qa-r03 lida de Coelo-backups/qa-r03.env; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
-  "achados_para_o_coordenador": [
-    "CAUSA RAIZ (medida 12:10): list_my_principal_contexts (191000), app_private.happens_actor (baseline), now_actor (190300), moments_actor_for_auth_user (230017), redeem_now_media_read_ticket (190600) e redeem_happens_media_read_ticket (190700) resolvem a pessoa por public.person_auth_links; a identidade interna nao tem esse vinculo (guard do realm, ADR 0019) e a ponte 220400 so cobre current_person_id(). Alem disso a membership do lote 27 (role_code owner) nao tem institution_role_assignments, e has_context_permission exige papel: mesmo com contexto, happens_permission_denied.",
-    "PRE-EXISTENTE (nao e deste pacote; igual no espelho do coordenador coelo_baseline): happens_media_private_r2_v1_test 15/18 (+5 erros) e now_media_private_r2_v1_test 21/23 falham por 'permission denied for function happens_asset': o helper pg_temp security definer do teste perdeu o EXECUTE de PUBLIC depois do 190900 (privilegio padrao revogado). Correcao: grant execute no helper pg_temp dentro do teste. Registrar como pendencia de teste, nao de produto.",
-    "Espelho: 'supabase db reset' precisa de 'supabase start' antes (LegacyResetLocalDbNotRunningError); o apply por psql na ordem de producao levou ~9 min; 200300 e 171000 tem guarda forward-only que impede reaplicar."
-  ],
-  "rota_real": {
-    "ambiente": "build release de test_driver/qa_main.dart (1da47a1cc) servido por serve.py em 127.0.0.1:3009; Chrome 9409 --use-angle=swiftshader perfil isolado; login por qa_drive; cliques por cdp_sem clickxy; rede por cdp_net; um Chrome, um servidor",
-    "capturas": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/01..16 (+ contato-11-16.png)",
-    "observado": {
-      "acontece.feed": "abre na rota normal com o contexto QA R04 Cuidado (sintetico) e o seletor 'Vendo como ... @qa-r04-cuidado-sintetico' (01); feed vazio apos publicar porque o predicado nao reconhece owner (gate 130200)",
-      "acontece.create / acontece.publish": "publicador abre para o contexto de instituicao (02..05); legenda + publico Familias + Publicar: save_happens_draft {id 2b05143d..., version 1} e publish_happens_post {status published} 200 (net-publish.log); segundo post para Equipe escolar tambem 200; reload volta a etapa 1 (rascunho nao salvo automaticamente, comportamento do publicador)",
-      "agora.view": "abre na rota normal, estado vazio honesto 'Nada novo no Agora' (12)",
-      "principal.for-you": "abre na rota normal com o contexto real (14)",
-      "momentos.view": "'Nao foi possivel carregar' + Tentar novamente (11): PGRST202 list_visible_moments (gate 130300)",
-      "momentos.create": "publicador abre (15), exige midia (upload real fica para a reprova)",
-      "principal.profile-view": "'Nao foi possivel carregar este perfil' (13): get_profile_about devolve null e o parser lancava FormatException; corrigido no cliente (commit desta rev), reprova apos o rebuild",
-      "agora.create": "/principal-now/publish nao e a rota (404); a rota e principalNowPublication; reprova apos o rebuild",
-      "errors.retry": "o botao Tentar novamente aparece na rota real de Momentos (11); prova positiva depois de 130300",
-      "errors.409": "nao existe fluxo de producao que navegue para a pagina 409 (conflitos sao tratados inline, ex. p_expected_revision de Cardapios); a familia so abre por /dev/errors/409; golden aprovado (P26). Proposta: manter FE local-green com esse gate registrado, nao promover"
+  "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
+  "historico_r05": {
+    "revision": 29,
+    "revisao_final_1550": {
+      "voce_entregou_tudo_mesmo": "Sim, no Git: origin/work/etapa2-r05-principal-chat-sistema em 92ae1d024 (+ este commit da rev 29), worktree limpa, sem stash, sem WIP; capturas, logs de rede (sem token), ferramentas, deltas-r05-pcs.json (22) e skills-deltas-r05.md na evidencia r05-principal-chat-sistema/. Quatro pacotes SQL entregues e ja em producao. Chrome, servidores, dart e espelho coelo_pcs5 encerrados.",
+      "o_que_fechou": [
+        "acontece.feed/create/publish/remove verified-e2e",
+        "agora.view e momentos.view FE verified + BE done",
+        "principal.for-you, principal.profile-view, errors.retry FE verified",
+        "agora.create, momentos.create, principal.profile-edit FE local-green",
+        "item 6 (testes de composicao) 19/19",
+        "P28 no Perfil e seletor de perfil; P35 (ponte, Superadmin ve tudo, arrobas reservados, perfil Coelo) em producao"
+      ],
+      "o_que_ficou_aberto": [
+        "meal-plans.create/edit/model-create/model-edit/publish: 503 por authorizedMealPlanTenantId nao injetado (P43)",
+        "publicacao com midia (Momentos/Agora/Acontece): funcao configurada apos o redeploy 15:22; prova pela tela pendente (dirigir por Key)",
+        "chat.attach: picker do cliente sobre 210200 + chat-media; chat.create-group E2E nao retomado",
+        "errors.409 sem fluxo de producao; agora.expire sem agendador; P28 restante (perguntar perfil ao publicar, canPublish no dock hospedado, feed agregado); avatar/capa do perfil Coelo",
+        "testes pre-existentes fora do delta (lista na mini_revisao_final)"
+      ],
+      "duvidas_ao_owner": [
+        "P43 Cardapios (remover o fail-closed por tenant vazio; servidor ja valida)",
+        "P44 sincronizador P35 por papel interno (owner x operations)"
+      ],
+      "dados_sinteticos": "3 posts do Acontece (1 retirado) e o rascunho de Momentos ba75dde2 na instituicao d0c40000-0000-4000-8000-000000000001; pessoa Coelo e memberships/assignments do sincronizador sao regra de produto"
     },
-    "dados_sinteticos_criados": [
-      "public.posts 2b05143d-479b-42e6-8fa8-dfa0ad1a030e (publico Familias) e um segundo post (publico Equipe escolar) na instituicao d0c40000-0000-4000-8000-000000000001, autor pessoa de servico do qa-r03, legenda 'Publicacao sintetica R05 ... (qa-r03, pode apagar)'; retirar por withdraw_happens_post no fim da Etapa 2 (P42)"
-    ]
-  },
-  "mini_revisao_final": {
-    "quando": "2026-09-11T14:56-03:00",
-    "sha_publicado": "commit desta rev em origin/work/etapa2-r05-principal-chat-sistema (abaixo dele: 2e596c710, 321d6bc1c, 45b443f05, 1da47a1cc, 5599f41da, 06d3753f9, becd1a50d, correcao do Perfil, capturas a778012cf, deltas); worktree limpa; origin/dev 11c4bfbef mesclado; sem stash",
-    "fechado_por_action_id_com_prova": [
-      "acontece.feed / acontece.create / acontece.publish / acontece.remove: verified-e2e (rota real abre com o contexto real; save_happens_draft + publish_happens_post 200; 3 posts sinteticos em producao, 1 retirado pela tela; feed lista e reload mantem; outro tenant 42501). Capturas 01-10, 21-27 em evidence/etapa-2/r05-principal-chat-sistema/rota-real/",
-      "agora.view: FE verified + BE done (rota real abre com estado vazio honesto; now_actor pela ponte; RPC 200/42501)",
-      "momentos.view: FE verified + BE done (130300 em producao; rota real abre; list_visible_moments 200)",
-      "principal.for-you: FE verified (blocked-decision -> rota real abre com o seletor P28)",
-      "principal.profile-view: FE verified (rota real com @, avatar inteiro, cabecalho igual ao mobile; get_profile_about nulo tratado)",
-      "errors.retry: FE verified (Tentar novamente na rota real de Momentos)",
-      "agora.create, momentos.create, principal.profile-edit: FE local-green (publicador/edicao abrem na rota real; publicacao com midia e edicao nao concluidas)",
-      "backend: 4 pacotes verdes entregues e aplicados (130000 ponte de ator + Superadmin ve tudo; 130100 @ no contexto + arrobas reservados + perfil Coelo; 130200 owner ve o feed; 130300 feed/retirada de Momentos)",
-      "item 6: composition_root_sanitization_test e superadmin_auth_scope_test atualizados ao estado ligado (19/19)"
-    ],
     "aberto_com_primeiro_gate": [
       {
         "pendencia": "meal-plans.create/edit/model-create/model-edit/publish",
@@ -236,46 +108,6 @@
         "pendencia": "Principal hospedado desenha o proprio cabecalho e dock dentro do shell (Acontece embedded)",
         "gate": "revisao de UI; nao e regressao desta rodada"
       }
-    ],
-    "deltas_propostos": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/deltas-r05-pcs.json (22 deltas, array no formato do aplicador; notas em deltas-r05-pcs.notas.json; ensaiado: apply-tracker-delta OK e validate-trackers PASS -> FE 75, BE 75, E2E 47 na minha worktree; rastreadores revertidos, o coordenador aplica)",
-    "pacotes_prontos": "nenhum pendente: 130000, 130100, 130200, 130300 aplicados pelo coordenador",
-    "dados_sinteticos_criados_em_producao": [
-      "public.posts na instituicao d0c40000-0000-4000-8000-000000000001 (autor: pessoa de servico do qa-r03): 2b05143d-479b-42e6-8fa8-dfa0ad1a030e (Familias, publicado), um segundo Publicacao sintetica R05 (qa-r03, pode apagar) (Familias, publicado) e aee8bc05-acb8-41e8-8bf8-f85a91f5d4f1 (Equipe escolar, RETIRADO pela tela); limpeza por withdraw_happens_post / arquivo no fim da Etapa 2 (P42)",
-      "public.institution_memberships + institution_role_assignments (institution_admin) criados pelo sincronizador 130000 para o espelho interno de cada usuario Superadmin em toda instituicao ativa (regra de produto P35, nao e dado de teste)",
-      "public.people c0e10000-0000-4000-8000-000000000001 Coelo + follow_links (regra de produto P35 B)",
-      "nenhum objeto no R2 (uploads de Momentos nao concluiram), nenhum cardapio, nenhuma publicacao de Agora/Momentos",
-      "public.moments_publications ba75dde2-cfba-458f-807c-ee2a94e7f981 (rascunho, legenda 'Momento sintetico R05 (qa-r03, pode apagar)') na instituicao d0c4...0001; sem objeto no R2 confirmado"
-    ],
-    "duvidas_ao_owner": [
-      "P43 (Cardapios): autorizar a remocao do fail-closed por tenant vazio no assistente (o servidor ja valida escopo) para destravar create/edit/model/publish? Sem isso as 5 acoes continuam 503 em producao",
-      "P44 (P35 sincronizador): todo usuario interno com platform_membership ativa recebe institution_admin em toda instituicao ativa; distinguir owner de operations?"
-    ],
-    "ambiente_encerrado": "Chrome 9409, servidores 3009/3000 e dart encerrados as 15:1x; espelho coelo_pcs5 parado (supabase stop)",
-    "complemento_1510": "segunda tentativa de Momentos com midia na origem localhost:3000 (CORS liberado): imagem entra no compositor, save_moments_draft devolve {id ba75dde2-cfba-458f-807c-ee2a94e7f981, version 2, receipt_id} e a publicacao para em /functions/v1/moments-media (duas chamadas sem corpo capturado, provavel preflight + falha), tela 'Nao foi possivel publicar agora' (38). Rascunho de Momentos ba75dde2 fica em producao (dado sintetico). Gate exato para momentos.create: resposta da Edge Function moments-media a partir de localhost:3000 (ler status pelo Network ou pelos logs da funcao). Logs: rota-real/net-momentos-publicar.log e net-acontece-publicar.log (sem token). Ferramentas novas em ferramentas/ (cdp_file.dart: intercepta Page.fileChooserOpened e entrega o arquivo; rpc.py: prova de RPC com credencial so em memoria).",
-    "complemento_1530": "Depois das allowlists de origem regravadas pelo coordenador (15:03), duas novas tentativas de publicar Momentos com midia em localhost:3000: imagem no compositor, save_moments_draft version 3 e 4 (rascunho ba75dde2), publico Equipe escolar marcado (45), Publicar agora -> 'Nao foi possivel publicar agora' (46). CAUSA RAIZ medida por sonda direta (ferramentas/rpc.py + fn_probe): POST /functions/v1/moments-media responde 422 {error: moments_r2_not_configured} para qualquer origem (a allowlist ja aceita localhost:3000 e 127.0.0.1:3009). No codigo: moments-media/index.ts environment() le COELO_R2_* como fallback, mas moments-media/r2_s3.ts momentsR2Config() so usa MOMENTS_R2_ENDPOINT/REGION/ACCESS_KEY_ID/SECRET_ACCESS_KEY/BUCKET, que nao existem nos secrets de producao (so COELO_R2_*). Correcao proposta (o classificador bloqueou a edicao nesta conversa como recurso compartilhado): em momentsR2Config usar MOMENTS_R2_* ?? COELO_R2_* e bucket padrao coelo-media-prod; redeploy de moments-media; happens-media e now-media conferir o mesmo caminho (dependencies.envGet). Logs: rota-real/net-momentos-publicar-2.log e -3.log. Ambiente encerrado 15:3x.",
-    "complemento_1540": "moments-media reimplantada pelo coordenador as 15:22 (dev 98201b51e): a sonda direta passou de 422 moments_r2_not_configured para 422 invalid_request (payload vazio), ou seja, a funcao esta configurada. Duas tentativas de publicar pela tela depois disso ficaram inconclusivas por automacao (o chip Equipe escolar alterna a cada clique e numa delas o clique em Publicar agora nao disparou chamada alguma; noutra a tela respondeu Nao foi possivel publicar agora sem corpo capturado). Sem delta novo: momentos.create continua FE local-green com gate = repetir a prova dirigindo por Key/semantica (nao por coordenada) e capturar o corpo da resposta de moments-media. Rascunho ba75dde2 chegou a version 6. Ambiente encerrado 15:3x."
-  },
-  "revisao_final_1550": {
-    "voce_entregou_tudo_mesmo": "Sim, no Git: origin/work/etapa2-r05-principal-chat-sistema em 92ae1d024 (+ este commit da rev 29), worktree limpa, sem stash, sem WIP; capturas, logs de rede (sem token), ferramentas, deltas-r05-pcs.json (22) e skills-deltas-r05.md na evidencia r05-principal-chat-sistema/. Quatro pacotes SQL entregues e ja em producao. Chrome, servidores, dart e espelho coelo_pcs5 encerrados.",
-    "o_que_fechou": [
-      "acontece.feed/create/publish/remove verified-e2e",
-      "agora.view e momentos.view FE verified + BE done",
-      "principal.for-you, principal.profile-view, errors.retry FE verified",
-      "agora.create, momentos.create, principal.profile-edit FE local-green",
-      "item 6 (testes de composicao) 19/19",
-      "P28 no Perfil e seletor de perfil; P35 (ponte, Superadmin ve tudo, arrobas reservados, perfil Coelo) em producao"
-    ],
-    "o_que_ficou_aberto": [
-      "meal-plans.create/edit/model-create/model-edit/publish: 503 por authorizedMealPlanTenantId nao injetado (P43)",
-      "publicacao com midia (Momentos/Agora/Acontece): funcao configurada apos o redeploy 15:22; prova pela tela pendente (dirigir por Key)",
-      "chat.attach: picker do cliente sobre 210200 + chat-media; chat.create-group E2E nao retomado",
-      "errors.409 sem fluxo de producao; agora.expire sem agendador; P28 restante (perguntar perfil ao publicar, canPublish no dock hospedado, feed agregado); avatar/capa do perfil Coelo",
-      "testes pre-existentes fora do delta (lista na mini_revisao_final)"
-    ],
-    "duvidas_ao_owner": [
-      "P43 Cardapios (remover o fail-closed por tenant vazio; servidor ja valida)",
-      "P44 sincronizador P35 por papel interno (owner x operations)"
-    ],
-    "dados_sinteticos": "3 posts do Acontece (1 retirado) e o rascunho de Momentos ba75dde2 na instituicao d0c40000-0000-4000-8000-000000000001; pessoa Coelo e memberships/assignments do sincronizador sao regra de produto"
+    ]
   }
 }

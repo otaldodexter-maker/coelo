@@ -751,16 +751,12 @@ GoRouter createSuperadminRouter({
     String? mealPlanModelId,
     bool isTemplate = false,
   }) {
+    // P47 (Owner, 11/09, opcao A): o assistente nao falha fechado por tenant
+    // vazio no cliente. Ele deriva o tenant da instituicao escolhida (lista
+    // autorizada pelo servidor) e superadmin_meal_plan_* revalida ator,
+    // capacidade e meal_plan_scope_allowed; o cliente nao e fronteira de
+    // autorizacao. authorizedMealPlanTenantId, quando injetado, e so o padrao.
     final authorizedTenantId = authorizedMealPlanTenantId?.trim() ?? '';
-    if (authorizedTenantId.isEmpty) {
-      // Fail-closed: sem tenant autorizado o assistente de mutacao nao abre.
-      return SuperadminErrorScreen(
-        key: const Key('meal-plan-authorized-tenant-unavailable'),
-        kind: SuperadminErrorKind.unavailable,
-        actionLabel: 'Voltar ao inicio',
-        onAction: () => context.goNamed(SuperadminRoutes.homeName),
-      );
-    }
     return productionOperationalPage(
       context,
       title: title,
