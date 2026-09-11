@@ -40,6 +40,11 @@ delete from public.people where id in (
   '9f040000-0000-4000-8000-000000000061',
   '9f040000-0000-4000-8000-000000000062',
   '9f040000-0000-4000-8000-000000000064');
-delete from public.institutions where id = '9f040000-0000-4000-8000-000000000010';
+-- audit.audit_logs (append-only) referencia institution_id por FK: a instituicao
+-- sintetica nao pode ser apagada; fica arquivada e marcada, sem vinculo algum.
+update public.institutions
+set status = 'archived', deleted_at = now(), updated_at = now(),
+    public_name = 'QA R04 Instituicao Sintetica (arquivada)'
+where id = '9f040000-0000-4000-8000-000000000010';
 
 commit;
