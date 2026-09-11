@@ -1,12 +1,12 @@
 {
- "revision": 24,
+ "revision": 25,
  "round": "E2-R04-20260911",
  "role": "Coordenacao noturna R04 - Claude Fable (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-fable-5-1",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T02:16:00-03:00",
+ "updatedAt": "2026-09-11T02:27:00-03:00",
  "relogio": "relogio da maquina; posse as 21:42 -03:00 de 10/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -41,7 +41,7 @@
    "primeiroGate": "reemitir reservations_v2 + 180000/180100/180200/180300 sobre a baseline com audit_append_superadmin_internal de 13 argumentos",
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
-   "estado": "reatribuida a coelo-39 as 02:06 (sem confirmacao ate 02:20): WIP de Locais publicado (a22721fbe)"
+   "estado": "coelo-39 sem retorno desde a atribuicao (02:06); pings as 02:16 e 02:26"
   },
   "acessos-pessoas": {
    "app": "Claude Opus",
@@ -53,7 +53,7 @@
    "ack": true,
    "recebidoEm": "2026-09-10T21:56:00-03:00",
    "resposta": "migration de MFA aplicada (lote 8): people.list/create/edit e escrita de Perfis/Modelos liberadas no backend; 170900 ficou obsoleta, nao precisa conferir; tirar account.mfa/AAL2 do caminho do cliente (router e auth gateway ainda citam aal2)",
-   "estado": "viva (coelo-d1): 171100 e 171200 em producao; Pessoas e Perfis listam com dados reais; AP-MODELS recarimbado em curso; rev 101"
+   "estado": "viva (coelo-d1): 171100/171200/171300/171500 em producao; Pessoas com criar/editar ligados; Decisao 7 nos formularios; access-models.* e Criar/Editar perfil em prova; rev 103"
   },
   "formularios-cuidado-rotina": {
    "app": "Claude Opus",
@@ -73,7 +73,7 @@
    "rev": 10,
    "head": "2335ea3c1",
    "upd": "22:4x",
-   "estado": "reatribuida a coelo-11 as 02:05 (sem confirmacao ate 02:20): WIP do launcher na worktree",
+   "estado": "coelo-11 confirmou as 02:2x: launcher corrigido (0d559370c) integrado; agora Cardapios/Principal na rota real; correcao extra do balao em formularios de Circulares/Avisos/Agenda",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -93,7 +93,7 @@
    "rev": 15,
    "head": "cd169f4f8",
    "upd": "22:4x",
-   "estado": "viva (coelo-9f, retomou): 6 pacotes em producao (200000..200500); prova 33/33 por RPC e rota real pela UI (aviso criado pela tela persistiu e sobreviveu ao reload); estado vazio provado nos tres diretorios; rev 18",
+   "estado": "viva (coelo-9f): 6 pacotes em producao; mini-revisao preliminar (rev 20, 24e04490d) com 27 capturas e 57 deltas aplicados; calendario 375 compacto; 3 duvidas ao Owner a receber",
    "ack": true,
    "recebidoEm": "2026-09-10T22:58:00-03:00"
   },
@@ -118,12 +118,13 @@
    "lote 12: 171100 (acessos-pessoas)",
    "lote 13: 240600 (realm-interno)",
    "lote 14: 171200 (acessos-pessoas)",
-   "lote 15: 200500 (publicacoes-agenda)"
+   "lote 15: 200500 (publicacoes-agenda)",
+   "lote 16: 171300, 171500 (acessos-pessoas)"
   ],
   "proximos": [
-   "acessos-pessoas: AP-MODELS recarimbado (1713xx)",
-   "formularios: P16 220450/220500 (subagente)",
-   "coordenador: 230023 disparo do worker de Avisos (aguarda P30)"
+   "formularios: P16 220450/220500 (subagente do coordenador)",
+   "coordenador: 230023 disparo do worker de Avisos (aguarda P30)",
+   "operacoes: nenhum SQL pendente"
   ]
  },
  "receiptsR04": [
@@ -206,6 +207,7 @@
   "22": "23:58 lote 11 (Avaliacoes v2 + revoke anon security definer) em producao; chaves de estrutura e avaliacoes ligadas; chat.edit/revoke E2E; regressao do launcher atribuida; realm-interno finalizado",
   "23": "02:12 retomada apos o reinicio da maquina (00:27): WIP das frentes preservado nas branches; lotes 12 e 13 registrados; reatribuicoes a coelo-11 e coelo-39; subagentes em publicacoes e operacoes; dump pos-lote 12",
   "24": "02:16 lotes 14 e 15 em producao; ponte de ator provada em producao para qa-r03; P30 (disparo do worker) ao Owner; skills coelo-backend/coelo-frontend com as regras da R04",
+  "25": "02:27 lote 16 em producao; 57 deltas de publicacoes aplicados (E2E 17/199); launcher corrigido integrado e novo achado devolvido; estrutura sem retorno",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -483,5 +485,16 @@
   "aberto": "disparo do worker (COELO_NOTICE_WORKER_SECRET nos secrets, notices_worker_url/notices_worker_secret no Vault, funcao app_private.notice_dispatch_publication_worker por pg_net e cron.schedule a cada minuto) e deploy da Edge Function: bloqueados pelo classificador da sessao do coordenador -> P30 ao Owner com os comandos prontos"
  },
  "provaDaPonteEmProducao": "02:13, supabase db query --linked somente leitura com request.jwt.claims de qa-r03 (aal1): current_person_id() resolve a pessoa de servico; has_platform_permission true para people.read, units.read, health_care.read, attendance.manage e meal_plans.manage; has_mfa_aal2() true. As familias people-based deixaram de negar o usuario de teste.",
- "semRevisaoNovaHa30min": "as 02:12: estrutura (rev 30, 23:24; reatribuida), principal-chat-sistema (rev 13, 23:27; reatribuida), operacoes (rev 16, 23:26; subagente), formularios-cuidado-rotina (rev 29, 00:17; subagente), realm-interno (rev 13, 00:24; finalizado)"
+ "semRevisaoNovaHa30min": "as 02:12: estrutura (rev 30, 23:24; reatribuida), principal-chat-sistema (rev 13, 23:27; reatribuida), operacoes (rev 16, 23:26; subagente), formularios-cuidado-rotina (rev 29, 00:17; subagente), realm-interno (rev 13, 00:24; finalizado)",
+ "lote16": {
+  "aplicadoEm": "2026-09-11T02:20 -03:00; ledger 93",
+  "dump": "schema-producao-20260911-lote16.sql (02:19, 3.698.566 bytes)",
+  "conteudo": [
+   "acessos-pessoas 20260910171300 access_profile_models_catalog_v2_baseline (catalogo de permissoes e Modelos de acesso sobre a baseline; substitui superadmin_access_profile_models_cursor pelo envelope {ok,data,error} que o cliente exige; pgTAP 32/11/10/17; 12 permissoes e 9 RPCs em producao)",
+   "acessos-pessoas 20260910171500 follow_links_backfill_v1 (backfill idempotente do acompanhamento D1 para child_contexts anteriores ao lote 12; pgTAP 5/5; 4 follow_links)"
+  ],
+  "nota": "access_profile_models_aal1_phase_policy_test tinha a assercao obsoleta 'MFA metadata is preserved' (Decisao 12); o grupo ajustou (408447ec9, 34/34)"
+ },
+ "deltasPublicacoesRev20": "57 deltas do grupo (proposedDeltas) convertidos e aplicados: BE done 20 (Avisos, Circulares, Agenda com CRUD + RLS + reload), FE verified 9 (notices.list/create, circulars.list/create/detail/publish/close/delete, agenda.view), FE local-green 13, E2E verified-e2e 9; certificacao com handoff e capturas ui/. Totais: FE verified 32/231, BE done 29/224, E2E 17/199; validador PASS; dev 5e72e716a",
+ "launcherDecisao7": "coelo-11 corrigiu o launcher (0d559370c: flag da pagina chega ao hospedeiro; destinos do Principal escondidos; 9/9) e esta integrado em dev; achado novo de publicacoes: em /circulars/new a 1440 o balao ainda cobre o botao Publicar (formularios de Circulares/Avisos/Agenda fora da regra) -> devolvido ao principal-chat como correcao prioritaria"
 }
