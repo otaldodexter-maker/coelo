@@ -438,6 +438,49 @@ void main() {
     );
   });
 
+  test('distribuicao nova vai a form_save_application com id nulo; existente mantem o id', () async {
+    final backend = _Backend(_applicationProjection());
+    final api = SupabaseFormsApi(backend);
+    FormApplication application(String id) => FormApplication(
+      id: id,
+      formId: 'form-1',
+      institutionId: 'institution-1',
+      name: 'Distribuicao',
+      audienceRules: const [
+        FormAudienceRule(
+          id: 'rule-1',
+          kind: FormAudienceRuleKind.institution,
+          mode: FormAudienceRuleMode.include,
+          targetId: 'institution-1',
+        ),
+      ],
+      managementVersion: 0,
+    );
+
+    await api.saveApplication(
+      FormCommand(
+        requestId: 'request-app-new',
+        expectedVersion: 0,
+        payload: FormSaveApplicationPayload(application('')),
+      ),
+    );
+    var payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
+    expect(backend.functionName, 'form_save_application');
+    // O wrapper publico trata id presente como distribuicao existente (P0002).
+    expect(payload.containsKey('id'), isTrue);
+    expect(payload['id'], isNull);
+
+    await api.saveApplication(
+      FormCommand(
+        requestId: 'request-app-edit',
+        expectedVersion: 0,
+        payload: FormSaveApplicationPayload(application('application-1')),
+      ),
+    );
+    payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
+    expect(payload['id'], 'application-1');
+  });
+
   test('schedule commands preserve schedule id and schedule management version', () async {
     final backend = _Backend(_applicationProjection());
     final api = SupabaseFormsApi(backend);

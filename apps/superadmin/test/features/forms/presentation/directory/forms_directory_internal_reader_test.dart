@@ -115,7 +115,10 @@ void main() {
       expect(find.text('Interno autorizado'), findsWidgets);
       expect(legacy.calls, isEmpty);
       expect(reader.queries, hasLength(1));
-      expect(find.byKey(const Key('forms-directory-create')), findsNothing);
+      // O reader continua exclusivo (nenhuma chamada ao realm de pessoas), mas
+      // o card Criar oferecido pela composicao aparece: regra do estado vazio
+      // do Owner e ADR 0034 (a rota abre, o servidor revalida ao salvar).
+      expect(find.byKey(const Key('forms-directory-create')), findsOneWidget);
     },
   );
 

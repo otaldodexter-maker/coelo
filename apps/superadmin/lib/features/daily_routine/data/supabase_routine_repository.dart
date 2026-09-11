@@ -41,7 +41,10 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       page: query.page,
       pageSize: query.pageSize,
       totalCount: _asInt(payload['total']),
-      canManage: rows.any((row) => row['can_manage'] == true),
+      // A capacidade vem no topo do envelope (candidato 20260911220000); o
+      // fallback por linha some quando o pacote estiver em producao. Sem isso o
+      // diretorio vazio nascia "somente leitura" (F-R04-FCR-009).
+      canManage: payload['can_manage'] == true || rows.any((row) => row['can_manage'] == true),
     );
   }
 

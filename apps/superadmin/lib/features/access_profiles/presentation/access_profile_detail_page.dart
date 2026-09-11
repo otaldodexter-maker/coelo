@@ -22,6 +22,7 @@ final class AccessProfileDetailPage extends StatefulWidget {
     required this.onBack,
     required this.onEdit,
     required this.onDeleted,
+    this.onCreateFromModel,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.onConversationsOpen,
@@ -36,6 +37,10 @@ final class AccessProfileDetailPage extends StatefulWidget {
   final VoidCallback onBack;
   final VoidCallback onEdit;
   final VoidCallback onDeleted;
+
+  /// Perfil de sistema (P31) não se edita nem se exclui; oferece criar um
+  /// perfil novo a partir dele.
+  final VoidCallback? onCreateFromModel;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final VoidCallback? onConversationsOpen;
@@ -288,21 +293,40 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
                         icon: const Icon(Icons.arrow_back_rounded),
                         label: const Text('Voltar'),
                       ),
-                      Wrap(
-                        spacing: CoeloSpacing.space2,
-                        children: [
-                          OutlinedButton.icon(
-                            onPressed: _deleting ? null : _delete,
-                            icon: const Icon(Icons.delete_outline_rounded),
-                            label: const Text('Excluir'),
-                          ),
-                          FilledButton.icon(
-                            onPressed: widget.onEdit,
-                            icon: const Icon(Icons.edit_outlined),
-                            label: const Text('Editar perfil'),
-                          ),
-                        ],
-                      ),
+                      if (_profile!.isSystem)
+                        Wrap(
+                          spacing: CoeloSpacing.space2,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            const Text(
+                              'Modelo do sistema: não editável',
+                              key: Key('access-profile-system-notice'),
+                            ),
+                            if (widget.onCreateFromModel != null)
+                              FilledButton.icon(
+                                key: const Key('access-profile-create-from-model'),
+                                onPressed: widget.onCreateFromModel,
+                                icon: const Icon(Icons.control_point_duplicate_outlined),
+                                label: const Text('Criar a partir deste modelo'),
+                              ),
+                          ],
+                        )
+                      else
+                        Wrap(
+                          spacing: CoeloSpacing.space2,
+                          children: [
+                            OutlinedButton.icon(
+                              onPressed: _deleting ? null : _delete,
+                              icon: const Icon(Icons.delete_outline_rounded),
+                              label: const Text('Excluir'),
+                            ),
+                            FilledButton.icon(
+                              onPressed: widget.onEdit,
+                              icon: const Icon(Icons.edit_outlined),
+                              label: const Text('Editar perfil'),
+                            ),
+                          ],
+                        ),
                     ],
                   ),
                   const SizedBox(height: CoeloSpacing.space4),

@@ -86,6 +86,8 @@ import '../../features/institutions/domain/institution_directory_repository.dart
 import '../../features/people/data/supabase_person_directory_repository.dart';
 import '../../features/people/domain/person_directory.dart';
 import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/data/supabase_person_handle_repository.dart';
+import '../../features/people/domain/person_handle.dart';
 import '../../features/people/data/supabase_person_detail_reader.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/groups/domain/group_directory.dart';
@@ -137,6 +139,7 @@ final class SuperadminAuthScope {
     required this.assessmentMutationsEnabled,
     required this.personDirectoryRepository,
     this.personDetailReader = const UnavailablePersonDetailReader(),
+    this.personHandleRepository,
     this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     required this.accessProfileRepository,
     this.platformUserRepository,
@@ -197,6 +200,9 @@ final class SuperadminAuthScope {
   final bool assessmentMutationsEnabled;
   final PersonDirectoryRepository personDirectoryRepository;
   final PersonDetailReader personDetailReader;
+
+  /// @ de pessoas (pacote 20260911170100); nulo até o pacote estar em produção.
+  final PersonHandleRepository? personHandleRepository;
   final PersonIdentityRepository personIdentityRepository;
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
@@ -253,6 +259,9 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
   String supabaseUrl = SuperadminAppConfig.supabaseUrl,
   String supabasePublishableKey = SuperadminAppConfig.supabasePublishableKey,
   bool enableAssessmentMutations = SuperadminAppConfig.assessmentMutationsEnabled,
+  // Chave de composicao do @ de pessoas: ligar quando 20260911170100 estiver
+  // em producao (o servidor autoriza; o cliente so pede e renderiza).
+  bool enablePersonHandles = false,
   SupabaseInitializer initializeSupabase = _initializeSupabase,
   CoeloAuthGatewayFactory createAuthGateway = _createAuthGateway,
   SuperadminAuthContextGatewayFactory createAuthContextGateway = _createAuthContextGateway,
@@ -377,6 +386,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       assessmentMutationsEnabled: enableAssessmentMutations,
       personDirectoryRepository: SupabasePersonDirectoryRepository(client),
       personDetailReader: SupabasePersonDetailReader(client),
+      personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
       personIdentityRepository: const UnavailablePersonIdentityRepository(),
       accessProfileRepository: SupabaseAccessProfileRepository(client),
       platformUserRepository: platformUsers,

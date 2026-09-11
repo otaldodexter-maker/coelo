@@ -118,7 +118,6 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
           _selectedDay = null;
           _expandedDay = false;
         }),
-        onToday: () => _changeMonth(widget.store!.referenceDate),
         onPrevious: () => _changeMonth(DateTime(_month.year, _month.month - 1)),
         onNext: () => _changeMonth(DateTime(_month.year, _month.month + 1)),
         enabled:
@@ -169,6 +168,7 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
       final body = _view == AgendaInstitutionalView.calendar
           ? _AgendaMonth(
               month: _month,
+              today: widget.store!.referenceDate,
               compact: mobile,
               occurrences: occurrences,
               selectedDay: _selectedDay,
@@ -180,7 +180,16 @@ final class _AgendaCalendarPageState extends State<AgendaCalendarPage> {
         padding: EdgeInsets.fromLTRB(inset, 0, inset, CoeloSpacing.space4),
         child: CoeloAdminWorkspaceLayout(
           toolbar: toolbar,
-          body: body,
+          body: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Expanded(child: body),
+              _AgendaFooter(
+                onToday: () => _changeMonth(widget.store!.referenceDate),
+                enabled: true,
+              ),
+            ],
+          ),
           detail: _selectedDay == null
               ? null
               : _AgendaDayDetail(
@@ -296,7 +305,6 @@ final class _AgendaUnavailableState extends State<_AgendaUnavailable> {
             onSearchChanged: (_) {},
             onContextChanged: (_) {},
             onViewChanged: (_) {},
-            onToday: () {},
             onPrevious: () {},
             onNext: () {},
             enabled: false,
@@ -322,7 +330,6 @@ final class _AgendaToolbar extends StatelessWidget {
     required this.onSearchChanged,
     required this.onContextChanged,
     required this.onViewChanged,
-    required this.onToday,
     required this.onPrevious,
     required this.onNext,
     this.enabled = true,
@@ -335,35 +342,32 @@ final class _AgendaToolbar extends StatelessWidget {
   final ValueChanged<String> onSearchChanged;
   final ValueChanged<String> onContextChanged;
   final ValueChanged<AgendaInstitutionalView> onViewChanged;
-  final VoidCallback onToday, onPrevious, onNext;
+  final VoidCallback onPrevious, onNext;
   final bool enabled;
 
   @override
   Widget build(BuildContext context) => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
-      Wrap(
-        alignment: WrapAlignment.spaceBetween,
-        crossAxisAlignment: WrapCrossAlignment.center,
-        spacing: CoeloSpacing.space3,
-        runSpacing: CoeloSpacing.space2,
+      Row(
         children: [
-          Text(_monthYear(month), style: Theme.of(context).textTheme.titleLarge),
-          Wrap(
-            spacing: CoeloSpacing.space1,
-            children: [
-              TextButton(onPressed: enabled ? onToday : null, child: const Text('Hoje')),
-              IconButton(
-                tooltip: 'Mês anterior',
-                onPressed: enabled ? onPrevious : null,
-                icon: const Icon(Icons.chevron_left_rounded),
-              ),
-              IconButton(
-                tooltip: 'Próximo mês',
-                onPressed: enabled ? onNext : null,
-                icon: const Icon(Icons.chevron_right_rounded),
-              ),
-            ],
+          Expanded(
+            child: Text(
+              _monthYear(month),
+              style: Theme.of(
+                context,
+              ).textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w800),
+            ),
+          ),
+          IconButton(
+            tooltip: 'Mês anterior',
+            onPressed: enabled ? onPrevious : null,
+            icon: const Icon(Icons.chevron_left_rounded),
+          ),
+          IconButton(
+            tooltip: 'Próximo mês',
+            onPressed: enabled ? onNext : null,
+            icon: const Icon(Icons.chevron_right_rounded),
           ),
         ],
       ),
@@ -399,8 +403,12 @@ final class _AgendaToolbar extends StatelessWidget {
             ),
           ),
         ],
-        actions: [_AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled)],
+        actions: const [],
       ),
+      const SizedBox(height: CoeloSpacing.space3),
+      // P33 (Owner, 11/09): o par Calendário/Lista divide a largura em 50%
+      // cada, maior e centralizado, em vez de dois botões pequenos à direita.
+      _AgendaViewToggle(selected: view, onSelected: onViewChanged, enabled: enabled),
       const SizedBox(height: CoeloSpacing.space3),
     ],
   );
@@ -414,30 +422,64 @@ final class _AgendaViewToggle extends StatelessWidget {
   final bool enabled;
 
   @override
-  Widget build(BuildContext context) => Semantics(
-    container: true,
-    label: 'Alternar visualização da Agenda',
-    child: Wrap(
-      spacing: CoeloSpacing.space1,
-      runSpacing: CoeloSpacing.space1,
-      children: [
-        for (final value in AgendaInstitutionalView.values)
-          OutlinedButton(
-            key: Key('agenda-view-${value.name}'),
-            onPressed: enabled ? () => onSelected(value) : null,
-            style: OutlinedButton.styleFrom(
-              foregroundColor: selected == value
-                  ? Theme.of(context).colorScheme.primary
-                  : Theme.of(context).colorScheme.onSurface,
-              side: BorderSide(
-                color: selected == value
-                    ? Theme.of(context).colorScheme.primary
-                    : Theme.of(context).colorScheme.outlineVariant,
-              ),
-              minimumSize: const Size(88, CoeloSize.touchMin),
-            ),
-            child: Text(value.label),
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Semantics(
+      container: true,
+      label: 'Alternar visualização da Agenda',
+      child: Center(
+        child: ConstrainedBox(
+          constraints: const BoxConstraints(maxWidth: 480),
+          child: Row(
+            children: [
+              for (final value in AgendaInstitutionalView.values) ...[
+                if (value != AgendaInstitutionalView.values.first)
+                  const SizedBox(width: CoeloSpacing.space1),
+                Expanded(
+                  child: OutlinedButton(
+                    key: Key('agenda-view-${value.name}'),
+                    onPressed: enabled ? () => onSelected(value) : null,
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: selected == value ? colors.primary : colors.onSurface,
+                      backgroundColor: selected == value ? colors.primaryContainer : null,
+                      side: BorderSide(
+                        color: selected == value ? colors.primary : colors.outlineVariant,
+                      ),
+                      minimumSize: const Size(0, CoeloSize.touchMin),
+                    ),
+                    child: Text(value.label),
+                  ),
+                ),
+              ],
+            ],
           ),
+        ),
+      ),
+    );
+  }
+}
+
+/// Rodapé da Agenda (referência do iPhone, P33): botão Hoje à esquerda.
+final class _AgendaFooter extends StatelessWidget {
+  const _AgendaFooter({required this.onToday, required this.enabled});
+
+  final VoidCallback onToday;
+  final bool enabled;
+
+  @override
+  Widget build(BuildContext context) => Padding(
+    padding: const EdgeInsets.only(top: CoeloSpacing.space2),
+    child: Row(
+      children: [
+        OutlinedButton(
+          key: const Key('agenda-today'),
+          onPressed: enabled ? onToday : null,
+          style: OutlinedButton.styleFrom(
+            minimumSize: const Size(88, CoeloSize.touchMin),
+            shape: const StadiumBorder(),
+          ),
+          child: const Text('Hoje'),
+        ),
       ],
     ),
   );
@@ -446,13 +488,14 @@ final class _AgendaViewToggle extends StatelessWidget {
 final class _AgendaMonth extends StatelessWidget {
   const _AgendaMonth({
     required this.month,
+    required this.today,
     required this.compact,
     required this.occurrences,
     required this.selectedDay,
     required this.onDaySelected,
   });
 
-  final DateTime month;
+  final DateTime month, today;
 
   /// Largura compacta medida pelo `LayoutBuilder` da página (não pelo
   /// `MediaQuery`), para valer também dentro do shell.
@@ -463,11 +506,14 @@ final class _AgendaMonth extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
     final first = DateTime(month.year, month.month);
     final visibleStart = first.subtract(Duration(days: first.weekday % 7));
-    // Com texto ampliado o número do dia cresce; a célula compacta acompanha
-    // para não transbordar (a 200% volta à altura antiga).
     final textScale = MediaQuery.textScalerOf(context).scale(1).clamp(1.0, 2.0);
+    // Referência do Owner (calendário do iPhone, 11/09): linhas de altura
+    // igual e generosa, separadas por linhas finas, sem contêiner por célula.
+    final rowHeight = (compact ? 104.0 : 128.0) * textScale;
+    final divider = BorderSide(color: colors.outlineVariant);
     return SingleChildScrollView(
       key: const Key('agenda-month-scroll'),
       child: Column(
@@ -475,47 +521,68 @@ final class _AgendaMonth extends StatelessWidget {
         children: [
           Row(
             children: [
-              for (final label in const ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'])
-                Expanded(child: Center(child: Text(label))),
+              for (var i = 0; i < 7; i++)
+                Expanded(
+                  child: Center(
+                    child: Text(
+                      const ['D', 'S', 'T', 'Q', 'Q', 'S', 'S'][i],
+                      style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                        fontWeight: FontWeight.w800,
+                        color: i == 0 || i == 6 ? colors.onSurfaceVariant : colors.onSurface,
+                      ),
+                    ),
+                  ),
+                ),
             ],
           ),
-          const SizedBox(height: CoeloSpacing.space2),
-          GridView.builder(
+          const SizedBox(height: CoeloSpacing.space1),
+          Column(
             key: const Key('agenda-month-grid'),
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-              crossAxisCount: 7,
-              // Decisão do Owner de 10/09 (agenda_calendar_light_375, A):
-              // em largura compacta a célula deixa de ser um retângulo alto e
-              // estreito; as ocorrências viram marcas em linha (ver
-              // `_AgendaDayCell`), então a célula fica quase quadrada.
-              childAspectRatio: compact ? .8 / textScale : .95,
-            ),
-            itemCount: 42,
-            itemBuilder: (context, index) {
-              final day = visibleStart.add(Duration(days: index));
-              final dayOccurrences = _forDay(occurrences, day);
-              return _AgendaDayCell(
-                day: day,
-                inMonth: day.month == month.month,
-                selected: selectedDay != null && _sameDay(day, selectedDay!),
-                occurrences: dayOccurrences,
-                compact: compact,
-                onPressed: () => onDaySelected(day),
-              );
-            },
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              for (var row = 0; row < 6; row++)
+                DecoratedBox(
+                  decoration: BoxDecoration(border: Border(top: divider)),
+                  child: SizedBox(
+                    height: rowHeight,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        for (var column = 0; column < 7; column++)
+                          Expanded(
+                            child: _dayCell(visibleStart.add(Duration(days: row * 7 + column))),
+                          ),
+                      ],
+                    ),
+                  ),
+                ),
+              DecoratedBox(
+                decoration: BoxDecoration(border: Border(top: divider)),
+                child: const SizedBox(height: 0),
+              ),
+            ],
           ),
         ],
       ),
     );
   }
+
+  Widget _dayCell(DateTime day) => _AgendaDayCell(
+    day: day,
+    inMonth: day.month == month.month,
+    today: _sameDay(day, today),
+    selected: selectedDay != null && _sameDay(day, selectedDay!),
+    occurrences: _forDay(occurrences, day),
+    compact: compact,
+    onPressed: () => onDaySelected(day),
+  );
 }
 
 final class _AgendaDayCell extends StatelessWidget {
   const _AgendaDayCell({
     required this.day,
     required this.inMonth,
+    required this.today,
     required this.selected,
     required this.occurrences,
     required this.onPressed,
@@ -523,160 +590,209 @@ final class _AgendaDayCell extends StatelessWidget {
   });
 
   final DateTime day;
-  final bool inMonth, selected;
+  final bool inMonth, today, selected;
   final List<AgendaOccurrence> occurrences;
   final VoidCallback onPressed;
 
-  /// Largura compacta (telefone): a célula mostra o número do dia e as
-  /// ocorrências como marcas coloridas em linha, com o excedente em `+N`,
-  /// em vez de rótulos truncados empilhados. Decisão do Owner de 10/09.
+  /// Largura compacta (telefone), medida pela página.
   final bool compact;
 
   @override
   Widget build(BuildContext context) {
-    final colors = Theme.of(context).colorScheme;
-    final largeText = MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-    final dayLabel = Text(
-      '${day.day}',
-      style: Theme.of(context).textTheme.labelLarge?.copyWith(
-        color: inMonth ? colors.onSurface : colors.onSurfaceVariant,
-        fontWeight: FontWeight.w800,
-      ),
-    );
-    if (compact) {
-      const shown = 3;
-      return Semantics(
-        button: true,
-        selected: selected,
-        label: '${day.day} de ${_monthName(day.month)}, ${occurrences.length} eventos',
-        child: Padding(
-          padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
-          child: TextButton(
-            key: Key('agenda-day-${_isoDate(day)}'),
-            onPressed: onPressed,
-            style: TextButton.styleFrom(
-              padding: EdgeInsets.zero,
-              backgroundColor: selected ? colors.primaryContainer : colors.surface,
-              foregroundColor: colors.onSurface,
-              shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-              side: BorderSide(color: colors.outlineVariant),
-            ),
-            child: Padding(
-              padding: const EdgeInsets.symmetric(
-                horizontal: CoeloSpacing.spaceHalf,
-                vertical: CoeloSpacing.space1,
-              ),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  dayLabel,
-                  const SizedBox(height: CoeloSpacing.spaceHalf),
-                  SizedBox(
-                    height: 12,
-                    child: Row(
-                      children: [
-                        for (final occurrence in occurrences.take(shown))
-                          Padding(
-                            padding: const EdgeInsets.only(right: 3),
-                            child: SizedBox.square(
-                              dimension: 8,
-                              child: DecoratedBox(
-                                decoration: BoxDecoration(
-                                  color: _eventMarkColor(colors, occurrence.item.prominence),
-                                  shape: BoxShape.circle,
-                                ),
-                              ),
-                            ),
-                          ),
-                        if (occurrences.length > shown)
-                          Flexible(
-                            child: FittedBox(
-                              fit: BoxFit.scaleDown,
-                              alignment: Alignment.centerLeft,
-                              child: Text(
-                                '+${occurrences.length - shown}',
-                                maxLines: 1,
-                                style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                                  fontSize: 9,
-                                  height: 12 / 9,
-                                  fontWeight: FontWeight.w700,
-                                  color: colors.onSurfaceVariant,
-                                ),
-                              ),
-                            ),
-                          ),
-                      ],
-                    ),
-                  ),
-                ],
-              ),
+    final theme = Theme.of(context);
+    final colors = theme.colorScheme;
+    final weekend = day.weekday == DateTime.saturday || day.weekday == DateTime.sunday;
+    final Color numberColor;
+    if (today) {
+      numberColor = colors.onPrimary;
+    } else if (selected) {
+      numberColor = colors.surface;
+    } else if (!inMonth) {
+      numberColor = colors.onSurfaceVariant.withValues(alpha: .55);
+    } else if (weekend) {
+      numberColor = colors.onSurfaceVariant;
+    } else {
+      numberColor = colors.onSurface;
+    }
+    // P33: número do dia um pouco menor, no canto superior esquerdo, com
+    // respiro (não colado à borda); hoje em círculo cheio na cor de destaque.
+    final number = SizedBox.square(
+      dimension: 24,
+      child: DecoratedBox(
+        decoration: BoxDecoration(
+          color: today
+              ? colors.primary
+              : selected
+              ? colors.onSurface
+              : Colors.transparent,
+          shape: BoxShape.circle,
+        ),
+        child: Center(
+          child: Text(
+            '${day.day}',
+            style: theme.textTheme.labelMedium?.copyWith(
+              color: numberColor,
+              fontWeight: FontWeight.w700,
             ),
           ),
         ),
-      );
-    }
+      ),
+    );
     return Semantics(
       button: true,
       selected: selected,
       label: '${day.day} de ${_monthName(day.month)}, ${occurrences.length} eventos',
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.spaceHalf),
-        child: TextButton(
-          key: Key('agenda-day-${_isoDate(day)}'),
-          onPressed: onPressed,
-          style: TextButton.styleFrom(
-            padding: EdgeInsets.zero,
-            backgroundColor: selected ? colors.primaryContainer : colors.surface,
-            foregroundColor: colors.onSurface,
-            shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-            side: BorderSide(color: colors.outlineVariant),
+      child: InkWell(
+        key: Key('agenda-day-${_isoDate(day)}'),
+        onTap: onPressed,
+        child: Padding(
+          padding: const EdgeInsets.fromLTRB(
+            CoeloSpacing.space1,
+            CoeloSpacing.space1,
+            CoeloSpacing.space1,
+            CoeloSpacing.spaceHalf,
           ),
-          child: Padding(
-            padding: const EdgeInsets.all(CoeloSpacing.space1),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                dayLabel,
-                const SizedBox(height: CoeloSpacing.spaceHalf),
-                for (final occurrence in occurrences.take(largeText ? 1 : 2))
-                  Padding(
-                    padding: const EdgeInsets.only(bottom: CoeloSpacing.spaceHalf),
-                    child: DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: _eventColor(colors, occurrence.item.prominence),
-                        borderRadius: BorderRadius.circular(CoeloRadius.sm),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 2),
-                        child: largeText
-                            ? SizedBox.square(
-                                dimension: 8,
-                                child: DecoratedBox(
-                                  decoration: BoxDecoration(
-                                    color: colors.onSurfaceVariant,
-                                    shape: BoxShape.circle,
-                                  ),
-                                ),
-                              )
-                            : Text(
-                                occurrence.item.title,
-                                maxLines: 1,
-                                overflow: TextOverflow.ellipsis,
-                                style: Theme.of(context).textTheme.labelSmall,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              Align(alignment: Alignment.topLeft, child: number),
+              const SizedBox(height: CoeloSpacing.space1),
+              Expanded(
+                child: LayoutBuilder(
+                  builder: (context, constraints) {
+                    // Cabem tantas pastilhas quantas a altura da linha permitir
+                    // (a linha não cresce, como no iPhone); o excedente vira +N.
+                    final pillHeight = 22 * MediaQuery.textScalerOf(context).scale(1);
+                    final fit = (constraints.maxHeight / pillHeight).floor();
+                    // O "+N" ocupa uma linha só quando não há espaço para ele
+                    // sob a última pastilha que cabe.
+                    final plusFits = constraints.maxHeight - fit * pillHeight >= 14;
+                    final shown = occurrences.length <= fit
+                        ? occurrences.length
+                        : (plusFits ? fit : fit - 1).clamp(0, occurrences.length);
+                    return ClipRect(
+                      child: OverflowBox(
+                        alignment: Alignment.topCenter,
+                        maxHeight: double.infinity,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            for (final occurrence in occurrences.take(shown))
+                              Padding(
+                                padding: const EdgeInsets.only(bottom: CoeloSpacing.spaceHalf),
+                                child: _AgendaEventPill(occurrence: occurrence),
                               ),
+                            if (occurrences.length > shown)
+                              Text(
+                                '+${occurrences.length - shown}',
+                                maxLines: 1,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  fontWeight: FontWeight.w700,
+                                  color: colors.onSurfaceVariant,
+                                ),
+                              ),
+                          ],
+                        ),
                       ),
-                    ),
-                  ),
-                if (!largeText && occurrences.length > 2)
-                  Text('+${occurrences.length - 2}', style: Theme.of(context).textTheme.labelSmall),
-              ],
-            ),
+                    );
+                  },
+                ),
+              ),
+            ],
           ),
         ),
       ),
     );
   }
+}
+
+/// Pastilha de evento na célula do mês (referência iOS): fundo suave na cor
+/// da categoria, ícone pequeno e título truncado; cancelado fica hachurado,
+/// com o prefixo "CANCELADO:" e o horário abaixo.
+final class _AgendaEventPill extends StatelessWidget {
+  const _AgendaEventPill({required this.occurrence});
+
+  final AgendaOccurrence occurrence;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    final canceled = occurrence.item.status == AgendaItemStatus.canceled;
+    final style = Theme.of(context).textTheme.labelSmall?.copyWith(
+      fontWeight: FontWeight.w700,
+      color: canceled ? colors.onSurfaceVariant : colors.onSurface,
+    );
+    final radius = BorderRadius.circular(CoeloRadius.xs);
+    final label = canceled ? 'CANCELADO: ${occurrence.item.title}' : occurrence.item.title;
+    final content = Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 3, vertical: 2),
+      child: canceled
+          ? Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(label, maxLines: 2, overflow: TextOverflow.ellipsis, style: style),
+                if (!occurrence.item.allDay) Text(_time(occurrence.startsAt), style: style),
+              ],
+            )
+          : Row(
+              children: [
+                Icon(_eventIcon(occurrence.item.type), size: 10, color: colors.onSurface),
+                const SizedBox(width: 2),
+                Expanded(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    softWrap: false,
+                    overflow: TextOverflow.clip,
+                    style: style,
+                  ),
+                ),
+              ],
+            ),
+    );
+    if (canceled) {
+      return ClipRRect(
+        borderRadius: radius,
+        child: CustomPaint(
+          painter: _HatchPainter(
+            background: colors.surfaceContainerHighest,
+            stroke: colors.outlineVariant,
+          ),
+          child: content,
+        ),
+      );
+    }
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: _eventColor(colors, occurrence.item.prominence),
+        borderRadius: radius,
+      ),
+      child: content,
+    );
+  }
+}
+
+/// Fundo hachurado (linhas diagonais finas) do evento cancelado no mês.
+final class _HatchPainter extends CustomPainter {
+  const _HatchPainter({required this.background, required this.stroke});
+
+  final Color background, stroke;
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    canvas.drawRect(Offset.zero & size, Paint()..color = background);
+    final paint = Paint()
+      ..color = stroke
+      ..strokeWidth = 1;
+    const step = 6.0;
+    for (var x = -size.height; x < size.width; x += step) {
+      canvas.drawLine(Offset(x, size.height), Offset(x + size.height, 0), paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(_HatchPainter old) => old.background != background || old.stroke != stroke;
 }
 
 final class _AgendaTimeline extends StatelessWidget {
@@ -1016,16 +1132,6 @@ Color _eventColor(ColorScheme colors, AgendaVisualProminence value) => switch (v
   AgendaVisualProminence.group => colors.tertiaryContainer,
   AgendaVisualProminence.activity => colors.surfaceContainerHighest,
   AgendaVisualProminence.personal => colors.errorContainer,
-};
-
-/// Cor sólida das marcas compactas: o "on container" de cada proeminência,
-/// legível em 8 px onde o tom pastel do rótulo não seria.
-Color _eventMarkColor(ColorScheme colors, AgendaVisualProminence value) => switch (value) {
-  AgendaVisualProminence.institutional => colors.primary,
-  AgendaVisualProminence.unit => colors.secondary,
-  AgendaVisualProminence.group => colors.tertiary,
-  AgendaVisualProminence.activity => colors.onSurfaceVariant,
-  AgendaVisualProminence.personal => colors.onErrorContainer,
 };
 
 IconData _eventIcon(AgendaItemType value) => switch (value) {

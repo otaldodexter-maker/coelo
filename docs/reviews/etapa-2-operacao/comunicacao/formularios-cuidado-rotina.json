@@ -1,192 +1,675 @@
 {
- "revision": 33,
- "round": "E2-R04-20260911",
+ "revision": 36,
+ "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
- "model": "claude-opus-5 (Claude, Opus)",
+ "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T08:31-03:00",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
- "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "b17eb0319+ (validacao de entrega apos o fechamento da R04; base origin/dev 0376a0446 mesclada em bbb4576f1)",
- "base": "origin/dev cbbb738db (docs(e2): rota real de Conta e Suporte, operacoes rev 18)",
+ "updatedAt": "2026-09-11T12:59-03:00",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r05-formularios-cuidado-rotina",
+ "head": "30cb982ca (publicado)",
+ "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
    "forms_authoring",
    "forms_responses",
    "forms_files",
+   "child_safety",
    "health_care",
    "medication",
-   "students",
    "attendance",
    "daily_routine"
   ],
   "actionCount": 43,
-  "order": [
-   "health_care + medication (rota normal com sessao qa-r03)",
-   "students (rota normal; student_links_read_v1 aplicado pelo coordenador)",
-   "attendance (D11 chave no banco; diretorio de Assiduidade ao composto CoeloAdminDirectory)",
-   "forms_authoring + forms_responses (D6 Testar por capacidade)",
-   "forms_files + forms.responses.export (XLSX no R2 privado via gateway)",
-   "daily_routine (D8 guarda de saida; D7 Lancamentos)",
-   "P16: tipo location em Formularios (pacote 2026091022xxxx + UI)",
-   "goldens do recorte; medication_form_mobile_light so apos P15 do grupo estrutura"
-  ]
- },
- "currentGate": {
-  "gate": "rota real provada em Formularios (list/create/edit/test verified/verified-e2e); demais familias bloqueadas por RPC ausente em producao ou UI inexistente (F-R04-FCR-005..010)",
-  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios / Saude e Cuidado / Acompanhamento",
-  "actionIds": [
-   "health-care.list",
-   "health-care.create",
-   "health-care.detail",
-   "health-care.edit",
-   "medication.list",
-   "medication.create",
-   "medication.detail",
-   "medication.edit",
-   "medication.evidence",
-   "students.list",
-   "students.link",
-   "students.transfer",
-   "students.edit",
-   "students.revoke",
-   "attendance.dashboard",
-   "attendance.create",
-   "attendance.mark",
-   "attendance.correct",
-   "attendance.finish",
-   "daily-routine.list",
-   "daily-routine.create",
-   "daily-routine.edit",
-   "daily-routine.apply",
-   "daily-routine.publish",
+  "em_e2e_hoje": [
    "forms.list",
    "forms.create",
    "forms.edit",
-   "forms.test",
-   "forms.location-question"
+   "medication.list"
   ],
-  "note": "estados propostos em deltas-r04-fcr.json; so verified/verified-e2e onde houve RPC 200 + reload na rota normal"
+  "order": [
+   "0. achado: cron coelo-forms-worker-dispatch 404 (forms_worker_url no Vault x funcao implantada form-operations), 10 min",
+   "1. forms.publish e forms.overview na rota real",
+   "2. forms.monitor/respond/responses/response-detail/responses.export (XLSX no R2 privado) e forms.location-answer",
+   "3. forms.upload/resolve-file/download/expire-file/delete-file (form-media em R2; backend blocked: gate real + pacote 2026091122xxxx se contrato)",
+   "4. child-safety.list/child/create/edit/suspend (P32 B auditado); spec curta da regra alvo (sino + politicas macro da unidade; Medicacao com opcao de nao acompanhar)",
+   "5. health-care.create/detail/edit e medication.create/detail/edit/evidence (ponte de ator + instituicao sintetica)",
+   "6. attendance.create/mark/correct/finish/dashboard e daily-routine.create/edit/apply/publish"
+  ]
  },
- "loopAgendado": "/loop 15m, agendado na abertura",
- "tests": {
-  "pgtap": "17/17 (internal_actor_service_person_v1_test); 55/55 (forms_location_question_v1_test, espelho p16)",
-  "flutter": "test/features/forms: 825 verdes / 1 pulado / 2 falhos (so forms_editor_golden_test: goldens 1440 divergentes, ver goldens.pendentes); os 6 testes novos de P16 verdes; ida e volta do editor e projecao de resposta original sem regressao apos f0df927e4",
-  "nota": "flutter analyze lib test limpo (0 issues) em da905636d",
-  "dart": "coelo_api test/forms 133/133 (inclui ida e volta da opcao de Local); coelo_domain test/forms 41/41"
+ "currentGate": {
+  "gate": "distribuicao salva em producao (form_save_application/form_save_schedule 200); aguardando o cron coelo-forms-occurrences (*/5) materializar a ocorrencia para provar monitor/responder/respostas; Seguranca infantil e Rotina ligadas no build 3",
+  "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios",
+  "actionIds": [
+   "forms.monitor",
+   "forms.respond",
+   "forms.responses",
+   "forms.response-detail",
+   "child-safety.create",
+   "child-safety.edit",
+   "child-safety.suspend",
+   "daily-routine.create"
+  ]
  },
+ "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
+ "tests": {},
  "reservedFiles": [],
  "blocking": [],
- "deltaProposals": [],
- "packages": [],
+ "deltaProposals": [
+  {
+   "action_id": "forms.publish",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "rota normal, publicacao pelo repository produtivo, reload mantem"
+  },
+  {
+   "action_id": "forms.publish",
+   "camada": "backend",
+   "estado_proposto": "done",
+   "delta": "form_publish em producao persistiu com auditoria; RLS/negativas pelas suites pgTAP existentes de Formularios (forms_definition 31, forms_internal_provenance_guards 39, operations_read_v2 70)"
+  },
+  {
+   "action_id": "forms.publish",
+   "camada": "integrated",
+   "estado_proposto": "verified-e2e",
+   "delta": "FE verified + BE done na mesma prova"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "rota normal, leitura real, reload"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "backend",
+   "estado_proposto": "done",
+   "delta": "form_get_overview em producao; leitura autorizada"
+  },
+  {
+   "action_id": "forms.overview",
+   "camada": "integrated",
+   "estado_proposto": "verified-e2e",
+   "delta": "leitura ponta a ponta com sessao qa-r03"
+  },
+  {
+   "action_id": "forms.list",
+   "camada": "frontend",
+   "estado_proposto": "verified",
+   "delta": "card Criar agora aparece em producao (F-R04-FCR-010a); prova na rota real apos o rebuild"
+  }
+ ],
+ "packages": [
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220000_daily_routine_directory_can_manage_v1.sql",
+   "action_id": [
+    "daily-routine.create",
+    "daily-routine.edit"
+   ],
+   "estado": "escrito; pgTAP pendente (sera rodado no espelho descartavel do subagente); create or replace de app_private.superadmin_routine_directory com can_manage no topo",
+   "chave_de_composicao": "nenhuma"
+  }
+ ],
  "commits": [
   {
-   "o_que": "composicao de producao de Perfis de cuidado (criar/editar/detalhe) e Medicacao (lista/criar/detalhe/editar) + guarda de mutacao do router aberta para /health-care, /students, /attendance, /daily-routine quando o repositorio real esta composto",
-   "prova": "dart analyze lib limpo; flutter test test/features/health_care verde"
+   "sha": "f6b536aa0",
+   "o_que": "rev 34 (abertura)"
   },
   {
-   "o_que": "cabecalho compartilhado (SuperadminShell) em todas as rotas de Formularios; builders de criar chamada e chamada passam a localizacao a guarda de mutacao; testes de rota de Assiduidade, Rotina e Cuidado atualizados ao contrato da ADR 0034 (rota abre quando o repositorio real esta composto)",
-   "prova": "dart analyze limpo; attendance_routes, daily_routine_routes e health_care_routes verdes"
+   "sha": "f17c2fa15",
+   "o_que": "fix(formularios): card Criar no diretorio de producao (F-R04-FCR-010a, canManage da composicao, servidor revalida forms.manage); rota /respond composta com api e occurrenceId sob withFormsAuthorization (F-R04-FCR-010b); botao Distribuir na visao geral abrindo showFormsProductionScheduleDialog (existia sem chamador) com reload das metricas; evidencias forms.publish/overview",
+   "prova": "flutter analyze limpo; forms_fail_closed_routes_test + forms_composition_sanitization_source_test 10/10; forms_directory (48/48 apos corrigir o comentario que disparava a assercao textual); forms_overview_page_test 18/18 (1 caso novo)"
   },
   {
-   "o_que": "P16: candidato 20260910220500_forms_location_question_v1 + pgTAP forms_location_question_v1_test (subagente do coordenador apos o reinicio de 00:27)",
-   "prova": "55/55 no espelho local baseline + lotes 1..14 com o pacote aplicado; pgTAP de Formularios existentes sem regressao (mesmos numeros antes/depois)",
-   "sha": "8db8e1cd3"
+   "sha": "1f4b02e28",
+   "o_que": "feat(seguranca-infantil): onCreate/onEdit ligados em /safety e /safety/children/:id (P32 B; RPCs child_safety_* e superadmin_child_safety_* conferidas em pg_proc de producao)",
+   "prova": "analyzer limpo; safety_routes_test + safety_reflow_test 6/6"
   },
   {
-   "o_que": "P16 cliente (forms.location-question / forms.location-answer): FormItemKind.location + FormAnswer.location no coelo_domain; FormOption com location_id/location_status/location_available; coelo_api decodifica/encoda (chaves de Local so juntas); gateway passa o detail FORMS_* e a API traduz FORMS_LOCATION_REVOKED e FORMS_LOCATION_NO_AVAILABLE_OPTION; editor com tipo Local (sem edicao manual de opcoes, aviso do catalogo de Locais); resposta com fichas do snapshot, revogada desabilitada \"(indisponivel)\", obrigatoria sem opcao bloqueada com aviso, escolha revogada recusada antes do envio; preview de Testar inerte",
-   "prova": "flutter analyze lib test limpo; 6 widget/unit tests novos verdes no superadmin (catalogo com Local; revogada desabilitada e nao gravada; obrigatoria sem opcao bloqueia; opcional nao bloqueia; recusa do servidor inline; mapeamento dos dois codigos); coelo_api 133/133; coelo_domain 41/41",
-   "sha": "da905636d",
-   "defeito_corrigido_pela_prova": "requireOnlyKeys exige conjunto exato: aceitar as chaves de Local como opcionais quebrou toda opcao de escolha (projecao de resposta original e autosave do editor); corrigido em f0df927e4 aceitando os dois formatos que o servidor projeta"
+   "sha": "b05078dc3",
+   "o_que": "fix(formularios): distribuicao nova vai ao fio com id nulo; o wrapper publico form_save_application trata id presente como distribuicao existente e respondia P0002 \"form application unavailable\" (medido por Network na rota real)",
+   "prova": "supabase_forms_api_test + forms_schedule_dialog_test 57/57 (1 caso novo)"
   },
   {
-   "o_que": "fix(formularios): formulario novo vai ao fio com id nulo (FormDefinitionDto.toJson); producao recusava com 22P02 invalid input syntax for type uuid: \"\"",
-   "prova": "coelo_api test/forms/form_definition_dto_test.dart 119/119; rota real: form_save_draft passou do 22P02 para o 22023 seguinte",
-   "sha": "f80d26909"
+   "sha": "(docs) spec",
+   "o_que": "docs/superpowers/specs/2026-09-11-child-safety-medication-policies-and-notifications-design.md: spec curta da regra alvo P32 (sino para unidade/hierarquia/demais responsaveis; unit_policies com acceptance_mode e tracking_enabled; aceite auditado; medicacao nao acompanhada = recusa honesta). Nao implementada; pacote de notificacoes nao coube na R05 e pode ser absorvido pelo item 6 da G5"
   },
   {
-   "o_que": "fix(formularios): SupabaseFormsApi.saveDraft retira status e management_version do payload (form_assert_payload_keys); producao recusava com 22023 \"form draft contains unknown keys\"",
-   "prova": "superadmin test/features/forms/data/supabase_forms_api_test.dart 50/50; rota real: form_save_draft 200 e reload mantendo",
-   "sha": "ee4903912"
-  },
-  {
-   "o_que": "docs(e2): rota real do grupo (rev 32): deltas por action_id, 25 capturas, findings F-R04-FCR-005..010, dados sinteticos para apagar",
-   "prova": "este JSON e deltas-r04-fcr.json",
-   "sha": "commit de docs desta revisao"
+   "sha": "30cb982ca",
+   "o_que": "feat(rotina): candidato 20260911220000_daily_routine_directory_can_manage_v1 (can_manage no topo do envelope de superadmin_routine_directory, mesmo corpo do lote 2 + a chave) e cliente lendo o topo com fallback por linha; router compoe onCreateEntry/onEdit em /daily-routine (F-R04-FCR-009)",
+   "prova": "analyzer limpo; pgTAP do candidato ainda por rodar (espelho do subagente de Assiduidade)"
   }
  ],
  "pendenciasRegistradas": [
   {
-   "action_id": "attendance.dashboard",
-   "o_que": "migrar o painel de Assiduidade ao composto CoeloAdminDirectory (regra do estado vazio + allowlist _AttendanceCallToolbar)",
-   "gate": "FE, sem dependencia externa"
+   "action_id": "forms.overview",
+   "o_que": "mostrar o status do formulario (rascunho/publicado) alem da versao de gestao",
+   "gate": "FE"
   },
   {
-   "action_id": "students.list",
-   "o_que": "StudentTrackingPage no composto; leitura de criancas falhando para qa-r03 (investigar superadmin_child_context_directory_v2)",
-   "gate": "FE + BE"
+   "action_id": "forms.edit",
+   "o_que": "campo Instituicao do editor com 133 px e nome quebrado em 6 linhas (captura 01); herdado da R04 (F-R04-FCR-010 captura 14)",
+   "gate": "FE"
   },
   {
-   "action_id": "router",
-   "o_que": "superadmin_error_routes_test ('/profile' 503) e persistent_shell_routes_test (inset do rodape) falham tambem em dev 75e4bff16: pre-existentes, nao sao deste grupo",
-   "gate": "outro grupo"
-  },
-  {
-   "action_id": "forms.location-question",
-   "o_que": "P16: backend 220500 e cliente em producao/dev; rota real bloqueada ate o 220800 (snapshot no v1) ser aplicado; depois provar salvar rascunho com item Local, responder, revogar um Local e ver a recusa, reload",
-   "gate": "coordenador aplica 220800; depois FE+BE na rota real"
-  },
-  {
-   "action_id": "health-care.create",
-   "o_que": "criar perfil/plano e Alunos listar dependem do 220600 (child directory v2)",
-   "gate": "coordenador aplica 220600; depois rota real (create/detail/edit de Cuidado e Medicacao, students.list)"
-  },
-  {
-   "action_id": "attendance.dashboard",
-   "o_que": "painel e Nova chamada dependem do 220700; o painel nao compoe onCreate (so por URL) e nao esta no composto",
-   "gate": "coordenador aplica 220700; FE: compor onCreate e migrar ao composto"
-  },
-  {
-   "action_id": "students.revoke",
-   "o_que": "F-R04-FCR-008: leitura diz can_manage=true, comando nega por has_context_permission; decidir com o coordenador (mesma funcao de capacidade ou institution_membership para a pessoa de servico)",
-   "gate": "decisao BE transversal (ponte de ator)"
-  },
-  {
-   "action_id": "daily-routine.create",
-   "o_que": "F-R04-FCR-009: canManage derivado do diretorio vazio; router nao compoe onCreateEntry/onEdit; BE expor can_manage no envelope",
-   "gate": "FE + BE do grupo"
-  },
-  {
-   "action_id": "forms.respond",
-   "o_que": "F-R04-FCR-010b: rota de resposta por ocorrencia monta FormResponsePage sem api/occurrenceId",
-   "gate": "FE do grupo"
-  },
-  {
-   "action_id": "forms.list",
-   "o_que": "F-R04-FCR-010a: card Criar so com reader == null; em producao nunca aparece (regra do estado vazio)",
-   "gate": "FE do grupo"
-  },
-  {
-   "action_id": "medication.evidence",
-   "o_que": "sem UI de registro de dose/evidencia no cliente; RPC existe (lote 2)",
-   "gate": "FE do grupo"
-  },
-  {
-   "action_id": "students.link",
-   "o_que": "vincular/transferir/editar sem UI (repositorio e comandos prontos); a tela so expoe revogar",
-   "gate": "FE do grupo (seletores de unidade/turma)"
-  },
-  {
-   "action_id": "forms.create",
-   "o_que": "rodape do editor de Formularios dentro do scroll (P15 pede ancorado em todos os formularios); editor nao usa SuperadminFormFrame",
-   "gate": "FE do grupo (o P15 ja esta no frame)"
+   "action_id": "forms.overview",
+   "o_que": "balao de chat aparece na visao geral (nao e criar/editar/publicar; conferir com a Decisao 7 se a visao geral conta como tela de publicar)",
+   "gate": "decisao de UX"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "coordenador: integrar b17eb0319+, aplicar 220600/220700/220800 na ordem (dump por lote) e mover para migrations/; grupo, na proxima rodada: repetir a rota real de Cuidado (create/detail/edit), Medicacao, Alunos, Assiduidade, Rotina e Local em Formularios; corrigir F-R04-FCR-008/009/010; medication_form_mobile_light apos P15",
- "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+ "nextStep": "ocorrencia pelo cron -> monitor/responder/respostas/detalhe na rota real; Seguranca infantil criar/editar/suspender; Cuidado/Medicacao criar/detalhe/editar; XLSX (responses.export) se houver resposta",
+ "finalizado": false,
+ "historicoR04": {
+  "revision": 33,
+  "round": "E2-R04-20260911",
+  "group": "formularios-cuidado-rotina",
+  "tool": "Claude Code (VS Code)",
+  "model": "claude-opus-5 (Claude, Opus)",
+  "coordinator": "Claude",
+  "timezone": "America/Sao_Paulo",
+  "updatedAt": "2026-09-11T08:31-03:00",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
+  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
+  "head": "b17eb0319+ (validacao de entrega apos o fechamento da R04; base origin/dev 0376a0446 mesclada em bbb4576f1)",
+  "base": "origin/dev cbbb738db (docs(e2): rota real de Conta e Suporte, operacoes rev 18)",
+  "scope": {
+   "families": [
+    "forms_authoring",
+    "forms_responses",
+    "forms_files",
+    "health_care",
+    "medication",
+    "students",
+    "attendance",
+    "daily_routine"
+   ],
+   "actionCount": 43,
+   "order": [
+    "health_care + medication (rota normal com sessao qa-r03)",
+    "students (rota normal; student_links_read_v1 aplicado pelo coordenador)",
+    "attendance (D11 chave no banco; diretorio de Assiduidade ao composto CoeloAdminDirectory)",
+    "forms_authoring + forms_responses (D6 Testar por capacidade)",
+    "forms_files + forms.responses.export (XLSX no R2 privado via gateway)",
+    "daily_routine (D8 guarda de saida; D7 Lancamentos)",
+    "P16: tipo location em Formularios (pacote 2026091022xxxx + UI)",
+    "goldens do recorte; medication_form_mobile_light so apos P15 do grupo estrutura"
+   ]
+  },
+  "currentGate": {
+   "gate": "rota real provada em Formularios (list/create/edit/test verified/verified-e2e); demais familias bloqueadas por RPC ausente em producao ou UI inexistente (F-R04-FCR-005..010)",
+   "screen": "Etapa 2 -> apps/superadmin -> Operacao -> Formularios / Saude e Cuidado / Acompanhamento",
+   "actionIds": [
+    "health-care.list",
+    "health-care.create",
+    "health-care.detail",
+    "health-care.edit",
+    "medication.list",
+    "medication.create",
+    "medication.detail",
+    "medication.edit",
+    "medication.evidence",
+    "students.list",
+    "students.link",
+    "students.transfer",
+    "students.edit",
+    "students.revoke",
+    "attendance.dashboard",
+    "attendance.create",
+    "attendance.mark",
+    "attendance.correct",
+    "attendance.finish",
+    "daily-routine.list",
+    "daily-routine.create",
+    "daily-routine.edit",
+    "daily-routine.apply",
+    "daily-routine.publish",
+    "forms.list",
+    "forms.create",
+    "forms.edit",
+    "forms.test",
+    "forms.location-question"
+   ],
+   "note": "estados propostos em deltas-r04-fcr.json; so verified/verified-e2e onde houve RPC 200 + reload na rota normal"
+  },
+  "loopAgendado": "/loop 15m, agendado na abertura",
+  "tests": {
+   "pgtap": "17/17 (internal_actor_service_person_v1_test); 55/55 (forms_location_question_v1_test, espelho p16)",
+   "flutter": "test/features/forms: 825 verdes / 1 pulado / 2 falhos (so forms_editor_golden_test: goldens 1440 divergentes, ver goldens.pendentes); os 6 testes novos de P16 verdes; ida e volta do editor e projecao de resposta original sem regressao apos f0df927e4",
+   "nota": "flutter analyze lib test limpo (0 issues) em da905636d",
+   "dart": "coelo_api test/forms 133/133 (inclui ida e volta da opcao de Local); coelo_domain test/forms 41/41"
+  },
+  "reservedFiles": [],
+  "blocking": [],
+  "deltaProposals": [],
+  "packages": [],
+  "commits": [
+   {
+    "o_que": "composicao de producao de Perfis de cuidado (criar/editar/detalhe) e Medicacao (lista/criar/detalhe/editar) + guarda de mutacao do router aberta para /health-care, /students, /attendance, /daily-routine quando o repositorio real esta composto",
+    "prova": "dart analyze lib limpo; flutter test test/features/health_care verde"
+   },
+   {
+    "o_que": "cabecalho compartilhado (SuperadminShell) em todas as rotas de Formularios; builders de criar chamada e chamada passam a localizacao a guarda de mutacao; testes de rota de Assiduidade, Rotina e Cuidado atualizados ao contrato da ADR 0034 (rota abre quando o repositorio real esta composto)",
+    "prova": "dart analyze limpo; attendance_routes, daily_routine_routes e health_care_routes verdes"
+   },
+   {
+    "o_que": "P16: candidato 20260910220500_forms_location_question_v1 + pgTAP forms_location_question_v1_test (subagente do coordenador apos o reinicio de 00:27)",
+    "prova": "55/55 no espelho local baseline + lotes 1..14 com o pacote aplicado; pgTAP de Formularios existentes sem regressao (mesmos numeros antes/depois)",
+    "sha": "8db8e1cd3"
+   },
+   {
+    "o_que": "P16 cliente (forms.location-question / forms.location-answer): FormItemKind.location + FormAnswer.location no coelo_domain; FormOption com location_id/location_status/location_available; coelo_api decodifica/encoda (chaves de Local so juntas); gateway passa o detail FORMS_* e a API traduz FORMS_LOCATION_REVOKED e FORMS_LOCATION_NO_AVAILABLE_OPTION; editor com tipo Local (sem edicao manual de opcoes, aviso do catalogo de Locais); resposta com fichas do snapshot, revogada desabilitada \"(indisponivel)\", obrigatoria sem opcao bloqueada com aviso, escolha revogada recusada antes do envio; preview de Testar inerte",
+    "prova": "flutter analyze lib test limpo; 6 widget/unit tests novos verdes no superadmin (catalogo com Local; revogada desabilitada e nao gravada; obrigatoria sem opcao bloqueia; opcional nao bloqueia; recusa do servidor inline; mapeamento dos dois codigos); coelo_api 133/133; coelo_domain 41/41",
+    "sha": "da905636d",
+    "defeito_corrigido_pela_prova": "requireOnlyKeys exige conjunto exato: aceitar as chaves de Local como opcionais quebrou toda opcao de escolha (projecao de resposta original e autosave do editor); corrigido em f0df927e4 aceitando os dois formatos que o servidor projeta"
+   },
+   {
+    "o_que": "fix(formularios): formulario novo vai ao fio com id nulo (FormDefinitionDto.toJson); producao recusava com 22P02 invalid input syntax for type uuid: \"\"",
+    "prova": "coelo_api test/forms/form_definition_dto_test.dart 119/119; rota real: form_save_draft passou do 22P02 para o 22023 seguinte",
+    "sha": "f80d26909"
+   },
+   {
+    "o_que": "fix(formularios): SupabaseFormsApi.saveDraft retira status e management_version do payload (form_assert_payload_keys); producao recusava com 22023 \"form draft contains unknown keys\"",
+    "prova": "superadmin test/features/forms/data/supabase_forms_api_test.dart 50/50; rota real: form_save_draft 200 e reload mantendo",
+    "sha": "ee4903912"
+   },
+   {
+    "o_que": "docs(e2): rota real do grupo (rev 32): deltas por action_id, 25 capturas, findings F-R04-FCR-005..010, dados sinteticos para apagar",
+    "prova": "este JSON e deltas-r04-fcr.json",
+    "sha": "commit de docs desta revisao"
+   }
+  ],
+  "pendenciasRegistradas": [
+   {
+    "action_id": "attendance.dashboard",
+    "o_que": "migrar o painel de Assiduidade ao composto CoeloAdminDirectory (regra do estado vazio + allowlist _AttendanceCallToolbar)",
+    "gate": "FE, sem dependencia externa"
+   },
+   {
+    "action_id": "students.list",
+    "o_que": "StudentTrackingPage no composto; leitura de criancas falhando para qa-r03 (investigar superadmin_child_context_directory_v2)",
+    "gate": "FE + BE"
+   },
+   {
+    "action_id": "router",
+    "o_que": "superadmin_error_routes_test ('/profile' 503) e persistent_shell_routes_test (inset do rodape) falham tambem em dev 75e4bff16: pre-existentes, nao sao deste grupo",
+    "gate": "outro grupo"
+   },
+   {
+    "action_id": "forms.location-question",
+    "o_que": "P16: backend 220500 e cliente em producao/dev; rota real bloqueada ate o 220800 (snapshot no v1) ser aplicado; depois provar salvar rascunho com item Local, responder, revogar um Local e ver a recusa, reload",
+    "gate": "coordenador aplica 220800; depois FE+BE na rota real"
+   },
+   {
+    "action_id": "health-care.create",
+    "o_que": "criar perfil/plano e Alunos listar dependem do 220600 (child directory v2)",
+    "gate": "coordenador aplica 220600; depois rota real (create/detail/edit de Cuidado e Medicacao, students.list)"
+   },
+   {
+    "action_id": "attendance.dashboard",
+    "o_que": "painel e Nova chamada dependem do 220700; o painel nao compoe onCreate (so por URL) e nao esta no composto",
+    "gate": "coordenador aplica 220700; FE: compor onCreate e migrar ao composto"
+   },
+   {
+    "action_id": "students.revoke",
+    "o_que": "F-R04-FCR-008: leitura diz can_manage=true, comando nega por has_context_permission; decidir com o coordenador (mesma funcao de capacidade ou institution_membership para a pessoa de servico)",
+    "gate": "decisao BE transversal (ponte de ator)"
+   },
+   {
+    "action_id": "daily-routine.create",
+    "o_que": "F-R04-FCR-009: canManage derivado do diretorio vazio; router nao compoe onCreateEntry/onEdit; BE expor can_manage no envelope",
+    "gate": "FE + BE do grupo"
+   },
+   {
+    "action_id": "forms.respond",
+    "o_que": "F-R04-FCR-010b: rota de resposta por ocorrencia monta FormResponsePage sem api/occurrenceId",
+    "gate": "FE do grupo"
+   },
+   {
+    "action_id": "forms.list",
+    "o_que": "F-R04-FCR-010a: card Criar so com reader == null; em producao nunca aparece (regra do estado vazio)",
+    "gate": "FE do grupo"
+   },
+   {
+    "action_id": "medication.evidence",
+    "o_que": "sem UI de registro de dose/evidencia no cliente; RPC existe (lote 2)",
+    "gate": "FE do grupo"
+   },
+   {
+    "action_id": "students.link",
+    "o_que": "vincular/transferir/editar sem UI (repositorio e comandos prontos); a tela so expoe revogar",
+    "gate": "FE do grupo (seletores de unidade/turma)"
+   },
+   {
+    "action_id": "forms.create",
+    "o_que": "rodape do editor de Formularios dentro do scroll (P15 pede ancorado em todos os formularios); editor nao usa SuperadminFormFrame",
+    "gate": "FE do grupo (o P15 ja esta no frame)"
+   }
+  ],
+  "duvidasParaOOwner": [],
+  "nextStep": "coordenador: integrar b17eb0319+, aplicar 220600/220700/220800 na ordem (dump por lote) e mover para migrations/; grupo, na proxima rodada: repetir a rota real de Cuidado (create/detail/edit), Medicacao, Alunos, Assiduidade, Rotina e Local em Formularios; corrigir F-R04-FCR-008/009/010; medication_form_mobile_light apos P15",
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
+  "ambienteDeTeste": {
+   "app": "flutter run -d chrome -t test_driver/qa_main.dart em http://localhost:3010 (a porta 3000 estava ocupada por outra frente; CORS do R2 so libera 3000, entao a prova de upload direto ao R2 tera de usar 3000 quando chegar a vez)",
+   "sessao": "qa-r03@coelo.me entrou em producao pela tela de login normal; credencial lida do arquivo local para o ambiente do processo, nunca impressa",
+   "harness": "test_driver/qa_main.dart (mesma composicao de lib/main.dart mais enableFlutterDriverExtension) e test_driver/qa_drive.dart (CDP -> window.$flutterDriver). O MCP dart/flutter_driver_command nao funciona neste app web: os finders ficam presos no frame sync; com set_frame_sync=false pelo gancho web tudo responde",
+   "pubspec": "flutter_driver entrou em dev_dependencies (aviso ao coordenador: toquei o pubspec de apps/superadmin)"
+  },
+  "findings": [
+   {
+    "id": "F-R04-FCR-001",
+    "titulo": "Cuidado e Medicacao: so o diretorio de Perfis esta ligado no router de producao",
+    "medido": "apps/superadmin/lib/app/router/superadmin_router.dart @ 98cc0529d, linhas 2730-2783",
+    "evidencia": "healthCareProfileCreate/Edit montam HealthCareProfileFormPage sem onSaved, loadDraft nem childOptions (a pagina cai em 'Cadastro indisponivel'); healthCareProfileDetail redireciona para mutation-capability-unavailable; as quatro rotas de Medicacao montam _unavailableMedicationPlans. O repositorio Supabase e a chave existem, mas nao chegam a essas rotas.",
+    "consequencia": "health-care.create/detail/edit e medication.* nao passam da regua do MVP por composicao, nao por backend. Assumido por este grupo: ligar as rotas ao SupabaseHealthCareRepository/SupabaseMedicationPlanRepository (criar perfil = save_profile com profile_id nulo e child_context_id; opcoes de crianca pelo leitor superadmin_child_context_directory_v2)."
+   },
+   {
+    "id": "F-R04-FCR-002",
+    "severity": "estrutural: bloqueia a regua do MVP em TODAS as familias do recorte (e em qualquer familia people-based) para a sessao qa-r03",
+    "titulo": "A sessao qa-r03 nao existe no realm people-based: as RPCs dos lotes 2/3/5 resolvem o ator por app_private.current_person_id() e a tratam como nao autenticada",
+    "medido": "producao, 2026-09-10 ~23:30, supabase db query --linked somente leitura",
+    "evidencia": "auth.users qa-r03@coelo.me tem 0 person_auth_links ativos e 0 platform_memberships; so existe em app_private.superadmin_internal_memberships (realm interno v2). app_private.current_person_id() le person_auth_links; app_private.has_platform_permission() le platform_memberships. require_health_care_actor, routine_*, can_access_attendance_child e student_link_require_scope usam essas duas funcoes; as tabelas de recibo, created_by_person_id e audit.audit_logs.actor_person_id tem FK para people(id). Formularios (form_command_receipts.actor_person_id) esta no mesmo caso. Producao tambem tem 0 instituicoes e 0 criancas.",
+    "consequencia": "nenhuma rota de Cuidado, Medicacao, Rotina, Assiduidade, Alunos ou Formularios passa da regua com qa-r03 hoje, mesmo com a composicao ligada; o servidor responde 'authentication required'. Estrutura/Acessos nao sentem isso porque as RPCs v2 usam require_superadmin_internal_context.",
+    "acao": "assumido por este grupo: pacote candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql que espelha cada identidade do realm interno v2 numa pessoa de servico (people.person_type='service') com platform_membership no mesmo papel de plataforma, e faz current_person_id() cair nesse espelho quando nao ha person_auth_link. Assim todas as RPCs people-based (inclusive Formularios e as de outros grupos) reconhecem a sessao interna sem reescrever cada funcao. Nao cria person_auth_link (o guard do realm impede e nao e necessario).",
+    "para_o_coordenador": "e uma mudanca transversal em app_private.current_person_id(): aplicar cedo na fila para as outras frentes people-based (Principal/Chat, Publicacoes) tambem passarem a funcionar com qa-r03. Se preferir outro desenho (ex.: pessoa de servico criada pelo Auth admin), avisar no coordenacao.json."
+   },
+   {
+    "id": "F-R04-FCR-003",
+    "severity": "bloqueia Assiduidade, Alunos, Cuidado, Medicacao e Rotina para QUALQUER papel",
+    "titulo": "Producao nao tem os codigos attendance.read, attendance.manage e people.assign_children, e nenhum papel de plataforma concede health_care.*, medication.*, routine.* ou attendance.*",
+    "medido": "producao, 2026-09-10 ~23:50, platform_permissions e platform_role_permissions por supabase db query --linked (leitura)",
+    "evidencia": "platform_permissions tem health_care.read/manage, medication.read/manage/record_evidence e routine.* (lote 2), mas zero grants em platform_role_permissions para esses codigos em qualquer papel; attendance.* e people.assign_children nao existem no catalogo (as migrations 010200 e 220200 os exigem).",
+    "consequencia": "mesmo com o ator resolvido, has_platform_permission('health_care.read') e falso para o owner; attendance e alunos negam para todos.",
+    "acao": "incluido no pacote 20260910220400: insere os tres codigos com rotulos e concede ao papel owner (allow, active) as permissoes das familias do recorte, sem tocar outros papeis (Decisao 12/P7: owner e o piso)."
+   },
+   {
+    "id": "F-R04-FCR-004",
+    "severity": "ambiente: a receita do README para provar pacote nao roda como esta",
+    "titulo": "supabase db reset aplica o seed DEPOIS das migrations; 20260910170100 exige o catalogo (people.read com MFA e matriz de grants) e falha antes do seed entrar",
+    "medido": "projeto descartavel coelo_fcr_r04 (portas 554xx), 2026-09-10 23:40-00:05, tres tentativas",
+    "evidencia": "1a: 'active MFA people.read capability is required' (SQLSTATE 55000) em 20260910170100; 2a (preflight de MFA removido na copia local): 'people.read role grants do not match the approved detail matrix'. Ambas porque platform_permissions esta vazia no momento da migration.",
+    "contorno_local": "copiar supabase/seed.sql para migrations como 20260910000001_seed_catalogo_local.sql (so no descartavel) e desligar [db.seed]; assim o catalogo existe antes de 170100. Nao alterei arquivo do repositorio.",
+    "para_o_coordenador": "vale registrar no README ou mover o catalogo para dentro da baseline; senao cada frente vai tropecar aqui."
+   },
+   {
+    "id": "F-R04-FCR-005",
+    "severity": "bloqueia forms.location-question na rota de producao",
+    "titulo": "P16: o snapshot de Locais so e aplicado no salvamento v2 e na publicacao; a rota de producao usa form_save_draft v1 e o validador exige >=1 opcao",
+    "medido": "producao, 11/09 03:20-03:30, form_save_draft -> 400 23514 com Local ativo na instituicao",
+    "evidencia": "packages/coelo_database/migrations/20260910220500_forms_location_question_v1.sql: form_apply_location_options_v1 chamado nas linhas 452 (replace_draft_definition_v2) e 734 (form_publish); validate_form_definition (linha ~634) levanta \"location item requires at least one active location\" quando form_question_options esta vazio; app_private.form_save_draft (baseline) nao chama o snapshot. O router monta FormsEditorPage com api (form_save_draft), nunca FormsEditorPage.authoring (v2).",
+    "acao": "backend do grupo: candidato que aplique form_apply_location_options_v1 no caminho v1 (app_private.form_save_draft, antes de validate_form_definition) com pgTAP; alternativa de cliente: compor o editor com a API v2. Nao aplicado em producao."
+   },
+   {
+    "id": "F-R04-FCR-006",
+    "severity": "bloqueia health-care.create, medication.create e students.list para qualquer sessao",
+    "titulo": "superadmin_child_context_directory_v2 nunca chegou a producao",
+    "medido": "producao, 11/09 03:08, PGRST202 em /health-care/profiles/new, /health-care/medication-plans/new e /students",
+    "evidencia": "funcao so em packages/coelo_database/migrations-historico/20260908051500_superadmin_child_context_directory_v2.sql (candidato CHILD-READ01 com pins de hash de 09/2026); ausente da baseline 20260910000000 e de migrations/",
+    "acao": "backend: reavaliar o candidato sobre a baseline (pins de hash vao divergir) e entrar na fila do coordenador; ate la Cuidado/Medicacao nao criam e Alunos nao lista."
+   },
+   {
+    "id": "F-R04-FCR-007",
+    "severity": "bloqueia toda a familia attendance",
+    "titulo": "RPCs de Assiduidade ausentes em producao: attendance_dashboard_access/read so no historico e superadmin_attendance_context_options inexistente no repositorio",
+    "medido": "producao, 11/09 03:12, PGRST202 em /attendance e /attendance/new",
+    "evidencia": "attendance_dashboard_access: migrations-historico/20260825171221_attendance_responsive_dashboard.sql; superadmin_attendance_context_options e superadmin_attendance_create_call: nenhum arquivo em migrations/, candidatos/ ou migrations-historico/",
+    "acao": "backend: o lote 20260910010200 (Assiduidade) so cobriu escalada e idempotencia; falta o contrato de leitura/contexto/criacao. Sem isso attendance.* nao passa da regua."
+   },
+   {
+    "id": "F-R04-FCR-008",
+    "severity": "bloqueia students.revoke (e link/transfer/edit) para a sessao qa-r03",
+    "titulo": "superadmin_student_links diz can_manage=true e superadmin_student_revoke nega com people.assign_children required",
+    "medido": "producao, 11/09 03:27, 403 42501",
+    "evidencia": "student_link_require_scope (20260910220200) usa app_private.has_context_permission(institution, ...); a ponte 220400 da a qa-r03 platform_membership e has_platform_permission, nao membership contextual na instituicao sintetica",
+    "acao": "backend: alinhar leitura e comando (mesma funcao de capacidade) ou dar a pessoa de servico o contexto institucional; decidir com o coordenador antes de mexer na ponte transversal."
+   },
+   {
+    "id": "F-R04-FCR-009",
+    "severity": "bloqueia daily-routine.create e esconde o card Criar",
+    "titulo": "Rotina diaria deriva canManage das linhas do diretorio (falso no vazio) e o router nao compoe onCreateEntry/onEdit",
+    "medido": "producao, 11/09 03:14, /daily-routine \"Modo somente leitura\", /daily-routine/new sem Salvar",
+    "evidencia": "daily_routine_pages.dart canManage = rows.any(can_manage); daily_routine_form_sections.dart ~322-334 fetchPage(model, pageSize 1).canManage; superadmin_routine_directory devolve can_manage por item, nao no topo",
+    "acao": "frontend: capacidade propria (bootstrap permission_codes routine.* ou can_manage no topo do diretorio) e compor onCreateEntry/onEdit; backend: expor can_manage no envelope do diretorio."
+   },
+   {
+    "id": "F-R04-FCR-010",
+    "severity": "UI, cliente",
+    "titulo": "Tres defeitos de composicao vistos na rota real",
+    "evidencia": "(a) /forms: card \"Criar formulario\" so aparece quando reader == null (forms_directory_page.dart 68-81, 238), logo nunca em producao; (b) /forms/:id/occurrences/:occ/respond monta const FormResponsePage() sem api/occurrenceId (\"Resposta indisponivel\"); (c) o balao flutuante de chat (174x48 em 1321,865) cobre o botao primario \"Criar local\" (99x48 em 1350,856) no formulario de Locais: o clique abriu /communication/conversations (memoria do Owner: chat nao aparece em telas de criar/editar). Tambem o campo Instituicao do editor de Formularios renderiza com 133px de largura e quebra o nome em 6 linhas (captura 14).",
+    "acao": "frontend do grupo (a, b) e do grupo de Estrutura/shell (c)."
+   }
+  ],
+  "pacotesProntos": [
+   {
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql",
+    "pgtap": "packages/coelo_database/supabase/tests/internal_actor_service_person_v1_test.sql (17 assercoes)",
+    "estado": "APLICADO EM PRODUCAO pelo coordenador (lote 10, ledger 85, 11/09 ~23:23 do relogio dele); 4 pessoas de servico e 4 memberships espelho conferidas por leitura; codigos attendance.*/people.assign_children presentes",
+    "o_que_faz": "F-R04-FCR-002 + F-R04-FCR-003: catalogo attendance/people.assign_children, grants ao owner, pessoa de servico + membership espelho por identidade interna (gatilho), current_person_id() com fallback ao espelho",
+    "transversal": "muda app_private.current_person_id(): toda RPC people-based passa a reconhecer a sessao interna v2. Aplicar cedo na fila; nao depende de outro pacote.",
+    "chave_de_composicao": "nenhuma nova: as chaves de Cuidado/Rotina e Alunos ja estao ligadas",
+    "defeitos_corrigidos_pela_prova": [
+     "status do espelho: CASE devolvia text para coluna platform_membership_status (cast adicionado; o coordenador apontou o mesmo no preflight dele)",
+     "fixture: guard do ultimo owner interno exige um segundo owner com auth link ativo antes de suspender; lifecycle guard exige version + 1 nas atualizacoes"
+    ],
+    "o_que_a_prova_nao_cobre": "nenhuma tela; a rota normal com qa-r03 so pode ser provada depois de o coordenador aplicar em producao"
+   },
+   {
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220500_forms_location_question_v1.sql",
+    "action_id": [
+     "forms.location-question",
+     "forms.location-answer"
+    ],
+    "pgtap": "packages/coelo_database/supabase/tests/forms_location_question_v1_test.sql (55 assercoes verdes; rodado isolado no espelho local coelo_baseline_p16 = baseline 20260910000000 + seed + lotes 1..14 por psql, com o pacote aplicado com commit)",
+    "estado": "APLICADO EM PRODUCAO (lote 17, 11/09 02:29); cliente integrado (4d4340376). Aberto: rota real com item Local exige o 220800 (snapshot no v1)",
+    "decisoes_aplicadas": {
+     "P16 Decisao 10": "novo tipo de item `location` em form_items.kind e form_answers.answer_kind (coluna text com CHECK; nao ha enum, logo nao existe arquivo 220450 de ADD VALUE)",
+     "Decisao 9 opcao 1 (opcoes fixas)": "o servidor resolve as opcoes a partir de public.activity_locations (status='active', mesma instituicao do formulario) no salvamento do rascunho v2 (superadmin_forms_save_draft_v2) e refaz o snapshot na publicacao (form_publish); ficam congeladas em form_question_options com location_id, label=nome e location_status. Opcoes de Local enviadas pelo cliente sao ignoradas; o eco da projecao (location_id/location_status/location_available) e tolerado pelo validador do payload",
+     "Decisao 9 opcao 2 (local revogado depois)": "ao gravar, reenviar ou editar, o Local escolhido precisa existir no snapshot E continuar ativo no catalogo; nao se preserva o apontamento nem ha sucessor automatico. Erro 23514 'form location answer requires a current location' (detail FORMS_LOCATION_REVOKED). Resposta ja gravada nao e reescrita",
+     "Decisao 12 caso extra": "pergunta obrigatoria visivel sem nenhuma alternativa valida bloqueia com 23514 'required location question has no available location' (detail FORMS_LOCATION_NO_AVAILABLE_OPTION), tanto ao enviar o revogado quanto ao omitir; a projecao expoe por opcao location_available (leitura viva) para o cliente desabilitar e avisar. Opcional sem alternativa pode ser omitida"
+    },
+    "o_que_faz": "3 constraints estendidas; 2 colunas + CHECK + indice em form_question_options; 3 funcoes app_private novas (form_location_options_snapshot_v1, form_apply_location_options_v1, form_location_option_available_v1) com revoke de public/anon/authenticated/service_role; 8 funcoes substituidas na forma vigente do espelho (superadmin_form_validate_draft_payload_v2, superadmin_form_replace_draft_definition_v2, superadmin_form_validate_draft_definition_v2, validate_form_definition, form_publish, form_definition_projection(uuid,uuid), form_replace_response_answers, form_assert_required_response_answers) e o exportador XLSX superadmin_form_request_xlsx_v2 remendado por replace() com preflight de uma ocorrencia por trecho",
+    "limites": "rascunho aceita item location com zero locais ativos; publicacao exige ao menos um (23514 'location item requires at least one active location'); snapshot limitado a 200 locais; snapshot com respostas gravadas nao e substituido",
+    "defeitos_corrigidos_pela_prova": [
+     "baseline: form_replace_response_answers declarava a variavel PL/pgSQL answer_id que colide com a coluna form_answer_options.answer_id / form_answer_assets.answer_id (42702 'column reference answer_id is ambiguous') em TODA resposta de escolha unica/multipla, foto e galeria. Renomeada para inserted_answer_id neste pacote. Os pgTAP existentes nao pegavam porque so respondem texto/inteiro/sim-nao",
+     "CHECK do snapshot com NULL passava (location_id sem status): trocado por num_nonnulls in (0,2)",
+     "validador do payload v2 recusava o eco das chaves de snapshot nas opcoes: tolerado so para item location"
+    ],
+    "pgtap_existentes_de_formularios": "identicos antes e depois do pacote no mesmo espelho: forms_definition 31/31, forms_response_edit_validation_v1 56/56, drafts_v2_repeatable_read 10/10, drafts_v2_serializable 10/10, forms_xlsx_private_r2_v1 313/313, forms_superadmin_operations_read_v2 70/70, forms_internal_provenance_guards 39/39, superadmin_forms_directory_internal_read 117/117. Quatro ja quebram ANTES do pacote por fixture desalinhada da cadeia de producao (nao sao deste pacote): forms_behavioral_rpc ('version_number' ambiguo), forms_security_and_operations ('argument of AND must be boolean'), superadmin_internal_form_drafts_v2 ('internal auth link version mismatch'), superadmin_forms_authoring_institution_context_v2 ('internal membership version mismatch')",
+    "o_que_falta_no_cliente": [
+     "packages/coelo_domain/lib/src/forms/form_definition.dart: FormItemKind.location e FormOption com locationId/locationStatus/locationAvailable; form_answers.dart: FormAnswerKind.location",
+     "packages/coelo_api/lib/src/forms/form_definition_dto.dart e form_runtime_dtos.dart: mapear 'location' na definicao e na resposta (option_ids com um id, como single_choice)",
+     "apps/superadmin/lib/features/forms/presentation: no editor (forms_editor_page.dart) o item Local sem edicao de opcoes, lista somente leitura vinda do servidor e aviso 'nenhum local ativo' quando vazia; no responder/testar (form_response_page.dart, forms_test_page.dart) widget de escolha unica com opcoes location_available=false desabilitadas e marcadas como revogadas; quando obrigatoria e nenhuma opcao disponivel, bloqueio com aviso e sem envio, mapeando 23514 FORMS_LOCATION_NO_AVAILABLE_OPTION e FORMS_LOCATION_REVOKED em mensagens honestas",
+     "o worker XLSX ja recebe optionId e resolve o rotulo pela definicao; conferir a coluna no arquivo gerado depois do cliente"
+    ],
+    "o_que_a_prova_nao_cobre": "nenhuma tela; rota normal com qa-r03 so depois de o coordenador aplicar em producao e o cliente existir; exportacao XLSX com resposta location nao foi gerada ponta a ponta (so o remendo do exportador e o pgTAP existente 313/313)",
+    "commit": "8db8e1cd3 em work/etapa2-r04-formularios-cuidado-rotina (push feito)"
+   },
+   {
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220600_child_context_directory_v2_baseline.sql",
+    "action_id": [
+     "health-care.create",
+     "medication.create",
+     "students.list"
+    ],
+    "pgtap": "supabase/tests/superadmin_child_context_directory_v2_test.sql 45/45 (espelho coelo_baseline_p16, 11/09 08:4x)",
+    "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-006: o cliente recebe PGRST202 porque CHILD-READ01 nunca entrou na baseline. Corpo do historico sem mudanca de contrato; preflight de pins de hash trocado por existencia",
+    "chave_de_composicao": "nenhuma (childDirectoryRead ja composto)"
+   },
+   {
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220700_attendance_dashboard_access_and_context_options_v1.sql",
+    "action_id": [
+     "attendance.dashboard",
+     "attendance.create",
+     "attendance.mark",
+     "attendance.correct",
+     "attendance.finish"
+    ],
+    "pgtap": "supabase/tests/attendance_dashboard_access_and_context_options_v1_test.sql 22/22 (espelho coelo_baseline_p16, 11/09 08:4x)",
+    "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-007: attendance_dashboard_access so existia no historico (20260825171221) e superadmin_attendance_context_options nunca teve arquivo; o cliente abre /attendance e /attendance/new com PGRST202. Escopo: platform > institution > unit > assignments > guardian; guardian negado (42501)",
+    "chave_de_composicao": "nenhuma (SupabaseAttendanceRepository ja composto)"
+   },
+   {
+    "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220800_forms_location_snapshot_v1_route.sql",
+    "action_id": [
+     "forms.location-question",
+     "forms.location-answer"
+    ],
+    "pgtap": "supabase/tests/forms_location_snapshot_v1_route_test.sql 8/8 (RED reproduzido antes: 23514)",
+    "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-005: form_replace_working_definition chama form_apply_location_options_v1 antes de validate_form_definition, como o v2 e o form_publish ja fazem; sem isso o editor de producao (form_save_draft v1) recusa o item Local com \"location item requires at least one active location\"",
+    "chave_de_composicao": "nenhuma"
+   }
+  ],
+  "goldens": {
+   "regravados_em": "bbc562c6f",
+   "motivo": "diferenca unica: botao de Bug no cabecalho e realce do item de menu (regras transversais do Owner de 10/09); decisoes A de forms_directory_*, forms_editor_*, forms_operations_monitor_light_375 e form_response_light_375 aplicadas; Rotina e Assiduidade nao constam das listas do Owner mas a diferenca e a mesma do shell compartilhado",
+   "pendentes": [
+    "forms_editor: o rodape (Cancelar/Salvar) fica dentro do scroll, nao ancorado; P15 diz 'todos os formularios' e o editor de Formularios nao usa o SuperadminFormFrame. Registrado como pendencia, nao corrigido nesta rodada",
+    "forms_editor_light_1440 (9,03%), forms_editor_dark_1440 (10,82%), forms_editor_date_range_light_1440 (6,54%), forms_editor_catalog_light_1440 (4,11%) e forms_editor_catalog_groups_light_1440: divergem JA NA BASE 317f37bab com os mesmos percentuais (medido 11/09 02:45 rodando o golden test com a lib da base); o item Local no catalogo (P16) so acrescenta delta em forms_editor_catalog_groups_light_1440 (4,11% -> 5,44%). Registrados, nao regravados: decisao do Owner"
+   ],
+   "regravados_apos_P15": "medication_form_mobile_light regravado em 11/09 08:5x com o respiro do rodape (4917bcade/1e34eb9f4 em dev): decisao A do Owner (goldens-decisoes-complementares) cumprida; health_care_golden_test 4/4"
+  },
+  "estadoVazioDosDiretorios": {
+   "regra": "Owner, 11/09 ~00:40 via coordenador: busca, filtros, toggle, Arquivos, abas de status e card Criar sempre visiveis, inclusive no vazio; correcao no composto",
+   "medido": "rota normal com qa-r03 em localhost:3010, 11/09 00:50-01:30 (capturas 08-14 no scratchpad; resumo aqui)",
+   "health-care.list": "cumpre: busca, 5 filtros, toggle, Arquivos, abas Todos/Ativos/Em Implantacao/Inativos, card Criar (com o ator produtivo ligado nesta rodada)",
+   "medication.list": "busca, 2 filtros, toggle, Arquivos e card Criar aparecem; a tela nao define abas de status (usa o filtro 'Status do plano'). Duvida ao Owner: Medicacao deve ganhar abas de status como Perfis?",
+   "forms.list": "DEFEITO corrigido nesta revisao: em producao a tela vinha sem o cabecalho (titulo, subtitulo, Bug, conta) porque nenhuma rota de Formularios envolvia a pagina no SuperadminShell (os goldens aprovados envolvem). Agora todas as rotas de Formularios (diretorio, criar, editar, visao geral, testar, monitor, responder, respostas, detalhe, arquivos) tem cabecalho. Card Criar continua escondido no vazio porque canManage vem do servidor (forms.manage) e a sessao qa-r03 ainda nao e reconhecida (F-R04-FCR-002); depois do 220400 ele aparece. Abas de status: a tela usa o filtro 'Situacao' em vez de abas. Titulos das telas sem golden (visao geral, testar, monitor, respostas, detalhe, arquivos) sao proposta minha; registrado como pergunta visual ao Owner.",
+   "attendance.dashboard": "NAO cumpre: o estado de erro/vazio esconde tudo (sem busca, filtros, toggle, abas, Criar) e o painel nao esta no composto CoeloAdminDirectory (allowlist do teste de arquitetura: _AttendanceCallToolbar; a tela de dashboard e um painel proprio). Pendencia da Fase 0 assumida por este grupo; nao concluida nesta rodada.",
+   "daily-routine.list": "mostra 'Acesso nao autorizado' sem o chrome do diretorio (servidor nega a sessao ate o 220400); reavaliar depois do pacote.",
+   "students.list": "NAO cumpre: 'Nao foi possivel carregar os alunos' + 'Acompanhamento indisponivel'; a pagina StudentTrackingPage nao esta no composto (sem busca/filtros/toggle/Criar) e o leitor de criancas (superadmin_child_context_directory_v2) falhou para qa-r03 mesmo sendo do realm interno; causa a investigar (provavelmente exige instituicao/escopo). Pendencia registrada."
+  },
+  "dadosSinteticosEmProducao": {
+   "prefixo_ids": "d0c40000-",
+   "instituicao": "QA R04 Cuidado (sintetico)",
+   "unidade": "Unidade QA R04 (handle unidade_qa_r04)",
+   "crianca": "Crianca QA R04 (contexto d0c40000-0000-4000-8000-000000000004, vinculo ativo)",
+   "limpeza": "delete where id::text like 'd0c40000-%' ao fim da rodada (e o que os subagentes relatarem)"
+  },
+  "paralelizacao": {
+   "desde": "2026-09-11T00:17-03:00",
+   "subagentes": [
+    "Cuidado+Medicacao (porta 3013)",
+    "Alunos+Assiduidade+Rotina (porta 3011)",
+    "Formularios (porta 3012)",
+    "P16 tipo location (backend + cliente)"
+   ],
+   "regra": "cada um em worktree isolada; so a conversa-mae escreve este JSON e faz commit"
+  },
+  "revisadoPor": "subagente do coordenador (prova na rota real do grupo, apos a queda da conversa do grupo no reinicio); um Chrome (CDP 9411, SwiftShader), build web release em localhost:3011, sessao qa-r03 em producao; nenhum SQL em producao",
+  "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04fcr (3 builds: base, + id nulo, + strip de status/management_version) servido por serve.js (Node, fallback de SPA) em http://localhost:3011; Chrome dedicado --remote-debugging-port=9411 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial de Coelo-backups/qa-r03.env no ambiente do shell, nunca impressa) com Manter sessao aberta; cliques por CDP (cdp.js clickxy/click por semantica), texto por click CDP + enter_text do driver (Input.insertText nao chega aos campos Flutter), RPCs por Network (cdp.js net, com navegacao dentro da coleta). O Chrome caiu uma vez sob SwiftShader (durante o rebuild); reaberto na rota, a sessao persistiu. Encerrados Chrome 9411 e Node 3011 ao final.",
+  "ROTA_REAL_R04": {
+   "deltas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/deltas-r04-fcr.json (29 entradas, uma por action_id)",
+   "capturas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/00..24 (25 PNG)",
+   "resultado_por_action_id": {
+    "P": [
+     "health-care.list (verified FE)",
+     "medication.list (verified-e2e)",
+     "forms.list (verified-e2e, card Criar oculto)",
+     "forms.create (verified-e2e)",
+     "forms.edit (verified-e2e)",
+     "forms.test (verified, preview inerte)"
+    ],
+    "F_bloqueadas": [
+     "health-care.create e medication.create e students.list: superadmin_child_context_directory_v2 404 (nunca aplicada)",
+     "students.revoke: 403 42501 people.assign_children required (has_context_permission vs ponte 220400 so de plataforma)",
+     "students.link/transfer/edit: sem UI",
+     "medication.evidence: sem UI",
+     "attendance.dashboard: attendance_dashboard_access 404 (so em migrations-historico)",
+     "attendance.create: superadmin_attendance_context_options 404 (nao existe no repositorio)",
+     "daily-routine.create: editor somente leitura (canManage derivado do diretorio vazio)",
+     "forms.location-question: 23514 location item requires at least one active location (F-R04-FCR-005: snapshot so no v2/publish)"
+    ],
+    "nao_executadas": [
+     "health-care.detail/edit",
+     "medication.detail/edit",
+     "attendance.mark/correct/finish",
+     "daily-routine.edit/apply/publish"
+    ]
+   },
+   "dados_sinteticos_criados_para_apagar": [
+    {
+     "tabela": "public.forms (+ form_versions/form_sections/form_items)",
+     "id": "4555ba07-e4a4-4971-8ba7-d81a775169cd",
+     "nome": "[R04-QA] Formulario Local editado",
+     "instituicao": "d0c40000-0000-4000-8000-000000000001",
+     "nota": "form_command_receipts com request_id b694fc50-bb0d-498d-999f-f9ae9503c2b5 e 69aaa64c-2128-48e5-aa02-d0e1ea0a71e2"
+    },
+    {
+     "tabela": "public.activity_locations",
+     "id": "fc446535-100c-4f35-8e30-e43d63176e3f",
+     "nome": "[R04-QA] Local Sala Azul",
+     "instituicao": "d0c40000-0000-4000-8000-000000000001",
+     "nota": "criado por superadmin_location_create_v2, request f402d987-3234-4d5e-8d14-2657829a99f7"
+    },
+    "students.revoke falhou com 403: o vinculo d0c40000-0000-4000-8000-000000000005 continua ativo; nenhum perfil, plano, chamada ou modelo foi criado"
+   ]
+  },
+  "finalizado": true,
+  "validacaoDeEntrega": {
+   "quando": "2026-09-11T08:31-03:00",
+   "pedido_do_owner": "conferir se tudo chegou ao coordenador (coelo-04): commits, worktrees, pendencias; e listar o que atualizar nas skills coelo-backend, coelo-frontend e coelo-frontend-backend",
+   "em_origin_dev": [
+    "ed32f4770 harness de QA (test_driver/qa_main.dart + qa_drive.dart, flutter_driver em dev_dependencies)",
+    "d5ddfde39 composicao de producao de Perfis de cuidado e Medicacao + guarda de mutacao por localizacao (/health-care, /students, /attendance, /daily-routine)",
+    "2c7a2e2ab/730f2a117 pacote 220400 (ponte de ator) + pgTAP 17/17 -> APLICADO (lote 10, ledger 85)",
+    "bbc562c6f goldens de Formularios, Rotina e Assiduidade regravados (Bug + realce do menu)",
+    "ac2ea564e cabecalho compartilhado nas rotas de Formularios; testes de rota de Assiduidade/Rotina/Cuidado no contrato da ADR 0034",
+    "87e413b8a memorizacao das leituras de opcoes de crianca e do detalhe do plano",
+    "8db8e1cd3/b67f6a505 P16 backend 220500 + pgTAP 55/55 -> APLICADO (lote 17); da905636d/f0df927e4/4d4340376 P16 cliente",
+    "f80d26909 e ee4903912 correcoes do DTO de formulario (id nulo; sem status/management_version) provadas na rota real",
+    "e5d35ad37 rev 32 + deltas-r04-fcr.json (29 entradas) + 25 capturas da rota real"
+   ],
+   "NAO_em_origin_dev_ate_esta_validacao": [
+    "b17eb0319 (branch do grupo, publicada): candidatos 220600 (child_context_directory_v2 sobre a baseline, F-R04-FCR-006), 220700 (attendance_dashboard_access + superadmin_attendance_context_options, F-R04-FCR-007) e 220800 (snapshot de Locais na rota v1 de rascunho, F-R04-FCR-005) com os tres pgTAP. 220600 e 220800 haviam sido commitados em migrations/ (pasta errada) e o 220700 estava SEM COMMIT na worktree; nesta validacao foram movidos/adicionados em candidatos/formularios-cuidado-rotina/ e publicados",
+    "bbb4576f1 merge de origin/dev 0376a0446 na branch (sem conflito)"
+   ],
+   "ledger_de_producao_conferido": "20260910220000..220500 aplicados; 220600/220700/220800 AUSENTES (pg_proc de producao sem superadmin_child_context_directory_v2, attendance_dashboard_access e superadmin_attendance_context_options)",
+   "prova_dos_tres_candidatos_nesta_validacao": "espelho coelo_baseline_p16 (baseline + seed + lotes por psql + os tres candidatos ja aplicados pelo subagente anterior), 11/09 08:4x: superadmin_child_context_directory_v2_test 45/45, attendance_dashboard_access_and_context_options_v1_test 22/22, forms_location_snapshot_v1_route_test 8/8",
+   "worktrees": "as quatro worktrees dos subagentes (e2-r04-fcr-cuidado/rotina/formularios/p16) estavam limpas em 87e413b8a, sem commit proprio; removidas nesta validacao junto das branches work/etapa2-r04-fcr-*. Fica so C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina (branch work/etapa2-r04-formularios-cuidado-rotina @ b17eb0319+), limpa, publicada; cabe ao coordenador integrar e remover",
+   "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md reescrito para a R04 nesta revisao (antes ainda era o da R03)",
+   "faltou": "nada do que foi produzido esta fora de Git ou fora deste JSON; o que nao chegou a dev sao os tres candidatos acima, que dependem do coordenador aplicar (fila) e integrar a branch"
+  },
+  "propostaDeAtualizacaoDasSkills": {
+   "ja_registrado_pelo_coordenador_em_dev": "coelo-backend (14b96e446: ordem de aplicacao, espelho por psql, ponte de ator 220400, MFA fora do MVP, dado sintetico por RPC/migration, revokes, memoria), coelo-frontend (5d5ed3796: entrypoint unico de driver, memoria, estado vazio no composto, launcher do chat, goldens) e coelo-frontend-backend (0376a0446: formato dos deltas, E2E exige FE+BE, build web + CDP, WIP do coordenador, candidato realocado por rename). Nao repetir",
+   "coelo-backend": [
+    "Antes de declarar \"SQL em producao\" para uma familia, listar as RPCs que o cliente chama (grep \"rpc(\" e os literais superadmin_* em lib/features/<familia>/data) e conferir cada uma em pg_proc de producao; PGRST202 na rota real (child_context_directory_v2, attendance_dashboard_access, superadmin_attendance_context_options) mostrou que \"lote aplicado\" nao significa \"contrato do cliente presente\" (F-R04-FCR-006/007)",
+    "Leitura e comando da mesma acao usam a MESMA funcao de capacidade: superadmin_student_links devolve can_manage=true por has_platform_permission e superadmin_student_revoke nega por has_context_permission (F-R04-FCR-008). A ponte de ator da capacidade de plataforma, nao contexto institucional; comandos que exigem contexto precisam ou aceitar a capacidade de plataforma ou o espelho precisa de institution_memberships (decisao pendente)",
+    "Capacidade de criar/gerir e devolvida no envelope do diretorio (can_manage no topo), nunca inferida pelo cliente a partir das linhas: Rotina deriva canManage do diretorio vazio e o editor nasce somente leitura (F-R04-FCR-009)",
+    "Rotas v1 e v2 de um mesmo comando precisam do mesmo pre-processamento: o snapshot de Locais (P16) foi posto no save_draft_v2 e no publish, mas o cliente de producao usa form_save_draft v1 (F-R04-FCR-005). Regra: ao acrescentar validacao ou enriquecimento, aplicar em todas as rotas que o cliente composto realmente chama",
+    "Politica de Formularios (P16, ADR 0034 Decisao 12): tipo de item `location` com opcoes congeladas do catalogo public.activity_locations no salvamento/publicacao; resposta exige local ativo no snapshot e no catalogo (23514 FORMS_LOCATION_REVOKED); obrigatoria sem opcao valida bloqueia (FORMS_LOCATION_NO_AVAILABLE_OPTION); a projecao expoe location_available por opcao",
+    "Perfis de cuidado/Medicacao (lote 2): platform.read NAO alcanca dado de saude de crianca; leitura exige health_care.read/medication.read (plataforma, contextual ou responsavel autorizado via 220000); a instituicao do agregado vem do contexto infantil, nunca do payload. Vale para pacotes novos dessas familias",
+    "Dado sintetico deixado em producao por esta frente (P37): prefixo d0c40000- (instituicao, unidade, crianca, vinculo criados por insert direto ANTES da regra \"nunca por insert direto\"), formulario 4555ba07-e4a4-4971-8ba7-d81a775169cd, local fc446535-100c-4f35-8e30-e43d63176e3f. Limpeza por script unico provado no espelho, depois do \"P37 aprovado\""
+   ],
+   "coelo-frontend": [
+    "Toda rota de producao compoe o mesmo shell do golden aprovado: as telas de Formularios nao trazem cabecalho proprio e nenhuma rota as envolvia no SuperadminShell (goldens envolvem, producao nao). Regra: o teste de rota de cada familia afirma o cabecalho (titulo, Bug, conta) na rota normal; formsShell no router e o exemplo (ac2ea564e)",
+    "A guarda de mutacao do router (hasAuthoritativeMutationCapability(location)) nao e fronteira de autorizacao: a rota abre quando o repositorio real esta composto e o servidor revalida (ADR 0034). Testes de rota das familias com repositorio real esperam a rota aberta, nao /errors/mutation-capability-unavailable (attendance/daily_routine/health_care_routes_test atualizados)",
+    "Leituras feitas em builder de GoRoute precisam de future memorizado por rota (childOptionsFuture, medicationPlanLoadFutures): um FutureBuilder cujo future e recriado a cada rebuild do shell nunca sai de \"carregando\" (87e413b8a)",
+    "Dirigir o app web pelo driver exige set_frame_sync=false a cada carga da pagina; o MCP dart/flutter_driver_command fica preso no frame sync no web e nao serve para a rota real. Em release, o tap do driver trava: usar clique por CDP (regra do coordenador)",
+    "Diretorios ainda fora do composto CoeloAdminDirectory no recorte: painel de Assiduidade (attendance_dashboard_page.dart, allowlist _AttendanceCallToolbar) e Alunos (StudentTrackingPage); no vazio/erro escondem busca, filtros, toggle, Arquivos, abas e Criar, contra a regra do Owner (estado vazio). Migrar ao composto e pendencia do grupo",
+    "Card Criar de Formularios so aparecia com reader == null (nunca em producao) e /forms/:id/occurrences/:occ/respond monta const FormResponsePage() sem api (F-R04-FCR-010 a/b); o balao do chat cobre o botao primario do formulario de Locais (c, grupo estrutura/shell)",
+    "Goldens do recorte: forms_directory_*, forms_editor_*, forms_operations_monitor_light_375, form_response_light_375, daily_routine_* e attendance_* regravados por causa do Bug + realce do menu (bbc562c6f); forms_editor_*_1440 divergem ja na base (9-11%) e ficam para decisao do Owner; medication_form_mobile_light so depois do P15 (agora em dev: conferir e regravar)"
+   ],
+   "coelo-frontend-backend": [
+    "Ordem de prova por familia na rota real: (1) grep das RPCs do cliente x pg_proc de producao; (2) sessao qa-r03 + dado sintetico com contexto institucional; (3) por action_id: rota abre, RPC 200 na aba Network, linha na tabela, reload. Declarar verified-e2e so com os quatro; \"blocked\" com o erro exato (codigo SQLSTATE/PGRST + mensagem) e a camada responsavel",
+    "Resultado da R04 do grupo (29 action_ids provados de 43): verified-e2e = medication.list, forms.list, forms.create, forms.edit; verified FE = health-care.list, forms.test; bloqueados por RPC ausente = health-care.create/medication.create/students.list (220600), attendance.dashboard/create (220700), forms.location-question (220800); bloqueados por capacidade = students.revoke (F-008); bloqueados por UI = students.link/transfer/edit, medication.evidence, daily-routine.create (F-009); nao executados = health-care.detail/edit, medication.detail/edit, attendance.mark/correct/finish, daily-routine.edit/apply/publish; forms.overview/publish/monitor/respond/responses/response-detail/responses.export e forms_files (5) sem rota real nesta rodada",
+    "Um subagente por familia com Chrome proprio funciona, mas a maquina aguenta dois Chrome/flutter run por vez; o coordenador pode assumir a rota real de um grupo com subagente proprio escrevendo no JSON do grupo (foi o caso desta frente apos a queda de 00:27)"
+   ]
+  },
+  "evolucaoEtapa2Recorte": {
+   "antes_da_R04": "FE verified 0/43 do recorte; BE em producao: lotes 1,2,3,5 (formularios, cuidado/rotina/assiduidade/alunos, guardian read, student links) mas nenhuma rota real aberta com sessao; E2E 0",
+   "depois_da_R04": "ponte de ator (220400) e P16 backend (220500) em producao; composicao de producao de Cuidado/Medicacao, cabecalho de Formularios, DTO de formulario corrigido; rota real com qa-r03 percorrida em 29 action_ids: 4 verified-e2e, 2 verified FE, e cada bloqueio com erro exato e pacote/correcao nomeados; 3 candidatos verdes na fila (220600/220700/220800); goldens do recorte regravados; harness qa_main/qa_drive reutilizado pelas outras frentes",
+   "percentuais": "sao do coordenador (deltas-r04-fcr.json aplicados por action_id no inventario); esta frente nao calcula percentual proprio"
+  },
+  "pendenciasPosMvp": [
+   "revisao profunda de seguranca: grants CRUD de authenticated sem policy (levantados pelo coordenador), IDOR por tela, sessoes concorrentes, auditoria com retry, golden por estado (ADR 0034)",
+   "leitura de saude pelo responsavel na familia (Principal): porta health_care_profile_for_guardian/medication_plans_for_guardian existe (220000) sem consumidor; fora do recorte do Superadmin",
+   "retencao/base legal/regra clinica de saude (OQ-003) e importacao/exportacao gerais (adiadas; so forms.responses.export XLSX no MVP, ainda sem prova na rota real)",
+   "MFA/AAL2 de volta por capacidade (ADR 0019) depois do MVP; routine_mfa_phase_enforced e requires_mfa hoje falsos",
+   "Cloudflare Access na frente do Superadmin (P21) e limpeza dos dados sinteticos (P37) no fechamento da proxima rodada"
+  ]
+ },
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r03-formularios-cuidado-rotina",
@@ -821,322 +1304,64 @@
    "wip_retido": "nenhum"
   }
  },
- "ambienteDeTeste": {
-  "app": "flutter run -d chrome -t test_driver/qa_main.dart em http://localhost:3010 (a porta 3000 estava ocupada por outra frente; CORS do R2 so libera 3000, entao a prova de upload direto ao R2 tera de usar 3000 quando chegar a vez)",
-  "sessao": "qa-r03@coelo.me entrou em producao pela tela de login normal; credencial lida do arquivo local para o ambiente do processo, nunca impressa",
-  "harness": "test_driver/qa_main.dart (mesma composicao de lib/main.dart mais enableFlutterDriverExtension) e test_driver/qa_drive.dart (CDP -> window.$flutterDriver). O MCP dart/flutter_driver_command nao funciona neste app web: os finders ficam presos no frame sync; com set_frame_sync=false pelo gancho web tudo responde",
-  "pubspec": "flutter_driver entrou em dev_dependencies (aviso ao coordenador: toquei o pubspec de apps/superadmin)"
+ "achadoCron": {
+  "resultado": "sem correcao necessaria",
+  "medido": "net._http_response de producao, 36 h ate 12:07 de 11/09: 430 respostas 200 ({\"claimed\":0,...}), 16 sem status (timeout de 5 s) e UM 404 as 10:41 (relogio local). O ultimo segmento da URL em forms_worker_url e form-operations, no host do projeto, e a funcao form-operations esta ACTIVE (v11, verify_jwt=false). O 404 foi transitorio; nenhum vault.update_secret emitido. Valor do segredo nunca lido nem impresso (consulta so do ultimo segmento e de dois booleanos)."
  },
- "findings": [
-  {
-   "id": "F-R04-FCR-001",
-   "titulo": "Cuidado e Medicacao: so o diretorio de Perfis esta ligado no router de producao",
-   "medido": "apps/superadmin/lib/app/router/superadmin_router.dart @ 98cc0529d, linhas 2730-2783",
-   "evidencia": "healthCareProfileCreate/Edit montam HealthCareProfileFormPage sem onSaved, loadDraft nem childOptions (a pagina cai em 'Cadastro indisponivel'); healthCareProfileDetail redireciona para mutation-capability-unavailable; as quatro rotas de Medicacao montam _unavailableMedicationPlans. O repositorio Supabase e a chave existem, mas nao chegam a essas rotas.",
-   "consequencia": "health-care.create/detail/edit e medication.* nao passam da regua do MVP por composicao, nao por backend. Assumido por este grupo: ligar as rotas ao SupabaseHealthCareRepository/SupabaseMedicationPlanRepository (criar perfil = save_profile com profile_id nulo e child_context_id; opcoes de crianca pelo leitor superadmin_child_context_directory_v2)."
-  },
-  {
-   "id": "F-R04-FCR-002",
-   "severity": "estrutural: bloqueia a regua do MVP em TODAS as familias do recorte (e em qualquer familia people-based) para a sessao qa-r03",
-   "titulo": "A sessao qa-r03 nao existe no realm people-based: as RPCs dos lotes 2/3/5 resolvem o ator por app_private.current_person_id() e a tratam como nao autenticada",
-   "medido": "producao, 2026-09-10 ~23:30, supabase db query --linked somente leitura",
-   "evidencia": "auth.users qa-r03@coelo.me tem 0 person_auth_links ativos e 0 platform_memberships; so existe em app_private.superadmin_internal_memberships (realm interno v2). app_private.current_person_id() le person_auth_links; app_private.has_platform_permission() le platform_memberships. require_health_care_actor, routine_*, can_access_attendance_child e student_link_require_scope usam essas duas funcoes; as tabelas de recibo, created_by_person_id e audit.audit_logs.actor_person_id tem FK para people(id). Formularios (form_command_receipts.actor_person_id) esta no mesmo caso. Producao tambem tem 0 instituicoes e 0 criancas.",
-   "consequencia": "nenhuma rota de Cuidado, Medicacao, Rotina, Assiduidade, Alunos ou Formularios passa da regua com qa-r03 hoje, mesmo com a composicao ligada; o servidor responde 'authentication required'. Estrutura/Acessos nao sentem isso porque as RPCs v2 usam require_superadmin_internal_context.",
-   "acao": "assumido por este grupo: pacote candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql que espelha cada identidade do realm interno v2 numa pessoa de servico (people.person_type='service') com platform_membership no mesmo papel de plataforma, e faz current_person_id() cair nesse espelho quando nao ha person_auth_link. Assim todas as RPCs people-based (inclusive Formularios e as de outros grupos) reconhecem a sessao interna sem reescrever cada funcao. Nao cria person_auth_link (o guard do realm impede e nao e necessario).",
-   "para_o_coordenador": "e uma mudanca transversal em app_private.current_person_id(): aplicar cedo na fila para as outras frentes people-based (Principal/Chat, Publicacoes) tambem passarem a funcionar com qa-r03. Se preferir outro desenho (ex.: pessoa de servico criada pelo Auth admin), avisar no coordenacao.json."
-  },
-  {
-   "id": "F-R04-FCR-003",
-   "severity": "bloqueia Assiduidade, Alunos, Cuidado, Medicacao e Rotina para QUALQUER papel",
-   "titulo": "Producao nao tem os codigos attendance.read, attendance.manage e people.assign_children, e nenhum papel de plataforma concede health_care.*, medication.*, routine.* ou attendance.*",
-   "medido": "producao, 2026-09-10 ~23:50, platform_permissions e platform_role_permissions por supabase db query --linked (leitura)",
-   "evidencia": "platform_permissions tem health_care.read/manage, medication.read/manage/record_evidence e routine.* (lote 2), mas zero grants em platform_role_permissions para esses codigos em qualquer papel; attendance.* e people.assign_children nao existem no catalogo (as migrations 010200 e 220200 os exigem).",
-   "consequencia": "mesmo com o ator resolvido, has_platform_permission('health_care.read') e falso para o owner; attendance e alunos negam para todos.",
-   "acao": "incluido no pacote 20260910220400: insere os tres codigos com rotulos e concede ao papel owner (allow, active) as permissoes das familias do recorte, sem tocar outros papeis (Decisao 12/P7: owner e o piso)."
-  },
-  {
-   "id": "F-R04-FCR-004",
-   "severity": "ambiente: a receita do README para provar pacote nao roda como esta",
-   "titulo": "supabase db reset aplica o seed DEPOIS das migrations; 20260910170100 exige o catalogo (people.read com MFA e matriz de grants) e falha antes do seed entrar",
-   "medido": "projeto descartavel coelo_fcr_r04 (portas 554xx), 2026-09-10 23:40-00:05, tres tentativas",
-   "evidencia": "1a: 'active MFA people.read capability is required' (SQLSTATE 55000) em 20260910170100; 2a (preflight de MFA removido na copia local): 'people.read role grants do not match the approved detail matrix'. Ambas porque platform_permissions esta vazia no momento da migration.",
-   "contorno_local": "copiar supabase/seed.sql para migrations como 20260910000001_seed_catalogo_local.sql (so no descartavel) e desligar [db.seed]; assim o catalogo existe antes de 170100. Nao alterei arquivo do repositorio.",
-   "para_o_coordenador": "vale registrar no README ou mover o catalogo para dentro da baseline; senao cada frente vai tropecar aqui."
-  },
-  {
-   "id": "F-R04-FCR-005",
-   "severity": "bloqueia forms.location-question na rota de producao",
-   "titulo": "P16: o snapshot de Locais so e aplicado no salvamento v2 e na publicacao; a rota de producao usa form_save_draft v1 e o validador exige >=1 opcao",
-   "medido": "producao, 11/09 03:20-03:30, form_save_draft -> 400 23514 com Local ativo na instituicao",
-   "evidencia": "packages/coelo_database/migrations/20260910220500_forms_location_question_v1.sql: form_apply_location_options_v1 chamado nas linhas 452 (replace_draft_definition_v2) e 734 (form_publish); validate_form_definition (linha ~634) levanta \"location item requires at least one active location\" quando form_question_options esta vazio; app_private.form_save_draft (baseline) nao chama o snapshot. O router monta FormsEditorPage com api (form_save_draft), nunca FormsEditorPage.authoring (v2).",
-   "acao": "backend do grupo: candidato que aplique form_apply_location_options_v1 no caminho v1 (app_private.form_save_draft, antes de validate_form_definition) com pgTAP; alternativa de cliente: compor o editor com a API v2. Nao aplicado em producao."
-  },
-  {
-   "id": "F-R04-FCR-006",
-   "severity": "bloqueia health-care.create, medication.create e students.list para qualquer sessao",
-   "titulo": "superadmin_child_context_directory_v2 nunca chegou a producao",
-   "medido": "producao, 11/09 03:08, PGRST202 em /health-care/profiles/new, /health-care/medication-plans/new e /students",
-   "evidencia": "funcao so em packages/coelo_database/migrations-historico/20260908051500_superadmin_child_context_directory_v2.sql (candidato CHILD-READ01 com pins de hash de 09/2026); ausente da baseline 20260910000000 e de migrations/",
-   "acao": "backend: reavaliar o candidato sobre a baseline (pins de hash vao divergir) e entrar na fila do coordenador; ate la Cuidado/Medicacao nao criam e Alunos nao lista."
-  },
-  {
-   "id": "F-R04-FCR-007",
-   "severity": "bloqueia toda a familia attendance",
-   "titulo": "RPCs de Assiduidade ausentes em producao: attendance_dashboard_access/read so no historico e superadmin_attendance_context_options inexistente no repositorio",
-   "medido": "producao, 11/09 03:12, PGRST202 em /attendance e /attendance/new",
-   "evidencia": "attendance_dashboard_access: migrations-historico/20260825171221_attendance_responsive_dashboard.sql; superadmin_attendance_context_options e superadmin_attendance_create_call: nenhum arquivo em migrations/, candidatos/ ou migrations-historico/",
-   "acao": "backend: o lote 20260910010200 (Assiduidade) so cobriu escalada e idempotencia; falta o contrato de leitura/contexto/criacao. Sem isso attendance.* nao passa da regua."
-  },
-  {
-   "id": "F-R04-FCR-008",
-   "severity": "bloqueia students.revoke (e link/transfer/edit) para a sessao qa-r03",
-   "titulo": "superadmin_student_links diz can_manage=true e superadmin_student_revoke nega com people.assign_children required",
-   "medido": "producao, 11/09 03:27, 403 42501",
-   "evidencia": "student_link_require_scope (20260910220200) usa app_private.has_context_permission(institution, ...); a ponte 220400 da a qa-r03 platform_membership e has_platform_permission, nao membership contextual na instituicao sintetica",
-   "acao": "backend: alinhar leitura e comando (mesma funcao de capacidade) ou dar a pessoa de servico o contexto institucional; decidir com o coordenador antes de mexer na ponte transversal."
-  },
-  {
-   "id": "F-R04-FCR-009",
-   "severity": "bloqueia daily-routine.create e esconde o card Criar",
-   "titulo": "Rotina diaria deriva canManage das linhas do diretorio (falso no vazio) e o router nao compoe onCreateEntry/onEdit",
-   "medido": "producao, 11/09 03:14, /daily-routine \"Modo somente leitura\", /daily-routine/new sem Salvar",
-   "evidencia": "daily_routine_pages.dart canManage = rows.any(can_manage); daily_routine_form_sections.dart ~322-334 fetchPage(model, pageSize 1).canManage; superadmin_routine_directory devolve can_manage por item, nao no topo",
-   "acao": "frontend: capacidade propria (bootstrap permission_codes routine.* ou can_manage no topo do diretorio) e compor onCreateEntry/onEdit; backend: expor can_manage no envelope do diretorio."
-  },
-  {
-   "id": "F-R04-FCR-010",
-   "severity": "UI, cliente",
-   "titulo": "Tres defeitos de composicao vistos na rota real",
-   "evidencia": "(a) /forms: card \"Criar formulario\" so aparece quando reader == null (forms_directory_page.dart 68-81, 238), logo nunca em producao; (b) /forms/:id/occurrences/:occ/respond monta const FormResponsePage() sem api/occurrenceId (\"Resposta indisponivel\"); (c) o balao flutuante de chat (174x48 em 1321,865) cobre o botao primario \"Criar local\" (99x48 em 1350,856) no formulario de Locais: o clique abriu /communication/conversations (memoria do Owner: chat nao aparece em telas de criar/editar). Tambem o campo Instituicao do editor de Formularios renderiza com 133px de largura e quebra o nome em 6 linhas (captura 14).",
-   "acao": "frontend do grupo (a, b) e do grupo de Estrutura/shell (c)."
-  }
- ],
- "pacotesProntos": [
-  {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql",
-   "pgtap": "packages/coelo_database/supabase/tests/internal_actor_service_person_v1_test.sql (17 assercoes)",
-   "estado": "APLICADO EM PRODUCAO pelo coordenador (lote 10, ledger 85, 11/09 ~23:23 do relogio dele); 4 pessoas de servico e 4 memberships espelho conferidas por leitura; codigos attendance.*/people.assign_children presentes",
-   "o_que_faz": "F-R04-FCR-002 + F-R04-FCR-003: catalogo attendance/people.assign_children, grants ao owner, pessoa de servico + membership espelho por identidade interna (gatilho), current_person_id() com fallback ao espelho",
-   "transversal": "muda app_private.current_person_id(): toda RPC people-based passa a reconhecer a sessao interna v2. Aplicar cedo na fila; nao depende de outro pacote.",
-   "chave_de_composicao": "nenhuma nova: as chaves de Cuidado/Rotina e Alunos ja estao ligadas",
-   "defeitos_corrigidos_pela_prova": [
-    "status do espelho: CASE devolvia text para coluna platform_membership_status (cast adicionado; o coordenador apontou o mesmo no preflight dele)",
-    "fixture: guard do ultimo owner interno exige um segundo owner com auth link ativo antes de suspender; lifecycle guard exige version + 1 nas atualizacoes"
-   ],
-   "o_que_a_prova_nao_cobre": "nenhuma tela; a rota normal com qa-r03 so pode ser provada depois de o coordenador aplicar em producao"
-  },
-  {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220500_forms_location_question_v1.sql",
-   "action_id": [
-    "forms.location-question",
-    "forms.location-answer"
-   ],
-   "pgtap": "packages/coelo_database/supabase/tests/forms_location_question_v1_test.sql (55 assercoes verdes; rodado isolado no espelho local coelo_baseline_p16 = baseline 20260910000000 + seed + lotes 1..14 por psql, com o pacote aplicado com commit)",
-   "estado": "APLICADO EM PRODUCAO (lote 17, 11/09 02:29); cliente integrado (4d4340376). Aberto: rota real com item Local exige o 220800 (snapshot no v1)",
-   "decisoes_aplicadas": {
-    "P16 Decisao 10": "novo tipo de item `location` em form_items.kind e form_answers.answer_kind (coluna text com CHECK; nao ha enum, logo nao existe arquivo 220450 de ADD VALUE)",
-    "Decisao 9 opcao 1 (opcoes fixas)": "o servidor resolve as opcoes a partir de public.activity_locations (status='active', mesma instituicao do formulario) no salvamento do rascunho v2 (superadmin_forms_save_draft_v2) e refaz o snapshot na publicacao (form_publish); ficam congeladas em form_question_options com location_id, label=nome e location_status. Opcoes de Local enviadas pelo cliente sao ignoradas; o eco da projecao (location_id/location_status/location_available) e tolerado pelo validador do payload",
-    "Decisao 9 opcao 2 (local revogado depois)": "ao gravar, reenviar ou editar, o Local escolhido precisa existir no snapshot E continuar ativo no catalogo; nao se preserva o apontamento nem ha sucessor automatico. Erro 23514 'form location answer requires a current location' (detail FORMS_LOCATION_REVOKED). Resposta ja gravada nao e reescrita",
-    "Decisao 12 caso extra": "pergunta obrigatoria visivel sem nenhuma alternativa valida bloqueia com 23514 'required location question has no available location' (detail FORMS_LOCATION_NO_AVAILABLE_OPTION), tanto ao enviar o revogado quanto ao omitir; a projecao expoe por opcao location_available (leitura viva) para o cliente desabilitar e avisar. Opcional sem alternativa pode ser omitida"
-   },
-   "o_que_faz": "3 constraints estendidas; 2 colunas + CHECK + indice em form_question_options; 3 funcoes app_private novas (form_location_options_snapshot_v1, form_apply_location_options_v1, form_location_option_available_v1) com revoke de public/anon/authenticated/service_role; 8 funcoes substituidas na forma vigente do espelho (superadmin_form_validate_draft_payload_v2, superadmin_form_replace_draft_definition_v2, superadmin_form_validate_draft_definition_v2, validate_form_definition, form_publish, form_definition_projection(uuid,uuid), form_replace_response_answers, form_assert_required_response_answers) e o exportador XLSX superadmin_form_request_xlsx_v2 remendado por replace() com preflight de uma ocorrencia por trecho",
-   "limites": "rascunho aceita item location com zero locais ativos; publicacao exige ao menos um (23514 'location item requires at least one active location'); snapshot limitado a 200 locais; snapshot com respostas gravadas nao e substituido",
-   "defeitos_corrigidos_pela_prova": [
-    "baseline: form_replace_response_answers declarava a variavel PL/pgSQL answer_id que colide com a coluna form_answer_options.answer_id / form_answer_assets.answer_id (42702 'column reference answer_id is ambiguous') em TODA resposta de escolha unica/multipla, foto e galeria. Renomeada para inserted_answer_id neste pacote. Os pgTAP existentes nao pegavam porque so respondem texto/inteiro/sim-nao",
-    "CHECK do snapshot com NULL passava (location_id sem status): trocado por num_nonnulls in (0,2)",
-    "validador do payload v2 recusava o eco das chaves de snapshot nas opcoes: tolerado so para item location"
-   ],
-   "pgtap_existentes_de_formularios": "identicos antes e depois do pacote no mesmo espelho: forms_definition 31/31, forms_response_edit_validation_v1 56/56, drafts_v2_repeatable_read 10/10, drafts_v2_serializable 10/10, forms_xlsx_private_r2_v1 313/313, forms_superadmin_operations_read_v2 70/70, forms_internal_provenance_guards 39/39, superadmin_forms_directory_internal_read 117/117. Quatro ja quebram ANTES do pacote por fixture desalinhada da cadeia de producao (nao sao deste pacote): forms_behavioral_rpc ('version_number' ambiguo), forms_security_and_operations ('argument of AND must be boolean'), superadmin_internal_form_drafts_v2 ('internal auth link version mismatch'), superadmin_forms_authoring_institution_context_v2 ('internal membership version mismatch')",
-   "o_que_falta_no_cliente": [
-    "packages/coelo_domain/lib/src/forms/form_definition.dart: FormItemKind.location e FormOption com locationId/locationStatus/locationAvailable; form_answers.dart: FormAnswerKind.location",
-    "packages/coelo_api/lib/src/forms/form_definition_dto.dart e form_runtime_dtos.dart: mapear 'location' na definicao e na resposta (option_ids com um id, como single_choice)",
-    "apps/superadmin/lib/features/forms/presentation: no editor (forms_editor_page.dart) o item Local sem edicao de opcoes, lista somente leitura vinda do servidor e aviso 'nenhum local ativo' quando vazia; no responder/testar (form_response_page.dart, forms_test_page.dart) widget de escolha unica com opcoes location_available=false desabilitadas e marcadas como revogadas; quando obrigatoria e nenhuma opcao disponivel, bloqueio com aviso e sem envio, mapeando 23514 FORMS_LOCATION_NO_AVAILABLE_OPTION e FORMS_LOCATION_REVOKED em mensagens honestas",
-    "o worker XLSX ja recebe optionId e resolve o rotulo pela definicao; conferir a coluna no arquivo gerado depois do cliente"
-   ],
-   "o_que_a_prova_nao_cobre": "nenhuma tela; rota normal com qa-r03 so depois de o coordenador aplicar em producao e o cliente existir; exportacao XLSX com resposta location nao foi gerada ponta a ponta (so o remendo do exportador e o pgTAP existente 313/313)",
-   "commit": "8db8e1cd3 em work/etapa2-r04-formularios-cuidado-rotina (push feito)"
-  },
-  {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220600_child_context_directory_v2_baseline.sql",
-   "action_id": [
-    "health-care.create",
-    "medication.create",
-    "students.list"
-   ],
-   "pgtap": "supabase/tests/superadmin_child_context_directory_v2_test.sql 45/45 (espelho coelo_baseline_p16, 11/09 08:4x)",
-   "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-006: o cliente recebe PGRST202 porque CHILD-READ01 nunca entrou na baseline. Corpo do historico sem mudanca de contrato; preflight de pins de hash trocado por existencia",
-   "chave_de_composicao": "nenhuma (childDirectoryRead ja composto)"
-  },
-  {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220700_attendance_dashboard_access_and_context_options_v1.sql",
-   "action_id": [
-    "attendance.dashboard",
-    "attendance.create",
-    "attendance.mark",
-    "attendance.correct",
-    "attendance.finish"
-   ],
-   "pgtap": "supabase/tests/attendance_dashboard_access_and_context_options_v1_test.sql 22/22 (espelho coelo_baseline_p16, 11/09 08:4x)",
-   "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-007: attendance_dashboard_access so existia no historico (20260825171221) e superadmin_attendance_context_options nunca teve arquivo; o cliente abre /attendance e /attendance/new com PGRST202. Escopo: platform > institution > unit > assignments > guardian; guardian negado (42501)",
-   "chave_de_composicao": "nenhuma (SupabaseAttendanceRepository ja composto)"
-  },
-  {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220800_forms_location_snapshot_v1_route.sql",
-   "action_id": [
-    "forms.location-question",
-    "forms.location-answer"
-   ],
-   "pgtap": "supabase/tests/forms_location_snapshot_v1_route_test.sql 8/8 (RED reproduzido antes: 23514)",
-   "estado": "PRONTO PARA A FILA; nao aplicado. F-R04-FCR-005: form_replace_working_definition chama form_apply_location_options_v1 antes de validate_form_definition, como o v2 e o form_publish ja fazem; sem isso o editor de producao (form_save_draft v1) recusa o item Local com \"location item requires at least one active location\"",
-   "chave_de_composicao": "nenhuma"
-  }
- ],
- "goldens": {
-  "regravados_em": "bbc562c6f",
-  "motivo": "diferenca unica: botao de Bug no cabecalho e realce do item de menu (regras transversais do Owner de 10/09); decisoes A de forms_directory_*, forms_editor_*, forms_operations_monitor_light_375 e form_response_light_375 aplicadas; Rotina e Assiduidade nao constam das listas do Owner mas a diferenca e a mesma do shell compartilhado",
-  "pendentes": [
-   "forms_editor: o rodape (Cancelar/Salvar) fica dentro do scroll, nao ancorado; P15 diz 'todos os formularios' e o editor de Formularios nao usa o SuperadminFormFrame. Registrado como pendencia, nao corrigido nesta rodada",
-   "forms_editor_light_1440 (9,03%), forms_editor_dark_1440 (10,82%), forms_editor_date_range_light_1440 (6,54%), forms_editor_catalog_light_1440 (4,11%) e forms_editor_catalog_groups_light_1440: divergem JA NA BASE 317f37bab com os mesmos percentuais (medido 11/09 02:45 rodando o golden test com a lib da base); o item Local no catalogo (P16) so acrescenta delta em forms_editor_catalog_groups_light_1440 (4,11% -> 5,44%). Registrados, nao regravados: decisao do Owner"
-  ],
-  "regravados_apos_P15": "medication_form_mobile_light regravado em 11/09 08:5x com o respiro do rodape (4917bcade/1e34eb9f4 em dev): decisao A do Owner (goldens-decisoes-complementares) cumprida; health_care_golden_test 4/4"
- },
- "estadoVazioDosDiretorios": {
-  "regra": "Owner, 11/09 ~00:40 via coordenador: busca, filtros, toggle, Arquivos, abas de status e card Criar sempre visiveis, inclusive no vazio; correcao no composto",
-  "medido": "rota normal com qa-r03 em localhost:3010, 11/09 00:50-01:30 (capturas 08-14 no scratchpad; resumo aqui)",
-  "health-care.list": "cumpre: busca, 5 filtros, toggle, Arquivos, abas Todos/Ativos/Em Implantacao/Inativos, card Criar (com o ator produtivo ligado nesta rodada)",
-  "medication.list": "busca, 2 filtros, toggle, Arquivos e card Criar aparecem; a tela nao define abas de status (usa o filtro 'Status do plano'). Duvida ao Owner: Medicacao deve ganhar abas de status como Perfis?",
-  "forms.list": "DEFEITO corrigido nesta revisao: em producao a tela vinha sem o cabecalho (titulo, subtitulo, Bug, conta) porque nenhuma rota de Formularios envolvia a pagina no SuperadminShell (os goldens aprovados envolvem). Agora todas as rotas de Formularios (diretorio, criar, editar, visao geral, testar, monitor, responder, respostas, detalhe, arquivos) tem cabecalho. Card Criar continua escondido no vazio porque canManage vem do servidor (forms.manage) e a sessao qa-r03 ainda nao e reconhecida (F-R04-FCR-002); depois do 220400 ele aparece. Abas de status: a tela usa o filtro 'Situacao' em vez de abas. Titulos das telas sem golden (visao geral, testar, monitor, respostas, detalhe, arquivos) sao proposta minha; registrado como pergunta visual ao Owner.",
-  "attendance.dashboard": "NAO cumpre: o estado de erro/vazio esconde tudo (sem busca, filtros, toggle, abas, Criar) e o painel nao esta no composto CoeloAdminDirectory (allowlist do teste de arquitetura: _AttendanceCallToolbar; a tela de dashboard e um painel proprio). Pendencia da Fase 0 assumida por este grupo; nao concluida nesta rodada.",
-  "daily-routine.list": "mostra 'Acesso nao autorizado' sem o chrome do diretorio (servidor nega a sessao ate o 220400); reavaliar depois do pacote.",
-  "students.list": "NAO cumpre: 'Nao foi possivel carregar os alunos' + 'Acompanhamento indisponivel'; a pagina StudentTrackingPage nao esta no composto (sem busca/filtros/toggle/Criar) e o leitor de criancas (superadmin_child_context_directory_v2) falhou para qa-r03 mesmo sendo do realm interno; causa a investigar (provavelmente exige instituicao/escopo). Pendencia registrada."
- },
- "dadosSinteticosEmProducao": {
-  "prefixo_ids": "d0c40000-",
-  "instituicao": "QA R04 Cuidado (sintetico)",
-  "unidade": "Unidade QA R04 (handle unidade_qa_r04)",
-  "crianca": "Crianca QA R04 (contexto d0c40000-0000-4000-8000-000000000004, vinculo ativo)",
-  "limpeza": "delete where id::text like 'd0c40000-%' ao fim da rodada (e o que os subagentes relatarem)"
- },
- "paralelizacao": {
-  "desde": "2026-09-11T00:17-03:00",
-  "subagentes": [
-   "Cuidado+Medicacao (porta 3013)",
-   "Alunos+Assiduidade+Rotina (porta 3011)",
-   "Formularios (porta 3012)",
-   "P16 tipo location (backend + cliente)"
-  ],
-  "regra": "cada um em worktree isolada; so a conversa-mae escreve este JSON e faz commit"
- },
- "revisadoPor": "subagente do coordenador (prova na rota real do grupo, apos a queda da conversa do grupo no reinicio); um Chrome (CDP 9411, SwiftShader), build web release em localhost:3011, sessao qa-r03 em producao; nenhum SQL em producao",
- "AMBIENTE_DE_PROVA": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r04fcr (3 builds: base, + id nulo, + strip de status/management_version) servido por serve.js (Node, fallback de SPA) em http://localhost:3011; Chrome dedicado --remote-debugging-port=9411 --use-angle=swiftshader (perfil isolado); login pelo driver (qa_drive.dart login, credencial de Coelo-backups/qa-r03.env no ambiente do shell, nunca impressa) com Manter sessao aberta; cliques por CDP (cdp.js clickxy/click por semantica), texto por click CDP + enter_text do driver (Input.insertText nao chega aos campos Flutter), RPCs por Network (cdp.js net, com navegacao dentro da coleta). O Chrome caiu uma vez sob SwiftShader (durante o rebuild); reaberto na rota, a sessao persistiu. Encerrados Chrome 9411 e Node 3011 ao final.",
- "ROTA_REAL_R04": {
-  "deltas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/deltas-r04-fcr.json (29 entradas, uma por action_id)",
-  "capturas": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/00..24 (25 PNG)",
-  "resultado_por_action_id": {
-   "P": [
-    "health-care.list (verified FE)",
-    "medication.list (verified-e2e)",
-    "forms.list (verified-e2e, card Criar oculto)",
-    "forms.create (verified-e2e)",
-    "forms.edit (verified-e2e)",
-    "forms.test (verified, preview inerte)"
-   ],
-   "F_bloqueadas": [
-    "health-care.create e medication.create e students.list: superadmin_child_context_directory_v2 404 (nunca aplicada)",
-    "students.revoke: 403 42501 people.assign_children required (has_context_permission vs ponte 220400 so de plataforma)",
-    "students.link/transfer/edit: sem UI",
-    "medication.evidence: sem UI",
-    "attendance.dashboard: attendance_dashboard_access 404 (so em migrations-historico)",
-    "attendance.create: superadmin_attendance_context_options 404 (nao existe no repositorio)",
-    "daily-routine.create: editor somente leitura (canManage derivado do diretorio vazio)",
-    "forms.location-question: 23514 location item requires at least one active location (F-R04-FCR-005: snapshot so no v2/publish)"
-   ],
-   "nao_executadas": [
-    "health-care.detail/edit",
-    "medication.detail/edit",
-    "attendance.mark/correct/finish",
-    "daily-routine.edit/apply/publish"
+ "rotaReal": {
+  "ambiente": "flutter build web -t test_driver/qa_main.dart --dart-define-from-file=.env.local -o build/web-r05fcr servido por node (SPA fallback) em http://127.0.0.1:3014; Chrome dedicado --remote-debugging-port=9415 --use-angle=swiftshader (o primeiro, 9414, travou ao navegar e ficou como processo zumbi; reaberto em porta nova com copia do perfil, sessao preservada); login qa-r03 pelo driver (credencial so no ambiente do processo)",
+  "forms.publish": {
+   "resultado": "P",
+   "prova": "/forms/4555ba07.../edit -> Publicar ou agendar -> Publicar agora -> \"Formulario publicado.\"; producao: forms.status=published, management_version 2->3, published_version_id preenchido, working_version_id nulo, first_published_at 15:24:43Z, audit.audit_logs forms.publish=1; reload em /forms/4555ba07... mostra Versao de gestao 3",
+   "capturas": [
+    "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/01-forms-edit-publicar.png",
+    "02-forms-publish-dialogo.png",
+    "03-forms-publish-publicado.png"
    ]
   },
-  "dados_sinteticos_criados_para_apagar": [
-   {
-    "tabela": "public.forms (+ form_versions/form_sections/form_items)",
-    "id": "4555ba07-e4a4-4971-8ba7-d81a775169cd",
-    "nome": "[R04-QA] Formulario Local editado",
-    "instituicao": "d0c40000-0000-4000-8000-000000000001",
-    "nota": "form_command_receipts com request_id b694fc50-bb0d-498d-999f-f9ae9503c2b5 e 69aaa64c-2128-48e5-aa02-d0e1ea0a71e2"
-   },
-   {
-    "tabela": "public.activity_locations",
-    "id": "fc446535-100c-4f35-8e30-e43d63176e3f",
-    "nome": "[R04-QA] Local Sala Azul",
-    "instituicao": "d0c40000-0000-4000-8000-000000000001",
-    "nota": "criado por superadmin_location_create_v2, request f402d987-3234-4d5e-8d14-2657829a99f7"
-   },
-   "students.revoke falhou com 403: o vinculo d0c40000-0000-4000-8000-000000000005 continua ativo; nenhum perfil, plano, chamada ou modelo foi criado"
-  ]
+  "forms.overview": {
+   "resultado": "P",
+   "prova": "/forms/4555ba07... abre pela projecao autorizada (form_get_overview), titulo + Versao de gestao 3 + Distribuicoes 0 / Ocorrencias 0 / Respostas 0; reload (Chrome novo na URL) mantem",
+   "capturas": [
+    "04-forms-overview-reload.png"
+   ],
+   "pendencia": "a visao geral nao mostra o status (Publicado/Rascunho), so a versao; registrar como melhoria FE"
+  },
+  "forms.distribuir": {
+   "resultado": "P (subpasso de forms.monitor/respond)",
+   "prova": "Distribuir -> Publico e agendamento (instituicao sintetica, toda a instituicao) -> Editar agendamento (uma vez, 11/09 12:55 a 11/10) -> Salvar: form_save_application 200 (application a0ee4530-469a-4c64-a7ab-9dca12746cbf), form_save_schedule 200 (schedule 2860c35a-...), form_get_overview recarregado",
+   "capturas": [
+    "09-distribuir-dialogo.png",
+    "10-agendamento.png",
+    "11-distribuido.png"
+   ],
+   "primeira_tentativa": "P0002 form application unavailable (corrigido em b05078dc3)"
+  },
+  "forms.files": {
+   "resultado": "F",
+   "prova": "/forms/4555ba07.../files: \"Acesso nao autorizado\" (form_list_file_jobs nega a sessao qa-r03); logo depois a sessao foi derrubada para /login (a invalidacao de autorizacao do withFormsAuthorization?). Gate: capacidade de arquivos para a sessao interna (BE) e conferir por que a negativa derruba a sessao (FE)"
+  }
  },
- "finalizado": true,
- "validacaoDeEntrega": {
-  "quando": "2026-09-11T08:31-03:00",
-  "pedido_do_owner": "conferir se tudo chegou ao coordenador (coelo-04): commits, worktrees, pendencias; e listar o que atualizar nas skills coelo-backend, coelo-frontend e coelo-frontend-backend",
-  "em_origin_dev": [
-   "ed32f4770 harness de QA (test_driver/qa_main.dart + qa_drive.dart, flutter_driver em dev_dependencies)",
-   "d5ddfde39 composicao de producao de Perfis de cuidado e Medicacao + guarda de mutacao por localizacao (/health-care, /students, /attendance, /daily-routine)",
-   "2c7a2e2ab/730f2a117 pacote 220400 (ponte de ator) + pgTAP 17/17 -> APLICADO (lote 10, ledger 85)",
-   "bbc562c6f goldens de Formularios, Rotina e Assiduidade regravados (Bug + realce do menu)",
-   "ac2ea564e cabecalho compartilhado nas rotas de Formularios; testes de rota de Assiduidade/Rotina/Cuidado no contrato da ADR 0034",
-   "87e413b8a memorizacao das leituras de opcoes de crianca e do detalhe do plano",
-   "8db8e1cd3/b67f6a505 P16 backend 220500 + pgTAP 55/55 -> APLICADO (lote 17); da905636d/f0df927e4/4d4340376 P16 cliente",
-   "f80d26909 e ee4903912 correcoes do DTO de formulario (id nulo; sem status/management_version) provadas na rota real",
-   "e5d35ad37 rev 32 + deltas-r04-fcr.json (29 entradas) + 25 capturas da rota real"
-  ],
-  "NAO_em_origin_dev_ate_esta_validacao": [
-   "b17eb0319 (branch do grupo, publicada): candidatos 220600 (child_context_directory_v2 sobre a baseline, F-R04-FCR-006), 220700 (attendance_dashboard_access + superadmin_attendance_context_options, F-R04-FCR-007) e 220800 (snapshot de Locais na rota v1 de rascunho, F-R04-FCR-005) com os tres pgTAP. 220600 e 220800 haviam sido commitados em migrations/ (pasta errada) e o 220700 estava SEM COMMIT na worktree; nesta validacao foram movidos/adicionados em candidatos/formularios-cuidado-rotina/ e publicados",
-   "bbb4576f1 merge de origin/dev 0376a0446 na branch (sem conflito)"
-  ],
-  "ledger_de_producao_conferido": "20260910220000..220500 aplicados; 220600/220700/220800 AUSENTES (pg_proc de producao sem superadmin_child_context_directory_v2, attendance_dashboard_access e superadmin_attendance_context_options)",
-  "prova_dos_tres_candidatos_nesta_validacao": "espelho coelo_baseline_p16 (baseline + seed + lotes por psql + os tres candidatos ja aplicados pelo subagente anterior), 11/09 08:4x: superadmin_child_context_directory_v2_test 45/45, attendance_dashboard_access_and_context_options_v1_test 22/22, forms_location_snapshot_v1_route_test 8/8",
-  "worktrees": "as quatro worktrees dos subagentes (e2-r04-fcr-cuidado/rotina/formularios/p16) estavam limpas em 87e413b8a, sem commit proprio; removidas nesta validacao junto das branches work/etapa2-r04-fcr-*. Fica so C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina (branch work/etapa2-r04-formularios-cuidado-rotina @ b17eb0319+), limpa, publicada; cabe ao coordenador integrar e remover",
-  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md reescrito para a R04 nesta revisao (antes ainda era o da R03)",
-  "faltou": "nada do que foi produzido esta fora de Git ou fora deste JSON; o que nao chegou a dev sao os tres candidatos acima, que dependem do coordenador aplicar (fila) e integrar a branch"
- },
- "propostaDeAtualizacaoDasSkills": {
-  "ja_registrado_pelo_coordenador_em_dev": "coelo-backend (14b96e446: ordem de aplicacao, espelho por psql, ponte de ator 220400, MFA fora do MVP, dado sintetico por RPC/migration, revokes, memoria), coelo-frontend (5d5ed3796: entrypoint unico de driver, memoria, estado vazio no composto, launcher do chat, goldens) e coelo-frontend-backend (0376a0446: formato dos deltas, E2E exige FE+BE, build web + CDP, WIP do coordenador, candidato realocado por rename). Nao repetir",
-  "coelo-backend": [
-   "Antes de declarar \"SQL em producao\" para uma familia, listar as RPCs que o cliente chama (grep \"rpc(\" e os literais superadmin_* em lib/features/<familia>/data) e conferir cada uma em pg_proc de producao; PGRST202 na rota real (child_context_directory_v2, attendance_dashboard_access, superadmin_attendance_context_options) mostrou que \"lote aplicado\" nao significa \"contrato do cliente presente\" (F-R04-FCR-006/007)",
-   "Leitura e comando da mesma acao usam a MESMA funcao de capacidade: superadmin_student_links devolve can_manage=true por has_platform_permission e superadmin_student_revoke nega por has_context_permission (F-R04-FCR-008). A ponte de ator da capacidade de plataforma, nao contexto institucional; comandos que exigem contexto precisam ou aceitar a capacidade de plataforma ou o espelho precisa de institution_memberships (decisao pendente)",
-   "Capacidade de criar/gerir e devolvida no envelope do diretorio (can_manage no topo), nunca inferida pelo cliente a partir das linhas: Rotina deriva canManage do diretorio vazio e o editor nasce somente leitura (F-R04-FCR-009)",
-   "Rotas v1 e v2 de um mesmo comando precisam do mesmo pre-processamento: o snapshot de Locais (P16) foi posto no save_draft_v2 e no publish, mas o cliente de producao usa form_save_draft v1 (F-R04-FCR-005). Regra: ao acrescentar validacao ou enriquecimento, aplicar em todas as rotas que o cliente composto realmente chama",
-   "Politica de Formularios (P16, ADR 0034 Decisao 12): tipo de item `location` com opcoes congeladas do catalogo public.activity_locations no salvamento/publicacao; resposta exige local ativo no snapshot e no catalogo (23514 FORMS_LOCATION_REVOKED); obrigatoria sem opcao valida bloqueia (FORMS_LOCATION_NO_AVAILABLE_OPTION); a projecao expoe location_available por opcao",
-   "Perfis de cuidado/Medicacao (lote 2): platform.read NAO alcanca dado de saude de crianca; leitura exige health_care.read/medication.read (plataforma, contextual ou responsavel autorizado via 220000); a instituicao do agregado vem do contexto infantil, nunca do payload. Vale para pacotes novos dessas familias",
-   "Dado sintetico deixado em producao por esta frente (P37): prefixo d0c40000- (instituicao, unidade, crianca, vinculo criados por insert direto ANTES da regra \"nunca por insert direto\"), formulario 4555ba07-e4a4-4971-8ba7-d81a775169cd, local fc446535-100c-4f35-8e30-e43d63176e3f. Limpeza por script unico provado no espelho, depois do \"P37 aprovado\""
-  ],
-  "coelo-frontend": [
-   "Toda rota de producao compoe o mesmo shell do golden aprovado: as telas de Formularios nao trazem cabecalho proprio e nenhuma rota as envolvia no SuperadminShell (goldens envolvem, producao nao). Regra: o teste de rota de cada familia afirma o cabecalho (titulo, Bug, conta) na rota normal; formsShell no router e o exemplo (ac2ea564e)",
-   "A guarda de mutacao do router (hasAuthoritativeMutationCapability(location)) nao e fronteira de autorizacao: a rota abre quando o repositorio real esta composto e o servidor revalida (ADR 0034). Testes de rota das familias com repositorio real esperam a rota aberta, nao /errors/mutation-capability-unavailable (attendance/daily_routine/health_care_routes_test atualizados)",
-   "Leituras feitas em builder de GoRoute precisam de future memorizado por rota (childOptionsFuture, medicationPlanLoadFutures): um FutureBuilder cujo future e recriado a cada rebuild do shell nunca sai de \"carregando\" (87e413b8a)",
-   "Dirigir o app web pelo driver exige set_frame_sync=false a cada carga da pagina; o MCP dart/flutter_driver_command fica preso no frame sync no web e nao serve para a rota real. Em release, o tap do driver trava: usar clique por CDP (regra do coordenador)",
-   "Diretorios ainda fora do composto CoeloAdminDirectory no recorte: painel de Assiduidade (attendance_dashboard_page.dart, allowlist _AttendanceCallToolbar) e Alunos (StudentTrackingPage); no vazio/erro escondem busca, filtros, toggle, Arquivos, abas e Criar, contra a regra do Owner (estado vazio). Migrar ao composto e pendencia do grupo",
-   "Card Criar de Formularios so aparecia com reader == null (nunca em producao) e /forms/:id/occurrences/:occ/respond monta const FormResponsePage() sem api (F-R04-FCR-010 a/b); o balao do chat cobre o botao primario do formulario de Locais (c, grupo estrutura/shell)",
-   "Goldens do recorte: forms_directory_*, forms_editor_*, forms_operations_monitor_light_375, form_response_light_375, daily_routine_* e attendance_* regravados por causa do Bug + realce do menu (bbc562c6f); forms_editor_*_1440 divergem ja na base (9-11%) e ficam para decisao do Owner; medication_form_mobile_light so depois do P15 (agora em dev: conferir e regravar)"
-  ],
-  "coelo-frontend-backend": [
-   "Ordem de prova por familia na rota real: (1) grep das RPCs do cliente x pg_proc de producao; (2) sessao qa-r03 + dado sintetico com contexto institucional; (3) por action_id: rota abre, RPC 200 na aba Network, linha na tabela, reload. Declarar verified-e2e so com os quatro; \"blocked\" com o erro exato (codigo SQLSTATE/PGRST + mensagem) e a camada responsavel",
-   "Resultado da R04 do grupo (29 action_ids provados de 43): verified-e2e = medication.list, forms.list, forms.create, forms.edit; verified FE = health-care.list, forms.test; bloqueados por RPC ausente = health-care.create/medication.create/students.list (220600), attendance.dashboard/create (220700), forms.location-question (220800); bloqueados por capacidade = students.revoke (F-008); bloqueados por UI = students.link/transfer/edit, medication.evidence, daily-routine.create (F-009); nao executados = health-care.detail/edit, medication.detail/edit, attendance.mark/correct/finish, daily-routine.edit/apply/publish; forms.overview/publish/monitor/respond/responses/response-detail/responses.export e forms_files (5) sem rota real nesta rodada",
-   "Um subagente por familia com Chrome proprio funciona, mas a maquina aguenta dois Chrome/flutter run por vez; o coordenador pode assumir a rota real de um grupo com subagente proprio escrevendo no JSON do grupo (foi o caso desta frente apos a queda de 00:27)"
-  ]
- },
- "evolucaoEtapa2Recorte": {
-  "antes_da_R04": "FE verified 0/43 do recorte; BE em producao: lotes 1,2,3,5 (formularios, cuidado/rotina/assiduidade/alunos, guardian read, student links) mas nenhuma rota real aberta com sessao; E2E 0",
-  "depois_da_R04": "ponte de ator (220400) e P16 backend (220500) em producao; composicao de producao de Cuidado/Medicacao, cabecalho de Formularios, DTO de formulario corrigido; rota real com qa-r03 percorrida em 29 action_ids: 4 verified-e2e, 2 verified FE, e cada bloqueio com erro exato e pacote/correcao nomeados; 3 candidatos verdes na fila (220600/220700/220800); goldens do recorte regravados; harness qa_main/qa_drive reutilizado pelas outras frentes",
-  "percentuais": "sao do coordenador (deltas-r04-fcr.json aplicados por action_id no inventario); esta frente nao calcula percentual proprio"
- },
- "pendenciasPosMvp": [
-  "revisao profunda de seguranca: grants CRUD de authenticated sem policy (levantados pelo coordenador), IDOR por tela, sessoes concorrentes, auditoria com retry, golden por estado (ADR 0034)",
-  "leitura de saude pelo responsavel na familia (Principal): porta health_care_profile_for_guardian/medication_plans_for_guardian existe (220000) sem consumidor; fora do recorte do Superadmin",
-  "retencao/base legal/regra clinica de saude (OQ-003) e importacao/exportacao gerais (adiadas; so forms.responses.export XLSX no MVP, ainda sem prova na rota real)",
-  "MFA/AAL2 de volta por capacidade (ADR 0019) depois do MVP; routine_mfa_phase_enforced e requires_mfa hoje falsos",
-  "Cloudflare Access na frente do Superadmin (P21) e limpeza dos dados sinteticos (P37) no fechamento da proxima rodada"
+ "notaRelogio": "a rev 35 registrou 12:58 por engano; o relogio da maquina marcava 12:40",
+ "subagentes": [
+  {
+   "tarefa": "pacote 20260911220100_attendance_superadmin_contract_v1 (14 RPCs do cliente de Assiduidade ausentes em producao: superadmin_attendance_directory/call_detail/create_call/set_participant/correct_participant/complete_call/reopen_call/mark_remaining_present/clear_presence_marks/undo_bulk/confirm_notice e attendance_dashboard_read/ranking_page/request_export) + pgTAP no descartavel",
+   "estado": "em execucao desde 12:52; sem Chrome, sem flutter test, sem producao"
+  }
+ ],
+ "dadosSinteticosCriados": [
+  {
+   "tabela": "public.form_applications",
+   "id": "a0ee4530-469a-4c64-a7ab-9dca12746cbf",
+   "nome": "Distribuicao de formulario",
+   "form": "4555ba07-e4a4-4971-8ba7-d81a775169cd"
+  },
+  {
+   "tabela": "public.form_application_schedules",
+   "id": "2860c35a-e878-41f5-bb49-00746977975d"
+  },
+  {
+   "nota": "ocorrencias/participacoes geradas pelo cron a partir desta distribuicao"
+  }
  ]
 }
