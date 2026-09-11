@@ -2561,8 +2561,16 @@ GoRouter createSuperadminRouter({
               repository: dailyRoutineRepository,
               logout: logout,
               activityController: attendanceActivities,
-              onCreateEntry: null,
-              onEdit: null,
+              // F-R04-FCR-009: sem estes callbacks o card Criar e a edicao nunca
+              // apareciam em producao; a rota abre e o servidor revalida
+              // routine.manage_models/manage_applications em cada comando.
+              onCreateEntry: (kind) =>
+                  context.goNamed(SuperadminRoutes.dailyRoutineCreateName, extra: kind),
+              onEdit: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineEditName,
+                pathParameters: {'modelId': item.id},
+                queryParameters: {'kind': item.kind.name},
+              ),
               // D7: Lancamentos no MVP e uma tela minima sobre o comando
               // daily-routine.publish, que ja existe. Autoria, capacidade,
               // escopo e versao esperada sao recalculados no servidor; aqui so
