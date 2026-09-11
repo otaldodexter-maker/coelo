@@ -1,15 +1,15 @@
 {
-  "revision": 38,
+  "revision": 39,
   "round": "E2-R05-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-publicacoes-agenda",
   "branch": "work/etapa2-r05-publicacoes-agenda",
-  "head": "2c676dde4",
+  "head": "4b9483148",
   "base": "origin/dev 2f6a6114f",
   "coordinator": "Claude (R05 · Coordenacao da tarde, coelo-25)",
-  "updatedAt": "2026-09-11T15:08:00-03:00",
+  "updatedAt": "2026-09-11T15:12:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -231,6 +231,15 @@
       ],
       "what": "Rota real com o build novo (66a52986f): circulars.edit pela tela (reabrir rascunho, editar titulo, Salvar rascunho, recarga completa mantem: ui-32..ui-39); circulars.schedule pela tela (seletor data 25/09 + horario 14:00, validacao honesta de publico, Agendar circular -> Agendada; recarga completa lista 25/09/2026 na aba Agendadas; RPC scheduled: ui-41..ui-46). notices.list: pastilha de tipo com altura propria (achado ui-19 corrigido), goldens communication_directory_* regravados.",
       "tests": "flutter test notices 133/133 + circulars 66/66 apos regravar; analyze limpo"
+    },
+    {
+      "sha": "4b9483148",
+      "actionIds": [
+        "agenda.location",
+        "agenda.create"
+      ],
+      "what": "Wizard de evento ganha o campo \"Qual <nivel>\" (seletor de contexto concreto) quando ha mais de um contexto do nivel; default = primeiro (comportamento anterior). Goldens agenda_create_{light,dark}_{375,768,1440} regravados: campo novo -> A+ pendente do Owner (nao e regressao visual, e conteudo novo). agenda.location FE continua local-green (nao provado pela tela nesta rodada).",
+      "tests": "test/features/agenda 291/291"
     }
   ],
   "pendingForCoordinator": [
@@ -298,6 +307,13 @@
         "agenda.location"
       ],
       "pending": "ACHADO de produto no wizard (ui-51/ui-52): \"Contexto principal\" so escolhe o NIVEL (Instituicao/Unidade/Turma/Atividade) e o formulario usa o PRIMEIRO contexto daquele nivel em store.contexts (_selectedContext), sem seletor da unidade/turma concreta; com mais de uma unidade o evento pode ir para a unidade errada. Proposta: seletor de contexto concreto (como o picker de instituicao das Circulares) antes do verified FE. BE done pela RPC."
+    },
+    {
+      "actionIds": [
+        "agenda.create",
+        "agenda.location"
+      ],
+      "pending": "Goldens agenda_create_* regravados com o campo novo \"Qual Instituicao/Unidade/...\": pedir A+ ao Owner (ownerVisualApproval continua o anterior ate ele responder)."
     }
   ],
   "proposedDeltas": [
@@ -684,7 +700,7 @@
   "uiRouteProof": null,
   "finalizado": {
     "at": "2026-09-11T15:08:00-03:00",
-    "head": "2c676dde4 (+ commit desta revisao)",
+    "head": "4b9483148 (rev 39)",
     "handoff": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
     "deltas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/deltas-r05-pa.json (16)",
     "capturas": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ (39 png)",
@@ -695,7 +711,7 @@
   "miniRevisao": {
     "quando": "2026-09-11T15:08:00-03:00",
     "destinatario": "coelo-25 (R05 · Coordenacao da tarde)",
-    "shaFinal": "ver head desta revisao (branch work/etapa2-r05-publicacoes-agenda publicada; status limpo)",
+    "shaFinal": "4b9483148 (rev 39; branch publicada; status limpo)",
     "fechouPorActionId": [
       {
         "action_id": "agenda.view",
