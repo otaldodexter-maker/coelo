@@ -26,7 +26,7 @@ Coordenação (Claude Opus, `coelo-b5`/`coelo-25`) abriu a R05 às 12:03 sobre
 denominadores homogêneos (inventário de 231 ações; 224 com backend aplicável;
 199 com E2E ativo no MVP), base: inventário validado (`validate-trackers.cjs`
 PASS) sobre a base conjunta; ambiente: repositório + produção medida nos lotes
-28 a 47. SQL aplicado em produção = `done` + `local-green` com pacote
+28 a 48. SQL aplicado em produção = `done` + `local-green` com pacote
 aplicado (na R05 todos os `local-green` têm o SQL em produção; falta rota real
 ou gateway). Aprovação visual não é `verified`; SQL em produção não é
 `done`; nada se soma entre camadas.
@@ -41,7 +41,7 @@ ou gateway). Aprovação visual não é `verified`; SQL em produção não é
 | Back-end `done` | 132/224 (58,93%) |
 | E2E `verified-e2e` | 105/199 (52,76%) |
 
-**Produção em 11/09 (tarde):** 20 lotes (28 a 47) e 37 pacotes aplicados pelo
+**Produção em 11/09 (tarde):** 21 lotes (28 a 48) e 34 pacotes aplicados pelo
 coordenador com dump prévio, preflight no espelho reconstruído na ordem real e
 ledger: contatos/documento/representantes da instituição, revoke de grants de
 authenticated sem policy, anexos do chat e arquivos de Formulários no R2, P36 e
