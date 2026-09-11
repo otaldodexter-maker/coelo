@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 52,
+ "revision": 53,
  "round": "E2-R05-20260911",
- "updatedAt": "2026-09-11T15:49:52-03:00",
+ "updatedAt": "2026-09-11T15:50:20-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R05 · Estrutura (G1)",
@@ -286,6 +286,11 @@
    "Code review: pendenciasDeCodeReview (parsers estritos em Pessoas/Agenda/Forms, SAI_INTERNAL_ERROR sem SQLSTATE, no-op do edit_core, carencia de 15 dias no RPC legado de handle de Unidades, card de previa da turma ilegivel no escuro)"
   ],
   "duvidasAoOwner": "nenhuma nova; observacao visual do card de previa da turma registrada para a lista de decisao",
-  "dadosSinteticos": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26)."
+  "dadosSinteticos": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26).",
+  "shaPublicado": "c3e1ee639 (codigo) / e77c936f6 (docs); status limpo; nenhum WIP",
+  "deltas": "evidence/etapa-2/r05-estrutura/deltas-r05-estrutura.json: 51 entradas; 21 ja aplicadas pelo coordenador (530613fb5); 22-51 pendentes de aplicacao",
+  "pacotesSqlRestantes": "nenhum (structure_handles_v1 aplicado no lote 42)",
+  "chavesCriadas": "nenhuma chave, token ou segredo criado por esta frente",
+  "dadosSinteticosCriados": "activity_definitions 95b98978 (ativa) e 2e45c8bd (sonda); groups 4214106c; activity_locations d5461295; institutions 190dd028 ganhou CNPJ sintetico e pessoa \"Rafaela Sintetica\"; units f5284f2f ativada (P42: ficam ate o fim da Etapa 2)"
  }
 }
