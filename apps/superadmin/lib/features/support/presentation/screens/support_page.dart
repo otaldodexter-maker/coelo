@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -49,9 +51,25 @@ class _SupportPageState extends State<SupportPage> {
   DialogRoute<void>? _fullscreenDetailRoute;
 
   @override
+  void initState() {
+    super.initState();
+    widget.controller.addListener(_surfaceCommandError);
+  }
+
+  /// Falha de resposta/status no repositório produtivo vira aviso na tela em
+  /// vez de sumir em silêncio (o controller já recarregou o diretório).
+  void _surfaceCommandError() {
+    final error = widget.controller.consumeCommandError();
+    if (error == null || !mounted) return;
+    showSuperadminNotice(context, error, icon: Icons.error_outline_rounded);
+  }
+
+  @override
   void didUpdateWidget(covariant SupportPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.controller, widget.controller)) {
+      oldWidget.controller.removeListener(_surfaceCommandError);
+      widget.controller.addListener(_surfaceCommandError);
       _controllerGeneration++;
       _restoreDetailOriginFocus = null;
       _search.text = widget.controller.filters.search;
@@ -61,6 +79,7 @@ class _SupportPageState extends State<SupportPage> {
 
   @override
   void dispose() {
+    widget.controller.removeListener(_surfaceCommandError);
     _controllerGeneration++;
     _invalidateFullscreenDetail();
     _search.dispose();
@@ -75,7 +94,7 @@ class _SupportPageState extends State<SupportPage> {
     logout: widget.logout,
     currentDestination: 'support',
     chatLauncherBottomInset: MediaQuery.textScalerOf(context).scale(CoeloSpacing.space20),
-    onBugReportSubmitted: widget.controller.submitReport,
+    onBugReportSubmitted: widget.controller.submitReportToBackend,
     onDestinationSelected: (d) {
       if (d == 'home') widget.onHomeOpen?.call();
       if (d == 'institutions') widget.onInstitutionsOpen();
@@ -149,6 +168,37 @@ class _SupportPageState extends State<SupportPage> {
   }
 
   Widget _listing(List<SupportTicket> tickets) {
+    final controller = widget.controller;
+    // Rota normal contra o repositório produtivo: carga e falha honestas,
+    // sem chamados fictícios (regra do MVP, ADR 0034).
+    // CRIAR (Owner, 10/09): o card Criar precede o estado, inclusive na falha.
+    if (controller.loadState == SupportLoadState.failure) {
+      return _stateWithCreate(
+        KeyedSubtree(
+          key: const Key('support-state-failure'),
+          child: CoeloStatePanel(
+            title: 'Suporte indisponível',
+            message: 'Não foi possível carregar os chamados. Tente novamente.',
+            icon: Icons.cloud_off_outlined,
+            actionLabel: 'Tentar novamente',
+            onAction: () => unawaited(controller.loadFromRepository()),
+          ),
+        ),
+      );
+    }
+    if (controller.loadState == SupportLoadState.loading && tickets.isEmpty) {
+      return _stateWithCreate(
+        const KeyedSubtree(
+          key: Key('support-state-loading'),
+          child: CoeloStatePanel(
+            title: 'Carregando chamados',
+            message: 'Buscando os chamados da operação...',
+            icon: Icons.hourglass_top_rounded,
+            loading: true,
+          ),
+        ),
+      );
+    }
     if (_displayMode == SupportDisplayMode.table) {
       return Column(
         crossAxisAlignment: CrossAxisAlignment.stretch,
@@ -214,6 +264,19 @@ class _SupportPageState extends State<SupportPage> {
       onCreate: _createSupport,
     );
   }
+
+  Widget _stateWithCreate(Widget state) => Column(
+    crossAxisAlignment: CrossAxisAlignment.stretch,
+    children: [
+      ConstrainedBox(
+        key: const Key('support-create-state'),
+        constraints: const BoxConstraints(minHeight: 128),
+        child: CoeloAdminCreateAction(label: 'Criar suporte', onPressed: _createSupport),
+      ),
+      const SizedBox(height: CoeloSpacing.space4),
+      Expanded(child: state),
+    ],
+  );
 
   void _open(SupportTicket ticket, SupportFocusRestoreCallback restoreFocus) {
     _restoreDetailOriginFocus = restoreFocus;
