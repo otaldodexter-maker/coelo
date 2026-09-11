@@ -471,7 +471,11 @@ Future<SupabaseAgendaRepository> _repository(
       'https://example.supabase.co',
       'publishable-key',
       httpClient: MockClient((request) async {
-        final response = await handler(request);
+        // O detalhe aberto por link direto tambem le os contextos (rev 26 da
+        // R04); os testes de item nao contam essa chamada nem a simulam.
+        final response = request.url.path.endsWith('superadmin_agenda_contexts')
+            ? _json({'contexts': <Object?>[]})
+            : await handler(request);
         return Response.bytes(
           response.bodyBytes,
           response.statusCode,

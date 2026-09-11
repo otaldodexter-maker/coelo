@@ -1,0 +1,158 @@
+[
+  {
+    "action_id": "audit.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.list",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): /audit abre pela rota normal com eventos reais (audit_list_events_for_superadmin 200, pagina 1 de 59), paginacao por cursor (Proxima -> pagina 2, RPC 200), reload mantem sessao e rota e a trilha registra superadmin.audit.list do proprio ator. RLS/negativas pelo pgTAP 210100 (37/37: auth ausente, sessao invalida, ator do realm people negado, cursor de outra instituicao rejeitado, permissao revogada). Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/30-audit-open.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/35-audit-reload.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/37-audit-page2.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.filter",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.filter",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.filter",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.detail",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.detail",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+      ]
+    }
+  },
+  {
+    "action_id": "audit.detail",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): clique na linha abre o painel Detalhe do evento via audit_get_event_for_superadmin 200 (ator, instante, acao, recurso, resultado, origem, instituicao, correlation id, motivo CHAT_MEMBER_INVALID, integridade verificada); a leitura do detalhe gera superadmin.audit.detail na trilha. Backend: leitura v2 (20260910210100) em producao desde o lote 10.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/34-audit-detail.png"
+      ]
+    }
+  }
+]

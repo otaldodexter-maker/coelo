@@ -91,14 +91,51 @@ void main() {
     expect(find.text('Feira cultural 2026'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
+  testWidgets('referência iOS (P33): hoje em círculo cheio, cancelado hachurado e Hoje no rodapé', (
+    tester,
+  ) async {
+    await _setSize(tester, const Size(1440, 1000));
+    final store = AgendaPrototypeStore.seeded(clock: () => DateTime(2026, 8, 3, 12));
+    store.cancelItem('event-parents', actorName: 'QA');
+    await tester.pumpWidget(_app(store: store));
+    await tester.pumpAndSettle();
+
+    // Cancelado continua visível no mês, com o prefixo e o horário.
+    expect(find.textContaining('CANCELADO: Feira cultural 2026'), findsOneWidget);
+    expect(find.byType(CustomPaint), findsWidgets);
+    // Hoje (data de referência) tem círculo cheio na cor primária.
+    final today = find.descendant(
+      of: find.byKey(const Key('agenda-day-2026-08-03')),
+      matching: find.byType(DecoratedBox),
+    );
+    final decoration = tester.widget<DecoratedBox>(today.first).decoration as BoxDecoration;
+    expect(decoration.shape, BoxShape.circle);
+    expect(decoration.color, CoeloTheme.light.colorScheme.primary);
+    // Botão Hoje fica no rodapé e volta ao mês de referência.
+    await tester.tap(find.byTooltip('Próximo mês'));
+    await tester.pumpAndSettle();
+    expect(find.text('setembro de 2026'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('agenda-today')));
+    await tester.pumpAndSettle();
+    expect(find.text('agosto de 2026'), findsOneWidget);
+    // Toggle Calendário/Lista divide a largura em duas metades iguais.
+    final calendar = tester.getSize(find.byKey(const Key('agenda-view-calendar')));
+    final list = tester.getSize(find.byKey(const Key('agenda-view-list')));
+    expect(calendar.width, closeTo(list.width, 1));
+    expect(tester.takeException(), isNull);
+  });
 }
 
-Widget _app({TextScaler textScaler = TextScaler.noScaling, ThemeData? theme}) => MaterialApp(
+Widget _app({
+  TextScaler textScaler = TextScaler.noScaling,
+  ThemeData? theme,
+  AgendaPrototypeStore? store,
+}) => MaterialApp(
   theme: theme ?? CoeloTheme.light,
   home: MediaQuery(
     data: MediaQueryData(textScaler: textScaler),
     child: AgendaCalendarPage(
-      store: AgendaPrototypeStore.seeded(),
+      store: store ?? AgendaPrototypeStore.seeded(),
       logout: () async => const LogoutResult.success(),
       onAreaSelected: (_) {},
       onCreateItem: () {},

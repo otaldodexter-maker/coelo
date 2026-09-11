@@ -289,6 +289,14 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
     );
   }
 
+  /// Toda célula de dados fica alinhada à esquerda e centralizada na altura
+  /// da linha, como na tabela de Instituições (decisão do Owner de 11/09/2026,
+  /// G-SUP): a feature não precisa envolver cada célula com `Align`.
+  Widget _cell(Widget child) => Padding(
+    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
+    child: Align(alignment: Alignment.centerLeft, child: child),
+  );
+
   Widget _pinnedRow(BuildContext context, T item) {
     final key = widget.rowKey(item);
     return KeyedSubtree(
@@ -298,10 +306,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
         key: Key('coelo-admin-table-pinned-row-background-$key'),
         highlighted: _isHighlighted(item),
         height: widget.rowHeight + 1,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-          child: widget.pinnedColumn.cellBuilder(context, item),
-        ),
+        child: _cell(widget.pinnedColumn.cellBuilder(context, item)),
       ),
     );
   }
@@ -346,10 +351,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                         key: Key('coelo-admin-table-cell-${column.id}-$key'),
                         width: _widths[column.id],
                         height: widget.rowHeight,
-                        child: Padding(
-                          padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-                          child: column.cellBuilder(context, item),
-                        ),
+                        child: _cell(column.cellBuilder(context, item)),
                       ),
                     )
                     .toList(growable: false),

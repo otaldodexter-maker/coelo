@@ -187,6 +187,7 @@ import '../dev_menu/development_person_directory_repository.dart';
 import '../dev_menu/development_person_identity_repository.dart';
 import '../../features/people/domain/person_directory.dart' hide PersonDirectoryPage;
 import '../../features/people/domain/person_detail_reader.dart';
+import '../../features/people/domain/person_handle.dart';
 import '../../features/people/presentation/person_detail_page.dart';
 import '../../features/people/domain/person_identity.dart';
 import '../../features/people/presentation/person_directory_page.dart';
@@ -205,6 +206,7 @@ import '../../features/meal_plans/presentation/meal_plan_directory_page.dart';
 import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/data/forms_directory_reader.dart';
+import '../../features/forms/data/forms_editor_context.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
@@ -230,6 +232,12 @@ import '../shell/superadmin_shell.dart';
 import 'superadmin_routes.dart';
 
 const _productionMutationUnavailablePath = '/errors/mutation-capability-unavailable';
+
+/// `?from=<uuid>` da criação de perfil (P31); qualquer outro valor é ignorado.
+String? _nullableProfileId(String? raw) {
+  final value = raw?.trim() ?? '';
+  return RegExp(r'^[0-9a-fA-F-]{36}$').hasMatch(value) ? value : null;
+}
 
 AccessProfileDomain _accessProfileDomain(String? value) => AccessProfileDomain.values.firstWhere(
   (domain) => domain.databaseValue == value,
@@ -325,6 +333,7 @@ GoRouter createSuperadminRouter({
   PersonDirectoryRepository personDirectoryRepository =
       const UnavailablePersonDirectoryRepository(),
   PersonDetailReader personDetailReader = const UnavailablePersonDetailReader(),
+  PersonHandleRepository? personHandleRepository,
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
@@ -2568,8 +2577,16 @@ GoRouter createSuperadminRouter({
               repository: dailyRoutineRepository,
               logout: logout,
               activityController: attendanceActivities,
-              onCreateEntry: null,
-              onEdit: null,
+              // F-R04-FCR-009: sem estes callbacks o card Criar e a edicao nunca
+              // apareciam em producao; a rota abre e o servidor revalida
+              // routine.manage_models/manage_applications em cada comando.
+              onCreateEntry: (kind) =>
+                  context.goNamed(SuperadminRoutes.dailyRoutineCreateName, extra: kind),
+              onEdit: (item) => context.goNamed(
+                SuperadminRoutes.dailyRoutineEditName,
+                pathParameters: {'modelId': item.id},
+                queryParameters: {'kind': item.kind.name},
+              ),
               // D7: Lancamentos no MVP e uma tela minima sobre o comando
               // daily-routine.publish, que ja existe. Autoria, capacidade,
               // escopo e versao esperada sao recalculados no servidor; aqui so
@@ -2612,6 +2629,11 @@ GoRouter createSuperadminRouter({
               child: FormsDirectoryPage(
                 api: null,
                 reader: formsDirectoryReader,
+                // F-R04-FCR-010a: o card Criar nunca aparecia em producao porque
+                // dependia do contexto do realm de pessoas, que o reader interno
+                // nao consulta. A rota /forms/new ja abre e o servidor nega ao
+                // salvar quem nao tem forms.manage.
+                canManage: true,
                 onCreate: () => context.goNamed(SuperadminRoutes.formCreateName),
                 onOpen: (form) => context.goNamed(
                   SuperadminRoutes.formOverviewName,
@@ -2668,6 +2690,20 @@ GoRouter createSuperadminRouter({
                     SuperadminRoutes.formFilesName,
                     pathParameters: {'formId': formId},
                   ),
+                  // Distribuir (publico + agendamento) e o unico caminho
+                  // produtivo que gera ocorrencias; sem ele monitor, responder
+                  // e respostas nunca tem o que mostrar. O dialogo so oferece
+                  // ids devolvidos por RPCs autorizadas e o servidor revalida.
+                  onDistribute: formsApi is FormsEditorContextApi
+                      ? (reload) => showFormsProductionScheduleDialog(
+                          context: context,
+                          api: formsApi!,
+                          contextApi: formsApi as FormsEditorContextApi,
+                          formId: formId,
+                          formTitle: 'formulário',
+                          onSaved: reload,
+                        )
+                      : null,
                 ),
               );
             },
@@ -2725,10 +2761,23 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.formRespond,
             name: SuperadminRoutes.formRespondName,
+            // F-R04-FCR-010b: a rota montava a pagina de resposta sem api
+            // nem ocorrencia, entao responder era sempre "indisponivel" em
+            // producao. A pagina produtiva ja le a ocorrencia pela projecao
+            // autorizada (form_get_occurrence_for_response) e o servidor
+            // decide se a resposta pode ser aberta, salva ou enviada.
             builder: (context, state) => formsShell(
               title: 'Responder formulário',
               subtitle: 'Retome, revise e envie uma resposta.',
-              child: const FormResponsePage(),
+              child: withFormsAuthorization(
+                () => FormResponsePage(
+                  key: ValueKey(
+                    'respond-${state.uri}-${session.authorizationInvalidationRevision}',
+                  ),
+                  api: formsApi,
+                  occurrenceId: state.pathParameters['occurrenceId'],
+                ),
+              ),
             ),
           ),
           GoRoute(
@@ -3122,7 +3171,10 @@ GoRouter createSuperadminRouter({
                 SuperadminRoutes.safetyChildName,
                 pathParameters: {'childId': id},
               ),
-              onCreate: null,
+              // P32 B (ADR 0034, Decisao 15; pacote 171800): o Superadmin
+              // cadastra, edita e decide autorizacoes com auditoria. A rota
+              // abre e o servidor revalida child_safety.manage em cada comando.
+              onCreate: () => context.goNamed(SuperadminRoutes.safetyCreateName),
               onExport: null,
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
@@ -3165,8 +3217,17 @@ GoRouter createSuperadminRouter({
               controller: resolvedChildSafetyController,
               logout: logout,
               onBack: () => context.goNamed(SuperadminRoutes.safetyName),
-              onCreate: null,
-              onEdit: null,
+              onCreate: () => context.goNamed(
+                SuperadminRoutes.safetyCreateName,
+                queryParameters: {'childId': state.pathParameters['childId']!},
+              ),
+              onEdit: (authorizationId) => context.goNamed(
+                SuperadminRoutes.safetyEditName,
+                pathParameters: {
+                  'childId': state.pathParameters['childId']!,
+                  'authorizationId': authorizationId,
+                },
+              ),
               onDestinationSelected: (destination) =>
                   _navigateFromPersistentShell(context, destination),
             ),
@@ -3357,6 +3418,7 @@ GoRouter createSuperadminRouter({
                   : PersonDetailPage(
                       key: ValueKey(session.authorizationInvalidationRevision),
                       reader: personDetailReader,
+                      handleRepository: personHandleRepository,
                       id: state.pathParameters['personId']!,
                       logout: logout,
                       onBack: () => context.goNamed(SuperadminRoutes.peopleName),
@@ -3384,8 +3446,13 @@ GoRouter createSuperadminRouter({
                   SuperadminRoutes.profileCreateName,
                   pathParameters: {'domain': domain.databaseValue},
                 ),
+                onCreateFromModel: (domain, sourceProfileId) => context.goNamed(
+                  SuperadminRoutes.profileCreateName,
+                  pathParameters: {'domain': domain.databaseValue},
+                  queryParameters: {'from': sourceProfileId},
+                ),
                 onOpen: (domain, profileId) => context.goNamed(
-                  SuperadminRoutes.profileEditName,
+                  SuperadminRoutes.profileDetailName,
                   pathParameters: {'domain': domain.databaseValue, 'profileId': profileId},
                 ),
                 directoryKind: AccessProfileDirectoryKind.profiles,
@@ -3559,11 +3626,12 @@ GoRouter createSuperadminRouter({
               listenable: session,
               builder: (context, _) => AccessProfileFormPage(
                 key: ValueKey(
-                  'profile-create-${state.pathParameters}-${session.authorizationInvalidationRevision}',
+                  'profile-create-${state.pathParameters}-${state.uri.queryParameters['from']}-${session.authorizationInvalidationRevision}',
                 ),
                 repository: accessProfileRepository,
                 logout: logout,
                 domain: _accessProfileDomain(state.pathParameters['domain']),
+                sourceProfileId: _nullableProfileId(state.uri.queryParameters['from']),
                 onCancel: () => context.goNamed(SuperadminRoutes.profilesName),
                 onSaved: (_) => context.goNamed(SuperadminRoutes.profilesName),
                 onDestinationSelected: (destination) =>
@@ -3590,6 +3658,11 @@ GoRouter createSuperadminRouter({
                   pathParameters: state.pathParameters,
                 ),
                 onDeleted: () => context.goNamed(SuperadminRoutes.profilesName),
+                onCreateFromModel: () => context.goNamed(
+                  SuperadminRoutes.profileCreateName,
+                  pathParameters: {'domain': state.pathParameters['domain']!},
+                  queryParameters: {'from': state.pathParameters['profileId']!},
+                ),
                 onDestinationSelected: (destination) =>
                     _navigateFromPersistentShell(context, destination),
               ),

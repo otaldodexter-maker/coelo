@@ -516,6 +516,19 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
   para aplicar pacotes e rodar pgTAP no descartável (`-qtA`, contando `ok`
   e `not ok`).
 
+Regras medidas na Rodada 5 (11/09/2026, tarde):
+
+- Worktree nova não herda o vínculo do CLI com o projeto: `supabase ... --linked`
+  falha com `LegacyProjectNotLinkedError` até copiar
+  `packages/coelo_database/supabase/.temp/` (ignorado pelo Git) de um checkout
+  já vinculado, ou rodar `supabase link --project-ref evvbomzejfijozbtgvpt`.
+  Conferir com `supabase migration list --linked` antes do primeiro lote.
+- Cada conversa Claude com o MCP `dart` ligado sobe um servidor de análise
+  (`dartaotruntime`, 700 a 900 MB); com oito conversas a máquina ficou com
+  0,02 GB livres às 12:20 sem nenhum Chrome pesado. Frentes de backend puro não
+  precisam desse MCP; o coordenador avisa o Owner em uma linha quando a RAM
+  livre cai abaixo de 1 GB e não mata processo de outra conversa.
+
 Regras medidas pelo grupo estrutura na Rodada 4 (21 pacotes, 180000..180350):
 
 - Migration histórica pode nunca ter aplicado em lugar nenhum: a de
