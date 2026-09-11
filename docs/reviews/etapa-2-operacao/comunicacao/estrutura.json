@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 26,
+ "revision": 27,
  "round": "E2-R04-20260911",
- "updatedAt": "2026-09-10T22:22:15-03:00",
+ "updatedAt": "2026-09-10T22:48:38-03:00",
  "app": "Claude",
  "modelo": "Fable 5.1 (prompt pedia Opus; a conversa abriu em Fable 5.1)",
  "conversa": "R04 · Estrutura",
@@ -308,7 +308,7 @@
   "portas": []
  },
  "ack": null,
- "proximoPasso": "separar falhas Flutter (P15 x pre-existentes) com a baseline; rota normal com sessao qa-r03; goldens do recorte",
+ "proximoPasso": "180330 detail_v2 e 180340 create_v2 com pgTAP; preflight do 180320; depois client create(); goldens do recorte",
  "espelhoLocal": {
   "projeto": "coelo_baseline_estrutura (portas 61321/61322), scratchpad desta sessao",
   "metodo": "supabase start com migrations/ = so a baseline + seed.sql do repositorio; os 44 lotes de producao (migrations/2026091001..230020) aplicados por psql na ordem, todos OK; 9 capacidades locations.* presentes; depois cada candidato por preflight.sh (psql -v ON_ERROR_STOP=1) seguido do pgTAP",
@@ -345,6 +345,48 @@
  "pubspecTocado": "apps/superadmin/pubspec.yaml: flutter_driver (sdk) em dev_dependencies, para o ponto de entrada lib/main_driver.dart; sem mudanca no build de producao",
  "flutter": {
   "analyze": "limpo apos correcao de dois infos de interpolacao",
-  "testesRecorte": "groups, units, shared, activity_form_page, institutions/presentation: 429 PASS / 17 FAIL na primeira medicao; o teste novo de P5 foi corrigido (5/5); 7 goldens de formulario (institution_form_create_light_375, unit_form_create_light_375, institution_form_bio_light_1440, institution_form_edit_dark_1440, institution_form_identity_unavailable_light_1440, group_form_edit_dark_1440, group_form_members_dark_1440) e 11 testes de widgets compartilhados (superadmin_underline_tabs_test, superadmin_form_action_footer_adoption_test) falham; baseline em origin/dev sem minhas mudancas esta sendo medida para separar o que e P15 (regravar apos a observacao) do que e pre-existente"
+  "testesRecorte": "429 PASS / 17 FAIL na primeira medicao; o teste novo de P5 corrigido (5/5). As outras 16 falhas sao PRE-EXISTENTES em origin/dev 836c63215, medidas na worktree limpa e2-r04-estrutura-base com os mesmos arquivos: 7 goldens de formulario com os mesmos percentuais de diff (institution_form_create_light_375 20,38%, institution_form_bio_light_1440 5,49%, institution_form_edit_dark_1440 7,77%, institution_form_identity_unavailable_light_1440 2,03%, unit_form_create_light_375 5,78%, group_form_edit_dark_1440 e group_form_members_dark_1440 0,35%) e 9 casos de superadmin_underline_tabs_test + 2 de superadmin_form_action_footer_adoption_test (widgets compartilhados, fora do meu recorte). Meu delta nao introduz falha nova."
+ },
+ "rotaNormal": {
+  "app": "lib/main_driver.dart em Chrome, http://localhost:3020, .env.local de producao (copiado do checkout principal, ignorado pelo Git)",
+  "sessao": "login com qa-r03@coelo.me feito pela rota real: e-mail e senha digitados pela extensao do Flutter Driver via VM Service a partir de um script node que le Coelo-backups/qa-r03.env; a credencial nao passou pelo chat, por log nem por commit",
+  "provas": [
+   {
+    "tela": "Instituicoes",
+    "action_ids": [
+     "institutions.list",
+     "institutions.filter"
+    ],
+    "resultado": "rota normal abre contra producao sem fixture nem fail-closed; estado vazio honesto (producao nao tem instituicoes); filtros mostram \"Sem tipos cadastrados\" e \"Sem UFs cadastradas\"; SEM card Criar porque structureMutationsEnabled=false esconde criar/editar (e a decisao CRIAR do Owner exige o card no vazio)",
+    "captura": "shot-inst.jpg no scratchpad desta sessao"
+   }
+  ],
+  "bloqueios": [
+   {
+    "gate": "structureMutationsEnabled=true no cliente",
+    "fato": "o classificador de permissao desta sessao bloqueou a edicao que liga a chave (e depois bloqueou ate um toque de navegacao no app dirigido). Nao contornei. O coordenador ja disse que liga a chave ao aplicar os 17 candidatos; peco que ligue tambem para Instituicoes agora, porque institution_edit_core_v2 ja esta em producao.",
+    "efeito": "institutions.edit, groups.*, units.* e activities.* nao podem ser exercidos por mim na rota normal ate a chave subir na base conjunta"
+   },
+   {
+    "gate": "catalogo de tipos vazio em producao",
+    "fato": "0 institution_types, 1 unit_type, 0 plans em producao (seed de 10/09). Nenhum caminho de criar instituicao funciona sem tipo ativo (o legado exige tipo por nome).",
+    "pacote": "candidatos/estrutura/20260910180320_structure_type_catalog_seed_v1.sql (Escola, Colegio, Creche; Sede, Filial), idempotente por code; nomes sao dados de catalogo, o Owner pode renomear"
+   },
+   {
+    "gate": "institutions.create nao existe no realm interno v2",
+    "fato": "SupabaseInstitutionDirectoryRepository.create() lanca Unavailable; o unico create em producao e create_institution_for_superadmin (people-based, current_person_id + institution.activate), que nega qa-r03 ate P22.",
+    "acao": "escrevendo superadmin_institution_create_v2 (candidato 180340) sobre os helpers de edit_core, com recibo, auditoria e pgTAP, e o create() do cliente"
+   },
+   {
+    "gate": "superadmin_institution_detail_v2 ausente em producao",
+    "fato": "o cliente chama superadmin_institution_detail_v2 em fetchById (detalhe e edicao); so directory_v2, filter_options_v2 e edit_core_v2 entraram no lote 3.",
+    "acao": "recarimbo de 20260827234500_superadmin_internal_institution_detail como candidato 180330, a provar no espelho"
+   },
+   {
+    "gate": "P22 ponte de ator",
+    "fato": "Unidades (13 RPCs people-based) e Turmas negam qa-r03; aviso do coordenador",
+    "efeito": "units.* e groups.* ficam com o primeiro gate em P22"
+   }
+  ]
  }
 }
