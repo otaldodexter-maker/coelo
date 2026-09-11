@@ -1,0 +1,165 @@
+[
+  {
+    "action_id": "agenda.request",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: rascunho -> superadmin_agenda_command request_publication -> superadmin_agenda_requests lista pending -> superadmin_agenda_decide_publication aprova -> evento published -> reload; 20260911190100 (rotulos: title, institution_name, requested_by_name, decided_by_name) em producao (lote 43), pgTAP agenda_requests_labels_v1_test 7/7; RLS/grants por 200300 (pgTAP 22 com negativas).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.request",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: /agenda/approvals na rota normal com a sessao qa-r03 lista o pedido pendente real; Decidir -> motivo -> Aprovar publicacao pela tela persistiu (Aprovado, motivo e data) e sobreviveu a recarga completa da pagina (ui-05..ui-08). Mapper le os rotulos do 190100 com UUID como reserva.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-07-approvals-approved.png; ui-08-approvals-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-08-approvals-reload.png",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.request",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal + decisao persistida em producao + RLS (pgTAP 200300/190100) + reload.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.location",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: superadmin_agenda_save com contextKind unit + local persiste na instituicao sintetica QA R04 Cuidado (unidade d0c4...0002); superadmin_agenda_get apos reload mantem unidade e local; rascunho excluido; pgTAP 200300 recusa unidade fora do tenant (invalid_unit_context).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.permissions",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: a rota /agenda/permissions redireciona por desenho para Perfis e permissoes (dde3e6229, permissoes centralizadas); abre na rota normal com a sessao qa-r03 (ui-03) e superadmin_agenda_contexts entrega instituicoes/unidades/turmas com capacidades em producao.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-03-agenda-permissions.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-03-agenda-permissions.png",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.permissions",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal (redirect por desenho) + contexts em producao (BE done na R04) + reload.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "notices.schedule",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R05: /notices/new pela tela: nome, mensagem, publico, data e hora de inicio 18/09 13:51 escolhidas no seletor Coelo (data + horario), Publicar aviso -> \"Publicacao agendada\"; diretorio apos recarga completa mostra \"Desde 18/09/2026\"; RPC confirma status scheduled (ui-13..ui-19).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-19-notices-reload.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-19-notices-reload.png",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "notices.schedule",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R05: rota normal + scheduled em producao + worker real (cron + notice-publication-worker) materializou um aviso agendado para +2 min: scheduled -> active com reach 18 (notice_receipts) sem intervencao; RLS por 200000 (pgTAP 38) + reload.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
+      "revision": "66a52986f",
+      "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.respond",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: 20260911190000 (ponte de ator em circular_actor + owner alcanca audiencia, P23/P35) em producao: save_circular_response_draft -> submit_circular_response -> superadmin_circular_response_summary_v2 {response_count:1, submitted_count:1}; pgTAP circular_actor_internal_bridge_v1_test 18/18 com negativas (sem membership, cross-tenant, anon).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.attach",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: 190000 + 190200 (R2 para Circulares: prepare presign em coelo-media-prod com chave tenants/.../circulars/circular/.../attachment/.../original) + 190300 (gateway v2 aceita bloco de midia com asset ready da propria circular) em producao: prepare -> PUT no R2 -> finalize ready -> rascunho com bloco de midia -> detail devolve asset_id -> publish com midia -> read signed_url -> bytes conferem; anon 401; delete de anexo publicado recusado (imutavel). pgTAP 18/18 + v2 34/34 + r2 45/46.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.schedule",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R05: o host produtivo nao passava onChooseSchedule e o botao Escolher data e hora ficava desabilitado (gate da R04/R05 na rota real); 66a52986f liga os seletores Coelo de data e horario. Rota real pela tela pendente (Chrome caiu por memoria).",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/ui/ui-30-circular-datepicker.png"
+  },
+  {
+    "action_id": "circulars.schedule",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: superadmin_circular_publish_v2 com publish_at futuro -> scheduled; detail apos reload mantem; agendada nao republica (CIRCULAR_INVALID_STATE, desenho do gateway); 200100 pgTAP 34/34.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R05: edicao do rascunho com versao otimista (inclusive bloco de midia apos 190300) e reload pela RPC; 200400 + 190300 pgTAP.",
+    "evidencia": "evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json",
+      "revision": "66a52986f",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
+      "recordedAt": "2026-09-11T14:40:00-03:00"
+    }
+  }
+]
