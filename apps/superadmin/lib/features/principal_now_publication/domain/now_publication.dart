@@ -1,6 +1,8 @@
 import 'package:characters/characters.dart';
 import 'package:flutter/foundation.dart';
 
+import '../../principal_shared/domain/principal_runtime_context.dart';
+
 enum NowPublicationPhase {
   initial,
   loading,
@@ -45,22 +47,29 @@ final class NowPublicationContext {
   const NowPublicationContext({
     required this.tenantId,
     required this.institutionId,
-    required this.unitId,
-    required this.groupId,
+    this.unitId,
+    this.groupId,
     required this.institutionName,
-    required this.unitName,
-    required this.groupName,
+    this.unitName,
+    this.groupName,
     required this.allowedAudiences,
     this.capabilities = const NowPlanCapabilities(),
   });
 
   final String tenantId;
   final String institutionId;
-  final String unitId;
-  final String groupId;
+  /// Unidade e turma sao opcionais: o contexto de instituicao (Owner,
+  /// Superadmin "ve tudo", P35) publica para a instituicao inteira. O servidor
+  /// aceita nulos e autoriza pelo escopo do ator.
+  final String? unitId;
+  final String? groupId;
   final String institutionName;
-  final String unitName;
-  final String groupName;
+  final String? unitName;
+  final String? groupName;
+
+  /// Rotulo do escopo para a tela: "Unidade · Turma" ou a instituicao.
+  String get scopeLabel =>
+      [unitName, groupName].whereType<String>().join(' · ').ifEmpty(institutionName);
   final Set<NowAudience> allowedAudiences;
   final NowPlanCapabilities capabilities;
 

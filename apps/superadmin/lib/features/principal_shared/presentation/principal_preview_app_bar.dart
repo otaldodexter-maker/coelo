@@ -1,6 +1,8 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import 'principal_global_navigation.dart';
+
 /// App bar compartilhada somente pelos previews do app Principal no Superadmin.
 ///
 /// Mantém o contrato visual aprovado: wordmark à esquerda e ações
@@ -32,19 +34,7 @@ final class PrincipalPreviewAppBar extends StatelessWidget implements PreferredS
       backgroundColor: scheme.surface,
       surfaceTintColor: Colors.transparent,
       titleSpacing: CoeloSpacing.space4,
-      title: Semantics(
-        image: true,
-        label: 'Coelo',
-        child: Text(
-          'coelo',
-          key: ValueKey('$keyPrefix-logo'),
-          style: Theme.of(context).textTheme.headlineSmall?.copyWith(
-            color: scheme.primary,
-            fontWeight: FontWeight.w800,
-            letterSpacing: -1,
-          ),
-        ),
-      ),
+      title: PrincipalBrandButton(keyPrefix: keyPrefix),
       actions: [
         _PrincipalHeaderAction(
           actionKey: ValueKey('$keyPrefix-bug'),

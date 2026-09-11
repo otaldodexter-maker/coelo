@@ -49,9 +49,9 @@ void main() {
   ) async {
     await pump(tester);
 
-    expect(find.text('coelo'), findsOneWidget);
+    expect(find.byKey(const Key('principal-happens-logo')), findsOneWidget);
     expect(find.byTooltip('Abrir menu'), findsOneWidget);
-    expect(find.byIcon(Icons.keyboard_arrow_down_rounded), findsOneWidget);
+    expect(find.byIcon(Icons.chevron_right_rounded), findsOneWidget);
     expect(find.byTooltip('Notificações'), findsOneWidget);
     expect(find.byTooltip('Abrir perfil'), findsOneWidget);
     expect(find.byTooltip('Reportar problema'), findsOneWidget);
@@ -127,7 +127,7 @@ void main() {
       'Abrir perfil',
       'Home',
       'Para você',
-      'Publicar no Agora',
+      'Publicar no Acontece',
       'Momentos',
       'Pesquisar',
       'Mensagens',
