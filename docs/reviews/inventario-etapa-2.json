@@ -1190,12 +1190,12 @@
       "scope": "mvp",
       "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
       "fe": "R04: /people/new abre o PersonIdentityLookupGate ('Verificar identidade'), mas o resolvedor de identidade composto e UnavailablePersonIdentityRepository: nao existe implementacao Supabase nem RPC de resolucao de identidade. Gate: contrato de resolucao de identidade (BE) + adapter.",
-      "be": "R04 (10/09, lote 8): MFA fora do MVP em producao; escrita de Pessoas deixa de negar por AAL2. Gate: ator do realm interno (P22).",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade)",
+      "be": "R04: superadmin_people_create_draft criou a pessoa sintetica 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, status draft) com o payload do cliente e a sessao qa-r03 (ponte de ator + MFA fora do MVP). O gate que resta e do cliente (resolvedor de identidade antes do formulario).",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "fail-closed",
-      "backendStatus": "pending-verification",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -1205,7 +1205,15 @@
         "productionApplied": false,
         "certificateChanged": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "60d931e98",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+          "recordedAt": "2026-09-11T03:14:00-03:00"
+        }
+      }
     },
     {
       "id": "people.edit",
@@ -1214,12 +1222,12 @@
       "scope": "mvp",
       "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
       "fe": "R04: capacidade de mutacao ligada para /people (2891e6977); o card do diretorio abre /people/:id/edit com os dados reais da crianca sintetica (3 passos). Salvar ainda nao provado na UI.",
-      "be": "R04: superadmin_people_update existe em producao e o portao assert_people_permission('people.update') aceita o usuario interno com a ponte + MFA fora do MVP; escrita real ainda nao exercitada.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit2 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r102",
+      "be": "R04: superadmin_people_update com expected_updated_at persistiu display_name da pessoa sintetica; superadmin_person_detail_v2 relido confirma.",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit2 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r102; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -1229,7 +1237,15 @@
         "productionApplied": false,
         "certificateChanged": false
       },
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+          "revision": "60d931e98",
+          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+          "recordedAt": "2026-09-11T03:14:00-03:00"
+        }
+      }
     },
     {
       "id": "people.links",
@@ -4132,12 +4148,12 @@
       "scope": "mvp",
       "done": "Cadeia Safety da R01 preservada; sucessor funcional D04 adc902eaf entregue na R02 permanece retido por golden falho. Adapter 963796ddf testado (34 PASS autorais) não ativado. SQL 48141c195 e teste legado f84db0412 preparados; 43 casos não executados. Não é ausência de trabalho nem integração concluída.",
       "fe": "Sucessor Safety integrado conforme merge69ce62c43: golden reconciliado,89P de composicao; adapters reais sem suporte explicito nao oferecem escrita. Adapter interno permanece inativo; SQL108U aguarda fila. Sem certificacao da acao. Teste de rota preserva negativa approved e edicao pendingDev,1P2816fbff1.",
-      "be": "R04: a decisao (child_safety_decide_authorization) exige revisor exato da unidade (child_safety_has_exact_unit_review), nao permissao de plataforma: o Owner interno recebe P0002 'child safety record unavailable' por desenho. Pela UI, Aprovar+Concluir nao persistiu. Decisao de produto: Superadmin decide autorizacoes ou so a unidade?",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.edit); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.edit) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r38-safety; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r104 (REST e captura 9411-b2-safety-approved-reload)",
+      "be": "R04: child_safety_edit_pending_authorization em producao levanta 42702 (variavel plpgsql request_reason ambigua com a coluna) em toda edicao pendente; candidato 172100 corrige so a variavel (pgTAP 4/4, RED antes) — pronto para aplicar. A decisao (aprovar/rejeitar) continua na P32.",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.edit); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.edit) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r38-safety; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r104 (REST e captura 9411-b2-safety-approved-reload); packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "pending-verification",
-      "backendStatus": "blocked-decision",
+      "backendStatus": "local-green",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
@@ -6338,7 +6354,7 @@
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
     }
   ],
-  "updatedAt": "2026-09-11T06:11:52.675Z",
+  "updatedAt": "2026-09-11T06:15:36.511Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
