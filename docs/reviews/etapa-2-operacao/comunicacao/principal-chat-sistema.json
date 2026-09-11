@@ -1,6 +1,6 @@
 {
-  "revision": 22,
-  "updated_at": "2026-09-11T12:34-03:00",
+  "revision": 23,
+  "updated_at": "2026-09-11T13:20-03:00",
   "round": "E2-R05-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-principal-chat-sistema",
   "branch": "work/etapa2-r05-principal-chat-sistema",
   "base": "origin/dev 2f6a6114f",
-  "head": "06264f92d",
-  "status": "EM CURSO. Item 1 medido: list_my_principal_contexts devolve [] para qa-r03 em producao (12:10) apesar do lote 27; causa e correcao no pacote abaixo. Build web de qa_main pronto; espelho coelo_pcs5 (623xx) com baseline + 107 migrations na ordem de producao. origin/dev 11c4bfbef mesclado (composto de tabela do G-SUP).",
+  "head": "1da47a1cc",
+  "status": "EM CURSO. 130000 confirmado em producao (list_my_principal_contexts devolve 3 contextos para qa-r03 as 14:05). Cliente P28/P35 publicado em 1da47a1cc; rebuild web em curso para a rota real. Segundo pacote 130100 (@ no contexto, arrobas reservados, perfil Coelo) verde e entregue.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos, Perfil, Para voce",
     "apps/superadmin -> Chat (attach, create-group E2E)",
@@ -19,10 +19,10 @@
     "composicao/shell: falhas pre-existentes em composition_root_sanitization_test e superadmin_auth_scope_test"
   ],
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal_profile 3, chat 8, meal_plans 6, error_pages 6. Estado de partida (inventario 11:50): chat 6 E2E; chat.create-group FE verified/BE done/E2E pending; chat.attach blocked-environment FE+BE; acontece/agora FE pending-verification BE local-green (SQL em producao); momentos.view FE local-green; principal.for-you e profile-edit blocked-decision (P28/P35 agora respondidos); meal-plans.create/edit/model-*/publish FE pending BE local-green; errors.409 FE local-green (golden aprovado P26); errors.retry pending.",
-  "primeiro_gate": "COORDENADOR: aplicar candidatos/principal-chat-sistema/20260911130000_principal_internal_actor_bridge_v1.sql em producao. Sem ele o Principal inteiro (acontece/agora/momentos/perfil/para voce) continua sem contexto para qa-r03 e as RPCs negam com active_membership_required/happens_permission_denied. Nenhuma chave de composicao: o cliente ja obedece.",
+  "primeiro_gate": "COORDENADOR: aplicar candidatos/principal-chat-sistema/20260911130100_principal_context_handles_and_coelo_profile_v1.sql (exige 130000 aplicado; pgTAP 14/14 + principal_runtime_contexts 13/13 com a projecao nova). O cliente ja le institution_handle/unit_handle como opcionais: sem o pacote o @ nao aparece, o resto funciona.",
   "ordem_de_trabalho": [
-    "1. acontece/agora/momentos na rota real: BLOQUEADO ate o coordenador aplicar 20260911130000 (pacote verde entregue); build e espelho prontos",
-    "2. principal.profile-view/profile-edit/for-you com P28 (avatar, cabecalho, @, + Agora, filtros por crianca/perfil, hibridos, contorno dos avatares) e P35 B (Superadmin ve tudo; perfil/usuario Coelo, arrobas reservados: pacote candidatos/principal-chat-sistema 2026091113xxxx): A FAZER",
+    "1. acontece/agora/momentos na rota real: 130000 em producao; rebuild web em curso; prova em seguida",
+    "2. P28 no cliente: FEITO 1da47a1cc (avatar, cabecalho, @, contorno, seletor de perfil, + no Acontece); P35 B: pacote 130100 entregue",
     "3. meal-plans.create/edit/model-create/model-edit/publish + Duplicar icone+menu (P27): A FAZER",
     "4. chat.attach (gate real + pacote proposto) e chat.create-group E2E: A FAZER",
     "5. errors.409 rota real e errors.retry: A FAZER",
@@ -30,9 +30,45 @@
   ],
   "tests": {
     "pgTAP_20260911130000": "22/22 PASS (13:0x) no coelo_pcs5",
-    "build_web": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local: OK (12:5x)"
+    "build_web": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local: OK (12:5x)",
+    "cliente_1da47a1cc": "flutter analyze lib test: No issues; principal_shared 19 PASS; principal_profile 137 PASS (goldens regravados apos P28); goldens for_you/happens/publicadores 73 PASS regravados (cabecalho)",
+    "pre_existentes_em_origin_dev": "principal_real_route_test 'never uses demo fixtures' e 'keeps its host' falham tambem sem minhas alteracoes (git stash, 13:5x): Bad state: No element; person_detail_golden_test 2 e structure_detail_golden_test 4 (composto de tabela do G-SUP em dev 11c4bfbef), import_development_routes, people_creation_requirements_red, prototype_navigation_routes, persistent_shell_routes (launcher/limites do Momentos), superadmin_error_routes '503': fora do meu delta; registrados"
   },
-  "lotes": [],
+  "lotes": [
+    {
+      "commit": "321d6bc1c",
+      "titulo": "Ponte de ator do Principal + Superadmin ve tudo (130000)",
+      "action_ids": [
+        "acontece.*",
+        "agora.*",
+        "momentos.*",
+        "principal.*"
+      ],
+      "prova": "pgTAP 22/22; EM PRODUCAO (conferido 14:05: 3 contextos para qa-r03)"
+    },
+    {
+      "commit": "45b443f05",
+      "titulo": "@ no contexto, arrobas reservados e perfil Coelo (130100)",
+      "action_ids": [
+        "principal.profile-view",
+        "principal.profile-edit",
+        "principal.for-you"
+      ],
+      "prova": "pgTAP 14/14 no descartavel; aguarda aplicacao"
+    },
+    {
+      "commit": "1da47a1cc",
+      "titulo": "P28 no Perfil (avatar, cabecalho, @, contorno), seletor de perfil (ate 5 + Ver todos + hibrido), + publica no Acontece, unidade/turma opcionais nos publicadores",
+      "action_ids": [
+        "principal.profile-view",
+        "principal.for-you",
+        "acontece.create",
+        "agora.create",
+        "momentos.create"
+      ],
+      "prova": "principal_shared 19/19, principal_profile 137/137, goldens 73/73 regravados apos a observacao; composition_gaps e principal_real_route atualizados"
+    }
+  ],
   "proposta_delta_por_action_id": {},
   "pacotesProntos": [
     {
@@ -61,6 +97,25 @@
         "principal.profile-view",
         "principal.profile-edit"
       ]
+    },
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "45b443f05",
+      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130100_principal_context_handles_and_coelo_profile_v1.sql",
+      "assunto": "P28/P35: list_my_principal_contexts recriada (drop+create) com institution_handle (=slug) e unit_handle; public.reserved_handles (coelo, coelo.me; RLS, sem grant) com gatilhos BEFORE em institutions.slug e units.handle (check_violation handle_reserved); pessoa de servico Coelo c0e10000-0000-4000-8000-000000000001 que segue e e seguida por toda pessoa ativa em follow_links (origem manual; backfill + gatilho AFTER INSERT em people).",
+      "pgTAP": "supabase/tests/principal_context_handles_and_coelo_profile_v1_test.sql 14/14; principal_runtime_contexts_test 13/13 (asserção do tipo de retorno atualizada); principal_internal_actor_bridge_v1_test 22/22 apos o 130100",
+      "chave_de_composicao": "nenhuma (cliente le os campos novos como opcionais desde 1da47a1cc)",
+      "risco": "baixo: drop/create de funcao usada so pelo cliente do Principal; gatilho em people executa um sync idempotente por insert",
+      "pendencias": [
+        "avatar (logo laranja/coelho branco) e capa da marca do perfil Coelo: nao ha catalogo de midia de perfil de pessoa; fica registrado",
+        "origem 'system' no enum follow_origin em vez de 'manual' para os vinculos da Coelo (ALTER TYPE em arquivo proprio)",
+        "@ de pessoas: quando acessos-pessoas criar person_handles, reaproveitar app_private.is_reserved_handle no gatilho"
+      ],
+      "action_ids": [
+        "principal.profile-view",
+        "principal.profile-edit",
+        "principal.for-you"
+      ]
     }
   ],
   "perguntas_ao_owner_via_coordenador": [],
@@ -69,7 +124,7 @@
     "P35: sincronizador da ponte concede institution_admin a todo espelho interno com platform_membership ativa; distinguir owner de operations fica para decisao do Owner se ele quiser"
   ],
   "blocker": null,
-  "next_step": "enquanto o coordenador aplica: item 2 no cliente (P28 no Perfil: avatar, cabecalho, @, + Agora, filtros, contorno) e pacote do perfil Coelo (2026091113 0100); depois rota real do Principal assim que 130000 estiver em producao",
+  "next_step": "rota real do Principal (Acontece feed/create/publish/remove, Agora, Momentos) com o build novo; depois Cardapios CRUD",
   "ack": null,
   "loop": "/loop 15m agendado na abertura",
   "regras_operacionais": "max 2 Chrome, 1 flutter test por vez; nenhum segredo em Git/chat/JSON; credencial de qa-r03 lida de Coelo-backups/qa-r03.env; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
