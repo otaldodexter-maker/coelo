@@ -1,13 +1,13 @@
 {
-  "revision": 31,
-  "updated_at": "2026-09-11T14:52:00-03:00",
+  "revision": 32,
+  "updated_at": "2026-09-11T14:56:00-03:00",
   "round": "E2-R05-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R05 · Operacoes",
   "conversation": "R05 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-operacoes",
   "branch": "work/etapa2-r05-operacoes",
-  "head": "cb64ca5cc (+ este commit)",
+  "head": "30a589972 (+ este commit)",
   "base": {
     "requested": "origin/dev",
     "resolved": "2f6a6114f",
@@ -361,11 +361,10 @@
       "options": "A) abas no lugar do filtro Status + persistir visao (recomendado); B) manter filtro e nao persistir"
     },
     {
-      "id": "IMP-R05",
+      "id": "IMP-R05-2",
       "kind": "visual",
-      "what": "Aprovar os 8 goldens claros de Importacoes (diretorio no composto, dentro da shell). Responder por arquivo: nome - decisao, observacao.",
-      "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7",
-      "fallback": "docs/reviews/evidence/etapa-2/r05-operacoes/imports-ra/pagina-lado-a-lado-importacoes.html"
+      "what": "Conferir apenas import_hub_wizard_unavailable_light_1440_200 corrigido (pagina honesta 503 dentro da shell a 200%). Observacao propria: a pagina generica diz 'temporariamente indisponivel' (503) para um recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP' (mudanca transversal em SuperadminErrorScreen, nao feita).",
+      "page": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
     }
   ],
   "next_step": "15:30: avisar coordenador 5 min antes e provar account.logout (Sair no menu da conta em /profile -> reload cai no login) com o Chrome desta frente; ate la: handoff publicado, mini-revisao preparada; 15:45 finalizado",
@@ -391,7 +390,10 @@
     "78283f81b (merge)",
     "3471321a5",
     "b0d5b5c1f",
-    "cb64ca5cc"
+    "cb64ca5cc",
+    "33684e476",
+    "72c4ccedc",
+    "30a589972"
   ],
   "r04_history": {
     "revision": 20,
@@ -1004,6 +1006,11 @@
       "action_id": "support.close",
       "tipo": "fechada",
       "o_que": "Responsaveis de lista fixa sem RPC: fechada (pacote 200100 + cliente 36474dc92/ca040ba49); a antiga chamada antes da sessao (401 em /login) tambem fechada em 13be50ae8."
+    },
+    {
+      "action_id": "imports.create",
+      "tipo": "ux-transversal",
+      "o_que": "/imports/new (e toda rota de mutacao bloqueada) mostra SuperadminErrorScreen 503 'temporariamente indisponivel' para recurso adiado por decisao; texto honesto seria 'Disponivel depois do MVP'. Mudanca transversal do erro generico; decisao de UI."
     }
   ],
   "nota_relogio": "carimbos das revs 23-25 estavam adiantados ate 40 min (13:05 -> 12:57 real; 13:35/13:40 -> 13:20; 14:20 -> 13:41); os horarios nos deltas seguem o relogio da maquina a partir da rev 26.",
@@ -1014,5 +1021,12 @@
     "escopo": "pagina G-SUP: 16 goldens claros de Suporte (kanban/table/detail 375/768/1024/1440 + 4 escalados) e 4 plan_table_light_* regravados apos o alinhamento das celulas no composto; escuros seguem o claro",
     "efeito": "ownerVisualApproval=A (atual) para support_kanban_light_*, support_table_light_*, support_detail_light_* (inclusive support_detail_light_1024, que voltou a estrutura R) e plan_table_light_*; nao altera verified/done/E2E",
     "fonte": "docs/reviews/evidence/etapa-2/r05-operacoes/g-sup/pagina-lado-a-lado-suporte.html"
+  },
+  "aprovacao_visual_owner_r05_importacoes": {
+    "quando": "11/09/2026 ~14:50, pela coordenacao",
+    "texto": "Esta correto e perfeito, apenas import_hub_wizard_unavailable_light_1440_200 esta com wizard incorreto e fundo cinza",
+    "efeito": "ownerVisualApproval=A para import_hub_directory_light_375/768/1024/1440, import_hub_empty_light_375_v4_21, import_hub_no_results_light_375_v4_21, import_hub_new_dialog_light_1440; import_hub_wizard_unavailable_light_1440_200 = A+ corrigido e regravado (pagina honesta de indisponibilidade dentro da shell, sem fundo cinza) e republicado na pagina v2 para conferencia",
+    "commit": "(golden) + 30a589972 (pagina)",
+    "pagina": "https://claude.ai/code/artifact/aafedc26-2673-4f10-8310-37b367dad7f7"
   }
 }
