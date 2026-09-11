@@ -1,15 +1,15 @@
 {
-  "revision": 115,
-  "updated_at": "2026-09-11T06:22:45.519Z",
-  "relogio_local": "Fri Sep 11 2026 03:22:45 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 116,
+  "updated_at": "2026-09-11T06:24:13.597Z",
+  "relogio_local": "Fri Sep 11 2026 03:24:13 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Fable 5.1 (o prompt previa Opus; a sessao aberta pelo Owner roda Fable 5.1)",
-  "status": "finalizado_com_adendos",
+  "status": "finalizado",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "a7f020b09",
+  "head": "9f4859e27 (rev 115); o commit desta rev 116 e o SHA final da branch e vai na mensagem ao coordenador",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -356,6 +356,29 @@
     "assinaturas_para_o_cliente": "detail usa p_model_id (nao p_id); update usa (p_draft, p_request_id); child_safety_edit_pending_authorization usa (p_authorization_id, p_expected_version, p_payload, p_request_id). Conferir no repositorio Flutter na proxima rodada antes de ligar edicao de Modelos pela UI.",
     "deltas": "47 entradas (nova: access-models.edit backend done)."
   },
+  "FECHAMENTO_03h30": {
+    "mini_revisao_formal": "rev 108 (775e6b3b3), complementada pelos adendos das revs 109-115.",
+    "SHA_publicado": "branch work/etapa2-r04-acessos-pessoas: rev 115 = 9f4859e27; handoff a7f020b09; deltas-r04.json com 47 entradas (ultimas: child-safety.edit BE done, access-models.edit BE done).",
+    "pacotes": {
+      "aplicados": "171000 (lote 10), 171100 (12), 171200 (14), 171300 e 171500 (16), 171700 (18), 171900 (19), 172000 (20), 172100 (21).",
+      "retidos": "171600 (P31, papeis de sistema de instituicao, pgTAP 7/7) e 171800 (P32 opcao b, decisao pelo Superadmin com child_safety.manage, pgTAP 25/25)."
+    },
+    "contratos_cliente_servidor_conferidos": "o cliente Flutter ja usa p_model_id no detail, (p_draft, p_request_id) no update com expected_version e capabilities [{code, effect}], e (p_request_id, p_authorization_id, p_expected_version, p_payload) na edicao pendente; nenhum ajuste de cliente pendente por assinatura.",
+    "perguntas_ao_owner": "P31 (papeis padrao de instituicao; sem eles Convites nao emite) e P32 (quem decide autorizacoes de retirada no Superadmin).",
+    "gates_abertos": "invites.create/detail/resend/revoke (P31); child-safety decisao e suspend (P32); people.create (resolvedor de identidade sem Supabase); internal-users.create (sem RPC/Edge Function); people.edit, internal-users.edit e access-profiles.edit pela UI dependem de build novo (memoria); golden platform_user_create_light_375 (P15).",
+    "ambiente": "Chrome da frente (porta 9411) e servidor estatico em :3000 encerrados as 03:29; nenhum dart/flutter desta worktree em execucao; projeto descartavel coelo_acessos (Docker) fica parado para o coordenador reaproveitar ou remover.",
+    "nao_retomo": "depois de 04:20 nao retomo por conta propria."
+  },
+  "DADOS_SINTETICOS_LISTA_COMPLETA": [
+    "app_private.superadmin_internal_profiles: perfil interno de qa-r03 'QA R04 Sintetico' (CPF 00000000000, semente 171200; job_title editado na prova) - apagar junto com o usuario qa-r03 ao fim da Etapa 2.",
+    "public.authorized_person_authorizations 34d29829-a8b5-4b23-aacb-46e994dce7d7 (crianca d0c40000-...0003, contexto d0c40000-...0004, pessoa ab513161-1613-4d3c-8c98-c7bb9b0e9579, pending/inactive, versao 2) e suas capacidades pickup+transport - apagar.",
+    "public.access_profile_templates cc322488-bb7d-4490-9418-ac941db7e6ae 'QA R04 Modelo sintetico' (qa-r04-modelo-sintetico-b6f3958c, active) e suas permissoes - apagar.",
+    "public.access_profile_templates 60fb9586-8e4c-46b8-8f1a-f8bdc396e2d4 'QA R04 Modelo sintetico (copia editada)' (qa-r04-modelo-sintetico-copia-a2dcc439, inactive, versao 2) - apagar.",
+    "public.people ec2a15a2-76bc-4e71-8419-94413d0c5c98 'QA R04 Pessoa sintetica' (draft) - apagar.",
+    "public.platform_roles qa-r04-perfil-sintetico-7f6f8d16 - ja apagado pela prova de delete; nada a fazer.",
+    "auth/convites: nenhum convite criado (issue_v2 recusou); destinatario qa-r04-convite@invalid.test nao existe em lugar nenhum.",
+    "ledger/idempotencia: request_ids sinteticos das RPCs (superadmin_request_ledger ou equivalente) podem ficar; sao apenas chaves de idempotencia."
+  ],
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
