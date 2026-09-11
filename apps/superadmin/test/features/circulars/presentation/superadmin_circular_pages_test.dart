@@ -325,6 +325,27 @@ void main() {
     expect(find.text('Respostas encerradas.'), findsOneWidget);
   });
 
+  // Rodada 4 (publicacoes-agenda): o servidor recusa editar Circular encerrada;
+  // o detalhe nao oferece Editar nesse estado (achado da prova em producao).
+  testWidgets('detail hides Editar when the Circular is closed', (tester) async {
+    final repository = _Repository()..visibleStatus = CircularStatus.closed;
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularDetailPage(
+            circularId: 'circular-closed',
+            repository: repository,
+            onBack: () {},
+            onEdit: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('circular-detail-edit')), findsNothing);
+    expect(find.byKey(const Key('circular-detail-close')), findsNothing);
+  });
+
   testWidgets('draft detail deletes only after confirmation and returns to directory', (
     tester,
   ) async {
