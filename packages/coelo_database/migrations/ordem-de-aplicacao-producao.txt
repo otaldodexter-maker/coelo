@@ -111,3 +111,6 @@
 20260910171200_qa_r03_internal_profile_seed_v1.sql
 # lote 15 (11/09 02:09)
 20260910200500_notice_publication_worker_v2.sql
+# lote 16 (11/09 02:20)
+20260910171300_access_profile_models_catalog_v2_baseline.sql
+20260910171500_follow_links_backfill_v1.sql
