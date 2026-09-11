@@ -32,7 +32,6 @@ const _pendingMigration = <String, List<String>>{
   'lib/features/agenda/presentation/agenda_calendar_page.dart': ['_AgendaToolbar'],
   'lib/features/agenda/presentation/agenda_requests_page.dart': ['_RequestTable'],
   'lib/features/attendance/attendance_pages.dart': ['_AttendanceCallToolbar'],
-  'lib/features/agenda/presentation/agenda_events_page.dart': ['_EventTable'],
   'lib/features/support/presentation/widgets/support_filter_toolbar.dart': ['SupportFilterToolbar'],
   'lib/features/support/presentation/widgets/support_ticket_table.dart': ['SupportTicketTable'],
 };
@@ -90,7 +89,6 @@ void main() {
     final root = Directory('lib/features');
     final displayEnum = RegExp(r'enum\s+\w*DirectoryDisplay\b|enum\s+_\w*Display\s*\{\s*cards');
     const pending = <String>{
-      'lib/features/agenda/presentation/agenda_events_page.dart',
       'lib/features/audit/presentation/audit_directory_page.dart',
       'lib/features/daily_routine/daily_routine_pages.dart',
       'lib/features/health_care/presentation/health_care_controller.dart',

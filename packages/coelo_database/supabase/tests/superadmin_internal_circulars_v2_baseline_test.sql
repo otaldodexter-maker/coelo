@@ -1,7 +1,7 @@
 -- pgTAP de Circulares v2 sobre a baseline (candidato 20260910200100). Derivado de superadmin_internal_circulars_v2_test.sql: AAL1 le (MFA fora do MVP).
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(34);
 
 select has_function('public','superadmin_circular_directory_v2',
  array['uuid','text','text[]','timestamp with time zone','uuid','integer'],'directory RPC exists');
@@ -75,9 +75,15 @@ insert into circular_results values('saved_replay',public.superadmin_circular_sa
    'kind','text','text','Confirme a renovação até 30 de setembro.')))));
 insert into circular_results values('load',public.superadmin_circular_load_draft_v2(
  '9c100000-0000-4000-8000-000000000010',null,null,null));
+insert into circular_results values('edited',public.superadmin_circular_save_draft_v2(
+ '9c100000-0000-4000-8000-000000000799','9c100000-0000-4000-8000-000000000010',null,null,null,
+ jsonb_build_object('id',(select body#>>'{data,id}' from circular_results where label='saved'),'title','Renovação de matrícula (editada)',
+  'version',(select (body#>>'{data,version}')::int from circular_results where label='saved'),'status','draft',
+  'response_policy','per_person','audiences',jsonb_build_array('guardians_only'),
+  'blocks',jsonb_build_array(jsonb_build_object('id','9c100000-0000-4000-8000-000000000899','kind','text','text','Bloco editado.')))));
 insert into circular_results values('published',public.superadmin_circular_publish_v2(
  '9c100000-0000-4000-8000-000000000702',
- (select (body#>>'{data,id}')::uuid from circular_results where label='saved'),1,null));
+ (select (body#>>'{data,id}')::uuid from circular_results where label='saved'),(select (body#>>'{data,version}')::bigint from circular_results where label='edited'),null));
 insert into circular_results values('detail',public.superadmin_circular_detail_v2(
  (select (body#>>'{data,id}')::uuid from circular_results where label='saved')));
 insert into circular_results values('directory',public.superadmin_circular_directory_v2(
@@ -86,7 +92,7 @@ insert into circular_results values('summary',public.superadmin_circular_respons
  (select (body#>>'{data,id}')::uuid from circular_results where label='saved')));
 insert into circular_results values('closed',public.superadmin_circular_close_v2(
  '9c100000-0000-4000-8000-000000000703',
- (select (body#>>'{data,id}')::uuid from circular_results where label='saved'),2));
+ (select (body#>>'{data,id}')::uuid from circular_results where label='saved'),(select (body#>>'{data,version}')::bigint from circular_results where label='published')));
 insert into circular_results values('media',public.superadmin_circular_save_draft_v2(
  '9c100000-0000-4000-8000-000000000704','9c100000-0000-4000-8000-000000000010',null,null,null,
  jsonb_build_object('id','','title','Circular com mídia','version',0,'response_policy','per_person',
@@ -124,6 +130,8 @@ select is((select body#>>'{data,status}' from circular_results where label='save
 select is((select body from circular_results where label='saved_replay'),
  (select body from circular_results where label='saved'),'save is idempotent');
 select is((select body#>>'{data,title}' from circular_results where label='load'),'Renovação de matrícula','draft reload persists');
+select is((select body#>>'{data,version}' from circular_results where label='edited'),'2','edicao do rascunho incrementa a versao (regressao 42702 do 200400)');
+select is((select title from public.circular_revisions where id=(select (body#>>'{data,revision_id}')::uuid from circular_results where label='edited')),'Renovação de matrícula (editada)','edicao persiste o titulo na revisao de trabalho');
 select is((select body#>>'{data,status}' from circular_results where label='published'),'published','publish persists canonical status');
 select is((select body#>>'{data,draft,status}' from circular_results where label='detail'),'published','detail reload sees publication');
 select is((select jsonb_array_length(body#>'{data,items}')::text from circular_results where label='directory'),'1','directory filters persisted data');

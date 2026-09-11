@@ -1,15 +1,15 @@
 {
-  "revision": 15,
+  "revision": 16,
   "round": "E2-R04-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "a63e80eec (rebaseado em origin/dev 836c63215)",
+  "head": "08ed44357",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
-  "updatedAt": "2026-09-10T22:26:00-03:00",
+  "updatedAt": "2026-09-10T23:10:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -58,8 +58,8 @@
     "disposableProject": "coelo_baseline_pa em scratchpad/pa-project (db 60322); baseline 20260910000000 + seed + 44 migrations/ aplicadas OK em 2026-09-10 21:50; snapshot pg_dump em /tmp/pa-base.dump do contêiner",
     "note": "db reset do CLI aplica o seed DEPOIS das migrations e a 170100 exige o catálogo; por isso o reset roda só com a baseline e as demais entram por psql na ordem (mesmo método do coordenador)."
   },
-  "firstGate": "Cliente: Agenda de eventos e Comunicacoes no composto CoeloAdminDirectory (_EventTable na allowlist do teste de arquitetura) e rota normal; rota real de Circulares/Avisos/Agenda com qa-r03 depende de o coordenador aplicar 200000-200300.",
-  "status": "quatro pacotes verdes no descartavel (prova limpa 117/117); cliente em seguida",
+  "firstGate": "UI real: login qa-r03 em localhost:3006 (Chrome via CDP) → Comunicacoes/Avisos → Circulares → Agenda; screenshots como prova de rota normal.",
+  "status": "4 pacotes em producao (lote 9); CRUD provado em producao com qa-r03 (Avisos 12/12, Circulares 12/13, Agenda 7/7 por RPC); 200400 pronto; Agenda de eventos no composto; app em localhost:3006 para a rota normal",
   "findings": [
     "Presença em produção (mapa r03-coordenacao): notices_v2 185008 = 1/16 (só analytics.notice_events); circulars_v2 191921 = 0/14; circulars_media_r2 212000 = 6/6; agenda 183836/193717 presentes (superadmin_agenda_list/get/contexts/save/command/requests/decide_publication em public).",
     "O cliente Superadmin chama somente superadmin_notice_*_v2 (185008), superadmin_circular_*_v2 (191921 + delete) e superadmin_agenda_* v1. A cadeia legada de Avisos people-based (003000, 204824, 212340, 220500) NÃO é chamada pelo app: 185008 é autossuficiente (colunas com if not exists, recibos próprios, auditoria via audit_append_superadmin_internal cuja assinatura de 13 args confere com produção). Decisão: não reentregar a cadeia legada no MVP; worker/pg_cron ficam registrados como pendência de entrega ao Principal (materialização de audiência), não bloqueiam CRUD de Avisos no Superadmin.",
@@ -154,6 +154,19 @@
       ],
       "compositionKey": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
       "sha": "a63e80eec"
+    },
+    {
+      "order": 5,
+      "file": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200400_superadmin_circular_save_draft_v2_fix.sql",
+      "actionIds": [
+        "circulars.edit"
+      ],
+      "pgtap": "superadmin_internal_circulars_v2_baseline_test.sql 34/34 (ganhou asserts de edicao)",
+      "fixes": [
+        "variavel plpgsql circular_id ambigua com a coluna (42702) derrubava toda edicao de rascunho; encontrada na prova em producao"
+      ],
+      "compositionKey": "nenhuma",
+      "sha": "08ed44357"
     }
   ],
   "compositionKeys": [
@@ -177,7 +190,31 @@
   },
   "blocked": "nenhum",
   "next": "apps/superadmin: Agenda de eventos + Comunicacoes no composto; flutter test das familias; goldens conforme listas do Owner.",
-  "changes": [],
+  "changes": [
+    {
+      "screen": "Etapa 2 → apps/superadmin → Agenda → Eventos → diretorio → agenda.view",
+      "actionIds": [
+        "agenda.view"
+      ],
+      "whatChanged": "AgendaEventsPage migrada ao composto CoeloAdminDirectory (_EventTable e enum local removidos da allowlist do teste de arquitetura); titulo da area fica no AgendaModuleShell; Arquivos honesto (importar/exportar indisponiveis).",
+      "criteria": [
+        "directory_composition_test verde",
+        "agenda_management_test 8/8",
+        "agenda_event_detail_page_test 6/6",
+        "bateria agenda+notices+circulars 477 PASS 2 SKIP"
+      ],
+      "sha": "8dc6bb76f"
+    },
+    {
+      "screen": "apps/superadmin → test_driver/app.dart (entrada com flutter_driver, so para provas)",
+      "actionIds": [],
+      "whatChanged": "pubspec: flutter_driver em dev_dependencies (AVISO AO COORDENADOR: toque no pubspec); test_driver/app.dart chama enableFlutterDriverExtension e app.main. Nao muda a entrada de producao.",
+      "criteria": [
+        "pub get OK"
+      ],
+      "sha": "pendente de commit"
+    }
+  ],
   "pendingForCoordinator": [
     {
       "actionIds": [
@@ -221,6 +258,20 @@
         "agenda.location"
       ],
       "pending": "aplicar 20260910200300 depois de 200200 (independente dos anteriores, mas na ordem da faixa); avisar acessos-pessoas: agenda_has_permission chama has_platform_permission, entao o P7 (membership por instituicao) se propaga sem conflito; membership interno escopado em instituicao continua sem Agenda (deny-by-default, decisao registrada)."
+    },
+    {
+      "actionIds": [
+        "circulars.edit"
+      ],
+      "pending": "aplicar 20260910200400 (forward-only, so a save_draft); depois repetir prova-producao.js: esperado 33/33."
+    },
+    {
+      "actionIds": [
+        "agenda.view",
+        "notices.list",
+        "circulars.list"
+      ],
+      "pending": "Regra nova do Owner (toolbar, filtros, toggle, Arquivos, abas e Criar sempre visiveis, mesmo vazio): Avisos, Circulares e Agenda de eventos ja estao no composto; a conferencia do estado vazio na rota real esta na fila desta frente (screenshots); correcao, se houver, no composto (coordenador/Fase 0)."
     }
   ],
   "proposedDeltas": [],
@@ -520,7 +571,8 @@
         "notices.archive"
       ],
       "chave": "nenhuma: SupabaseNoticeRepository ja e o repositorio produtivo do router; conferir apos aplicar",
-      "sha": "a5251ed7d"
+      "sha": "a5251ed7d",
+      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
     },
     {
       "ordem": 2,
@@ -537,7 +589,8 @@
         "circulars.close"
       ],
       "chave": "nenhuma (gateway ja composto)",
-      "sha": "28a2e1dd4"
+      "sha": "28a2e1dd4",
+      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
     },
     {
       "ordem": 3,
@@ -547,7 +600,8 @@
         "circulars.delete"
       ],
       "chave": "superadminCircularDeleteEnabled -> true apos aplicar (apps/superadmin composition)",
-      "sha": "4219b810f"
+      "sha": "4219b810f",
+      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
     },
     {
       "ordem": 4,
@@ -563,7 +617,35 @@
         "agenda.location"
       ],
       "chave": "nenhuma: SupabaseAgendaRepository (v1) ja e o repositorio produtivo; SupabaseAgendaReadRepository (v2, superadmin_agenda_*_v2) nao esta composto e as RPCs v2 nunca existiram em SQL",
-      "sha": "a63e80eec"
+      "sha": "a63e80eec",
+      "estado": "aplicado em producao 22:29 (lote 9, coordenador)"
+    },
+    {
+      "ordem": 5,
+      "arquivo": "packages/coelo_database/candidatos/publicacoes-agenda/20260910200400_superadmin_circular_save_draft_v2_fix.sql",
+      "pgtap": "superadmin_internal_circulars_v2_baseline_test.sql 34/34 (ganhou asserts de edicao)",
+      "actionIds": [
+        "circulars.edit"
+      ],
+      "chave": "nenhuma",
+      "sha": "08ed44357",
+      "estado": "pronto; aplicar"
     }
-  ]
+  ],
+  "productionProof": {
+    "session": "qa-r03@coelo.me AAL1 via login por senha + PostgREST (script docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao.js)",
+    "runs": [
+      {
+        "at": "2026-09-10T22:45-03:00",
+        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2245.md",
+        "result": "16/17 (Avisos CRUD completo; Circulares/Agenda so leitura: producao sem instituicao)"
+      },
+      {
+        "at": "2026-09-10T23:00-03:00",
+        "file": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/prova-producao-20260910-2300.md",
+        "result": "32/33 com a instituicao sintetica 9f040000-...-0010: Circulares criar/agendar/publicar/filtrar/encerrar/excluir OK, editar FALHOU (42702, corrigido em 200400); Agenda criar/detalhe/editar+publicar/reload/cancelar OK; anon negado nas tres familias"
+      }
+    ],
+    "note": "Prova por RPC produtiva com a mesma assinatura que os repositorios chamam. A rota normal na UI (localhost:3006, Chrome via CDP) esta em andamento; verified so com a UI aberta."
+  }
 }

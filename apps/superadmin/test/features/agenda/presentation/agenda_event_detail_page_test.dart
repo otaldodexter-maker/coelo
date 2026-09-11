@@ -285,6 +285,8 @@ void main() {
     await tester.pumpWidget(
       app(AgendaEventsPage(store: prototype, onCreate: () {}, onOpen: (_) {}, onEdit: (_) {})),
     );
+    // O composto mede o rodapé de paginação no primeiro frame; assenta antes de interagir.
+    await tester.pumpAndSettle();
 
     await tester.tap(find.byKey(const Key('agenda-event-actions-directory-lifecycle')));
     await tester.pumpAndSettle();
