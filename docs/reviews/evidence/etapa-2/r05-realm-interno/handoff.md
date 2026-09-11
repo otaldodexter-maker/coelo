@@ -40,6 +40,7 @@ existentes: tudo igual ao espelho `supabase_db_coelo_baseline` do coordenador
 | 9 | `20260911210800_forms_answer_media_r2_v1.sql` | answer-image no R2: `form_prepare_asset_upload_r2_v1` (legado + espelho), `form_asset_r2_descriptor_v1`, `form_media_finalize_answer_r2_v1`, gatilho de discard → fila de limpeza | `forms_answer_media_r2_v1_test.sql` 14/14 | pronto |
 | 10 | `20260911210900_forms_media_expire_dispatch_v1.sql` | cron `coelo-forms-media-expire` (*/10) → form-media `cleanup` com o Bearer do worker de Formulários já no Vault; URL nova `forms_media_worker_url` | `media_expire_dispatch_v1_test.sql` 6/6 | pronto |
 | 11 | `20260911211000_plans_select_for_institution_directory_v1.sql` | SELECT em `plans` para `authenticated` (policy já existia) para a view `institution_directory` responder | `plans_select_for_institution_directory_v1_test.sql` 4/4 | opcional; aplicado (lote 28-42) |
+| 13 | `20260911211200_agenda_scoped_internal_identity_denied_v1.sql` | Agenda: identidade interna escopada não lê a Agenda de plataforma (vazamento cross-tenant latente) | compat 22/22 + labels 7/7 | pronto |
 | 12 | `20260911211100_structure_handles_create_payload_v1.sql` | Decisão 16 sobre o `180000` da G1: `handle` opcional na criação de turma/unidade/atividade, padrão hierárquico, disponibilidade global, handle nos `detail_v2` de Unidades e Turmas | `structure_handles_create_payload_v1_test.sql` 18/18 (+ suítes de detalhe atualizadas) | pronto; após o 180000 |
 
 ## Edge Functions escritas (deploy do coordenador)
@@ -65,6 +66,27 @@ Contratos completos (assinaturas, envelopes, códigos, limites) em
 | P32 no cliente | tela de políticas macro da unidade (get/set); os modos são registrados e devolvidos; o fluxo que os aplica (quem libera) é produto pós-Superadmin |
 | @ das pessoas (Decisão 16) | pacote 210600 devolve o @ de `person_handles`; edição pelo cliente via `superadmin_person_handle_get/set/availability` (170100) |
 | `institution_directory` (view) | `plans` sem SELECT para authenticated: leitura direta falha; cliente lê por RPC; decisão de code review |
+
+## Achado de segurança (14:40): ponte de ator e escopo de instituição
+
+Prova no descartável (ordem real até o lote 43): identidade interna escopada
+em instituição A listou evento da instituição B por `superadmin_agenda_list`.
+Causa: `220400`/`130000` espelham a membership interna escopada como
+`platform_membership` sem escopo e `agenda_has_permission` consultava
+`has_platform_permission` antes do realm interno. Corrigido na Agenda pelo
+pacote `20260911211200_agenda_scoped_internal_identity_denied_v1.sql`
+(compat 22/22, labels 7/7, probe → `agenda_permission_denied`). Exposição
+latente: produção tem 0 identidades escopadas (medido às 14:44). Helpers das
+outras famílias que herdam o mesmo problema (decidem só por
+`has_platform_permission`): `require_routine_actor`,
+`require_health_care_actor`, `assert_people_permission`,
+`assert_child_safety_platform`, `require_forms_actor`, `form_require_owner`,
+`assert_support_permission`, `assert_account_actor`,
+`access_profile_require_mutation`, `assert_institution_file_access`,
+`assert_institution_identity_access`, `require_profile_authority`.
+Recomendação de raiz para a revisão profunda: a ponte espelhar membership
+escopada como `institution_membership` (não `platform_membership`), ou
+`has_platform_permission` ignorar espelhos de identidades escopadas.
 
 ## Code review R04 (item 7): achados, sem alteração
 

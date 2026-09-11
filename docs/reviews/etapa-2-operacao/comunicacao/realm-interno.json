@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 28,
+  "revision": 30,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T14:36-03:00",
+  "updatedAt": "2026-09-11T14:50-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "ef5d926a8 (origin/dev 530613fb5 mesclada)",
+  "head": "a25bdee73",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -323,6 +323,16 @@
       "dependeDe": "20260911180000_structure_handles_v1 (G1) aplicado ANTES",
       "chaveDeComposicao": "cliente da G1: campo Identificador envia `handle` no create de Unidade/Turma/Atividade quando o usuario editar; troca posterior por superadmin_structure_handle_set_v1; ler handle/handle_last_changed_at dos detail_v2",
       "estado": "APLICADO em producao (lote 43)"
+    },
+    {
+      "ordem": 13,
+      "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911211200_agenda_scoped_internal_identity_denied_v1.sql",
+      "assunto": "SEGURANCA: identidade interna escopada em instituicao lia eventos de outra instituicao por superadmin_agenda_list (platform_membership espelhada pelas pontes de ator concedia agenda.read de plataforma); agenda_has_permission passa a decidir so pela membership interna de PLATAFORMA quando ha vinculo interno; agenda_actor_id intacto (190100 depende da pessoa de servico)",
+      "pgTAP": "agenda_internal_realm_compat_v1_test 22/22 (teste 16 original restaurado), agenda_requests_labels_v1_test 7/7, probe cross-tenant -> agenda_permission_denied",
+      "commit": "65d41db91",
+      "dependeDe": "200300 e as pontes (ja em producao)",
+      "chaveDeComposicao": "nenhuma",
+      "estado": "pronto; recomendado aplicar agora. Exposicao latente: producao tem 0 identidades internas escopadas hoje (medido 14:44, somente leitura)"
     }
   ],
   "pendenciasRegistradas": [
@@ -332,8 +342,8 @@
     "chat.attach: Edge Function chat-media e cron de expire nao fazem parte deste pacote SQL",
     "forms_files: answer-image (uploads de resposta) continua em form_assets + Supabase Storage no form-media; migrar para R2 e o proximo pacote (prepare/finalize anonimos com secret hash)",
     "210200: superadmin_chat_attachment_finalize_v1/expire_v1 fazem coalesce(current_setting('request.jwt.claims',true),'')::jsonb; sem claims (nunca via PostgREST) cai em SAI_INTERNAL_ERROR em vez de SAI_PERMISSION_DENIED - falha fechada, corrigir com nullif na revisao profunda",
-    "ponte de ator (220400/130000): a membership interna ESCOPADA em instituicao e espelhada como platform_membership sem escopo, entao has_platform_permission vale para identidades escopadas nos RPCs do realm people-based (Agenda, Rotina, Cuidado...). No teste da Agenda a identidade escopada so viu evento da propria instituicao (sem leak provado); falta prova cross-tenant por RPC people-based para identidades escopadas: revisao profunda de seguranca",
-    "agenda_internal_realm_compat_v1_test ajustado a ponte de ator (22/22); superadmin_agenda_contexts/production/read_v2_contract ja falhavam no espelho antes (fixtures antigas)"
+    "agenda_internal_realm_compat_v1_test ajustado a ponte de ator (22/22); superadmin_agenda_contexts/production/read_v2_contract ja falhavam no espelho antes (fixtures antigas)",
+    "SEGURANCA (revisao profunda, prioridade; exposicao latente: 0 identidades escopadas em producao em 11/09 14:44): as pontes 220400/130000 espelham a membership interna ESCOPADA em instituicao como platform_membership sem escopo. Helpers que decidem so por has_platform_permission e por isso herdam o problema: require_routine_actor, require_health_care_actor, assert_people_permission, assert_child_safety_platform, require_forms_actor, form_require_owner, assert_support_permission, assert_account_actor, access_profile_require_mutation, assert_institution_file_access, assert_institution_identity_access, require_profile_authority (medido no descartavel por pg_proc). Corrigido na Agenda (211200). Recomendacao de raiz: a ponte espelhar membership escopada como institution_membership (nao platform_membership) ou has_platform_permission ignorar espelhos de identidades escopadas; decisao de produto/coordenacao antes de existir o primeiro usuario interno escopado"
   ],
   "deltaPropostoBE": {
     "institutions.edit": "backend done quando a estrutura persistir e recarregar na rota real (SQL ja em producao, lote 28)",
@@ -343,7 +353,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "tudo em producao; ate 15:45 em revisao/handoff; descartavel coelo_realm_r05 sera parado no encerramento",
+  "status": "12 pacotes em producao + 211200 pronto; inventario dos helpers afetados pela ponte registrado; ate 15:45 em revisao/handoff",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
