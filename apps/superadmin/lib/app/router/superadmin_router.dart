@@ -363,6 +363,7 @@ GoRouter createSuperadminRouter({
   PersonIdentityRepository personIdentityRepository = const UnavailablePersonIdentityRepository(),
   UnitDirectoryRepository unitDirectoryRepository = const UnavailableUnitDirectoryRepository(),
   StructureHandleAvailabilityChecker? structureHandleAvailability,
+  StructureHandleSetter? structureHandleSet,
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   bool enableActivityLocationCreate = false,
@@ -1755,6 +1756,7 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       checkHandleAvailability: structureHandleAvailability,
+                      setHandle: structureHandleSet,
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
                           session.isAuthenticated &&
@@ -1818,6 +1820,7 @@ GoRouter createSuperadminRouter({
                       key: ValueKey(session.authorizationInvalidationRevision),
                       repository: unitRepository,
                       checkHandleAvailability: structureHandleAvailability,
+                      setHandle: structureHandleSet,
                       unitId: state.pathParameters['unitId'],
                       locationCatalogReader: locationCatalogReader,
                       locationSessionAvailable:
@@ -2088,6 +2091,8 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
                     logout: logout,
@@ -2106,6 +2111,8 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     groupId: state.pathParameters['groupId'],
                     logout: logout,
                     onCancel: () => _returnToOr(context, state, SuperadminRoutes.groupsName),
@@ -2250,6 +2257,7 @@ GoRouter createSuperadminRouter({
                 : ActivityFormPage(
                     repository: activityDirectoryRepository,
                     checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     initialTemplateId: state.uri.queryParameters['templateId'],
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
                     initialUnitId: state.uri.queryParameters['unitId'],
@@ -2440,6 +2448,7 @@ GoRouter createSuperadminRouter({
                         : null,
                     repository: activityDirectoryRepository,
                     checkHandleAvailability: structureHandleAvailability,
+                    setHandle: structureHandleSet,
                     aboutRepository: productionActivityAboutRepository,
                     logout: logout,
                     onCancel: () => state.uri.queryParameters.containsKey('returnTo')

@@ -495,7 +495,7 @@ void main() {
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Parque');
-    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-parque');
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade.parque');
 
     await _tapVisible(tester, find.byKey(const Key('step-plano')));
     expect(find.text('Herdar plano da instituição'), findsOneWidget);
@@ -819,7 +819,7 @@ void main() {
     await tester.tap(find.text('Hierarquia').first);
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Parque');
-    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-parque');
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade.parque');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
@@ -832,22 +832,21 @@ void main() {
     expect(find.text('Localização'), findsWidgets);
   });
 
-  testWidgets('identificador aceita hifens e o @ publico e declarado como gerado pelo servidor', (
+  testWidgets('identificador e o @ da unidade: recusa hifen e viaja como handle', (
     tester,
   ) async {
-    // Achado da rota real (11/09): o identificador digitado com hifens vai como
-    // slug e e gravado assim; o handle unidadecentror04_f5284f2f e outra coluna,
-    // derivada pelo servidor. O assistente nao pode deixar parecer que o campo e
-    // o @ nem esconder que o @ existe.
+    // Regra do @ (ADR 0034 Decisao 16): o campo Identificador e o @ publico,
+    // sem hifens; na criacao ele vai no payload como `handle` (lote 211100).
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
+    final repository = FakeUnitDirectoryRepository(institutions);
 
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
         home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(institutions),
+          repository: repository,
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
@@ -860,78 +859,33 @@ void main() {
 
     final note = find.byKey(const Key('unit-handle-note'));
     expect(note, findsOneWidget);
-    expect(tester.widget<Text>(note).data, contains('gerado pelo servidor ao criar'));
-    expect(tester.widget<Text>(note).data, contains('sem hífens'));
+    expect(tester.widget<Text>(note).data, contains('@ público da unidade'));
 
     await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade Centro R04');
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-centro-r04');
     await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-
-    expect(find.text('Use somente letras minúsculas sem acento, números e hífens.'), findsNothing);
-    expect(find.byKey(const Key('superadmin-location-map')), findsOneWidget);
-  });
-
-  testWidgets('identificador verifica a disponibilidade do @ enquanto digita', (tester) async {
-    // ADR 0034 Decisao 16: a legenda responde ao servidor (debounce de 300 ms)
-    // e nunca bloqueia o formulario quando a verificacao falha.
-    await tester.binding.setSurfaceSize(const Size(1024, 900));
-    addTearDown(() => tester.binding.setSurfaceSize(null));
-    final calls = <(String, String, String?)>[];
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: UnitFormPage(
-          repository: FakeUnitDirectoryRepository(FakeInstitutionDirectoryRepository()),
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onSaved: (_) {},
-          checkHandleAvailability: (kind, handle, {excludeId}) async {
-            calls.add((kind, handle, excludeId));
-            return UnitHandleAvailability(
-              normalized: handle.toLowerCase(),
-              reason: handle == 'ocupado'
-                  ? UnitHandleAvailabilityReason.taken
-                  : UnitHandleAvailabilityReason.available,
-            );
-          },
-        ),
-      ),
-    );
-    await tester.pumpAndSettle();
-    await tester.tap(find.text('Hierarquia').first);
-    await tester.pumpAndSettle();
-
-    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupa');
-    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupado');
-    await tester.pump(const Duration(milliseconds: 100));
-    expect(calls, isEmpty, reason: 'debounce: nada antes de 300 ms');
-    await tester.pump(const Duration(milliseconds: 300));
-    await tester.pumpAndSettle();
-    expect(calls, [('unit', 'ocupado', null)], reason: 'so a ultima digitacao vai ao servidor');
-    expect(
-      tester.widget<Text>(find.byKey(const Key('unit-handle-availability'))).data,
-      '@ocupado já está em uso. Escolha outro.',
-    );
+    expect(find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
+        findsOneWidget);
 
     await tester.enterText(find.byKey(const Key('unit-slug-field')), 'centro.escola');
-    await tester.pump(const Duration(milliseconds: 400));
+    await tester.tap(find.byKey(const Key('unit-form-continue')));
     await tester.pumpAndSettle();
-    expect(
-      tester.widget<Text>(find.byKey(const Key('unit-handle-availability'))).data,
-      '@centro.escola está disponível.',
-    );
+    expect(find.text('Use letras minúsculas, números, ponto e sublinhado (3 a 30 caracteres).'),
+        findsNothing);
   });
 
-  testWidgets('edicao mostra o @ publico final ao lado do identificador', (tester) async {
+  testWidgets('edicao mostra o @ no identificador e troca por Alterar @', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final institutions = FakeInstitutionDirectoryRepository();
     final repository = FakeUnitDirectoryRepository(institutions);
     final edited = repository.records.first.copyWith(
       slug: 'unidade-centro-r04',
-      handle: 'unidadecentror04_f5284f2f',
+      handle: 'centro.escola',
+      managementVersion: 3,
     );
+    final calls = <(String, String, int, String)>[];
 
     await tester.pumpWidget(
       MaterialApp(
@@ -942,6 +896,16 @@ void main() {
           logout: () async => const LogoutResult.success(),
           onCancel: () {},
           onSaved: (_) {},
+          setHandle: (kind, id, version, handle) async {
+            calls.add((kind, id, version, handle));
+            return handle == 'ocupado'
+                ? const StructureHandleChange(outcome: StructureHandleChangeOutcome.taken)
+                : StructureHandleChange(
+                    outcome: StructureHandleChangeOutcome.changed,
+                    handle: handle,
+                    managementVersion: version + 1,
+                  );
+          },
         ),
       ),
     );
@@ -951,11 +915,38 @@ void main() {
 
     expect(
       tester.widget<TextFormField>(find.byKey(const Key('unit-slug-field'))).controller!.text,
-      'unidade-centro-r04',
+      'centro.escola',
     );
     final note = tester.widget<Text>(find.byKey(const Key('unit-handle-note')));
-    expect(note.data, contains('@unidadecentror04_f5284f2f'));
-    expect(note.data, contains('não é editado por este formulário'));
+    expect(note.data, contains('@centro.escola'));
+    expect(note.data, contains('Alterar @'));
+    final button = find.byKey(const Key('unit-handle-change-button'));
+    expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'ocupado');
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(calls.single, ('unit', edited.id, 3, 'ocupado'));
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-change-message'))).data,
+      'Este @ já está em uso. Escolha outro.',
+    );
+
+    await tester.enterText(find.byKey(const Key('unit-slug-field')), 'centro.novo');
+    await tester.pumpAndSettle();
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(calls.last, ('unit', edited.id, 3, 'centro.novo'));
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-change-message'))).data,
+      '@ alterado para @centro.novo.',
+    );
+    expect(
+      tester.widget<Text>(find.byKey(const Key('unit-handle-note'))).data,
+      contains('@centro.novo'),
+    );
+    expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
   });
 
   testWidgets('edit saves from the current step and remains on the form', (tester) async {
@@ -1039,7 +1030,7 @@ Future<void> _prepareUnitCreate(WidgetTester tester) async {
   await tester.tap(find.byKey(const Key('unit-form-continue')));
   await tester.pumpAndSettle();
   await tester.enterText(find.byKey(const Key('unit-name-field')), 'Unidade retry');
-  await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade-retry');
+  await tester.enterText(find.byKey(const Key('unit-slug-field')), 'unidade.retry');
   await _tapVisible(tester, find.byKey(const Key('step-plano')));
   await tester.tap(find.byKey(const Key('unit-form-continue')));
   await tester.pumpAndSettle();

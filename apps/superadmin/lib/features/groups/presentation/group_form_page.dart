@@ -11,6 +11,7 @@ import '../../support/domain/support_ticket.dart';
 import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../units/domain/unit_handle_availability.dart';
 import '../domain/group_directory.dart';
 
 enum GroupFormSaveResult { created, updated }
@@ -120,6 +121,8 @@ final class GroupFormPage extends StatefulWidget {
     this.initialUnitId,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
+    this.checkHandleAvailability,
+    this.setHandle,
     super.key,
   });
 
@@ -133,6 +136,11 @@ final class GroupFormPage extends StatefulWidget {
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
+  /// Regra do @ (ADR 0034 Decisao 16): disponibilidade enquanto digita e a
+  /// acao "Alterar @" na edicao (trava de 30 dias). Opcionais.
+  final StructureHandleAvailabilityChecker? checkHandleAvailability;
+  final StructureHandleSetter? setHandle;
+
   @override
   State<GroupFormPage> createState() => _GroupFormPageState();
 }
@@ -140,6 +148,7 @@ final class GroupFormPage extends StatefulWidget {
 final class _GroupFormPageState extends State<GroupFormPage> {
   final _formKey = GlobalKey<FormState>();
   late final TextEditingController _nameController;
+  late final TextEditingController _handleController;
   late final TextEditingController _typeController;
   late final TextEditingController _typeOtherController;
   late final TextEditingController _primaryColorController;
@@ -186,6 +195,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     super.initState();
     _status = GroupStatus.active;
     _nameController = TextEditingController();
+    _handleController = TextEditingController();
+    _handleController.addListener(_scheduleHandleCheck);
     _typeController = TextEditingController();
     _typeOtherController = TextEditingController();
     _primaryColorController = TextEditingController(text: '#D63C00');
@@ -231,6 +242,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _status = initialRecord?.status ?? GroupStatus.active;
       _original = initialRecord;
       _nameController.text = initialRecord?.name ?? '';
+      _handleController.text = initialRecord?.handle ?? '';
       _typeController.text = initialRecord?.groupType ?? 'class';
       _typeOtherController.text = initialRecord?.groupTypeOtherText ?? '';
       if (!_typeOptions.any((option) => option.id == _typeController.text)) {
@@ -366,7 +378,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   @override
   void dispose() {
+    _handleCheckTimer?.cancel();
     _nameController.dispose();
+    _handleController.dispose();
     _typeController.dispose();
     _typeOtherController.dispose();
     _primaryColorController.dispose();
@@ -383,6 +397,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     _selectedInstitution?.id,
     _selectedUnit?.id,
     _nameController.text.trim(),
+    _editing ? null : _handleController.text.trim(),
     _typeController.text.trim(),
     _typeController.text == 'other' ? _typeOtherController.text.trim() : null,
     _status.name,
@@ -548,6 +563,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                   unitId: unit.id,
                   unitName: unit.label,
                   name: _nameController.text.trim(),
+                  handle: _handleController.text.trim(),
                   groupType: _typeController.text.trim(),
                   groupTypeOtherText: _typeController.text == 'other'
                       ? _typeOtherController.text.trim()
@@ -916,6 +932,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       validator: _required('Informe o nome da turma.'),
       onChanged: (_) => _markDirty(),
     ),
+    _handleField(),
     CoeloAdminSingleSelectField<String>(
       key: const Key('group-type-field'),
       label: 'Tipo da turma',
@@ -950,6 +967,154 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       }),
     ),
   ];
+
+  // --- Regra do @ (ADR 0034 Decisao 16) -----------------------------------
+  Timer? _handleCheckTimer;
+  int _handleCheckSequence = 0;
+  UnitHandleAvailability? _handleAvailability;
+  String _handleChecked = '';
+  bool _changingHandle = false;
+  String? _handleChangeMessage;
+  bool _handleChangeFailed = false;
+
+  void _scheduleHandleCheck() {
+    final checker = widget.checkHandleAvailability;
+    if (checker == null) return;
+    final value = _handleController.text.trim();
+    _handleCheckTimer?.cancel();
+    if (value.isEmpty || value == (_original?.handle ?? '')) {
+      if (_handleAvailability != null) setState(() => _handleAvailability = null);
+      return;
+    }
+    final sequence = ++_handleCheckSequence;
+    _handleCheckTimer = Timer(const Duration(milliseconds: 300), () async {
+      final result = await checker('group', value, excludeId: _original?.id);
+      if (!mounted || sequence != _handleCheckSequence) return;
+      setState(() {
+        _handleAvailability = result;
+        _handleChecked = value;
+      });
+    });
+  }
+
+  bool get _canChangeHandle {
+    final original = _original;
+    if (original == null || widget.setHandle == null || _changingHandle) return false;
+    final value = _handleController.text.trim();
+    return value.isNotEmpty && value != original.handle;
+  }
+
+  /// "Alterar @": superadmin_structure_handle_set_v1 com a versao corrente.
+  /// O servidor aplica a trava de 30 dias e a unicidade; aqui so a mensagem.
+  Future<void> _changeHandle() async {
+    final original = _original;
+    final setter = widget.setHandle;
+    if (original == null || setter == null) return;
+    final value = _handleController.text.trim();
+    setState(() {
+      _changingHandle = true;
+      _handleChangeMessage = null;
+    });
+    final result = await setter('group', original.id, original.managementVersion, value);
+    if (!mounted) return;
+    setState(() {
+      _changingHandle = false;
+      _handleChangeFailed = !result.changed;
+      _handleChangeMessage = result.message;
+      if (result.changed) {
+        _original = original.copyWith(
+          handle: result.handle,
+          managementVersion: result.managementVersion,
+        );
+        _handleController.text = result.handle;
+        _handleAvailability = null;
+      }
+    });
+  }
+
+  Widget _handleField() {
+    final theme = Theme.of(context);
+    final availability = _handleAvailability;
+    String note;
+    Color noteColor = theme.colorScheme.onSurfaceVariant;
+    if (availability != null && _handleChecked == _handleController.text.trim()) {
+      (note, noteColor) = switch (availability.reason) {
+        UnitHandleAvailabilityReason.available => (
+          '@${availability.normalized} está disponível.',
+          theme.colorScheme.primary,
+        ),
+        UnitHandleAvailabilityReason.taken => (
+          '@${availability.normalized} já está em uso. Escolha outro.',
+          theme.colorScheme.error,
+        ),
+        UnitHandleAvailabilityReason.invalid => (
+          'Use letras minúsculas, números, ponto e sublinhado (3 a 50 caracteres).',
+          theme.colorScheme.error,
+        ),
+        UnitHandleAvailabilityReason.empty => ('Informe o @.', theme.colorScheme.error),
+        UnitHandleAvailabilityReason.unavailable => (
+          'Não foi possível verificar a disponibilidade agora; o servidor confere ao salvar.',
+          theme.colorScheme.onSurfaceVariant,
+        ),
+      };
+    } else if (!_editing) {
+      note = 'Este é o @ público da turma. Vazio, o servidor gera @nomedaturma.nomedaunidade.';
+    } else if ((_original?.handle ?? '').isEmpty) {
+      note = 'O @ público foi atribuído pelo servidor na criação.';
+    } else {
+      note =
+          '@ público: @${_original!.handle} · use "Alterar @" para trocar (uma vez a cada 30 dias).';
+    }
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        CoeloFormTextField(
+          fieldKey: const Key('group-handle-field'),
+          controller: _handleController,
+          labelText: 'Identificador',
+          prefixIcon: Icons.alternate_email_rounded,
+          textInputAction: TextInputAction.next,
+          validator: (value) {
+            final normalized = value?.trim() ?? '';
+            if (normalized.isNotEmpty &&
+                !RegExp(r'^[a-z0-9][a-z0-9._]{1,48}[a-z0-9]$').hasMatch(normalized)) {
+              return 'Use letras minúsculas, números, ponto e sublinhado (3 a 50 caracteres).';
+            }
+            return null;
+          },
+          onChanged: (_) => _markDirty(),
+        ),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text(
+          note,
+          key: const Key('group-handle-note'),
+          style: theme.textTheme.bodySmall?.copyWith(color: noteColor),
+        ),
+        if (_editing && widget.setHandle != null) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          Align(
+            alignment: Alignment.centerLeft,
+            child: OutlinedButton.icon(
+              key: const Key('group-handle-change-button'),
+              onPressed: _canChangeHandle ? _changeHandle : null,
+              icon: const Icon(Icons.alternate_email_rounded),
+              label: Text(_changingHandle ? 'Alterando @…' : 'Alterar @'),
+            ),
+          ),
+          if (_handleChangeMessage != null) ...[
+            const SizedBox(height: CoeloSpacing.space1),
+            Text(
+              _handleChangeMessage!,
+              key: const Key('group-handle-change-message'),
+              style: theme.textTheme.bodySmall?.copyWith(
+                color: _handleChangeFailed ? theme.colorScheme.error : theme.colorScheme.primary,
+              ),
+            ),
+          ],
+        ],
+      ],
+    );
+  }
 
   List<Widget> _prototypeFields() => [
     CoeloAdminToggleField(

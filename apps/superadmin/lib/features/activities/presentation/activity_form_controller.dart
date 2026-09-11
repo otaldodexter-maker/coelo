@@ -31,6 +31,7 @@ final class ActivityFormController extends ChangeNotifier {
     String? initialCatalogError,
     this.professionalSearcher,
     this.handleAvailabilityChecker,
+    this.handleSetter,
   }) : isEditing = false,
        detail = null,
        expectedManagementVersion = 0,
@@ -72,6 +73,7 @@ final class ActivityFormController extends ChangeNotifier {
     this.loadTemplateOptions,
     String? initialCatalogError,
     this.handleAvailabilityChecker,
+    this.handleSetter,
   }) : isEditing = true,
        loadScopedOptions = null,
        detail = source,
@@ -88,6 +90,7 @@ final class ActivityFormController extends ChangeNotifier {
        _requestedTemplateId = null,
        catalogOptionsError = initialCatalogError,
        governance = initialDraft?.governance ?? source.item.governance {
+    _currentHandleStem = source.item.handleStem ?? '';
     _hydrateEdit(source, initialDraft);
     _listen();
     _baseline = _signature;
@@ -102,6 +105,44 @@ final class ActivityFormController extends ChangeNotifier {
   /// stem enquanto digita; opcional, nunca bloqueia o formulario.
   final StructureHandleAvailabilityChecker? handleAvailabilityChecker;
   UnitHandleAvailability? handleAvailability;
+
+  /// Acao "Alterar @" da edicao (superadmin_structure_handle_set_v1, trava
+  /// de 30 dias). Opcional: sem ela o @ fica somente leitura na edicao.
+  final StructureHandleSetter? handleSetter;
+  bool changingHandle = false;
+  String? handleChangeMessage;
+  bool handleChangeFailed = false;
+  String _currentHandleStem = '';
+
+  bool get canChangeHandle {
+    final current = detail;
+    if (current == null || handleSetter == null || changingHandle) return false;
+    final value = handleStem.text.trim();
+    return value.isNotEmpty && value != _currentHandleStem;
+  }
+
+  /// Troca o stem do @ no servidor e avanca a versao esperada do rascunho,
+  /// para o proximo salvar nao cair em SAI_CONCURRENT_CHANGE.
+  Future<void> changeHandle() async {
+    final current = detail;
+    final setter = handleSetter;
+    if (current == null || setter == null) return;
+    final value = handleStem.text.trim();
+    changingHandle = true;
+    handleChangeMessage = null;
+    notifyListeners();
+    final result = await setter('activity', current.item.id, expectedManagementVersion, value);
+    changingHandle = false;
+    handleChangeFailed = !result.changed;
+    handleChangeMessage = result.message;
+    if (result.changed) {
+      _currentHandleStem = result.handle;
+      expectedManagementVersion = result.managementVersion;
+      handleStem.text = result.handle;
+      handleAvailability = null;
+    }
+    notifyListeners();
+  }
   String _handleChecked = '';
   Timer? _handleCheckTimer;
   int _handleCheckSequence = 0;
@@ -126,7 +167,7 @@ final class ActivityFormController extends ChangeNotifier {
     if (checker == null) return;
     final value = handleStem.text.trim();
     _handleCheckTimer?.cancel();
-    if (value.isEmpty || value == (detail?.item.handleStem ?? '')) {
+    if (value.isEmpty || value == _currentHandleStem) {
       if (handleAvailability != null) {
         handleAvailability = null;
         notifyListeners();
@@ -144,7 +185,7 @@ final class ActivityFormController extends ChangeNotifier {
   }
   final ActivityDetail? detail;
   final bool isEditing;
-  final int expectedManagementVersion;
+  int expectedManagementVersion;
   final TextEditingController name;
   final TextEditingController handleStem;
   final TextEditingController description;

@@ -217,6 +217,10 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'institution_id': request.record.institutionId,
   'unit_id': request.record.unitId,
   'name': request.record.name.trim(),
+  // Decisao 16: @ opcional na criacao (vazio -> @turma.unidade pelo gatilho);
+  // na edicao a troca passa por superadmin_structure_handle_set_v1.
+  if (request.record.managementVersion == 0 && request.record.handle.trim().isNotEmpty)
+    'handle': request.record.handle.trim(),
   'group_type': request.record.groupType.trim().toLowerCase(),
   'group_type_other_text': request.record.groupTypeOtherText,
   'status': request.record.statusDatabaseValue,
@@ -297,6 +301,7 @@ GroupRecord _record(Map<String, dynamic> row) {
         ),
     ],
     studentCount: _int(row['student_count']),
+    handle: row['handle'] as String? ?? '',
     teacherOrResponsibleNames: access
         .where((item) => item.profileCode == 'teacher' || item.profileCode == 'professional')
         .map((item) => item.displayName)
