@@ -1,15 +1,15 @@
 {
- "revision": 40,
+ "revision": 41,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:12-03:00",
+ "updatedAt": "2026-09-11T15:20-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "a1ca952cc + rev 40 (publicado)",
+ "head": "294a88780 de codigo + rev 41 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,12 +40,9 @@
   ]
  },
  "currentGate": {
-  "gate": "recorte entregue; a partir de 15:15 so provas extras (daily-routine.apply/publish) enquanto o Chrome aguentar; revisao das 15:50 sera respondida no JSON",
-  "screen": "Etapa 2 -> apps/superadmin -> Acompanhamento -> Rotina diaria",
-  "actionIds": [
-   "daily-routine.apply",
-   "daily-routine.publish"
-  ]
+  "gate": "finalizado as 15:20; ate 15:45 apenas correcoes concretas se surgirem; revisao das 15:50 sera respondida neste JSON",
+  "screen": "Etapa 2 -> apps/superadmin",
+  "actionIds": []
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
  "tests": {},
@@ -138,6 +135,15 @@
    "sha": "a1ca952cc",
    "o_que": "fix(rotina): request_id dos comandos do editor vira uuid v4 (22P02 medido na rota real)",
    "prova": "test/features/daily_routine 112 verdes, 1 golden do composto pre-existente (G7 regravou)"
+  },
+  {
+   "sha": "294a88780",
+   "o_que": "feat(rotina): onDuplicateModel/onCreateFromModel na rota de producao (daily-routine.apply)",
+   "prova": "analyzer limpo; daily_routine_routes_test 4/4; build 8 na rota real: os links \"Duplicar modelo\" e \"Criar rotina por este modelo\" aparecem no card (73-routine-card-acoes.png) mas o toque e engolido pelo onPressed do card (abre a edicao)"
+  },
+  {
+   "sha": "b0b622766",
+   "o_que": "docs: handoff da R05 (R04 preservado em evidence/etapa-2/r04-formularios-cuidado-rotina/handoff-r04.md)"
   }
  ],
  "pendenciasRegistradas": [
@@ -215,11 +221,21 @@
    "action_id": "attendance.mark",
    "o_que": "primeira tentativa de Salvar mostra \"Alteracao de presenca nao salva\" e a segunda grava (corrida entre reserva de chave e envio)",
    "gate": "FE"
+  },
+  {
+   "action_id": "daily-routine.apply",
+   "o_que": "acoes internas do card do modelo (Duplicar, Criar rotina por este modelo) nao recebem o toque: o card inteiro e um botao (CoeloAdminInteractiveCard) e vence os TextButtons; mover as acoes para o menu do card ou dar-lhes prioridade no hit-test",
+   "gate": "FE"
+  },
+  {
+   "action_id": "daily-routine.list",
+   "o_que": "abas Rotinas e Lancamentos vazias escondem o card Criar (regra do estado vazio)",
+   "gate": "FE"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "ate 15:45: provar o save de Rotina no build 7 se o Chrome aguentar; responder a revisao das 15:50 no JSON",
- "finalizado": false,
+ "nextStep": "responder a revisao das 15:50 no JSON; apos 16:00 nao retomar",
+ "finalizado": true,
  "historicoR04": {
   "revision": 33,
   "round": "E2-R04-20260911",
@@ -1482,6 +1498,10 @@
   "daily-routine.edit": {
    "resultado": "P (leitura) ",
    "prova": "edit?kind=model abre com detail 200 e Salvar; save de edicao nao exercitado; 71"
+  },
+  "daily-routine.apply": {
+   "resultado": "F (FE)",
+   "prova": "card do modelo mostra as duas acoes (build 8), mas o clique nelas navega para /edit: o InteractiveCard captura o toque antes dos TextButtons internos; 73"
   }
  },
  "notaRelogio": "a rev 38 registrou 14:58 por engano (relogio da maquina marcava 14:38); a rev 35 idem (12:58 -> 12:40)",
@@ -1557,8 +1577,8 @@
   }
  ],
  "miniRevisao": {
-  "quando": "2026-09-11T14:58-03:00",
-  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 40), publicados; status limpo; sem WIP",
+  "quando": "2026-09-11T15:20-03:00",
+  "sha_final": "294a88780 (codigo) + b0b622766 (handoff) + este commit (rev 41), branch work/etapa2-r05-formularios-cuidado-rotina publicada, status limpo, sem WIP retido",
   "fechou": [
    "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
    "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
@@ -1577,13 +1597,16 @@
    "medication.create/detail/edit/evidence: seletor de hora + responsaveis (FE)",
    "forms.location-answer: exige formulario com item Local publicado (220800 em producao); nao exercitado",
    "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza",
-   "daily-routine.apply/publish: criar aplicacao (aba Rotinas) e lancamento a partir do modelo 176882c5 (nao exercitado; RPCs do lote 2 em producao)"
+   "daily-routine.apply/publish: hit-test das acoes do card (FE) e prova de superadmin_routine_save_application/publish_launch na rota real"
   ],
   "duvidas_ao_owner": [
    "Medicacao deve ter abas de status como Perfis de cuidado? (herdada da R04)",
    "Detalhe do perfil de cuidado: manter redirecionamento ao editor ou criar tela somente leitura com historico (spec 020)?",
    "Titulos das telas de Formularios sem golden (visao geral, monitor, respostas, arquivos) sao proposta minha (herdada)"
   ],
-  "chaves_criadas": "nenhuma por esta frente (form_media_worker_url foi criada pelo coordenador)"
+  "chaves_criadas": "nenhuma por esta frente (form_media_worker_url foi criada pelo coordenador)",
+  "deltas": "deltas-r05-fcr.json (16, aplicado), -2 (29, aplicado), -3 (21), -4 (5); todos ensaiados com apply-tracker-delta + validate-trackers PASS",
+  "pacotes": "20260911220000, 220100, 230000 aplicados pelo coordenador; nenhum candidato pendente",
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md"
  }
 }
