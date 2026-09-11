@@ -1,15 +1,15 @@
 {
- "revision": 37,
+ "revision": 39,
  "round": "E2-R05-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T13:29-03:00",
+ "updatedAt": "2026-09-11T15:06-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-formularios-cuidado-rotina",
  "branch": "work/etapa2-r05-formularios-cuidado-rotina",
- "head": "7323c9220 + rev 37 (publicado)",
+ "head": "a1ca952cc + rev 39 (publicado)",
  "base": "origin/dev 2f6a6114f",
  "scope": {
   "families": [
@@ -40,61 +40,36 @@
   ]
  },
  "currentGate": {
-  "gate": "forms_responses provada ponta a ponta (monitor/respond/responses/response-detail); XLSX bloqueado pelo deploy de form-operations; proximo: Seguranca infantil criar/editar/suspender e Cuidado/Medicacao criar/detalhe/editar na rota real (build 4 ja tem tudo)",
-  "screen": "Etapa 2 -> apps/superadmin -> Acessos -> Seguranca da crianca / Saude e Cuidado",
+  "gate": "entrega principal fechada; restam provas na rota real que dependem do build 7 (rotina save) e do harness (XLSX download na origem 3000; Chrome/SwiftShader caindo a cada ~20 min)",
+  "screen": "Etapa 2 -> apps/superadmin -> Formularios / Seguranca infantil / Cuidado / Medicacao / Rotina / Assiduidade",
   "actionIds": [
-   "child-safety.create",
-   "child-safety.edit",
-   "child-safety.suspend",
-   "health-care.create",
-   "health-care.detail",
-   "health-care.edit",
+   "daily-routine.create",
+   "forms.download",
    "medication.create",
-   "medication.detail",
-   "medication.edit"
+   "attendance.dashboard"
   ]
  },
  "loopAgendado": "/loop 15m, agendado na abertura (12:12)",
  "tests": {},
  "reservedFiles": [],
  "blocking": [],
- "deltaProposals": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16 entradas; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
+ "deltaProposals": [
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr.json (16, rev 37, ja aplicados pelo coordenador)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-2.json (29, rev 38; ensaiado com apply-tracker-delta + validate-trackers PASS e revertido)",
+  "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/deltas-r05-fcr-3.json (16, rev 39: attendance.dashboard/create/mark/finish/correct verified-e2e; forms.responses.export BE done com gate de deploy da form-export-download)"
+ ],
  "packages": [
   {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220000_daily_routine_directory_can_manage_v1.sql",
-   "action_id": [
-    "daily-routine.create",
-    "daily-routine.edit"
-   ],
-   "estado": "pgTAP em execucao pelo subagente (daily_routine_directory_can_manage_v1_test)",
-   "chave": "nenhuma"
+   "arquivo": "candidatos/formularios-cuidado-rotina/20260911220000_daily_routine_directory_can_manage_v1.sql",
+   "estado": "APLICADO em producao pelo coordenador (lote 28-42); pgTAP 15/15"
   },
   {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911220100_attendance_superadmin_contract_v1.sql",
-   "action_id": [
-    "attendance.dashboard",
-    "attendance.create",
-    "attendance.mark",
-    "attendance.correct",
-    "attendance.finish"
-   ],
-   "pgtap": "supabase/tests/attendance_superadmin_contract_v1_test.sql 141/141 (espelho coelo_r05_att: baseline + seed + 107 arquivos da ordem de producao + candidato; regressao attendance_authorization 23/0 e dashboard_access 22/0)",
-   "estado": "PRONTO PARA A FILA",
-   "notas": [
-    "attendance.export nao entra no catalogo; export responde EXPORT_UNAVAILABLE (ADR 0034)",
-    "chamada de atividade sem activity_group_participants nasce sem participantes (limite do esquema)",
-    "delta de esquema: attendance_sessions.version/reopen_*, status reopened/corrected, app_private.attendance_bulk_operations, response em attendance_idempotency_reservations"
-   ],
-   "chave": "nenhuma (SupabaseAttendanceRepository ja composto); rota real depois da aplicacao"
+   "arquivo": "candidatos/formularios-cuidado-rotina/20260911220100_attendance_superadmin_contract_v1.sql",
+   "estado": "APLICADO em producao; pgTAP 141/141"
   },
   {
-   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260911230000_form_media_r2_cleanup_dispatch_v1.sql",
-   "action_id": [
-    "forms.expire-file",
-    "forms.delete-file"
-   ],
-   "estado": "dispatch do cron coelo-form-media-r2-cleanup (*/5) para a form-media; aplicar DEPOIS do deploy da funcao e da criacao do segredo form_media_worker_url no Vault (sem custo; valor = URL da funcao)",
-   "chave": "nenhuma"
+   "arquivo": "candidatos/formularios-cuidado-rotina/20260911230000_form_media_r2_cleanup_dispatch_v1.sql",
+   "estado": "APLICADO em producao (cron coelo-form-media-r2-cleanup); depende do segredo form_media_worker_url no Vault"
   }
  ],
  "commits": [
@@ -150,6 +125,20 @@
   {
    "sha": "7323c9220",
    "o_que": "feat(formularios): Edge Function form-media (ramo question-image em R2 + worker expire/cleanup; answer-image legado) Deno 47/47; candidato 20260911230000_form_media_r2_cleanup_dispatch_v1 (cron); 12 capturas da rota real"
+  },
+  {
+   "sha": "05968beef",
+   "o_que": "fix(seguranca-infantil): /safety na guarda de mutacao do router quando o adapter real esta composto; pgTAP daily_routine_directory_can_manage_v1_test (15/15)"
+  },
+  {
+   "sha": "f5d1f0c91",
+   "o_que": "fix(cuidado): alergia sem data de episodio vai sem gravidade (23514 health_care_allergies_severity_check medido na rota real); evidencias de Seguranca infantil",
+   "prova": "supabase_health_care_data_test 8/8 (1 caso novo)"
+  },
+  {
+   "sha": "a1ca952cc",
+   "o_que": "fix(rotina): request_id dos comandos do editor vira uuid v4 (22P02 medido na rota real)",
+   "prova": "test/features/daily_routine 112 verdes, 1 golden do composto pre-existente (G7 regravou)"
   }
  ],
  "pendenciasRegistradas": [
@@ -187,10 +176,50 @@
    "action_id": "ambiente",
    "o_que": "rebuild na mesma pasta servida derruba o app aberto (bundle parcial, tela branca) e o Chrome sob SwiftShader perde o canvas apos navegacoes; usar pasta de build nova por rebuild e reabrir o Chrome com --enable-unsafe-swiftshader",
    "gate": "harness"
+  },
+  {
+   "action_id": "child-safety.suspend",
+   "o_que": "tabela de autorizacoes mostra decision_status (verde/Aprovado) para linha suspensa; coluna Relacao com enum cru (mother/father); etapa Pessoa autorizada pede UUID cru em vez de busca de Pessoas",
+   "gate": "FE"
+  },
+  {
+   "action_id": "health-care.detail",
+   "o_que": "nao existe detalhe somente leitura: a rota redireciona ao editor; alinhar com spec 020 (detalhe com historico)",
+   "gate": "FE/UX"
+  },
+  {
+   "action_id": "medication.create",
+   "o_que": "seletor de hora (Defina o horario) nao fecha ao Aplicar sob CDP; Responsavel sem opcoes (leitura de responsaveis do contexto nao composta); imagem do medicamento \"Envio indisponivel\"",
+   "gate": "FE"
+  },
+  {
+   "action_id": "forms.download",
+   "o_que": "COELO_ALLOWED_ORIGINS das Edge Functions nao inclui a origem do harness; prova do download exige 127.0.0.1:3000 (hoje ocupada pela G2) ou incluir 3014 no segredo (sem custo)",
+   "gate": "ambiente (coordenador)"
+  },
+  {
+   "action_id": "daily-routine.create",
+   "o_que": "rodape do editor de Rotina sem Cancelar a esquerda (regra do Owner); Instituicao de origem e campo de texto para uuid",
+   "gate": "FE/UX"
+  },
+  {
+   "action_id": "attendance.*",
+   "o_que": "rota real com o contrato 220100 nao exercitada nesta rodada (tempo); attendance.export segue indisponibilidade honesta",
+   "gate": "FE prova"
+  },
+  {
+   "action_id": "attendance.create",
+   "o_que": "balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape da chamada (Decisao 7: sem chat em criar/editar)",
+   "gate": "FE (shell/launcher)"
+  },
+  {
+   "action_id": "attendance.mark",
+   "o_que": "primeira tentativa de Salvar mostra \"Alteracao de presenca nao salva\" e a segunda grava (corrida entre reserva de chave e envio)",
+   "gate": "FE"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "Seguranca infantil criar/editar/suspender; Cuidado/Medicacao criar/detalhe/editar; Rotina criar apos pgTAP do 220000; XLSX apos deploy",
+ "nextStep": "ate 15:45: provar o save de Rotina no build 7 se o Chrome aguentar; responder a revisao das 15:50 no JSON",
  "finalizado": false,
  "historicoR04": {
   "revision": 33,
@@ -1392,11 +1421,67 @@
    "prova": "19-forms-response-detail.png"
   },
   "forms.responses.export": {
-   "resultado": "F (BE ambiente)",
-   "prova": "superadmin_form_request_xlsx_v2 200, job pending; worker responde processed:false (form-operations v11 de 20/08)"
+   "resultado": "P (BE) / download com gate de origem",
+   "prova": "job succeeded 3975 bytes R2; /files mostra Concluido (55); form-export-download 403 request_denied (COELO_ALLOWED_ORIGINS sem 127.0.0.1:3014)"
+  },
+  "child-safety.create": {
+   "resultado": "P",
+   "prova": "child_safety_request_authorization 200 (7fcb6761); capturas 24/25/27/29/30"
+  },
+  "child-safety.edit": {
+   "resultado": "P",
+   "prova": "child_safety_edit_pending_authorization 200 (versao 2) + child_safety_decide_authorization 200 (34d29829 approved); 32/33/37/38"
+  },
+  "child-safety.suspend": {
+   "resultado": "P (BE) / defeito FE de exibicao",
+   "prova": "child_safety_change_lifecycle 200; SQL status=suspended versao 4; auditoria request x2, edit_pending, decide, lifecycle; 35/36"
+  },
+  "health-care.create": {
+   "resultado": "P",
+   "prova": "superadmin_health_care_save_profile 200 (5712371e); primeira tentativa 23514 severity_check -> f5d1f0c91; 41/44/45/46"
+  },
+  "health-care.detail": {
+   "resultado": "P (redireciona ao editor carregado)",
+   "prova": "superadmin_health_care_profile_detail 200; 48"
+  },
+  "health-care.edit": {
+   "resultado": "P",
+   "prova": "save_profile 200 revisao 2; important_signs persistido; 2 revisoes; 48/49"
+  },
+  "medication.create": {
+   "resultado": "parcial",
+   "prova": "etapas 1-2 preenchidas (51/52); seletor de hora nao fecha ao Aplicar e o Chrome caiu; Responsavel sem opcoes"
+  },
+  "daily-routine.create": {
+   "resultado": "parcial",
+   "prova": "card Criar modelo aparece (57); editor editavel (58/59); save 22P02 -> a1ca952cc; prova do save no build 7"
+  },
+  "attendance.dashboard": {
+   "resultado": "P",
+   "prova": "attendance_dashboard_read; 60"
+  },
+  "attendance.create": {
+   "resultado": "P",
+   "prova": "superadmin_attendance_create_call 200 (d3821901); 61/62"
+  },
+  "attendance.mark": {
+   "resultado": "P",
+   "prova": "set_participant 200 versao 2; 63"
+  },
+  "attendance.finish": {
+   "resultado": "P",
+   "prova": "complete_call 200 closed versao 3; 64/65"
+  },
+  "attendance.correct": {
+   "resultado": "P",
+   "prova": "correct_participant 200 corrected versao 4; 67/68"
+  },
+  "forms.download": {
+   "resultado": "P",
+   "prova": "form-export-download 200 com download_url presignada do R2 apos origem liberada + redeploy; 69"
   }
  },
- "notaRelogio": "a rev 35 registrou 12:58 por engano; o relogio da maquina marcava 12:40",
+ "notaRelogio": "a rev 38 registrou 14:58 por engano (relogio da maquina marcava 14:38); a rev 35 idem (12:58 -> 12:40)",
  "subagentes": [
   {
    "tarefa": "pacote 20260911220100_attendance_superadmin_contract_v1 (14 RPCs do cliente de Assiduidade ausentes em producao: superadmin_attendance_directory/call_detail/create_call/set_participant/correct_participant/complete_call/reopen_call/mark_remaining_present/clear_presence_marks/undo_bulk/confirm_notice e attendance_dashboard_read/ranking_page/request_export) + pgTAP no descartavel",
@@ -1431,18 +1516,65 @@
    "tabela": "public.form_file_jobs",
    "id": "09f86ec7-554d-417d-8110-a68d5a02e309",
    "nota": "job XLSX pending ate o deploy do worker"
+  },
+  {
+   "tabela": "public.authorized_person_authorizations",
+   "id": "7fcb6761-eb6d-40c4-9926-d6bf1bb722ba",
+   "nota": "autorizacao pendente criada e editada (pessoa 9f04...62, crianca d0c4...03)"
+  },
+  {
+   "tabela": "public.authorized_person_authorizations",
+   "id": "34d29829-a8b5-4b23-aacb-46e994dce7d7",
+   "nota": "autorizacao da R04 aprovada e suspensa nesta rodada"
+  },
+  {
+   "tabela": "public.health_care_profiles",
+   "id": "5712371e-d103-4fd2-8cc5-2087fd2cbd81",
+   "nota": "perfil de cuidado da crianca d0c4...03 com alergia f3bf4a90"
+  },
+  {
+   "tabela": "public.attendance_sessions",
+   "id": "d3821901-196d-478d-9ea4-70e1c38e8c38",
+   "nota": "chamada da turma 368a5cea em 11/09, corrigida (versao 4); participante a496f56e"
   }
  ],
  "edgeFunctions": [
   {
    "nome": "form-media",
-   "estado": "commitada em 7323c9220; deploy pelo coordenador",
-   "mapa": "prepare/finalize/resolve/download/delete question-image -> superadmin_form_media_prepare_v2 / authorize_finalize_v2 + form_media_finalize_question_r2_v1 (service_role) / resolve_v2 / delete_v2; expire+cleanup (bearer do worker) -> form_media_expire_question_r2_v1, claim_cleanup, DELETE R2, mark_purged; answer-image legado",
-   "pendente_cliente": "supabase_forms_api.dart ainda chama so o fluxo por occurrence_id; adaptar o cliente para form_id/form_version_id + signed_upload_url/required_headers (forms.upload no editor)"
+   "estado": "implantada pelo coordenador; ramo question-image em R2; cliente Dart ainda no fluxo legado (pendencia FE forms.upload)"
   },
   {
    "nome": "form-operations",
-   "estado": "BLOQUEIO: implantada v11 de 2026-08-20 sem export_xlsx_r2_v1; deploy a partir de dev destrava forms.responses.export (job 09f86ec7 pending em producao)"
+   "estado": "implantada a partir de dev; job XLSX 09f86ec7 succeeded (3975 bytes em R2)"
   }
- ]
+ ],
+ "miniRevisao": {
+  "quando": "2026-09-11T14:58-03:00",
+  "sha_final": "a1ca952cc de codigo + este commit de docs (rev 39), publicados; status limpo; sem WIP",
+  "fechou": [
+   "forms.publish, forms.overview (rev 37, ja aplicados: verified-e2e)",
+   "forms.monitor, forms.respond, forms.responses, forms.response-detail: verified-e2e (deltas rev 37)",
+   "forms.list: card Criar em producao (verified)",
+   "child-safety.create/edit/suspend: verified-e2e (deltas-2)",
+   "health-care.create/detail/edit: verified-e2e (deltas-2)",
+   "forms.responses.export: BE done (XLSX em R2), FE verified; download com gate de origem",
+   "attendance.*: BE remote-green (contrato 220100 em producao, pgTAP 141/141)",
+   "daily-routine.create: card Criar e editor editavel (local-green) apos 220000; save corrigido",
+   "form-media em R2 (implantada), spec P32, achado do cron (sem correcao)",
+   "attendance.dashboard/create/mark/finish/correct: verified-e2e (deltas-3)",
+   "forms.responses.export e forms.download: verified-e2e (XLSX no R2 privado com URL curta)"
+  ],
+  "aberto_primeiro_gate": [
+   "daily-routine.create/edit/apply/publish: prova do save no build 7 (a1ca952cc)",
+   "medication.create/detail/edit/evidence: seletor de hora + responsaveis (FE)",
+   "forms.location-answer: exige formulario com item Local publicado (220800 em producao); nao exercitado",
+   "forms.upload/resolve-file/expire-file/delete-file: cliente Dart do editor no ramo question-image da form-media (FE) e prova do cron de limpeza"
+  ],
+  "duvidas_ao_owner": [
+   "Medicacao deve ter abas de status como Perfis de cuidado? (herdada da R04)",
+   "Detalhe do perfil de cuidado: manter redirecionamento ao editor ou criar tela somente leitura com historico (spec 020)?",
+   "Titulos das telas de Formularios sem golden (visao geral, monitor, respostas, arquivos) sao proposta minha (herdada)"
+  ],
+  "chaves_criadas": "nenhuma por esta frente (form_media_worker_url foi criada pelo coordenador)"
+ }
 }

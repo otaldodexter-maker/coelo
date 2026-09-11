@@ -127,18 +127,22 @@ select ok((select (body ? 'created_by_internal_identity_id') is false and (body 
 select is((select jsonb_array_length(body->'items')::text from agenda_results where label='listed'),'1','list ve o evento');
 select is((select body->>'status' from agenda_results where label='edited'),'published','Owner interno edita e publica');
 select is((select body->>'revision' from agenda_results where label='edited'),'2','revisao otimista incrementa');
-select is((select created_by_internal_identity_id::text from public.agenda_events where id=(select (body->>'id')::uuid from agenda_results where label='saved')),
-  '9b100000-0000-4000-8000-000000000301','trigger roteou o criador para a identidade interna');
-select ok((select created_by_person_id is null and updated_by_person_id is null from public.agenda_events where id=(select (body->>'id')::uuid from agenda_results where label='saved')),
-  'colunas de pessoa ficam nulas para ator interno');
-select is((select count(*)::text from public.agenda_history_receipts where actor_internal_identity_id='9b100000-0000-4000-8000-000000000301'),'2',
-  'recibos de historico gravam o ator interno');
+-- Desde as pontes de ator (20260910220400 e 20260911130000) a identidade interna age pela
+-- sua pessoa de servico: current_person_id() a devolve e o gatilho de roteamento mantem as
+-- colunas de pessoa (190100 depende disso: "nome de quem pediu = pessoa de servico da ponte").
+select is((select created_by_person_id from public.agenda_events where id=(select (body->>'id')::uuid from agenda_results where label='saved')),
+  (select person_id from app_private.superadmin_internal_actor_people where internal_identity_id='9b100000-0000-4000-8000-000000000301'),
+  'criador e a pessoa de servico da identidade interna (ponte de ator)');
+select ok((select created_by_internal_identity_id is null and updated_by_internal_identity_id is null from public.agenda_events where id=(select (body->>'id')::uuid from agenda_results where label='saved')),
+  'colunas de identidade interna ficam nulas quando a ponte resolve a pessoa');
+select is((select count(*)::text from public.agenda_history_receipts where actor_person_id=(select person_id from app_private.superadmin_internal_actor_people where internal_identity_id='9b100000-0000-4000-8000-000000000301')),'2',
+  'recibos de historico gravam a pessoa de servico do ator interno');
 select is((select message from agenda_errors where label='cross_tenant_unit'),'invalid_unit_context',
   'contexto de unidade fora do tenant e recusado');
 select is((select jsonb_array_length(body->'items')::text from agenda_results where label='content_list'),'1','Content interno le a Agenda');
 select is((select message from agenda_errors where label='content_save'),'agenda_permission_denied','Content interno nao cria');
 select is((select message from agenda_errors where label='scoped_list'),'agenda_permission_denied',
-  'identidade interna escopada em instituicao nao le a Agenda de plataforma');
+  'identidade interna escopada em instituicao nao le a Agenda de plataforma (211200: a platform_membership espelhada pela ponte nao concede agenda.*)');
 select is((select message from agenda_errors where label='people_list'),'agenda_permission_denied',
   'pessoa sem membership de plataforma e negada');
 select ok(not exists(select 1 from agenda_results where body::text like '%@invalid.test%'),'saidas nao expoem e-mail');

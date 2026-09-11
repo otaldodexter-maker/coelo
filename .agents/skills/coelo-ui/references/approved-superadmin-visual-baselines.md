@@ -229,6 +229,25 @@ O que ela define para o detalhe de dia da Agenda:
 As duas capturas juntas fixam a navegação ano → mês → dia da Agenda e o
 tratamento de evento cancelado (hachurado no mês, riscado no dia).
 
+## Respostas do Owner de 2026-09-11 (tarde) às dúvidas visuais da Rodada 5
+
+- **G-SUP (Suporte e Em implantação alinhados como Instituições; 16 goldens
+  claros `support_*_light_*` e `plan_table_light_*`): aprovado às 14:20**
+  ("está tudo aprovado, ficou legal"). Regra que vira baseline: toda célula de
+  `CoeloAdminResizableTable` é alinhada à esquerda e centralizada na linha
+  pelo composto; detalhe lateral em corpo estreito no desktop entra como
+  `bodyOverride` do composto para manter a toolbar.
+- **Agenda P33/P34 (12 goldens `agenda_calendar_*` e `agenda_detail_*`,
+  regravados no 3.44.2 após as observações):** página lado a lado enviada
+  (artefato 881e760e; cópia em
+  `docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/duvidas-visuais.html`),
+  **aprovado às 14:52** ("o render atual está perfeito e aprovado"): os 12
+  goldens regravados são a nova baseline do calendário e do detalhe da Agenda.
+- **Perfil do Principal (P28) e perfil Coelo (P35):** goldens de Perfil,
+  Acontece, Para você e publicadores regravados pela frente principal-chat
+  após a observação do cabeçalho; aprovação visual do Owner pendente na
+  próxima página lado a lado.
+
 ## Respostas do Owner de 2026-09-11 às dúvidas visuais da Rodada 4
 
 Fonte: página de decisões da R04 (artefato "Decisões R04", respondida às

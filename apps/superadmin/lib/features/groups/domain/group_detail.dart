@@ -113,11 +113,13 @@ bool isGroupDetailId(String value) => RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
 ).hasMatch(value);
 
+/// Exige as chaves conhecidas e ignora chaves aditivas (superadmin_group_detail_v2
+/// passou a devolver `handle` na R05, regra do @).
 Map<String, Object?> _map(Object? value, Set<String> keys) {
-  if (value is! Map || value.length != keys.length || !keys.every(value.containsKey)) {
+  if (value is! Map || !keys.every(value.containsKey)) {
     throw const FormatException('Invalid group detail');
   }
-  return Map<String, Object?>.from(value);
+  return {for (final key in keys) key: value[key]};
 }
 
 String _string(Object? value) =>

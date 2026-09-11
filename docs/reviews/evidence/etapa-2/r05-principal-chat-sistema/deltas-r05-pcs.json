@@ -1,0 +1,270 @@
+[
+  {
+    "action_id": "acontece.feed",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota normal abre com o contexto real (P35: seletor Vendo como com @), feed lista os posts publicados e reload mantem (01, 21, 23)",
+    "evidencia": "capturas 01/21/23; RPC list_visible_happens_feed devolve os posts do owner apos 130200",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.feed",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "130000 (ponte de ator) + 130200 (owner ve tudo) em producao; feed devolve os posts para qa-r03; tenant inexistente/alheio nega 42501 happens_permission_denied (prova RPC 12:5x)",
+    "evidencia": "pgTAP principal_internal_actor_bridge_v1 22/22 + happens_feed_owner_visibility_v1 6/6; net-publish.log",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.feed",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "rota normal + feed de producao + negativa cross-tenant + reload mantem",
+    "evidencia": "capturas 21/23 e RPC",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09)",
+    "evidencia": "capturas 02-09",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+    "evidencia": "pgTAP 22/22; RPCs 200 na rota real",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "publicado pela tela real, persistido em producao, aparece no feed apos reload (23), negativa cross-tenant pela RPC",
+    "evidencia": "capturas 05/09/23",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09)",
+    "evidencia": "capturas 02-09",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+    "evidencia": "pgTAP 22/22; RPCs 200 na rota real",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "publicado pela tela real, persistido em producao, aparece no feed apos reload (23), negativa cross-tenant pela RPC",
+    "evidencia": "capturas 05/09/23",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.remove",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "menu do post > Retirar publicacao > dialogo > Retirar pela tela real (24, 25); o post some do feed e continua ausente apos reload (27)",
+    "evidencia": "capturas 24-27",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/25-acontece-retirar-dialogo.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.remove",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "withdraw_happens_post pela rota real: feed de producao passa de 3 para 2 posts (RPC 14:4x); 190800 pgTAP 33/33 + 10/10 com negativa",
+    "evidencia": "RPC list_visible_happens_feed antes/depois",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/27-acontece-retirar-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.remove",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "retirada pela tela real persistida em producao e mantida apos reload",
+    "evidencia": "capturas 24-27 + RPC",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/27-acontece-retirar-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota normal abre com o contexto real e estado vazio honesto 'Nada novo no Agora' (12)",
+    "evidencia": "captura 12",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "130000 em producao: now_actor reconhece a sessao interna; load_now_draft 200 para qa-r03 e outro tenant 42501 (prova RPC)",
+    "evidencia": "pgTAP 22/22 (now_actor); RPC",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "publicador do Agora abre na rota real para o contexto de instituicao (28); publicacao com midia nao exercitada (picker via CDP)",
+    "evidencia": "captura 28"
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota normal abre apos 130300 com estado vazio honesto (22); antes respondia 'Nao foi possivel carregar' com Tentar novamente (11)",
+    "evidencia": "capturas 11/22",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "130300 (list_visible_moments + withdraw_moment) em producao; list_visible_moments 200 [] para qa-r03",
+    "evidencia": "pgTAP moments_feed_and_withdrawal 23/23; RPC",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "publicador abre (15); imagem sintetica entra no compositor pelo seletor de arquivo (30) e chega a Revisao com publico (32); a publicacao com midia falhou ('Nao foi possivel publicar agora', 33) na origem 127.0.0.1:3009 e a tentativa em localhost:3000 perdeu a midia antes de publicar; gate: repetir com cdp_net na origem liberada no CORS",
+    "evidencia": "capturas 15/30/32/33"
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota normal abre com o contexto real (14) e o seletor de perfil (P28: ate 5 inline, Ver todos, hibrido)",
+    "evidencia": "captura 14; principal_real_route_test",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/14-para-voce.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota normal abre com o contexto real, @ do perfil, avatar nao cortado, cabecalho igual ao mobile (17); reload mantem (18); get_profile_about nulo tratado como ausencia de Sobre",
+    "evidencia": "capturas 13 (antes) / 17 / 18",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/17-perfil-apos-correcao.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "botao Editar perfil disponivel na rota real (17); edicao nao exercitada",
+    "evidencia": "captura 17"
+  },
+  {
+    "action_id": "errors.retry",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "Tentar novamente na rota real de Momentos (11) leva ao feed quando o servidor responde (22)",
+    "evidencia": "capturas 11/22",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/11-momentos.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  }
+]

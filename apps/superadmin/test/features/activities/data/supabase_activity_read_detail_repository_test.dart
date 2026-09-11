@@ -71,7 +71,6 @@ void main() {
     await expectLater(repo.fetchById('invalid'), _failure(ActivityReadDetailFailure.invalidId));
   });
   final corruptions = <String, void Function(Map<String, Object?>)>{
-    'unexpected section': (d) => d['participants'] = [],
     'missing counts': (d) => d.remove('counts'),
     'wrong activity id': (d) => (d['activity']! as Map)['activity_id'] = _group,
     'invalid institution': (d) => (d['activity']! as Map)['institution_id'] = 'bad',

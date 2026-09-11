@@ -152,6 +152,17 @@ void main() {
     });
   }
 
+  test('additive keys from the server (handle) are ignored', () async {
+    // R05: superadmin_group_detail_v2 passou a devolver o @ (regra do @).
+    final repository = _repository(
+      (_) async => _json({
+        'ok': true,
+        'data': {..._data(), 'handle': 'turma.unidade', 'handle_last_changed_at': null},
+      }),
+    );
+    final detail = await repository.fetchById(_data()['id'] as String);
+    expect(detail.id, _data()['id']);
+  });
   final invalidPayloads = <Object?>[
     null,
     [],
@@ -162,11 +173,8 @@ void main() {
     {..._data(), 'inherit_access': 'true'},
     {..._data(), 'management_version': 1.5},
     {..._data(), 'created_at': 'bad-date'},
-    {
-      ..._data(),
-      'members': ['unapproved'],
-    },
   ];
+
   for (var index = 0; index < invalidPayloads.length; index++) {
     test('malformed or divergent payload $index fails closed', () async {
       final repository = _repository(

@@ -271,5 +271,351 @@
    "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: institutions-edit-cnpj.jpg; institutions-edit-representante.jpg; institutions-edit-administradora.jpg; institutions-edit-perfil-apos-reload.jpg; institutions-edit-representantes-apos-reload.jpg; institutions-edit-administradores-apos-reload.jpg",
    "recordedAt": "2026-09-11T14:22:00-03:00"
   }
+ },
+ {
+  "action_id": "institutions.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:37): /institutions em producao lista as 3 instituicoes (cards, filtros, abas de status, card Criar, paginacao) pela superadmin_institution_directory_v2; carga completa da pagina (Page.navigate) mantem.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (5a4a0213c) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: institutions-list.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: superadmin_institution_directory_v2 (lote 3, 230001) responde a sessao interna do qa-r03 com as instituicoes; RLS deny-by-default e negativas de sessao/tenant no pgTAP do lote 3 (superadmin_internal_institution_directory_v2, aplicado com pgTAP verde pelo coordenador na R03/R04).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; RPC superadmin_institution_directory_v2 ok | pgTAP do lote 3 (institution directory v2) verde no espelho do coordenador",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: rota normal abre contra producao, leitura pelo repositorio produtivo, negativas por pgTAP do lote 3, reload completo mantem a lista.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: institutions-list.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.filter",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:38): busca \"Cuidado\" reduz a lista a QA R04 Cuidado (sintetico) com Limpar filtros; aba \"Em Implantacao\" filtra por status; filtros de tipo e UF carregados por superadmin_institution_filter_options_v2.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (5a4a0213c) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: institutions-filter-busca.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.filter",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: superadmin_institution_directory_v2 com p_search/p_statuses e superadmin_institution_filter_options_v2 (lote 3) respondem em producao a sessao interna; negativas no pgTAP do lote 3.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; RPCs directory_v2 e filter_options_v2 ok | pgTAP do lote 3 verde (coordenador)",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.filter",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: filtro pela rota normal contra producao, reload mantem a lista, negativas por pgTAP.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-filter-busca.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: institutions-filter-busca.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.detail",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:20): abrir a instituicao pelo card leva a /institutions/<id>/edit, que carrega o detalhe autoritativo por superadmin_institution_detail_v2 (perfil, documento, endereco, representantes, administradores); nao existe rota /institutions/<id> separada (404 honesto). Reload completo mantem.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (5a4a0213c) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: institutions-edit-perfil-apos-reload.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.detail",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: superadmin_institution_detail_v2 (180330) em producao devolve o detalhe com representatives[] e administrators[] (lote 28); superadmin_internal_institution_detail_test 25/25 (R04) cobre negativas de sessao e tenant.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; superadmin_institution_detail_v2 ok | pgTAP institution_detail 25/25 (R04)",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.detail",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: detalhe aberto pela rota normal, dados de producao, negativas por pgTAP, reload mantem.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-edit-perfil-apos-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: institutions-edit-perfil-apos-reload.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.reload",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: reload completo (Page.navigate/Page.reload) da lista de Instituicoes e da edicao mantem lista, filtros padrao e os dados editados (institutions-edit-*-apos-reload.jpg).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (5a4a0213c) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: institutions-list.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.reload",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: leituras directory_v2/detail_v2 idempotentes em producao; pgTAP dos lotes 3 e 180330.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; directory_v2/detail_v2 ok apos reload | pgTAP lote 3 e institution_detail 25/25",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "institutions.reload",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: reload pela rota normal contra producao mantem estado; negativas por pgTAP.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/institutions-list.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: institutions-list.jpg",
+   "recordedAt": "2026-09-11T14:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.filter",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:51): filtro por instituicao (Escola R04 Estrutura) aplicado na lista de Unidades reduz a 1 unidade e mostra Limpar filtros; opcoes carregadas por unit_directory_filter_options; abas de status presentes.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (01a8c3e27) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: units-filter-aplicado.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.filter",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: list_units_for_superadmin com filtros e unit_directory_filter_options (lote 160000, ponte de ator) respondem em producao a sessao interna; units_rpcs_versioned e unit_detail 31/31 cobrem negativas (R04).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; list_units_for_superadmin com p_institution_ids ok | pgTAP units_rpcs_versioned + unit_detail 31/31 (R04)",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.filter",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: filtro pela rota normal contra producao; reload mantem a lista; negativas por pgTAP.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-filter-aplicado.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-filter-aplicado.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.reload",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: reload completo da lista de Unidades e da edicao (units-edit-apos-reload.jpg) mantem os dados alterados (status Ativa) e a lista com o indicador verde.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (01a8c3e27) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: units-list-apos-status.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.reload",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: leituras list_units_for_superadmin/superadmin_unit_detail_v2 idempotentes em producao; pgTAP unit_detail 31/31 (R04).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; RPCs de leitura de Unidades ok apos reload | pgTAP unit_detail 31/31",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.reload",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: reload pela rota normal mantem estado; negativas por pgTAP.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-list-apos-status.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-list-apos-status.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.locations-map",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:37-14:50): /units/f5284f2f/locations abre o catalogo da unidade (vazio honesto com Criar local interno/externo e Trazer da instituicao; depois 1 local apos a copia). Correcao: o deep link quebrava com \"Nao foi possivel carregar os locais\" porque superadmin_unit_detail_v2 passou a devolver handle/handle_last_changed_at (lote 211100) e o parser exigia contagem exata de chaves; parser tolerante a chaves aditivas em Unidades, Turmas e Atividades.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (01a8c3e27) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: units-locations-apos-copia-e-reload.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.locations-map",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: superadmin_unit_detail_v2 + superadmin_location_catalog_v2 (escopo unidade) em producao para a sessao interna; superadmin_location_catalog_v2_authorization 26/26, isolation 6/6 e catalog 30/30 reexecutados no espelho coelo_estrutura_r05 (baseline + 116 lotes).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; unit_detail_v2 e location_catalog_v2 ok | pgTAP authorization 26/26, isolation 6/6, catalog 30/30 (espelho R05, 14:1x)",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.locations-map",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: rota normal (deep link) abre o catalogo da unidade contra producao, negativas por pgTAP reexecutado, reload mantem (o local copiado aparece).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-locations-apos-copia-e-reload.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-locations-apos-copia-e-reload.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.copy-institution-location",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:40): Trazer da instituicao -> selecionar \"Sala R04 Estrutura\" -> Trazer para a unidade: navega ao detalhe do local copiado; o catalogo da unidade recarregado (deep link) lista a copia.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "Chrome 152 headless (CDP 9561) contra o build release de qa_main (01a8c3e27) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r03@coelo.me | provas: units-copy-detalhe-apos-copia.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.copy-institution-location",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: superadmin_location_copy_v2 (lote 48) criou activity_locations d5461295 (scope unit, unidade f5284f2f, andar 1o andar, active) em producao; superadmin_locations_copy_v2_test 19/19 reexecutado no espelho (negativas de escopo e sessao).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo; RPC superadmin_location_copy_v2 ok=true id d5461295-9273-4caa-9197-8f9d8c05c4f8 | pgTAP superadmin_locations_copy_v2_test 19/19 (espelho R05)",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.copy-institution-location",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R05: copia pela rota normal persistiu em producao, negativas por pgTAP reexecutado, reload do catalogo da unidade mostra a copia.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/units-copy-detalhe-apos-copia.jpg",
+   "revision": "estrutura.json rev 45",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-copy-detalhe-apos-copia.jpg",
+   "recordedAt": "2026-09-11T14:52:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05 (14:55): superadmin_activity_save_v2 com p_publish=true e a turma 4214106c vinculada (P36, lote 35) publicou a atividade 95b98978 em producao (status active, management_version 24); o detalhe recarregado na rota real mostra Ativa com 1 turma. Chamada feita pela sessao do app (token do proprio Chrome via CDP, sem imprimir). Negativas: superadmin_activity_save_v2_test 46/46 e permissions_publish 18/18 no espelho (R04/R05).",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg",
+   "revision": "estrutura.json rev 46",
+   "environment": "producao coelo; RPC superadmin_activity_save_v2 p_publish=true ok=true status active management_version 24 | pgTAP activity_save_v2 46/46, permissions_publish 18/18",
+   "recordedAt": "2026-09-11T15:03:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: o botao \"Salvar alteracoes\" (publish) da edicao fecha antes do HTTP com \"Nao foi possivel salvar a atividade\" (a rota de edicao nao conhece o status corrente e publish_v2 exige draft; pendencia da rev 40) e, depois da falha, o coordenador de tentativas congela tambem o Salvar rascunho ate recarregar. Gate: decidir p_publish pelo status do detalhe (draft -> publish; active -> so save) e nao congelar o rascunho apos falha local.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/activities-publish-fechado-no-cliente.jpg"
+ },
+ {
+  "action_id": "groups.members",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: etapa \"Pessoas da turma\" abre na rota real com estado vazio honesto, Cadastrar pessoa e Buscar por @, CPF, e-mail ou celular; inclusao de pessoa nao provada (a instituicao sintetica da turma nao tem pessoa vinculada alem da criada em institutions.edit, que pertence a outra instituicao). Gate: provar cadastro/busca de pessoa da propria instituicao.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg"
+ },
+ {
+  "action_id": "groups.location",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05: o detalhe da turma le o local vinculado (vazio honesto) e as reservas por catalogo; a ESCRITA nao tem UI: SupabaseGroupLocationCreateRepository (180200) existe sem consumidor e o assistente de Turmas nao tem secao de local. Gate: secao de local no assistente (reusar ActivityCataloguedLocationSection) + repositorio available:true na composicao.",
+  "evidencia": "evidence/etapa-2/r05-estrutura/rota-real/groups-location-detalhe-sem-local.jpg"
  }
 ]

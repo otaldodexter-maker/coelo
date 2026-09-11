@@ -1,3 +1,5 @@
+import 'dart:math' as math;
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -419,9 +421,22 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     final signature = _draftSignature();
     final held = _intents[intent];
     if (held != null && held.$1 == signature) return held.$2;
-    final id = '$intent-${DateTime.now().microsecondsSinceEpoch}';
+    // O servidor recebe request_id como uuid (22P02 "invalid input syntax for
+    // type uuid" na rota real da R05 com o formato antigo intent-epoch); a
+    // idempotencia por intencao e assinatura do rascunho continua no mapa.
+    final id = _secureUuid();
     _intents[intent] = (signature, id);
     return id;
+  }
+
+  static String _secureUuid() {
+    final random = math.Random.secure();
+    final bytes = List<int>.generate(16, (_) => random.nextInt(256));
+    bytes[6] = (bytes[6] & 0x0f) | 0x40;
+    bytes[8] = (bytes[8] & 0x3f) | 0x80;
+    final hex = bytes.map((b) => b.toRadixString(16).padLeft(2, '0')).join();
+    return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
+        '${hex.substring(16, 20)}-${hex.substring(20)}';
   }
 
   void _completeIntent(String intent) => _intents.remove(intent);

@@ -154,11 +154,13 @@ String _uuid(Object? value) {
   return value.toLowerCase();
 }
 
+/// Exige as chaves conhecidas e ignora chaves aditivas do servidor (a regra
+/// do @ acrescenta campos aos detail_v2 sem quebrar o cliente).
 Map<String, dynamic> _map(Object? value, Set<String> keys) {
-  if (value is! Map || value.length != keys.length || !keys.every(value.containsKey)) {
+  if (value is! Map || !keys.every(value.containsKey)) {
     throw const FormatException('Invalid object');
   }
-  return Map<String, dynamic>.from(value);
+  return {for (final key in keys) key: value[key]};
 }
 
 List<dynamic> _rows(Object? value) {

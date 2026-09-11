@@ -1,0 +1,275 @@
+[
+ {
+  "action_id": "attendance.dashboard",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:42): /attendance abre o painel com periodo/granularidade, indicadores (\"Dados insuficientes\" honesto, 0 pendentes/faltas/revisao) e Arquivos; sem fixture. Pendencia herdada: painel fora do composto CoeloAdminDirectory.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.dashboard",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "attendance_dashboard_access e attendance_dashboard_read (220100) em producao; leitura autorizada pelo escopo de plataforma; pgTAP 141/141.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.dashboard",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "painel real lido pela rota normal; reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:44): /attendance/new com contexto real (instituicao/unidade/turma sinteticas via superadmin_attendance_context_options), Lancar chamada -> /attendance/calls/:id com o participante da turma. DEFEITO registrado: o balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape (Decisao 7).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "attendance_reserve_idempotency_key + superadmin_attendance_create_call 200 (chamada d3821901, open, versao 1), instituicao derivada da turma.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "chamada criada pela rota normal e reaberta por URL apos reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.mark",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: Presente -> Salvar; a primeira tentativa mostrou \"Alteracao de presenca nao salva\" (corrida da reserva de chave) e a segunda gravou; estado exibido \"Presente\".",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.mark",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_attendance_set_participant 200 (versao 2) com chave reservada no servidor (D11).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.mark",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "marcacao persistida e relida no reload (1 marcado).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.finish",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: Concluir chamada (clicando acima do balao de chat) -> chamada fechada; reload mostra \"Corrigir chamada\" e \"Desfazer ultimo lote\" desabilitado.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.finish",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_attendance_complete_call 200 (status closed, versao 3).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.finish",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "conclusao pela rota normal, persistida e relida.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.correct",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: Corrigir chamada -> dialogo (participante, novo estado, motivo obrigatorio) -> Registrar correcao. Nota: o dropdown de novo estado nao aceitou a selecao por CDP (ficou Presente); o motivo entrou pelo driver.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.correct",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_attendance_correct_participant 200 (status corrected, versao 4; motivo em attendance_record_revisions).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.correct",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "correcao pela rota normal persistida em producao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.responses.export",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05 (15:10): com COELO_ALLOWED_ORIGINS incluindo 127.0.0.1:3014 e form-export-download reimplantada a partir de dev, o clique no download responde 200 com download_url presignada do R2 privado (coelo-transient-prod), token de download emitido (app_private.form_file_download_tokens) e auditoria superadmin.forms.export.download.authorize; objeto XLSX 3975 bytes gerado pelo worker form-operations.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.responses.export",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: /forms/:id/files -> Exportar (job pending) -> Concluido -> icone de download abre a URL curta; a primeira tentativa (funcao antiga) mostrou \"Nao foi possivel iniciar o download\" honesto.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.responses.export",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "um XLSX por formulario no R2 privado com reautorizacao server-side, expiracao (2 min de token, 24 h de artefato) e auditoria; FE verified + BE done.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.download",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "mesma prova do download do XLSX (form-export-download -> URL curta).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.download",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_form_authorize_xlsx_download_v2 + form_redeem_xlsx_download_r2_v1 (service_role) em producao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.download",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "download pela rota normal com reautorizacao e URL presignada.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/69-xlsx-download.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+   "recordedAt": "2026-09-11T15:05:00-03:00"
+  }
+ }
+]

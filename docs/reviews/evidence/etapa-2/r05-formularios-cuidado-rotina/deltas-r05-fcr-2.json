@@ -1,0 +1,379 @@
+[
+ {
+  "action_id": "child-safety.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (13:40-13:48, rota real com qa-r03): card Criar seguranca em /safety (mutationsEnabled + guarda de mutacao), assistente de 4 etapas (crianca por busca server-side, pessoa por uuid, capacidades, revisao), rodape ancorado sem chat; Enviar para aprovacao volta ao diretorio com a contagem atualizada.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "child_safety_request_authorization 200 em producao (autorizacao 7fcb6761, pending/inactive, versao 1) com audit child_safety.authorization.request; superadmin_child_safety_search_children 200.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "criada pela rota normal, listada no diretorio e no detalhe da crianca apos reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: Gerenciar -> Editar abre /safety/children/:id/authorizations/:aid/edit com o estado real carregado (pessoa, motivo, relacao); motivo alterado e enviado.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "child_safety_edit_pending_authorization 200 (versao 1->2, pending) com audit child_safety.authorization.edit_pending; decisao pelo Superadmin: child_safety_decide_authorization 200 (34d29829 approved/active, versao 3) com audit ...decide (P32 B, pacote 171800).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/38-child-safety-editada.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/38-child-safety-editada.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "edicao e aprovacao pela rota normal, persistidas e relidas no detalhe.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.suspend",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: Gerenciar -> Suspender autorizacao -> confirmacao -> child_safety_change_lifecycle 200. DEFEITO FE registrado: apos reload a linha suspensa continua com ponto verde e \"Status: Aprovado\" (coluna le decision_status, nao o ciclo de vida) e a coluna Relacao mostra o enum cru (mother/father).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.suspend",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "authorized_person_authorizations 34d29829: status=suspended, suspended_at/by preenchidos, versao 4; audit child_safety.authorization.lifecycle.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.suspend",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "suspensao pela rota normal persistida em producao; a exibicao do estado suspenso fica como pendencia FE (nao bloqueia a regua do MVP).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:00-14:03): /health-care/profiles/new com criancas reais (superadmin_child_context_directory_v2), 4 etapas, justificativa obrigatoria; primeira tentativa recusada com 23514 health_care_allergies_severity_check (gravidade padrao \"Moderada\" sem data de episodio) -> corrigido no cliente (f5d1f0c91: sem data, gravidade nula) e provado com data informada.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/45-health-care-create-revisao.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/45-health-care-create-revisao.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_health_care_save_profile 200 (perfil 5712371e, revisao 1) e superadmin_health_care_directory listando o perfil; instituicao derivada do contexto infantil.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "perfil criado pela rota normal e listado apos recarga do diretorio.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.detail",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: /health-care/profiles/:id redireciona ao editor carregado com superadmin_health_care_profile_detail (identidade da crianca bloqueada na edicao); nao ha tela de detalhe somente leitura (pendencia de UX registrada).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.detail",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_health_care_profile_detail 200 com alergias e revisoes.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.detail",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "leitura real pela rota normal.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05 (14:20): sinais importantes e justificativa editados -> Salvar alteracoes.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_health_care_save_profile 200 (revisao 2, management_version 1); health_care_profiles.important_signs persistido e 2 linhas em health_care_profile_revisions.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "edicao pela rota normal persistida e relida (detalhe e SQL).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05 (14:28-14:36): /health-care/medication-plans/new abre com criancas reais; etapas crianca/medicamento (Dipirona 2.5 ml oral) e vigencia (11/09) preenchidas; na etapa Horarios o seletor de hora nao fecha ao Aplicar e o renderer do Chrome (SwiftShader) caiu; \"Responsavel: Nenhuma opcao disponivel\" e \"Envio indisponivel\" na imagem. Nao concluiu o save.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/52-medication-create-preenchido.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/52-medication-create-preenchido.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "backend",
+  "estado_proposto": "local-green",
+  "delta": "superadmin_medication_plan_save presente em producao (lote 2) e nao exercitado nesta rodada; superadmin_child_context_directory_v2 200.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/51-medication-create-etapa1.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/51-medication-create-etapa1.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.responses.export",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R05: apos o deploy de form-operations pelo coordenador, o job 09f86ec7 passou a succeeded (progress 1, artifact_provider r2, 3975 bytes, completed 16:27Z); superadmin_form_request_xlsx_v2 e superadmin_forms_file_jobs_v2 200.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.responses.export",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R05: /forms/:id/files lista a exportacao como Concluido com icone de download; o clique chama form-export-download e recebe 403 request_denied porque COELO_ALLOWED_ORIGINS nao inclui a origem do harness (127.0.0.1:3014; a 3000 esta em uso pela G2). Gate de ambiente para forms.download, nao de produto.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/55-forms-files-xlsx-concluido.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.create",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "R05 (14:45): com o candidato 220000 aplicado o diretorio mostra o card Criar modelo e /daily-routine/new abre editavel (F-R04-FCR-009 fechado no cliente); Salvar respondeu 22P02 porque request_id ia como intent-epoch -> corrigido (a1ca952cc, uuid v4). Prova do save fica para o proximo build.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/58-daily-routine-create.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/58-daily-routine-create.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "daily-routine.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "superadmin_routine_directory com can_manage no topo (20260911220000 em producao, pgTAP 15/15) e superadmin_routine_save_model presente; recusa 22P02 medida na rota real.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.dashboard",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "R05: contrato do cliente (14 RPCs superadmin_attendance_*/attendance_dashboard_*) escrito e aplicado em producao (20260911220100, pgTAP 141/141 no espelho limpo); rota real ainda nao exercitada nesta rodada.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.create",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "idem 220100: superadmin_attendance_create_call/set_participant/complete_call/reopen_call com idempotencia por chave reservada e auditoria; wrapper attendance_reserve_idempotency_key corrigido (era invoker sem grant).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.mark",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "idem 220100 (set_participant, mark_remaining_present, clear_presence_marks, undo_bulk).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.correct",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "idem 220100 (correct_participant com motivo em attendance_record_revisions; status corrected).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "attendance.finish",
+  "camada": "backend",
+  "estado_proposto": "remote-green",
+  "delta": "idem 220100 (complete_call/reopen_call; confirm_notice).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+   "recordedAt": "2026-09-11T14:55:00-03:00"
+  }
+ }
+]

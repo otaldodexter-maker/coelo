@@ -168,6 +168,50 @@ Ao corrigir, avançar a subtela até o próximo aceite verificável do recorte;
 reabrir provas anteriores somente por mudança relevante, regressão ou evidência
 insuficiente identificada. Não repetir auditoria ampla a cada retomada.
 
+Regras medidas na Rodada 5 (tarde de 11/09/2026):
+
+- **Célula de tabela é alinhada pelo composto** (`CoeloAdminResizableTable`,
+  G-SUP aprovado pelo Owner): a feature não envolve célula com `Align`; o
+  composto alinha à esquerda e centraliza na linha. Mudança no composto altera
+  goldens de todos os diretórios com célula crua (Perfis, Formulários, Rotina,
+  Importações): quem muda o composto regrava os goldens afetados de todas as
+  famílias num único commit, depois de conferir nas imagens de falha que a
+  diferença é só o alinhamento.
+- **Calendário da Agenda (P33, referência iOS):** grade sem contêiner por
+  célula, linhas finas entre semanas, número menor no canto superior esquerdo
+  com respiro, hoje em círculo cheio, pastilhas com ícone + título (clip, não
+  reticências), cancelado hachurado com `CANCELADO:` e hora, toggle
+  Calendário/Lista em 50/50 centralizado, botão Hoje no rodapé.
+- **Detalhe usa o mesmo rodapé de formulário (P34):**
+  `SuperadminFormActionFooter` sobre a superfície do tema, destrutivo à
+  esquerda e ação primária à direita; conteúdo em `SingleChildScrollView` +
+  `Column` com respiro `space10` sob o rodapé.
+- **Rota de mutação cuja família tem SQL na baseline** segue o repositório
+  composto em `hasAuthoritativeMutationCapability` (Planos como Pessoas e
+  Cuidado); carga de dados operacionais no router só com sessão (o router
+  chamava `support_list`/`account_profile_get` antes do login e devolvia 401).
+- **Envelopes de RPC:** save de perfil devolve `{domain, profile, version}`;
+  o cliente desembrulha antes do `fromJson`. `institutions.edit` faz duas
+  chamadas encadeadas (`edit_core_v2` e `superadmin_institution_contacts_edit_v1`)
+  com o mesmo `expected_version` encadeado.
+- **Rota real no build release:** texto entra por `enter_text` do driver
+  (`window.$flutterDriver`, com `set_frame_sync false` antes de qualquer
+  `tap`) após clique por CDP; `Input.insertText` do CDP não chega ao campo;
+  a sessão pode ser injetada no `localStorage`
+  (`coelo.superadmin.auth.session`); RPCs são conferidas por
+  `performance.getEntriesByType('resource')` com `responseStatus`. Cada
+  frente serve o build numa porta própria (3000, 3014, 3020) e a porta entra
+  em `COELO_ALLOWED_ORIGINS` das Edge Functions.
+- **Sair na rota real derruba as outras frentes:** o botão Sair e as provas de
+  `account.logout`/`account.sessions` revogam todas as sessões do
+  `qa-r03`; fechar a aba em vez de Sair e deixar essas provas para o fim.
+- **Testes de estados remotos do detalhe** precisam simular as chamadas
+  adicionais (`superadmin_agenda_contexts`), senão o `MockClient` devolve
+  corpo nulo e o teste falha por cast.
+- **Goldens de Atividades (9 casos de `activity_golden_test`)** já falhavam em
+  `origin/dev` antes da R05; ficam registrados para a frente estrutura
+  regravar após a observação.
+
 Regras medidas na Rodada 4 (noite de 10→11/09/2026):
 
 - Rota normal em produção com a sessão `qa-r03@coelo.me`: o único

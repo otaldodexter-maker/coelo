@@ -184,3 +184,9 @@
 20260911190100_agenda_requests_labels_v1.sql
 20260911190200_circulars_media_private_r2_v1_reapply.sql
 20260911190300_superadmin_circulars_v2_media_v1.sql
+# lote 44 (11/09 14:45) - R05 realm-interno: SEGURANCA: identidade interna escopada em instituicao nao le a Agenda de outra instituicao (espelho sem escopo da ponte)
+20260911211200_agenda_scoped_internal_identity_denied_v1.sql
+# lote 45 (11/09 14:55) - R05 realm-interno: claims do worker de anexos do chat (SAI_PERMISSION_DENIED em vez de erro interno)
+20260911211300_chat_attachment_worker_claims_v1.sql
+# lote 46 (11/09 14:57) - R05 acessos-pessoas: filtro por segmento no diretorio de Pessoas (p_segment)
+20260911170400_people_list_segment_v1.sql

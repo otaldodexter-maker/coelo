@@ -130,6 +130,38 @@ rota `/dev`, golden ou teste isolado não comprovam isso.
   exportação por resposta, e sem CSV/ZIP/PDF inventado.
 - Outros import/export do Superadmin: botão visível e honestamente indisponível.
 
+### Regras de integração medidas na Rodada 5 (tarde de 11/09/2026)
+
+- **Fila de produção em lote, com preflight único no espelho reconstruído na
+  ordem real**: 17 lotes (28 a 44) e 33 pacotes em quatro horas, cada um com
+  dump prévio, preflight no espelho `coelo_baseline` (rebuild por
+  `db reset` + `psql` da ordem real quando um pacote devolvido já tinha
+  entrado no espelho) e ledger inserido à mão. Um pacote devolvido (asserção
+  vermelha no espelho) volta à frente com o erro exato e a ordem em que o
+  espelho aplicou os outros grupos.
+- **Contrato antes do cliente, uma frente por objeto:** institution_contacts
+  (G5 escreve, G1 consome), @ de estrutura (G1 escreve o núcleo, G5 completa
+  o payload dos RPCs v2), form-media (G3 e G5 colidiram; regra nova: o prompt
+  nomeia a única frente dona de cada Edge Function e de cada família de RPC).
+- **Deltas só em arquivo** `deltas-*.json` no formato do aplicador
+  (`certificacao.evidence` aponta um ARQUIVO em `docs/...`); propostas em
+  campos livres do JSON do grupo são normalizadas uma vez pelo coordenador e a
+  regra devolvida ao grupo.
+- **E2E por action_id na R05:** Instituições (edit), Atividades
+  (create/detail/edit/location), Unidades (edit/status), Perfis de acesso
+  (list/detail/create), Pessoas (list/links/reload), Convites (list),
+  Formulários (publish/overview/monitor/respond/responses/response-detail),
+  Segurança infantil (create/edit/suspend), Cuidado (create/detail/edit),
+  Agenda (request/permissions), Avisos (schedule com o worker real),
+  Auditoria (list/filter/detail), Planos (list/create/edit), Suporte com
+  responsável. Aprovação visual do Owner (G-SUP) continua separada.
+- **Sessão compartilhada do `qa-r03`:** um Sair global de uma frente invalida
+  as sessões das outras; combinar pelo JSON a hora das provas de Sair.
+- **Memória:** cada conversa Claude com o MCP `dart` sobe um servidor de
+  análise de ~800 MB; com oito conversas a máquina ficou com 0,02 GB livres e
+  as sessões foram reiniciadas às ~14:10 (nomes de sessão mudaram; a máquina
+  não reiniciou). Frentes de backend puro não precisam desse MCP.
+
 ### Regras de integração medidas na Rodada 4 (10→11/09/2026)
 
 - Deltas de estado chegam ao coordenador em

@@ -209,7 +209,6 @@ void main() {
     {..._data(), 'id': _otherId},
     {..._data(), 'unit_type': null},
     {..._data(), 'status': 'unknown'},
-    {..._data(), 'groups_count': 0},
     {
       ..._data(),
       'address': {'country': 'Brasil'},
@@ -223,6 +222,18 @@ void main() {
       'effective_plan': {'id': _otherId, 'code': 'plan', 'name': 'Plano', 'inherited': 'true'},
     },
   ];
+  test('additive keys from the server (handle, handle_last_changed_at) are ignored', () async {
+    // R05: superadmin_unit_detail_v2 passou a devolver o @ (regra do @);
+    // chave nova nao pode derrubar Locais da unidade.
+    final repository = _repository(
+      (_) async => _json({
+        'ok': true,
+        'data': {..._data(), 'handle': 'unidade.escola', 'handle_last_changed_at': null},
+      }),
+    );
+    final detail = await repository.fetchById(_id);
+    expect(detail.id, _id);
+  });
   for (var index = 0; index < invalid.length; index++) {
     test('malformed or divergent unit payload $index fails closed', () async {
       final repository = _repository((_) async => _json({'ok': true, 'data': invalid[index]}));

@@ -136,11 +136,15 @@ bool isUnitDetailId(String value) => RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{4}-[0-9a-fA-F]{12}$',
 ).hasMatch(value);
 
+/// Exige as chaves conhecidas e ignora chaves aditivas: em 11/09 (R05) o
+/// superadmin_unit_detail_v2 passou a devolver `handle` e
+/// `handle_last_changed_at` (regra do @) e a exigencia de contagem exata
+/// derrubava Locais da unidade no deep link.
 Map<String, Object?> _map(Object? value, Set<String> keys) {
-  if (value is! Map || value.length != keys.length || !keys.every(value.containsKey)) {
+  if (value is! Map || !keys.every(value.containsKey)) {
     throw const FormatException('Invalid unit detail');
   }
-  return Map<String, Object?>.from(value);
+  return {for (final key in keys) key: value[key]};
 }
 
 Map<String, String?>? _nullableTextMap(Object? value, Set<String> keys) {

@@ -250,6 +250,27 @@ Remover cada item no mesmo turno em que a verificação confirmar o efeito.
    e não substitui Auth, RLS nem MFA. **Decisão do Owner (10/09/2026,
    noite): ligar depois do MVP.** Não bloqueia a Etapa 2; volta à fila na
    revisão profunda de segurança, quando o Superadmin tiver clientes reais.
+3. **Chave HMAC do catálogo de identidade `coelo_person_identity_hmac_v1`
+   (Vault, criada em 11/09/2026 pela migration `20260911210000`).** Guarda o
+   HMAC-SHA256 do CPF em `app_private.person_identity_identifiers`
+   (`hmac_key_version = 1`); gerada no próprio banco
+   (`encode(extensions.gen_random_bytes(32),'hex')`), nunca passou por chat,
+   commit, log ou JSON. Rotação só por suspeita de vazamento: criar a versão 2
+   com `select vault.create_secret(encode(extensions.gen_random_bytes(32),'hex'),
+   'coelo_person_identity_hmac_v2','HMAC v2')` via `supabase db query --linked`
+   e publicar migration que faça `person_identity_hmac_v1` ler a v2 e gravar
+   `hmac_key_version = 2`; as linhas v1 ficam válidas só para a máscara (o
+   CPF não é guardado). Como gerar chave assim: sempre no banco, com
+   `vault.create_secret`, nunca em arquivo.
+4. **Segredos de worker das Edge Functions de mídia (11/09/2026).**
+   `CHAT_MEDIA_WORKER_SECRET` (secret + Vault `chat_media_worker_secret`) foi
+   gerado localmente com `openssl rand -hex 32`, gravado a partir de
+   `Coelo-backups/chat-media-worker-secret.env` e nunca impresso. Rotação:
+   gerar novo hex, `supabase secrets set CHAT_MEDIA_WORKER_SECRET=...` e
+   `select vault.update_secret(id, '<novo>')` na mesma linha do Vault. As
+   URLs `chat_media_worker_url`, `form_media_worker_url` e
+   `forms_media_worker_url` no Vault não são segredos. Os workers de
+   Formulários usam o Bearer `forms_worker_bearer_token` já existente.
 2. **Troca da senha do banco de produção (ADR 0034, Decisão 8/P14).** Motivo:
    `supabase db dump --dry-run` imprimiu a credencial do papel efêmero do
    pooler numa saída de ferramenta em 10/09/2026. Roteiro: painel Supabase →
@@ -528,6 +549,78 @@ Regras medidas na Rodada 5 (11/09/2026, tarde):
   0,02 GB livres às 12:20 sem nenhum Chrome pesado. Frentes de backend puro não
   precisam desse MCP; o coordenador avisa o Owner em uma linha quando a RAM
   livre cai abaixo de 1 GB e não mata processo de outra conversa.
+
+- **Provar com a ordem real de produção, não só com a fila do grupo.** O
+  pgTAP do P32 passou no descartável da frente e falhou no espelho do
+  coordenador porque, entre os pacotes do grupo, entraram a ponte do Principal
+  (`20260911130000`) e `person_handles`. Antes de entregar, `git fetch` e
+  aplicar no descartável as migrations que outros grupos publicaram em
+  `migrations/` depois da abertura, na ordem do arquivo. A fixture de teste
+  precisa ser idempotente diante dos gatilhos de espelho da ponte (membership
+  com `not exists`), senão quebra na ordem real (caso do 190000).
+- **Pessoas de serviço não são destinatárias nem "equipe".** As pontes
+  `220400` (Superadmin) e `130000` (Principal) espelham identidades internas
+  como `people.person_type = 'service'` com membership na instituição. Toda
+  consulta que enumera equipe da unidade/instituição para notificar, listar ou
+  contar filtra `person_type = 'adult'`.
+- **Identidade interna escopada em instituição (achado de segurança, lote
+  44).** O espelho da ponte grava a membership escopada como
+  `platform_membership` sem escopo; qualquer helper que consulte
+  `has_platform_permission` antes do realm interno concede capacidade de
+  plataforma a uma identidade escopada. Corrigido na Agenda
+  (`20260911211200`: com vínculo interno ativo só a membership interna de
+  plataforma decide); latente em produção (0 identidades escopadas em
+  11/09). Pendência de revisão profunda: provar por família (Rotina, Cuidado,
+  Assiduidade, Cardápios, Suporte) e corrigir a raiz na ponte.
+- **RPC people-based que resolve o ator por `person_auth_links` diretamente**
+  (caso de `app_private.circular_actor`) ignora a pessoa de serviço e nega o
+  Superadmin com `active_membership_required`. Resolver por
+  `app_private.current_person_id()` (lote 41).
+- **"Presente em produção" mede objeto e forma.** A migration histórica de
+  R2 de Circulares constava presente (funções existiam) mas o corpo de
+  `prepare_circular_media_upload` não conhecia `storage_provider`; a
+  reaplicação idempotente entrou como `20260911190200`. Conferir
+  `pg_get_functiondef` pelo trecho que distingue a versão.
+- **pg_safeupdate do PostgREST:** `DELETE`/`UPDATE` sem `WHERE` dentro de
+  função (mesmo em tabela temporária) falha com 21000 pela API e passa no
+  pgTAP via psql. Regra: sempre `where true`; a prova precisa de
+  `load 'safeupdate'` como `supabase_admin` (hotfix `20260911170200`, que
+  bloqueava vínculos de criança desde o lote 12).
+- **Grants sem policy: revogar presence-based** (`20260911210100`): calcular
+  na aplicação a lista de tabelas com RLS ligada, grant a `authenticated` e
+  sem policy para o comando; revogar; exigir zero ao final; só NOTICE para
+  tabela com RLS desligada; nunca lista fixa (o local concede mais que a
+  produção). Escopo restrito a `public/app_private/audit/analytics`
+  (`storage`/`realtime` são do Supabase).
+- **Arquivos no R2 seguem o contrato em três tempos** (chat `210200`,
+  Formulários `210300`/`210800`): `prepare` (authenticated, registro
+  `pending` com chave opaca e ticket de 30 min), `authorize_finalize` +
+  `finalize` (service_role pela Edge Function após HEAD/sha256/dimensões),
+  `authorize_read` (TTL 300 s, auditado) e `expire` (cron). Uma única frente
+  escreve cada Edge Function: em 11/09 G3 e G5 escreveram `form-media` em
+  paralelo e a reconciliação custou uma hora.
+- **Constraint trigger diferido para regra de hierarquia** (P36,
+  `20260911210400`): `deferrable initially deferred` nas duas tabelas
+  (definição e vínculo), mensagem estável (`P36_ACTIVITY_REQUIRES_GROUP`) e
+  NOTICE das linhas que já violam.
+- **`has_platform_permission(text)` depois do P7 conta membership de
+  instituição**: catálogo de plataforma (Planos) e RPC sem instituição usam
+  `has_scoped_platform_permission(p, null)` (`20260911200000`; perfil de
+  instituição com `plan.change` criava plano da plataforma).
+- **Sessão de teste compartilhada:** `account.logout`, `account.sessions` e
+  o Sair do shell revogam todas as sessões do `qa-r03` no servidor e derrubam
+  as outras frentes (`SAI_SESSION_INVALID`). Não é "sessão única por
+  usuário" (2 sessões coexistiram em produção). Provas de Sair só no fim da
+  rodada, com aviso; nas demais, fechar a aba.
+- **`db query -f` interrompido no meio de um lote:** cada arquivo é uma
+  transação; retomar conferindo por objeto (`pg_proc`/`pg_class`) quais já
+  entraram antes de reaplicar e inserir o ledger.
+- **Edge Function nova precisa de deploy + secrets + Vault no mesmo turno**
+  (chat-media: `CHAT_MEDIA_WORKER_SECRET`, `CHAT_MEDIA_ALLOWED_ORIGINS`,
+  Vault `chat_media_worker_url/secret`); a lista de origens dos secrets não é
+  legível pelo CLI (só o hash), então ao regravar `COELO_ALLOWED_ORIGINS`
+  escrever a lista completa (três origens `coelo.me` + portas locais das
+  frentes).
 
 Regras medidas pelo grupo estrutura na Rodada 4 (21 pacotes, 180000..180350):
 
