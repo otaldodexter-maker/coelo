@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-11T12:15:00-03:00"
+updated_at: "2026-09-11T12:30:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,8 +13,8 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-11T12:15:00-03:00"
-tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r31"
+tracker_sync_at: "2026-09-11T12:30:00-03:00"
+tracker_sync_revisions: "R04 fechada: estrutura r32; acessos-pessoas r118; principal-chat-sistema r20; realm-interno r15; publicacoes-agenda r30; operacoes r20; formularios-cuidado-rotina r33; coordenacao r39 (R05 aberta; estrutura R04 r40 integrada)"
 ---
 
 # Pendências Coelo — Front-end
@@ -141,6 +141,21 @@ padrão hierárquico, RPC de disponibilidade, `handle_last_changed_at` e trava
 de 30 dias; acessos-pessoas: @ de pessoas, inclusive funcionários,
 responsáveis e crianças sem perfil de acesso, visível e editável por quem
 responde por elas (complemento do Owner às 12:15).
+
+**Atualização de 11/09 às 12:30 — abertura da Rodada 5 (coordenacao.json revs 38 e 39).**
+Sete frentes abertas em worktrees `e2-r05-*` sobre `2f6a6114f`; ACK gravado.
+A continuação da frente estrutura da R04 (rev 40, `631f9de52`: activities.edit
+ligado no cliente, `fetchById` → `superadmin_activity_detail_v2`, verificado
+180/180 pela frente) foi integrada em `dev`; o WIP `44574dfda` deixou de ser WIP.
+Achados: os nove casos de `activity_golden_test` já falhavam em `origin/dev`
+`9bf60463b` (pixel test), antes de qualquer merge da R05 — pendência da frente
+estrutura (regravar só após a observação, SDK 3.44.2); o 404 do cron
+`coelo-forms-worker-dispatch` foi um único evento às 10:41 e o Vault já aponta
+`form-operations` (sem correção, frente formularios); `list_my_principal_contexts`
+e os atores de Acontece/Agora/Momentos resolvem por `person_auth_links`, então o
+lote 27 não basta para o Principal com `qa-r03` (pacote da frente principal-chat
+em curso). Memória da máquina em 0,02 GB livres às 12:20 (um servidor de análise
+Dart por conversa): frentes sem `build web` e `flutter test` simultâneos.
 
 ## Estado anterior — Rodada 3 (E2-R03-20260910) encerrada às 20:30 de 10/09
 
