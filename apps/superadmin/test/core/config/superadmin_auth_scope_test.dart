@@ -25,7 +25,6 @@ import 'package:coelo_superadmin/features/health_care/data/supabase_medication_p
 import 'package:coelo_superadmin/features/daily_routine/data/supabase_routine_repository.dart';
 import 'package:coelo_superadmin/features/units/data/supabase_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/data/supabase_group_directory_repository.dart';
-import 'package:coelo_superadmin/features/health_care/domain/medication_plan_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/invites/data/supabase_invite_repository.dart';
 import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
