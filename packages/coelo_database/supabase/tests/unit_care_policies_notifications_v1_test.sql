@@ -128,7 +128,7 @@ select is((select count(*) from public.context_notification_events where object_
   'com medication_mode not_tracked o plano nao gera evento');
 select is((select count(*) from app_private.child_care_notification_recipients_v1(
   '9f080000-0000-4000-8000-000000000010','9f080000-0000-4000-8000-000000000011','9f080000-0000-4000-8000-000000000091','9f080000-0000-4000-8000-000000000061')),4::bigint,
-  'com notify_other_guardians=false o outro responsavel sai da lista');
+  'com notify_other_guardians=false o outro responsavel sai da lista (e as pessoas de servico das identidades internas nunca entram)');
 
 -- 6. cross-tenant e RLS
 select set_config('request.jwt.claims',jsonb_build_object('sub','9f080000-0000-4000-8000-000000000102','session_id','9f080000-0000-4000-8000-000000000202','aal','aal1','role','authenticated')::text,true);
