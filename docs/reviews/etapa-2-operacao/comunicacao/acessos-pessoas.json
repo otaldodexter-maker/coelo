@@ -1,7 +1,7 @@
 {
-  "revision": 103,
-  "updated_at": "2026-09-11T05:17:53.356Z",
-  "relogio_local": "Fri Sep 11 2026 02:17:53 GMT-0300 (Horário Padrão de Brasília)",
+  "revision": 104,
+  "updated_at": "2026-09-11T05:28:29.649Z",
+  "relogio_local": "Fri Sep 11 2026 02:28:29 GMT-0300 (Horário Padrão de Brasília)",
   "round": "E2-R04-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "R04_EM_CURSO",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-acessos-pessoas",
   "branch": "work/etapa2-r04-acessos-pessoas",
-  "head": "ver git log (commit dos candidatos 171300 e 171500 publicado apos 52a060079)",
+  "head": "ver git log (deltas e capturas publicados apos ce6f061cc)",
   "base_observed": "origin/dev 98cc0529d contem a4af2b198 e o R04-prompts.md; candidatos/acessos-pessoas tem 170900 (retido) e 170750 (obsoleto); lote 4 (170100-170800) em migrations/",
   "recorte": {
     "familias": [
@@ -39,7 +39,7 @@
   "loop": "/loop 15m agendado na abertura",
   "testes_P_F_B_S_U": "nenhum teste automatizado executado ainda nesta rodada; login real 1 P",
   "bloqueio": "nenhum total",
-  "proximo_passo": "mini-revisao das 04:00 (deltas FE/BE/E2E por action_id); se a memoria permitir, build web com os commits e prova de people.edit/internal-users.edit/child-safety.*",
+  "proximo_passo": "Modelos: abrir detalhe e Criar modelo; fechar Chrome; mini-revisao (rev 105) ate 04:00 com SHA final, fechados/abertos, pacotes e duvidas ao Owner",
   "ACK_ao_coordenador": "recebido o aviso do lote 8 (MFA fora do MVP + student_links_read) por mensagem entre sessoes as 22:10; respondido pelo mesmo canal; rebase feito.",
   "ROTA_NORMAL_COM_SESSAO": {
     "auth.login": "P (qa-r03 entra pela tela normal, Home como Owner Coelo / Superadmin)",
@@ -165,6 +165,23 @@
   "MEMORIA": "1,1 GB livres; flutter analyze e build web adiados; um Chrome (9411). O coordenador valida analyze na base conjunta.",
   "D1_EM_PRODUCAO_CONFERIDO": "follow_summary/follow_followers_list respondem por REST (10 funcoes follow_* em producao); contagem 0 para a crianca sintetica por ser anterior ao lote 12 — o 171500 corrige. Contrato para principal-chat: follow_summary(p_target_kind, p_target_id) -> {followers_count, following_count}; follow_following_list(p_person_id, p_limit, p_after_id); follow_followers_list(p_target_kind, p_target_id, p_limit, p_after_id) [exige people.read]; follow_set(p_target_kind, p_target_id, p_follow) -> summary + following.",
   "people.links_backend": "superadmin_person_detail_v2 responde ok:true com memberships e child_contexts da crianca sintetica (REST); FE ainda sem alcance a partir do card.",
+  "DELTAS_PARA_O_COORDENADOR": "docs/reviews/evidence/etapa-2/r04-acessos-pessoas/deltas-r04.json (formato {action_id, camada, estado_proposto, delta, evidencia, certificacao}; 30 entradas FE/BE). Nenhuma acao proposta como E2E verified: sem escrita provada pela UI + reload em nenhuma delas. profile-files.import/export propostos FE verified (aceite de adiamento na rota real).",
+  "ROTA_NORMAL_02h30_build_novo": {
+    "child-safety.list": "P com dados reais (composicao legada + ponte): 1 crianca, abas com contagem; reload mantem",
+    "child-safety.child": "P: detalhe com a autorizacao pendente e Gerenciar",
+    "child-safety.create": "BE P por REST: autorizacao 34d29829-a8b5-4b23-aacb-46e994dce7d7 persistida (pending) e relida; UI de criar nao exercitada",
+    "child-safety.edit (decisao)": "F por desenho: Aprovar+Concluir na UI nao persiste; por REST child_safety_decide_authorization devolve P0002 porque exige revisor exato da unidade (child_safety_has_exact_unit_review), nao permissao de plataforma. PERGUNTA AO OWNER: o Superadmin decide autorizacoes de retirada ou so a unidade? Se o Superadmin puder, o pacote e pequeno (aceitar child_safety.review/manage de plataforma na revisao).",
+    "people.edit": "rota abre o formulario de 3 passos com os dados reais da crianca (capacidade composta ligada); salvar nao exercitado",
+    "people.create": "rota abre o dialogo Verificar identidade; resolvedor indisponivel (sem implementacao Supabase/RPC) -> honesto, mas bloqueia criar",
+    "internal-users.detail": "P com Editar e Acoes (capability owner)",
+    "internal-users.edit": "rota ligada (ce6f061cc) — prova depende de novo build (memoria < 3 GB no momento)",
+    "access-models.list": "P apos o lote 16: 6 modelos + card Criar modelo",
+    "access-profiles.create": "F: o formulario chama superadmin_access_profile_detail(p_domain, null) esperando rascunho em branco e a v2 devolve P0002; alem disso a v2 devolve to_jsonb(role)+contagens, enquanto AccessProfile.fromJson le permissions[]/memberships[]/membership_count (forma do historico 20260729144440). Gate BE: contrato de detalhe/rascunho de perfil (v3) alinhado ao cliente; nao entra hoje por tempo e risco."
+  },
+  "DADOS_SINTETICOS_CRIADOS_NESTA_RODADA": [
+    "app_private.superadmin_internal_profiles: perfil de qa-r03 (semente 171200) — apaga com o usuario",
+    "public.authorized_person_authorizations: 34d29829-a8b5-4b23-aacb-46e994dce7d7 (crianca d0c40000-...0003, pessoa 9f040000-...0062, pending) — apagar ao fim"
+  ],
   "historico_r03": {
     "revision": 94,
     "updated_at": "2026-09-10T19:56:30.537Z",
