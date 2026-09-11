@@ -130,17 +130,17 @@ void main() {
     expect(directory.repository, same(repository));
     expect(repository.calls, contains('fetchPage:model'));
 
-    repository.calls.clear();
+    // ADR 0034 (R04): com o repositorio real composto, criar e editar abrem;
+    // o servidor revalida ator, capacidade, escopo e versao esperada.
     router.go('/daily-routine/new');
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
-    expect(repository.calls, isEmpty);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, '/daily-routine/new');
 
-    repository.calls.clear();
     router.go('/daily-routine/application-1/edit?kind=application');
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
-    expect(repository.calls, isEmpty);
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsNothing);
+    expect(router.routeInformationProvider.value.uri.path, '/daily-routine/application-1/edit');
   });
 }
 
