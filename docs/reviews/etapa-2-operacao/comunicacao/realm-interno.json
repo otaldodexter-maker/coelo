@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 25,
+  "revision": 26,
   "round": "E2-R05-20260911",
-  "updatedAt": "2026-09-11T13:43-03:00",
+  "updatedAt": "2026-09-11T13:50-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R05 · Realm interno e Chat backend",
   "coordenador": "R05 · Coordenação da tarde (coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r05-realm-interno",
   "branch": "work/etapa2-r05-realm-interno",
-  "head": "cb9f0d03d",
+  "head": "2b2532914 (merge de origin/dev 8665fa160+ reconciliado)",
   "upstream": "origin/work/etapa2-r05-realm-interno (push no primeiro commit)",
   "historicoR04": {
     "miniRevisao": {
@@ -297,11 +297,11 @@
     {
       "ordem": 10,
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260911210900_forms_media_expire_dispatch_v1.sql",
-      "assunto": "cron coelo-forms-media-expire (*/10) chamando form-media action expire com x-worker-secret; Vault forms_media_worker_url/secret; null enquanto faltarem",
+      "assunto": "cron coelo-forms-media-expire (*/10) chamando form-media action cleanup (expira + apaga fila no R2) com Authorization Bearer do token ja existente no Vault (forms_worker_bearer_token); URL nova no Vault forms_media_worker_url; null enquanto faltar",
       "pgTAP": "sem suite (padrao 230023); job agendado no descartavel",
-      "commit": "5c013651d",
+      "commit": "2b2532914",
       "dependeDe": "210300/210800 e deploy de form-media",
-      "chaveDeComposicao": "coordenador grava forms_media_worker_url/secret no Vault e FORMS_MEDIA_WORKER_SECRET + COELO_FORMS_MEDIA_PROVIDER=r2 nos secrets de form-media",
+      "chaveDeComposicao": "coordenador grava forms_media_worker_url no Vault (URL da form-media); nenhum segredo novo (FORMS_MEDIA_WORKER_SECRET deixou de existir)",
       "estado": "pronto"
     },
     {
@@ -331,7 +331,7 @@
     "child-safety.create/edit, medication.create (P32 alvo)": "backend local-green do complemento (politicas + sino); done apos aplicar"
   },
   "loop": "cron 9ded10f6 a cada 15 min ate 15:45",
-  "status": "entrega completa; aguardando 15:50 sem parar: revisando codigo e docs; descartavel coelo_realm_r05 de pe ate o encerramento",
+  "status": "entrega completa; reconciliacao com dev feita; proximo: completar o @ de estrutura sobre o pacote da G1 quando ela publicar (ordem do coordenador)",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -417,7 +417,7 @@
   },
   "miniRevisao": {
     "quando": "2026-09-11T13:14-03:00",
-    "1_shaFinal": "4c441d9a3 em origin/work/etapa2-r05-realm-interno (inclui merge de origin/dev 4bf0cfe51+); status limpo; sem WIP; os seis candidatos 210000..210500 sao byte-a-byte iguais aos migrations/ de dev",
+    "1_shaFinal": "2b2532914 em origin/work/etapa2-r05-realm-interno (merge de dev com o form-media da G3 reconciliado); status limpo; sem WIP",
     "2_fechouPorActionId": {
       "institutions.edit": "backend local-green: 210000 em producao (lote 28), pgTAP 38/38, contrato publicado; done depende da estrutura persistir/recarregar",
       "chat.attach": "backend local-green: 210200 em producao (lote 32), pgTAP 28/28; gate Edge Function chat-media + cron",
@@ -436,7 +436,7 @@
       "suites pre-existentes": "edit_core (7, MFA), chat_groups (provenance), activity e2e (16, Storage), health_care (1, MFA), child_safety_production (schemaname): atualizar na revisao profunda"
     },
     "4_deltasPropostos": "docs/reviews/evidence/etapa-2/r05-realm-interno/deltas-be-r05.json (7 IDs backend local-green); nenhum delta FE/E2E",
-    "5_pacotesEChaves": "210000..210500 em producao (lotes 28,30,32,33,35,36); 210600, 210700, 210800, 210900 prontos; Edge Functions chat-media (nova) e form-media (ramos R2 + question_* + expire) escritas, deploy do coordenador; chave criada: coelo_person_identity_hmac_v1 (Vault); a criar pelo coordenador ao implantar: CHAT_MEDIA_WORKER_SECRET, FORMS_MEDIA_WORKER_SECRET (+ Vault *_worker_url/secret) e COELO_FORMS_MEDIA_PROVIDER=r2 quando ligar o R2 de Formularios",
+    "5_pacotesEChaves": "210000..210500 em producao; 210600, 210700, 210800, 210900 e 211000 (opcional) prontos; chat-media escrita (deploy); form-media: ramos R2 de respostas atras de env; segredos a criar no deploy: CHAT_MEDIA_WORKER_SECRET + CHAT_MEDIA_ALLOWED_ORIGINS + Vault chat_media_worker_url/secret; Vault forms_media_worker_url; COELO_FORMS_MEDIA_PROVIDER=r2 quando o cliente de respostas trocar",
     "6_duvidasAoOwner": "nenhuma nova; a mudanca de comportamento de has_activity_capability (180060, instrutor apenas) e uma pergunta de produto para a revisao profunda, nao bloqueia",
     "provasRegistradas": "pgTAP 166/166 (11 suites novas) + 25 suites de regressao iguais ao espelho; Deno 45/45; evidencia em docs/reviews/evidence/etapa-2/r05-realm-interno/"
   },
@@ -444,6 +444,6 @@
   "edgeFunctions": {
     "chat-media": "packages/coelo_database/supabase/functions/chat-media (index.ts, r2_s3.ts, stored_bytes.ts, deno.json, testes 5/5; deno check limpo); actions prepare/finalize/read/expire; env COELO_R2_*, CHAT_MEDIA_ALLOWED_ORIGINS, CHAT_MEDIA_WORKER_SECRET; config.toml [functions.chat-media] verify_jwt=false; deploy do coordenador fecha o gate de chat.attach",
     "_shared/image_dimensions.ts": "largura/altura do cabecalho JPEG/PNG/WebP para o finalize dos catalogos R2 (question-image, answer-image); testes 2/2",
-    "form-media": "ALTERADA nesta rodada (Deno 38/38, deno check limpo), sem deploy: (a) ramos R2 de prepare/finalize/download para respostas atras de COELO_FORMS_MEDIA_PROVIDER=r2 (sem a chave o legado Supabase Storage segue igual: 30 testes legados intactos): form_prepare_asset_upload_r2_v1 + PUT assinado; form_finalize_asset_upload (usuario) -> form_asset_r2_descriptor_v1 -> HEAD/bytes/sha256/dimensoes -> form_media_finalize_answer_r2_v1; download -> authorize_for_worker + descriptor + GET 60 s; (b) acoes novas question_prepare/question_finalize/question_resolve/question_delete (imagem de pergunta, RPCs internas do 210300; envelope {action, request_id, payload}); (c) action expire com x-worker-secret (FORMS_MEDIA_WORKER_SECRET): form_media_expire_question_r2_v1 + claim_cleanup -> DELETE no R2 -> mark_purged. Env novos: COELO_FORMS_MEDIA_PROVIDER, FORMS_MEDIA_WORKER_SECRET"
+    "form-media": "RECONCILIADA com a versao da G3 (question-image dela ja implantada, worker expire/cleanup por Authorization Bearer FORMS_OPERATIONS_BEARER_TOKEN): mantidos index.ts/media_contract.ts/question_image.ts dela; acrescentados so os ramos R2 de RESPOSTAS (prepare/finalize/download) atras de COELO_FORMS_MEDIA_PROVIDER=r2, reutilizando createTransport dela e _shared/image_dimensions (que a G3 tambem incorporou em question_image.ts); minhas acoes question_* e expire por x-worker-secret foram descartadas por duplicarem as dela. Deno 51/51 (47 da G3 + 4 meus), deno check limpo. Env novo: apenas COELO_FORMS_MEDIA_PROVIDER (ligar so quando a frente formularios trocar o cliente de respostas para upload_url/required_headers)"
   }
 }
