@@ -70,6 +70,9 @@ Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 final class _GoldenChatRepository implements ChatRepository {
   @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
+  @override
   Future<int> fetchUnreadTotal() async => 0;
 
   @override

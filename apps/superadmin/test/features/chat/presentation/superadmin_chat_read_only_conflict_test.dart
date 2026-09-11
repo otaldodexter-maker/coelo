@@ -126,6 +126,9 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _ReadOnlyOnSendRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   final List<ChatSendMessageCommand> sent = [];
   var threadReads = 0;
   var inboxReads = 0;
@@ -210,6 +213,9 @@ final class _ReadOnlyOnSendRepository implements ChatRepository {
 
 /// Duas conversas, a segunda recusando o envio por somente leitura.
 final class _TwoConversationRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   @override
   Future<int> fetchUnreadTotal() async => 0;
 

@@ -327,6 +327,50 @@ final class ChatRealtimeRefresh {
   final DateTime occurredAt;
 }
 
+/// Criar grupo (P8, ADR 0034 Decisao 12): contrato de
+/// superadmin_chat_create_group_v2 publicado pelo grupo realm-interno.
+/// O escopo e derivado no servidor (activity > group > unit > institution) e os
+/// membros sao pessoas do realm de pessoas com vinculo ativo na instituicao.
+final class ChatCreateGroupCommand {
+  const ChatCreateGroupCommand({
+    required this.requestId,
+    required this.institutionId,
+    required this.title,
+    required this.personIds,
+    this.unitId,
+    this.groupId,
+    this.activityId,
+  }) : assert(requestId != ''),
+       assert(institutionId != '');
+
+  final String requestId;
+  final String institutionId;
+  final String title;
+  final List<String> personIds;
+  final String? unitId;
+  final String? groupId;
+  final String? activityId;
+}
+
+final class ChatGroupCreated {
+  const ChatGroupCreated({
+    required this.conversationId,
+    required this.title,
+    required this.memberCount,
+    this.replayed = false,
+  });
+
+  final String conversationId;
+  final String title;
+  final int memberCount;
+  final bool replayed;
+}
+
+/// Membro invalido (sem vinculo ativo na instituicao): CHAT_MEMBER_INVALID 422.
+final class ChatMemberInvalidException implements Exception {
+  const ChatMemberInvalidException();
+}
+
 abstract interface class ChatRepository {
   Future<int> fetchUnreadTotal();
   Future<ChatInboxPage> fetchInbox(ChatInboxQuery query);
@@ -347,6 +391,7 @@ abstract interface class ChatRepository {
     required String conversationId,
     required ChatConversationFlag flag,
   });
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command);
 }
 
 final class UnavailableChatRepository implements ChatRepository {
@@ -395,6 +440,10 @@ final class UnavailableChatRepository implements ChatRepository {
     required String conversationId,
     required ChatConversationFlag flag,
   }) => Future<ChatConversationPreference>.error(const ChatFailureException());
+
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
 }
 
 final class ChatUnauthorizedException implements Exception {

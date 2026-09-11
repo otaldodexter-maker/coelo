@@ -136,6 +136,9 @@ void main() {
 }
 
 final class _ChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _ChatRepository({required this.inbox, this.thread = const ChatThreadPage(items: [])});
 
   final ChatInboxPage inbox;

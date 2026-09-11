@@ -88,6 +88,9 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 enum _Mode { empty, noResults, unauthorized, offline, failure, emptyThread }
 
 final class _StatefulRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _StatefulRepository({required this.mode});
 
   final _Mode mode;

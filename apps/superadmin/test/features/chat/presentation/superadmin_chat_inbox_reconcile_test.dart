@@ -118,6 +118,9 @@ Future<void> _pump(WidgetTester tester, ChatRepository repository) async {
 }
 
 final class _ReconcilingRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _ReconcilingRepository({
     this.conversations = 1,
     this.slowInbox = false,

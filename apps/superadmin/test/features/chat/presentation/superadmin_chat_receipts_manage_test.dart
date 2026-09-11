@@ -212,6 +212,9 @@ final class _EditRecord {
 }
 
 final class _ManageChatRepository implements ChatRepository {
+  @override
+  Future<ChatGroupCreated> createGroup(ChatCreateGroupCommand command) =>
+      Future<ChatGroupCreated>.error(const ChatFailureException());
   _ManageChatRepository({required this.thread, this.editError, this.revokeError});
 
   final ChatThreadPage thread;
