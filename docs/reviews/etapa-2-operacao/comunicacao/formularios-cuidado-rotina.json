@@ -1,20 +1,20 @@
 {
- "revision": 47,
+ "revision": 48,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T19:45-03:00",
+ "updatedAt": "2026-09-11T20:02-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "ca60b096b (abertura)",
+ "head": "03ccdbf41",
  "base": "origin/dev ca60b096b",
- "usuario": "qa-r06-formularios@coelo.me (arquivo Coelo-backups/qa-r06-formularios.env AUSENTE as 19:45; sigo no trabalho local e volto a conferir a cada item; se nao existir ate a prova de rota real, registro o bloqueio aqui e nao uso outro usuario sem o coordenador dizer)",
+ "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
   "families": [
    "forms_authoring",
@@ -63,10 +63,17 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "item 0: health_care_golden_test",
-  "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado -> diretorio (tabela/hover)",
+  "gate": "rota real: build web-r06fcr2 em andamento (Medicacao + Rotina); em seguida Chrome dedicado",
+  "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Planos de medicacao / Acompanhamento -> Rotina diaria",
   "actionIds": [
-   "health-care.list"
+   "medication.create",
+   "medication.detail",
+   "medication.edit",
+   "medication.evidence",
+   "health-care.list",
+   "daily-routine.list",
+   "daily-routine.edit",
+   "daily-routine.publish"
   ]
  },
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
@@ -77,8 +84,49 @@
   "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (a criar)"
  ],
  "packages": [],
- "commits": [],
- "pendenciasRegistradas": [],
+ "commits": [
+  {
+   "sha": "70c44f75a",
+   "o_que": "rev 47 (abertura)"
+  },
+  {
+   "sha": "19e00ba7a",
+   "o_que": "test(cuidado): regrava profile_directory_table_light_1440 (item 0): a diferenca era so a celula alinhada pelo composto de tabela (regra da R05), conferida na imagem de diferenca; health_care_golden_test 4/4",
+   "prova": "flutter test health_care_golden_test 4/4"
+  },
+  {
+   "sha": "7ab1a05f8",
+   "o_que": "feat(medicacao): medication.evidence no cliente: recordEvidence (superadmin_medication_plan_record_evidence, contrato do 010400), evidencias lidas no detalhe, secao Registros de dose na revisao do plano em edicao com dialogo (Administrada/Nao administrada/Recusada, motivo obrigatorio fora de Administrada, observacao)",
+   "prova": "medication_plan_evidence_test 2/2; supabase_health_care_data_test +1; test/features/health_care 198 P, 1 F pre-existente na base (medication date uses the Coelo picker at 375 pixels and 200 percent text: overflow do SuperadminFormFrame, medido em ca60b096b limpo)"
+  },
+  {
+   "sha": "03ccdbf41",
+   "o_que": "feat(rotina): V-15 A+: card Criar nas tres abas (cards e tabela, com dados), seletor de origem (rotina nasce de modelo, lancamento de rotina), acoes da tabela iguais ao card (icones com tooltip), Lancar hoje = superadmin_routine_save_launch_draft (D7) e troca para Lancamentos; golden daily_routine_directory_table_light_1440 regravado apos aplicar a observacao",
+   "prova": "daily_routine_create_everywhere_test 1/1; suite daily_routine + rotas verde"
+  }
+ ],
+ "pendenciasRegistradas": [
+  {
+   "action_id": "medication.create",
+   "o_que": "campo Responsavel sem opcoes: o contrato superadmin_medication_plan_save nao recebe responsaveis (o saver ignora responsibleIds); manter honesto ou remover o campo apos decisao",
+   "gate": "contrato BE/decisao"
+  },
+  {
+   "action_id": "medication.edit",
+   "o_que": "teste pre-existente medication_plan_ui_contract_test \"medication date uses the Coelo picker at 375 pixels and 200 percent text\" falha na base ca60b096b (RenderFlex overflow 23px no SuperadminFormFrame a 375/200%)",
+   "gate": "FE composto (frame)"
+  },
+  {
+   "action_id": "medication.evidence",
+   "o_que": "imagem/prescricao seguem \"Envio indisponivel neste contexto\": nao ha gateway de midia de medicacao; media_asset_id fica nulo no registro de dose",
+   "gate": "BE midia (pos-MVP)"
+  },
+  {
+   "action_id": "daily-routine.list",
+   "o_que": "Arquivar (pedido do Owner em V-15) nao tem comando no servidor (routine_models/applications tem status archived, mas nenhuma RPC superadmin_routine_* muda status); candidato SQL se sobrar tempo, senao pendencia de contrato",
+   "gate": "BE contrato"
+  }
+ ],
  "duvidasParaOOwner": [],
  "nextStep": "item 0",
  "finalizado": false,

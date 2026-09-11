@@ -81,6 +81,29 @@ final class SupabaseMedicationPlanRepository implements MedicationPlanRepository
     return fetchDetail(saved['id']! as String);
   }
 
+  @override
+  Future<MedicationEvidence> recordEvidence(MedicationEvidenceCommand command) async {
+    final saved = _map(
+      await _rpc('superadmin_medication_plan_record_evidence', {
+        'request_id': command.requestId,
+        'plan_id': command.planId,
+        'payload': {
+          'outcome': _outcomeToDatabase(command.outcome),
+          'reason': command.reason,
+          'note': command.note,
+          'occurred_at': command.occurredAt?.toUtc().toIso8601String(),
+        },
+      }),
+    );
+    return MedicationEvidence(
+      id: saved['id']! as String,
+      occurredAt: command.occurredAt ?? DateTime.now(),
+      outcome: command.outcome,
+      reason: command.reason,
+      note: command.note,
+    );
+  }
+
   Future<Object?> _rpc(String function, Map<String, Object?> params) async {
     try {
       return await _client.rpc<Object?>(function, params: params);
@@ -159,8 +182,29 @@ MedicationPlanDetail _detail(Map<String, Object?> payload) {
     groupId: payload['group_id'] as String?,
     scopeKind: payload['scope_kind'] as String?,
     childDisplayName: payload['display_name'] as String? ?? '',
+    evidence: _rows(payload['evidence']).map(_evidence).toList(growable: false),
   );
 }
+
+MedicationEvidence _evidence(Map<String, Object?> row) => MedicationEvidence(
+  id: row['id']! as String,
+  occurredAt: _date(row['occurred_at']),
+  outcome: _outcomeFromDatabase(row['outcome'] as String?),
+  reason: row['reason'] as String?,
+  note: row['note'] as String?,
+);
+
+String _outcomeToDatabase(MedicationEvidenceOutcome outcome) => switch (outcome) {
+  MedicationEvidenceOutcome.administered => 'administered',
+  MedicationEvidenceOutcome.notAdministered => 'not_administered',
+  MedicationEvidenceOutcome.refused => 'refused',
+};
+
+MedicationEvidenceOutcome _outcomeFromDatabase(String? value) => switch (value) {
+  'not_administered' => MedicationEvidenceOutcome.notAdministered,
+  'refused' => MedicationEvidenceOutcome.refused,
+  _ => MedicationEvidenceOutcome.administered,
+};
 
 MedicationScheduleDraft _schedule(Map<String, Object?> row) => MedicationScheduleDraft(
   timeOfDay: _timeOfDay(row['time_of_day'] as String? ?? '00:00'),

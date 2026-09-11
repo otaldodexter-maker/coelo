@@ -321,6 +321,37 @@ void main() {
       expect(detail.schedules.single.timeOfDay, '08:30');
     });
 
+    test('registrar dose manda o desfecho ao servidor e o detalhe lê os registros', () async {
+      final backend = _Backend({
+        'superadmin_medication_plan_record_evidence': {'id': 'evidence-1', 'plan_id': 'plan-1'},
+      });
+      final client = _clientFor(backend);
+      addTearDown(client.dispose);
+
+      final saved = await SupabaseMedicationPlanRepository(client).recordEvidence(
+        MedicationEvidenceCommand(
+          requestId: 'request-9',
+          planId: 'plan-1',
+          outcome: MedicationEvidenceOutcome.refused,
+          reason: 'Criança recusou',
+        ),
+      );
+      final params = backend.paramsOf('superadmin_medication_plan_record_evidence');
+      expect(params['plan_id'], 'plan-1');
+      expect(params['payload'], containsPair('outcome', 'refused'));
+      expect(params['payload'], containsPair('reason', 'Criança recusou'));
+      expect(saved.id, 'evidence-1');
+      expect(
+        () => MedicationEvidenceCommand(
+          requestId: 'r',
+          planId: 'plan-1',
+          outcome: MedicationEvidenceOutcome.notAdministered,
+        ),
+        throwsArgumentError,
+        reason: 'o servidor exige motivo quando a dose não foi administrada',
+      );
+    });
+
     test('cada recusa do servidor vira o erro certo do domínio', () async {
       for (final (code, matcher) in <(String, Matcher)>[
         ('42501', isA<MedicationPlanUnauthorizedException>()),

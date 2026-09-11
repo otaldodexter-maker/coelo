@@ -118,6 +118,20 @@ final class DevMedicationPlanRepository implements MedicationPlanRepository {
       (throw const MedicationPlanNotFoundException());
 
   @override
+  Future<MedicationEvidence> recordEvidence(MedicationEvidenceCommand command) async {
+    if (!_plans.any((plan) => plan.id == command.planId)) {
+      throw const MedicationPlanNotFoundException();
+    }
+    return MedicationEvidence(
+      id: 'evidence-${command.requestId}',
+      occurredAt: command.occurredAt ?? DateTime.now(),
+      outcome: command.outcome,
+      reason: command.reason,
+      note: command.note,
+    );
+  }
+
+  @override
   Future<MedicationPlanDetail> save(MedicationPlanSaveCommand command) async {
     final replay = _replays[command.requestId];
     if (replay != null) {

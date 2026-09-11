@@ -9,6 +9,7 @@ import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../domain/medication_plan_edit_snapshot.dart';
+import '../domain/medication_plan_repository.dart';
 import 'health_care_responsive_surface.dart';
 import 'health_medication_form_sections.dart';
 
@@ -68,6 +69,15 @@ final class HealthMedicationPlanSaveReceipt {
 typedef HealthMedicationPlanDraftSave =
     Future<HealthMedicationPlanSaveReceipt> Function(HealthMedicationPlanFormDraft draft);
 
+/// Registra uma dose do plano em edição (medication.evidence); o chamador
+/// gera o request_id e devolve o registro confirmado pelo servidor.
+typedef HealthMedicationEvidenceRecord =
+    Future<MedicationEvidence> Function({
+      required MedicationEvidenceOutcome outcome,
+      String? reason,
+      String? note,
+    });
+
 final class HealthMedicationPlanFormPage extends StatefulWidget {
   const HealthMedicationPlanFormPage({
     required this.logout,
@@ -78,6 +88,8 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
     this.initialDraft,
     this.childOptions = const [],
     this.responsibleOptions = const [],
+    this.evidence = const [],
+    this.onRecordEvidence,
     this.onDraftSaved,
     this.onChangeChild,
     this.onPickMedicationImage,
@@ -93,6 +105,8 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
   final HealthMedicationPlanFormDraft? initialDraft;
   final List<HealthCareFormChoice> childOptions;
   final List<HealthCareFormChoice> responsibleOptions;
+  final List<MedicationEvidence> evidence;
+  final HealthMedicationEvidenceRecord? onRecordEvidence;
   final HealthMedicationPlanDraftSave? onDraftSaved;
   final VoidCallback? onChangeChild;
   final VoidCallback? onPickMedicationImage;
@@ -104,6 +118,7 @@ final class HealthMedicationPlanFormPage extends StatefulWidget {
 
 final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPlanFormPage> {
   var _step = _Step.medicine;
+  late var _evidence = List.of(widget.evidence);
   String? _childId;
   var _route = 'oral';
   DateTime? _startsAt;
@@ -632,8 +647,59 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
         'Responsáveis',
         _responsibles.map((id) => _choiceLabel(widget.responsibleOptions, id)).join(', '),
       ),
+      if (_editing && widget.onRecordEvidence != null) _evidenceSection(),
     ],
   );
+
+  Widget _evidenceSection() => Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      const SizedBox(height: CoeloSpacing.space4),
+      Text('Registros de dose', style: Theme.of(context).textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space2),
+      if (_evidence.isEmpty)
+        const Text('Nenhuma dose registrada.')
+      else
+        for (final item in _evidence)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+            child: Text(
+              [
+                _dateTime(item.occurredAt),
+                _outcomeLabel(item.outcome),
+                if (item.reason case final reason? when reason.isNotEmpty) reason,
+                if (item.note case final note? when note.isNotEmpty) note,
+              ].join(' · '),
+            ),
+          ),
+      const SizedBox(height: CoeloSpacing.space2),
+      OutlinedButton.icon(
+        key: const Key('health-medication-record-evidence'),
+        onPressed: _recordEvidence,
+        icon: const Icon(Icons.medication_liquid_outlined),
+        label: const Text('Registrar dose'),
+      ),
+    ],
+  );
+
+  Future<void> _recordEvidence() async {
+    final record = widget.onRecordEvidence;
+    if (record == null) return;
+    final draft = await showDialog<_EvidenceDraft>(
+      context: context,
+      builder: (_) => const _EvidenceDialog(),
+    );
+    if (draft == null || !mounted) return;
+    try {
+      final saved = await record(outcome: draft.outcome, reason: draft.reason, note: draft.note);
+      if (!mounted) return;
+      setState(() => _evidence = [saved, ..._evidence]);
+      ScaffoldMessenger.of(context).showSnackBar(const SnackBar(content: Text('Dose registrada.')));
+    } on MedicationPlanException catch (error) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(error.message)));
+    }
+  }
 
   Widget _grid(List<Widget> children) => LayoutBuilder(
     builder: (context, constraints) {
@@ -676,6 +742,102 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
       ],
     ),
   );
+}
+
+final class _EvidenceDraft {
+  const _EvidenceDraft(this.outcome, this.reason, this.note);
+  final MedicationEvidenceOutcome outcome;
+  final String? reason, note;
+}
+
+final class _EvidenceDialog extends StatefulWidget {
+  const _EvidenceDialog();
+  @override
+  State<_EvidenceDialog> createState() => _EvidenceDialogState();
+}
+
+final class _EvidenceDialogState extends State<_EvidenceDialog> {
+  var _outcome = MedicationEvidenceOutcome.administered;
+  final _reason = TextEditingController();
+  final _note = TextEditingController();
+
+  @override
+  void dispose() {
+    _reason.dispose();
+    _note.dispose();
+    super.dispose();
+  }
+
+  bool get _valid =>
+      _outcome == MedicationEvidenceOutcome.administered || _reason.text.trim().isNotEmpty;
+
+  @override
+  Widget build(BuildContext context) => AlertDialog(
+    title: const Text('Registrar dose'),
+    content: SizedBox(
+      width: 420,
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          SegmentedButton<MedicationEvidenceOutcome>(
+            segments: [
+              for (final outcome in MedicationEvidenceOutcome.values)
+                ButtonSegment(value: outcome, label: Text(_outcomeLabel(outcome))),
+            ],
+            selected: {_outcome},
+            onSelectionChanged: (values) => setState(() => _outcome = values.first),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          TextField(
+            key: const Key('health-medication-evidence-reason'),
+            controller: _reason,
+            onChanged: (_) => setState(() {}),
+            decoration: InputDecoration(
+              labelText: _outcome == MedicationEvidenceOutcome.administered
+                  ? 'Motivo (opcional)'
+                  : 'Motivo (obrigatório)',
+            ),
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          TextField(
+            key: const Key('health-medication-evidence-note'),
+            controller: _note,
+            decoration: const InputDecoration(labelText: 'Observação'),
+          ),
+        ],
+      ),
+    ),
+    actions: [
+      TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
+      FilledButton(
+        key: const Key('health-medication-evidence-confirm'),
+        onPressed: !_valid
+            ? null
+            : () => Navigator.of(context).pop(
+                _EvidenceDraft(
+                  _outcome,
+                  _reason.text.trim().isEmpty ? null : _reason.text.trim(),
+                  _note.text.trim().isEmpty ? null : _note.text.trim(),
+                ),
+              ),
+        child: const Text('Registrar'),
+      ),
+    ],
+  );
+}
+
+String _outcomeLabel(MedicationEvidenceOutcome outcome) => switch (outcome) {
+  MedicationEvidenceOutcome.administered => 'Administrada',
+  MedicationEvidenceOutcome.notAdministered => 'Não administrada',
+  MedicationEvidenceOutcome.refused => 'Recusada',
+};
+
+String _dateTime(DateTime value) {
+  final local = value.toLocal();
+  final hour = local.hour.toString().padLeft(2, '0');
+  final minute = local.minute.toString().padLeft(2, '0');
+  return '${_date(local)} $hour:$minute';
 }
 
 String _choiceLabel(List<HealthCareFormChoice> options, String? id) {
