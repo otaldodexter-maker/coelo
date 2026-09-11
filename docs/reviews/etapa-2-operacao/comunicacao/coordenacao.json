@@ -1,12 +1,12 @@
 {
- "revision": 46,
+ "revision": 47,
  "round": "E2-R05-20260911",
  "role": "Coordenacao da tarde R05 - Claude Opus (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T15:04:00-03:00",
+ "updatedAt": "2026-09-11T15:50:00-03:00",
  "relogio": "relogio da maquina; posse as 12:03 -03:00 de 11/09/2026",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -236,6 +236,7 @@
   "44": "14:30 lotes 37-43 em producao (18 pacotes; total da rodada 16 lotes, 32 pacotes); chat-media, form-operations e form-media implantadas; deltas de G1/G2/G3/G7 aplicados (FE 94 / BE done 96 / E2E 67); sessoes renomeadas apos reinicio ~14:10; aprovacao G-SUP do Owner",
   "45": "14:48 lote 44 (seguranca da Agenda); deltas de G2/G6/G3 aplicados (FE 106 / BE done 107 / E2E 78); origens locais liberadas nas Edge Functions; G4 cobrada",
   "46": "15:04 lotes 45-46; form-export-download implantada; allowlists de origem alinhadas; deltas finais de G1/G3/G4/G6 aplicados (FE 131 / BE done 128 / E2E 99); P47/P48 e IMP-R05 registrados",
+  "47": "15:50 pedido de revisao final as sete frentes; lotes 47-48; moments-media corrigida; todas as frentes finalizadas (FE 138 / BE done 132 / E2E 105)",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -974,11 +975,14 @@
    "lote 43: 211100 (realm-interno), 190100, 190200, 190300 (publicacoes)",
    "lote 44: 211200 (realm-interno, seguranca)",
    "lote 45: 211300 (realm-interno)",
-   "lote 46: 170400 (acessos-pessoas)"
+   "lote 46: 170400 (acessos-pessoas)",
+   "lote 47: 211400 (realm-interno)",
+   "lote 48: 211500 (realm-interno)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
-  ]
+  ],
+  "total": "21 lotes (28 a 48), 34 pacotes; candidatos restantes: nenhum"
  },
  "alertaDeMemoria1220": "12:20: RAM livre 0,02 GB de 15,6; 6 dartaotruntime (analysis servers, ~700-900 MB cada, um por sessao/worktree), 28 dart, 24 chrome (139 MB no total), vmmemWSL 688 MB. Causa provavel: um servidor de analise Dart por conversa (8 conversas). Pedido ao Owner: fechar janelas do VS Code/MCP dart que nao estejam em uso; frentes so um flutter test por vez e sem build web simultaneo. Coordenador nao mata processo de outra conversa.",
  "sessoesR05": "coelo-46 = coordenacao R04 encerrada (worktree e2-r04-coordenacao removivel no fechamento); a conversa R04 Estrutura nao esta viva",
@@ -1305,12 +1309,51 @@
   "base": "validate-trackers PASS sobre 2fa07be8e"
  },
  "finalizadosR05": {
-  "estrutura": "rev 46 f62f9a350 (49 deltas)",
-  "acessos-pessoas": "rev 124 80b3a872d + 170400 (lote 46)",
-  "realm-interno": "rev 32 048b00340 (14 pacotes em producao)",
-  "principal-chat-sistema": "rev 26 81a462848 (22 deltas; Cardapios bloqueados por P47)",
-  "publicacoes-agenda": "rev 37 2c676dde4 (16 deltas)",
-  "formularios-cuidado-rotina": "rev 39 79e3810b8 (57 deltas em tres arquivos)",
-  "operacoes": "rev 32 6285d69fd (deltas finais a receber)"
+  "estrutura": "rev 50 155115028 / HEAD c3e1ee639 (51 deltas)",
+  "acessos-pessoas": "rev 131 b5aad6ab4 (41 deltas em 4 arquivos)",
+  "formularios-cuidado-rotina": "rev 46 395f4552f (65 deltas em 6 arquivos)",
+  "principal-chat-sistema": "rev 29 45d3e681d (22 deltas)",
+  "realm-interno": "rev 36 a8062aa3a (16 pacotes em producao)",
+  "publicacoes-agenda": "rev 42 421d26991 (16 deltas)",
+  "operacoes": "rev 36 2db40669a (deltas em 5 arquivos)"
+ },
+ "pedidoDeRevisao1550": {
+  "quando": "2026-09-11T15:50:00-03:00",
+  "texto": "Revisao final de 10 minutos a cada frente (responder no proprio JSON ate 16:00): voce entregou tudo mesmo? o que ficou em aberto? Campos: SHA publicado (branch e status limpo, WIP nomeado se houver); fechado por action_id com prova; aberto com o primeiro gate; deltas (arquivo e quantos ja aplicados); pacotes SQL (todos aplicados ou o que resta); duvidas ao Owner (visuais com pagina R/A); dados sinteticos criados; chaves criadas. Depois de 16:00 ninguem retoma por conta propria.",
+  "destinatarios": [
+   "estrutura (coelo-65)",
+   "acessos-pessoas (coelo-5d)",
+   "formularios-cuidado-rotina (coelo-de)",
+   "principal-chat-sistema (coelo-c2)",
+   "realm-interno (coelo-38)",
+   "publicacoes-agenda (coelo-da)",
+   "operacoes (coelo-0c)"
+  ],
+  "jaRespondidas": [
+   "principal-chat-sistema rev 29 (45d3e681d)",
+   "formularios-cuidado-rotina rev 46 (395f4552f)"
+  ]
+ },
+ "lote47": {
+  "aplicadoEm": "15:15; ledger 211400",
+  "dump": "schema-producao-20260911-lote47.sql",
+  "conteudo": [
+   "realm-interno 211400 unit_default_handle_fit_v1 (@ padrao de unidade normalizado e truncado antes do ponto; 5/5 + payload 18/18)"
+  ]
+ },
+ "lote48": {
+  "aplicadoEm": "15:37; ledger 211500",
+  "dump": "schema-producao-20260911-lote48.sql",
+  "conteudo": [
+   "realm-interno 211500 plans_revoke_select_reconcile_v1 (revoga o SELECT de plans reaberto pelo 211000; institution_directory por RPC como a G7 desenhou no 200000)"
+  ]
+ },
+ "deploys1522": "moments-media corrigida pelo coordenador (momentsR2Config lia so MOMENTS_R2_*; 422 moments_r2_not_configured em producao) e reimplantada; a G4 nao pode alterar por ser recurso compartilhado (classificador); coordenador assumiu por ser deploy de Edge Function",
+ "metricasParciais1550": {
+  "feVerified": "138/231",
+  "beDone": "132/224",
+  "e2eVerified": "105/199",
+  "feAprovacaoVisual": "53/231",
+  "base": "validate-trackers PASS sobre 4d9c2364d"
  }
 }
