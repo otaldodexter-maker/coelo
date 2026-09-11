@@ -1,15 +1,15 @@
 {
- "revision": 23,
+ "revision": 24,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T21:43-03:00",
+ "updatedAt": "2026-09-10T22:04-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "98cc0529d",
+ "head": "f3fefa306",
  "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex)",
  "scope": {
   "families": [
@@ -35,10 +35,9 @@
   ]
  },
  "currentGate": {
-  "gate": "abertura da R04: leitura do contrato, historico da R03, pendencias e skills; preparar sessao qa-r03 e app local",
-  "screen": "Etapa 2 -> apps/superadmin -> Cuidado -> Perfis de cuidado / Medicacao",
+  "gate": "ligar criar/editar/detalhe de Perfis de cuidado e as quatro rotas de Medicacao ao repositorio Supabase no router de producao; depois CRUD com sessao",
+  "screen": "Etapa 2 -> apps/superadmin -> Saude e Cuidado -> Perfis de cuidado / Medicacao",
   "actionIds": [
-   "health-care.list",
    "health-care.create",
    "health-care.detail",
    "health-care.edit",
@@ -48,7 +47,7 @@
    "medication.edit",
    "medication.evidence"
   ],
-  "note": "primeira revisao da R04. Chaves COELO_ENABLE_CARE_AND_ROUTINE_BACKEND e COELO_ENABLE_STUDENT_LINK_COMMANDS ligadas por padrao segundo o prompt; vou conferir no codigo antes de abrir a rota."
+  "note": "health-care.list abriu na rota normal com sessao (lista vazia em producao)."
  },
  "loopAgendado": "/loop 15m, agendado na abertura",
  "tests": {
@@ -66,7 +65,7 @@
  "commits": [],
  "pendenciasRegistradas": [],
  "duvidasParaOOwner": [],
- "nextStep": "conferir chaves de composicao, subir o app em localhost:3000 e entrar com qa-r03; rota normal de Perfis de cuidado e Medicacao por action_id",
+ "nextStep": "composicao de Cuidado/Medicacao no router; criar perfil sintetico em producao; reload; depois Alunos",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -700,5 +699,20 @@
    "working_tree": "limpo, tudo commitado e publicado",
    "wip_retido": "nenhum"
   }
- }
+ },
+ "ambienteDeTeste": {
+  "app": "flutter run -d chrome -t test_driver/qa_main.dart em http://localhost:3010 (a porta 3000 estava ocupada por outra frente; CORS do R2 so libera 3000, entao a prova de upload direto ao R2 tera de usar 3000 quando chegar a vez)",
+  "sessao": "qa-r03@coelo.me entrou em producao pela tela de login normal; credencial lida do arquivo local para o ambiente do processo, nunca impressa",
+  "harness": "test_driver/qa_main.dart (mesma composicao de lib/main.dart mais enableFlutterDriverExtension) e test_driver/qa_drive.dart (CDP -> window.$flutterDriver). O MCP dart/flutter_driver_command nao funciona neste app web: os finders ficam presos no frame sync; com set_frame_sync=false pelo gancho web tudo responde",
+  "pubspec": "flutter_driver entrou em dev_dependencies (aviso ao coordenador: toquei o pubspec de apps/superadmin)"
+ },
+ "findings": [
+  {
+   "id": "F-R04-FCR-001",
+   "titulo": "Cuidado e Medicacao: so o diretorio de Perfis esta ligado no router de producao",
+   "medido": "apps/superadmin/lib/app/router/superadmin_router.dart @ 98cc0529d, linhas 2730-2783",
+   "evidencia": "healthCareProfileCreate/Edit montam HealthCareProfileFormPage sem onSaved, loadDraft nem childOptions (a pagina cai em 'Cadastro indisponivel'); healthCareProfileDetail redireciona para mutation-capability-unavailable; as quatro rotas de Medicacao montam _unavailableMedicationPlans. O repositorio Supabase e a chave existem, mas nao chegam a essas rotas.",
+   "consequencia": "health-care.create/detail/edit e medication.* nao passam da regua do MVP por composicao, nao por backend. Assumido por este grupo: ligar as rotas ao SupabaseHealthCareRepository/SupabaseMedicationPlanRepository (criar perfil = save_profile com profile_id nulo e child_context_id; opcoes de crianca pelo leitor superadmin_child_context_directory_v2)."
+  }
+ ]
 }
