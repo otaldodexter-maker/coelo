@@ -323,6 +323,55 @@ pertencem e voltam a contar na revisão profunda.
   entrypoint de driver, formato dos deltas, E2E exige FE e BE, prova de rota
   real por build web + CDP, subagentes do coordenador quando uma conversa cai).
 
+## Decisão 15 — respostas do Owner ao lote P20–P37 da Rodada 4 (11/09/2026, 10:40)
+
+Respondidas na página de decisões da R04 (artefato "Decisões R04"). Texto
+integral das observações em `docs/reviews/etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`.
+
+- **P20** token antigo da Cloudflare: fica para a revisão de segurança (C).
+- **P22** ponte de ator: confirmada, "se isso funcionar sempre" (A).
+- **P23** Owner de instituição em Cardápios: sim (A); regra geral: Owner de
+  instituição e de unidade fazem tudo dentro do seu contexto, e Perfis e
+  permissões liberam o resto.
+- **P24** grupos do chat: os dois modelos no MVP (C); grupos com quaisquer
+  perfis e responsáveis.
+- **P25** instituição sintética: fica arquivada e pode ser usada para teste;
+  perguntar ao final se apaga (A).
+- **P26** erro 409: aprovar as imagens como golden (A).
+- **P28** foto do Perfil: R, com quatro correções (avatar cortado embaixo,
+  cabeçalho fora do padrão mobile e logo errada, @ do perfil visível,
+  contorno nos avatares sobrepostos) e regras de filtro por perfil no
+  cabeçalho do Principal, "+ Agora" só para quem publica e pergunta de perfil
+  antes de publicar.
+- **P30** worker de Avisos: aprovado (A). Regra nova: tokens, chaves e
+  segredos sem custo são criados pelo agente sem pedir; vazamento vira
+  pendência com roteiro de redefinição e o Owner aprende a gerar cada chave.
+- **P31** perfis padrão: aprovados (A); modelos de sistema para Superadmin,
+  Admin e Principal, editáveis só pelo Owner; a unidade parte do modelo ou
+  cria do zero; professores atrelados a turmas e atividades.
+- **P32** Segurança infantil: B agora (Superadmin decide com auditoria);
+  regra alvo com notificações à unidade, à hierarquia da criança e aos demais
+  responsáveis, e políticas macro por unidade (aceitar para liberar, só
+  inclusão, só exclusão); mesmo conceito para Medicação, com opção de não
+  acompanhar.
+- **P33** calendário 375: R, aproximar do calendário do iPhone (cantos menos
+  redondos, data menor no canto superior esquerdo com respiro, sem contêiner,
+  botões calendário/lista a 50%); conteúdo por hierarquia com filtro por
+  perfil.
+- **P34** detalhe do evento: A+ (sem fundo cinza; cancelar à esquerda,
+  salvar à direita; rodapé igual ao de Instituições).
+- **P35** Principal: A e B agora: semear a membership de teste e a regra "o
+  Superadmin vê tudo"; criar o perfil/usuário Coelo (segue e é seguido por
+  todos, logo e capa da marca, arrobas `coelo` e `coelo.me` reservados).
+- **P36** Rodada 5 começa pela Estrutura (A), respeitando a hierarquia
+  instituição → unidade → turma → atividade.
+- **P37** limpeza: script único no fechamento da próxima rodada (A); o
+  usuário `qa-r03` também é do Codex.
+- **G-SUP** Suporte no composto: A+ (alinhar colunas das tabelas de Suporte
+  e Em implantação como na de Instituições). **G-FORM** editor de Formulários
+  1440: A.
+- **WT** worktree quebrada da R03: removida pelo coordenador a pedido dele.
+
 ## Consequências
 
 - O replay local com Docker deixa de ser porta obrigatória; continua útil para
