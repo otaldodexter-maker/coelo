@@ -1,15 +1,15 @@
 {
- "revision": 25,
+ "revision": 26,
  "round": "E2-R04-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-10T22:34-03:00",
+ "updatedAt": "2026-09-10T22:47-03:00",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-formularios-cuidado-rotina",
  "branch": "work/etapa2-r04-formularios-cuidado-rotina",
- "head": "f3fefa306",
+ "head": "d5ddfde39 (rebase em origin/dev 836c63215)",
  "base": "origin/dev 98cc0529d (docs(e2): Rodada 4 inteira no Claude, sem Codex)",
  "scope": {
   "families": [
@@ -71,7 +71,7 @@
  ],
  "pendenciasRegistradas": [],
  "duvidasParaOOwner": [],
- "nextStep": "escrever e provar o pacote 20260910220400 no descartavel; rebase em origin/dev 836c63215; depois criar dados sinteticos e provar Perfis de cuidado",
+ "nextStep": "terminar a prova pgTAP do 220400 no descartavel; criar instituicao + crianca sinteticas em producao (ha 0 instituicoes e 0 criancas) e provar Perfis de cuidado na rota normal",
  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md",
  "historicoR03": {
   "updatedAt": "2026-09-10T17:10:00-03:00",
@@ -729,6 +729,34 @@
    "consequencia": "nenhuma rota de Cuidado, Medicacao, Rotina, Assiduidade, Alunos ou Formularios passa da regua com qa-r03 hoje, mesmo com a composicao ligada; o servidor responde 'authentication required'. Estrutura/Acessos nao sentem isso porque as RPCs v2 usam require_superadmin_internal_context.",
    "acao": "assumido por este grupo: pacote candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql que espelha cada identidade do realm interno v2 numa pessoa de servico (people.person_type='service') com platform_membership no mesmo papel de plataforma, e faz current_person_id() cair nesse espelho quando nao ha person_auth_link. Assim todas as RPCs people-based (inclusive Formularios e as de outros grupos) reconhecem a sessao interna sem reescrever cada funcao. Nao cria person_auth_link (o guard do realm impede e nao e necessario).",
    "para_o_coordenador": "e uma mudanca transversal em app_private.current_person_id(): aplicar cedo na fila para as outras frentes people-based (Principal/Chat, Publicacoes) tambem passarem a funcionar com qa-r03. Se preferir outro desenho (ex.: pessoa de servico criada pelo Auth admin), avisar no coordenacao.json."
+  },
+  {
+   "id": "F-R04-FCR-003",
+   "severity": "bloqueia Assiduidade, Alunos, Cuidado, Medicacao e Rotina para QUALQUER papel",
+   "titulo": "Producao nao tem os codigos attendance.read, attendance.manage e people.assign_children, e nenhum papel de plataforma concede health_care.*, medication.*, routine.* ou attendance.*",
+   "medido": "producao, 2026-09-10 ~23:50, platform_permissions e platform_role_permissions por supabase db query --linked (leitura)",
+   "evidencia": "platform_permissions tem health_care.read/manage, medication.read/manage/record_evidence e routine.* (lote 2), mas zero grants em platform_role_permissions para esses codigos em qualquer papel; attendance.* e people.assign_children nao existem no catalogo (as migrations 010200 e 220200 os exigem).",
+   "consequencia": "mesmo com o ator resolvido, has_platform_permission('health_care.read') e falso para o owner; attendance e alunos negam para todos.",
+   "acao": "incluido no pacote 20260910220400: insere os tres codigos com rotulos e concede ao papel owner (allow, active) as permissoes das familias do recorte, sem tocar outros papeis (Decisao 12/P7: owner e o piso)."
+  },
+  {
+   "id": "F-R04-FCR-004",
+   "severity": "ambiente: a receita do README para provar pacote nao roda como esta",
+   "titulo": "supabase db reset aplica o seed DEPOIS das migrations; 20260910170100 exige o catalogo (people.read com MFA e matriz de grants) e falha antes do seed entrar",
+   "medido": "projeto descartavel coelo_fcr_r04 (portas 554xx), 2026-09-10 23:40-00:05, tres tentativas",
+   "evidencia": "1a: 'active MFA people.read capability is required' (SQLSTATE 55000) em 20260910170100; 2a (preflight de MFA removido na copia local): 'people.read role grants do not match the approved detail matrix'. Ambas porque platform_permissions esta vazia no momento da migration.",
+   "contorno_local": "copiar supabase/seed.sql para migrations como 20260910000001_seed_catalogo_local.sql (so no descartavel) e desligar [db.seed]; assim o catalogo existe antes de 170100. Nao alterei arquivo do repositorio.",
+   "para_o_coordenador": "vale registrar no README ou mover o catalogo para dentro da baseline; senao cada frente vai tropecar aqui."
+  }
+ ],
+ "pacotesProntos": [
+  {
+   "arquivo": "packages/coelo_database/candidatos/formularios-cuidado-rotina/20260910220400_internal_actor_service_person_v1.sql",
+   "pgtap": "packages/coelo_database/supabase/tests/internal_actor_service_person_v1_test.sql (17 assercoes)",
+   "estado": "escrito; prova no descartavel em andamento (reset da baseline ainda rodando)",
+   "o_que_faz": "F-R04-FCR-002 + F-R04-FCR-003: catalogo attendance/people.assign_children, grants ao owner, pessoa de servico + membership espelho por identidade interna (gatilho), current_person_id() com fallback ao espelho",
+   "transversal": "muda app_private.current_person_id(): toda RPC people-based passa a reconhecer a sessao interna v2. Aplicar cedo na fila; nao depende de outro pacote.",
+   "chave_de_composicao": "nenhuma nova: as chaves de Cuidado/Rotina e Alunos ja estao ligadas"
   }
  ]
 }
