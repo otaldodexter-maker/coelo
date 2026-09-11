@@ -319,7 +319,11 @@ Future<bool> _createRoutineLaunch(
       requestId: newRoutineRequestId(),
     );
     if (context.mounted) {
-      showSuperadminNotice(context, 'Lancamento de hoje criado.', icon: Icons.check_circle_outline_rounded);
+      showSuperadminNotice(
+        context,
+        'Lancamento de hoje criado.',
+        icon: Icons.check_circle_outline_rounded,
+      );
     }
     return true;
   } on RoutineRepositoryException catch (error) {
@@ -2703,8 +2707,7 @@ GoRouter createSuperadminRouter({
               // se pede a publicacao e se relata o que ele respondeu.
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
-              onCreateLaunch: (item) =>
-                  _createRoutineLaunch(context, dailyRoutineRepository, item),
+              onCreateLaunch: (item) => _createRoutineLaunch(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(
@@ -3237,7 +3240,9 @@ GoRouter createSuperadminRouter({
                         id: draft.childId,
                         label:
                             medicationPlanDirectoryRepository?.childLabelFor(medicationId) ??
-                            'Criança do plano',
+                            (detail.childDisplayName.isEmpty
+                                ? 'Criança do plano'
+                                : detail.childDisplayName),
                       ),
                     ],
                     onCancel: () {

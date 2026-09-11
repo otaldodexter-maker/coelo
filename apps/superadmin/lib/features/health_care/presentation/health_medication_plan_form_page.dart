@@ -775,12 +775,13 @@ final class _EvidenceDialogState extends State<_EvidenceDialog> {
   Widget build(BuildContext context) => AlertDialog(
     title: const Text('Registrar dose'),
     content: SizedBox(
-      width: 420,
+      width: 520,
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           SegmentedButton<MedicationEvidenceOutcome>(
+            showSelectedIcon: false,
             segments: [
               for (final outcome in MedicationEvidenceOutcome.values)
                 ButtonSegment(value: outcome, label: Text(_outcomeLabel(outcome))),
