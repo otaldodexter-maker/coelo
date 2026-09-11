@@ -31,7 +31,9 @@ void main() {
     await tester.pumpWidget(
       app(AgendaEventsPage(store: prototype, onCreate: () {}, onOpen: (_) {}, onEdit: (_) {})),
     );
-    expect(find.text('Eventos'), findsOneWidget);
+    // O título da área ('Eventos') pertence ao AgendaModuleShell; a página só
+    // entrega conteúdo de domínio ao composto CoeloAdminDirectory.
+    expect(find.byType(CoeloAdminDirectory<CoeloAdminDirectoryDisplay>), findsOneWidget);
     expect(find.byKey(const Key('agenda-events-create-card')), findsOneWidget);
     expect(find.byKey(const Key('coelo-admin-files-action')), findsOneWidget);
 
@@ -98,6 +100,8 @@ void main() {
     await tester.pumpWidget(
       app(AgendaEventsPage(store: prototype, onCreate: () {}, onOpen: (_) {}, onEdit: edited.add)),
     );
+    // O composto mede o rodapé de paginação no primeiro frame; assenta antes de interagir.
+    await tester.pumpAndSettle();
     final statusLabel = switch (item.status) {
       AgendaItemStatus.draft => 'Rascunho',
       AgendaItemStatus.scheduled => 'Agendado',
