@@ -6,7 +6,7 @@
   "model": "Opus 5 (1M)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-publicacoes-agenda",
   "branch": "work/etapa2-r04-publicacoes-agenda",
-  "head": "7d3e0793d",
+  "head": "f5d0c284a",
   "base": "origin/dev 98cc0529d",
   "coordinator": "Claude (R04 · Coordenação noturna)",
   "updatedAt": "2026-09-11T03:08:00-03:00",
@@ -273,7 +273,7 @@
         "circular_routes_test 11/11; o teste novo falha sem a correcao",
         "flutter analyze limpo"
       ],
-      "sha": "pendente"
+      "sha": "f326b4fec"
     }
   ],
   "pendingForCoordinator": [
