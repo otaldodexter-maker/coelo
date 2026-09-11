@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 14,
+  "revision": 15,
   "round": "E2-R04-20260911",
-  "updatedAt": "2026-09-11T08:30-03:00",
+  "updatedAt": "2026-09-11T08:35-03:00",
   "app": "Claude",
   "modelo": "Fable 5.1",
   "conversa": "R04 · Realm interno e Chat backend",
@@ -121,7 +121,7 @@
     "escopo": "membership de plataforma ve toda conversa; membership de instituicao so ve a propria instituicao (outro tenant responde CHAT_NOT_FOUND). Anexos: so metadados; chat.attach continua dependendo do gateway de midia comum (fora deste recorte).",
     "criarGrupoNoCliente": "sugestao para SupabaseChatRepository: createGroup(ChatCreateGroupCommand{institutionId, title, personIds, unitId?, groupId?, activityId?, idempotencyKey}) -> ChatConversationSummary; o seletor de hierarquia escolhe UMA instituicao e pessoas dela (readers existentes de Pessoas/Unidades/Turmas do Superadmin); grupo entre instituicoes nao existe no modelo (conversations.institution_id NOT NULL)."
   },
-  "proximoPasso": "commitar a varredura quando o subagente terminar; parar o descartavel; nada mais no recorte",
+  "proximoPasso": "nenhum; descartavel coelo_baseline_realm parado",
   "pacotesProntos": [
     {
       "arquivo": "packages/coelo_database/candidatos/realm-interno/20260910240000_chat_production_contract_v1.sql",
@@ -281,7 +281,7 @@
     "provasRegistradas": "pgTAP 141/141 no descartavel (7 suites); prova em producao 18/18 (22:32) e reconferencia somente leitura 5/5 (23:20) com qa-r03; evidencia em docs/reviews/evidence/etapa-2/r04-realm-interno/",
     "handoff": "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md"
   },
-  "status": "finalizado; validacao de entrega feita em 11/09 08:20-08:40 a pedido do Owner; um commit novo fora de dev (skills)",
+  "status": "finalizado; entrega validada e completa em 11/09 08:45 (varredura incluida)",
   "ordemDoOwner0000": "ninguem para antes da entrega (frentes 04:00, coordenador 05:00); usar o maximo de subagentes e rtk",
   "medicaoAuthenticatedProducao": {
     "quando": "2026-09-11T00:05-03:00 (somente leitura)",
@@ -312,5 +312,17 @@
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-realm-interno limpa, sem WIP; e2-r03-realm-interno (quebrada, locked) ainda existe e continua para o Owner remover; projeto descartavel coelo_baseline_realm (portas 624xx) ainda de pe no Docker, pode ser parado com supabase stop --project-id coelo_baseline_realm",
     "correcaoParaOOwner": "P24 em R04-perguntas-ao-owner-20260911.md descreve o 240400 como \"membros sao identidades internas\"; o pacote em producao aceita pessoas da instituicao (institution_memberships ou guardian_links + child_contexts), e o criador interno nao entra como participante. Reescrever a pergunta antes da resposta; \"so identidades internas\" seria uma variante 240700 (~1 h)."
   },
-  "skillsPropostas": "docs/reviews/evidence/etapa-2/r04-realm-interno/skills-deltas-r04.md (texto aplicado nos tres SKILL.md desta branch, secoes da Rodada 4): chat interno v2 em producao e contrato; reescrita historica exige audit de 13 args + requires_mfa=false + aal1; ALTER DEFAULT PRIVILEGES nao protege funcao nova; prova por sessao sintetica via GoTrue+PostgREST com --read-only; limpeza por arquivamento (FK do audit_logs); psql do container; fixture compartilhada com prefixo por grupo; cross-tenant por RPC como gate de RLS do MVP; medicao antes/depois em pacote de privilegios; no FE, composicao real do chat, regras de Criar grupo e mapeamento dos codigos"
+  "skillsPropostas": "docs/reviews/evidence/etapa-2/r04-realm-interno/skills-deltas-r04.md (texto aplicado nos tres SKILL.md desta branch, secoes da Rodada 4): chat interno v2 em producao e contrato; reescrita historica exige audit de 13 args + requires_mfa=false + aal1; ALTER DEFAULT PRIVILEGES nao protege funcao nova; prova por sessao sintetica via GoTrue+PostgREST com --read-only; limpeza por arquivamento (FK do audit_logs); psql do container; fixture compartilhada com prefixo por grupo; cross-tenant por RPC como gate de RLS do MVP; medicao antes/depois em pacote de privilegios; no FE, composicao real do chat, regras de Criar grupo e mapeamento dos codigos",
+  "varreduraAuthenticated": {
+    "arquivo": "docs/reviews/evidence/etapa-2/r04-realm-interno/varredura-authenticated-2026-09-11.md",
+    "quando": "2026-09-11T08:30-03:00 (somente leitura, subagente)",
+    "resultado": "140 objetos com grant a authenticated (134 tabelas + 6 views, todos em public); sem policy: INSERT 23, UPDATE 26, DELETE 18, SELECT 7 (person_auth_links + 6 views); RLS desligada com grant: 0; TRUNCATE/REFERENCES/TRIGGER 0/0/0 (240600 efetivo); anon/PUBLIC: nenhum",
+    "achados": [
+      "nenhuma tela escreve direto nessas tabelas (Dart usa .from() so em 3 tabelas profile_about_*; 153 chamadas sao .rpc), entao o revoke futuro e neutro; decisao do coordenador (nao aplicar nesta rodada) mantida",
+      "institution_directory (security_invoker) ja falha em leitura direta por sessao autenticada: plans sem SELECT para authenticated (policy sem grant); so funciona via RPC",
+      "person_auth_links e o unico objeto com SELECT concedido e zero policies: person_directory.has_active_login sai sempre false em leitura direta; recomendacao: policy self_read em vez de so revogar",
+      "Tabela C: 8 tabelas com deny explicito e policies permissivas sem grant em INSERT 7 / UPDATE 9 / DELETE 7 (activity_*, guardian_context_permission_grants, institution_member_permission_overrides, context_notification_recipients, attendance_sessions, conversation_routing_*, *_chat_settings)"
+    ],
+    "estado": "pendencia de code review para a revisao profunda; nenhum revoke aplicado"
+  }
 }
