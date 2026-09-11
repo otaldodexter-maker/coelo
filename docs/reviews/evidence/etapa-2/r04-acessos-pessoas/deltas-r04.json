@@ -80,14 +80,14 @@
   {
     "action_id": "people.links",
     "camada": "frontend",
-    "estado_proposto": "pending-verification",
-    "delta": "R04: o diretorio abre o editor (que mostra os vinculos), nao a rota /people/:id de detalhe; alcance do detalhe continua sem callback.",
+    "estado_proposto": "local-green",
+    "delta": "R04: o card e a linha do diretorio passam a abrir /people/:id (PersonDirectoryPage.onOpen) e o detalhe oferece Editar quando a composicao autoriza (bd0538ec6); testes de diretorio, detalhe e rotas 33/33. Prova na rota real depende de novo build web (memoria).",
     "evidencia": "comunicacao/acessos-pessoas.json r102",
     "certificacao": {
       "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
-      "revision": "ce6f061cc",
-      "environment": "build web release contra producao",
-      "recordedAt": "2026-09-11T02:05:00-03:00"
+      "revision": "bd0538ec6",
+      "environment": "flutter test local (SDK 3.44.2); backend superadmin_person_detail_v2 provado por REST em producao",
+      "recordedAt": "2026-09-11T02:45:00-03:00"
     }
   },
   {
