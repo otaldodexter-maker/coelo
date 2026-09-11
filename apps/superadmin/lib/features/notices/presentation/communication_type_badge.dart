@@ -35,33 +35,38 @@ final class CommunicationTypeBadge extends StatelessWidget {
     };
     return Semantics(
       label: 'Tipo: ${type.label}${type == CommunicationType.notice ? ', popup' : ''}',
-      child: SizedBox(
-        key: Key('communication-type-badge-${type.storageValue}'),
-        width: 120,
-        child: Container(
-          constraints: const BoxConstraints(minHeight: CoeloSpacing.space8),
-          padding: const EdgeInsets.symmetric(
-            horizontal: CoeloSpacing.space2,
-            vertical: CoeloSpacing.space1,
-          ),
-          decoration: BoxDecoration(
-            color: background,
-            borderRadius: BorderRadius.circular(CoeloRadius.full),
-          ),
-          child: Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(icon, size: CoeloSize.iconSm, color: foreground),
-              const SizedBox(width: CoeloSpacing.space1),
-              Flexible(
-                child: Text(
-                  type.label,
-                  maxLines: 1,
-                  overflow: TextOverflow.ellipsis,
-                  style: Theme.of(context).textTheme.labelMedium?.copyWith(color: foreground),
+      // Altura propria: dentro de uma celula esticada da tabela do composto a
+      // pastilha nao pode crescer com a linha (achado R05, ui-19).
+      child: Align(
+        alignment: Alignment.centerLeft,
+        child: SizedBox(
+          key: Key('communication-type-badge-${type.storageValue}'),
+          width: 120,
+          height: CoeloSpacing.space8,
+          child: Container(
+            padding: const EdgeInsets.symmetric(
+              horizontal: CoeloSpacing.space2,
+              vertical: CoeloSpacing.space1,
+            ),
+            decoration: BoxDecoration(
+              color: background,
+              borderRadius: BorderRadius.circular(CoeloRadius.full),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(icon, size: CoeloSize.iconSm, color: foreground),
+                const SizedBox(width: CoeloSpacing.space1),
+                Flexible(
+                  child: Text(
+                    type.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelMedium?.copyWith(color: foreground),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),
