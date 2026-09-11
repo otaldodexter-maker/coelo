@@ -6,7 +6,6 @@ import 'package:coelo_superadmin/features/activities/presentation/activity_form_
 import 'package:coelo_superadmin/features/activities/presentation/activity_form_draft.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/features/activities/presentation/activity_pedagogical_configuration_draft.dart';
-import 'package:fake_async/fake_async.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -22,40 +21,39 @@ void main() {
   });
 
   test('handle stem availability is checked with debounce and only for the last value', () async {
+    // Sem fake_async (nao e dependencia declarada): esperas reais curtas.
     final options = await FakeActivityDirectoryRepository().fetchFormOptions(
       institutionId: 'institution-1',
     );
-    fakeAsync((async) {
-      final calls = <String>[];
-      final controller = ActivityFormController.create(
-        options,
-        handleAvailabilityChecker: (kind, handle, {excludeId}) async {
-          calls.add('$kind:$handle:$excludeId');
-          return UnitHandleAvailability(
-            normalized: handle,
-            reason: handle == 'ocupado'
-                ? UnitHandleAvailabilityReason.taken
-                : UnitHandleAvailabilityReason.available,
-          );
-        },
-      );
-      addTearDown(controller.dispose);
-      controller.handleStem.text = 'ocupa';
-      controller.handleStem.text = 'ocupado';
-      async.elapse(const Duration(milliseconds: 100));
-      expect(calls, isEmpty);
-      async.elapse(const Duration(milliseconds: 300));
-      expect(calls, ['activity:ocupado:null']);
-      expect(controller.handleAvailabilityMessage, '@ocupado já está em uso. Escolha outro.');
-      controller.handleStem.text = 'robotica';
-      expect(controller.handleAvailabilityMessage, isNull, reason: 'texto mudou, legenda some');
-      async.elapse(const Duration(milliseconds: 400));
-      expect(controller.handleAvailabilityMessage, '@robotica está disponível.');
-      controller.handleStem.text = '';
-      async.elapse(const Duration(milliseconds: 400));
-      expect(controller.handleAvailabilityMessage, isNull);
-      expect(calls.length, 2);
-    });
+    final calls = <String>[];
+    final controller = ActivityFormController.create(
+      options,
+      handleAvailabilityChecker: (kind, handle, {excludeId}) async {
+        calls.add('$kind:$handle:$excludeId');
+        return UnitHandleAvailability(
+          normalized: handle,
+          reason: handle == 'ocupado'
+              ? UnitHandleAvailabilityReason.taken
+              : UnitHandleAvailabilityReason.available,
+        );
+      },
+    );
+    addTearDown(controller.dispose);
+    controller.handleStem.text = 'ocupa';
+    controller.handleStem.text = 'ocupado';
+    await Future<void>.delayed(const Duration(milliseconds: 100));
+    expect(calls, isEmpty, reason: 'debounce: nada antes de 300 ms');
+    await Future<void>.delayed(const Duration(milliseconds: 350));
+    expect(calls, ['activity:ocupado:null']);
+    expect(controller.handleAvailabilityMessage, '@ocupado já está em uso. Escolha outro.');
+    controller.handleStem.text = 'robotica';
+    expect(controller.handleAvailabilityMessage, isNull, reason: 'texto mudou, legenda some');
+    await Future<void>.delayed(const Duration(milliseconds: 450));
+    expect(controller.handleAvailabilityMessage, '@robotica está disponível.');
+    controller.handleStem.text = '';
+    await Future<void>.delayed(const Duration(milliseconds: 450));
+    expect(controller.handleAvailabilityMessage, isNull);
+    expect(calls.length, 2);
   });
 
   test('wizard exposes the six canonical activity steps in order', () {
