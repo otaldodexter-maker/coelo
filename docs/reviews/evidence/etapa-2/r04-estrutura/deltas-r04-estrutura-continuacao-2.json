@@ -83,5 +83,44 @@
   "estado_proposto": "blocked-decision",
   "delta": "R04 continuacao: /institutions/<id>/edit carrega a instituicao criada (detail_v2 em producao), mas o assistente exige CNPJ, representantes e administradores que a criacao v2 nao persiste; o cliente recusa salvar campos sem contrato (UnsupportedRelation). Editar so fecha quando o realm interno persistir documento/contato/pessoas. Gate: pacote novo de estrutura (institution_contacts_v2), decisao de escopo do Owner.",
   "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/institutions-edit-documento-vazio.jpg"
+ },
+ {
+  "action_id": "units.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R04 continuacao (11/09 10:34): assistente /units/new em producao (identidade herdada de Escola R04 Estrutura, hierarquia com tipo Filial do catalogo 180320, CEP por viacep, plano herdado) e Criar unidade -> lista recarregada mostra Unidade Centro R04 (Se, Sao Paulo/SP, Filial, Essencial).",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-create-hierarquia.jpg, units-create-localizacao.jpg, units-create-revisao.jpg, units-list-apos-criar.jpg",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R04 continuacao: create_unit_for_superadmin (people-based) pela ponte de ator 220400; public.units f5284f2f-b487-4100-bc0b-ffbcbb7d3db3 \"Unidade Centro R04\" draft, handle normalizado pelo servidor para unidadecentror04_f5284f2f (o identificador com hifens digitado no cliente nao e o gravado: o CHECK de handle nao aceita hifen), audit unit.create success 13:34:01Z; contrato das 13 RPCs em units_rpcs_versioned_from_production_v1_test.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/handoff.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/handoff.md",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo (evvbomzejfijozbtgvpt) | provas: supabase db query --linked somente leitura em 11/09 10:35 (public.units, audit unit.create); pgTAP units_rpcs_versioned_from_production_v1_test (lote 1) e unit_detail 31/31",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R04 continuacao: rota normal, CRUD em producao, RLS/hierarquia pelas RPCs versionadas e reload mantendo a unidade (regua do MVP). Achado: identificador digitado com hifens vira handle sem hifens + sufixo no servidor; o cliente deveria aceitar ponto/underscore (CHECK) ou mostrar o handle final.",
+  "evidencia": "evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/units-list-apos-criar.jpg",
+   "revision": "estrutura.json rev 36",
+   "environment": "producao coelo pelo build release de qa_main com qa-r03@coelo.me | provas: units-create-revisao.jpg; units-list-apos-criar.jpg; public.units f5284f2f",
+   "recordedAt": "2026-09-11T10:35:00-03:00"
+  }
  }
 ]
