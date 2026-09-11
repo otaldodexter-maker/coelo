@@ -192,3 +192,5 @@
 20260911170400_people_list_segment_v1.sql
 # lote 47 (11/09 15:15) - R05 realm-interno: @ padrao de unidade cabe em 30 chars sem hifen (defeito achado pela G2)
 20260911211400_unit_default_handle_fit_v1.sql
+# lote 48 (11/09 15:37) - R05 realm-interno: reconciliacao com o 200000 (plans sem SELECT direto de authenticated; institution_directory por RPC)
+20260911211500_plans_revoke_select_reconcile_v1.sql
