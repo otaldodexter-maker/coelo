@@ -1,13 +1,13 @@
 {
-  "revision": 42,
-  "updated_at": "2026-09-11T20:21:00-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-11T20:40:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
   "conversation": "R06 · Operações",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
   "branch": "work/etapa2-r06-operacoes",
-  "head": "8776eb424",
+  "head": "(commit desta rev)",
   "base": {
     "requested": "origin/dev",
     "resolved": "ca60b096b",
@@ -117,6 +117,24 @@
       "what": "ROTA REAL: /support abre em cards; toggle Tabela grava coelo.superadmin.support.display=table; abas Todos/Novo/Em andamento/Aguardando solicitante/Concluido na tabela (superadmin_support_list 200 com o filtro no servidor); Novo -> sem resultados; Concluido -> 1 chamado; reload reabre em tabela. Achado corrigido: lista vazia com filtro ativo mostrava a mensagem de vazio (o repositorio filtra no servidor) -> agora sem resultados na tabela; kanban mantem colunas vazias.",
       "commit": "8776eb424",
       "evidence": "rota-real/10-14"
+    },
+    {
+      "when": "20:24",
+      "action_ids": [
+        "catalog.validate",
+        "catalog.sync"
+      ],
+      "what": "(4) P44=B: 5 entradas novas no indice (composto e componentes), 5 builders no registry (variantes alinhadas), 16 exemplos atualizados com a mudanca real da fonte; os 3 validadores com zero diagnostico; relatorio regenerado sem caminhos absolutos. Teste de secoes obrigatorias passou a rolar pela posicao (o composto captura o gesto no centro). Pre-existentes na base limpa (conferido em e2-r06-coordenacao 2a579335e): catalog_app_test \"opens the temporarily public catalog\" e validate_admin_visual_contracts_test (usos crus em agenda/chat/institutions de outras frentes + 3 arquivos allowlistados que nao existem).",
+      "commit": "35fb05a0c + d43e0b7a1"
+    },
+    {
+      "when": "20:35",
+      "action_ids": [
+        "plans.activate",
+        "plans.assign"
+      ],
+      "what": "(3) ROTA REAL: plans.activate conciliado com a spec 051 como Restaurar (arquivado -> ativo): Arquivar + motivo -> plan_save 200 (archive) -> Restaurar + motivo -> plan_save 200 (restore); reload e aba Ativos mantem ativo. plans.assign: spec 051 mantem vinculos institucionais somente leitura; nao ha comando de atribuicao aprovado -> pergunta P51 ao Owner (blocked-decision mantido).",
+      "evidence": "rota-real/20-25"
     }
   ],
   "tests": [
@@ -166,6 +184,28 @@
       "frontend": "verified (P49)",
       "backend": "done",
       "integrated": "verified-e2e (recertificado)"
+    },
+    {
+      "action_id": "plans.activate",
+      "frontend": "verified",
+      "backend": "done",
+      "integrated": "verified-e2e"
+    },
+    {
+      "action_id": "catalog.validate",
+      "frontend": "verified"
+    },
+    {
+      "action_id": "catalog.sync",
+      "frontend": "verified"
+    },
+    {
+      "action_id": "account.settings",
+      "frontend": "verified (reconfirmado)"
+    },
+    {
+      "action_id": "account.theme",
+      "frontend": "verified (reconfirmado)"
     }
   ],
   "packages_ready": [
@@ -176,8 +216,25 @@
       "state": "PRONTO para o coordenador aplicar (faixa 2026091220xxxx)"
     }
   ],
-  "questions_to_owner": [],
-  "next_step": "(4) Catalogo: registry dos 5 componentes + fingerprints; (3) Planos activate/assign na rota real",
+  "questions_to_owner": [
+    {
+      "id": "P51-plans-assign",
+      "kind": "produto",
+      "what": "plans.assign: a spec 051 aprova arquivar/restaurar e mantem os vinculos plano-instituicao somente leitura; nao existe comando de atribuicao. Entra no MVP um comando \"Atribuir plano a instituicao\" (institution_subscriptions com motivo e auditoria, sem cobranca) ou fica pos-MVP?",
+      "options": "A) pos-MVP (recomendado: sem cliente real e sem cobranca); B) comando minimo no MVP (RPC + tela no detalhe da instituicao)"
+    },
+    {
+      "id": "SUP-R06",
+      "kind": "visual",
+      "what": "Suporte com abas de estado na tabela no lugar do filtro Status (P49=A) e 24 goldens regravados; conferir na pagina lado a lado."
+    },
+    {
+      "id": "DEF-R06",
+      "kind": "visual",
+      "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
+    }
+  ],
+  "next_step": "pagina lado a lado (SUP-R06, DEF-R06) para o Owner; handoff; (6) audit.export so se sobrar tempo (Edge Function audit-export sem deploy: nao iniciado)",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -990,5 +1047,27 @@
     "revisao_10min_ate": "21:46",
     "nota": "lote 49 aplicado: qa-r06-operacoes com identidade interna, Owner de plataforma, ponte e memberships nas qa-r04-*; rota real comeca assim que o build web terminar"
   },
-  "pendencias_registradas_r06": []
+  "pendencias_registradas_r06": [
+    {
+      "action_id": "catalog.validate",
+      "tipo": "teste-pre-existente",
+      "o_que": "catalog_app_test (modo publico temporario) e validate_admin_visual_contracts_test falham tambem na base limpa; o gate visual lista InkWell/PopupMenu/DropdownButtonFormField crus em agenda_calendar_page, superadmin_chat_page, superadmin_chat_create_group_dialog, institution_card e institution_filter_menu (frentes publicacoes/principal-chat/estrutura) e 3 arquivos allowlistados que nao existem mais (institution_directory_cards/toolbar)."
+    },
+    {
+      "action_id": "plans.assign",
+      "tipo": "decisao",
+      "o_que": "sem comando aprovado; P51 ao Owner."
+    },
+    {
+      "action_id": "account.sessions",
+      "tipo": "revisao-profunda",
+      "o_que": "auditoria propria (audit.audit_logs) da listagem/revogacao nao existe; GoTrue registra em auth.audit_log_entries. Revogacao individual por sessao nao existe (GoTrue so expoe scope=others)."
+    },
+    {
+      "action_id": "support.table",
+      "tipo": "ui",
+      "o_que": "a 1424px de largura util a toolbar quebra o filtro Leitura para a segunda linha (golden 1440 fica em uma linha)."
+    }
+  ],
+  "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (16 deltas; ensaiado com apply-tracker-delta.cjs + validate-trackers.cjs PASS e revertido)"
 }
