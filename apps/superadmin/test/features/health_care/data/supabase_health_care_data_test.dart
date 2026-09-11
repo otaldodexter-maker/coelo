@@ -148,6 +148,30 @@ void main() {
       expect(payload['subject'], 'care_profile');
     });
 
+    test('alergia sem data de episódio vai sem gravidade (severity_check do servidor)', () async {
+      final backend = _Backend({
+        'superadmin_health_care_save_profile': {'id': 'profile-9', 'revision': 1},
+      });
+      final client = _clientFor(backend);
+      addTearDown(client.dispose);
+
+      await SupabaseHealthCareRepository(client).createCareProfile(
+        HealthCareProfileDraft(
+          childId: 'person-1',
+          observedReaction: 'Urticaria leve',
+          justification: 'Cadastro inicial.',
+        ),
+      );
+
+      final payload =
+          backend.paramsOf('superadmin_health_care_save_profile')['payload']! as Map<String, Object?>;
+      final allergy = (payload['allergies']! as List).single as Map<String, Object?>;
+      expect(allergy.containsKey('last_episode_at'), isFalse);
+      // O formulario nasce com "Moderada" selecionada; sem episodio o servidor
+      // recusaria com 23514 (health_care_allergies_severity_check).
+      expect(allergy['episode_severity'], isNull);
+    });
+
     test('perfil fora do escopo volta como ausente, sem confirmar existência', () async {
       final backend = _Backend({})
         ..errors['superadmin_health_care_profile_detail'] = (status: 403, code: '42501');
