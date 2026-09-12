@@ -1,17 +1,17 @@
 {
   "grupo": "suites",
-  "revision": 44,
+  "revision": 45,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:35:00-03:00",
+  "updatedAt": "2026-09-12T14:07:09-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "7e450214e5bcf1e2fcf5b8bbe3291e4003b36a20",
+  "head": "0a7b0ad27321cccc80df393d1b6566563d73e072",
   "upstream": "origin/dev",
-  "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
+  "base": "c729090f9f1f9968059e074009f06e2c45c09530",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
   "recorte": {
     "testes": [
@@ -74,25 +74,17 @@
     "R08 G8: P51 pós-allowlist do C0 é WIP ainda não integrado em origin/dev: p51-link-pos-allowlist.json às 13:15:35 registra 7 booleanos true e p51-auth-allowlist.json às 13:17:25; preservar como evidência temporal posterior, sem reclassificar o ciclo 120 nem promover E2E.",
     "R08 G8: matriz documental por arquivo/SHA publicada em docs/reviews/evidence/etapa-2/r08-suites/matriz-evidencias.md; ciclos 30/60/90/120/150, G1 45 A e anônimo 293 separados sem somar reruns. A fonte final anônima 72e6e6f22/recibo 8b9e784e5 identifica seis caminhos; resta apenas ausência de ID estável comum para provar interseção semântica entre ciclos.",
     "R08 G8: ciclo150 integrado por base d2a8cc813; P51 pós-allowlist mantém sete invariantes e P51/G1/anônimo permanecem evidências temporais separadas, sem promoção nova FE/BE/E2E.",
-    "R08 G8: script matriz-exata.js e resultado matriz-exata-result.json/md publicados; ciclos 30/60/90 têm 245/476/820 chaves únicas, anônimo 293 eventos/281 chaves com 12 duplicatas, interseção sintática 60∩90 de 224 e zero linhas desconhecidas.",
-    "Gate do C0: parser corrigido para testDone ligado a testStart por ID; ciclos 30/60/90 = 121/238/422 casos executados, com 10/11/11 hidden/loading filtrados; log anônimo = 292 linhas de casos, 280 chaves e 12 duplicações, com rodapé +293 separado como total declarado; interseção ciclo60∩ciclo90 = 112.",
-    "Reconciliação do log anônimo: 293 linhas com marcador (+0 loading +1..+292 casos), sem salto; +293 é somente rodapé do runner. As 12 duplicações foram identificadas em quatro nomes completos de forms_media_reader_test.dart, nos prefixos 28..33, 34..38, 39..40 e 43..45.",
     "Review G6 aplicado: parser anônimo preserva dois casos legítimos com nome iniciado por loading at; somente seis marcadores loading de arquivo são filtrados. Resultado corrigido para 293 casos, 281 chaves e 12 duplicações; footer +293 permanece fora da contagem.",
     "Plano executável do censo único de fechamento publicado: comando PowerShell com recorte, concurrency=1, timeout=10m, reporter JSON, preservação de exit code; parser por testID/suiteID; skips R07 11 reconciliados individualmente; estimativa por timestamps reais. Plano não executado.",
     "Correção final do parser anônimo: removido todo filtro por prefixo loading; a regex somente aceita marcador com caminho .dart e nome após os dois-pontos, preservando casos legítimos loading at. Resultado 293 observados, 281 únicos, 12 duplicações.",
     "Plano do censo corrigido conforme C0: suíte completa \test, concurrency=1, reporter JSON, saída ../../docs a partir de apps/superadmin, janela de 30m, parser por testID/suiteID sem colapsar nomes, skips individuais. Estimativa medida R07: 426.010s (7m06.010s), limite operacional 1800s. Não executado.",
     "Correção documental ACK180: campo canônico revision=35, campo alternativo revisao removido, updatedAt ajustado ao relógio da máquina (13:51:25-03:00) e contagens refutadas movidas para historicoR08, sem apresentá-las como estado atual.",
-    "Review final G6 aplicado: loader identificado por igualdade estrutural com loading + suite.path; caminhos canonicalizados para apps/superadmin; métricas renomeadas para observedEvents, uniqueDisplayKeys e displayKeyCollisions, preservando 293/281/12 sem chamar chaves de casos.",
-    "Review G6 final: loaderMatched separado por ciclo (10/11/11), matriz reescrita somente com resultados atuais 121/238/422 e anônimo 293/281/12; caminhos canonicalizados e nomenclatura de chaves corrigida.",
-    "Parser geral executável publicado em censo-parser.js: args input/output/base/exit-code; preserva testID/suiteID/path relativo; separa passed/failed/skipped/hidden/loading/errors, órfãos e desconhecidos. Validação sem Flutter no JSONL ciclo90: exit 1, 422 passed, 11 hidden, 0 órfãos, 0 unknown.",
-    "Parser geral materializado e validado sem Flutter sobre JSONL ciclo90: exit 1, 422 passed, 11 hidden, 0 órfãos; preserva IDs e separa eventos. Correção final de processamento de eventos estruturais publicada.",
-    "Parser geral corrigido: loader por pathRel do nome após loading comparado ao suite.path; classificação loading antes de hidden. Validação ciclo90 sem Flutter: 422 passed, 11 loading, 0 hidden, 0 órfãos, exit 1.",
-    "Correção de evidência C0: ciclo90 reconhecido como exit 0, não exit 1. Parser geral agora trata done como metadado, registra inputSha256 e foi validado no ciclo180 integrado: 411 passed, 4 failed, 1 skipped, 4 errors, nativeExitCode=1, sem rerun.",
     "Proveniência R07 corrigida: 426.010s foi medido com \flutter test --reporter json -j 6, não concurrency=1. Plano distingue a medição paralela do censo futuro serial --concurrency=1; janela de 30m preservada, sem extrapolação indevida.",
     "Proveniência anexada ao plano: R07 426.010s veio de -j6 paralelo; fechamento usa concurrency=1 e mede duração própria dentro de 30m, sem extrapolação.",
-    "Parser geral materializa evento done e resultado versionado do ciclo180: base c729090f, inputSha256 804e94758031d298b5e6994e5759b44401258b4f362836ed2ec2222d7481116b, done success=false/time=97850, exit=1, 411 passed/4 failed/1 skipped, 0 órfãos. Sem Flutter."
+    "Parser geral materializa evento done e resultado versionado do ciclo180: base c729090f, inputSha256 804e94758031d298b5e6994e5759b44401258b4f362836ed2ec2222d7481116b, done success=false/time=97850, exit=1, 411 passed/4 failed/1 skipped, 0 órfãos. Sem Flutter.",
+    "Correção documental C0: updatedAt ajustado ao relógio real; alegações refutadas removidas de feito e preservadas em historicoR08.contagensRefutadas; base completa c729090f9f1f9968059e074009f06e2c45c09530 registrada."
   ],
-  "pendente": "Reconciliar diferenças de categorização loading/hidden do parser geral com o formato canônico do C0 antes de qualquer promoção; não inventar contagens.",
+  "pendente": "Resultado ciclo180 já reconciliado: done único false/97850, exit1, 411/4/1, 4 errors, loading16/hidden6 e 0 órfãos. Aguardar aceite documental do C0; não executar Flutter nem promover cobertura.",
   "commitsPublicados": [
     "d5da3dfaf",
     "9dd3e1c76",
@@ -128,7 +120,8 @@
     "aeff370aa (rev 41)",
     "0d710964a (rev 42)",
     "4e493a3a2 (rev 43)",
-    "7e450214e (rev 44)"
+    "7e450214e (rev 44)",
+    "0a7b0ad27 (rev 45)"
   ],
   "foraDoRecorteRegistrado": [
     {
@@ -457,6 +450,51 @@
         "origem": "plano de censo anterior",
         "observado": "recorte apenas test/app,test/core/config,test/shared",
         "status": "refutado pelo protocolo; censo completo usa test"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "R08 G8: script matriz-exata.js e resultado matriz-exata-result.json/md publicados; ciclos 30/60/90 têm 245/476/820 chaves únicas, anônimo 293 eventos/281 chaves com 12 duplicatas, interseção sintática 60∩90 de 224 e zero linhas desconhecidas.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Gate do C0: parser corrigido para testDone ligado a testStart por ID; ciclos 30/60/90 = 121/238/422 casos executados, com 10/11/11 hidden/loading filtrados; log anônimo = 292 linhas de casos, 280 chaves e 12 duplicações, com rodapé +293 separado como total declarado; interseção ciclo60∩ciclo90 = 112.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Reconciliação do log anônimo: 293 linhas com marcador (+0 loading +1..+292 casos), sem salto; +293 é somente rodapé do runner. As 12 duplicações foram identificadas em quatro nomes completos de forms_media_reader_test.dart, nos prefixos 28..33, 34..38, 39..40 e 43..45.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Review final G6 aplicado: loader identificado por igualdade estrutural com loading + suite.path; caminhos canonicalizados para apps/superadmin; métricas renomeadas para observedEvents, uniqueDisplayKeys e displayKeyCollisions, preservando 293/281/12 sem chamar chaves de casos.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Review G6 final: loaderMatched separado por ciclo (10/11/11), matriz reescrita somente com resultados atuais 121/238/422 e anônimo 293/281/12; caminhos canonicalizados e nomenclatura de chaves corrigida.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Parser geral executável publicado em censo-parser.js: args input/output/base/exit-code; preserva testID/suiteID/path relativo; separa passed/failed/skipped/hidden/loading/errors, órfãos e desconhecidos. Validação sem Flutter no JSONL ciclo90: exit 1, 422 passed, 11 hidden, 0 órfãos, 0 unknown.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Parser geral materializado e validado sem Flutter sobre JSONL ciclo90: exit 1, 422 passed, 11 hidden, 0 órfãos; preserva IDs e separa eventos. Correção final de processamento de eventos estruturais publicada.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Parser geral corrigido: loader por pathRel do nome após loading comparado ao suite.path; classificação loading antes de hidden. Validação ciclo90 sem Flutter: 422 passed, 11 loading, 0 hidden, 0 órfãos, exit 1.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
+      },
+      {
+        "origem": "feito histórico R08",
+        "observado": "Correção de evidência C0: ciclo90 reconhecido como exit 0, não exit 1. Parser geral agora trata done como metadado, registra inputSha256 e foi validado no ciclo180 integrado: 411 passed, 4 failed, 1 skipped, 4 errors, nativeExitCode=1, sem rerun.",
+        "status": "refutada ou substituída pelo resultado ciclo180"
       }
     ],
     "estadoAtual": "parser JSONL por testID/suiteID; loader estrutural; caminhos apps/superadmin; anonimo 293 observedEvents/281 uniqueDisplayKeys/12 displayKeyCollisions; matriz atual sem contagens obsoletas"
