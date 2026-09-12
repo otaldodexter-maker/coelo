@@ -1,11 +1,11 @@
 {
   "grupo": "realm-interno",
-  "revision": 79,
+  "revision": 80,
   "round": "E2-R09-20260912-1542",
-  "updatedAt": "2026-09-12T19:00:38.782034+00:00",
+  "updatedAt": "2026-09-12T19:11:01.458680+00:00",
   "app": "Codex",
   "modelo": "gpt-6-astra / medium (configuracao declarada por C0)",
-  "conversa": "R09 G5 Realm interno e Back-end",
+  "conversa": "R09 ? Realm interno e Back-end ? G5",
   "coordenador": "C0 unico 01a096ed-314b-7c13-a9e0-3e64649e66fc / host local",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
   "branch": "work/etapa2-r09-realm-interno-20260912-1542",
@@ -29,10 +29,13 @@
     ],
     "foraDoRecorte": "UI, auditoria ampla, Etapa 3, SQL sem espelho/posse, remoto/deploy, inventario e rastreadores C0"
   },
-  "primeiroGate": "G1/C0: prova real Turmas (vinculo/Local e negativas); Avaliacoes confirmar aluno elegivel antes de nota, reutilizando diario R08. Posse SQL/E2E pendente.",
+  "primeiroGate": "C0 integrar proposta BE activities.assessment; autorizar diagnostico dos vinculos sinteticos que deixaram diario sem alunos para G1.",
   "provaLocal": "R09: nenhum teste de produto executado; ACK documental. Provas R08 permanecem historicas.",
   "bloqueio": null,
-  "pedidosAoCoordenador": [],
+  "pedidosAoCoordenador": [
+    "Revisar/integrar deltas-assessment-be.json: 1 BE done proposto, sem FE/E2E; negativa real anon/ID inexistente + pgTAP cross-tenant reutilizado, sem segunda sessao real.",
+    "Autorizar leitura focal da cadeia activity_group_participants/child_group_links/child_unit_links do assignment retido; definir autoria da fixture e posse G0 se SQL for necessario."
+  ],
   "perguntasParaOOwner": [
     "H19: quem pode ser Responsável de um plano de medicação (guardiões autorizados, equipe no escopo, ambos) e qual a semântica dessa atribuição, sem conceder implicitamente medication.record_evidence?"
   ],
@@ -1245,24 +1248,31 @@
     "memoria": "no-op: nenhuma regra duravel nova"
   },
   "checkpointR09": {
-    "revision": 79,
+    "revision": 80,
     "round": "E2-R09-20260912-1542",
-    "feito": "Revisao focal das provas existentes G1 concluida; sem defeito SQL demonstrado ou promocao BE",
-    "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/handoff.md",
+    "coordenacaoRevision": 97,
+    "feito": "Runner minimo e prova API normal concluida, 9 checks PASS/0 FAIL; diario retido tem zero alunos; sem SQL novo",
+    "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
     "actionIds": [
-      "groups.members",
-      "groups.location",
       "activities.assessment",
-      "assessments.entry",
-      "assessments.gradebook",
       "assessments.detail"
     ],
     "consumidora": "G1 estrutura",
-    "testesProdutoExecutados": 0,
-    "novosAceites": [],
-    "deltas": [],
-    "proximoGate": "G1/C0: prova real Turmas (vinculo/Local e negativas); Avaliacoes confirmar aluno elegivel antes de nota, reutilizando diario R08. Posse SQL/E2E pendente.",
-    "donoDesbloqueio": "C0/G1 e G0 para posse de espelho",
-    "status": "checkpoint curto publicado; aguarda confirmacao do proximo pacote/recursos sem polling"
+    "testes": {
+      "apiAtual": {
+        "pass": 9,
+        "fail": 0
+      },
+      "oracleOffline": "PASS",
+      "pgTAP": "52/52 historicos R08 G0 reutilizados, nenhum rerun"
+    },
+    "deltaArquivo": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/deltas-assessment-be.json",
+    "aceitesBEPropostos": [
+      "activities.assessment"
+    ],
+    "novosAceitesIntegrados": [],
+    "proximoGate": "C0 integrar proposta BE activities.assessment; autorizar diagnostico dos vinculos sinteticos que deixaram diario sem alunos para G1.",
+    "tituloInterface": "ferramenta de renomeacao indisponivel; conversa normalizada neste JSON",
+    "memoria": "no-op"
   }
 }

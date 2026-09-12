@@ -1,0 +1,15 @@
+[
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 G5: save/activate/releituras reais R08 + pgTAP52/52 mesma familia (cross-tenant caso48) reutilizados; anon401 e nao enumeracao de atividade/unidade por API normal R09, controle autorizado200. Regua MVP combinada; sem segunda sessao real escopada e sem promover FE/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+      "revision": "G5-R09-r80",
+      "environment": "Supabase producao; pgTAP R08 G0 reutilizado",
+      "recordedAt": "2026-09-12T19:11:01.449001+00:00"
+    }
+  }
+]
