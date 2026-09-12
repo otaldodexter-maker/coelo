@@ -342,7 +342,7 @@ async function handleAnswerR2(
   const authorized = await serviceClient.rpc("form_media_authorize_for_worker", {
     p_asset_id: access.asset_id,
     p_actor_person_id: actorPersonId,
-    p_edit_secret: access.edit_secret,
+    p_edit_secret: access.edit_secret ?? null,
   });
   if (authorized.error || !authorized.data || authorized.data.state !== "finalized") {
     throw new Error("asset_unavailable");
@@ -762,7 +762,7 @@ export async function handleFormMediaRequest(
           {
             p_asset_id: payload.asset_id,
             p_actor_person_id: actorPersonId,
-            p_edit_secret: payload.edit_secret,
+            p_edit_secret: payload.edit_secret ?? null,
           },
         );
         if (
@@ -809,7 +809,7 @@ export async function handleFormMediaRequest(
           {
             p_asset_id: payload.asset_id,
             p_actor_person_id: actorPersonId,
-            p_edit_secret: payload.edit_secret,
+            p_edit_secret: payload.edit_secret ?? null,
           },
         );
         if (
