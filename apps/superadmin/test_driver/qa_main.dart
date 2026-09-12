@@ -23,16 +23,17 @@ Future<void> main() async {
       'COELO_QA_TEXT_ENTRY_EMULATION',
     ),
   );
-  // O seletor nativo de arquivos nao e dirigivel pelo CDP; na sessao de QA o
-  // botao "Adicionar arquivo" entrega um PNG sintetico e o resto do fluxo
-  // (prepare -> R2 -> finalize -> bloco de midia) continua real.
-  SuperadminQaHooks.circularFilePicker = () async => [
-    CircularSelectedFile(
-      uploadRequestId: CircularMediaLimits.newRequestId(),
-      name: 'qa-pixel.png',
-      mimeType: 'image/png',
-      bytes: base64Decode(_qaPngBase64),
-    ),
-  ];
+  // A prova pela interface usa o seletor normal. Runners antigos podem
+  // optar pelo arquivo sintetico; essa substituicao nao prova o seletor.
+  if (const bool.fromEnvironment('COELO_QA_SYNTHETIC_CIRCULAR_FILE')) {
+    SuperadminQaHooks.circularFilePicker = () async => [
+      CircularSelectedFile(
+        uploadRequestId: CircularMediaLimits.newRequestId(),
+        name: 'qa-pixel.png',
+        mimeType: 'image/png',
+        bytes: base64Decode(_qaPngBase64),
+      ),
+    ];
+  }
   await app.main();
 }
