@@ -1,17 +1,17 @@
 {
-  "revision": 52,
+  "revision": 53,
   "updated_at": "2026-09-11T21:35:00-03:00",
-  "round": "E2-R06-20260911",
+  "round": "E2-R07-20260911",
   "group": "operacoes",
-  "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
-  "conversation": "R06 · Operações",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-operacoes",
-  "branch": "work/etapa2-r06-operacoes",
-  "head": "(commit desta rev)",
+  "tool_model": "Codex, Luna, esforco medio — conversa R07 · Operacoes",
+  "conversation": "R07 · Operações",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-operacoes",
+  "branch": "work/etapa2-r07-operacoes",
+  "head": "a50487878 (origin/dev na abertura; commit desta rev pendente)",
   "base": {
     "requested": "origin/dev",
-    "resolved": "ca60b096b",
-    "note": "HEAD que contem R06-prompts.md e coordenacao rev 51"
+    "resolved": "a50487878",
+    "note": "origin/dev conferido com git fetch; HEAD contem R07-prompts.md e coordenacao rev 60"
   },
   "scope": {
     "app": "apps/superadmin",
@@ -39,12 +39,15 @@
     "excluded": "code review profundo; refatoracao; escrita em dev/inventario/rastreadores (coordenador); deploy de Edge Function (coordenador)"
   },
   "opening_contract": {
-    "objective": "fechar a ordem (0)-(6) do prompt G7 da R06 no maximo que couber em 2h",
-    "received": "R05 fechada com audit/plans/support/logout em E2E; respostas do Owner P43=B, P44=B, P49=A, IMP-R05-2=A, V-16=A+; candidatos/operacoes vazio",
-    "first_gate": "(0) teste de Importacoes no composto",
-    "stop_criterion": "T0+2h, ou ordem do Owner/coordenador",
-    "expected_evidence": "commits pequenos em portugues na branch (push), flutter test por familia, pgTAP verde se houver pacote, prova de rota real com qa-r06-operacoes, deltas em evidence/etapa-2/r06-operacoes/deltas-r06-ops.json",
-    "time_estimate": "nao calculavel ainda; calibrar apos (0) e (1)"
+    "objective": "resolver a ordem (0)-(5) da R07 na rota real, preservando o escopo de Operacoes e a regua do MVP",
+    "received": "R06 fechada; 200200/200300 em producao; suporte com abas e persistencia; candidatos/operacoes vazio; T0 ainda nao registrado pelo coordenador",
+    "included": "apps/superadmin; account.settings/theme/sessions; support.* restante; plans.* restante; catalog.validate/sync/publish; audit.export honesto; imports.* e profile_files.* honestos; V-16 somente se sobrar tempo",
+    "excluded": "dev, inventario e rastreadores (coordenador); deploy de Edge Function; pacote SQL salvo indispensavel; goldens de outras familias; code review profundo",
+    "first_gate": "(0) warning strict_raw_type em test_driver/qa_login.dart:40 e flutter analyze limpo",
+    "order": ["(0) warning", "(1) account", "(2) support", "(3) plans/catalog", "(4) audit/imports/profile_files", "(5) V-16"],
+    "stop_criterion": "T0+4h; revisao final no proprio JSON ate T0+4h10; nao retomar depois",
+    "expected_evidence": "commits pequenos em portugues publicados na branch; flutter analyze/test por familia; prova de rota real com qa-r06-operacoes; capturas commitadas; deltas em evidence/etapa-2/r07-operacoes/deltas-r07-ops.json",
+    "time_estimate": "quatro horas de execucao apos T0 do coordenador; calibrar no primeiro gate"
   },
   "loop": "/loop 15m agendado na abertura (retomar o recorte da R06, atualizar operacoes.json, nao encerrar antes de T0+2h)",
   "changes": [
@@ -290,7 +293,52 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "nenhum: finalizado; nao retomar depois de 21:46",
+  "next_step": "aguardando T0 no coordenacao.json; executar imediatamente o gate (0), sem credencial em saidas",
+  "r07": {
+    "opened_at": "2026-09-11T23:21:30-03:00",
+    "t0": "pendente de registro pelo coordenador",
+    "done": [
+      {
+        "action_id": "qa_login.strict_raw_type",
+        "status": "verified",
+        "proof": "dart analyze test_driver/qa_login.dart -> No issues found; flutter analyze amplo iniciou, resolveu dependencias, mas nao devolveu diagnostico antes do timeout do processo"
+      },
+      {
+        "action_id": "account.settings / account.theme / account.sessions",
+        "status": "local-green",
+        "proof": "flutter test test/features/account -> parte da suíte conjunta aprovada; prova de rota real R07 retida porque o build web nao concluiu main.dart.js"
+      },
+      {
+        "action_id": "support.*",
+        "status": "local-green",
+        "proof": "flutter test test/features/account test/features/support -> 195/195 PASS; prova de rota real R07 retida porque o build web nao concluiu main.dart.js"
+      },
+      {
+        "action_id": "audit.export / imports.* / profile_files.*",
+        "status": "local-green",
+        "proof": "flutter test test/features/audit test/features/imports test/features/access_profiles/presentation/access_profile_file_actions_test.dart -> 99 PASS + 1 skip esperado; export geral nao inicia job/download e imports exibem indisponibilidade honesta"
+      },
+      {
+        "action_id": "plans.* / catalog.validate / catalog.sync / catalog.publish",
+        "status": "local-green",
+        "proof": "flutter test test/features/plans test/features/catalog -> 51/51 PASS; plans.assign segue bloqueado por decisao da spec 051 e catalog.publish segue dependente de hosting nominal"
+      }
+    ],
+    "pending": [
+      {"action_id": "qa_login.strict_raw_type", "first_gate": "flutter analyze em apps/superadmin"},
+      {"action_id": "account.settings / account.theme / account.sessions", "first_gate": "build web da propria branch + Chrome/CDP; local-green registrado"},
+      {"action_id": "support.*", "first_gate": "build web da propria branch + Chrome/CDP; local-green registrado"},
+      {"action_id": "plans.assign", "first_gate": "decisao da spec 051 / P51 Owner; nao criar comando por inferencia"},
+      {"action_id": "catalog.publish", "first_gate": "decisao nominal de hosting; nao publicar recurso"},
+      {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "build web da propria branch + Chrome/CDP para conferir o botao honesto; local-green registrado"}
+    ],
+    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55", "15d3390bd", "a1045abf1", "86f5380a8", "1c6bb0665"],
+    "deltas": "docs/reviews/evidence/etapa-2/r07-operacoes/deltas-r07-ops.json (a criar)",
+    "packages": [],
+    "synthetic_data": "nenhum novo",
+    "keys": "nenhuma",
+    "skills_deltas": "nenhum"
+  },
   "commits": [],
   "r04_history": {
     "revision": 20,
