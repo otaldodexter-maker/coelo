@@ -1,19 +1,19 @@
 {
-  "revision": 79,
+  "revision": 80,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T17:04:43.003Z",
+  "updatedAt": "2026-09-12T17:09:26.977Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "17d4f2233 + ProfileSummary48 desta revisão",
-  "base": "origin/dev 7e889abac materializado no merge a7b081674",
+  "head": "8fead7905 + reviewH28 desta revisão",
+  "base": "origin/dev7d2b66a3e ciclo180 materializado por8fead7905",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
     "objetivo": "Fechar primeiro gate executável do recorte G3 com correção e evidências por action_id.",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Cuidado RED0PASS2FAIL menu242x44 -> fixnominal_ProfileSummary48; GREEN8PASS0FAIL/analyze0,2reativados0novos, goldenssemPNG. Publicar/mergecycle180.",
+  "currentGate": "ReviewreadonlyH28G2 SHA425aceaf8:2achadosbairrostate_code/atividadefirstOrNullenviadosautorC0; aguardaprova/followup. SemFlutter/SQL/ediçãoalheia.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -335,7 +335,7 @@
       "o_que": "handoff/memória conciliados"
     }
   ],
-  "nextStep": "Publicar reativação e solicitar próximo gate independente ao C0 até corte; handoff segueparcial.",
+  "nextStep": "RevisarfollowupH28G2 apósprova; permanecernopróximogateautorizado até14:52:16. NenhumprocessoG3.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",
@@ -2530,7 +2530,7 @@
     ]
   },
   "memoryGate": {
-    "status": "delta proposto ao escritor central",
+    "status": "AplicadoC0em65f219550; fonte/projeção lidas e materializadas ciclo180",
     "evidencia": "11-memory-delta.md",
     "artigosValidos": 64,
     "tests": {
