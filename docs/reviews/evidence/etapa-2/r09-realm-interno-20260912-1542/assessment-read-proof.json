@@ -1,0 +1,60 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "coordenacaoRevision": 97,
+  "measuredAt": "2026-09-12T19:08:45.483312+00:00",
+  "businessMutations": false,
+  "realCrossTenantSession": false,
+  "checks": [
+    {
+      "step": "anon_superadmin_assessment_configuration_read",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "anon_superadmin_assessment_gradebook_read",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "authorized_configuration",
+      "pass": true,
+      "http": 200,
+      "studentCount": null
+    },
+    {
+      "step": "authorized_gradebook",
+      "pass": true,
+      "http": 200,
+      "studentCount": 0
+    },
+    {
+      "step": "unknown_activity",
+      "pass": true,
+      "http": 200,
+      "dataAbsent": true
+    },
+    {
+      "step": "unit_outside_activity",
+      "pass": true,
+      "http": 200,
+      "dataAbsent": true
+    },
+    {
+      "step": "unknown_gradebook",
+      "pass": true,
+      "http": 200,
+      "dataAbsent": true
+    },
+    {
+      "step": "logout_local",
+      "pass": true,
+      "http": 204
+    }
+  ],
+  "pass": true
+}
