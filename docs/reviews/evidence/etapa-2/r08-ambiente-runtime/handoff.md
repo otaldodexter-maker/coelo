@@ -422,3 +422,27 @@ management version 2 com o asset anexado; a URL autorizada devolveu exatamente
 o replay do mesmo reload ID confirmou resposta e asset. Exit 0, logout local
 204, sem prepare, PUT, finalize, save ou cleanup. Recibo:
 [forms-answer-image-api-download-pass-20260912.log](./forms-answer-image-api-download-pass-20260912.log).
+
+## Build QA integrado do ciclo 180
+
+O ciclo 180 `origin/dev@7d2b66a3e` foi incorporado sem conflito. O build
+`flutter build web --release -t test_driver/qa_main.dart
+--dart-define-from-file=.env.local` passou em 87,6 s sobre o source SHA
+`b82fed9c4b997995ee723ed6fff1dd62f4b746b7`. O `main.dart.js` tem 8.432.045
+bytes e SHA-256
+`1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8`.
+
+O servidor antigo PID 44404 foi encerrado pelo PID exato e substituído pelo
+PID 14072, bind `127.0.0.1:3014`. `/login` retornou 200/1020 bytes e
+`flutter_bootstrap.js`, 200/9975 bytes. A mesma aba Chrome 829822454 foi
+recarregada em `/login`; nenhum segundo navegador foi aberto. Estes HTTPs e o
+reload da aba não promovem a prova UI de login/leitura/reload, que permanece
+bloqueada pelo canal de texto CUA já documentado. Metadados:
+[build-qa-ciclo180-metadata.txt](./build-qa-ciclo180-metadata.txt).
+
+Após o build, a máquina tinha 3,62 GB livres de 15,63 GB, zero processo
+`flutter test`/`flutter_tools` e dez processos Dart MCP leves. Para o censo
+final, a recomendação enviada ao C0 é um único processo Flutter com
+`--concurrency=2` somente se o preflight imediato ainda mostrar pelo menos
+3,0 GB livres; abaixo disso, `--concurrency=1`. Nenhum censo foi iniciado pelo
+G0. Evidência: [censo-capacidade-20260912.txt](./censo-capacidade-20260912.txt).

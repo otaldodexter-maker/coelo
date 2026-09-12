@@ -1,12 +1,12 @@
 {
-  "revision": 28,
+  "revision": 29,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:03:20-03:00",
+  "updatedAt": "2026-09-12T14:08:35-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -77,7 +77,9 @@
       "C0 integrou o fix e obteve Deno 56/56 com deno.json; form-media v18 ativa aceitou o ator interno e o prepare HTTP 200 materializou/reproduziu um asset no mesmo draft",
       "C0 configurou somente COELO_FORMS_MEDIA_PROVIDER=r2; retomada idempotente reutilizou o mesmo asset e confirmou envelope R2, sem PUT por validade insegura",
       "fix TTL 5927718f2 aprovado, integrado e implantado na form-media v20; mesmo asset passou prepare/PUT/finalize/replay/save com bytes e SHA medidos",
-      "form-media v21 corrigiu argumento nulo do download; modo download-only com reload_request_id pré-persistido passou GET exato e reopen da resposta version2, exit0"
+      "form-media v21 corrigiu argumento nulo do download; modo download-only com reload_request_id pré-persistido passou GET exato e reopen da resposta version2, exit0",
+      "origin/dev ciclo180 incorporado; build QA release exit0 em 87.6s, servidor 3014 PID14072 e mesma aba Chrome recarregada",
+      "capacidade pós-build medida: 3.62GB livres, zero flutter test; recomendado único processo censo concurrency2 apenas com RAM imediata >=3GB"
     ],
     "pending": [
       "prova UI de login, leitura autorizada e persistencia apos reload segue bloqueada porque CUA nao atualiza os controllers Flutter; a prova API answer-image fechou, mas nao promove UI"
@@ -126,6 +128,7 @@
       ,"answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204"
       ,"answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204"
       ,"download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita"
+      ,"build QA ciclo180: exit0 em 87.6s; main.dart.js 8432045 bytes SHA256 1f4fa2ef; GET login200 e bootstrap200 no PID14072; aba829822454 recarregada"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -142,13 +145,13 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "incorporar origin/dev ciclo180 e, com slot C0, gerar build QA integrado final, reiniciar somente o servidor 3014 e publicar SHA/PID/HTTP sem abrir outro Chrome"
+    "nextGate": "aguardar próximo gate não conflitante do C0 até o corte; manter servidor/Chrome/baseline disponíveis e não promover a prova UI bloqueada"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
-    "server": "127.0.0.1:3014 PID 44404, ativo; /login HTTP 200; build integrado SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285",
+    "server": "127.0.0.1:3014 PID 14072, ativo; /login e flutter_bootstrap HTTP200; build ciclo180 SHA-256 1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
-    "flutterTest": "nao reservado; nao usar",
+    "flutterTest": "slot build usado e devolvido; zero processo ativo; censo nao iniciado; recomendar unico processo concurrency2 somente se RAM livre imediata >=3GB",
     "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
     "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image PASS API preservado: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response bb1f3443 version2, asset e47eb9e1; prepare/PUT/finalize/replay/save/download/reopen todos comprovados, sem cleanup"
   },
@@ -156,7 +159,7 @@
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
     "head": "3b134d456bde954b3ae3fca7cbc525d77a8d740e",
-    "buildSourceSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
+    "buildSourceSha": "b82fed9c4b997995ee723ed6fff1dd62f4b746b7",
     "publishedSha": "3b134d456bde954b3ae3fca7cbc525d77a8d740e",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
@@ -300,6 +303,11 @@
       "revision": 28,
       "at": "2026-09-12T14:03:20-03:00",
       "summary": "v21 e reload ID pré-persistido fecharam o answer-image API: GET 68 bytes/SHA esperado e reopen da resposta version2 passaram, sem nova escrita ou cleanup."
+    },
+    {
+      "revision": 29,
+      "at": "2026-09-12T14:08:35-03:00",
+      "summary": "Ciclo180 incorporado e build QA release publicado no servidor PID14072/porta3014, mesma aba recarregada; capacidade do censo medida sem iniciar teste."
     }
   ]
 }
