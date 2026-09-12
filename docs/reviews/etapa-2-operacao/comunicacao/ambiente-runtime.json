@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "round": "E2-R09-20260912",
+  "revision": 38,
+  "round": "E2-R09-20260912-1542",
   "r09": {
     "updatedAt": "2026-09-12T15:25:10-03:00",
     "t0": "2026-09-12T15:17:09-03:00",
@@ -16,9 +16,9 @@
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
-  "model": "GPT-5.6 Sol medio (papel atribuido)",
+  "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:49:00-03:00",
+  "updatedAt": "2026-09-12T16:00:54.1579130-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:40:00-03:00",
@@ -106,51 +106,51 @@
       "docker inspect baseline: running, healthy, restart unless-stopped, volume supabase_db_coelo_baseline",
       "porta 57322 publicada para 5432",
       "flutter build web release: exit 0 em 74.1 s",
-      "GET /login: HTTP 200; prova explicitamente nao promovida a E2E"
-      ,"principal_internal_actor_bridge_v1_test.sql: 22/22, exit 0"
-      ,"internal_actor_scope_root_v1_test.sql: 46/46, exit 0"
-      ,"internal_actor_scope_root_v1_hotfix_test.sql: 4/4, exit 0"
-      ,"internal_actor_institution_access_by_role_v1_test.sql: 16/16, exit 0"
-      ,"preflight-lote56.sql: 20/20, native exit 0, wrapper exit 0"
-      ,"superadmin_assessments_internal_v2_test.sql em 53b9c6d29: 52/52, native/wrapper exit 0"
-      ,"cleanup preview c9662b0ff: native/wrapper exit 0, rollback, nove contagens zero"
-      ,"superadmin_internal_invites_v2_test.sql em 76aed97cb: 34 ok, 1 not ok, native 0, wrapper 1, rollback"
-      ,"superadmin_internal_invites_v2_test.sql corrigido em 95b501322: 35/35, native/wrapper exit 0, rollback"
-      ,"H09 apply baseline: native exit 0; job unico */5 com sweep limitado a 500"
-      ,"now_publication_expiry_dispatch_v1_test.sql: 6/6, native/wrapper exit 0, rollback"
-      ,"superadmin_internal_chat_attachments_v1_test.sql: 28/28, native exit 0, rollback"
-      ,"chat_attachment_worker_claims_v1_test.sql: 3/3, native exit 0, rollback; wrapper agregado 0"
-      ,"forms_question_media_r2_v1_test.sql em 28625efaf: 33/33, native/wrapper exit 0, rollback"
-      ,"forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback"
-      ,"superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida"
-      ,"rerun unico internal drafts em 0d52d5dbf: 59 ok, revogacao com version passou, reativacao falhou revoked internal access is terminal, native/wrapper exit 3, transacao revertida"
-      ,"rerun final internal drafts em afcebccd0: 159/159, native/wrapper exit 0, rollback"
-      ,"RED retry/delete: 4 ok e 5 not ok de 9, native 0 wrapper 1 rollback; GREEN 9/9 native/wrapper 0 rollback"
-      ,"RED terminal unbind: 3 ok e 4 not ok de 7, native 0 wrapper 1 rollback; GREEN 7/7 native/wrapper 0 rollback"
-      ,"regressao forms_question_media_r2 pos-140548/49: 32 ok e 1 not ok de 33, native 0 wrapper 1 rollback; parada antes de 17/159"
-      ,"rerun final 684eea023: forms question media 33/33, behavioral 17/17 e internal drafts 159/159; native/wrapper 0 e rollback"
-      ,"forms-question-image-api-smoke.py: dry-run READY_NO_MUTATION, parse sintático PASS, PNG 68 bytes SHA-256 431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
-      ,"supabase functions list/download read-only: form-media ACTIVE v16 verify_jwt=true; index/media_contract/question_image/r2_s3 iguais por bytes"
-      ,"smoke API produção: auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload PASS, logout 204, exit 0, sem DELETE"
-      ,"flutter build web release integrado: exit 0 em 84.3 s; main.dart.js 8399330 bytes SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285"
-      ,"GET /login 200/1020 bytes e flutter_bootstrap.js 200/9975 bytes após restart PID 44404"
-      ,"moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1"
-      ,"lote58 GREEN: estrutural 4/4, comportamental 11/11, regressões Moments 23/23 e 30/30; total 68/68, rollback e native/wrapper 0"
-      ,"forms-answer-image-api-smoke.py: AST PASS, dry-run READY_NO_MUTATION, guard inválido para antes da auth; discovery HTTP 200 encontrou 0 candidatos e logout 204"
-      ,"forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200"
-      ,"form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0"
-      ,"answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo"
-      ,"form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403"
-      ,"answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204"
-      ,"answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204"
-      ,"answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204"
-      ,"download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita"
-      ,"build QA ciclo180: exit0 em 87.6s; main.dart.js 8432045 bytes SHA256 1f4fa2ef; GET login200 e bootstrap200 no PID14072; aba829822454 recarregada"
-      ,"H28: apply inicial c83 falhou sintaxe e rollback; apply corrigido45dee exit0; estrutural final11/11, funcional final10/10, regressões modernas8/8+11/11+4/4, todos testes rollback"
-      ,"superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28"
-      ,"gate lote59: candidato final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente no baseline; estrutural11/11+funcional10/10, rollback e exit0; produção/ledger intocados"
-      ,"gate final lote59: regressões modernas no mesmo corpo df0a281cb passaram segmentos8/8+identidade11/11+handles4/4; total final44/44, rollback e exit0"
-      ,"build QA pós-lote59: origin/dev477e6c8df integrado em e2769f7b; build99.1s exit0, main.dart.js8432929B SHA256f3f2a3e8; servidor3014 PID7476 e mesma aba recarregada"
+      "GET /login: HTTP 200; prova explicitamente nao promovida a E2E",
+      "principal_internal_actor_bridge_v1_test.sql: 22/22, exit 0",
+      "internal_actor_scope_root_v1_test.sql: 46/46, exit 0",
+      "internal_actor_scope_root_v1_hotfix_test.sql: 4/4, exit 0",
+      "internal_actor_institution_access_by_role_v1_test.sql: 16/16, exit 0",
+      "preflight-lote56.sql: 20/20, native exit 0, wrapper exit 0",
+      "superadmin_assessments_internal_v2_test.sql em 53b9c6d29: 52/52, native/wrapper exit 0",
+      "cleanup preview c9662b0ff: native/wrapper exit 0, rollback, nove contagens zero",
+      "superadmin_internal_invites_v2_test.sql em 76aed97cb: 34 ok, 1 not ok, native 0, wrapper 1, rollback",
+      "superadmin_internal_invites_v2_test.sql corrigido em 95b501322: 35/35, native/wrapper exit 0, rollback",
+      "H09 apply baseline: native exit 0; job unico */5 com sweep limitado a 500",
+      "now_publication_expiry_dispatch_v1_test.sql: 6/6, native/wrapper exit 0, rollback",
+      "superadmin_internal_chat_attachments_v1_test.sql: 28/28, native exit 0, rollback",
+      "chat_attachment_worker_claims_v1_test.sql: 3/3, native exit 0, rollback; wrapper agregado 0",
+      "forms_question_media_r2_v1_test.sql em 28625efaf: 33/33, native/wrapper exit 0, rollback",
+      "forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback",
+      "superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida",
+      "rerun unico internal drafts em 0d52d5dbf: 59 ok, revogacao com version passou, reativacao falhou revoked internal access is terminal, native/wrapper exit 3, transacao revertida",
+      "rerun final internal drafts em afcebccd0: 159/159, native/wrapper exit 0, rollback",
+      "RED retry/delete: 4 ok e 5 not ok de 9, native 0 wrapper 1 rollback; GREEN 9/9 native/wrapper 0 rollback",
+      "RED terminal unbind: 3 ok e 4 not ok de 7, native 0 wrapper 1 rollback; GREEN 7/7 native/wrapper 0 rollback",
+      "regressao forms_question_media_r2 pos-140548/49: 32 ok e 1 not ok de 33, native 0 wrapper 1 rollback; parada antes de 17/159",
+      "rerun final 684eea023: forms question media 33/33, behavioral 17/17 e internal drafts 159/159; native/wrapper 0 e rollback",
+      "forms-question-image-api-smoke.py: dry-run READY_NO_MUTATION, parse sintático PASS, PNG 68 bytes SHA-256 431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460",
+      "supabase functions list/download read-only: form-media ACTIVE v16 verify_jwt=true; index/media_contract/question_image/r2_s3 iguais por bytes",
+      "smoke API produção: auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload PASS, logout 204, exit 0, sem DELETE",
+      "flutter build web release integrado: exit 0 em 84.3 s; main.dart.js 8399330 bytes SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285",
+      "GET /login 200/1020 bytes e flutter_bootstrap.js 200/9975 bytes após restart PID 44404",
+      "moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1",
+      "lote58 GREEN: estrutural 4/4, comportamental 11/11, regressões Moments 23/23 e 30/30; total 68/68, rollback e native/wrapper 0",
+      "forms-answer-image-api-smoke.py: AST PASS, dry-run READY_NO_MUTATION, guard inválido para antes da auth; discovery HTTP 200 encontrou 0 candidatos e logout 204",
+      "forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200",
+      "form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0",
+      "answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo",
+      "form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403",
+      "answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204",
+      "answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204",
+      "answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204",
+      "download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita",
+      "build QA ciclo180: exit0 em 87.6s; main.dart.js 8432045 bytes SHA256 1f4fa2ef; GET login200 e bootstrap200 no PID14072; aba829822454 recarregada",
+      "H28: apply inicial c83 falhou sintaxe e rollback; apply corrigido45dee exit0; estrutural final11/11, funcional final10/10, regressões modernas8/8+11/11+4/4, todos testes rollback",
+      "superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28",
+      "gate lote59: candidato final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente no baseline; estrutural11/11+funcional10/10, rollback e exit0; produção/ledger intocados",
+      "gate final lote59: regressões modernas no mesmo corpo df0a281cb passaram segmentos8/8+identidade11/11+handles4/4; total final44/44, rollback e exit0",
+      "build QA pós-lote59: origin/dev477e6c8df integrado em e2769f7b; build99.1s exit0, main.dart.js8432929B SHA256f3f2a3e8; servidor3014 PID7476 e mesma aba recarregada"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -366,5 +366,54 @@
       "at": "2026-09-12T14:49:00-03:00",
       "summary": "Verificação pós-push corrigiu a referência do canal para o SHA definitivo 263d3c8e; igualdade local/remoto será confirmada no recibo final ao C0."
     }
-  ]
+  ],
+  "novaR09": {
+    "round": "E2-R09-20260912-1542",
+    "revision": 38,
+    "ackCoordinationRevision": 96,
+    "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
+    "host": "local",
+    "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "t0": "2026-09-12T15:42:18-03:00",
+    "executionUntil": "2026-09-12T19:42:18-03:00",
+    "closingUntil": "2026-09-12T20:12:18-03:00",
+    "cutoff": "primeiro corte tempo/consumo C0",
+    "adoptedAt": "2026-09-12T16:00:54.1579130-03:00",
+    "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
+    "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-ambiente-runtime-20260912-1542",
+    "baseSha": "7907453f0362665ab87fe8faaa4854f286904148",
+    "nextGate": "build QA teclado real false; entrada, login normal, leitura autorizada e reload por CUA no Chrome existente",
+    "ownerTransfer": "Owner transferiu build/probe a G0 nesta mensagem, apos fix C0 7907453f0",
+    "scope": "apps/superadmin -> Auth -> login/entrada de texto -> auth.login; dependencia runtime; depois Docker/WSL/espelho",
+    "limits": "sem feature/composicao/SQL remoto/deploy/rastreadores; sem sessao injetada; duas tentativas diferentes e devolver causa a C0",
+    "estimate": "build historico 87.6s; estimativa inicial 15min para build/probe/login/reload, sujeita a recursos e canal suportado",
+    "resources": {
+      "measuredAt": "2026-09-12T16:00:54.1968365-03:00",
+      "server": {
+        "port": 3014,
+        "pid": 7476,
+        "owner": "G0: servidor legado de ambiente-runtime medido, preservado ate build novo pronto",
+        "source": "e2-r08-ambiente-runtime/apps/superadmin/build/web"
+      },
+      "freeMemoryKiB": 1130872,
+      "flutterTest": {
+        "measuredProcesses": 0,
+        "owner": "nenhum"
+      },
+      "chrome": {
+        "tab": "a descobrir pelo canal suportado",
+        "pid": 22592,
+        "owner": "G0",
+        "state": "adotado para a nova vaga; browser existente, nao abrir outro"
+      }
+    },
+    "proof": {
+      "reload": "nao executado",
+      "login": "nao executado",
+      "pgtap": "nao executado",
+      "text": "nao executado",
+      "read": "nao executado"
+    }
+  },
+  "reasoningEffort": "medium"
 }
