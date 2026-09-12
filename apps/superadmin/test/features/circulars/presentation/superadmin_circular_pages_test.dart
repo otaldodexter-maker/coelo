@@ -283,6 +283,16 @@ void main() {
     expect(top('circular-preview-text-before'), lessThan(top('circular-preview-question-middle')));
     expect(top('circular-preview-question-middle'), lessThan(top('circular-preview-media-middle')));
     expect(top('circular-preview-media-middle'), lessThan(top('circular-preview-text-after')));
+
+    await tester.tap(find.byKey(const Key('circular-response-acceptDecline')));
+    await tester.pump();
+
+    expect(controller.draft.blocks.map((block) => block.id).toList(), [
+      'text-before',
+      'question-middle',
+      'media-middle',
+      'text-after',
+    ]);
   });
 
   testWidgets('admin composer saves and publishes through the existing domain controller', (

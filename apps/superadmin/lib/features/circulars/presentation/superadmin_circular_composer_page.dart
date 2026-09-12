@@ -293,15 +293,32 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
 
   void _applyPreset(_ResponsePreset preset, List<CircularQuestionBlock> questions) {
     final controller = widget.controller;
-    for (final question in questions) {
-      controller.removeQuestion(question.id);
+    if (preset == _ResponsePreset.readOnly) {
+      for (final question in questions) {
+        controller.removeQuestion(question.id);
+      }
+      return;
     }
-    if (preset == _ResponsePreset.readOnly) return;
-    controller.addQuestion(CircularQuestionKind.singleChoice);
-    final question = controller.draft.blocks.whereType<CircularQuestionBlock>().last;
-    controller.updateQuestion(question.id, prompt: preset.prompt, required: true);
-    for (var index = 0; index < question.options.length; index++) {
-      controller.updateOption(question.id, question.options[index].id, preset.options[index]);
+    if (questions.isEmpty) {
+      controller.addQuestion(CircularQuestionKind.singleChoice);
+    } else {
+      for (final extra in questions.skip(1)) {
+        controller.removeQuestion(extra.id);
+      }
+    }
+    final question = controller.draft.blocks.whereType<CircularQuestionBlock>().single;
+    controller.updateQuestion(
+      question.id,
+      prompt: preset.prompt,
+      kind: CircularQuestionKind.singleChoice,
+      required: true,
+    );
+    for (final extra in question.options.skip(CircularLimits.minimumOptions)) {
+      controller.removeOption(question.id, extra.id);
+    }
+    final options = controller.draft.blocks.whereType<CircularQuestionBlock>().single.options;
+    for (var index = 0; index < options.length; index++) {
+      controller.updateOption(question.id, options[index].id, preset.options[index]);
     }
   }
 
@@ -412,10 +429,9 @@ final class _TextBlockCardState extends State<_TextBlockCard> {
                 : Key('circular-text-${widget.block.id}'),
             controller: _text,
             hintText: 'Escreva a comunicação.',
-            maxLength: (CircularLimits.bodyCharacters - otherCharacters).clamp(
-              1,
-              CircularLimits.bodyCharacters,
-            ).toInt(),
+            maxLength: (CircularLimits.bodyCharacters - otherCharacters)
+                .clamp(1, CircularLimits.bodyCharacters)
+                .toInt(),
             maxLines: 5,
             onChanged: (value) => widget.controller.updateTextBlock(widget.block.id, value),
           ),
@@ -449,6 +465,12 @@ final class _MediaBlockCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           _BlockActions(label: 'Mídia', blockId: block.id, controller: controller),
+          Text(
+            'Até ${CircularLimits.files} arquivos · PDF, imagem ou vídeo',
+            style: Theme.of(
+              context,
+            ).textTheme.bodySmall?.copyWith(color: Theme.of(context).colorScheme.onSurfaceVariant),
+          ),
           const SizedBox(height: CoeloSpacing.space2),
           Wrap(
             spacing: CoeloSpacing.space2,
