@@ -9,6 +9,58 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final scenario in ['redirect', 'wrong-mime']) {
+    test('R2 upload refuses $scenario without finalize', () async {
+      final actions = <String>[];
+      var puts = 0;
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          actions.add(body['action'] as String);
+          return http.Response(
+            jsonEncode({
+              'asset_id': 'asset-1',
+              'storage_provider': 'r2',
+              'upload_url': 'https://private.test/signed',
+              'required_headers': {
+                'content-type': scenario == 'wrong-mime' ? 'image/jpeg' : 'image/png',
+              },
+            }),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseNowPublicationRepository(
+        client,
+        httpClient: MockClient((request) async {
+          puts++;
+          expect(request.followRedirects, isFalse);
+          expect(request.headers, {'content-type': 'image/png'});
+          return http.Response('', 307, headers: {'location': 'https://other.invalid/file'});
+        }),
+      );
+      await expectLater(
+        repository.uploadMedia(
+          NowPublicationContext.demo,
+          'publication-1',
+          NowMediaDraft.image(
+            localId: 'local-1',
+            name: 'image.png',
+            mimeType: 'image/png',
+            bytes: Uint8List(8),
+          ),
+        ),
+        throwsException,
+      );
+      expect(actions, ['prepare']);
+      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
+    });
+  }
+
   test('envia mídia por upload assinado sem base64 na Edge Function', () async {
     final functionBodies = <Map<String, dynamic>>[];
     http.Request? storageRequest;
@@ -82,7 +134,7 @@ void main() {
                   'asset_id': 'asset-1',
                   'storage_provider': 'r2',
                   'upload_url': 'https://r2.test/put?X-Amz-Signature=abc',
-                  'required_headers': {'content-length': '3'},
+                  'required_headers': {'content-type': 'image/png', 'content-length': '3'},
                   'expires_at': '2099-01-01T00:00:00Z',
                 }
               : {'asset_id': 'asset-1', 'storage_provider': 'r2', 'object_key': 'opaque'};
@@ -120,6 +172,7 @@ void main() {
     expect(functionBodies.map((body) => body['action']), ['prepare', 'finalize']);
     expect(storageRequest, isNull, reason: 'o ramo R2 nunca chama o Supabase Storage');
     expect(putRequest?.method, 'PUT');
+    expect(putRequest?.followRedirects, isFalse);
     expect(putRequest?.url.host, 'r2.test');
     expect(putRequest?.headers['content-type'], 'image/png');
     expect(putRequest?.headers['content-length'], '3');

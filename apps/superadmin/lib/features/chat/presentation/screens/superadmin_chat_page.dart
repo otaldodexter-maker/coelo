@@ -6,6 +6,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:file_picker/file_picker.dart';
 
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
@@ -15,6 +16,7 @@ import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
 import '../widgets/superadmin_chat_create_group_dialog.dart';
 import '../widgets/superadmin_chat_composer.dart';
+import '../widgets/superadmin_chat_upload_dialog.dart';
 
 final class _PendingChatSend {
   const _PendingChatSend({
@@ -86,6 +88,27 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   var _managing = false;
   var _loadingOlder = false;
   _PendingChatSend? _pendingSend;
+  MediaSession _attachmentSession = MediaSession();
+  DialogRoute<String>? _uploadRoute;
+  bool _pickingAttachment = false;
+  int _attachmentGeneration = 0;
+
+  ChatAttachmentRepository? get _attachmentRepository =>
+      _repository is ChatAttachmentRepository ? _repository as ChatAttachmentRepository : null;
+
+  void _resetAttachments() {
+    _attachmentGeneration++;
+    _pickingAttachment = false;
+    unawaited(_attachmentSession.invalidate());
+    _attachmentSession = MediaSession();
+    final route = _uploadRoute;
+    _uploadRoute = null;
+    if (route != null) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (route.isActive) route.navigator?.removeRoute(route);
+      });
+    }
+  }
 
   @override
   void initState() {
@@ -97,7 +120,9 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   @override
   void didUpdateWidget(covariant SuperadminChatPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.mediaSession, widget.mediaSession)) _resetAttachments();
     if (identical(oldWidget.chatRepository, widget.chatRepository)) return;
+    _resetAttachments();
     _searchDebounce?.cancel();
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
@@ -121,6 +146,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 
   @override
   void dispose() {
+    _resetAttachments();
+    unawaited(_attachmentSession.invalidate());
     _searchDebounce?.cancel();
     _search.dispose();
     _composer.dispose();
@@ -221,6 +248,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     final threadGeneration = ++_threadRequestGeneration;
     final requestedRepository = _repository;
     if (conversationChanged) {
+      _resetAttachments();
       _sendRequestGeneration++;
       _pendingSend = null;
     }
@@ -264,6 +292,85 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
           setState(() => _threadError = error);
         }
       }
+    }
+  }
+
+  Future<void> _attach() async {
+    final conversation = _selected;
+    final repository = _attachmentRepository;
+    if (repository == null) {
+      _showNotice('Anexos aguardam o gateway R2 autorizado.');
+      return;
+    }
+    if (conversation == null ||
+        conversation.isReadOnly ||
+        _pickingAttachment ||
+        _uploadRoute != null) {
+      return;
+    }
+    final generation = _attachmentGeneration;
+    bool isCurrent() =>
+        mounted &&
+        generation == _attachmentGeneration &&
+        widget.mediaSession?.isInvalidated != true &&
+        identical(repository, _attachmentRepository) &&
+        _selected?.id == conversation.id;
+    _pickingAttachment = true;
+    try {
+      final files = await FilePicker.platform.pickFiles(
+        type: FileType.custom,
+        allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+        withData: true,
+      );
+      if (!mounted || !isCurrent() || files == null || files.files.isEmpty) return;
+      final file = files.files.single;
+      final bytes = file.bytes;
+      if (bytes == null) throw const ChatAttachmentInvalidException();
+      final contentType = switch (file.extension?.toLowerCase()) {
+        'jpg' || 'jpeg' => 'image/jpeg',
+        'png' => 'image/png',
+        'webp' => 'image/webp',
+        'pdf' => 'application/pdf',
+        _ => '',
+      };
+      final command = ChatAttachmentUpload(
+        conversationId: conversation.id,
+        requestId: _requestId(),
+        fileName: file.name,
+        contentType: contentType,
+        bytes: bytes,
+      );
+      command.validate();
+      final route = DialogRoute<String>(
+        context: context,
+        barrierDismissible: false,
+        builder: (_) => SuperadminChatUploadDialog(
+          repository: repository,
+          command: command,
+          isContextCurrent: isCurrent,
+        ),
+      );
+      _uploadRoute = route;
+      final sent = await Navigator.of(context).push(route);
+      if (!isCurrent()) return;
+      _uploadRoute = null;
+      if (sent == null) return;
+      final thread = await _repository.fetchThread(
+        ChatThreadQuery(conversationId: conversation.id),
+      );
+      if (!isCurrent()) return;
+      setState(() => _thread = thread);
+      unawaited(_loadInbox(preserveSelection: true, silent: true));
+    } on ChatAttachmentInvalidException {
+      if (isCurrent()) _showNotice('Use uma imagem de até 4 MB ou um PDF de até 10 MB.');
+    } on ChatUnauthorizedException catch (error) {
+      if (isCurrent()) _denyAccess(error);
+    } catch (_) {
+      if (isCurrent()) {
+        _showNotice('Não foi possível abrir ou atualizar o arquivo. Tente novamente.');
+      }
+    } finally {
+      if (isCurrent()) _pickingAttachment = false;
     }
   }
 
@@ -567,6 +674,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
   void _denyAccess(ChatUnauthorizedException error) {
     // A confirmed denial invalidates this page's private snapshot, including
     // outstanding requests. Network failures keep their separate retry path.
+    _resetAttachments();
     _searchDebounce?.cancel();
     _inboxRequestGeneration++;
     _threadRequestGeneration++;
@@ -978,7 +1086,8 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                 key: ValueKey(message.id),
                 message: message,
                 mediaReader: widget.mediaReader,
-                mediaSession: widget.mediaSession,
+                mediaSession: widget.mediaSession ?? _attachmentSession,
+                attachmentRepository: _attachmentRepository,
                 // A read-only conversation refuses the commands server-side;
                 // do not offer an affordance that cannot succeed.
                 onEdit: conversation.isReadOnly || _managing ? null : () => _editMessage(message),
@@ -995,7 +1104,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
             compact: compact,
             onSend: _send,
             onAudio: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
-            onImage: () => _showNotice('Anexos aguardam o gateway R2 autorizado.'),
+            onImage: _attach,
           ),
       ],
     );
@@ -1005,6 +1114,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
 final class _MessageBubble extends StatelessWidget {
   const _MessageBubble({
     required this.message,
+    this.attachmentRepository,
     this.mediaReader,
     this.mediaSession,
     this.onEdit,
@@ -1012,6 +1122,7 @@ final class _MessageBubble extends StatelessWidget {
     super.key,
   });
   final ChatMessage message;
+  final ChatAttachmentRepository? attachmentRepository;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
   final VoidCallback? onEdit;
@@ -1086,6 +1197,7 @@ final class _MessageBubble extends StatelessWidget {
                   state: SuperadminChatAttachmentState.ready,
                   mediaReader: mediaReader,
                   mediaSession: mediaSession,
+                  attachmentRepository: attachmentRepository,
                 ),
               ],
               const SizedBox(height: CoeloSpacing.space1),

@@ -1,0 +1,504 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: gallery sends exact ticket headers and bytes, then accepts only finalized asset
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: gallery rejects expired ticket before PUT
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: gallery rejects authorization ticket before PUT
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: gallery rejects redirect-url ticket before PUT
+00:00 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: gallery rejects wrong-mime ticket before PUT
+00:00 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: uncertain PUT keeps the asset for explicit verification without a second PUT
+00:00 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: uncertain finalize retries its original request ID
+00:00 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: mismatched finalized item cannot enter an answer
+00:00 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: session invalidation during PUT clears bytes and suppresses finalize
+00:00 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: explicit discard uses the authorized API and does not retry the PUT
+00:00 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart: invalid image bytes are cleared without preparing a ticket
+00:00 +11: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart
+00:01 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: edits the approved schedule fields in a content-height dialog
+00:01 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: stays overflow-free at 375 pixels and 200 percent text
+00:01 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: rejects an end before the start
+00:02 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: requires at least one weekday for weekly recurrence
+00:02 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: keeps save disabled with an honest integration reason
+00:02 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: scheduling preserves unrepresentable audience rule-arule-b
+00:02 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: scheduling preserves unrepresentable audience rule-b
+00:02 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: scheduling preserves unrepresentable audience rule-c
+00:02 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/directory/forms_schedule_dialog_test.dart: persists an authorized institution audience and recurring schedule
+00:02 +20: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart
+00:03 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production author autosaves after debounce using the management version
+00:05 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production autosave preserves edits made while saving and sends the next version
+00:05 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production autosave is cancelled when the editor context changes
+00:06 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production autosave retries an uncertain result with the same command
+00:06 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options add and remove preserve stable IDs through reload
+00:07 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options enforce fifty and recheck retained add at capacity
+00:08 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options protect complex references in another section
+00:08 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options preserve min 2 max 50 without clamping
+00:08 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options preserve min 3 max 50 without clamping
+00:08 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options removal clears only its transient branch selection
+00:09 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options retained callbacks ignore a replacement editor
+00:09 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice options retained delete cannot remove a different option
+00:09 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch creates both booleans and preserves them after reload
+00:10 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retains boolean and source after toggle
+00:10 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retains boolean and source after duplicate-parent
+00:10 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retains boolean and source after duplicate-section
+00:11 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retains boolean and source after reorder-parent
+00:11 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retained callbacks ignore obsolete context dispose=false
+00:11 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no false branch retained callbacks ignore obsolete context dispose=true
+00:12 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch explicit trigger survives save and reload FormItemKind.singleChoice
+00:12 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch explicit trigger survives save and reload FormItemKind.multipleChoice
+00:13 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after toggle
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: Too many elements
+
+When the exception was thrown, this was the stack:
+#0      List.single (dart:core-patch/growable_array.dart:363:5)
+#1      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:514:44)
+<asynchronous suspension>
+#2      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  choice branch retains opaque triggers after toggle
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:14 +41 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after toggle [E]
+  Test failed. See exception logs above.
+  The test description was: choice branch retains opaque triggers after toggle
+
+00:14 +41 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after reorder-options
+00:14 +42 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after duplicate-parent
+00:15 +43 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after duplicate-section
+00:15 +44 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after next-trigger
+00:15 +45 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retained add cannot run after its trigger is cleared
+00:16 +46 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch rejects cycle without destructive hydration
+00:16 +47 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch rejects unknown-option without destructive hydration
+00:16 +48 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch rejects unknown-source without destructive hydration
+00:16 +49 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch mixed hierarchy remains editable at 375 and 200 percent text
+00:16 +50 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch depth 4 keeps backend-independent client validation
+00:17 +51 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch depth 5 keeps backend-independent client validation
+00:17 +52 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch creation survives a new editor load and second save
+00:17 +53 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch cyclic loaded graph stays rejected without recursive UI failure
+00:17 +54 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch loaded children remain present in preview
+00:17 +55 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch deep hierarchy remains editable at 375 pixels with 200 percent text
+00:18 +56 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after save
+00:18 +57 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after hide
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: Too many elements
+
+When the exception was thrown, this was the stack:
+#0      List.single (dart:core-patch/growable_array.dart:363:5)
+#1      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:918:44)
+<asynchronous suspension>
+#2      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  yes-no branch retains child and condition after hide
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:19 +57 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after hide [E]
+  Test failed. See exception logs above.
+  The test description was: yes-no branch retains child and condition after hide
+
+00:19 +57 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after duplicate-parent
+00:19 +58 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after duplicate-section
+00:19 +59 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after reorder-parent
+00:20 +60 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch reload preserves hierarchy, order and editable child
+00:20 +61 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch preserves noncontiguous loaded order sourceAfter=false
+00:20 +62 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch preserves noncontiguous loaded order sourceAfter=true
+00:20 +63 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch deleting and adding children retains distinct stable IDs
+00:21 +64 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch nested copy remaps the complete subtree and keeps descendant editable
+00:21 +65 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll missing-intent saves draft but cannot publish
+00:21 +66 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll blank-intent saves draft but cannot publish
+00:21 +67 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll long-intent saves draft but cannot publish
+00:21 +68 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll no-question saves draft but cannot publish
+00:22 +69 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll information saves draft but cannot publish
+00:22 +70 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll two-questions saves draft but cannot publish
+00:22 +71 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll still rejects empty-title on draft save
+00:22 +72 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll still rejects invalid-condition on draft save
+00:22 +73 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded metadata survives FormKind.form title edit discard=false
+00:22 +74 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded metadata survives FormKind.form title edit discard=true
+00:23 +75 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded metadata survives FormKind.quickPoll title edit discard=false
+00:23 +76 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded metadata survives FormKind.quickPoll title edit discard=true
+00:23 +77 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: incomplete quick poll rejected by API retains edits and confirmed discard baseline
+00:23 +78 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: complete quick poll retains publish confirmation
+00:23 +79 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded FormItemKind.scale noneditable configuration survives title edit
+00:23 +80 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded FormItemKind.decimal noneditable configuration survives title edit
+00:24 +81 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded FormItemKind.money noneditable configuration survives title edit
+00:24 +82 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives title
+00:24 +83 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives discard
+00:24 +84 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives reorder
+00:25 +85 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives duplicate-question
+00:25 +86 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives duplicate-section
+00:25 +87 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives reorder-duplicate-section
+00:25 +88 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: loaded branching survives duplicate-dependent
+00:25 +89 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.photo duplication preserves loaded image settings
+00:26 +90 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.photo image settings survive title edit and discard=false
+00:26 +91 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.photo image settings survive title edit and discard=true
+00:26 +92 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.gallery duplication preserves loaded image settings
+00:26 +93 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.gallery image settings survive title edit and discard=false
+00:26 +94 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: FormItemKind.gallery image settings survive title edit and discard=true
+00:27 +95 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard confirmation describes the confirmed baseline
+00:27 +96 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard restores removed questions and clears local context
+00:27 +97 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard restores the latest publication receipt
+00:27 +98 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard restores the authorized loaded definition
+00:27 +99 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard keeps edits when confirmation is cancelled
+00:27 +100 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production discard restores the latest successful save receipt
+00:28 +101 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: discarding a new production form restores its neutral authorized draft
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: empty
+  Actual: 'Form title'
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:1583:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart line 1583
+The test description was:
+  discarding a new production form restores its neutral authorized draft
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:28 +101 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: discarding a new production form restores its neutral authorized draft [E]
+  Test failed. See exception logs above.
+  The test description was: discarding a new production form restores its neutral authorized draft
+
+00:28 +101 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: failed save does not replace the production discard baseline
+00:29 +102 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: owned editor dialog preserves the theme below its navigator
+00:29 +103 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement removes only editor overlays and preserves an external route
+00:29 +104 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: disposing the editor removes its own open dialog
+00:29 +105 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: an obsolete save cannot release the next editor save
+00:29 +106 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: publication confirmed in an old context cannot publish the replacement form
+00:29 +107 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: old publication receipt cannot replace the new editor definition
+00:30 +108 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: old catalog callback cannot mutate the replacement editor
+00:30 +109 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its preview route before its first build
+00:30 +110 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its catalog route before its first build
+00:30 +111 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its delete-section route before its first build
+00:31 +112 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its delete-question route before its first build
+00:31 +113 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its move route before its first build
+00:31 +114 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its publish route before its first build
+00:31 +115 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: context replacement dismisses its cancel route before its first build
+00:31 +116 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: stale editor save receipt cannot alter the current form
+00:32 +117 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: stale editor save error cannot alter the current form
+00:32 +118 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: API replacement clears prior editor data and capabilities immediately
+00:32 +119 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: form ID replacement loads the new definition through the same API
+00:32 +120 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: unchanged editor identity preserves unsaved edits without refetching
+00:32 +121 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: obsolete editor context cannot fetch a form after replacement
+00:32 +122 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: obsolete editor context cannot fetch a form after dispose
+00:32 +123 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production authoring saves money limits in minor units
+00:33 +124 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production authoring refuses an inverted numeric range
+00:33 +125 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: production authoring declares the short text maximum length
+00:33 +126 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: publishing a form that was never saved says why instead of doing nothing
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: empty
+  Actual: [Instance of 'FormCommand<FormIdPayload>']
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:1982:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart line 1982
+The test description was:
+  publishing a form that was never saved says why instead of doing nothing
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:33 +126 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: publishing a form that was never saved says why instead of doing nothing [E]
+  Test failed. See exception logs above.
+  The test description was: publishing a form that was never saved says why instead of doing nothing
+
+00:33 +126 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: a form saved first can then be published
+00:33 +127 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: a publication refused by capability says so instead of doing nothing
+00:34 +128 -4: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart
+00:34 +128 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls preserve free configuration in unrelated autosave
+00:35 +129 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls preserve from configuration in unrelated autosave
+00:35 +130 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls preserve until configuration in unrelated autosave
+00:35 +131 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls preserve range configuration in unrelated autosave
+00:36 +132 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls edit and restore civil range automatic=false
+00:36 +133 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls edit and restore civil range automatic=true
+00:36 +134 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls free explicitly clears both bounds
+00:36 +135 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls incomplete rule and inverted range never save
+00:37 +136 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls retained callback cannot cross rule A B A or API context
+00:37 +137 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls hydrate civil bounds before editing
+00:37 +138 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls choose a civil day at 375px without a time picker
+00:38 +139 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: date controls keep an incomplete later edit dirty after earlier receipt
+00:38 +140 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: short text maximum length survives unrelated autosave
+00:38 +141 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: money limits are authored in minor units
+00:38 +142 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authored money limits are restored in the same civil notation
+00:38 +143 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: integer and decimal limits keep their plain unit
+00:39 +144 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: short text exposes a maximum length control the author can set
+00:39 +145 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: an authored maximum length is restored into its control
+00:39 +146 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: clearing the control removes the maximum length
+00:39 +147 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of 0 never saves a draft
+00:39 +148 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of -5 never saves a draft
+00:39 +149 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of abc never saves a draft
+00:39 +150 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of 2,5 never saves a draft
+00:40 +151 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of 10001 never saves a draft
+00:40 +152 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a maximum length of 99999 never saves a draft
+00:40 +153 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: only short text carries the maximum length control
+00:40 +154 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the maximum length control fits at 375.0 px and 200% text
+00:40 +155 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the inverted range message fits at 375.0 px and 200% text
+00:40 +156 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the maximum length control fits at 768.0 px and 200% text
+00:40 +157 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the inverted range message fits at 768.0 px and 200% text
+00:40 +158 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the maximum length control fits at 1024.0 px and 200% text
+00:40 +159 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the inverted range message fits at 1024.0 px and 200% text
+00:40 +160 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the maximum length control fits at 1440.0 px and 200% text
+00:40 +161 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the inverted range message fits at 1440.0 px and 200% text
+00:40 +162 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: the maximum length control is reachable and labelled for assistive tech
+00:40 +163 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: integer refuses an inverted range instead of saving it
+00:41 +164 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: decimal refuses an inverted range instead of saving it
+00:41 +165 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: money refuses an inverted range instead of saving it
+00:41 +166 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: an unreadable bound is refused instead of being dropped
+00:41 +167 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a decimal bound on an integer question is refused, not dropped
+00:41 +168 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: an equal minimum and maximum is a valid single accepted value
+00:41 +169 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: only one declared bound never counts as inverted
+00:41 +170 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: a branch question is held to the same numeric limits
+00:41 +171 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: duplicating a question keeps its authored limits
+00:42 +172 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: duplicating a money question keeps its limits in minor units
+00:42 +173 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls persist explicit limits automatic=false
+00:42 +174 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls persist explicit limits automatic=true
+00:42 +175 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls keep absent limits absent and allow explicit defaults
+00:42 +176 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject 0 before save and recover after correction
+00:43 +177 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject 6 before save and recover after correction
+00:43 +178 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject 2.5 before save and recover after correction
+00:43 +179 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject abc before save and recover after correction
+00:43 +180 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject 4 before save and recover after correction
+00:43 +181 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls reject a maximum below minimum without changing minimum
+00:43 +182 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls retain invalid input entered during an earlier save
+00:43 +183 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls remain absent for photo
+00:44 +184 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls duplicate edited limits without sharing controllers
+00:44 +185 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery controls stack at 375px and support keyboard input
+00:44 +186 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery image limits explicit=false survive manual save
+00:44 +187 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery image limits explicit=true survive manual save
+00:44 +188 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery image limits explicit=false survive autosave
+00:44 +189 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: gallery image limits explicit=true survive autosave
+00:44 +190 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: yes-no false branch autosave keeps selected booleans per child
+00:44 +191 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: choice branch autosave persists trigger without saving selector-only changes
+00:45 +192 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave debounces edits but never saves hydration
+00:45 +193 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave serializes edits made while a save is in flight
+00:45 +194 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave observes structure and question edits
+00:45 +195 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave pauses during discard and does not save discarded edits
+00:45 +196 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave pauses after FormApiFailureKind.unavailable until explicit save
+00:45 +197 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave pauses after FormApiFailureKind.conflict until explicit save
+00:45 +198 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave cancels on dispose before debounce
+00:46 +199 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave cancels on api before debounce
+00:46 +200 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave cancels on form before debounce
+00:46 +201 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: manual save consumes pending autosave timer once
+00:46 +202 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave ignores selection-only controller changes
+00:46 +203 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave resumes when discard is declined
+00:46 +204 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave does not retry revoked capability
+00:46 +205 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave allows an incomplete quick poll draft
+00:46 +206 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: authoring autosave resumes dirty creation after slow catalog search
+00:47 +207 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: autosave retry replays a committed receipt after confirmation is lost
+00:47 +208 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: autosave denial while delete dialog is open cannot remove local question
+00:47 +209 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: retained institution callback cannot select after api replacement
+00:47 +210 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: retained institution callback cannot select after page replacement
+00:47 +211 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal authoring create=true fits 375px and 200 percent text
+00:47 +212 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal authoring create=false fits 375px and 200 percent text
+00:47 +213 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: creation search denial invalidates previously selected institution
+00:47 +214 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: unique candidate auto-selection respects empty search:
+00:47 +215 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: unique candidate auto-selection respects empty search: specific
+00:48 +216 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal save denial disables stale edit permission
+00:48 +217 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: late nominal read cannot replace a different API context
+00:48 +218 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: late save receipt cannot attach to a new nominal context
+00:48 +219 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: new nominal editor pages past 20 and creates with a stable UUID
+00:48 +220 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal save retries the same command and preserves later local edits
+00:48 +221 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal existing editor manage=false opens without catalog
+00:48 +222 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_authoring_test.dart: nominal existing editor manage=true opens without catalog
+00:48 +223 -4: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart
+00:51 +223 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: location revoked option is disabled and cannot be answered
+00:51 +224 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required location without available option blocks with a warning
+00:51 +225 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: optional location without available option does not block
+00:51 +226 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: location server refusal is shown inline as the honest message
+00:52 +227 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 1 required true
+00:52 +228 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 2 required true
+00:52 +229 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 5 required true
+00:52 +230 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 6 required true
+00:52 +231 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 1 required false
+00:52 +232 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 2 required false
+00:52 +233 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 5 required false
+00:52 +234 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds restored count 6 required false
+00:52 +235 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty assets omitted from incomplete save FormItemKind.photo required true
+00:52 +236 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty assets omitted from incomplete save FormItemKind.photo required false
+00:52 +237 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty assets omitted from incomplete save FormItemKind.gallery required true
+00:52 +238 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty assets omitted from incomplete save FormItemKind.gallery required false
+00:52 +239 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: gallery bounds ignore hidden restored answer
+00:52 +240 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: optional empty assets omitted from direct submit FormItemKind.photo
+00:52 +241 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: optional empty assets omitted from direct submit FormItemKind.gallery
+00:53 +242 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty required gallery omitted from incomplete autosave
+00:53 +243 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored required media can be reviewed FormItemKind.photo
+00:53 +244 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored required media can be reviewed FormItemKind.gallery
+00:53 +245 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored empty required media remains unavailable FormItemKind.photo
+00:53 +246 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored empty required media remains unavailable FormItemKind.gallery
+00:53 +247 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored media never crosses to replacement context
+00:53 +248 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: review restored submitted photo can cancel and confirm unchanged media
+00:53 +249 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response presents one section and preserves numeric text across navigation
+00:53 +250 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: global response review navigates to the first missing section
+00:53 +251 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response section progress excludes a fully hidden conditional section
+00:53 +252 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: global review chooses first section even when a later number is invalid
+00:54 +253 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: navigation preserves pending autosave and focus stays in the active section
+00:54 +254 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: receipt hiding the active section chooses a visible destination
+00:54 +255 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response section context and focus reset on API replacement=false
+00:54 +256 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response section context and focus reset on API replacement=true
+00:54 +257 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response review includes answers from every presented section
+00:54 +258 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response section navigation fits 375px at 200 percent text
+00:54 +259 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave debounces edits and does not save hydration
+00:54 +260 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave saves incomplete draft without submitting
+00:54 +261 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave serializes local edits during receipt wait
+00:54 +262 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave rejects retained callback after api
+00:54 +263 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave rejects retained callback after occurrence
+00:54 +264 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave rejects retained callback after dispose
+00:54 +265 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave is paused in review and submit stays explicit
+00:54 +266 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave pauses after FormApiFailureKind.conflict
+00:55 +267 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave pauses after FormApiFailureKind.unauthorized
+00:55 +268 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave lost confirmation requires manual replay before later save
+00:55 +269 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave preserves numeric draft while invalid input is -
+00:55 +270 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave preserves numeric draft while invalid input is NaN
+00:55 +271 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave preserves numeric draft while invalid input is Infinity
+00:55 +272 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: retained submit cannot bypass fresh review after context change=false
+00:55 +273 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: retained submit cannot bypass fresh review after context change=true
+00:55 +274 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave clears invalid numeric state when its branch is hidden
+00:55 +275 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: confirmed submission clears transient invalid numeric edit before reopening
+00:55 +276 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: response autosave feedback fits 375px at 200 percent text
+00:55 +277 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: lost save replay preserves newer answers and the next intent uses the confirmed version
+00:55 +278 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: editing a submitted response changes nothing until review and confirmation
+00:55 +279 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: cancelling a local submitted revision restores the confirmed answers
+00:55 +280 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: lost save confirmation retries the exact committed command
+00:56 +281 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: lost submit confirmation retries the exact committed command
+00:56 +282 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: lost edit confirmation retries the exact committed command
+00:56 +283 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty loaded FormItemKind.shortText does not satisfy a required answer
+00:56 +284 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: empty loaded FormItemKind.multipleChoice does not satisfy a required answer
+00:56 +285 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required FormItemKind.yesNo must be answered before review
+00:56 +286 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required FormItemKind.singleChoice must be answered before review
+00:56 +287 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required FormItemKind.multipleChoice must be answered before review
+00:56 +288 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required FormItemKind.scale must be answered before review
+00:56 +289 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: required FormItemKind.date must be answered before review
+00:56 +290 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: submitted summary shows the confirmed receipt, not edits during submit
+00:56 +291 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: residual hidden answers are removed from load
+00:56 +292 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: residual hidden answers are removed from receipt
+00:57 +293 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: late branch save receipt preserves newer hidden-branch intent
+00:57 +294 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: hidden branch values leave review and commands nested=false
+00:57 +295 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: hidden branch values leave review and commands nested=true
+00:57 +296 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: multiple-choice union drops only newly hidden branch answers before submit
+00:57 +297 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: one matching branch condition is enough, consistent with the domain
+00:57 +298 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: FormItemKind.photo required attachment follows visible=false
+00:57 +299 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: FormItemKind.photo required attachment follows visible=true
+00:57 +300 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: FormItemKind.gallery required attachment follows visible=false
+00:57 +301 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: FormItemKind.gallery required attachment follows visible=true
+00:57 +302 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: date picker result from an old context cannot populate the new response
+00:57 +303 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: obsolete save receipt does not affect the next context
+00:58 +304 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: obsolete save failure does not affect the next context
+00:58 +305 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: production clears answers when occurrence changes
+00:58 +306 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: production clears answers when API changes
+00:58 +307 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: obsolete occurrence lookup cannot open a draft after context replacement
+00:58 +308 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: disposed occurrence lookup cannot open a response draft
+00:58 +309 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: production fails closed without an authorized occurrence
+00:58 +310 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: production opens, saves and submits the authorized response draft
+00:58 +311 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: autosave exposes one real state and reacts to editing
+00:58 +312 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: development response preserves the selected form context
+00:58 +313 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: cancelar upload preserva a resposta e encerra o progresso local
+00:58 +314 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: integer above the declared maximum never reaches the draft
+00:58 +315 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: integer below the declared minimum never reaches the draft
+00:58 +316 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: decimal above the declared maximum never reaches the draft
+00:58 +317 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: decimal below the declared minimum never reaches the draft
+00:58 +318 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: money above the declared maximum never reaches the draft
+00:58 +319 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: money below the declared minimum never reaches the draft
+00:58 +320 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: money answer is compared against the declared limit in the same unit
+00:58 +321 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a value inside the declared range still saves
+00:58 +322 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: short text longer than the declared maximum never reaches the draft
+00:59 +323 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a saved money answer reopens in civil notation
+00:59 +324 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: the review summary shows money in civil notation too
+00:59 +325 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: reopened money survives a round trip through the draft
+00:59 +326 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a refused text says what to review, not to review numbers
+00:59 +327 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: repairing a refused text back to the stored value still autosaves
+00:59 +328 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a choice reads as its label, never as the internal id
+00:59 +329 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a multiple choice reads its labels in the authored order
+00:59 +330 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a date reads the same in the field and in the submitted summary
+00:59 +331 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: one form exercises every authored limit from filling to sending
+00:59 +332 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a scale without a declared minimum starts where the server accepts
+00:59 +333 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a scale that declares zero still offers zero
+00:59 +334 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: the date picker offers only the authored range
+00:59 +335 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a stored answer outside the authored range does not crash the picker
+00:59 +336 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: an inconsistent authored date range says so instead of crashing
+00:59 +337 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: without an authored range the picker keeps its wide fallback
+00:59 +338 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: an out-of-range value cannot be submitted either
+00:59 +339 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: the authored maximum of selections is visible before choosing
+00:59 +340 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: the authored minimum of selections is visible before choosing
+00:59 +341 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a selection beyond the authored maximum is refused
+00:59 +342 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: deselecting below the maximum lets the next selection through
+00:59 +343 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a count below the authored minimum cannot be sent
+01:00 +344 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: reaching the authored minimum unlocks sending
+01:00 +345 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a required FormItemKind.photo blocks review while upload is unavailable
+01:00 +346 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a required FormItemKind.gallery blocks review while upload is unavailable
+01:00 +347 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a negative answer satisfies a required yes-no
+01:00 +348 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: zero satisfies a required number
+01:00 +349 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: a missing answer never satisfies a required item
+01:00 +350 -4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart: an item without authored selection limits keeps every option open
+01:00 +351 -4: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after toggle
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: discarding a new production form restores its neutral authorized draft
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: publishing a form that was never saved says why instead of doing nothing
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: yes-no branch retains child and condition after hide

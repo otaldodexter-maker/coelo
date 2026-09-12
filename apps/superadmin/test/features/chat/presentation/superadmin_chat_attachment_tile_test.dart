@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
@@ -15,6 +17,46 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
+  testWidgets('binding read is explicit and discards its pending ticket after purge', (
+    tester,
+  ) async {
+    final repository = _BindingReader();
+    final session = MediaSession();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SuperadminChatAttachmentTile(
+            attachment: const ChatAttachment(
+              id: 'binding-1',
+              fileName: 'imagem.png',
+              mediaType: 'image/png',
+              byteSize: 100,
+            ),
+            state: SuperadminChatAttachmentState.ready,
+            attachmentRepository: repository,
+            mediaSession: session,
+          ),
+        ),
+      ),
+    );
+    expect(repository.requests, isEmpty);
+    await tester.tap(find.text('Abrir imagem'));
+    await tester.pumpAndSettle();
+    expect(repository.requests, ['binding-1']);
+    await session.invalidate();
+    repository.pending.complete(
+      ChatAttachmentRead(
+        url: Uri.parse('https://private.invalid/read'),
+        expiresAt: DateTime.now().toUtc().add(const Duration(minutes: 5)),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('chat-image-preview')), findsNothing);
+    expect(find.text('A imagem não está disponível neste contexto.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final control in ['footer', 'header']) {
     for (final change in ['covered', 'disposed']) {
       testWidgets('image $control close cannot affect another route after $change', (tester) async {
@@ -359,4 +401,17 @@ final class _Reader implements MediaReader {
     requests.add(request);
     return MediaReadResult.fromJson({'asset_id': request.assetId, 'state': 'processing'});
   }
+}
+
+final class _BindingReader implements ChatAttachmentRepository {
+  final requests = <String>[];
+  final pending = Completer<ChatAttachmentRead>();
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) {
+    requests.add(attachmentId);
+    return pending.future;
+  }
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
 }

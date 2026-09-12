@@ -1,0 +1,212 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart
+00:00 +0: production author autosaves after debounce using the management version
+00:01 +1: production autosave preserves edits made while saving and sends the next version
+00:01 +2: production autosave is cancelled when the editor context changes
+00:02 +3: production autosave retries an uncertain result with the same command
+00:02 +4: choice options add and remove preserve stable IDs through reload
+00:03 +5: choice options enforce fifty and recheck retained add at capacity
+00:04 +6: choice options protect complex references in another section
+00:04 +7: choice options preserve min 2 max 50 without clamping
+00:04 +8: choice options preserve min 3 max 50 without clamping
+00:04 +9: choice options removal clears only its transient branch selection
+00:05 +10: choice options retained callbacks ignore a replacement editor
+00:05 +11: choice options retained delete cannot remove a different option
+00:05 +12: yes-no false branch creates both booleans and preserves them after reload
+00:06 +13: yes-no false branch retains boolean and source after toggle
+00:06 +14: yes-no false branch retains boolean and source after duplicate-parent
+00:06 +15: yes-no false branch retains boolean and source after duplicate-section
+00:06 +16: yes-no false branch retains boolean and source after reorder-parent
+00:07 +17: yes-no false branch retained callbacks ignore obsolete context dispose=false
+00:07 +18: yes-no false branch retained callbacks ignore obsolete context dispose=true
+00:07 +19: choice branch explicit trigger survives save and reload FormItemKind.singleChoice
+00:08 +20: choice branch explicit trigger survives save and reload FormItemKind.multipleChoice
+00:08 +21: choice branch retains opaque triggers after toggle
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following StateError was thrown running a test:
+Bad state: Too many elements
+
+When the exception was thrown, this was the stack:
+#0      List.single (dart:core-patch/growable_array.dart:363:5)
+#1      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:514:44)
+<asynchronous suspension>
+#2      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#3      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  choice branch retains opaque triggers after toggle
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:09 +21 -1: choice branch retains opaque triggers after toggle [E]
+  Test failed. See exception logs above.
+  The test description was: choice branch retains opaque triggers after toggle
+
+00:09 +21 -1: choice branch retains opaque triggers after reorder-options
+00:10 +22 -1: choice branch retains opaque triggers after duplicate-parent
+00:10 +23 -1: choice branch retains opaque triggers after duplicate-section
+00:11 +24 -1: choice branch retains opaque triggers after next-trigger
+00:11 +25 -1: choice branch retained add cannot run after its trigger is cleared
+00:11 +26 -1: choice branch rejects cycle without destructive hydration
+00:12 +27 -1: choice branch rejects unknown-option without destructive hydration
+00:12 +28 -1: choice branch rejects unknown-source without destructive hydration
+00:12 +29 -1: choice branch mixed hierarchy remains editable at 375 and 200 percent text
+00:12 +30 -1: choice branch depth 4 keeps backend-independent client validation
+00:13 +31 -1: choice branch depth 5 keeps backend-independent client validation
+00:13 +32 -1: yes-no branch creation survives a new editor load and second save
+00:14 +33 -1: yes-no branch cyclic loaded graph stays rejected without recursive UI failure
+00:14 +34 -1: yes-no branch loaded children remain present in preview
+00:14 +35 -1: yes-no branch deep hierarchy remains editable at 375 pixels with 200 percent text
+00:15 +36 -1: yes-no branch retains child and condition after save
+00:15 +37 -1: yes-no branch retains child and condition after hide
+00:15 +38 -1: yes-no branch retains child and condition after duplicate-parent
+00:16 +39 -1: yes-no branch retains child and condition after duplicate-section
+00:16 +40 -1: yes-no branch retains child and condition after reorder-parent
+00:16 +41 -1: yes-no branch reload preserves hierarchy, order and editable child
+00:17 +42 -1: yes-no branch preserves noncontiguous loaded order sourceAfter=false
+00:17 +43 -1: yes-no branch preserves noncontiguous loaded order sourceAfter=true
+00:17 +44 -1: yes-no branch deleting and adding children retains distinct stable IDs
+00:17 +45 -1: yes-no branch nested copy remaps the complete subtree and keeps descendant editable
+00:18 +46 -1: incomplete quick poll missing-intent saves draft but cannot publish
+00:18 +47 -1: incomplete quick poll blank-intent saves draft but cannot publish
+00:18 +48 -1: incomplete quick poll long-intent saves draft but cannot publish
+00:18 +49 -1: incomplete quick poll no-question saves draft but cannot publish
+00:19 +50 -1: incomplete quick poll information saves draft but cannot publish
+00:19 +51 -1: incomplete quick poll two-questions saves draft but cannot publish
+00:19 +52 -1: incomplete quick poll still rejects empty-title on draft save
+00:19 +53 -1: incomplete quick poll still rejects invalid-condition on draft save
+00:19 +54 -1: loaded metadata survives FormKind.form title edit discard=false
+00:19 +55 -1: loaded metadata survives FormKind.form title edit discard=true
+00:20 +56 -1: loaded metadata survives FormKind.quickPoll title edit discard=false
+00:20 +57 -1: loaded metadata survives FormKind.quickPoll title edit discard=true
+00:20 +58 -1: incomplete quick poll rejected by API retains edits and confirmed discard baseline
+00:20 +59 -1: complete quick poll retains publish confirmation
+00:21 +60 -1: loaded FormItemKind.scale noneditable configuration survives title edit
+00:21 +61 -1: loaded FormItemKind.decimal noneditable configuration survives title edit
+00:21 +62 -1: loaded FormItemKind.money noneditable configuration survives title edit
+00:21 +63 -1: loaded branching survives title
+00:21 +64 -1: loaded branching survives discard
+00:22 +65 -1: loaded branching survives reorder
+00:22 +66 -1: loaded branching survives duplicate-question
+00:22 +67 -1: loaded branching survives duplicate-section
+00:22 +68 -1: loaded branching survives reorder-duplicate-section
+00:23 +69 -1: loaded branching survives duplicate-dependent
+00:23 +70 -1: FormItemKind.photo duplication preserves loaded image settings
+00:23 +71 -1: FormItemKind.photo image settings survive title edit and discard=false
+00:24 +72 -1: FormItemKind.photo image settings survive title edit and discard=true
+00:24 +73 -1: FormItemKind.gallery duplication preserves loaded image settings
+00:24 +74 -1: FormItemKind.gallery image settings survive title edit and discard=false
+00:24 +75 -1: FormItemKind.gallery image settings survive title edit and discard=true
+00:24 +76 -1: production discard confirmation describes the confirmed baseline
+00:24 +77 -1: production discard restores removed questions and clears local context
+00:25 +78 -1: production discard restores the latest publication receipt
+00:25 +79 -1: production discard restores the authorized loaded definition
+00:25 +80 -1: production discard keeps edits when confirmation is cancelled
+00:26 +81 -1: production discard restores the latest successful save receipt
+00:26 +82 -1: discarding a new form after failed autosave restores its neutral authorized draft
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following assertion was thrown running a test:
+The finder "Found 0 widgets with type "FilledButton" that are ancestors of widgets with text
+"Descartar": []" (used in a call to "tap()") could not find any matching widgets.
+
+When the exception was thrown, this was the stack:
+#0      WidgetController._getElementPoint (package:flutter_test/src/controller.dart:2095:7)
+#1      WidgetController.getCenter (package:flutter_test/src/controller.dart:1947:12)
+#2      WidgetController.tap (package:flutter_test/src/controller.dart:1080:7)
+#3      _discard (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:2032:16)
+<asynchronous suspension>
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart:1582:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+The test description was:
+  discarding a new form after failed autosave restores its neutral authorized draft
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:27 +82 -2: discarding a new form after failed autosave restores its neutral authorized draft [E]
+  Test failed. See exception logs above.
+  The test description was: discarding a new form after failed autosave restores its neutral authorized draft
+
+00:27 +82 -2: failed save does not replace the production discard baseline
+00:27 +83 -2: owned editor dialog preserves the theme below its navigator
+00:27 +84 -2: context replacement removes only editor overlays and preserves an external route
+00:28 +85 -2: disposing the editor removes its own open dialog
+00:28 +86 -2: an obsolete save cannot release the next editor save
+00:28 +87 -2: publication confirmed in an old context cannot publish the replacement form
+00:28 +88 -2: old publication receipt cannot replace the new editor definition
+00:29 +89 -2: old catalog callback cannot mutate the replacement editor
+00:29 +90 -2: context replacement dismisses its preview route before its first build
+00:29 +91 -2: context replacement dismisses its catalog route before its first build
+00:29 +92 -2: context replacement dismisses its delete-section route before its first build
+00:30 +93 -2: context replacement dismisses its delete-question route before its first build
+00:30 +94 -2: context replacement dismisses its move route before its first build
+00:30 +95 -2: context replacement dismisses its publish route before its first build
+00:30 +96 -2: context replacement dismisses its cancel route before its first build
+00:30 +97 -2: stale editor save receipt cannot alter the current form
+00:31 +98 -2: stale editor save error cannot alter the current form
+00:31 +99 -2: API replacement clears prior editor data and capabilities immediately
+00:31 +100 -2: form ID replacement loads the new definition through the same API
+00:31 +101 -2: unchanged editor identity preserves unsaved edits without refetching
+00:32 +102 -2: obsolete editor context cannot fetch a form after replacement
+00:32 +103 -2: obsolete editor context cannot fetch a form after dispose
+00:32 +104 -2: production authoring saves money limits in minor units
+00:32 +105 -2: production authoring refuses an inverted numeric range
+00:32 +106 -2: production authoring declares the short text maximum length
+00:32 +107 -2: publishing after failed initial autosave explains that a saved draft is required
+00:32 +108 -2: a form saved first can then be published
+00:32 +109 -2: a publication refused by capability says so instead of doing nothing
+00:33 +110 -2: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: choice branch retains opaque triggers after toggle
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_context_isolation_test.dart: discarding a new form after failed autosave restores its neutral authorized draft

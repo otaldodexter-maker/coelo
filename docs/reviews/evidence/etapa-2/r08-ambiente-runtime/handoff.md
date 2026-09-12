@@ -14,7 +14,7 @@ Recorte exclusivo de ambiente local, espelho Supabase preservado e scripts QA ex
 - Docker Desktop/WSL: recuperado sem factory reset, reinício do Windows, remoção de volume ou recriação de VHDX.
 - Espelho `supabase_db_coelo_baseline`: saudável em `127.0.0.1:57322`, com volume nomeado preservado.
 - Build QA: concluído em modo release a partir de `af99409cf5bb266b4be96647690abde44ace8f23`.
-- Servidor: ativo em `127.0.0.1:3014`, PID `16248`.
+- Servidor: ativo em `127.0.0.1:3014`, PID `14724`.
 - Navegador compartilhado: aba Chrome mantida aberta, mas a automação CUA não atualizou o controller dos campos Flutter. Login, leitura autorizada e persistência após reload **não foram comprovados**.
 
 ## Docker Desktop e WSL
@@ -92,13 +92,13 @@ sha256: 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1
 Servidor SPA existente reutilizado:
 
 ```powershell
-python docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/serve.py --directory apps/superadmin/build/web --host 127.0.0.1 --port 3014
+python docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/serve.py apps/superadmin/build/web 3014 127.0.0.1
 ```
 
 Recursos entregues:
 
 ```text
-PID: 16248
+PID: 14724
 http://127.0.0.1:3014/login -> HTTP 200, 1020 bytes
 http://127.0.0.1:3014/flutter_bootstrap.js -> HTTP 200, 9975 bytes
 ```
@@ -170,7 +170,11 @@ Com isso, o espelho está comprovado para o preflight do lote 56. O ledger de um
 
 A investigação dos scripts existentes e do Dart MCP está em [runtime-driver-reproduction.md](./runtime-driver-reproduction.md). O build release estático não expõe DTD/VM Service; `dtd.listDtdUris` não encontrou app conectado. `qa_drive.dart` depende de CDP, enquanto `qa_login.dart` e `flutter_driver_command` dependem de app debug/VM Service. Também ficou registrado o bloqueio automático `blocked by policy` recebido antes de qualquer Chrome por shell, distinguindo-o de aprovação humana.
 
-Há um procedimento preciso para a próxima sessão tentar `flutter run -d web-server` na mesma porta e reutilizar a mesma aba, somente após o C0 liberar a troca do servidor. Não foi executado nem promovido a solução nesta sessão.
+O C0 liberou a tentativa com `flutter run -d web-server` na mesma porta e na mesma aba. DTD e VM Service foram encontrados, mas `qa_login.dart` falhou no DWDS (`Unexpected null value`) e o Dart MCP informou que Flutter Driver não estava habilitado; o próprio Flutter avisou que o dispositivo web-server exige a extensão Dart Debug Chrome. O servidor debug foi encerrado limpo e o release foi restaurado no PID `33856`.
+
+O probe CUA foi repetido com seletores e APIs exatos, usando apenas sentinelas: `getByRole("textbox", {name: "E-mail"}).fill(...)` + `press("Tab")`, além de `click(7)` + `pressKey("CTRL+A")` + `typeText(...)` + `pressKey("TAB")` e `setValue(7, ...)`. O Tab não transferiu o foco, o controller continuou vazio e o submit retornou as validações obrigatórias. Não houve chamada Auth. As duas rotas de driver suportadas foram, portanto, esgotadas sem CDP alternativo ou segundo navegador.
+
+O último gate solicitado pelo C0 usou clique físico `[960, 434]` e instrumentação QA temporária, sanitizada, nos controllers/focus nodes. O clique atingiu e focou o e-mail; `Tab` moveu o foco para senha, mas `typeText` e uma tecla individual mantiveram DOM e controllers em comprimento zero. Isso isola o bloqueio no canal de inserção de texto da extensão, não no hit-testing. A instrumentação foi removida integralmente, o build original foi recompilado com exit 0 e recuperou o SHA-256 original `4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1`; release ativo no PID `14724`.
 
 ## Suítes focais adicionais de G5
 
@@ -194,3 +198,9 @@ O C0 liberou nominalmente o baseline às 11:28 BRT. O candidato `20260912140545_
 Terminais: [h09-apply-baseline-76aed97cb.log](./h09-apply-baseline-76aed97cb.log), [pgtap-h09-expiry-dispatch-76aed97cb.log](./pgtap-h09-expiry-dispatch-76aed97cb.log) e [pgtap-chat-consumers-post-h09.log](./pgtap-chat-consumers-post-h09.log).
 
 O primeiro probe após a aplicação teve somente erro de quoting do comando local (`column "coelo" does not exist`); o apply já havia encerrado com exit 0. O probe foi corrigido sem reaplicar o candidato e a linha nominal acima foi confirmada. O log preserva ambos os fatos. O slot SQL foi devolvido imediatamente ao C0, que mantém posse exclusiva de backup, produção e ledger do lote 56.
+
+## Pacote focal de Formulários bloqueado
+
+Com posse nominal do C0, o teste `forms_question_media_r2_v1_test.sql` de `444ac0246` foi executado RED: casos 1–18 passaram, 19/20 falharam e a suíte abortou em `forms.read required`, exits nativo/wrapper `3`; a transação foi revertida no fechamento da conexão e o probe confirmou zero fixtures persistidas. O candidato `20260912140546_forms_question_media_draft_bridge_v1.sql` foi aplicado somente ao baseline, COMMIT e exits `0/0`. O GREEN repetiu exatamente a falha RED e terminou `3/3`; nenhuma regressão foi empilhada.
+
+A causa é objetiva: `has_platform_permission(text)` delega ao overload `(text,uuid)` com instituição nula, que nega membership institucional ao ator interno. O candidato usa a forma sem instituição tanto no prepare people-based quanto no editor/`require_forms_actor`. A revisão G3 posterior também bloqueou `ON DELETE RESTRICT DEFERRABLE` — materializado como `confdeltype=r` — e exige `NO ACTION DEFERRABLE`, além de `media_context` JSON null quando não há working version. O STOP chegou depois do COMMIT local; por segurança não houve rollback/reset destrutivo. Produção permaneceu intocada e o baseline aguarda correção forward do autor. Recibo sanitizado: [pgtap-forms-question-media-444ac024.log](./pgtap-forms-question-media-444ac024.log).

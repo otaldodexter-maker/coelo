@@ -1,4 +1,7 @@
 import 'dart:async';
+import 'dart:typed_data';
+
+import 'package:file_picker/file_picker.dart';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart';
@@ -13,6 +16,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('attachment confirmation uploads once, reloads binding and preserves text draft', (
+    tester,
+  ) async {
+    _viewport(tester, 1440);
+    FilePicker.platform = _ChatFilePicker();
+    final repository = _UploadingChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    final composer = find.byWidgetPredicate(
+      (widget) => widget is TextField && widget.maxLines != 1,
+    );
+    await tester.enterText(composer, 'Rascunho preservado');
+    await tester.tap(find.byTooltip('Adicionar imagem'));
+    await tester.pumpAndSettle();
+    expect(repository.uploads, isEmpty);
+    expect(find.text('imagem.png'), findsOneWidget);
+    await tester.tap(find.text('Enviar arquivo'));
+    await tester.pumpAndSettle();
+    expect(repository.uploads, hasLength(1));
+    expect(repository.uploads.single.conversationId, 'conversation-1');
+    expect(find.text('Rascunho preservado'), findsOneWidget);
+    final tile = tester.widget<SuperadminChatAttachmentTile>(
+      find.byType(SuperadminChatAttachmentTile),
+    );
+    expect(tile.attachment.id, 'binding-upload');
+    expect(tile.attachment.assetId, isNull);
+    expect(tile.attachmentRepository, same(repository));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('page forwards canonical image reader and session without prefetch', (tester) async {
     _viewport(tester, 1024);
     final reader = _ImageReader();
@@ -1250,3 +1283,65 @@ ChatThreadPage _threadPage(String body) => ChatThreadPage(
     ),
   ],
 );
+
+final class _UploadingChatRepository extends _ChatRepository implements ChatAttachmentRepository {
+  _UploadingChatRepository()
+    : super._(inbox: _ChatRepository.standard().inbox, thread: _ChatRepository.standard().thread);
+  final uploads = <ChatAttachmentUpload>[];
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) async {
+    uploads.add(command);
+    return 'message-upload';
+  }
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => uploads.isEmpty
+      ? thread
+      : ChatThreadPage(
+          items: [
+            ChatMessage(
+              id: 'message-upload',
+              conversationId: query.conversationId,
+              body: '',
+              authorName: 'Marina',
+              sentAt: DateTime.utc(2026, 9, 12),
+              isMine: true,
+              kind: 'image',
+              attachments: const [
+                ChatAttachment(
+                  id: 'binding-upload',
+                  fileName: 'imagem.png',
+                  mediaType: 'image/png',
+                  byteSize: 8,
+                ),
+              ],
+            ),
+          ],
+        );
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) => throw UnimplementedError();
+}
+
+final class _ChatFilePicker extends FilePicker {
+  @override
+  Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    void Function(FilePickerStatus)? onFileLoading,
+    bool allowCompression = false,
+    int compressionQuality = 0,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+    bool lockParentWindow = false,
+    bool readSequential = false,
+  }) async => FilePickerResult([
+    PlatformFile(
+      name: 'imagem.png',
+      size: 8,
+      bytes: Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10]),
+    ),
+  ]);
+}
