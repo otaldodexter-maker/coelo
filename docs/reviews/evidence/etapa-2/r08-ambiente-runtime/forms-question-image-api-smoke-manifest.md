@@ -1,7 +1,7 @@
 ---
 title: "R08 G0 — Manifesto do smoke API de Formulários e question-image"
 source: "Contratos produtivos form_save_draft, form_get_editor e form-media na base R08"
-status: "preparado-e-preflight-remoto-read-only"
+status: "executado-pass-fixture-preservada"
 generated_at: "2026-09-12T12:23:00-03:00"
 ---
 
@@ -76,3 +76,15 @@ Somente após liberação do C0:
 ```powershell
 rtk python docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-question-image-api-smoke.py --execute --institution-id d0c40000-0000-4000-8000-000000000001
 ```
+
+## Resultado da execução autorizada
+
+O C0 autorizou nominalmente uma única fixture às 12:33 BRT. A execução encerrou com exit `0` e todos os gates PASS: Auth `200`, save identificado `200`, editor inicial `200`, prepare `200`, PUT `200`, finalize `200`/`ready`/1×1, replay idêntico `200` no mesmo asset, resolve e GET `200` com 68 bytes e SHA-256 igual, editor recarregado `200` com único binding `ready`, e logout local `204`.
+
+- formulário preservado: `f88005ab-af5e-4aa2-8cf7-f35de4ded376`;
+- working version: `4adae123-1aad-4e1f-a2f4-b59d661bc3d4`;
+- item: `b7ac860f-f23a-4b68-b320-d2098abc94e6`;
+- asset preservado: `d25b8baa-efb5-4702-b5e6-ac3084610605`;
+- recibo sanitizado: [forms-question-image-api-smoke-20260912.log](./forms-question-image-api-smoke-20260912.log).
+
+Nenhum DELETE/cleanup foi chamado. O recibo não contém credencial, JWT, ticket, chave de objeto ou URL assinada.
