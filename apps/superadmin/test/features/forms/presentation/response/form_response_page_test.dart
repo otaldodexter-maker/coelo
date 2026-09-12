@@ -4,11 +4,34 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_anonymous_edit_secret_store.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
+import 'package:coelo_superadmin/features/forms/presentation/response/forms_gallery_answer_field.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('Photo response preserves photo kind when a camera image is confirmed', (
+    tester,
+  ) async {
+    final api = _ResponseApi(kind: FormItemKind.photo);
+    final session = MediaSession();
+    addTearDown(session.invalidate);
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormResponsePage(api: api, occurrenceId: 'occurrence-1', mediaSession: session),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Capturar foto'), findsOneWidget);
+    tester.widget<FormsGalleryAnswerField>(find.byType(FormsGalleryAnswerField)).onChanged([
+      'synthetic-photo',
+    ]);
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(api.saveCommand?.payload.answers['item-1']?.kind, FormAnswerKind.photo);
+  });
   for (final mode in FormIdentityMode.values) {
     testWidgets('gallery capability uses the authorized response context $mode', (tester) async {
       final session = MediaSession();
