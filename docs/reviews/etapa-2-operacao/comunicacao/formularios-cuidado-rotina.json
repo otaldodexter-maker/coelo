@@ -1,4 +1,54 @@
 {
+  "revision": 85,
+  "round": "E2-R09-20260912-1542",
+  "group": "formularios-cuidado-rotina",
+  "role": "G3",
+  "threadId": "01a096ee-1249-70d0-be68-eef51e03ac03",
+  "hostId": "local",
+  "tool": "Codex",
+  "model": "gpt-6-astra",
+  "reasoningEffort": "medium",
+  "coordinator": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+  "timezone": "America/Sao_Paulo",
+  "updatedAt": "2026-09-12T19:00:28.349313+00:00",
+  "T0": "2026-09-12T15:42:18-03:00",
+  "corteExecucao": "2026-09-12T19:42:18-03:00",
+  "revisaoAte": "2026-09-12T20:12:18-03:00",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+  "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+  "base": "7907453f0362665ab87fe8faaa4854f286904148",
+  "status": "fila sem polling; adocao confirmada via Git",
+  "currentGate": "Aguardar vaga e slots nominais de C0; depois attendance.mark/correct/finish na tela reconstruida com sinteticos, persistencia no Supabase real e reload; preservar aceite BE valido.",
+  "ackR09": {
+    "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "hostId": "local",
+    "round": "E2-R09-20260912-1542",
+    "coordinatorRevision": 96,
+    "instructionReceived": true,
+    "adoptedAt": "2026-09-12T19:00:28.349313+00:00",
+    "onlyCoordinator": true,
+    "primeiroGate": "attendance.mark/correct/finish",
+    "vagaLiberada": false,
+    "timersReativados": false,
+    "corte": "Primeiro corte de tempo/consumo definido por C0",
+    "nextActions": [
+      "attendance.mark",
+      "attendance.correct",
+      "attendance.finish",
+      "forms.upload",
+      "forms.resolve-file",
+      "forms.location-answer"
+    ]
+  },
+  "testsR09": {
+    "executed": 0,
+    "passed": 0,
+    "failed": 0,
+    "reason": "ACK de fila; nenhum teste de produto executado"
+  },
+  "deltasR09": [],
+  "memory": "no-op: somente adocao operacional; nenhuma regra duravel de produto alterada",
+  "historicoR08": {
   "revision": 84,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
@@ -2546,4 +2596,5 @@
     "substituidoPor": "C0 comunicou alteração nominal Owner às14:22BRT"
   },
   "fechamentoAte": "2026-09-12T15:00:00-03:00"
+}
 }
