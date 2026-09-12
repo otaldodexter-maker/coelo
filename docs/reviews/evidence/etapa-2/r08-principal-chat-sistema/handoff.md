@@ -212,3 +212,23 @@ Nao ha promocao E2E nem nova acao no denominador. C0 deve incorporar as provas
 como complemento de chat.attach FE local-green e verificar a base integrada.
 H09 agora tem fonte commitada: r08-coordenacao/lote56-cron-execucoes.md em
 origin/dev2d97892d9 comprova duas execucoes do scheduler; sem aceite visual.
+
+## Provas API publicadas — sem promocao UI/E2E
+
+- Acontece: `happens-api-proof.md`,23operacoes/checksPASS, PNG privado,
+  read/hash/reload,TTLexpirado403,retirada200 e ausencia na reconsulta.
+- Agora: `now-api-proof.md`,19operacoes/checksPASS, PNG privado eTTLURL;
+  publicacao preservada com prazo13/09T15:24:39Z. Expiracao24h nao verificada.
+- Momentos: `moments-api-proof.md`,20operacoes/checksPASS e1FAIL na retirada
+ 403peloautor;preservadoeencaminhadoC0paraACL. Nenhumretry aposfalha.
+- Cardapios: `meal-plan-api-proof.md`,24operacoes/checksPASS sobrelote55,
+  modeloexistentev2preservado, plano novo draft1/edit2/review3/publish4/archive5.
+
+Essas contagens incluem consultas repetidas de proposito e nao sao testes ou
+IDs de acao distintos. Todos os manifests preservam somente dados sinteticos
+necessarios; nao incluem segredo ou URLassinada. Nao se inventou ator
+cross-tenant negado: as contasQA existentes sao Owner/platform.
+
+Memoria: nenhum contrato de produto foi mudado por essas provas. As fontes
+canonicas de autorizacao seguem vigentes; C0 concilia a hipotese403 e a spec028.
+Nao foi criada projecao de conhecimento para registrar mera atividade.
