@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_location_create.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/locations/presentation/location_selection_field.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
@@ -847,7 +848,7 @@ void main() {
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('group-catalogued-location-context-required')), findsOneWidget);
+    expect(find.byType(LocationSelectionField), findsOneWidget);
   });
 }
 

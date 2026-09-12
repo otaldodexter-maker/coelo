@@ -11,4 +11,4 @@ O formulário de criação de Turma agora oferece seleção de Local do catálog
 
 Guardas no cliente são apenas composição e consistência: criação somente, catálogo da unidade selecionada e repositório habilitado. Tenant, unidade, hierarquia, autorização e a transação continuam validados no RPC.
 
-Verificação realizada: `dart analyze` focal de `group_form_page.dart`, router, `SuperadminApp` e `main.dart` — PASS, sem issues. Teste de widget e rota real aguardam a fila Flutter/Chrome; nenhum action_id foi promovido.
+Verificação realizada: `dart analyze` focal de `group_form_page.dart`, router, `SuperadminApp` e `main.dart` — PASS, sem issues. `flutter test test/features/groups/presentation/group_form_page_test.dart --concurrency=1` — 27/27 PASS, PID 26092, exit 0. A primeira expectativa do novo teste assumia contexto vazio; a fixture já seleciona instituição/unidade e renderiza corretamente o seletor, então a expectativa foi corrigida e o rerun focal passou. Rota real/Chrome ainda aguarda recurso; nenhum action_id foi promovido.
