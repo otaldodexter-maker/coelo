@@ -89,6 +89,13 @@ Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de 
 - O C0 integrado reporta `79` em três arquivos na base `b85fd00e0`; essa contagem é independente da união autoral `101` e não deve ser somada a ela.
 - Para Agora, Momentos e Cardápios, deploy/preflight e testes API permanecem métricas distintas de UI/E2E. O recibo `d01f92023` mede também Acontece `23 checks PASS`, Agora `19 checks PASS` e Cardápios `24 checks PASS`; nenhuma dessas contagens certifica UI/E2E por si só.
 
+## Auditoria textual do ciclo 120
+
+- `Grupos + H19`: a primeira tentativa conjunta mediu `60 PASS / 1 FAIL`; o `H19` isolado registrou `32 PASS`, e o retry/correção de Grupos registrou `29 PASS / 0 FAIL`. São etapas sobrepostas do mesmo gate; não somar `60 + 32 + 29`.
+- `form-media`: a base conjunta registrou `54 PASS / 0 FAIL` em Deno, enquanto o recibo autoral anterior registrava `53`; são execuções/base distintas e não devem ser somadas como novos casos.
+- Principal: `79 PASS` permanece um pacote separado, em 3 arquivos e base `b85fd00e0`; Forms H12/H26 são `273 PASS` em 2 arquivos e base `f11eb76b8`. Não misturar nem somar os denominadores.
+- O diff-check com whitespace nativo preservado é uma observação de formatação/proveniência do artefato; não é falha de teste nem altera os resultados acima.
+
 ## Auditoria de coerência com o censo R07
 
 - Os `23 PASS` de `person_form_page_test.dart` e `39 PASS` de `platform_user_pages_test.dart` documentados por G2 são suítes focais diferentes das falhas nominais do censo R07; não reduzem nem reclassificam os `33 FAIL` históricos.
