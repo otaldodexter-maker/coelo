@@ -833,7 +833,6 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     );
   }
 
-  @override
   Widget _legacyBuild(BuildContext context) {
     if (_loading) {
       return _shell(
