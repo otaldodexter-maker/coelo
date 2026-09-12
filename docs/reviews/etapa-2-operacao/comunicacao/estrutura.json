@@ -1,12 +1,12 @@
 {
  "grupo": "estrutura",
- "revision": 100,
+ "revision": 101,
  "round": "E2-R09-20260912-1542",
  "adocaoR09": {
   "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
   "hostId": "local",
   "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
-  "coordinatorRevision": 96,
+  "coordinatorRevision": 97,
   "instructionReceived": true,
   "status": "vaga inicial adotada; unico C0 reconhecido; sem posse ou timers anteriores",
   "T0": "2026-09-12T15:42:18-03:00",
@@ -29,6 +29,7 @@
   "testesProduto": "nao executados nesta abertura; 29 PASS R08 sao historicos, nao rerodados",
   "handoff": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/handoff.md",
   "pedidoG5": "groups.members: dialogos produzem person-pending-* mas superadmin_group_save exige UUID de identidade global ativa. Confirmar resolvedor contextual superadmin_people_identity_lookup_v1/capacidade e role_codes; G1 corrige consumidor apos primeira fatia. Evidencia e caminhos no handoff.",
+  "pedidoC0": "Owner pediu continuidade sem parar: G1 prepara regressao do defeito de identidade na mesma fatia Turmas. Solicito slot flutterTest para RED/GREEN focal group_form_page_test e transferencia Chrome depois do gate G0. Arquivos G1: groups/presentation/group_form_page.dart, teste correspondente e somente injecao do parametro de identidade nas duas rotas normais de Turmas; sem alterar composition root. G5: lookup170700 exige people.create e nao filtra resultados por institution/unit (parametros apenas auditados no corpo inspecionado); confirmar contrato elegivel antes de ligar busca generica. Sem ampliar SQL/grants.",
   "memoria": "no-op na adocao; nenhuma regra de produto alterada"
  },
  "updatedAt": "2026-09-12T16:01:38.6198770-03:00",
