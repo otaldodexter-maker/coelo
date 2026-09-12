@@ -1,15 +1,15 @@
 {
-  "revision": 78,
+  "revision": 79,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "d94f60f1d (correção G4 aceita; revisão do parser G8 adicionada nesta revisão)",
+  "head": "d9c6f0dad (revisão G8 anterior; correção de parecer e manifesto retido nesta revisão)",
   "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:43:17-03:00",
+  "updatedAt": "2026-09-12T13:48:37.9826551-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "entrega final ao C0; integrar por conteúdo após conferir o SHA publicado; não remover esta worktree antes da integração.",
+  "next": "C0 integrar a proposta de manifesto retido; G8 corrigir classificação de loader, caminho repo-relative e semântica de chaves de exibição; não remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2650,7 +2650,17 @@
       "duplicates": "quatro nomes com multiplicidades 6/5/2/3 geram 5+4+1+2=12; rodapé não é caso nem 13ª duplicação",
       "verification": "parser e logs commitados somente; Flutter, Chrome e remoto não executados",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g8-test-evidence-parser-review.md",
-      "status": "reviewed-concrete-filter-defect-sent-to-c0-and-g8"
+      "followUp": "cc7e68703/cfc710b13 restauram 293 eventos anônimos, mas jsonl mantém prefixo loading genérico, caminhos absolutos impedem interseção entre worktrees e 281 mede chaves de exibição, não identidade de casos",
+      "status": "reviewed-follow-up-required-before-final-matrix"
+    },
+    "retainedR08ResourcesReview": {
+      "sourceCommit": "57259e29c",
+      "scope": "manifesto G4 cruzado com incident circular G6, fixtures Forms G0 e P51 G5",
+      "finding": "manifesto vigente contém cinco domínios G4 e omite os recursos sintéticos confirmados por G6, G0 e G5",
+      "proposal": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/retained-r08-resources-proposal.json",
+      "privacy": "somente IDs e instruções de retenção; sem email, URL assinada, action link, token, credencial, headers ou sessão",
+      "mutation": "nenhum cleanup, retry, deploy ou acesso remoto executado",
+      "status": "proposal-ready-for-c0"
     }
   },
   "r07History": {

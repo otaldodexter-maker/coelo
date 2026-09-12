@@ -47,3 +47,23 @@ Total: `5 + 4 + 1 + 2 = 12`. Não existe 13º caso nem duplicação atribuível 
 rodapé. Os mesmos quatro grupos explicam 422/410/12 no ciclo 90.
 
 O achado e a correção mínima foram enviados ao C0 e diretamente ao G8.
+
+## Revisão do corretivo final
+
+Os commits `cc7e68703` e `cfc710b13` restauram os 293 eventos do log compacto,
+mas ainda não fecham a matriz como prova comparativa:
+
+- `jsonl()` continua classificando qualquer nome iniciado por `loading ` como
+  marcador. O filtro precisa usar a relação estrutural entre o marcador e o
+  caminho da suíte, não um prefixo que também pode ser nome legítimo de teste;
+- a normalização preserva a raiz absoluta de cada worktree. Assim, o mesmo
+  arquivo executado por G3 e C0 recebe chaves diferentes e as interseções ficam
+  artificialmente zeradas; o caminho deve ser canônico a partir da raiz do
+  repositório, por exemplo `apps/superadmin/test/...`;
+- 281 é o número de chaves distintas `path + display name`, não o número
+  demonstrado de casos. Testes parametrizados podem compartilhar o nome
+  exibido. Os 12 excedentes são colisões dessa chave de exibição; os 293
+  eventos observados continuam sendo a contagem fiel disponível.
+
+O C0 e o G8 receberam essa distinção. Nenhum teste foi reexecutado nesta
+revisão somente leitura.
