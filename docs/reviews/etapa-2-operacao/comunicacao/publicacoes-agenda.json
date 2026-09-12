@@ -1,15 +1,15 @@
 {
-  "revision": 53,
+  "revision": 54,
   "round": "E2-R07-20260911",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "Luna, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-publicacoes-agenda",
   "branch": "work/etapa2-r07-publicacoes-agenda",
-  "head": "91d6aa287 (base R07; revisao inicial em andamento)",
+  "head": "4340462a5 (ultimo checkpoint R07 publicado; commit final de handoff segue)",
   "base": "origin/dev 91d6aa287",
   "coordinator": "Codex (R07 · Coordenacao)",
-  "updatedAt": "2026-09-11T23:22:00-03:00",
+  "updatedAt": "2026-09-12T09:31:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -62,7 +62,7 @@
     "closedAt": ""
   },
   "firstGate": "circulars.attach pela tela: deploy da circular-media (versao em producao continua anterior ao fix x-client-info); rota real R07 tambem esta retida pelo adaptador CDP que nao concluiu Page.getFrameTree na aba do build web-qa.",
-  "status": "em_execucao",
+  "status": "finalizado",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -86,7 +86,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach retido pelo deploy da Edge Function circular-media com o fix x-client-info; prova de qualquer item pela rota real retida adicionalmente pelo CDP (Chrome criado, servidor respondeu index/bootstrap, Page.getFrameTree expirou). Os testes locais e demais deltas seguem independentes.",
-  "next": "tentar uma única reanexação após o Chrome terminar o bootstrap; se persistir, registrar bloqueio de ferramenta e produzir apenas deltas comprovados por testes/código sem promover E2E.",
+  "next": "entrega final ao C0; integrar por conteúdo após conferir o SHA publicado; não remover esta worktree antes da integração.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -1951,7 +1951,7 @@
       }
     ]
   },
-  "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (5 entradas; ensaio apply + validate PASS: FE 140, BE 132, E2E 107; revertido)",
+  "deltasFile": "docs/reviews/evidence/etapa-2/r07-publicacoes-agenda/deltas-r07-pa.json (0 entradas; nenhuma ação nova certificada)",
   "ownerVisualApproval": null,
   "revisaoFinal": {
     "quando": "2026-09-11T21:41:00-03:00 (resposta ao pedido de 21:36; conteudo da rev 51 confirmado)",
@@ -2479,6 +2479,45 @@
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/handoff.md",
   "dadosSinteticos": "evento c7cf7370 (published, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee, cb77ed7f) e 1 publicada com 1 resposta submetida; nenhuma chave criada",
+  "r07RevisaoFinal": {
+    "quando": "2026-09-12T09:31:00-03:00",
+    "pedidoPor": "C0 R07: fechamento formal e preparação da R08",
+    "entregueTudo": "Sim: todo o trabalho executado nesta frente foi transmitido no JSON e na branch publicada; não houve nova implementação de produto nem nova certificação E2E.",
+    "shaPublicadoAntesDoFechamento": "4340462a5; o commit deste fechamento será publicado logo após esta alteração",
+    "branch": "work/etapa2-r07-publicacoes-agenda",
+    "statusWorktree": "limpa; sem arquivos modificados ou untracked; sem stash",
+    "feito": [
+      "revisão inicial R07 gravada e publicada",
+      "test/features/circulars + test/features/agenda: 359/359 verdes",
+      "flutter analyze apps/superadmin: No issues found",
+      "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local concluído",
+      "gate de conhecimento consultado como no-op; validate PASS para 64 artigos"
+    ],
+    "evidencias": [
+      "docs/reviews/evidence/etapa-2/r07-publicacoes-agenda/deltas-r07-pa.json ([])",
+      "publicacoes-agenda.json r07History.checkpoints",
+      "provas R06 preservadas em docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/handoff.md e ui/"
+    ],
+    "abertoComPrimeiroGate": [
+      {
+        "action_id": "circulars.attach",
+        "camada": "frontend/integrated",
+        "gate": "deploy da Edge Function circular-media com x-client-info no Allow-Headers; dependente do coordenador. A prova de rota R07 também ficou retida porque as abas Chrome criadas não solicitaram main.dart.js e o CDP expirou em Page.getFrameTree.",
+        "estimativaDelta": "sem estimativa nova: requer primeiro o deploy e uma sessão Chrome/CDP funcional"
+      },
+      {
+        "action_id": "circulars.create/edit, agenda.create/edit, circulars.respond, notices.*, agenda.*",
+        "camada": "frontend/integrated",
+        "gate": "nenhuma ação nova foi certificada nesta janela; provas R06/inventário permanecem a fonte vigente e não foram duplicadas",
+        "estimativaDelta": "uma nova sessão de rota real após o desbloqueio do CDP"
+      }
+    ],
+    "dadosSinteticos": "nenhum dado novo criado na R07; permanecem evento c7cf7370 e circulares bd439ba5, 5f8d2aee e cb77ed7f da R06, sujeitos à limpeza no fim da Etapa 2",
+    "chavesCriadas": "nenhuma",
+    "pacotesSql": "nenhum",
+    "tudoTransmitido": true,
+    "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
+  },
   "r07History": {
     "initialReview": {
       "revision": 53,
