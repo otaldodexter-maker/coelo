@@ -1,12 +1,12 @@
 {
-  "revision": 87,
+  "revision": 88,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:23:45.421813-03:00",
+  "updatedAt": "2026-09-12T14:32:18.377560-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2661,10 +2661,8 @@
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G2",
-      "inicio": "2026-09-12T14:23:45.421813-03:00",
-      "expira": "2026-09-12T14:28:00-03:00",
-      "estado": "Quatro cenarios H28; C0 accessibility native0 terminado"
+      "dono": "livre",
+      "estado": "C0People19PASS0FAIL/native0; analise final segue"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
@@ -2673,8 +2671,8 @@
       "G2 H28 apos pacote revisado"
     ],
     "sqlEspelho": {
-      "dono": "G0",
-      "estado": "H28 44/44 moderno; C0 revisa lote59"
+      "dono": "livre",
+      "estado": "H28 final44/44; producao lote59 aplicado"
     }
   },
   "filaSqlR08": {
@@ -3294,6 +3292,59 @@
       ],
       "metodo": "git show por SHA, leitura integral com reutilizacao exata de subarvores ja lidas; ACK enviado nove frentes",
       "certificacao": "ACK nao certifica produto"
+    },
+    {
+      "ciclo": "220min",
+      "at": "2026-09-12T14:32:18.377560-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 32,
+          "sha": "0d42be27d5cadba3d728fd41d58c10ae12053860"
+        },
+        {
+          "g": "G1",
+          "r": 96,
+          "sha": "99566bed849c9f75da0bbd6986e28de6a867b743"
+        },
+        {
+          "g": "G2",
+          "r": 160,
+          "sha": "942955410699007fd86515fd34fb804b6b96903d"
+        },
+        {
+          "g": "G3",
+          "r": 81,
+          "sha": "42ab614942b061c67ca5d32fd91c479a568c6c2c"
+        },
+        {
+          "g": "G4",
+          "r": 72,
+          "sha": "e043a4258cb2ae29d941dea4926f6b3fbd12af44"
+        },
+        {
+          "g": "G5",
+          "r": 73,
+          "sha": "e1cad10e23d83bbef07d775a253792a14c294d73"
+        },
+        {
+          "g": "G6",
+          "r": 89,
+          "sha": "35cc5c912f5181315ef475f9e5e75ae0185cbab8"
+        },
+        {
+          "g": "G7",
+          "r": 79,
+          "sha": "3bdf43fc6e7a0b86542da6c85d82038c2b7e1282"
+        },
+        {
+          "g": "G8",
+          "r": 53,
+          "sha": "9d5a2f88a855edb50f2d656c4f16490d50b610d0"
+        }
+      ],
+      "metodo": "git show SHA fixo; leitura integral/subarvores identicas ja lidas",
+      "certificacao": "ACK nao certifica produto"
     }
   ],
   "ownershipR08": {
@@ -3313,7 +3364,7 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:00:00-03:00",
-    "ultimoCheckpoint": "2026-09-12T14:23:45.421813-03:00"
+    "ultimoCheckpoint": "2026-09-12T14:32:18.377560-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T13:43:32.751532-03:00",
@@ -3533,5 +3584,17 @@
       "beDone": "149/224 66.52%",
       "e2e": "131/199 65.83%"
     }
+  },
+  "lote59R08": {
+    "aplicado": true,
+    "versoes": [
+      "20260912143000"
+    ],
+    "exit": 0,
+    "ledgerConfirmado": true,
+    "pgTAP": "44/44 corpo final df0a281cb; G0c34fc20d4",
+    "composicao": "contextFiltersAvailable:true apospostflight",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json",
+    "proximoLote": 60
   }
 }
