@@ -9,7 +9,7 @@
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:10:16, ajustes de C0 até 15:30:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "b8172a1399f66b0f9f5cc9d3f0de8cbf7d8b7f8a",
+  "head": "d615bd9b84ac0d218ed76f2e209d3edcacb953dc",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -376,3 +376,4 @@
     }
   }
 }
+
