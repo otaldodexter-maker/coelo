@@ -21,6 +21,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
     this.onReportBug,
     this.onOpenNotifications,
     this.onOpenContext,
+    this.onFollow,
     this.onMessage,
     this.onOpenEdit,
     this.onOpenBio,
@@ -50,6 +51,7 @@ final class PrincipalProfilePreviewPage extends StatefulWidget {
   final VoidCallback? onReportBug;
   final VoidCallback? onOpenNotifications;
   final VoidCallback? onOpenContext;
+  final VoidCallback? onFollow;
   final VoidCallback? onMessage;
 
   /// Optional entry point to `principal.profile-edit`.
@@ -218,6 +220,8 @@ final class _PrincipalProfilePreviewPageState extends State<PrincipalProfilePrev
       _IdentitySection(
         data: widget.data,
         wide: !compact,
+        onFollow: () =>
+            _runOrPreview(context, widget.showPreviewFeeds, widget.onFollow, 'Acompanhar'),
         onMessage: () =>
             _runOrPreview(context, widget.showPreviewFeeds, widget.onMessage, 'Mensagem'),
         onOpenEdit: widget.onOpenEdit,
@@ -441,11 +445,13 @@ final class _ProfileHero extends StatelessWidget {
                   color: Theme.of(context).colorScheme.surface,
                   shape: BoxShape.circle,
                   border: Border.all(color: Theme.of(context).colorScheme.surface, width: 4),
+                  // V-1 (Owner, 11/09/2026): sombra do circulo igual a do menu
+                  // flutuante (PrincipalGlobalNavigation): .06, blur 8, (0, 3).
                   boxShadow: [
                     BoxShadow(
-                      color: Theme.of(context).colorScheme.shadow.withValues(alpha: .16),
-                      blurRadius: 16,
-                      offset: const Offset(0, 6),
+                      color: Theme.of(context).colorScheme.shadow.withValues(alpha: .06),
+                      blurRadius: 8,
+                      offset: const Offset(0, 3),
                     ),
                   ],
                 ),
@@ -480,6 +486,7 @@ final class _IdentitySection extends StatelessWidget {
   const _IdentitySection({
     required this.data,
     required this.wide,
+    required this.onFollow,
     required this.onMessage,
     required this.onOpenEdit,
     required this.onOpenBio,
@@ -487,6 +494,7 @@ final class _IdentitySection extends StatelessWidget {
 
   final PrincipalProfilePreviewData data;
   final bool wide;
+  final VoidCallback onFollow;
   final VoidCallback onMessage;
   final VoidCallback? onOpenEdit;
   final VoidCallback onOpenBio;
@@ -565,6 +573,14 @@ final class _IdentitySection extends StatelessWidget {
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
+        // V-1 (Owner, 11/09/2026): o botao Acompanhar tinha sumido; volta como
+        // acao primaria. Sem porta de follow composta, informa indisponibilidade.
+        FilledButton.icon(
+          key: const Key('principal-profile-follow'),
+          onPressed: onFollow,
+          icon: const Icon(Icons.person_add_alt_1_outlined),
+          label: const Text('Acompanhar'),
+        ),
         OutlinedButton.icon(
           key: const Key('principal-profile-message'),
           onPressed: onMessage,

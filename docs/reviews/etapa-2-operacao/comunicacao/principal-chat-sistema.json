@@ -1,6 +1,6 @@
 {
-  "revision": 36,
-  "updated_at": "2026-09-11T21:19-03:00",
+  "revision": 37,
+  "updated_at": "2026-09-11T21:22-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,7 +10,7 @@
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:19 (T0+2h = 21:36). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:46.",
+  "status": "FINALIZADO 21:22 (T0+2h = 21:36). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:46.",
   "T0_assumido": "CORRIGIDO pelo coordenacao.json rev 56: T0 = 19:36; T0+2h = 21:36; T0+2h10 = 21:46",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -25,7 +25,7 @@
     "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
     "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
     "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
-    "4. principal.for-you e profile-view abrem na rota real (18, 19); V-2 APLICADO (goldens for_you 97/97); V-3 PARCIAL: foto do feed/Agora sem esticar (sprite com cobertura, goldens principal_happens 91/91); espacamento/cantos do conteiner no mobile, separacoes Agora->menu e fontes/cores: nao feitos; V-1 nao feito",
+    "4. principal.for-you/profile-view abrem na rota real (18, 19); V-2 APLICADO; V-3 PARCIAL (foto sem esticar); V-1 PARCIAL: botao Acompanhar de volta (acao honesta, sem porta de follow) e sombra do avatar igual a do menu flutuante (goldens principal_profile 137/137); avatar clicavel abrindo o Agora do perfil e contorno degrade quando ha Agora nao visto: nao feitos; profile-edit nao provado",
     "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
     "6. P48=A: FEITO 060d21e53 candidatos/principal-chat-sistema/20260911130400 (pgTAP 16/16 + regressoes 22/22, 13/13, 17/17, 6/6 no descartavel coelo_pcs6_db)"
   ],
@@ -195,7 +195,7 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:19-03:00",
+    "quando": "2026-09-11T21:22-03:00",
     "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema; worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
@@ -206,7 +206,8 @@
       "principal_real_route_test 4/4; suites dos publicadores 67/95/88; meal_plans 140/140 (+2 do contrato scopeRules)",
       "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes",
       "principal.for-you: V-2 aplicado (degrade dos cards) e goldens for_you regravados (97/97)",
-      "acontece.feed / agora.view: V-3 parcial (foto sem esticar: _SpriteImage com cobertura), goldens principal_happens regravados 91/91"
+      "acontece.feed / agora.view: V-3 parcial (foto sem esticar: _SpriteImage com cobertura), goldens principal_happens regravados 91/91",
+      "principal.profile-view: V-1 parcial (Acompanhar de volta, sombra do avatar = menu flutuante), goldens principal_profile regravados 137/137"
     ],
     "aberto_com_primeiro_gate": [
       {
@@ -222,8 +223,8 @@
         "gate": "nao iniciado"
       },
       {
-        "pendencia": "V-1 (Perfil) e o resto do V-3 (conteiner mobile, separacoes, fontes/cores)",
-        "gate": "nao iniciados; V-2 e a foto do V-3 feitos"
+        "pendencia": "V-1 restante (avatar abre o Agora do perfil; contorno degrade laranja com Agora nao visto) e V-3 restante (conteiner mobile, separacoes, fontes/cores)",
+        "gate": "nao iniciados"
       },
       {
         "pendencia": "errors.403/409/500/503/retry",

@@ -172,7 +172,7 @@
     "action_id": "principal.profile-view",
     "camada": "frontend",
     "estado_proposto": "verified",
-    "delta": "rota real abre (18); V-1 (avatar abre o Agora, contorno degrade, sombra, botao Acompanhar) nao aplicado nesta rodada",
+    "delta": "rota real abre (18); V-1 parcial: botao Acompanhar de volta (acao honesta) e sombra do avatar igual a do menu flutuante; goldens principal_profile 137/137; avatar->Agora e contorno degrade ficam abertos",
     "evidencia": "captura 18",
     "certificacao": {
       "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/18-perfil-web.png",
