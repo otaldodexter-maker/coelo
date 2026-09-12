@@ -1,12 +1,12 @@
 {
-  "revision": 97,
+  "revision": 98,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:04:12.740Z",
+  "updatedAt": "2026-09-12T19:13:24.176Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -256,6 +256,7 @@
     "95": "Nove IDs novos fornecidos pelo Owner registrados; blocos de liberacao disponibilizados para encaminhamento, sem afirmar recebimento; G0/G5/G1 liberadas, adocao pendente.",
     "96": "Checkpoint ativo: cota indisponivel, nove IDs conhecidos sem ferramentas de envio; diagnostico G0 integrado; ajuste QA em validacao; nenhum novo aceite.",
     "97": "ACKs novos por ID/round; G0 runtime confirmado; G5 primeiro handoff integrado; prova API download/TTL sem promocao; nenhum SQL/deploy.",
+    "98": "Runtime real G0 integrado; BE activities.assessment aceito por provas combinadas; consumo real57%; leitura dos nove threads via App Server; G6 recebe Chrome apos liberacao G0. Nenhuma mensagem de liberacao ainda confirmada.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3694,11 +3695,11 @@
       "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
       "json": "ambiente-runtime.json",
-      "ackRevision": 38,
-      "primeiroGate": "C0 assume qa_main.dart e experimento de teclado; G0 medir recursos e informar PID/posse, sem novo build/browser/teste ate transferencia",
-      "status": "ativa; adocao confirmada via Git",
+      "ackRevision": 40,
+      "primeiroGate": "runtime pronto; aguardar candidato SQL/novo bloqueio sem polling",
+      "status": "fatia entregue; vaga liberada",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.404Z"
@@ -3715,7 +3716,7 @@
       "primeiroGate": "groups.members/location ou institutions.status",
       "status": "ativa; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.452Z"
@@ -3732,7 +3733,7 @@
       "primeiroGate": "people.create/edit e H28 focal",
       "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.501Z"
@@ -3749,7 +3750,7 @@
       "primeiroGate": "attendance.mark/correct/finish",
       "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.545Z"
@@ -3762,11 +3763,11 @@
       "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
       "json": "principal-chat-sistema.json",
-      "ackRevision": 74,
+      "ackRevision": 76,
       "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
       "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.588Z"
@@ -3779,11 +3780,11 @@
       "branch": "work/etapa2-r09-realm-interno-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
       "json": "realm-interno.json",
-      "ackRevision": 79,
+      "ackRevision": 80,
       "primeiroGate": "Provar negativa real do contrato activities.assessment e assessments.detail com fixture retida e API normal; preparar runner minimo sem criar dados/SQL. Leitura remota autorizada C0; nao depende slot SQL.",
       "status": "ativa; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.624Z"
@@ -3797,10 +3798,10 @@
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
       "json": "publicacoes-agenda.json",
       "ackRevision": 92,
-      "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
-      "status": "fila; adocao confirmada via Git",
+      "primeiroGate": "circulars.attach pela UI normal 127.0.0.1:3014; fixture nova QA R09 G6 circulars.attach 20260912-1542 autorizada em contexto sintetico retido; guardar fixture e provar reload, usar negativas validas da familia",
+      "status": "vaga ativa atribuida; follow-up ainda nao enviado",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.666Z"
@@ -3817,7 +3818,7 @@
       "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
       "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.704Z"
@@ -3834,7 +3835,7 @@
       "primeiroGate": "testes focais na base integrada",
       "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
-      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
       "ackAt": "2026-09-12T19:04:12.740Z"
@@ -3842,14 +3843,16 @@
   },
   "slotsR09": {
     "chrome": {
-      "dono": "G0",
+      "dono": "G6",
       "pid": 22592,
-      "inicio": "2026-09-12T16:00:54-03:00",
-      "estado": "posse confirmada G0 rev38; build/probe teclado real e login em curso"
+      "browser": "2",
+      "tab": "829822462",
+      "inicio": "2026-09-12T19:13:24.176Z",
+      "estado": "transferencia C0 apos G0 rev40; instrucao G6 pendente de envio; servidor39504 porta3014 preservado"
     },
     "flutterTest": {
-      "dono": "nenhum",
-      "estado": "nenhum flutter test identificado no processo; reservar antes de executar"
+      "dono": "G1",
+      "estado": "G1 registrou reserva e RED de membros na conversa; nao iniciar outro teste ate entrega/liberacao"
     },
     "sqlEspelho": {
       "dono": "nenhum",
@@ -3857,12 +3860,12 @@
     },
     "ativas": [
       "C0",
-      "G0",
+      "G1",
       "G5",
-      "G1"
+      "G6"
     ],
     "atribuicoesPendentes": [],
-    "e2eLiberado": false,
+    "e2eLiberado": true,
     "sqlLiberado": false
   },
   "consumoR09": {
@@ -4103,5 +4106,20 @@
     "receivedAt": "2026-09-12T18:54:32.757Z",
     "reported": "C0 antigo reconhece nova coordenacao e suspende escritas; reportou heartbeat antigo ainda ACTIVE e dispatches antigos G0/G1/G5",
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
+  },
+  "consumoR09Atual": {
+    "usedPercent": 57,
+    "limitId": "codex",
+    "windowDurationMins": 10080,
+    "measuredAt": "2026-09-12T19:13:00Z",
+    "source": "account/rateLimits/read; Codex app-server",
+    "measurementNote": "primeira consulta real desta abertura, nao T0; horario aproximado dentro do minuto da chamada",
+    "nextCheckBy": "2026-09-12T19:23:00Z"
+  },
+  "canalR09": {
+    "read": "Codex App Server stdio documentado; nove IDs lidos",
+    "send": "pendente: retomar somente tarefa com ultimo turno completed; nao confundir notLoaded do processo leitor com ociosidade global",
+    "proxy": "falhou socket padrao OS10050; daemon lifecycle indisponivel Windows",
+    "heartbeat": "sem agendamento; checkpoints em sessao ativa"
   }
 }
