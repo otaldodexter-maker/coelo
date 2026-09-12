@@ -167,6 +167,7 @@ def main() -> int:
     mode.add_argument("--execute", action="store_true")
     mode.add_argument("--discover", action="store_true")
     mode.add_argument("--preflight", action="store_true")
+    mode.add_argument("--resume-download", action="store_true")
     parser.add_argument("--occurrence-id")
     parser.add_argument("--participation-id")
     parser.add_argument("--item-id")
@@ -177,7 +178,7 @@ def main() -> int:
         help="Nome da variável que contém o edit_secret anônimo; o valor nunca é impresso.",
     )
     args = parser.parse_args()
-    if not args.execute and not args.discover and not args.preflight:
+    if not args.execute and not args.discover and not args.preflight and not args.resume_download:
         emit("guard", "READY_NO_MUTATION")
         return 0
     occurrence_id = ""
@@ -185,7 +186,7 @@ def main() -> int:
     requested_item_id = None
     expected_auth_uid = None
     run_manifest: dict[str, Any] | None = None
-    if args.execute or args.preflight:
+    if args.execute or args.preflight or args.resume_download:
         try:
             occurrence_id = str(uuid.UUID(args.occurrence_id or ""))
             expected_participation_id = str(uuid.UUID(args.participation_id or ""))
@@ -194,7 +195,7 @@ def main() -> int:
         except ValueError:
             emit("guard", "INVALID_RUNTIME_FIXTURE")
             return 2
-        if args.execute:
+        if args.execute or args.resume_download:
             if RUN_MANIFEST.exists():
                 run_manifest = json.loads(RUN_MANIFEST.read_text(encoding="utf-8"))
                 if (
@@ -213,6 +214,9 @@ def main() -> int:
                 ):
                     require_uuid(run_manifest.get(key), key)
             else:
+                if args.resume_download:
+                    emit("guard", "RESUME_MANIFEST_REQUIRED")
+                    return 2
                 run_manifest = {
                     "schema_version": 1,
                     "preserved": True,
@@ -447,6 +451,76 @@ def main() -> int:
         save_run_manifest(run_manifest)
         emit("open_or_reuse_draft", "PASS", http=status, response_id=response_id)
 
+        if args.resume_download:
+            asset_id = require_uuid(run_manifest.get("asset_id"), "asset")
+            draft_answers = draft.get("answers")
+            if not isinstance(draft_answers, list):
+                raise SmokeFailure("download_resume:invalid_answers")
+            if not any(
+                isinstance(answer, dict)
+                and answer.get("item_id") == item_id
+                and answer.get("asset_ids") == [asset_id]
+                for answer in draft_answers
+            ):
+                raise SmokeFailure("download_resume:asset_not_persisted")
+            access_payload = {
+                "asset_id": asset_id,
+                **({"edit_secret": edit_secret} if edit_secret else {}),
+            }
+            status, downloaded = edge({
+                "action": "download",
+                "request_id": run_manifest["download_request_id"],
+                "expected_version": 0,
+                "payload": access_payload,
+            })
+            if status != 200 or not isinstance(downloaded, dict) or not isinstance(
+                downloaded.get("signed_url"), str
+            ):
+                raise SmokeFailure(f"download_authorize:{status}:{error_code(downloaded)}")
+            get_request = urllib.request.Request(downloaded["signed_url"], method="GET")
+            try:
+                with urllib.request.urlopen(get_request, timeout=30) as response:
+                    get_status = response.status
+                    received = response.read()
+            except urllib.error.HTTPError as error:
+                get_status = error.code
+                received = b""
+            if get_status != 200 or received != PNG:
+                raise SmokeFailure(f"download_get:{get_status}:content_mismatch")
+            emit(
+                "authorized_download",
+                "PASS",
+                http=get_status,
+                bytes=len(received),
+                sha256=hashlib.sha256(received).hexdigest(),
+            )
+            status, reloaded = rpc("form_open_response_draft", {
+                "p_request_id": run_manifest["open_request_id"],
+                "p_expected_version": 0,
+                "p_payload": open_payload,
+            })
+            if status != 200 or not isinstance(reloaded, dict) or reloaded.get("id") != response_id:
+                raise SmokeFailure(f"reload:{status}:{error_code(reloaded)}")
+            reloaded_answers = reloaded.get("answers")
+            if not isinstance(reloaded_answers, list):
+                raise SmokeFailure("reload:invalid_answers")
+            if not any(
+                isinstance(answer, dict)
+                and answer.get("item_id") == item_id
+                and answer.get("asset_ids") == [asset_id]
+                for answer in reloaded_answers
+            ):
+                raise SmokeFailure("reload:asset_not_persisted")
+            emit("reload_response", "PASS", http=status, response_id=response_id, asset_id=asset_id)
+            emit(
+                "download_resume",
+                "PASS",
+                response_id=response_id,
+                asset_id=asset_id,
+                preserved=True,
+            )
+            return 0
+
         checksum = hashlib.sha256(PNG).hexdigest()
         prepare_request_id = run_manifest["prepare_request_id"]
         prepare_payload = {
@@ -581,9 +655,9 @@ def main() -> int:
             raise SmokeFailure(f"download_get:{get_status}:content_mismatch")
         emit("authorized_download", "PASS", http=get_status, bytes=len(received), sha256=checksum)
 
-        # A segunda abertura é o reload autorizado consumido pela tela normal.
+        # Replay idempotente da abertura comprova a leitura persistida pela tela normal.
         status, reloaded = rpc("form_open_response_draft", {
-            "p_request_id": str(uuid.uuid4()),
+            "p_request_id": run_manifest["open_request_id"],
             "p_expected_version": 0,
             "p_payload": open_payload,
         })
