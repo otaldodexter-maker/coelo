@@ -42,3 +42,4 @@ generated_at: 2026-09-12
 - P50 foi reconciliado em `p50-hierarchy.md`; as provas R06 permanecem vigentes e a regressao local do leitor passou.
 - Prova detalhada em `flutter-verification.md`. O slot global foi liberado imediatamente ao C0.
 - Gate de memoria: 64 artigos validados; nenhuma regra duravel nova, pois ordem intercalada e limite de 10.000 ja constam nas fontes canonicas/projecoes. No-op documental.
+- A fixture visual dos tres A+ usa `texto -> midia -> pergunta -> texto` e cobre claro 375 normal/200% e claro 1440/200%. So o codigo da prova foi preparado; nenhum PNG foi regravado e os seis R permanecem intocados.

@@ -1,15 +1,15 @@
 {
-  "revision": 58,
+  "revision": 59,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "535aca8ef (ordem intercalada e 67 testes focais verdes)",
+  "head": "5245d87c1 (ordem intercalada verde e tres estados A+ preparados)",
   "base": "origin/dev incorporado por merge a33d85111",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T11:33:48-03:00",
+  "updatedAt": "2026-09-12T11:36:22-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T11:33:48-03:00",
-    "sha": "535aca8ef",
+    "checkpoint": "2026-09-12T11:36:22-03:00",
+    "sha": "5245d87c1",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2530,7 +2530,8 @@
       "aplicar um preset de resposta atualiza a pergunta existente sem desloca-la entre texto e midia",
       "limite agregado de texto preservado em 10000; nenhum contrato reduzido para 4000",
       "H14 reconciliado com C0 como subaceite de shell.load sem novo denominador",
-      "seis R comparados pelo recorte do rodape e preservados sem regravacao"
+      "seis R comparados pelo recorte do rodape e preservados sem regravacao",
+      "fixture visual A+ agora prova texto-midia-pergunta-texto e inclui variantes light 375/1440 a 200 por cento, sem PNG regravado"
     ],
     "verification": {
       "analyze": "dart analyze focal em 6 arquivos apos o ajuste de preset: No issues found (11:27 BRT)",
