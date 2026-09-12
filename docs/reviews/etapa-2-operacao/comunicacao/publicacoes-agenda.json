@@ -1,15 +1,15 @@
 {
-  "revision": 86,
+  "revision": 87,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "1eccbc591 (handoff consolidado nesta revisão)",
+  "head": "c97d6b25e (proposta de backlog R09 nesta revisão)",
   "base": "origin/dev 7d2b66a3e incorporado por merge 04b37ad4c",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T14:20:33.2938776-03:00",
+  "updatedAt": "2026-09-12T14:22:59.5951021-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "C0 integrar os SHAs G8 aprovados e indicar o próximo gate não conflitante; seguir sem Flutter e sem remover esta worktree.",
+  "next": "C0 incorporar a proposta focal no backlog R09 autoritativo; Owner decidir path/componente/recorte/rodape dos seis R antes de qualquer regravacao; seguir sem iniciar R09 e sem remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2674,6 +2674,22 @@
       "residual": "32/42px sort targets in narrow columns remain separate and unresolved",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/h25-activities-institutions-visual-review.md",
       "status": "reviewed-correction-sufficient-no-image-change"
+    },
+    "r09BacklogProposal": {
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/r09-backlog-proposal.md",
+      "authority": "proposal-only; C0 owns final backlog/prompts/trackers",
+      "ownerDecision": "identify path/component, capture scope and footer geometry for each of the six R before code or PNG changes",
+      "executableAfterDecision": "apply only the named visual delta and recertify affected code without bulk rebaseline",
+      "independentEvidence": [
+        "circulars.attach UI on runtime 3014 with a new authorized retained fixture",
+        "shell.load complementary read_at/retry route proof when an event exists"
+      ],
+      "doNotReopen": [
+        "P50 without affected code",
+        "10000 versus 4000 resolved in favor of spec 037",
+        "valid R06/R08 proofs without material delta"
+      ],
+      "status": "proposal-ready-for-c0"
     }
   },
   "r07History": {
