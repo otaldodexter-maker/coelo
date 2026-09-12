@@ -20,7 +20,7 @@ Branch `work/etapa2-r06-principal-chat-sistema` (base `origin/dev ca60b096b`), p
 ## Aberto (primeiro gate)
 
 - **momentos.create / agora.create / acontece.create com mídia** — gate medido: mídia entra pelo seletor (13), `save_moments_draft` 200 (rascunho `b173843d-5ea4-46d4-a913-7d177443f591`, v2), e o `PUT` presigned no R2 falha por **CORS**: `coelo-media-prod` responde 204 só para `Origin: http://localhost:3000` e 403 para `127.0.0.1:3009` (sonda OPTIONS no `upload_url`); a allowlist da `moments-media` aceita `127.0.0.1:3009` e `localhost:3000` (`prepare` 200 por sonda direta). A porta 3000 estava ocupada por outra frente. **Pedido ao coordenador (sem custo)**: acrescentar `http://127.0.0.1:3009` ao CORS do R2 (ou reservar a 3000 para esta frente).
-- **meal-plans.create/edit/publish** — candidato de backend para `meal_plan_create_or_update_draft` (scopeRules: iterar o mapa, gravar objeto); capturas 11 e 23.
+- **meal-plans.create/edit/publish** — candidato `20260911130500` (pgTAP 9/9) corrige o contrato de `scopeRules`; falta o coordenador aplicar e esta frente reprovar pela tela; capturas 11 e 23.
 - **chat.create-group (UI) / chat.attach (cliente)** — não iniciados (tempo).
 - **V-1 / V-2 / V-3** (Perfil, Para você, Acontece feed) — não aplicados nesta rodada.
 - **errors.403/409/500/503/retry** — só 404 provado pela rota real.
