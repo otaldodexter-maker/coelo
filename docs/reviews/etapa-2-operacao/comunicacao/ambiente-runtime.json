@@ -1,5 +1,5 @@
 {
-  "revision": 38,
+  "revision": 39,
   "round": "E2-R09-20260912-1542",
   "r09": {
     "updatedAt": "2026-09-12T15:25:10-03:00",
@@ -18,7 +18,7 @@
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:00:54.1579130-03:00",
+  "updatedAt": "2026-09-12T16:07:38.752248-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:40:00-03:00",
@@ -369,7 +369,7 @@
   ],
   "novaR09": {
     "round": "E2-R09-20260912-1542",
-    "revision": 38,
+    "revision": 39,
     "ackCoordinationRevision": 96,
     "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
     "host": "local",
@@ -382,7 +382,7 @@
     "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
     "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-ambiente-runtime-20260912-1542",
     "baseSha": "7907453f0362665ab87fe8faaa4854f286904148",
-    "nextGate": "build QA teclado real false; entrada, login normal, leitura autorizada e reload por CUA no Chrome existente",
+    "nextGate": "Docker/WSL e paridade de objetos do espelho na ordem real; sem SQL novo sem posse C0",
     "ownerTransfer": "Owner transferiu build/probe a G0 nesta mensagem, apos fix C0 7907453f0",
     "scope": "apps/superadmin -> Auth -> login/entrada de texto -> auth.login; dependencia runtime; depois Docker/WSL/espelho",
     "limits": "sem feature/composicao/SQL remoto/deploy/rastreadores; sem sessao injetada; duas tentativas diferentes e devolver causa a C0",
@@ -391,9 +391,9 @@
       "measuredAt": "2026-09-12T16:00:54.1968365-03:00",
       "server": {
         "port": 3014,
-        "pid": 7476,
-        "owner": "G0: servidor legado de ambiente-runtime medido, preservado ate build novo pronto",
-        "source": "e2-r08-ambiente-runtime/apps/superadmin/build/web"
+        "pid": 39504,
+        "owner": "G0 servidor entregue para consumidores C0",
+        "source": "e2-r09-ambiente-runtime-20260912-1542/apps/superadmin/build/web"
       },
       "freeMemoryKiB": 1130872,
       "flutterTest": {
@@ -401,18 +401,32 @@
         "owner": "nenhum"
       },
       "chrome": {
-        "tab": "a descobrir pelo canal suportado",
+        "tab": "829822462",
         "pid": 22592,
-        "owner": "G0",
-        "state": "adotado para a nova vaga; browser existente, nao abrir outro"
+        "owner": "C0; G0 liberou slot apos gate",
+        "state": "adotado para a nova vaga; browser existente, nao abrir outro",
+        "browser": "2",
+        "releasedAt": "2026-09-12T16:07:38.752248-03:00"
       }
     },
     "proof": {
-      "reload": "nao executado",
-      "login": "nao executado",
-      "pgtap": "nao executado",
-      "text": "nao executado",
-      "read": "nao executado"
+      "text": "PASS primeira tentativa CUA typeText + screenshot",
+      "login": "PASS senha pela UI normal, Home",
+      "read": "PASS Instituicoes: tres registros sinteticos existentes",
+      "reload": "PASS mesma lista em /institutions apos reload",
+      "pgtap": "nao executado nesta abertura",
+      "evidence": "docs/reviews/evidence/etapa-2/r09-ambiente-runtime-20260912-1542/handoff.md"
+    },
+    "updatedAt": "2026-09-12T16:07:38.752248-03:00",
+    "status": "runtime-gate-PASS; Chrome liberado ao C0; espelho em medicao",
+    "build": {
+      "sourceSha": "76e869f89530ab4335a4a62360d80dd4cd97432f",
+      "qaFixSha": "7907453f0362665ab87fe8faaa4854f286904148",
+      "pid": 41348,
+      "exitCode": 0,
+      "seconds": 88.3,
+      "textEntryEmulation": false,
+      "servedAndLocalSha256": "bb2932c37305649d953bad160e0081ed153499790b28450831054b0cf43ae305"
     }
   },
   "reasoningEffort": "medium"
