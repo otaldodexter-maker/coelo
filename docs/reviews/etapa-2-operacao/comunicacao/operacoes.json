@@ -1,6 +1,6 @@
 {
-  "revision": 48,
-  "updated_at": "2026-09-11T21:06:00-03:00",
+  "revision": 49,
+  "updated_at": "2026-09-11T21:10:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -283,7 +283,7 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "encerrar Chrome/servidor/descartavel; revisao de 10 min as 21:36",
+  "next_step": "nenhum: finalizado 21:10; nao retomar depois de 21:46",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -1135,5 +1135,38 @@
     "itens": "SUP-R06 (6 pares de Suporte), DEF-R06 (2 pares), SES-R06 (captura da rota real)"
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md",
-  "merge_origin_dev": "b60ac0bea (lote 52 integrado; flutter analyze lib test limpo; support+account+errors+imports+sonda 284/284)"
+  "merge_origin_dev": "b60ac0bea (lote 52 integrado; flutter analyze lib test limpo; support+account+errors+imports+sonda 284/284)",
+  "finalizado": "2026-09-11T21:10:00-03:00 (antes do corte 21:36; nada retomado depois)",
+  "revisao_final_T0_2h": {
+    "respondido_em": "21:10 (antecipada; valida em 21:36 salvo revisao posterior)",
+    "entregou_tudo": "sim — itens (0) a (5) da ordem fechados; (6) audit.export nao iniciado por decisao (ADR 0034 adia exportacoes gerais; Edge Function sem deploy)",
+    "sha_publicado": "work/etapa2-r06-operacoes = origin (commit desta rev, sobre 22f6ae9be); git status limpo; sem stash; sem WIP; merge de origin/dev b60ac0bea (lote 52) incluido; flutter analyze lib test limpo",
+    "fechado_por_action_id_com_prova": {
+      "imports.list (teste)": "fail_closed_screens_with_data_probe_test 16/16 (2a28545d3)",
+      "account.sessions": "FE verified / BE done / E2E verified-e2e propostos — pacote 200200 em producao (lote 50), pgTAP 14/14; rota real: lista, segunda sessao via API, Encerrar as outras (GoTrue scope=others), reload (capturas 01-04)",
+      "account.settings / account.theme": "FE verified reconfirmado (captura 05)",
+      "support.table / support.kanban": "P49=A aplicado (abas + persistencia); recertificados verified/done/E2E na rota real (capturas 10-14); 24 goldens regravados (SUP-R06)",
+      "plans.activate": "= Restaurar (spec 051): archive/restore por plan_save 200, reload/Ativos mantem (capturas 20-25); FE verified / BE done / E2E propostos",
+      "catalog.validate / catalog.sync": "P44=B: indice + registry + 16 exemplos; 3 validadores com zero diagnostico; FE verified propostos",
+      "imports.create": "texto honesto (SuperadminErrorKind.deferred) e rota dentro da shell na rota real (captura 31); FE verified (adiamento honesto) proposto",
+      "account.profile": "e-mail da pessoa de servico (pacote 200300, lote 53) provado na rota real (captura 40); recertificacao",
+      "plans.list / plans.edit": "parser tolerante (entitlements ausentes, starts_at nulo), plans 45/45"
+    },
+    "aberto_com_primeiro_gate": {
+      "plans.assign": "sem comando aprovado na spec 051 -> P51 ao Owner (blocked-decision)",
+      "catalog.publish": "deploy do Catalogo (Pages) = decisao nominal do Owner",
+      "audit.export": "adiado (ADR 0034); Edge Function nao iniciada",
+      "account.mfa": "fora do MVP (Decisao 12); texto \"MFA pendente\" no Perfil a revisar",
+      "aprovacao visual": "SUP-R06 (24 goldens), DEF-R06 (2), SES-R06 (captura): https://claude.ai/code/artifact/1d18a357-f2ed-40ee-827b-63798967a700",
+      "testes pre-existentes": "test/app/router (superadmin_error_routes /profile, persistent_shell 2, prototype_navigation, structure_detail 4, person_detail 2, moments publication, people_creation_red) e apps/catalog (catalog_app_test, validate_admin_visual_contracts) — conferidos em ca60b096b/2a579335e, nao sao desta frente"
+    },
+    "deltas": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (20; ensaiado com apply-tracker-delta.cjs + validate-trackers.cjs PASS e revertido); aprovacoes visuais pendentes nunca viram verified/done/E2E",
+    "pacotes": "20260911200200 (lote 50) e 20260911200300 (lote 53) aplicados; candidatos/operacoes vazio",
+    "duvidas_ao_owner": "P51 plans.assign; SUP-R06; DEF-R06; SES-R06 (pagina lado a lado acima)",
+    "dados_sinteticos": "plano 5b0fc76b (arquivado e restaurado: +2 recibos em plan_change_receipts); sessoes do qa-r06-operacoes (uma revogada; a do Chrome fechada); eventos de auditoria das provas; limpeza no fim da Etapa 2",
+    "chaves_criadas": "nenhuma (nenhum segredo, token ou chave criado)",
+    "ambiente": "Chrome CDP 9421 fechado; servidor 3021 parado; descartavel coelo_ops_r06 parado (volume mantido); build web em apps/superadmin/build/web-r06ops (nao versionado)",
+    "skills": "secao 5 de docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md; conhecimento: no-op nesta frente (regras propostas ao coordenador)",
+    "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
+  }
 }
