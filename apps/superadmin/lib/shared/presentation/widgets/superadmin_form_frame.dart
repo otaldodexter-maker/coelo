@@ -62,7 +62,18 @@ final class SuperadminFormFrame extends StatelessWidget {
               // Antes ele ia para dentro do scroll em mobile, entao subia junto
               // com conteudo curto e ficava fora da primeira tela em formulario
               // longo. Decisao do Owner de 10/09/2026 sobre a observacao RODAPE.
-              footer,
+              // Texto ampliado ou teclado podem deixar menos altura que o
+              // rodape. Preservar espaco para o formulario e tornar todas as
+              // acoes alcancaveis, sem reduzir texto nem sobrepor o conteudo.
+              ConstrainedBox(
+                constraints: BoxConstraints(
+                  maxHeight: ((constraints.maxHeight - inset - CoeloSpacing.space4) / 2).clamp(
+                    0,
+                    double.infinity,
+                  ),
+                ),
+                child: SingleChildScrollView(child: footer),
+              ),
             ],
           ),
         );

@@ -1,0 +1,362 @@
+R08 G0 pgTAP focal G5 assessments
+AT=2026-09-12T11:20:19.0059046-03:00
+SOURCE_COMMIT=53b9c6d29
+SOURCE=packages/coelo_database/supabase/tests/superadmin_assessments_internal_v2_test.sql
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+COMMAND=git show <commit>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..52
+(1 row)
+
+               has_table
+----------------------------------------
+ ok 1 - assessment configurations exist
+(1 row)
+
+              has_table
+-------------------------------------
+ ok 2 - assessment instruments exist
+(1 row)
+
+             has_table
+------------------------------------
+ ok 3 - assessment categories exist
+(1 row)
+
+              has_table
+--------------------------------------
+ ok 4 - assessment competencies exist
+(1 row)
+
+            has_table
+----------------------------------
+ ok 5 - assessment concepts exist
+(1 row)
+
+            has_table
+---------------------------------
+ ok 6 - assessment periods exist
+(1 row)
+
+             has_table
+------------------------------------
+ ok 7 - assessment gradebooks exist
+(1 row)
+
+           has_table
+-------------------------------
+ ok 8 - private receipts exist
+(1 row)
+
+          has_table
+-----------------------------
+ ok 9 - private events exist
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 10 - configuration RLS is enabled and forced
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 11 - gradebook RLS is enabled and forced
+(1 row)
+
+                    ok
+------------------------------------------
+ ok 12 - period RLS is enabled and forced
+(1 row)
+
+                    ok
+-------------------------------------------
+ ok 13 - receipt RLS is enabled and forced
+(1 row)
+
+                   ok
+-----------------------------------------
+ ok 14 - event RLS is enabled and forced
+(1 row)
+
+                     table_privs_are
+---------------------------------------------------------
+ ok 15 - authenticated cannot access gradebooks directly
+(1 row)
+
+                    table_privs_are
+-------------------------------------------------------
+ ok 16 - authenticated cannot access receipts directly
+(1 row)
+
+            has_function
+------------------------------------
+ ok 17 - context options RPC exists
+(1 row)
+
+             has_function
+---------------------------------------
+ ok 18 - configuration read RPC exists
+(1 row)
+
+           has_function
+-----------------------------------
+ ok 19 - gradebook read RPC exists
+(1 row)
+
+           has_function
+----------------------------------
+ ok 20 - closing queue RPC exists
+(1 row)
+
+             has_function
+---------------------------------------
+ ok 21 - configuration save RPC exists
+(1 row)
+
+               has_function
+-------------------------------------------
+ ok 22 - configuration activate RPC exists
+(1 row)
+
+           has_function
+-----------------------------------
+ ok 23 - gradebook save RPC exists
+(1 row)
+
+            has_function
+-------------------------------------
+ ok 24 - gradebook submit RPC exists
+(1 row)
+
+            has_function
+-------------------------------------
+ ok 25 - gradebook review RPC exists
+(1 row)
+
+            has_function
+-------------------------------------
+ ok 26 - gradebook return RPC exists
+(1 row)
+
+             has_function
+--------------------------------------
+ ok 27 - gradebook publish RPC exists
+(1 row)
+
+              has_function
+-----------------------------------------
+ ok 28 - publication schedule RPC exists
+(1 row)
+
+                function_privs_are
+--------------------------------------------------
+ ok 29 - authenticated only executes read gateway
+(1 row)
+
+                  function_privs_are
+------------------------------------------------------
+ ok 30 - authenticated only executes mutation gateway
+(1 row)
+
+                function_privs_are
+---------------------------------------------------
+ ok 31 - anonymous cannot execute mutation gateway
+(1 row)
+
+                           ok
+--------------------------------------------------------
+ ok 32 - assessment gateway uses only internal identity
+(1 row)
+
+                         results_eq
+------------------------------------------------------------
+ ok 33 - assessment v2 adds no unapproved role capabilities
+(1 row)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "012d5575-968f-4c6b-b63e-b02a79dc87d9", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  relation "follow_links_expected" already exists, skipping
+INSERT 0 1
+NOTICE:  relation "follow_links_expected" already exists, skipping
+INSERT 0 1
+INSERT 0 1
+ set_config
+------------
+
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+SELECT 1
+                           ok
+---------------------------------------------------------
+ ok 34 - AAL2 internal Owner can read assessment context
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 35 - context response uses the stable v2 envelope and collections
+(1 row)
+
+                                 ok
+---------------------------------------------------------------------
+ ok 36 - context exposes the synthetic activity and group assignment
+(1 row)
+
+SELECT 1
+                       ok
+------------------------------------------------
+ ok 37 - authorized configuration save succeeds
+(1 row)
+
+             results_eq
+-------------------------------------
+ ok 38 - configuration persists once
+(1 row)
+
+                           ok
+---------------------------------------------------------
+ ok 39 - receipt attributes command to internal identity
+(1 row)
+
+                                 ok
+--------------------------------------------------------------------
+ ok 40 - audit is internal, minimized and never fabricates a person
+(1 row)
+
+SELECT 1
+                       ok
+-------------------------------------------------
+ ok 41 - valid synthetic configuration activates
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 42 - activation opens the synthetic period
+(1 row)
+
+SELECT 1
+                         ok
+-----------------------------------------------------
+ ok 43 - open period creates the synthetic gradebook
+(1 row)
+
+                               is
+-----------------------------------------------------------------
+ ok 44 - the synthetic gradebook contains one active student row
+(1 row)
+
+                    ok
+------------------------------------------
+ ok 45 - same request and payload replays
+(1 row)
+
+                   results_eq
+-------------------------------------------------
+ ok 46 - replay does not duplicate configuration
+(1 row)
+
+                            ok
+-----------------------------------------------------------
+ ok 47 - same request with a different payload is rejected
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                           ok
+---------------------------------------------------------
+ ok 48 - institution-scoped actor is denied cross-tenant
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000209"}
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 49 - Owner AAL1 reads the context in the MVP
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000203"}
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 50 - people-only credential cannot enter internal assessment realm
+(1 row)
+
+UPDATE 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                            ok
+-----------------------------------------------------------
+ ok 51 - revoked internal membership is denied immediately
+(1 row)
+
+ set_config
+------------
+ {}
+(1 row)
+
+SET
+                    throws_ok
+-------------------------------------------------
+ ok 52 - anonymous role has no RPC execute grant
+(1 row)
+
+RESET
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+NATIVE_EXIT=0
+SUITE_RESULT native_exit=0 ok=52 not_ok=0 expected=52
+WRAPPER_EXIT=0

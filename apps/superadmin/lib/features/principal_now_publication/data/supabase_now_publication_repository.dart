@@ -203,14 +203,14 @@ final class SupabaseNowPublicationRepository implements NowPublicationRepository
       if (uploadUrl == null) throw Exception('now_media_prepare_failed');
       final headers = {
         for (final entry in (prepared['required_headers'] as Map? ?? const {}).entries)
-          entry.key.toString(): entry.value.toString(),
-        'content-type': mimeType,
+          entry.key.toString().toLowerCase(): entry.value.toString(),
       };
-      final sent = await _httpClient.put(
-        Uri.parse(uploadUrl),
-        headers: headers,
-        body: Uint8List.fromList(bytes),
-      );
+      if (headers['content-type'] != mimeType) throw Exception('now_media_upload_invalid_headers');
+      final request = http.Request('PUT', Uri.parse(uploadUrl))
+        ..followRedirects = false
+        ..headers.addAll(headers)
+        ..bodyBytes = Uint8List.fromList(bytes);
+      final sent = await http.Response.fromStream(await _httpClient.send(request));
       if (sent.statusCode < 200 || sent.statusCode >= 300) {
         throw Exception('now_media_upload_failed');
       }

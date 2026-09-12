@@ -42,6 +42,8 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     expect(find.byType(CatalogHostPage), findsOneWidget);
+    expect(find.byKey(const Key('catalog-local-preview')), findsNothing);
+    expect(find.byKey(const Key('catalog-platform-fallback')), findsOneWidget);
 
     session.signOut();
     router.go(SuperadminRoutes.devCatalog);

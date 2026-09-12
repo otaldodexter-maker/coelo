@@ -416,9 +416,14 @@ final class PlatformUserPage {
 }
 
 final class PlatformUserCreateResult {
-  const PlatformUserCreateResult({required this.record, required this.message});
+  const PlatformUserCreateResult({
+    required this.record,
+    required this.message,
+    this.passwordSetupLink,
+  });
   final PlatformUserRecord record;
   final String message;
+  final Uri? passwordSetupLink;
   bool get invitationSent => false;
 }
 

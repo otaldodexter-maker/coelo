@@ -6,6 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/activity/superadmin_activity.dart';
 import '../../../app/shell/superadmin_notice.dart';
 import '../../../app/shell/superadmin_shell.dart';
+import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
@@ -1236,38 +1237,37 @@ final class _ActivityTemplateCreatePageState extends State<_ActivityTemplateCrea
                       ),
                     ),
                   ],
-                  const SizedBox(height: CoeloSpacing.space8),
-                  Wrap(
-                    alignment: WrapAlignment.end,
-                    spacing: CoeloSpacing.space3,
-                    runSpacing: CoeloSpacing.space2,
-                    children: [
-                      OutlinedButton(
-                        onPressed: _submitting
-                            ? null
-                            : _step == 0
-                            ? Navigator.of(context).pop
-                            : () => setState(() => _step--),
-                        child: Text(_step == 0 ? 'Cancelar' : 'Anterior'),
-                      ),
-                      FilledButton(
-                        key: Key(
-                          _step < 2
-                              ? 'activity-template-create-next'
-                              : 'activity-template-create-submit',
-                        ),
-                        onPressed: _submitting ? null : (_step < 2 ? _advance : _submit),
-                        child: Text(
-                          _step < 2 ? 'Continuar' : (_submitting ? 'Criando...' : 'Criar modelo'),
-                        ),
-                      ),
-                    ],
-                  ),
                 ],
               ),
             ),
           ),
         ),
+      ),
+    ),
+    bottomNavigationBar: SafeArea(
+      top: false,
+      child: SuperadminFormActionFooter(
+        surfaceKey: const Key('activity-template-create-footer'),
+        tertiaryAction: TextButton(
+          key: const Key('activity-template-create-cancel'),
+          onPressed: _submitting ? null : Navigator.of(context).pop,
+          child: const Text('Cancelar'),
+        ),
+        continuationActions: [
+          if (_step > 0)
+            OutlinedButton(
+              key: const Key('activity-template-create-previous'),
+              onPressed: _submitting ? null : () => setState(() => _step--),
+              child: const Text('Anterior'),
+            ),
+          FilledButton(
+            key: Key(
+              _step < 2 ? 'activity-template-create-next' : 'activity-template-create-submit',
+            ),
+            onPressed: _submitting ? null : (_step < 2 ? _advance : _submit),
+            child: Text(_step < 2 ? 'Continuar' : (_submitting ? 'Criando...' : 'Criar modelo')),
+          ),
+        ],
       ),
     ),
   );

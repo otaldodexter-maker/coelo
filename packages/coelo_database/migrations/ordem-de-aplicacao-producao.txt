@@ -216,3 +216,6 @@
 20260911130400_internal_actor_institution_access_by_role_v1.sql
 20260911130500_meal_plan_scope_rules_object_v1.sql
 20260911170800_internal_user_create_v1.sql
+
+# lote 56 (12/09 11:32) - R08 realm-interno: cron bounded de expiracao do Agora; backup esquema+dados e pgTAP local verdes
+20260912140545_now_publication_expiry_dispatch_v1.sql

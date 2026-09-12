@@ -1,0 +1,26 @@
+R08 G0 cleanup manifest preview only
+AT=2026-09-12T11:22:05.7712767-03:00
+SOURCE_COMMIT=c9662b0ff
+SOURCE=packages/coelo_database/scripts/stage2-realm-chat-cleanup-manifest.sql
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+STATIC_GUARDS=BEGIN + SET LOCAL TRANSACTION READ ONLY + CTE/SELECT only + ROLLBACK; no persistent DML
+COMMAND=git show <commit>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+SET
+  category  |                relation_name                 | row_count |                              future_action
+------------+----------------------------------------------+-----------+-------------------------------------------------------------------------
+ auth       | auth.users                                   |         0 | ban/delete only through Auth Admin after sessions are revoked
+ realm      | app_private.superadmin_internal_identities   |         0 | remove dependent realm rows only after Auth cleanup receipt
+ realm      | app_private.superadmin_internal_profiles     |         0 | delete by internal_identity_id allowlist
+ realm      | app_private.superadmin_internal_memberships  |         0 | revoke first; preserve audit references
+ realm      | app_private.superadmin_internal_actor_people |         0 | remove bridge only after dependent institution memberships
+ realm      | public.institution_memberships               |         0 | revoke/delete only memberships owned by allowlisted actor people
+ chat       | public.conversations                         |         0 | reuse chat-internal-production-cleanup ordering; retain audit
+ chat-media | public.chat_attachment_metadata              |         0 | purge private R2 keys through chat-media worker before metadata cleanup
+ retained   | audit.audit_logs                             |         0 | never delete; append-only evidence
+(9 rows)
+
+ROLLBACK
+NATIVE_EXIT=0
+ROLLBACK_COUNT=1
+WRAPPER_EXIT=0

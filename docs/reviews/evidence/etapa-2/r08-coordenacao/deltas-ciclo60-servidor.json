@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "agora.expire",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R04 (10/09, lote 9): transicao de expiracao (190500) APLICADA EM PRODUCAO; pgTAP 16/16. Gate para done: rota normal com sessao e reload. R08: lote56 aplicado em producao apos pgTAP6/6 e regressao31/31, backup logico ADR0034 Decisao8, ledger e cron nominal confirmados. Duas execucoes automaticas succeeded; fluxo UI continua pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md"
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "RPC 20260911170800 em produção no lote55 (recibo 19d3914373); Edge Function internal-user-create v3 ACTIVE, OPTIONS204 sem corpo e POST anônimo401 medidos em12/09. Falta provar criação Auth/identidade, hierarquia e reload com sessão real; não done. R08 P51: redirect canônico HTTPS separado do CORS; internal-user-create v4 ACTIVE implantada C0 apos Deno8PASS. OPTIONS medido; allowlist Auth e criacao/reload na UI ainda pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/internal-user-create-preflight.md"
+  }
+]

@@ -9,6 +9,61 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final scenario in ['redirect', 'wrong-mime']) {
+    test('signed upload refuses $scenario without finalize or publish', () async {
+      final actions = <String>[];
+      var puts = 0;
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          if (request.url.path.endsWith('/rpc/save_moments_draft')) {
+            return _json({'id': 'publication-1', 'version': 1}, request);
+          }
+          actions.add(body['action'] as String);
+          expect(body['publication_id'], 'publication-1');
+          return _json({
+            'asset_id': 'asset-1',
+            'upload_url': 'https://private.test/signed',
+            'required_headers': {
+              'Content-Type': scenario == 'wrong-mime' ? 'image/jpeg' : 'image/png',
+            },
+          }, request);
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseMomentsPublicationRepository(
+        client,
+        httpClient: MockClient((request) async {
+          puts++;
+          expect(request.followRedirects, isFalse);
+          expect(request.headers, {'content-type': 'image/png'});
+          return http.Response('', 307, headers: {'location': 'https://other.invalid/file'});
+        }),
+      );
+      await expectLater(
+        repository.publish(
+          MomentsPublicationContext.demo,
+          MomentsDraft(
+            audiences: const {MomentsAudienceKind.families},
+            media: [
+              MomentsMediaDraft.local(
+                localId: 'local-1',
+                name: 'image.png',
+                mimeType: 'image/png',
+                bytes: Uint8List(8),
+              ),
+            ],
+          ),
+        ),
+        throwsException,
+      );
+      expect(actions, ['prepare']);
+      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
+    });
+  }
+
   test('salva, envia ao R2 por PUT e publica sem expor credenciais', () async {
     final functionBodies = <Map<String, dynamic>>[];
     final rpcBodies = <String, Map<String, dynamic>>{};
@@ -78,6 +133,7 @@ void main() {
     expect(publication.id, 'publication-1');
     expect(publication.status, MomentsStatus.published);
     expect(upload?.method, 'PUT');
+    expect(upload?.followRedirects, isFalse);
     expect(upload?.bodyBytes, [1, 2, 3]);
     expect(upload?.headers['content-type'], 'video/mp4');
     expect(functionBodies.map((body) => body['action']), ['prepare', 'finalize']);
