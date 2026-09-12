@@ -57,10 +57,18 @@ A auditoria posterior foi somente leitura:
   ausencia de grant direto ao cliente.
 
 Impacto real: a prova 16/16 anterior ao delete permanece auditavel, mas a
-fixture deixou de estar disponivel para reproducao. Pela funcao canonica,
-`superadmin_circular_delete_v2` faz exclusao logica da circular e marca assets
-ready/pending como `orphaned`; isso e inferencia do codigo, pois o status remoto
-do catalogo nao ficou visivel ao papel autenticado.
+fixture deixou de estar disponivel para reproducao pela API. A primeira leitura
+do codigo sugeriu que o asset poderia ter sido marcado `orphaned`; essa era
+apenas uma inferencia e nao uma medicao remota.
+
+Em 2026-09-12 12:34:55 BRT, o C0 mediu a fixture por SQL somente leitura no
+catalogo autoritativo: a circular existe com `status = archived` e
+`deleted_at` preenchido; o asset existe com `status = READY`, 70 bytes e
+`cleanup_attempted = false`. Portanto, nenhum dado foi fisicamente apagado e a
+inferencia de asset `orphaned` nao se confirmou. O incidente permanece porque a
+circular ficou operacionalmente indisponivel, em violacao da retencao exigida
+pelo contrato da rodada. A consulta central foi preservada pelo C0 em
+`docs/reviews/evidence/etapa-2/r08-coordenacao/circular-incidente-auditoria.sql`.
 
 Arquivos sanitizados: `smoke-circular-media-r08-result.json` e
 `smoke-circular-media-r08-post-delete-audit.json`.

@@ -23,5 +23,20 @@
     "rowCount": null,
     "rows": []
   },
-  "note": "read-only post-incident audit; no signed URL or credential recorded"
+  "coordinatorSqlMeasurement": {
+    "at": "2026-09-12T12:34:55-03:00",
+    "circular": {
+      "exists": true,
+      "status": "archived",
+      "deletedAtPresent": true
+    },
+    "asset": {
+      "exists": true,
+      "status": "READY",
+      "bytes": 70,
+      "cleanupAttempted": false
+    },
+    "source": "docs/reviews/evidence/etapa-2/r08-coordenacao/circular-incidente-auditoria.sql"
+  },
+  "note": "read-only post-incident audits; no signed URL or credential recorded; the client audit could not see catalog status, while the coordinator SQL measurement confirmed logical archival and retained READY asset"
 }
