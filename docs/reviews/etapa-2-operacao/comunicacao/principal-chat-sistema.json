@@ -1,6 +1,6 @@
 {
-  "revision": 70,
-  "updated_at": "2026-09-12T14:08:11.818449-03:00",
+  "revision": 71,
+  "updated_at": "2026-09-12T14:16:00.981439-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "7d2b66a3e",
-  "status": "EXECUTANDO: ProfileSummaryreview1e0029e9e concluído; runnerG1resume com2achados encaminhados, fixesG1 emcurso",
+  "head": "00def54c7",
+  "status": "EXECUTANDO: reviewrunnerG1 concluído d59e17f62, fakeproofG4 GREEN2/native0 semrede; próximo gate C0",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -41,7 +41,8 @@
     "perfil-save-reload": "RED5falhasesperadas/native1;GREEN37PASS0FAIL0SKIP/native0 em2arquivos;5novos32existentes2oráculoswrapperobsoletossubstituidos;analyze4arquivos0/native0. NaoE2E.",
     "principal-integrado-C0": "79PASS/3arquivos baseb85fd00e0/analyze0 conforme ciclo120C0; naosomaraosrerunsG4.",
     "perfil-subject-role": "RED6 esperados/native1; GREEN43PASS0FAIL0SKIP/native0 (6novos37existentes); analyze4arquivos0. Não somar reruns.",
-    "perfil-consumidores": "ViewRED2→GREEN16PASS; scannerRED3→GREEN7PASS;23IDs únicos5novos18existentes; analyze3arquivos0; nenhumUI/E2E."
+    "perfil-consumidores": "ViewRED2→GREEN16PASS; scannerRED3→GREEN7PASS;23IDs únicos5novos18existentes; analyze3arquivos0; nenhumUI/E2E.",
+    "executor-G1-offline": "2workflows únicos; RED0PASS2FAILecbcca06f; GREEN2PASS0FAILd59e17f62/native0; 0rede/credenciaisreais/mutação remota; não somar diagnósticoou4negativosG1."
   },
   "lotes": [
     {
@@ -76,8 +77,8 @@
     "conciliar spec028 bindingattachment_id semassetId antescertificacao",
     "proximo gate independente aposAPI, semconflito demaisfrentes"
   ],
-  "next_step": "Revisar fixesG1 loginfalho nãofinalizar e bindassignment/gradebookantesmutação; semremoto/semrunnerG4.",
-  "ack": "Basecycle1807d2b66a3e materializada/push próprio; C0tests23Perfilscanner/37H25/analyze0. ReviewG3menu8PASSatribuídoautor. Nenhum slotativo.",
+  "next_step": "Publicar fakeproof/review para C0 avaliarACKexecuçãoúnica; próximo gate independente solicitado até14:52:16.",
+  "ack": "Nenhum runner remoto/Flutter/Chrome G4. Revisões G3 entregues; runnerG1fixesatendidos por leitura e faultinjection offline.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "Sem processo/slotFlutter/Chrome G4 ativo. Slots globais coordenadosC0; semsegredos;worktreeprincipalintocado;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
