@@ -61,3 +61,5 @@ A retenção alternativa tem assert específico em setInstitutions; setUnits/set
 ### Prova integrada C0
 
 C0 publicou `0b9eac1e4` com `ciclo210-people.jsonl`, `ciclo210-people-result.json` e `ciclo210-people-exit.txt` em sua pasta de evidências. G3 leu o log bruto completo e o exit: 19 aprovados, 0 falhos, 0 ignorados, done success e native exit 0, base `3c7ebbd5dcef2643677fc453b742c0fca02fe451`. Os quatro casos acima constam como success. A prova integrada resolve a ausência de log auditável da execução anterior G2, sem fabricar histórico ou duplicar execução G3. Parecer final favorável, mantendo os limites de cobertura e ativação já descritos.
+
+C0 comunicou aplicação do lote59 às14:31 e publicou `477e6c8df`. G3 conferiu o diff que habilita `contextFiltersAvailable:true` e `lote59-apply.log` com nativeExitCode0. O gate de ativação antes pendente foi executado pelo integrador; não foi reaplicado por G3 e não representa prova UI remota nesta revisão.
