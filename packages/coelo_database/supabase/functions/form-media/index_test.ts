@@ -1209,7 +1209,7 @@ function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boo
         },
         maybeSingle: () => Promise.resolve({ data: "source" in options ? options.source : {
           id, item_id: readToken, mime_type: "image/png",
-          expected_byte_length: answerPng.length, state: "finalized",
+          actual_byte_length: answerPng.length, state: "finalized",
         } }),
       };
       return assetQuery;
@@ -1292,7 +1292,11 @@ Deno.test("answer R2 finalize replay returns the same Flutter asset envelope wit
 });
 
 Deno.test("answer R2 finalize never returns an unconfirmed or mismatched source", async () => {
-  for (const source of [null, { id: mediaId }, { id, item_id: readToken, mime_type: "image/png", expected_byte_length: answerPng.length, state: "uploaded" }]) {
+  for (const source of [null, { id: mediaId },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: answerPng.length, state: "uploaded" },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: null, state: "finalized" },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: answerPng.length + 1, state: "finalized" },
+  ]) {
     const harness = answerR2Harness({ alreadyFinalized: true, source });
     const result = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), harness.dependencies);
     assertEquals(result.status, 400);

@@ -255,19 +255,20 @@ async function handleAnswerR2(
     // campos mínimos que o consumidor Flutter precisa após a confirmação.
     const finalizedResponse = async () => {
       const source = await serviceClient.from("form_assets")
-        .select("id,item_id,mime_type,expected_byte_length,state")
+        .select("id,item_id,mime_type,actual_byte_length,state")
         .eq("id", access.asset_id).maybeSingle();
       const asset = source.data;
       if (source.error || !asset || asset.id !== access.asset_id ||
           asset.state !== "finalized" || typeof asset.item_id !== "string" ||
           asset.mime_type !== descriptor.mime_type ||
-          asset.expected_byte_length !== Number(descriptor.expected_byte_size)) {
+          typeof asset.actual_byte_length !== "number" ||
+          asset.actual_byte_length !== Number(descriptor.expected_byte_size)) {
         throw new Error("asset_unavailable");
       }
       return response(origin, 200, {
         asset_id: asset.id, state: "finalized", media_asset_id: descriptor.media_asset_id,
         id: asset.id, item_id: asset.item_id, mime_type: asset.mime_type,
-        byte_length: asset.expected_byte_length,
+        byte_length: asset.actual_byte_length,
       });
     };
     if (descriptor.state === "finalized" && descriptor.media_status === "ready") {
