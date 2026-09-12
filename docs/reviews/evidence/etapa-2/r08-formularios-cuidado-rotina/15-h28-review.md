@@ -1,6 +1,6 @@
 ---
 source: "C0 review nominal FE H28; ponta G2 425aceaf8 confirmada pelo autor; código/testes cliente e candidato SQL"
-status: "review readonly com dois achados enviados a G2; aguarda prova e followup"
+status: "review encerrado favoravelmente; 19PASS integrados por C0 com log bruto conferido"
 generated_at: "2026-09-12"
 ---
 
@@ -49,3 +49,15 @@ Critério focal de fechamento enviado ao autor/C0:4cenários (atividade alternat
 ## Followup 36cfefa81
 
 Guard deUF em setMunicipalities efetivamente lido e adequado. Todos os achados de código desta revisão estão atendidos na ponta36cfefa81; resta a execução e revisão dos quatro cenários. O autor foi orientado a escrever os testes enquanto espera slot, pois a preparação não ocupa Flutter. Parecer estrutural favorável ao diff, condicionado às provas; não altera o estado produtivo nem libera a flag antes do gate C0.
+
+## Fechamento df0a281cb
+
+Os quatro testes publicados foram lidos integralmente: UF adicional preserva bairro compatível; atividade com vínculo alternativo sobrevive à ampliação de instituições; atividade duplicada aparece uma vez e permite deseleção; mudança de município não retém bairro por opção de outra UF. Os fixtures contêm vínculos duplicados reais. Os achados de código desta revisão estão atendidos; parecer favorável à integração do cliente sob o gate de implantação de C0.
+
+G2 registrou em `968b0173d` a execução focal repository + ViewModel com 19 aprovados e 0 falhos. Em mensagem posterior, confirmou exit code 0 e saída `00:01 +19: All tests passed!`, mas informou que não preservou log bruto. Portanto, este documento distingue resultado informado pelo executor de evidência bruta auditável: G3 leu os testes e o registro commitado, não reexecutou a suíte e não inventou um log retroativo.
+
+A retenção alternativa tem assert específico em setInstitutions; setUnits/setGroups foram inspecionados em código. A deduplicação testada é de atividade; cidades/bairros foram inspecionados sem cenário isolado novo. Esses limites permanecem explícitos, sem ampliar cobertura ou somar os 19 testes às execuções G3. SQL/fixtures A/B e ativação de `contextFiltersAvailable` continuam com C0/G5; esta revisão não certifica H28 produtivo nem E2E.
+
+### Prova integrada C0
+
+C0 publicou `0b9eac1e4` com `ciclo210-people.jsonl`, `ciclo210-people-result.json` e `ciclo210-people-exit.txt` em sua pasta de evidências. G3 leu o log bruto completo e o exit: 19 aprovados, 0 falhos, 0 ignorados, done success e native exit 0, base `3c7ebbd5dcef2643677fc453b742c0fca02fe451`. Os quatro casos acima constam como success. A prova integrada resolve a ausência de log auditável da execução anterior G2, sem fabricar histórico ou duplicar execução G3. Parecer final favorável, mantendo os limites de cobertura e ativação já descritos.

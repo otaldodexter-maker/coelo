@@ -8,7 +8,7 @@ generated_at: "2026-09-12"
 
 Worktree preservada: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina`. Branch `work/etapa2-r08-formularios-cuidado-rotina`. Base conjunta atual: `origin/dev 7d2b66a3e`, incorporada por merge `8fead7905`, sem rebase/force e sem editar/puxar o checkout principal. C0 é o integrador e escritor dos rastreadores. Não houve deploy, migration, cleanup ou criação de fixture remota por G3.
 
-T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; ajustes até `15:22:16`. Este documento ainda é parcial: captura Foto local-green e a rodada continua nos próximos gates autorizados.
+T0 histórico `10:52:16 BRT`. **Prazo substituído por alteração nominal do Owner comunicada por C0 às14:22:** frentes até14:40, revisão até14:50 e fechamento total C0 até15:00. Os marcos anteriores14:52:16/15:02:16/15:22:16 não estão mais vigentes. Este documento ainda é parcial enquanto G3 conclui review H28; não iniciará R09 automaticamente.
 
 ## Entregas publicadas
 
