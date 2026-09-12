@@ -1,6 +1,6 @@
 {
-  "revision": 60,
-  "updated_at": "2026-09-12T12:31:39.653844-03:00",
+  "revision": 61,
+  "updated_at": "2026-09-12T12:39:08.239002-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "b3dd45c53",
-  "status": "EXECUTANDO: AconteceAPI23PASS,AgoraAPI19PASS;MomentosAPI20PASS/1FAILwithdraw403; aguardaACL C0;UIpendente",
+  "head": "a6e07972c",
+  "status": "EXECUTANDO: CardapiosAPI24PASS/lote55; midiaAPIAconteceAgoraPASS;Momentosretirada403aguardaC0;preparoChatAPI",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -35,7 +35,8 @@
     "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E",
     "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados.",
     "agora-api": "19checks/operacoesPASS exit0;TTLURL403,logout204;publicacao24hNAOverificada.",
-    "momentos-api": "20checksPASS/1FAILwithdraw_moment403 exit1;preparePUTfinalizepublishreadhashreloadTTL passaram;semretirada/semnegativaaposretirada;logout204."
+    "momentos-api": "20checksPASS/1FAILwithdraw_moment403 exit1;preparePUTfinalizepublishreadhashreloadTTL passaram;semretirada/semnegativaaposretirada;logout204.",
+    "cardapios-api": "24checks/operacoesPASS exit0;draft1/edit2/review3/publish4/archive5;modeloexistentev2intacto;scopeRulesobjetopersistido;naoE2EUI."
   },
   "lotes": [
     {
@@ -70,7 +71,7 @@
     "runtimeUI paraPNG/Cardapios/create-group",
     "conciliar spec028 bindingattachment_id semassetId antescertificacao"
   ],
-  "next_step": "PublicarprovasNow/Momentos; aguardarC0review403antesretrymesmarecurso; prepararCardapioslote55semreimplementar; mergeorigin/deventre pacotes.",
+  "next_step": "PublicarCardapiosAPI; aguardarC0ACL403Momentos antesretry; preparar1grupoChatQA/anexoAPI conformepar/realm nominal; UI aguardaG0.",
   "ack": "C0ciclo90dev2441725d5recebido; APIfixturesnominaisautorizadas; falhaMomentosencaminhadaeparada;semprocessoativo.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1ChromeG0;1Fluttertest global mediante concessaoC0;nenhumprocessoG4ativo;semsegredos;semworktreeprincipal/pull;deploy/SQL/inventario/rastreadoresC0.",
@@ -337,7 +338,9 @@
       "fee190810",
       "9bee7eb26",
       "bb0da7578",
-      "b3dd45c53"
+      "b3dd45c53",
+      "45b0820ae",
+      "a6e07972c"
     ],
     "h09": "C0 mediu cron.job_run_details:14:35/14:40UTC succeeded. Artefato publicado origin/dev2d97892d9 docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md. Nao prova expiracao visual/E2E.",
     "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
@@ -346,7 +349,8 @@
     "principal_chat_recebimento": "Local-green4casosnovos+regressoes; detalhes nohandoffPacote4;58focaisfinais e43previos,naosomarreruns;semE2E.",
     "smoke_api_acontece": "PASS23checks/exit0; happens-api-proof.md e happens-api-manifest.json;16x16PNGprivateR2/readhash/reload/TTL403/withdrawausente/logout204. SemE2EUI ou cross-tenant. Hierarquiad0c4/d0c4/368amedida/autorizadaC0.",
     "smoke_api_agora": "now-api-proof.md/manifest;publicacao392ee49a-265b-42e3-9c5b-ed44a34028f8/asset0451e371-7f79-4501-b439-7da426ca4019;expires2026-09-13T15:24:39.452258Z;masterpreservado,semE2EUI.",
-    "smoke_api_momentos": "moments-api-proof.md/manifest;publicacaobd9f2361-548f-44f8-a595-fddec3ff1396/asset6f8f9fc8-215a-4e07-8b7f-583d210215c7;withdraw403mesmoautor;aguardaC0ACL;preservado,naorepetirupload."
+    "smoke_api_momentos": "moments-api-proof.md/manifest;publicacaobd9f2361-548f-44f8-a595-fddec3ff1396/asset6f8f9fc8-215a-4e07-8b7f-583d210215c7;withdraw403mesmoautor;aguardaC0ACL;preservado,naorepetirupload.",
+    "smoke_api_cardapios": "meal-plan-api-proof.md/manifest;plano8f072222-a9c5-4902-a0d8-ded1d789fe4c archived5 preservado;modelod132698c-605d-46b4-bb11-124f85563604v2inalterado;21–25/09staffgrupoQA;semDELETE."
   },
   "historico_pre_r08_operacional": {
     "tests": {
