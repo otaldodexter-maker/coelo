@@ -19,7 +19,7 @@ tracker_sync_revisions: "R07 encerrada: estrutura69; acessos146+checkpoint149; f
 
 # Pendências Coelo — Front-end
 
-## Estado vigente ? R09 E2-R09-20260912-1542, C0 revisao104
+## Estado vigente ? R09 E2-R09-20260912-1542, C0 revisao106
 
 T0 12/09/2026 15:42:18 BRT preservado; corte de execucao19:42:18 e
 fechamento20:12:18, ou antes por consumo. Nove IDs/ACKs conferidos; posse
@@ -29,17 +29,16 @@ cota codex (App Server); nao e medicao de T0. Checkpoints em sessao ativa.
 Runtime G0 aprovado pela UI normal: teclado real, login, leitura de
 Instituicoes e reload, sem sessao injetada. Prova em
 [evidencia G0](evidence/etapa-2/r09-ambiente-runtime-20260912-1542/handoff.md).
-Chrome22592/aba829822468 e servidor15452/3014 com G1; Local salvo, reload e negativa contextual provados; aceite composto publicado. Consumo real16:44=60%. Lote60 permanece somente no espelho:42PASS pertinentes,8FAIL preexistentes na suite ampliada; [preflight](evidence/etapa-2/r09-coordenacao/lote60-preflight.md).
+Chrome22592/aba829822468 e servidor15452/3014 recolhidos por C0 apos entrega G1; Local salvo, reload e negativa contextual provados; aceite composto publicado. Consumo real16:58=61%. Lote60 aplicado/ledger/consumidor3PASS;112PASS SQL apos reconciliacao focal do espelho e testes vigentes; [preflight](evidence/etapa-2/r09-coordenacao/lote60-preflight.md).
 A disponibilidade do runtime nao certifica automaticamente CRUDs de produto.
 
 activities.assessment BE done: persistencia/ativacao/releitura reais R08,
 pgTAP52/52 com negativa cross-tenant e nove checks API R09 (incluem Auth/logout).
 FE/E2E permanecem abertos. [Prova G5](evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md).
-Forms.resolve-file mantem BE local-green/E2E pendente: probe final6PASS/0FAIL
-com download68B, negacao sem Auth e URL60s expirada; faltam gates restantes.
+Forms.upload e forms.resolve-file BE done: cadeia R08 persistida/reaberta, negativas SQL e consumidor real apos lote60. FE/E2E continuam pendentes; probe previo6PASS comprova download68B e TTL expirado.
 [Prova C0](evidence/etapa-2/r09-coordenacao/forms-download-access.md).
 
-Base231 acoes; FE162/231; BE151/224; E2E132/199. Avanco desta abertura: Local FE/BE/E2E e activities.assessment BE. [Aceite Local](evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md). Inventario e matrizes sincronizados pelo aplicador.
+Base231 acoes; FE162/231; BE153/224; E2E132/199. Avanco desta abertura: Local FE/BE/E2E e activities.assessment BE. [Aceite Local](evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md). Inventario e matrizes sincronizados pelo aplicador.
 
 ## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
 
@@ -636,7 +635,7 @@ esses blocos são "sem autorização para verificar", não "ausentes".
 Reconciliação documental em **2026-09-09T17:13:51-03:00**, sobre `dev` documental `09aa3861e` e base funcional `d019c109a`.
 Objetivo: atualizar entregas, pendências e evidências das duas rodadas no inventário e nas três camadas. Inclui as 230 ações conhecidas; não reabre tarefas nem executa/deploya produto. Critério de parada: matrizes idênticas ao inventário nos campos de cada camada, fontes reconciliadas e publicação verificada. Trabalho documental realizado neste turno; ETA do produto continua desconhecida.
 
-Conclusão certificada no inventário: Front-end 162/231, backend 151/224 ações aplicáveis e integração 132/199 ativas (também 132/202 incluindo o gate formal).
+Conclusão certificada no inventário: Front-end 162/231, backend 153/224 ações aplicáveis e integração 132/199 ativas (também 132/202 incluindo o gate formal).
 São 39 famílias; 205 ações ativas considerando cinco de shell, 22 adiadas e três gates MFA. A contagem `scope=mvp` é 200 (198 com backend/E2E e duas preferências locais); shell é separado. Sete ações não se aplicam ao backend. FE ativo: 4/205; três certificados são de indisponibilidade de ações adiadas. Não é percentual de código implementado.
 
 Os sete certificados FE são `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`, `attendance.export` informativo e `profile-files.import/export` históricos. R02 acrescentou cinco certificados; nenhuma promoção nesta manutenção. `account.logout` permanece ID distinto, sem herdar o aceite de Auth.

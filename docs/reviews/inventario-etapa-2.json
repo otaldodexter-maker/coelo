@@ -5120,17 +5120,25 @@
       "scope": "mvp",
       "done": "R08: cadeia API de imagem de resposta concluida e recursos preservados. Primeiro gate restante: rota normal interativa de Formulario com upload/download/reload e negativa no outro tenant; camera/anonimo nao certificados por API.",
       "fe": "R08 ciclo180: pergunta e Galeria identificada/anonima, Foto camera cardinalidade1, persistencia local confirmada de edit_secret e composicao por conta/projeto integradas. Suites C0 na basec729 passaram os casos Forms; pacote geral411PASS4FAIL1SKIP teve somente goldensH25 falhos, corrigidos separadamente semPNG com37PASS. Autorizacao/download real e UI continuam gates separados; sem verified/E2E.",
-      "be": "R09 C0 r103: authorizer de anexo anonimo aceita NULL indevidamente; duas negativas reproduzidas e corrigidas SOMENTE no espelho.25PASS focais+17PASS regressao; suite ampliada62PASS/8FAIL preexistentes. Lote60 retido sem aplicacao; producao permanece59. Backup/preflight e proximos gates no recibo.",
+      "be": "R09 C0 r106: SQL lote60 aplicado/ledger unico e corpo igual espelho;112PASS SQL incluindo ownership/cross-tenant/anonimo/segredo; consumidor real download68B/SHA apos apply3PASS. Cadeia R08 prepare/PUT/finalize/replay/save/fresh read/reload reutilizada. FE/E2E e camera/UI anonima continuam separados.",
       "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r39-media; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; inspecao de d502350ce; sem reserva nominal concedida; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r19 (contratoFormsFiles); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\form-media-v17-preflight.json; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo180-flutter.jsonl; docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v21-preflight.json; docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log; docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+          "revision": "R09-C0-r106",
+          "environment": "Supabase/R2 producao; lote60; form-media produtivo",
+          "recordedAt": "2026-09-12T17:01:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.resolve-file",
@@ -5139,18 +5147,26 @@
       "scope": "mvp",
       "done": "R09 C0: reautorizacao e TTL de download por API provados parcialmente; G3 ainda precisa download/reabertura pela rota normal com runtime G0 e negativa real de tenant/contrato. API e expiracao do link nao certificam UI nem expiracao do ativo.",
       "fe": "R08 ciclo180: pergunta e Galeria identificada/anonima, Foto camera cardinalidade1, persistencia local confirmada de edit_secret e composicao por conta/projeto integradas. Suites C0 na basec729 passaram os casos Forms; pacote geral411PASS4FAIL1SKIP teve somente goldensH25 falhos, corrigidos separadamente semPNG com37PASS. Autorizacao/download real e UI continuam gates separados; sem verified/E2E.",
-      "be": "R09 C0 r103: authorizer de anexo anonimo aceita NULL indevidamente; duas negativas reproduzidas e corrigidas SOMENTE no espelho.25PASS focais+17PASS regressao; suite ampliada62PASS/8FAIL preexistentes. Lote60 retido sem aplicacao; producao permanece59. Backup/preflight e proximos gates no recibo.",
+      "be": "R09 C0 r106: SQL lote60 aplicado/ledger unico e corpo igual espelho;112PASS SQL incluindo ownership/cross-tenant/anonimo/segredo; consumidor real download68B/SHA apos apply3PASS. Cadeia R08 prepare/PUT/finalize/replay/save/fresh read/reload reutilizada. FE/E2E e camera/UI anonima continuam separados.",
       "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3; etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo180-flutter.jsonl; docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log; docs/reviews/evidence/etapa-2/r09-coordenacao/forms-download-access.md; docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+          "revision": "R09-C0-r106",
+          "environment": "Supabase/R2 producao; lote60; form-media produtivo",
+          "recordedAt": "2026-09-12T17:01:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.download",
@@ -8854,7 +8870,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T19:54:12.133Z",
+  "updatedAt": "2026-09-12T20:01:10.117Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

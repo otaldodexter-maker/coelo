@@ -1,6 +1,6 @@
 ---
 source: C0 R09; pgTAP no espelho; preflight Supabase; ADR0034
-status: preflight-verde; aguardando-aplicacao-serializada
+status: aplicado-producao; consumer-pass
 generated_at: 2026-09-12
 ---
 
@@ -56,6 +56,33 @@ N?o houve chamada remota nem leitura de segredo para essa reconcilia??o.
 Resultado: su?te ampliada70PASS/0FAIL/0SKIP/native0, arquivo
 lote60-reconciled-security.log. Total pertinente ?nico112PASS (25+17+70).
 Falhas e logs anteriores ficam preservados, n?o somados como novos testes.
-Schema e dados t?m marcador dump complete e SHA256 reconferido. Preflight
+Dados t?m marcador dump complete e SHA256 reconferido; schema original saiu exit0 sem coment?rios (padr?o CLI). Preflight
 renovado, ledger59 presente e candidato ausente. Lote60 liberado para aplica??o
 somente do NULL guard; n?o reaplicar lotes anteriores nem SQL de reconcilia??o.
+
+## Aplica??o e consumidor ? revis?o106
+
+Schema refeito com --keep-comments para conferir marcador de t?rmino:
+`C:/Users/adrie/Documents/Coelo-backups/schema-producao-20260912-r09-lote60-verificado.sql`,
+5.189.035 bytes, SHA256 5f4f3fb760848bfb5407cd4ef9ad7b3ec8f18c27cf1b3f30f32d64d3c575463a,
+exit0, dump complete presente. O original sem coment?rios tamb?m fica retido;
+a afirma??o anterior sobre marcador no schema original foi corrigida.
+
+Aplicado ap?s lote59 via supabase_apply_migration; success=true.
+Ledger gerou vers?o20260912195837, nome forms_answer_media_authorization_null_guard_v1,
+exatamente uma entrada. Candidato193603 promovido para migrations/ com a
+vers?o real do ledger, sem alterar conte?do. Corpos espelho/produ??o agora
+MD5 bb5ec29824e4ce316c9c86cc235cd330. Execute anon=false,
+authenticated=false, service_role=true. Nenhuma mudan?a de composi??o necess?ria.
+
+Consumidor normal ap?s aplica??o: forms-lote60-consumer.jsonl,3PASS/0FAIL
+(Auth200, download68bytes/SHA original, logout local204). O link continuou
+com TTL60s; prova de expira??o pr?via ? reutilizada sem nova espera.
+Recursos R08 retidos; nenhum upload/asset/segredo novo nem deploy Edge.
+
+BE done de forms.upload e forms.resolve-file: cadeia real prepare/PUT/finalize/
+replay/save R08 (forms-answer-image-api-v20-20260912.log), fresh read/reload e
+GET R08 (forms-answer-image-api-download-pass-20260912.log), negativas de
+ownership, outro tenant, anon e segredo errado/ausente em25pgTAP, regress?es87,
+aplica??o e consumidor R09. Gate FE/E2E continua upload/download pela UI normal.
+N?o certifica c?mera, UI an?nima nem forms.expire-file.

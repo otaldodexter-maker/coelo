@@ -1,0 +1,28 @@
+[
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0 r106: SQL lote60 aplicado/ledger unico e corpo igual espelho;112PASS SQL incluindo ownership/cross-tenant/anonimo/segredo; consumidor real download68B/SHA apos apply3PASS. Cadeia R08 prepare/PUT/finalize/replay/save/fresh read/reload reutilizada. FE/E2E e camera/UI anonima continuam separados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+      "revision": "R09-C0-r106",
+      "environment": "Supabase/R2 producao; lote60; form-media produtivo",
+      "recordedAt": "2026-09-12T17:01:00-03:00"
+    }
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0 r106: SQL lote60 aplicado/ledger unico e corpo igual espelho;112PASS SQL incluindo ownership/cross-tenant/anonimo/segredo; consumidor real download68B/SHA apos apply3PASS. Cadeia R08 prepare/PUT/finalize/replay/save/fresh read/reload reutilizada. FE/E2E e camera/UI anonima continuam separados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+      "revision": "R09-C0-r106",
+      "environment": "Supabase/R2 producao; lote60; form-media produtivo",
+      "recordedAt": "2026-09-12T17:01:00-03:00"
+    }
+  }
+]
