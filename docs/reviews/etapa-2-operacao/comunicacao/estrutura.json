@@ -1,6 +1,6 @@
 {
   "grupo": "estrutura",
-  "revision": 112,
+  "revision": 113,
   "round": "E2-R09-20260912-1542",
   "adocaoR09": {
     "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -44,7 +44,7 @@
   "entregaR09": {
     "codigo": "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
     "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-    "pedidoC0": "Local positivo completo: lista/reabertura normal, API e detalhe/reload, location-ui-proof.md. C0/G5 precisa fornecer negativa real cross-tenant/hierarquia e fixture ativa para members. Candidato draft ec2a15a2 foi corretamente recusado e inclusao retirada; grupo1043c165 ativo v2 preservado. Sem SQL G1. UI no edit do grupo, ainda sem mudancas.",
+    "pedidoC0": "G1 destravou fixture por leitura normal superadmin_people_list statusactive/p_searchQA: QA R04 Responsavel9f040000-0000-4000-8000-000000000062 ativo existente. Inclusao pela busca UI em curso; nenhuma criacao/status em Pessoas. C0/G5 segue necessario para negativa real de tenant/hierarquia e erro SQL busca22025. Local UI/API/reload ja publicado.",
     "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
     "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
     "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
