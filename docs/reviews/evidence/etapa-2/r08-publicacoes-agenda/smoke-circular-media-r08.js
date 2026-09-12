@@ -23,9 +23,12 @@ if (!baseUrl || !apiKey || !qa.QA_EMAIL || !qa.QA_PASSWORD) {
 
 const arg = (name) => process.argv.find((value) => value.startsWith(`--${name}=`))?.slice(name.length + 3);
 const execute = process.argv.includes('--execute');
+const audit = process.argv.includes('--audit');
 const institutionId = arg('institution');
 const unitId = arg('unit');
 const groupId = arg('group');
+const auditCircularId = arg('circular');
+const auditAssetId = arg('asset');
 const outputPath = arg('output') || 'smoke-circular-media-r08-result.json';
 const uuid = () => crypto.randomUUID();
 const png = Buffer.from(
@@ -90,6 +93,16 @@ async function edge(body, { anonymous = false } = {}) {
   return { status: response.status, body: responseBody };
 }
 
+async function table(path) {
+  const response = await fetch(`${baseUrl}/rest/v1/${path}`, {
+    headers: { apikey: apiKey, Authorization: `Bearer ${token}` },
+  });
+  const text = await response.text();
+  let body;
+  try { body = JSON.parse(text); } catch { body = text; }
+  return { status: response.status, body };
+}
+
 async function inspectHierarchy() {
   const response = await rpc('superadmin_agenda_contexts', {});
   if (response.status !== 200) throw new Error(`hierarquia indisponivel: ${compact(response)}`);
@@ -108,6 +121,41 @@ async function inspectHierarchy() {
 async function run() {
   await login();
   const hierarchy = await inspectHierarchy();
+  if (audit) {
+    if (!auditCircularId || !auditAssetId) throw new Error('audit exige circular e asset');
+    const detail = await rpc('superadmin_circular_detail_v2', { p_circular_id: auditCircularId });
+    const mediaRead = await edge({ action: 'read', asset_id: auditAssetId });
+    const circularRows = await table(
+      `circulars?id=eq.${encodeURIComponent(auditCircularId)}&select=id,status,deleted_at,management_version`,
+    );
+    const assetRows = await table(
+      `circular_media_assets?id=eq.${encodeURIComponent(auditAssetId)}&select=id,circular_id,status,storage_provider,cleanup_attempted_at`,
+    );
+    const auditResult = {
+      at: new Date().toISOString(),
+      ids: { circularId: auditCircularId, assetId: auditAssetId },
+      detail: { status: detail.status, code: detail.body?.error?.code || detail.body?.code || null },
+      mediaRead: {
+        status: mediaRead.status,
+        code: mediaRead.body?.error?.code || mediaRead.body?.code || null,
+        ticketReturned: Boolean(mediaRead.body?.url || mediaRead.body?.signed_url || mediaRead.body?.read_url),
+      },
+      circularCatalog: {
+        status: circularRows.status,
+        rowCount: Array.isArray(circularRows.body) ? circularRows.body.length : null,
+        rows: Array.isArray(circularRows.body) ? circularRows.body : [],
+      },
+      assetCatalog: {
+        status: assetRows.status,
+        rowCount: Array.isArray(assetRows.body) ? assetRows.body.length : null,
+        rows: Array.isArray(assetRows.body) ? assetRows.body : [],
+      },
+      note: 'read-only post-incident audit; no signed URL or credential recorded',
+    };
+    fs.writeFileSync(outputPath, JSON.stringify(auditResult, null, 2));
+    console.log(JSON.stringify(auditResult, null, 2));
+    return;
+  }
   if (!execute) return;
   if (!institutionId || !unitId || !groupId) throw new Error('execute exige institution, unit e group');
   const institution = hierarchy.find((item) => item.level === 'institution' && item.id === institutionId);

@@ -1,0 +1,27 @@
+{
+  "at": "2026-09-12T15:26:08.033Z",
+  "ids": {
+    "circularId": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+    "assetId": "429f1bc4-f579-4179-9193-0e6304aa3e0f"
+  },
+  "detail": {
+    "status": 200,
+    "code": "CIRCULAR_NOT_FOUND"
+  },
+  "mediaRead": {
+    "status": 403,
+    "code": null,
+    "ticketReturned": false
+  },
+  "circularCatalog": {
+    "status": 403,
+    "rowCount": null,
+    "rows": []
+  },
+  "assetCatalog": {
+    "status": 403,
+    "rowCount": null,
+    "rows": []
+  },
+  "note": "read-only post-incident audit; no signed URL or credential recorded"
+}
