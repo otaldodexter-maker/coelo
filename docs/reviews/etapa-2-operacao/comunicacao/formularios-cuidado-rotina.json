@@ -1,19 +1,19 @@
 {
-  "revision": 72,
+  "revision": 73,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:27:45.951Z",
+  "updatedAt": "2026-09-12T16:33:39.662Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "8b9e784e5 + captura Foto local-green desta revisão",
-  "base": "origin/dev 7cc6d4e7b materializado no merge8b9e784e5",
+  "head": "a7b081674 + followup purge câmera desta revisão",
+  "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
     "objetivo": "Fechar primeiro gate executável do recorte G3 com correção e evidências por action_id.",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Captura Foto local-green182PASS/analyze0, pronta para integração C0; câmera real e E2E dependem G0. H19 decisão nominal pendente.",
+  "currentGate": "Review G4 confirmado e corrigido: finalizeTree RED1FAIL -> GREEN9PASS/analyze0. Slot Flutter liberado; aguarda integração C0 e próximo gate independente.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -113,6 +113,18 @@
         "failed": 0,
         "overlap": "11 novos;camera8/upload19/resposta155; não somar pacotes",
         "evidencia": "08-camera-result.md"
+      },
+      {
+        "sha": "followup purge câmera desta revisão",
+        "passed": 9,
+        "failed": 0,
+        "novos": 1,
+        "overlap": "8 já contados no pacote câmera182; não somar",
+        "evidencia": "09-camera-purge.md",
+        "red": {
+          "passed": 0,
+          "failed": 1
+        }
       }
     ],
     "e2eExecutados": 0,

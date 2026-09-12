@@ -9,6 +9,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('underlying form disposal purges camera during finalizeTree', (tester) async {
+    final session = MediaSession();
+    final camera = _Camera()..captureGate = Completer<Uint8List>();
+    final visible = ValueNotifier<bool>(true);
+    addTearDown(visible.dispose);
+    await tester.pumpWidget(MaterialApp(home: ValueListenableBuilder<bool>(
+      valueListenable: visible,
+      builder: (context, value, _) => value
+          ? _SessionOwner(session: session, child: TextButton(
+              onPressed: () => showDialog<Uint8List>(context: context,
+                builder: (_) => FormsCameraCaptureDialog(session: session, createCamera: () => camera)),
+              child: const Text('Open')))
+          : const SizedBox.shrink(),
+    )));
+    await tester.tap(find.text('Open'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Usar foto'));
+    await tester.pump();
+    visible.value = false;
+    await tester.pump();
+    expect(camera.closed, isTrue);
+    expect(tester.takeException(), isNull);
+    final bytes = Uint8List.fromList([1, 2, 3]);
+    camera.captureGate!.complete(bytes);
+    await tester.pumpAndSettle();
+    expect(bytes, everyElement(0));
+    expect(find.text('A sessão terminou. Abra novamente o formulário.'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   Future<void> open(
     WidgetTester tester,
     MediaSession session,
@@ -179,6 +209,24 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
     expect(next.closed, isTrue);
   });
+}
+
+final class _SessionOwner extends StatefulWidget {
+  const _SessionOwner({required this.session, required this.child});
+  final MediaSession session;
+  final Widget child;
+  @override
+  State<_SessionOwner> createState() => _SessionOwnerState();
+}
+
+final class _SessionOwnerState extends State<_SessionOwner> {
+  @override
+  void dispose() {
+    unawaited(widget.session.invalidate());
+    super.dispose();
+  }
+  @override
+  Widget build(BuildContext context) => widget.child;
 }
 
 final class _Camera implements FormsCameraPort {

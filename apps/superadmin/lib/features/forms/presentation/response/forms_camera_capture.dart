@@ -4,6 +4,7 @@ import 'dart:typed_data';
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 
 import 'forms_camera_platform.dart';
 import 'forms_camera_port.dart';
@@ -67,12 +68,15 @@ final class _FormsCameraCaptureDialogState extends State<FormsCameraCaptureDialo
     } else {
       _unregister = widget.session.registerPurge(() async {
         _stop();
-        if (mounted) {
-          setState(() {
-            _ready = false;
-            _capturing = false;
-            _message = 'A sessão terminou. Abra novamente o formulário.';
+        _ready = false;
+        _capturing = false;
+        _message = 'A sessão terminou. Abra novamente o formulário.';
+        if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+          WidgetsBinding.instance.addPostFrameCallback((_) {
+            if (mounted) setState(() {});
           });
+        } else if (mounted) {
+          setState(() {});
         }
       });
       unawaited(_start());
