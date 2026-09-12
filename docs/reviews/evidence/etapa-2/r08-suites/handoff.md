@@ -84,9 +84,10 @@ Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de 
 
 - O pacote Chat registra `56 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 45 regressões existentes; não é uma suíte independente única.
 - O pacote de controle do PUT registra `28 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 17 existentes; seis casos Chat já pertencem aos 56, portanto `56 + 28` é contagem sobreposta e não deve ser somada.
-- O smoke de Momentos `20 PASS / 1 FAIL` é uma checagem local/focal; não comprova leitura, reload, remoção ou E2E e não deve ser promovido a aceite de produto.
-- Os `101` casos do Principal foram recebidos em três arquivos; devem ser relatados por arquivo, distinguindo casos novos, existentes e reruns, nunca como uma suíte única agregada.
-- Para Agora, Momentos e Cardápios, deploy/preflight e testes locais permanecem métricas distintas; ausência de uma contagem focal explícita não autoriza inferir PASS, E2E ou suite única.
+- O smoke de Momentos `20 PASS / 1 FAIL` é uma checagem API real em produção: a falha é a retirada que retornou `403` pelo autor. Não comprova UI, reload, remoção bem-sucedida ou E2E; não deve ser promovido a aceite de produto.
+- Os `101` casos do autor Principal são a união de cinco arquivos (`58` do último pacote + `43` anteriores); devem ser relatados por arquivo, distinguindo casos novos, existentes e reruns. Não são uma suíte única agregada.
+- O C0 integrado reporta `79` em três arquivos na base `b85fd00e0`; essa contagem é independente da união autoral `101` e não deve ser somada a ela.
+- Para Agora, Momentos e Cardápios, deploy/preflight e testes API permanecem métricas distintas de UI/E2E. O recibo `d01f92023` mede também Acontece `23 checks PASS`, Agora `19 checks PASS` e Cardápios `24 checks PASS`; nenhuma dessas contagens certifica UI/E2E por si só.
 
 ## Auditoria de coerência com o censo R07
 
