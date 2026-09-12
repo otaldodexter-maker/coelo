@@ -1,15 +1,15 @@
 {
-  "revision": 79,
+  "revision": 80,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "d9c6f0dad (revisão G8 anterior; correção de parecer e manifesto retido nesta revisão)",
+  "head": "4ce8a34f8 (manifesto retido e parecer G8; revisão visual H25 nesta revisão)",
   "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:48:37.9826551-03:00",
+  "updatedAt": "2026-09-12T13:52:32.7839597-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "C0 integrar a proposta de manifesto retido; G8 corrigir classificação de loader, caminho repo-relative e semântica de chaves de exibição; não remover esta worktree.",
+  "next": "C0 integrar a proposta de manifesto retido e o corretivo H25 de G3; G8 corrigir classificação de loader, caminho repo-relative e semântica de chaves de exibição; não remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2661,6 +2661,15 @@
       "privacy": "somente IDs e instruções de retenção; sem email, URL assinada, action link, token, credencial, headers ou sessão",
       "mutation": "nenhum cleanup, retry, deploy ou acesso remoto executado",
       "status": "proposal-ready-for-c0"
+    },
+    "h25ActivitiesInstitutionsVisualReview": {
+      "scope": "approved master versus integrated test and isolated diff at 768/1024/1440, light/dark",
+      "finding": "delta restricted to earlier ellipsis in table header labels after the 48px resize strip reduced the paint width by 36px",
+      "fixReview": "G3 full-width IgnorePointer/ExcludeSemantics paint layer plus disjoint sort and resize hitboxes preserves the approved visual and accessibility targets",
+      "verification": "G6 view_image read-only; G3 reports 16 golden PASS without rebaseline and focal geometry/interaction tests",
+      "residual": "32/42px sort targets in narrow columns remain separate and unresolved",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/h25-activities-institutions-visual-review.md",
+      "status": "reviewed-correction-sufficient-no-image-change"
     }
   },
   "r07History": {
