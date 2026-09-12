@@ -301,7 +301,17 @@
       {
         "action_id": "qa_login.strict_raw_type",
         "status": "verified",
-        "proof": "dart analyze test_driver/qa_login.dart -> No issues found; flutter analyze iniciado na worktree e nao devolveu diagnostico antes do timeout do processo"
+        "proof": "dart analyze test_driver/qa_login.dart -> No issues found; flutter analyze amplo iniciou, resolveu dependencias, mas nao devolveu diagnostico antes do timeout do processo"
+      },
+      {
+        "action_id": "account.settings / account.theme / account.sessions",
+        "status": "local-green",
+        "proof": "flutter test test/features/account -> parte da suíte conjunta aprovada; prova de rota real R07 retida porque o build web nao concluiu main.dart.js"
+      },
+      {
+        "action_id": "support.*",
+        "status": "local-green",
+        "proof": "flutter test test/features/account test/features/support -> 195/195 PASS; prova de rota real R07 retida porque o build web nao concluiu main.dart.js"
       }
     ],
     "pending": [
@@ -313,7 +323,7 @@
       {"action_id": "plans.* / catalog.*", "first_gate": "prova pela rota real"},
       {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "botao honesto e indisponibilidade conferidos"}
     ],
-    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55"] ,
+    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55", "15d3390bd"],
     "deltas": "docs/reviews/evidence/etapa-2/r07-operacoes/deltas-r07-ops.json (a criar)",
     "packages": [],
     "synthetic_data": "nenhum novo",
