@@ -1,5 +1,5 @@
 {
-  "revision": 91,
+  "revision": 92,
   "round": "E2-R09-20260912-1542",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -9,10 +9,10 @@
   "hostId": "local",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
   "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
-  "head": "ACK r91: commit que publica esta revisao na branch propria",
+  "head": "Alinhamento r92: commit que publica esta revisao na branch propria",
   "base": "origin/dev 7907453f0362665ab87fe8faaa4854f286904148",
   "coordinator": "01a096ed-314b-7c13-a9e0-3e64649e66fc (host local; unico C0 da nova R09)",
-  "updatedAt": "2026-09-12T15:58:06-03:00",
+  "updatedAt": "2026-09-12T16:03:06-03:00",
   "r09Current": {
     "round": "E2-R09-20260912-1542",
     "ackRevision": 91,
@@ -20,6 +20,18 @@
     "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
     "coordinatorHostId": "local",
     "instructionReceived": true,
+    "alignmentRequest": {
+      "requestedAt": "2026-09-12T16:03:06-03:00",
+      "reason": "Owner solicitou continuidade e alinhamento com C0; fetch sob demanda ainda mostra C0 r96, G6 na fila e E2E nao liberado",
+      "owner": "C0 01a096ed-314b-7c13-a9e0-3e64649e66fc host local",
+      "actionId": "circulars.attach",
+      "request": "liberar vaga G6 e janela nominal do Chrome existente apos G0 provar runtime; informar URL/build e autorizar fixture abaixo com contexto permitido",
+      "proposedFixtureLabel": "QA R09 G6 circulars.attach 20260912-1542",
+      "fixtureState": "somente proposta; nenhum recurso criado; aguarda autorizacao nominal C0 e definicao do contexto",
+      "retention": "reter circular e anexo sinteticos; registrar IDs apos criacao pela UI normal; nenhuma acao no recurso do incidente",
+      "responseChannel": "publicar liberacao em coordenacao.json e encaminhar follow-up a esta tarefa; mensagem entre threads indisponivel; nao fazer polling",
+      "ackCommit": "ac8c7ea2f"
+    },
     "status": "adotado; fila sem polling",
     "T0": "2026-09-12T15:42:18-03:00",
     "execucaoAte": "2026-09-12T19:42:18-03:00",
