@@ -332,7 +332,7 @@
       {"action_id": "catalog.publish", "first_gate": "decisao nominal de hosting; nao publicar recurso"},
       {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "build web da propria branch + Chrome/CDP para conferir o botao honesto; local-green registrado"}
     ],
-    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55", "15d3390bd"],
+    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55", "15d3390bd", "a1045abf1", "86f5380a8", "1c6bb0665"],
     "deltas": "docs/reviews/evidence/etapa-2/r07-operacoes/deltas-r07-ops.json (a criar)",
     "packages": [],
     "synthetic_data": "nenhum novo",
