@@ -1,6 +1,6 @@
 {
-  "revision": 50,
-  "updated_at": "2026-09-11T21:06:00-03:00",
+  "revision": 51,
+  "updated_at": "2026-09-11T21:22:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -174,6 +174,13 @@
         "account.profile"
       ],
       "what": "ROTA REAL: apos o lote 53 (200300), Meu perfil mostra o e-mail da pessoa de servico (captura 40). Chrome CDP 9421 havia sido fechado (orfaos 9xxx) e foi reaberto com o mesmo perfil. Nota: o bloco Meu acesso diz \"MFA pendente\" com MFA fora do MVP (Decisao 12) — texto a revisar, registrado."
+    },
+    {
+      "when": "21:21",
+      "action_ids": [
+        "account.profile"
+      ],
+      "what": "Meu acesso: \"MFA pendente\" -> \"MFA fora do MVP\" (Decisao 12); account 125/125; nenhum golden alterado (a pendencia ui-texto registrada na rev 48 fica fechada)."
     }
   ],
   "tests": [
@@ -1124,8 +1131,8 @@
     },
     {
       "action_id": "account.profile",
-      "tipo": "ui-texto",
-      "o_que": "Meu acesso mostra \"MFA pendente\" embora MFA esteja fora do MVP (Decisao 12); trocar por rotulo honesto (\"MFA desativado no MVP\") ou omitir."
+      "tipo": "fechada",
+      "o_que": "Meu acesso mostra \"MFA pendente\" embora MFA esteja fora do MVP (Decisao 12); trocar por rotulo honesto (\"MFA desativado no MVP\") ou omitir. — FECHADA no commit desta rev."
     }
   ],
   "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (20 deltas)",
@@ -1140,7 +1147,7 @@
   "revisao_final_T0_2h": {
     "respondido_em": "21:10 (antecipada; valida em 21:36 salvo revisao posterior)",
     "entregou_tudo": "sim — itens (0) a (5) da ordem fechados; (6) audit.export nao iniciado por decisao (ADR 0034 adia exportacoes gerais; Edge Function sem deploy)",
-    "sha_publicado": "work/etapa2-r06-operacoes = origin (commit desta rev, sobre 22f6ae9be); git status limpo; sem stash; sem WIP; merge de origin/dev b60ac0bea (lote 52) incluido; flutter analyze lib test limpo",
+    "sha_publicado": "work/etapa2-r06-operacoes = origin (commit desta rev); 9 commits desde 1e94633a5 aguardam integracao; git status limpo; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": {
       "imports.list (teste)": "fail_closed_screens_with_data_probe_test 16/16 (2a28545d3)",
       "account.sessions": "FE verified / BE done / E2E verified-e2e propostos — pacote 200200 em producao (lote 50), pgTAP 14/14; rota real: lista, segunda sessao via API, Encerrar as outras (GoTrue scope=others), reload (capturas 01-04)",
@@ -1170,5 +1177,6 @@
     "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
   },
   "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa.",
-  "loop_2105": "retomada pelo loop as 21:05: sem item executavel restante no recorte sem decisao do Owner (plans.assign P51, catalog.publish nominal, audit.export adiado, texto MFA no Perfil muda golden aprovado). 7 commits publicados na branch ainda nao integrados em dev (1e94633a5..a06d5cb78: rota /imports/new na shell, handoff, revs 46-49). Nada mais a fazer ate 21:36; revisao final ja gravada (rev 49)."
+  "loop_2105": "retomada pelo loop as 21:05: sem item executavel restante no recorte sem decisao do Owner (plans.assign P51, catalog.publish nominal, audit.export adiado, texto MFA no Perfil muda golden aprovado). 7 commits publicados na branch ainda nao integrados em dev (1e94633a5..a06d5cb78: rota /imports/new na shell, handoff, revs 46-49). Nada mais a fazer ate 21:36; revisao final ja gravada (rev 49).",
+  "loop_2119": "retomada 21:19: texto MFA corrigido sem golden; sem outro item executavel; finalizado."
 }

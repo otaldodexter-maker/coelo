@@ -692,7 +692,8 @@ class _AccessCard extends StatelessWidget {
             contentPadding: EdgeInsets.zero,
             leading: const Icon(Icons.admin_panel_settings_outlined),
             title: Text(access.role),
-            subtitle: Text(access.mfaEnabled ? 'MFA configurada' : 'MFA pendente'),
+            // MFA fora do MVP (ADR 0034, Decisao 12): nenhuma tela exige segundo fator.
+            subtitle: Text(access.mfaEnabled ? 'MFA configurada' : 'MFA fora do MVP'),
           ),
         ),
         for (final capability in access.capabilities)
