@@ -64,7 +64,9 @@ Não foi encontrado item aberto fora do inventário, dos três rastreadores ou d
 perguntas R06 que exija nova pergunta nesta abertura. O único deslocamento de
 estado observado foi P52: deploy executado e registrado; a prova funcional
 continua atribuída à frente de Acessos e Pessoas. A varredura permanece aberta
-para os handoffs que chegarem durante a R07.
+para os handoffs que chegarem durante a R07. A oitava frente G8 (Suítes
+pré-existentes) foi incorporada depois da abertura e permanece coberta pelo
+recibo da coordenação.
 
 ## Reconciliação R07 — item novo medido
 
