@@ -1,10 +1,10 @@
 {
-  "revision": 82,
-  "updated_at": "2026-09-12T18:58:39.778105+00:00",
+  "revision": 83,
+  "updated_at": "2026-09-12T19:07:08.434433+00:00",
   "round": "E2-R09-20260912-1542",
   "group": "operacoes",
   "tool_model": "Codex, GPT-6 Astra, esforco medio",
-  "conversation": "R09 - Operacoes (G7)",
+  "conversation": "R09 \u00b7 Opera\u00e7\u00f5es (G7)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
   "branch": "work/etapa2-r09-operacoes-20260912-1542",
   "head": "7907453f0362665ab87fe8faaa4854f286904148",
@@ -19,7 +19,7 @@
     "coordenadorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
     "coordenadorHostId": "local",
     "coordenadorUnico": true,
-    "ackCoordenacaoRevision": 96,
+    "ackCoordenacaoRevision": 97,
     "round": "E2-R09-20260912-1542",
     "status": "fila; adocao confirmada via Git",
     "instructionReceived": true,
@@ -31,6 +31,17 @@
     "recursos": "sem Chrome, Flutter test, SQL ou deploy; sem polling ou timers",
     "novosAceites": [],
     "memoria": "no-op; somente ACK operacional, sem regra nova de produto"
+  },
+  "solicitacaoVagaR09": {
+    "coordenadorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "coordenadorHostId": "local",
+    "coordenacaoRevision": 97,
+    "pedidoOwner": "Continuar a atividade principal e alinhar com C0",
+    "pedidoC0": "Liberar a proxima vaga de execucao G7 com corte; priorizar plans.assign se spec051 permitir, alternativa account.sessions sintetica propria",
+    "status": "aguardando transferencia nominal de vaga; G0/G5/G1 ativos",
+    "conversationTitleRequested": "R09 - Operacoes (G7)",
+    "conversationTitleLimitation": "Sem ferramenta para renomear a conversa; nome do canal atualizado neste JSON",
+    "execucaoProduto": "nao iniciada; sem uso de Chrome, Flutter test, SQL ou deploy"
   },
   "r08": {
     "t0": "2026-09-12T10:52:16.727826-03:00",
