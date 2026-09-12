@@ -1,0 +1,22 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..10
+(1 row)
+
+INSERT 0 1
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+ERROR:  new row for relation "institution_roles" violates check constraint "institution_roles_global_system_check"
+DETAIL:  Failing row contains (a2800000-0000-4000-8000-000000000131, null, h28-global-a, H28 Global A, null, f, active, 2026-09-12 17:15:13.260575+00, 2026-09-12 17:15:13.260575+00, institution, 1, null, null).

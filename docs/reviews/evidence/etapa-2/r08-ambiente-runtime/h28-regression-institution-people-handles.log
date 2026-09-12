@@ -1,0 +1,53 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+------
+ 1..4
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+CREATE TABLE
+GRANT
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f090000-0000-4000-8000-000000000011", "role": "authenticated", "session_id": "9f090000-0000-4000-8000-000000000021"}
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+RESET
+           is
+------------------------
+ ok 1 - pessoas criadas
+(1 row)
+
+                          ok
+------------------------------------------------------
+ ok 2 - representante nasce com @ e o detalhe devolve
+(1 row)
+
+                          ok
+------------------------------------------------------
+ ok 3 - administrador nasce com @ e o detalhe devolve
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 4 - o @ devolvido e o ativo em person_handles
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

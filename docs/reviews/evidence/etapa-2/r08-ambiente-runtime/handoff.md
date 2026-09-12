@@ -446,3 +446,30 @@ final, a recomendação enviada ao C0 é um único processo Flutter com
 `--concurrency=2` somente se o preflight imediato ainda mostrar pelo menos
 3,0 GB livres; abaixo disso, `--concurrency=1`. Nenhum censo foi iniciado pelo
 G0. Evidência: [censo-capacidade-20260912.txt](./censo-capacidade-20260912.txt).
+A remedição das 14:21 mostrou 2,83 GB livres; a recomendação final mudou para
+`--concurrency=1`, salvo recuperação comprovada para pelo menos 3,0 GB no
+preflight imediatamente anterior ao censo.
+
+## H28 local — filtros contextuais de Pessoas
+
+Por ordem do C0, o candidato 14:30 foi aplicado somente no baseline descartável.
+A primeira versão `c83fd9ca1` falhou na compilação e reverteu integralmente: o
+predicado externo tinha um parêntese aberto e os dois corpos PL/pgSQL não tinham
+o `;` após `END`. O SHA corrigido `45dee1097` alterou apenas esses três pontos e
+aplicou com exit 0. Produção e ledger nunca foram tocados.
+
+O estrutural inicial fez 11/12 porque a última asserção chamava a RPC protegida
+sem ator/permissão e recebeu corretamente `42501`. O SHA `1d38899f0` removeu
+essa pseudochamada e passou 11/11 com rollback. A fixture funcional evoluiu de
+forma fail-closed: primeiro faltava `groups.handle`, depois papéis globais
+violavam `institution_roles_global_system_check`, e por fim faltava
+`activity_definitions.canonical_handle`; cada conexão abortou e reverteu. O SHA
+final `e1cad10e2` passou 10/10 com rollback.
+
+Regressões modernas People sobre o candidato passaram: segmentos 8/8,
+identidade 11/11 e handles 4/4. Total atual: 44/44. A suíte histórica
+`superadmin_people_directory_test.sql` não é compatível com a base atual:
+espera permissões antigas e a assinatura removida de 12 argumentos; registrou
+quatro falhas e abortou ao resolver a função inexistente, com rollback. Isso foi
+preservado como dívida de teste, não contado como verde nem como regressão do
+candidato.

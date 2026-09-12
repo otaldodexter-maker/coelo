@@ -1,0 +1,84 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..12
+(1 row)
+
+                              has_function
+------------------------------------------------------------------------
+ ok 1 - listagem de Pessoas expõe atividade e localidade sem sobrecarga
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 2 - PostgREST vê uma única assinatura de listagem
+(1 row)
+
+           function_privs_are
+----------------------------------------
+ ok 3 - authenticated conserva execução
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 4 - anon não recebe diretório de Pessoas
+(1 row)
+
+CREATE FUNCTION
+                                 ok
+--------------------------------------------------------------------
+ ok 5 - atividade aceita somente profissional/participante vigentes
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 6 - instituição, unidade e grupo são resolvidos no mesmo contexto
+(1 row)
+
+                                              ok
+----------------------------------------------------------------------------------------------
+ ok 7 - nome do perfil vem da linha original, inclusive perfil global com institution_id nulo
+(1 row)
+
+                                           ok
+-----------------------------------------------------------------------------------------
+ ok 8 - localidade percorre unidade/instituição canônicas, não ID de endereço do cliente
+(1 row)
+
+                                ok
+-------------------------------------------------------------------
+ ok 9 - membership emite a atividade que o domínio Dart já declara
+(1 row)
+
+                             ok
+------------------------------------------------------------
+ ok 10 - contagem é de pessoas distintas antes da paginação
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 11 - segmentos legados continuam compostos antes dos filtros novos
+(1 row)
+
+                                                                                                              lives_ok
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ not ok 12 - defaults antigos continuam chamáveis antes da fixture A/B                                                                                                                                                             +
+ # Failed test 12: "defaults antigos continuam chamáveis antes da fixture A/B"                                                                                                                                                     +
+ #     died: 42501: people permission denied                                                                                                                                                                                       +
+ #         CONTEXT:                                                                                                                                                                                                                +
+ #             PL/pgSQL function app_private.assert_people_permission(text) line 5 at RAISE                                                                                                                                        +
+ #             SQL statement "SELECT app_private.assert_people_permission('people.read')"                                                                                                                                          +
+ #             PL/pgSQL function public.superadmin_people_list(text,public.person_type[],public.record_status[],uuid[],uuid[],uuid[],text[],text[],text,boolean,integer,integer,text,uuid[],text[],text[],text[]) line 4 at PERFORM+
+ #             SQL statement "select public.superadmin_people_list(p_search=>'__h28_no_fixture__',p_limit=>8)"                                                                                                                     +
+ #             PL/pgSQL function lives_ok(text,text) line 14 at EXECUTE
+(1 row)
+
+                finish
+--------------------------------------
+ # Looks like you failed 1 test of 12
+(1 row)
+
+ROLLBACK

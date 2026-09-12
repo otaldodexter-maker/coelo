@@ -1,12 +1,12 @@
 {
-  "revision": 29,
+  "revision": 30,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:08:35-03:00",
+  "updatedAt": "2026-09-12T14:21:14-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -79,7 +79,9 @@
       "fix TTL 5927718f2 aprovado, integrado e implantado na form-media v20; mesmo asset passou prepare/PUT/finalize/replay/save com bytes e SHA medidos",
       "form-media v21 corrigiu argumento nulo do download; modo download-only com reload_request_id pré-persistido passou GET exato e reopen da resposta version2, exit0",
       "origin/dev ciclo180 incorporado; build QA release exit0 em 87.6s, servidor 3014 PID14072 e mesma aba Chrome recarregada",
-      "capacidade pós-build medida: 3.62GB livres, zero flutter test; recomendado único processo censo concurrency2 apenas com RAM imediata >=3GB"
+      "capacidade pós-build medida: 3.62GB livres, zero flutter test; recomendado único processo censo concurrency2 apenas com RAM imediata >=3GB",
+      "H28 candidato 45dee1097 aplicado somente baseline; estrutural11, funcional10 e regressões modernas23 totalizaram 44/44 com rollback",
+      "RAM remediada em 2.83GB as 14:21; recomendacao final ao C0 mudou para censo concurrency1 salvo preflight imediato >=3GB"
     ],
     "pending": [
       "prova UI de login, leitura autorizada e persistencia apos reload segue bloqueada porque CUA nao atualiza os controllers Flutter; a prova API answer-image fechou, mas nao promove UI"
@@ -129,6 +131,8 @@
       ,"answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204"
       ,"download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita"
       ,"build QA ciclo180: exit0 em 87.6s; main.dart.js 8432045 bytes SHA256 1f4fa2ef; GET login200 e bootstrap200 no PID14072; aba829822454 recarregada"
+      ,"H28: apply inicial c83 falhou sintaxe e rollback; apply corrigido45dee exit0; estrutural final11/11, funcional final10/10, regressões modernas8/8+11/11+4/4, todos testes rollback"
+      ,"superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -145,14 +149,14 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "aguardar próximo gate não conflitante do C0 até o corte; manter servidor/Chrome/baseline disponíveis e não promover a prova UI bloqueada"
+    "nextGate": "aguardar próximo gate não conflitante do C0 até o corte; H28 está local-green e candidato permanece somente baseline, servidor/Chrome disponíveis"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
     "server": "127.0.0.1:3014 PID 14072, ativo; /login e flutter_bootstrap HTTP200; build ciclo180 SHA-256 1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
-    "flutterTest": "slot build usado e devolvido; zero processo ativo; censo nao iniciado; recomendar unico processo concurrency2 somente se RAM livre imediata >=3GB",
-    "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
+    "flutterTest": "slot build usado e devolvido; censo nao iniciado; RAM livre caiu para2.83GB as14:21, recomendar unico processo concurrency1 salvo preflight imediato >=3GB",
+    "sql": "H28 candidato45dee aplicado somente baseline; 44/44 moderno verde com rollback; baseline também inclui140550 local; produção e ledger intocados",
     "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image PASS API preservado: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response bb1f3443 version2, asset e47eb9e1; prepare/PUT/finalize/replay/save/download/reopen todos comprovados, sem cleanup"
   },
   "git": {
@@ -308,6 +312,11 @@
       "revision": 29,
       "at": "2026-09-12T14:08:35-03:00",
       "summary": "Ciclo180 incorporado e build QA release publicado no servidor PID14072/porta3014, mesma aba recarregada; capacidade do censo medida sem iniciar teste."
+    },
+    {
+      "revision": 30,
+      "at": "2026-09-12T14:21:14-03:00",
+      "summary": "H28 ficou local-green 44/44 no baseline apos correcoes fail-closed de candidato/fixtures; RAM caiu para2.83GB e censo concurrency1 foi recomendado."
     }
   ]
 }

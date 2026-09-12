@@ -1,0 +1,25 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..10
+(1 row)
+
+INSERT 0 1
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+INSERT 0 2
+INSERT 0 5
+INSERT 0 5
+ERROR:  null value in column "canonical_handle" of relation "activity_definitions" violates not-null constraint
+DETAIL:  Failing row contains (a2800000-0000-4000-8000-000000000161, a2800000-0000-4000-8000-000000000101, H28 Atividade A, null, institution, null, a2800000-0000-4000-8000-000000000011, active, 2026-09-12 17:17:42.69831+00, 2026-09-12 17:17:42.69831+00, null, unit_local, optional, null, null, h28-atividade-a, null, 1, null, null, null, initials, null, null, null, null, null, null, person, null).
