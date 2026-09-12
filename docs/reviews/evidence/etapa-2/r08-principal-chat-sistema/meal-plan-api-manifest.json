@@ -1,0 +1,175 @@
+{
+  "source": "R08 G4 meal plan API smoke, lote55 scopeRules object",
+  "ui_e2e": false,
+  "environment": "production",
+  "started_at": "2026-09-12T15:37:00.296631+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "unit_id": "d0c40000-0000-4000-8000-000000000002",
+  "group_id": "368a5cea-2bcf-4fa4-ad1f-18da58694551",
+  "template_id": "d132698c-605d-46b4-bb11-124f85563604",
+  "start_date": "2026-09-21",
+  "end_date": "2026-09-25",
+  "audience": "staff",
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "current_group_hierarchy",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "meal_plan_template_get",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "existing_published_model_same_tenant",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "model_has_menu_without_media",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "meal_plan_conflicts_check",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "no_existing_schedule_conflict",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "create_lote55_object_scope",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "reload_created",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "scopeRules_object_persisted",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "edit_same_draft",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "reload_edited",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "edited_name_persisted",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "meal_plan_submit_for_review",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "meal_plan_publish",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "reload_published",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "published_status_and_scope_persisted",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "meal_plan_list",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "directory_contains_same_plan",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "meal_plan_archive",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "reload_archived",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "soft_archive_preserves_record",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "model_unchanged",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "existing_model_version_preserved",
+      "passed": true,
+      "http_status": null
+    }
+  ],
+  "states": [
+    {
+      "stage": "created",
+      "id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+      "status": "draft",
+      "revision": 1
+    },
+    {
+      "stage": "edited",
+      "id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+      "status": "draft",
+      "revision": 2
+    },
+    {
+      "stage": "submitted",
+      "id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+      "status": "inReview",
+      "revision": 3
+    },
+    {
+      "stage": "published",
+      "id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+      "status": "published",
+      "revision": 4
+    },
+    {
+      "stage": "archived",
+      "id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+      "status": "archived",
+      "revision": 5
+    }
+  ],
+  "status": "passed",
+  "cross_tenant": "not executed; no scoped negative QA actor available",
+  "template_version": 2,
+  "meal_plan_id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+  "retention": "soft archived synthetic plan and existing model preserved; no DELETE",
+  "logout_status": 204,
+  "finished_at": "2026-09-12T15:37:07.562164+00:00",
+  "execution_exit_code": 0
+}

@@ -225,3 +225,6 @@
 20260912140547_forms_question_media_draft_bridge_fix_v1.sql
 20260912140548_forms_question_media_retry_delete_v1.sql
 20260912140549_forms_question_media_terminal_unbind_v1.sql
+
+# lote 58 (12/09 12:49) - R08 Momentos: grant minimo de retirada ao institution_admin e hint coerente com capability/autoria; backup privado, 68/68 pgTAP, ledger atomico
+20260912140550_moments_withdraw_permission_v1.sql

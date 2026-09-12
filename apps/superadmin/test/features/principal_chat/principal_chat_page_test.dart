@@ -6,6 +6,28 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('received attachment metadata is visible even without a canonical asset', (
+    tester,
+  ) async {
+    await _pump(
+      tester,
+      _PrincipalChatRepository(
+        attachments: const [
+          ChatAttachment(
+            id: 'binding-1',
+            fileName: 'imagem-recebida.png',
+            mediaType: 'image/png',
+            byteSize: 100,
+          ),
+        ],
+      ),
+    );
+    await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
+    await tester.pumpAndSettle();
+    expect(find.text('imagem-recebida.png'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   test('the Principal chat surface imports no administrative composition', () {
     final directory = Directory('lib/features/principal_chat');
     expect(directory.existsSync(), isTrue);
@@ -17,9 +39,9 @@ void main() {
     for (final source in sources) {
       // Só as diretivas importam: prosa que cita o nome proibido para explicar
       // a regra não é uma dependência.
-      final directives = source
-          .readAsLinesSync()
-          .where((line) => line.startsWith('import ') || line.startsWith('export '));
+      final directives = source.readAsLinesSync().where(
+        (line) => line.startsWith('import ') || line.startsWith('export '),
+      );
       for (final directive in directives) {
         // spec050 e PRINCIPAL.md: a familia visual Principal nao importa a
         // composicao administrativa, mesmo hospedada em apps/superadmin.
@@ -166,10 +188,7 @@ void main() {
       MaterialApp(
         home: Scaffold(
           appBar: AppBar(title: const Text('Shell hospedeiro')),
-          body: PrincipalChatPage(
-            chatRepository: _PrincipalChatRepository(),
-            embedded: true,
-          ),
+          body: PrincipalChatPage(chatRepository: _PrincipalChatRepository(), embedded: true),
         ),
       ),
     );
@@ -265,7 +284,9 @@ void main() {
   testWidgets('swapping the repository leaves no trace of the previous actor', (tester) async {
     final first = _PrincipalChatRepository();
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalChatPage(chatRepository: first, onBack: () {})),
+      MaterialApp(
+        home: PrincipalChatPage(chatRepository: first, onBack: () {}),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const ValueKey('principal-chat-conversation-conversation-1')));
@@ -278,7 +299,9 @@ void main() {
     // pode sobreviver, nem rascunho, nem busca, nem thread aberta.
     final second = _PrincipalChatRepository(inbox: const ChatInboxPage(items: [], totalUnread: 0));
     await tester.pumpWidget(
-      MaterialApp(home: PrincipalChatPage(chatRepository: second, onBack: () {})),
+      MaterialApp(
+        home: PrincipalChatPage(chatRepository: second, onBack: () {}),
+      ),
     );
     await tester.pumpAndSettle();
 
@@ -363,13 +386,11 @@ void main() {
   });
 }
 
-Future<void> _pump(
-  WidgetTester tester,
-  ChatRepository repository, {
-  VoidCallback? onBack,
-}) async {
+Future<void> _pump(WidgetTester tester, ChatRepository repository, {VoidCallback? onBack}) async {
   await tester.pumpWidget(
-    MaterialApp(home: PrincipalChatPage(chatRepository: repository, onBack: onBack ?? () {})),
+    MaterialApp(
+      home: PrincipalChatPage(chatRepository: repository, onBack: onBack ?? () {}),
+    ),
   );
   await tester.pumpAndSettle();
 }
@@ -399,6 +420,7 @@ final class _PrincipalChatRepository implements ChatRepository {
     this.pagedThread = false,
     this.emptyThread = false,
     this.failInboxAfterFirst = false,
+    this.attachments = const [],
   }) : inbox = inbox ?? _defaultInbox(readOnly: readOnly);
 
   ChatInboxPage inbox;
@@ -410,6 +432,7 @@ final class _PrincipalChatRepository implements ChatRepository {
   final bool pagedThread;
   final bool emptyThread;
   final bool failInboxAfterFirst;
+  final List<ChatAttachment> attachments;
 
   final List<ChatThreadQuery> threadQueries = [];
   ChatInboxPage? nextInbox;
@@ -473,14 +496,13 @@ final class _PrincipalChatRepository implements ChatRepository {
       );
     }
     return ChatThreadPage(
-      nextCursor: pagedThread
-          ? ChatCursor(DateTime.utc(2026, 9, 9, 10), 'message-1')
-          : null,
+      nextCursor: pagedThread ? ChatCursor(DateTime.utc(2026, 9, 9, 10), 'message-1') : null,
       items: [
         ChatMessage(
           id: 'message-1',
           conversationId: query.conversationId,
-          body: 'Bom dia',
+          body: attachments.isEmpty ? 'Bom dia' : '',
+          attachments: attachments,
           authorName: 'Coordenacao',
           sentAt: DateTime.utc(2026, 9, 9, 10),
           isMine: true,
