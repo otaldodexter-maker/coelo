@@ -1,12 +1,12 @@
 {
-  "revision": 70,
+  "revision": 72,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T10:58:14.291624-03:00",
+  "updatedAt": "2026-09-12T11:28:53.624492-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2649,29 +2649,35 @@
       "dono": "G0",
       "pid": 22592,
       "inicio": "2026-09-12T10:52:16.727826-03:00",
-      "expira": "2026-09-12T11:22:16.727826-03:00",
+      "expira": "2026-09-12T11:58:53.624492-03:00",
       "estado": "G0 CUA sem login; servidor16248 em3014; nenhum segundo Chrome",
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G2",
+      "dono": "G4",
       "pid": null,
-      "inicio": "2026-09-12T11:12:30-03:00",
-      "expira": "2026-09-12T11:27:30-03:00",
-      "estado": "focalP15/platform_users; G7 liberou; zero processos confirmadoC0"
+      "inicio": "2026-09-12T11:28:53.624492-03:00",
+      "expira": "2026-09-12T11:38:53.624492-03:00",
+      "estado": "11 novos casos Chat e regressoes; G1 liberou22PASS; zero flutter test medidoC0"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
     "filaFlutterTest": [
-      "G1 rodape/estrutura",
-      "G4 chat repository",
-      "G6 circular ordem",
-      "G7 Help Center2A"
-    ]
+      "C0 integrado",
+      "G6 circular",
+      "G7 Help Center2A",
+      "G2 15A",
+      "G3 H10 H11"
+    ],
+    "sqlEspelho": {
+      "dono": "G0",
+      "escopo": "aplicar candidatoH09 e pgTAP6; depois chat28+3",
+      "inicio": "2026-09-12T11:28:53.624492-03:00"
+    }
   },
   "filaSqlR08": {
     "proximoLote": 56,
-    "estado": "retida ate espelho/pgTAP e backup",
+    "estado": "backup esquema completo; dados em curso; preflight producao deps presentes, cron inexistente, ledger0; G0 valida candidato local",
     "candidatos": []
   },
   "receiptsR08": [
@@ -2746,7 +2752,7 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T11:15:26.040372-03:00"
+    "ultimoCheckpoint": "2026-09-12T11:28:53.624492-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T11:10:37.573868-03:00",
