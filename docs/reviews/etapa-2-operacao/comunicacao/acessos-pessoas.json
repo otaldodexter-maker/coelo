@@ -1,17 +1,57 @@
 {
-  "revision": 160,
-  "updated_at": "2026-09-12T14:28:00-03:00",
-  "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
-  "round": "E2-R08-20260912",
+  "R09_ADOCAO_G2": {
+    "revision": 161,
+    "recorded_at": "2026-09-12T16:00:22-03:00",
+    "round": "E2-R09-20260912-1542",
+    "threadId": "01a096ed-ea61-7cb1-8ba0-b7f65dec4bf9",
+    "hostId": "local",
+    "c0_threadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "c0_hostId": "local",
+    "c0_revision": 96,
+    "instructionReceived": true,
+    "status": "fila sem polling",
+    "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+    "T0": "2026-09-12T15:42:18-03:00",
+    "execucaoAte": "2026-09-12T19:42:18-03:00",
+    "fechamentoAte": "2026-09-12T20:12:18-03:00",
+    "corte": "primeiro corte de tempo/consumo comunicado por C0",
+    "proximo_gate": "apps/superadmin -> Pessoas -> criar/editar pessoa e @ -> people.create/people.edit; H28 filtros e reload focal, apos vaga e runtime C0",
+    "slots": {
+      "chrome": false,
+      "flutterTest": false,
+      "sql": false
+    },
+    "feito": [
+      "fetch origin",
+      "adocao da posse C0 revisao 96",
+      "worktree nova criada de origin/dev somente para ACK"
+    ],
+    "provas_reutilizar": "H28 SQL59 aplicado/flag true; 44 pgTAP e 19 testes C0 conforme R09-prompts; P51 usuario/link/allowlist provados. Cruzamento detalhado por SHA na vaga. Nao repetir SQL59 nem Auth; link seguro nao comprova SMTP.",
+    "testes_produto": "nao executados; sem vaga",
+    "deltas_aceite": [],
+    "historico": "Demais blocos anteriores preservados como historico R03-R08; nao representam execucao, timers ou autorizacoes atuais. Este ACK rege a espera R09.",
+    "memoria": "nenhuma regra duravel de produto alterada; ACK operacional somente"
+  },
+  "revision": 161,
+  "updated_at": "2026-09-12T16:00:22-03:00",
+  "relogio_local": "2026-09-12T16:00:22-03:00",
+  "round": "E2-R09-20260912-1542",
   "group": "acessos-pessoas",
   "tool": "Codex",
-  "model": "GPT-5.6 Terra (esforco medio)",
-  "status": "ativa; H28 em candidato local para revisao/serializacao C0/G5; E2E continua dependente do runtime de G0",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
-  "branch": "work/etapa2-r08-acessos-pessoas",
-  "head": "H28 candidato/payload publicado em 1cbc1f6a0; rollout do cliente permanece desligado até serialização confirmada",
-  "base_observed": "origin/dev materializado por merge antes do candidato H28; C0/G5 revisam e serializam lote 59",
+  "model": "gpt-6-astra (medium; configuracao declarada por C0)",
+  "status": "fila; adocao confirmada via Git; aguarda vaga C0 sem polling",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+  "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
+  "head": "ACK documental R09 sobre 7907453f0; SHA do ACK no Git",
+  "base_observed": "7907453f0362665ab87fe8faaa4854f286904148",
   "T0": {
+    "T0": "2026-09-12T15:42:18-03:00",
+    "corte": "2026-09-12T19:42:18-03:00",
+    "fechamento_ate": "2026-09-12T20:12:18-03:00",
+    "observacao": "Primeiro corte tempo/consumo de C0; G2 em fila sem timers."
+  },
+  "T0_historico_R08": {
     "observacao": "coordenacao rev64 lida e incorporada; slots e cortes vigentes da R08.",
     "T0": "2026-09-12T10:52:16.727826-03:00",
     "corte": "2026-09-12T14:52:16.727826-03:00",
@@ -40,7 +80,7 @@
       "transversal: V-11 A+ (Perfis: sem dados de demonstracao no app real; card Criar sempre presente em cards e tabela, mesmo vazio); V-13 e V-14 aprovados"
     ]
   },
-  "primeiro_gate": "nenhum bloqueio total; o que ficou aberto esta em REVISAO_FINAL_21h36.3_aberto_com_primeiro_gate",
+  "primeiro_gate": "apps/superadmin -> Pessoas -> criar/editar pessoa e @ -> people.create/people.edit; H28 filtros e reload focal, apos vaga e runtime C0",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
     "aplicar 20260911170800_internal_user_create_v1 (candidatos/acessos-pessoas; pgTAP 9/9 na ordem real + lote 49)",
@@ -48,11 +88,11 @@
     "integrar a branch (14 commits sobre fcdded416) e levar os deltas de skills (PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06)",
     "com 170500/170700 em producao: as secoes do @ em Usuarios internos/Alunos e o gate de people.create ja respondem no proximo build; provas pela tela ficam para a R07"
   ],
-  "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
+  "loop": "nenhum; sem polling, T0 ou timers da tentativa encerrada",
   "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P (reprovado apos o lote 49); person_handles_v1_test 22/22 P; institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; people_identity_lookup_v1_test 11/11 P; superadmin_internal_users_directory_test 44/45 (teste 7 requires_mfa pre-existente). Rota real: 8 acoes provadas (abaixo).",
   "bloqueio": "parcial: rota real sem credencial propria; trabalho independente segue",
-  "proximo_passo": "cliente: SupabasePersonIdentityRepository (people.create), @ na tela de Usuarios internos (170500) e Excluir modelo de sistema (170600); flutter test das familias; commit; revisao de 10 min as 21:36.",
-  "ACK_ao_coordenador": "lido coordenacao rev 57 (21:36): 170500/170600 em producao no lote 50 e 170700 no lote 54; deltas-r06.json aplicados; obrigado. A cobranca das 20:58 cruzou com os commits fb96e9374 (20:14) e ee35cce3a (20:25), ja publicados; rev 140 saiu as 20:54.",
+  "proximo_passo": "aguardar follow-up de C0 com vaga e slots; depois leituras focais e cruzamento das provas existentes",
+  "ACK_ao_coordenador": "Adoto como unico C0 01a096ed-314b-7c13-a9e0-3e64649e66fc, host local; coordenacao revisao 96, round E2-R09-20260912-1542.",
   "PACOTE_170500_P46_20h20": {
     "id": "AP-INTERNAL-USER-HANDLES-170500",
     "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170500_internal_user_handles_v1.sql",
