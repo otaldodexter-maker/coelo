@@ -556,8 +556,17 @@ final class _ActivityFormBody extends StatelessWidget {
                     title: command == _ActivityFormCommand.saveDraft
                         ? 'Não foi possível salvar o rascunho.'
                         : 'Não foi possível salvar a atividade.',
-                    message: 'Confira a conexão e tente novamente sem perder as alterações.',
-                    icon: Icons.cloud_off_outlined,
+                    // Honesto: com avaliacao habilitada o salvar agregado nao
+                    // existe (save_v2 nao carrega a configuracao avaliativa);
+                    // a configuracao vive na tela propria da atividade.
+                    message: controller.pedagogicalConfiguration.enabled
+                        ? 'A avaliação é configurada na tela "Configuração avaliativa" da atividade. '
+                              'Desative "Habilitar avaliação" para salvar o rascunho e configure a '
+                              'avaliação depois.'
+                        : 'Confira a conexão e tente novamente sem perder as alterações.',
+                    icon: controller.pedagogicalConfiguration.enabled
+                        ? Icons.info_outline_rounded
+                        : Icons.cloud_off_outlined,
                     actionLabel: 'Tentar novamente',
                     onAction: onRetryCommand,
                   ),
