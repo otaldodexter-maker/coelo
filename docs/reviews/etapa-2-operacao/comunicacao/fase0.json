@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 28,
+  "revision": 35,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:10:00-03:00",
+  "updatedAt": "2026-09-12T13:51:25-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "cfc710b1370739b0684d4eb63b7f29f37bfce7d6",
+  "head": "efba31f93ab3d8e0ffeeffa242fbd9e500543da5",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -80,7 +80,8 @@
     "Review G6 aplicado: parser anônimo preserva dois casos legítimos com nome iniciado por loading at; somente seis marcadores loading de arquivo são filtrados. Resultado corrigido para 293 casos, 281 chaves e 12 duplicações; footer +293 permanece fora da contagem.",
     "Plano executável do censo único de fechamento publicado: comando PowerShell com recorte, concurrency=1, timeout=10m, reporter JSON, preservação de exit code; parser por testID/suiteID; skips R07 11 reconciliados individualmente; estimativa por timestamps reais. Plano não executado.",
     "Correção final do parser anônimo: removido todo filtro por prefixo loading; a regex somente aceita marcador com caminho .dart e nome após os dois-pontos, preservando casos legítimos loading at. Resultado 293 observados, 281 únicos, 12 duplicações.",
-    "Plano do censo corrigido conforme C0: suíte completa \test, concurrency=1, reporter JSON, saída ../../docs a partir de apps/superadmin, janela de 30m, parser por testID/suiteID sem colapsar nomes, skips individuais. Estimativa medida R07: 426.010s (7m06.010s), limite operacional 1800s. Não executado."
+    "Plano do censo corrigido conforme C0: suíte completa \test, concurrency=1, reporter JSON, saída ../../docs a partir de apps/superadmin, janela de 30m, parser por testID/suiteID sem colapsar nomes, skips individuais. Estimativa medida R07: 426.010s (7m06.010s), limite operacional 1800s. Não executado.",
+    "Correção documental ACK180: campo canônico revision=35, campo alternativo revisao removido, updatedAt ajustado ao relógio da máquina (13:51:25-03:00) e contagens refutadas movidas para historicoR08, sem apresentá-las como estado atual."
   ],
   "pendente": "Aguardar próximo gate do C0; não promover equivalência semântica a partir de interseções sintáticas.",
   "commitsPublicados": [
@@ -108,7 +109,8 @@
     "7d87d0f0f (rev 31)",
     "cc7e68703 (rev 32)",
     "9b05a4e57 (rev 33)",
-    "cfc710b13 (rev 34)"
+    "cfc710b13 (rev 34)",
+    "efba31f93 (rev 35)"
   ],
   "foraDoRecorteRegistrado": [
     {
@@ -421,5 +423,24 @@
       "total": 75
     }
   },
-  "revisao": 34
+  "historicoR08": {
+    "contagensRefutadas": [
+      {
+        "origem": "matriz-exata anterior",
+        "observado": "ciclo30=245, ciclo60=476, ciclo90=820",
+        "status": "refutada; misturava testStart/testDone/prints"
+      },
+      {
+        "origem": "parser anonimo intermediario",
+        "observado": "292 casos/280 chaves",
+        "status": "refutada; excluia dois nomes legitimos iniciados por loading at"
+      },
+      {
+        "origem": "plano de censo anterior",
+        "observado": "recorte apenas test/app,test/core/config,test/shared",
+        "status": "refutado pelo protocolo; censo completo usa test"
+      }
+    ],
+    "estadoAtual": "parser JSONL por testID/suiteID; parser anonimo 293 observados/281 unicos/12 duplicacoes; plano de censo completo corrigido e nao executado"
+  }
 }
