@@ -399,7 +399,12 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       ),
       assessmentRepository: SupabaseAssessmentRepository(client),
       assessmentMutationsEnabled: enableAssessmentMutations,
-      personDirectoryRepository: SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true),
+      personDirectoryRepository: SupabasePersonDirectoryRepository(
+        client,
+        segmentFilterAvailable: true,
+        // H28: serializar no mesmo lote da assinatura estendida de Pessoas.
+        contextFiltersAvailable: true,
+      ),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
       // people.create: o resolvedor de identidade usa a RPC 170700; sem ela

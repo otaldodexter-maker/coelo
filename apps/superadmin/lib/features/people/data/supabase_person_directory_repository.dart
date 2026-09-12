@@ -4,13 +4,21 @@ import '../domain/person_directory.dart';
 import '../domain/person_detail_v2.dart';
 
 final class SupabasePersonDirectoryRepository implements PersonDirectoryRepository {
-  const SupabasePersonDirectoryRepository(this._client, {this.segmentFilterAvailable = false});
+  const SupabasePersonDirectoryRepository(
+    this._client, {
+    this.segmentFilterAvailable = false,
+    this.contextFiltersAvailable = false,
+  });
 
   final SupabaseClient _client;
 
   /// Liga `p_segment` (abas no servidor) quando 20260911170400 estiver em
   /// producao; antes disso a RPC de 12 parametros nao aceita o argumento.
   final bool segmentFilterAvailable;
+
+  /// Liga os filtros H28 somente depois da assinatura candidata ser serializada.
+  /// Sem a RPC nova, omitir os argumentos preserva o diretório fail-closed.
+  final bool contextFiltersAvailable;
 
   @override
   Future<PersonDirectoryPage> fetchPage(PersonDirectoryQuery query) async {
@@ -32,6 +40,12 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
           'p_limit': query.pageSize,
           // Abas do diretorio filtradas no servidor (20260911170400).
           if (segmentFilterAvailable) 'p_segment': query.segment.databaseValue,
+          if (contextFiltersAvailable) ...{
+            'p_activity_ids': query.activityIds.toList(growable: false),
+            'p_state_codes': query.stateCodes.toList(growable: false),
+            'p_municipality_ids': query.municipalityIds.toList(growable: false),
+            'p_neighborhood_ids': query.neighborhoodIds.toList(growable: false),
+          },
         },
       );
       final payload = Map<String, dynamic>.from(response as Map);
@@ -59,6 +73,10 @@ final class SupabasePersonDirectoryRepository implements PersonDirectoryReposito
         units: _options(payload['units']),
         groups: _options(payload['groups']),
         roles: _options(payload['roles']),
+        activities: _options(payload['activities']),
+        states: _options(payload['states']),
+        municipalities: _options(payload['municipalities']),
+        neighborhoods: _options(payload['neighborhoods']),
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
@@ -124,6 +142,9 @@ List<PersonFilterOption> _options(Object? raw) {
           row['label'] as String,
           institutionId: row['institution_id'] as String?,
           unitId: row['unit_id'] as String?,
+          groupId: row['group_id'] as String?,
+          stateCode: row['state_code'] as String?,
+          municipalityId: row['municipality_id'] as String?,
         ),
       )
       .toList(growable: false);
