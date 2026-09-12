@@ -1,6 +1,6 @@
 {
-  "revision": 50,
-  "updated_at": "2026-09-12T10:58:04.991955-03:00",
+  "revision": 51,
+  "updated_at": "2026-09-12T11:25:58.735798-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,9 +9,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "6d6cbef32",
-  "status": "EXECUTANDO: CORS Momentos corrigido com 27 testes Deno verdes; deploy C0 e E2E pendentes",
-  "T0_assumido": "R07 desta frente: 2026-09-11T23:20:52-03:00; T0+4h = 2026-09-12T03:20:52-03:00; revisao final ate 03:30:52",
+  "head": "aeac6bd60426102327337f631e3f195427b1b8fc",
+  "status": "EXECUTANDO: Momentos v10 e Chat v4 implantados por C0; cliente chat.attach WIP local aguardando Flutter; E2E aberto",
+  "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
     "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
@@ -19,7 +19,7 @@
     "apps/superadmin -> paginas de erro 403/404/409/500/503/retry pela rota real",
     "backend: P48=A pacote 130000 owner->institution_admin, operations->leitura; Edge Functions happens-media, now-media, moments-media"
   ],
-  "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
+  "action_ids_status": "Recorte G4 R08: estados oficiais preservados ate evidencia E2E e delta C0; historico R07 nao conta como teste atual",
   "ordem_de_trabalho": [
     "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
     "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
@@ -126,8 +126,8 @@
     "130500 (scopeRules de Cardapios) aguarda aplicacao; depois disso esta frente reprova create/edit/publish pela tela"
   ],
   "next_step": null,
-  "ack": "coordenacao rev 57 lida (retencao do 130400 e CORS alinhado): 130400 reescrito sobre o 210100 e republicado; capturas 01-10 restauradas na branch",
-  "loop": "/loop 15m agendado na abertura",
+  "ack": "C0 ACK rev50/1d09cb3c8 no ciclo20min; pub get autorizado; slot Flutter aguardado",
+  "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
   "historico_r05": {
     "revision": 29,
@@ -356,7 +356,10 @@
       "contrato comum e G4 completos; plano/backlog/fechamento/decisoes R07 lidos",
       "origin/dev 6d6cbef32 incorporada",
       "C0 e G5 informados",
-      "moments-media: teste HTTP reproduziu falta de x-client-info; uma linha corrigida; 27 Deno PASS / 0 FAIL"
+      "moments-media: teste HTTP reproduziu falta de x-client-info; uma linha corrigida; 27 Deno PASS / 0 FAIL",
+      "1d09cb3c8 commit/push; C0 integrou e implantou moments-media v10 ACTIVE",
+      "C0 integrou G5 e implantou chat-media v4 ACTIVE",
+      "pub get sem upgrade; consumidor Chat implementado localmente, testes ainda nao executados"
     ],
     "pendente": [
       "provas reais de midia",
@@ -365,18 +368,23 @@
       "Perfil/Para Voce e erros",
       "disparador H09"
     ],
-    "primeiro_gate": "C0 implantar moments-media; G0 liberar runtime e C0 conceder Chrome. Trabalho independente: consumidor chat.attach.",
+    "primeiro_gate": "PNG UI depende runtime G0/slot Chrome C0. Trabalho independente atual: validar cliente chat.attach no slot Flutter nominal.",
     "evidencias_esperadas": "arquivos commitados em docs/reviews/evidence/etapa-2/r08-principal-chat-sistema; testes locais separados de UI/R2/Supabase e negativa de escopo",
-    "estimativa_delta": "CORS localizado: 15-25 min com teste; E2E depende de runtime/slot. Chat exige inspecao do consumidor antes de estimar. Demais gates na janela, sem promessa de concluir todos.",
+    "estimativa_delta": "Consumidor Chat local implementado; teste focal6-8min apos slot, mais correcoes se falhar. PNG/Cardapios dependem runtime. Sem nova estimativa ampla.",
     "testes": {
       "moments-media": "27 PASS / 0 FAIL; antes 0 PASS / 1 FAIL em cors_test por x-client-info",
-      "e2e": "nao executado"
+      "e2e": "nao executado",
+      "chat": "Flutter nao executado:11 novos casos escritos, mais regressoes existentes. Analyze anterior zero issues; ultimo encontrou1warning no fakeFilePicker, corrigido, ainda sem rerun. CodigoWIP local nao integra este checkpoint documental."
     },
     "recursos": {
       "chrome": "aguarda C0/G0",
-      "flutter_test": "nao solicitado ainda",
+      "flutter_test": "solicitado; fila C0 G2/G1/G4/G6; nenhum flutter test iniciado G4",
       "deno": "local disponivel; nao consome slot Flutter"
     },
-    "commits_publicados": []
+    "commits_publicados": [
+      "1d09cb3c8"
+    ],
+    "h09": "G5 candidato76aed97cb cron5min/sweep500 sem apagar midia; pgTAP/aplicacao e medicao cron.job por C0 pendentes",
+    "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido."
   }
 }
