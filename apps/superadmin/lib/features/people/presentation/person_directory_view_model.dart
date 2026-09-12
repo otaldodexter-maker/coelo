@@ -46,9 +46,12 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
             .toList(growable: false);
   List<PersonFilterOption> get visibleActivities => _query.groupIds.isEmpty
       ? const []
-      : _filterOptions.activities
-            .where((item) => _query.groupIds.contains(item.groupId))
-            .toList(growable: false);
+      : {
+          for (final item in _filterOptions.activities.where(
+            (item) => _query.groupIds.contains(item.groupId),
+          ))
+            item.id: item,
+        }.values.toList(growable: false);
   List<PersonFilterOption> get visibleMunicipalities => _query.stateCodes.isEmpty
       ? const []
       : _filterOptions.municipalities
