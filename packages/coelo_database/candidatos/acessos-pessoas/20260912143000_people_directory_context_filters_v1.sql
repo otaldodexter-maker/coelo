@@ -125,7 +125,7 @@ begin
           and (cardinality(coalesce(p_activity_ids,array[]::uuid[]))=0 or c.activity_id=any(p_activity_ids))
           and (cardinality(coalesce(p_state_codes,array[]::text[]))=0 or c.state_code=any(p_state_codes))
           and (cardinality(coalesce(p_municipality_ids,array[]::text[]))=0 or c.municipality_id=any(p_municipality_ids))
-          and (cardinality(coalesce(p_neighborhood_ids,array[]::text[]))=0 or c.neighborhood_id=any(p_neighborhood_ids)))
+          and (cardinality(coalesce(p_neighborhood_ids,array[]::text[]))=0 or c.neighborhood_id=any(p_neighborhood_ids))))
   ), ranked as (
     select f.*, row_number() over(order by
       case when p_sort_ascending and p_sort='display_name' then lower(f.display_name) end asc, case when not p_sort_ascending and p_sort='display_name' then lower(f.display_name) end desc,
