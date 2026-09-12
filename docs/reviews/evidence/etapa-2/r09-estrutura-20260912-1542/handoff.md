@@ -17,6 +17,14 @@ composition root, SQL, grant ou RPC foi alterado. Cadastro manual/profissional
 preserva o ID global informado e exige formato UUID, em vez de fabricar ID.
 Isso nao cria pessoa global: o servidor continua exigindo identidade ativa.
 
+Segundo defeito da mesma cadeia corrigido: `_record` esperava perfil aninhado,
+mas `group_management_payload` vigente (`20260912180000:714`) devolve
+`profile_id/profile_code/profile_name` planos. O papel ficava vazio e a
+hidratacao de Membros ignorava a pessoa ao reabrir. Parser agora prioriza os
+campos produtivos, preservando a compatibilidade aninhada. Teste novo RED
+esperava guardian e recebeu vazio; GREEN do repository 5 PASS/0 FAIL e analyze
+sem issues. Nenhuma repeticao da suite de formulario, nem mudanca de backend.
+
 Regressao nova reproduziu a falha antes da correcao (0 PASS/1 FAIL). Depois:
 2 PASS focais, incluidos nos 30 PASS/0 FAIL da regressao do formulario (13 s,
 exit0); analyze dos tres arquivos sem issues. `member-tests.json` registra

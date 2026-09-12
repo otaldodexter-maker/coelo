@@ -22,7 +22,7 @@ void main() {
             'profile_code': 'guardian',
             'profile_name': 'Responsável',
             'capabilities': ['groups.read'],
-            'restrictions': [],
+            'restrictions': <String>[],
           },
         ],
       }, request),

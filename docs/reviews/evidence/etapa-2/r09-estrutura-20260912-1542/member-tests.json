@@ -30,6 +30,15 @@
     "result": "No issues found!",
     "resolved": "2 curly_braces_in_flow_control_structures infos from first analysis"
   },
+  "reloadParser": {
+    "source": "packages/coelo_database/migrations/20260912180000_structure_handles_client_v1.sql:714; group_management_payload",
+    "redCommand": "flutter test test/features/groups/data/supabase_group_directory_repository_test.dart --plain-name 'reload preserves' --concurrency=1 --reporter expanded --no-pub",
+    "red": "exit1; 0PASS/1FAIL; expected guardian, actual empty profileCode",
+    "greenCommand": "flutter test test/features/groups/data/supabase_group_directory_repository_test.dart --concurrency=1 --reporter expanded --no-pub",
+    "green": "exit0; 5PASS/0FAIL; 0 skipped; distinct repository suite, no form rerun",
+    "analysisCommand": "dart analyze lib/features/groups/data/supabase_group_directory_repository.dart test/features/groups/data/supabase_group_directory_repository_test.dart",
+    "analysis": "exit0; No issues found; one test collection inference warning resolved"
+  },
   "notExecuted": ["production UI", "real persistence/reload", "remote member negative", "goldens"],
   "newVerifiedActions": [],
   "memory": "no-op; fixes existing identity contract, no new role or hierarchy rule"
