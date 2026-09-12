@@ -1,0 +1,22 @@
+{
+  "measuredAt": "2026-09-12T14:13:00-03:00",
+  "mode": "authenticated-read-only",
+  "target": {
+    "assignmentId": "41e161da-ebaa-4fed-b0ba-132640e6a59f",
+    "institutionId": "190dd028-3125-452d-8502-612bfa1029de",
+    "unitId": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+    "groupId": "4214106c-46a2-4bf4-84ba-9c6a619bd486",
+    "activityId": "95b98978-19e2-43ba-aa0c-70ae81557e08"
+  },
+  "preflight": {
+    "contextOptionsHttpStatus": 200,
+    "configurationReadHttpStatus": 200,
+    "configurationReadData": null
+  },
+  "technicalGate": {
+    "g4": "14ae8b4d; fakeproof stateful green",
+    "g5": "d59e17f62; code ACK pass",
+    "runner": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments_api_runner.py"
+  },
+  "secretsOrChildData": false
+}
