@@ -45,3 +45,21 @@ certifica atores internos sem contexto ativo nem altera o contrato desses atores
 - `git diff --check`: exit 0.
 
 Nenhum pgTAP, SQL remoto, deploy, Flutter ou Chrome foi executado por G5.
+
+## Expiração do PUT no replay R2
+
+Após o C0 habilitar o provider R2, a retomada reutilizou o mesmo form asset e
+recebeu um envelope R2, mas parou antes do PUT porque `expires_at` vinha do
+recibo legado. Essa expiração não descreve a URL que acabara de ser assinada.
+
+O RED comparou a expiração legada com a janela do signer e falhou no valor
+exato. A correção usa o mesmo relógio congelável e a mesma janela conservadora
+de 300 segundos já adotados pelo ramo question-image. O asset, o objeto, a
+autorização e os request IDs não mudam.
+
+- RED focal: 0/1 pelo horário legado divergente.
+- GREEN focal: 1/1.
+- Regressão `form-media/index_test.ts`: 33/33.
+- `deno check index.ts` e `git diff --check`: exit 0.
+
+Deploy e nova retomada continuam exclusivos do C0/G0, respectivamente.
