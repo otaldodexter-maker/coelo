@@ -502,3 +502,31 @@ Pendência G0 única: a prova visual de login/leitura/reload não foi obtida por
 o canal de texto CUA não atualiza os controllers Flutter. A prova API real de
 answer-image fechou, mas não é promovida a UI/E2E. C0 remove a worktree somente
 após integração e backup; G0 não fará cleanup dos sintéticos nem do runtime.
+
+## Gate focal final do lote 59
+
+Por solicitação e confirmação explícitas do C0, o corpo final de G2 em
+`df0a281cb561b0440a1eb8ab5cd541b8b6196fdb` foi provado novamente no baseline
+descartável. O candidato atual tem blob Git
+`707cc8b4fe37d46dc8e40a993dbbd8fe33b2d513` e SHA-256 LF
+`8b6c66091b89e7a319b00f894f80869cb764ba66106baa18e9acbec943761b6e`;
+ele difere do corpo anteriormente aplicado porque a coleção de localidades
+passou a projetar também `state_code`.
+
+Para reproduzir uma base fresca sem alterar o candidato remoto, removi somente
+a assinatura experimental de 17 argumentos já presente no espelho e apliquei o
+candidato final. O apply terminou com `COMMIT`. O estrutural do mesmo SHA (blob
+`f428ac3aa624fef325ef738c7814a52ec3f802bb`, SHA-256 LF
+`d28091240fe733ccb88e503ac54fd3e66dd5e6536e6afd9c804fff4af5dc5aeb`)
+passou 11/11. O fixture funcional verde de G5 em
+`e1cad10e2` (blob `6509d411`, SHA-256 LF
+`dc1295bc55dcffca72ec88aafc154f15b88351781f40369168ed2712f953df8d`)
+passou 10/10. Ambos rodaram uma vez, terminaram com rollback e exit 0: 21/21
+asserts do corpo final. As 23 regressões modernas pertencem à versão anterior
+do corpo e não foram indevidamente atribuídas a esta prova focal. Produção,
+fila e ledger permaneceram intocados.
+
+Recibos: [estrutural final](./h28-final-structural-df0a281cb.log) e
+[funcional final](./h28-final-functional-e1cad10e2.log). Uma consulta somente
+leitura posterior confirmou que a assinatura final está presente e que o corpo
+materializado contém `state_code`: [verificação do corpo](./h28-final-body-df0a281cb.log).
