@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/features/activities/domain/activity_directory.d
 import 'package:coelo_superadmin/features/activities/presentation/activity_directory_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
+import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_listing_pagination_footer.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -572,6 +573,8 @@ void main() {
     await tester.tap(find.byKey(const Key('create-activity-template-tile')));
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-template-create-page')), findsOneWidget);
+    expect(find.byKey(const Key('activity-template-create-footer')), findsOneWidget);
+    expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.text('Contexto'), findsWidgets);
     expect(find.byKey(const Key('activity-form-units')), findsNothing);
     expect(find.byKey(const Key('activity-form-groups')), findsNothing);

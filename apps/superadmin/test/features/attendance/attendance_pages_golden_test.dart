@@ -39,7 +39,7 @@ void main() {
         find.byKey(const Key('attendance-golden-root')),
         matchesGoldenFile('goldens/attendance_call_compact_start_${brightness.name}_375.png'),
       );
-      await tester.ensureVisible(find.widgetWithText(TextButton, 'Voltar para Assiduidade'));
+      await tester.ensureVisible(find.widgetWithText(TextButton, 'Voltar'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
       await expectLater(

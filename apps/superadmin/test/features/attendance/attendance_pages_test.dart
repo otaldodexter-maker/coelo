@@ -16,6 +16,29 @@ import 'package:flutter_test/flutter_test.dart';
 import '../../support/fake_attendance_repository.dart';
 
 void main() {
+  testWidgets('loaded call can change without reusing a disposed note controller', (tester) async {
+    final repository = FakeAttendanceRepository.seeded();
+    addTearDown(repository.dispose);
+    for (final callId in ['call-progress', 'call-completed', 'call-progress']) {
+      await tester.pumpWidget(
+        _app(
+          AttendanceCallPage(
+            repository: repository,
+            callId: callId,
+            permissions: const AttendancePermissions.owner(),
+            logout: unavailableSuperadminLogout,
+            onBack: () {},
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.text('Sua publicação'), findsOneWidget);
+      expect(tester.takeException(), isNull);
+    }
+    await tester.pumpWidget(const SizedBox.shrink());
+    expect(tester.takeException(), isNull);
+  });
+
   for (final configuration in [
     (375.0, 2.0, false),
     (768.0, 1.0, true),
@@ -1732,7 +1755,7 @@ void main() {
         ),
       );
       await tester.pumpAndSettle();
-      final action = find.widgetWithText(TextButton, 'Voltar para Assiduidade');
+      final action = find.widgetWithText(TextButton, 'Voltar');
       await tester.ensureVisible(action);
       await tester.pumpAndSettle();
       final viewport = tester.getRect(find.byKey(const Key('attendance-call-scroll')));

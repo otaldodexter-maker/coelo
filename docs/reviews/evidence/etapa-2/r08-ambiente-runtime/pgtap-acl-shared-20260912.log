@@ -1,0 +1,607 @@
+R08 G0 pgTAP ACL shared baseline
+AT=2026-09-12T11:11:03.4325035-03:00
+CONTAINER=supabase_db_coelo_baseline DATABASE=postgres USER=postgres
+COMMAND_TEMPLATE=Get-Content -Raw <suite> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+=== SUITE principal_internal_actor_bridge_v1_test.sql PLAN=22 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..22
+(1 row)
+
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 3
+INSERT 0 1
+            has_function
+------------------------------------
+ ok 1 - helper parametrizado existe
+(1 row)
+
+                   ok
+----------------------------------------
+ ok 2 - helper sem execute para cliente
+(1 row)
+
+                                 ok
+--------------------------------------------------------------------
+ ok 3 - list_my_principal_contexts: authenticated executa, anon nao
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 4 - sessao interna resolve para a pessoa de servico
+(1 row)
+
+                    is
+-------------------------------------------
+ ok 5 - realm people-based tem precedencia
+(1 row)
+
+                     is
+---------------------------------------------
+ ok 6 - auth user sem realm nao vira ninguem
+(1 row)
+
+                                                   is
+---------------------------------------------------------------------------------------------------------
+ ok 7 - o espelho interno ganhou membership owner nas duas instituicoes ativas (gatilho de institutions)
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 8 - instituicao inativa nao recebe membership
+(1 row)
+
+                                 is
+---------------------------------------------------------------------
+ ok 9 - cada membership recebeu o papel de sistema institution_admin
+(1 row)
+
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+                         is
+-----------------------------------------------------
+ ok 10 - segunda sincronizacao e no-op (idempotente)
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+ set_config
+------------
+ 2
+(1 row)
+
+ set_config
+------------
+ owner
+(1 row)
+
+RESET
+              set_config
+--------------------------------------
+ 229e24b2-a472-4de6-9688-17cdb02d3770
+(1 row)
+
+              set_config
+--------------------------------------
+ 229e24b2-a472-4de6-9688-17cdb02d3770
+(1 row)
+
+              set_config
+--------------------------------------
+ 229e24b2-a472-4de6-9688-17cdb02d3770
+(1 row)
+
+                                    is
+--------------------------------------------------------------------------
+ ok 11 - A enxerga as duas instituicoes ativas como contexto do Principal
+(1 row)
+
+              is
+-------------------------------
+ ok 12 - contexto de A e owner
+(1 row)
+
+                                    is
+---------------------------------------------------------------------------
+ ok 13 - happens_actor reconhece a sessao interna com happens.posts.create
+(1 row)
+
+                                    is
+--------------------------------------------------------------------------
+ ok 14 - now_actor reconhece a sessao interna com now.publications.create
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 15 - moments_actor_for_auth_user reconhece a sessao interna
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000002", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000002"}
+(1 row)
+
+SET
+                  set_config
+-----------------------------------------------
+ c7000000-0000-4000-8000-000000000002:guardian
+(1 row)
+
+RESET
+                               throws_ok
+------------------------------------------------------------------------
+ ok 16 - B nao entra no Acontece da instituicao X (cross-tenant negado)
+(1 row)
+
+                              throws_ok
+---------------------------------------------------------------------
+ ok 17 - B nao entra no Agora da instituicao X (cross-tenant negado)
+(1 row)
+
+                                throws_ok
+-------------------------------------------------------------------------
+ ok 18 - B nao entra nos Momentos da instituicao X (cross-tenant negado)
+(1 row)
+
+                              is
+--------------------------------------------------------------
+ ok 19 - B continua vendo so o proprio contexto guardian em Y
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000003", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000003"}
+(1 row)
+
+SET
+ set_config
+------------
+ 0
+(1 row)
+
+RESET
+                      is
+----------------------------------------------
+ ok 20 - auth user sem realm nao tem contexto
+(1 row)
+
+SET
+              throws_ok
+-------------------------------------
+ ok 21 - anon nao executa o resolver
+(1 row)
+
+RESET
+                  throws_ok
+---------------------------------------------
+ ok 22 - resgate sem ticket continua negando
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=principal_internal_actor_bridge_v1_test.sql native_exit=0 ok=22 not_ok=0 expected=22
+=== SUITE internal_actor_scope_root_v1_test.sql PLAN=46 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..46
+(1 row)
+
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+                          is
+-------------------------------------------------------
+ ok 1 - as duas identidades ganharam pessoa de servico
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 2 - espelho da escopada carrega o escopo de A
+(1 row)
+
+                                   is
+-------------------------------------------------------------------------
+ ok 3 - identidade escopada em A so tem membership ativa em A (nao em B)
+(1 row)
+
+                                        is
+-----------------------------------------------------------------------------------
+ ok 4 - identidade de plataforma tem membership em A e B (Superadmin ve tudo, P35)
+(1 row)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+                        ok
+--------------------------------------------------
+ ok 5 - sync reconcilia membership fora do escopo
+(1 row)
+
+                             is
+-------------------------------------------------------------
+ ok 6 - membership fora do escopo fica inactive + revoked_at
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+ superadmin_internal_actor_institution_access_sync
+---------------------------------------------------
+                                                 0
+(1 row)
+
+                                               is
+------------------------------------------------------------------------------------------------
+ ok 7 - membership do espelho de plataforma numa instituicao em rascunho e preservada pelo sync
+(1 row)
+
+                                              is
+-----------------------------------------------------------------------------------------------
+ ok 8 - sync nao cria membership em instituicao fora do escopo nem em rascunho para a escopada
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9c600000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9c600000-0000-4000-8000-000000000202"}
+(1 row)
+
+                                is
+-------------------------------------------------------------------
+ ok 9 - escopada: um argumento nega (sem capacidade de plataforma)
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 10 - escopada: dois argumentos com A concede
+(1 row)
+
+                      is
+----------------------------------------------
+ ok 11 - escopada: dois argumentos com B nega
+(1 row)
+
+                         is
+----------------------------------------------------
+ ok 12 - escopada: Agenda (211200) continua negando
+(1 row)
+
+CREATE TABLE
+CREATE FUNCTION
+CREATE FUNCTION
+ run_helpers
+-------------
+
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9c600000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "9c600000-0000-4000-8000-000000000201"}
+(1 row)
+
+                    is
+------------------------------------------
+ ok 13 - plataforma: um argumento concede
+(1 row)
+
+ run_helpers
+-------------
+
+(1 row)
+
+                                            is
+------------------------------------------------------------------------------------------
+ ok 14 - require_routine_actor aceita a escopada pelo contexto da propria instituicao
+ ok 15 - require_health_care_actor aceita a escopada pelo contexto da propria instituicao
+(2 rows)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9c600000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9c600000-0000-4000-8000-000000000202"}
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 16 - escopada: contexto de A concede routine.read
+(1 row)
+
+                                       is
+--------------------------------------------------------------------------------
+ ok 17 - escopada: contexto de B nega routine.read (membership em B desativada)
+(1 row)
+
+                                      is
+-------------------------------------------------------------------------------
+ ok 18 - assert_people_permission nega a identidade escopada (42501)
+ ok 19 - assert_child_safety_platform nega a identidade escopada (42501)
+ ok 20 - require_forms_actor nega a identidade escopada (42501)
+ ok 21 - form_require_owner nega a identidade escopada (42501)
+ ok 22 - assert_support_permission nega a identidade escopada (42501)
+ ok 23 - assert_account_actor nega a identidade escopada (42501)
+ ok 24 - access_profile_require_mutation nega a identidade escopada (42501)
+ ok 25 - assert_institution_file_access nega a identidade escopada (42501)
+ ok 26 - assert_institution_identity_access nega a identidade escopada (42501)
+ ok 27 - require_profile_authority nega a identidade escopada (42501)
+(10 rows)
+
+                                      is
+------------------------------------------------------------------------------
+ ok 28 - require_routine_actor aceita a identidade de plataforma
+ ok 29 - require_health_care_actor aceita a identidade de plataforma
+ ok 30 - assert_people_permission aceita a identidade de plataforma
+ ok 31 - assert_child_safety_platform aceita a identidade de plataforma
+ ok 32 - require_forms_actor aceita a identidade de plataforma
+ ok 33 - form_require_owner aceita a identidade de plataforma
+ ok 34 - assert_support_permission aceita a identidade de plataforma
+ ok 35 - assert_account_actor aceita a identidade de plataforma
+ ok 36 - access_profile_require_mutation aceita a identidade de plataforma
+ ok 37 - assert_institution_file_access aceita a identidade de plataforma
+ ok 38 - assert_institution_identity_access aceita a identidade de plataforma
+ ok 39 - require_profile_authority aceita a identidade de plataforma
+(12 rows)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9c600000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "9c600000-0000-4000-8000-000000000203"}
+(1 row)
+
+                                   is
+-------------------------------------------------------------------------
+ ok 40 - pessoa people-based escopada: P7 mantido (um argumento concede)
+(1 row)
+
+                              is
+--------------------------------------------------------------
+ ok 41 - pessoa people-based escopada: outra instituicao nega
+(1 row)
+
+ set_config
+------------
+
+(1 row)
+
+           is
+-------------------------
+ ok 42 - sem sessao nega
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 43 - anon nao executa has_platform_permission
+(1 row)
+
+                    is
+------------------------------------------
+ ok 44 - authenticated executa (policies)
+(1 row)
+
+               is
+---------------------------------
+ ok 45 - anon nao executa o sync
+(1 row)
+
+                    is
+------------------------------------------
+ ok 46 - authenticated nao executa o sync
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=internal_actor_scope_root_v1_test.sql native_exit=0 ok=46 not_ok=0 expected=46
+=== SUITE internal_actor_scope_root_v1_hotfix_test.sql PLAN=4 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+------
+ 1..4
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 2
+                            is
+-----------------------------------------------------------
+ ok 1 - reativa exatamente a membership de plataforma em C
+(1 row)
+
+                                    is
+---------------------------------------------------------------------------
+ ok 2 - membership de plataforma em rascunho volta a active sem revoked_at
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 3 - membership da escopada fora do escopo continua inactive
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 4 - segunda execucao nao reativa nada (idempotente)
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=internal_actor_scope_root_v1_hotfix_test.sql native_exit=0 ok=4 not_ok=0 expected=4
+=== SUITE internal_actor_institution_access_by_role_v1_test.sql PLAN=16 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..16
+(1 row)
+
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+                              is
+--------------------------------------------------------------
+ ok 1 - institution_reader existe como papel de sistema unico
+(1 row)
+
+                        cmp_ok
+-------------------------------------------------------
+ ok 2 - institution_reader recebe as permissoes *.read
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 3 - institution_reader nao tem permissao de escrita
+(1 row)
+
+CREATE VIEW
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+                              is
+---------------------------------------------------------------
+ ok 4 - owner interno: membership nas duas instituicoes ativas
+(1 row)
+
+                  is
+---------------------------------------
+ ok 5 - owner interno: role_code owner
+(1 row)
+
+                             is
+-------------------------------------------------------------
+ ok 6 - owner interno: papel institution_admin, nunca reader
+(1 row)
+
+                             is
+------------------------------------------------------------
+ ok 7 - operations: membership nas duas instituicoes ativas
+(1 row)
+
+                          is
+-------------------------------------------------------
+ ok 8 - operations: role_code professional (nao owner)
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 9 - operations: somente institution_reader
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 10 - auditor: nenhuma membership automatica
+(1 row)
+
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+                  is
+---------------------------------------
+ ok 11 - segunda sincronizacao e no-op
+(1 row)
+
+UPDATE 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+              cmp_ok
+-----------------------------------
+ ok 12 - rebaixamento mexe em algo
+(1 row)
+
+                               is
+-----------------------------------------------------------------
+ ok 13 - rebaixado: institution_admin revogado, reader concedido
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 14 - rebaixado: role_code vira professional
+(1 row)
+
+UPDATE 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+ superadmin_internal_actor_institution_access_sync
+---------------------------------------------------
+                                                 6
+(1 row)
+
+                               is
+-----------------------------------------------------------------
+ ok 15 - promovido: reader revogado, institution_admin concedido
+(1 row)
+
+UPDATE 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+ superadmin_internal_actor_institution_access_sync
+---------------------------------------------------
+                                                 4
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 16 - papel sem alvo: membership automatica revogada
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=internal_actor_institution_access_by_role_v1_test.sql native_exit=0 ok=16 not_ok=0 expected=16
+WRAPPER_EXIT=0

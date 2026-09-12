@@ -19,7 +19,38 @@ tracker_sync_revisions: "R07 encerrada: estrutura69; acessos146+checkpoint149; f
 
 # Pendências Coelo — Front-end + Back-end
 
-## Estado vigente — Rodada 7 (E2-R07-20260911), fechamento em 12/09/2026
+## Estado vigente — Rodada 8 (E2-R08-20260912), checkpoint 11h14
+
+C0 publicou a posse em dev às 10h52, com nove frentes G0–G8 identificadas.
+Execução até 14h52:16; revisão até 15h02:16 e fechamento até 15h22:16.
+O heartbeat de dez minutos está ativo. ACK por revisão das nove branches
+no primeiro ciclo de vinte minutos foi registrado em coordenacao.json.
+
+Avanço real integrado: preflight de Momentos e Chat aceita x-client-info.
+C0 executou Deno na base conjunta: Momentos 27 PASS/0 FAIL e Chat 6 PASS/0 FAIL,
+ambos com exit 0, sem somar reruns. Deploys moments-media v10 e chat-media v4
+ACTIVE; OPTIONS autorizado 200 e origem externa 403 sem ACAO. Provas:
+evidence/etapa-2/r08-coordenacao/moments-media-preflight.md e
+evidence/etapa-2/r08-coordenacao/chat-media-preflight.md.
+Isso não certifica upload, CRUD, isolamento ou reload pela tela.
+
+G0 recuperou Docker e entregou build/servidor3014; a entrada de texto CUA
+não atualiza os controllers Flutter. Login/leitura/reload permanecem bloqueados.
+O espelho ainda exige pgTAP e paridade dos consumidores compartilhados;
+SQL de produção permanece retido, próximo lote56. G1/G2/G3/G4/G6/G7 seguem
+correções locais e G5 prepara contratos/fixtures; G8 reconcilia evidências
+históricas. Pacotes recebidos aguardam revisão/testes integrados próprios.
+
+Nenhum estado de ação promovido neste checkpoint, nenhuma reconciliação
+histórica adicional, nenhum usuário/chave/objeto sintético criado por C0.
+Base: inventário R07 reconciliado, 231 ações; 224 BE e 199 E2E ativos.
+FE verified 161/231 (69,70%); FE local-green 23/70 (32,86%);
+aprovação visual FE 54/231 (23,38%); BE local-green 32/75 (42,67%);
+SQL em produção 181/224 (80,80%); BE done 149/224 (66,52%);
+E2E 131/199 (65,83%). O censo R07 abaixo é histórico, não execução R08.
+
+
+## Histórico — Rodada 7 (E2-R07-20260911), fechamento em 12/09/2026
 
 Todos os oito HEADs finais foram integrados por merge, incluindo G8 rev19
 (d4a62918c). R07 encerrada; Etapa2 continua aberta. Censo independente:
@@ -833,3 +864,7 @@ Front-end + Back-end: as duas colunas separam os gates; o estado é o aceite E2E
 [Coordenação Claude, grupos e prompts atuais](etapa-2-operacao/TRABALHO-ATUAL.md). A retomada noturna usa conversas novas e preserva as entregas R01/R02.
 
 [Histórico integral dos cortes anteriores](archive/2026-09-09-r01-r02-historico.json), com texto original, origem e hash; não contém ordens vigentes. Os registros de 08/09 continuam no arquivo histórico original.
+
+### R08 checkpoint integrado 12/09 11h35
+
+G1 rodape, G3 frame/Chamada e G7 Catalogo integrados; Flutter121PASS/0FAIL/0SKIP e analyze global exit0. Lote56 Agora aplicado/ledger, cron ativo5min; sem nova certificacao E2E. Evidencia: [ciclo30](evidence/etapa-2/r08-coordenacao/ciclo30.md). Estados oficiais preservados; avanços locais separados dos aceites.

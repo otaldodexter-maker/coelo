@@ -1,0 +1,121 @@
+R08 G0 preflight parity lote 56
+AT=2026-09-12T11:13:49.2819305-03:00
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+SOURCE=docs/reviews/evidence/etapa-2/r08-ambiente-runtime/preflight-lote56.sql
+COMMAND=Get-Content -Raw <source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..20
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 1 - has_platform_permission(text,uuid) existe
+(1 row)
+
+                                      ok
+-------------------------------------------------------------------------------
+ ok 2 - has_platform_permission preserva o ramo final de plataforma do lote 50
+(1 row)
+
+                              ok
+---------------------------------------------------------------
+ ok 3 - scope_targets tem a assinatura final do hotfix lote 52
+(1 row)
+
+                                         ok
+------------------------------------------------------------------------------------
+ ok 4 - scope_targets inclui instituicao nao apagada sem restringir o alvo a active
+(1 row)
+
+                    ok
+-------------------------------------------
+ ok 5 - reativador final do lote 52 existe
+(1 row)
+
+                  is
+--------------------------------------
+ ok 6 - anon nao executa o reativador
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 7 - authenticated nao executa o reativador
+(1 row)
+
+                      is
+----------------------------------------------
+ ok 8 - service_role nao executa o reativador
+(1 row)
+
+                    ok
+-------------------------------------------
+ ok 9 - sincronizador compartilhado existe
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 10 - sincronizador e a forma final do lote 55 sobre scope_targets
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 11 - as quatro funcoes usam security definer
+(1 row)
+
+                     is
+---------------------------------------------
+ ok 12 - as quatro funcoes fixam search_path
+(1 row)
+
+                    is
+------------------------------------------
+ ok 13 - anon nao executa o sincronizador
+(1 row)
+
+                        is
+---------------------------------------------------
+ ok 14 - authenticated nao executa o sincronizador
+(1 row)
+
+                     is
+--------------------------------------------
+ ok 15 - PUBLIC nao executa o sincronizador
+(1 row)
+
+                           cmp_ok
+-------------------------------------------------------------
+ ok 16 - institution_reader tem permissoes de leitura ativas
+(1 row)
+
+                                 is
+--------------------------------------------------------------------
+ ok 17 - institution_reader nao tem permissao ativa fora de leitura
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 18 - pg_cron e cron.job estao disponiveis para o lote 56
+(1 row)
+
+                                     ok
+-----------------------------------------------------------------------------
+ ok 19 - sweep de publicacoes Agora exigido pelo candidato do lote 56 existe
+(1 row)
+
+                                       is
+---------------------------------------------------------------------------------
+ ok 20 - estado preflight: nenhum job de expiracao Agora preexistente no espelho
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+NATIVE_EXIT=0
+PREFLIGHT_RESULT native_exit=0 ok=20 not_ok=0 expected=20
+WRAPPER_EXIT=0
