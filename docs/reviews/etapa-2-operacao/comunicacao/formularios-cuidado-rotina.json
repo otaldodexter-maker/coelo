@@ -1,18 +1,18 @@
 {
- "revision": 56,
+ "revision": 57,
  "round": "E2-R07-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Codex",
  "model": "Codex Luna, esforco medio",
  "coordinator": "coordenador da R07",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T23:40-03:00",
+ "updatedAt": "2026-09-11T23:58-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
  "branch": "work/etapa2-r07-formularios-cuidado-rotina",
- "head": "a50487878 (base R07; revisao inicial em andamento)",
+ "head": "3c33810a1 (codigo e deltas publicados; status limpo)",
  "base": "origin/dev a50487878",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -83,6 +83,11 @@
   }
  ],
  "commits": [
+  {
+   "sha": "3c33810a1",
+   "o_que": "feat(assiduidade): reconstruir chamada na superficie Publicacao; goldens mobile/web atualizados; teste antigo de wizard ajustado ao contrato sem etapas",
+   "prova": "flutter test attendance_pages_test.dart: 55 testes PASS; attendance_pages_golden_test.dart: 4 goldens PASS; push explicito da branch publicado"
+  },
   {
    "sha": "70c44f75a",
    "o_que": "rev 47 (abertura)"
@@ -1993,6 +1998,24 @@
   "dados_sinteticos": "lista em dadosSinteticosCriados + nova versao de trabalho do formulario 4555ba07 com item Local (rascunho sobre o publicado)",
   "chaves_criadas": "nenhuma",
   "skills_deltas": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/skills-deltas.md"
+ },
+ "checkpointR07_2358": {
+  "quando": "2026-09-11T23:58-03:00",
+  "feito": [
+   "attendance.entry/complete: tela reconstruída sobre PublicationSurface, sem wizard e sem balão; segments P/F/A, Marcar todos presentes, observações individuais e resumo web",
+   "attendance.entry/complete: testes de páginas 55 PASS e goldens 4 PASS; deltas-r07-fcr.json publicado"
+  ],
+  "pendente": [
+   "prova na rota real com qa-r06-formularios e capturas commitadas",
+   "forms.location-question e forms.location-answer pela tela",
+   "daily-routine.edit/publish/list pela tela",
+   "child-safety.list e child-safety.child pela tela",
+   "forms.upload/resolve-file/expire-file/delete-file se sobrar tempo"
+  ],
+  "commitsPublicados": ["3c33810a1"],
+  "status": "limpo",
+  "primeiroGateAberto": "prova E2E na rota real; nenhum bloqueio de implementação demonstrado",
+  "proximoPasso": "preparar harness de rota real e depois seguir a ordem forms.location -> daily-routine -> child-safety"
  },
  "revisaoR07Inicial": {
   "quando": "2026-09-11T23:40-03:00",
