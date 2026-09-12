@@ -1,0 +1,14 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "serverPid": 15452,
+  "chromePid": 22592,
+  "tab": "829822468",
+  "port": 3014,
+  "buildExit": 0,
+  "durationSeconds": 74.2,
+  "textEmulation": false,
+  "syntheticCircularFile": false,
+  "servedHttp": 200,
+  "localSha256": "0a4004b669f766a20b2fb0385ae46768c6e05df2b69f2c90bd39f16d2f6091a9",
+  "servedSha256": "0a4004b669f766a20b2fb0385ae46768c6e05df2b69f2c90bd39f16d2f6091a9"
+}
