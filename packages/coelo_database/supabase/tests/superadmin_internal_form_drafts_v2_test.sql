@@ -193,16 +193,24 @@ select is((select count(*) from public.forms where created_by_internal_identity_
 select ok(not exists(select 1 from app_private.superadmin_internal_form_draft_receipts r join fauthor_invalid i using(request_id)),'invalid payloads leave no receipt');
 
 -- AuthLink and membership revocation must reauthorize before receipt retrieval.
-update app_private.superadmin_internal_auth_links set status='revoked',revoked_at=now() where id='8f020000-0000-4000-8000-000000000401';
+update app_private.superadmin_internal_auth_links
+set status='revoked',revoked_at=now(),version=version+1
+where id='8f020000-0000-4000-8000-000000000401';
 set local role authenticated;
 insert into fauthor_results select 'revoked_link_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
 reset role;
-update app_private.superadmin_internal_auth_links set status='active',revoked_at=null where id='8f020000-0000-4000-8000-000000000401';
-update app_private.superadmin_internal_memberships set status='revoked',revoked_at=now() where id='8f020000-0000-4000-8000-000000000501';
+update app_private.superadmin_internal_auth_links
+set status='active',revoked_at=null,version=version+1
+where id='8f020000-0000-4000-8000-000000000401';
+update app_private.superadmin_internal_memberships
+set status='revoked',revoked_at=now(),version=version+1
+where id='8f020000-0000-4000-8000-000000000501';
 set local role authenticated;
 insert into fauthor_results select 'revoked_membership_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
 reset role;
-update app_private.superadmin_internal_memberships set status='active',revoked_at=null where id='8f020000-0000-4000-8000-000000000501';
+update app_private.superadmin_internal_memberships
+set status='active',revoked_at=null,version=version+1
+where id='8f020000-0000-4000-8000-000000000501';
 select is((select body#>>'{error,code}' from fauthor_results where label='revoked_link_replay'),'SAI_INTERNAL_CONTEXT_DENIED','revoked link cannot replay');
 select is((select body#>>'{error,code}' from fauthor_results where label='revoked_membership_replay'),'SAI_MEMBERSHIP_REVOKED','revoked membership cannot replay');
 
