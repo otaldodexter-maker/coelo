@@ -110,6 +110,23 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
   bool _loadingAudience = false;
   String? _error;
 
+  // Este diálogo representa apenas uma inclusão simples. Reprogramar não
+  // autoriza transformar exclusões, múltiplas regras ou outros públicos.
+  bool get _preserveAudience {
+    final rules = _application?.audienceRules;
+    return rules != null &&
+        (rules.length != 1 ||
+            rules.single.mode != FormAudienceRuleMode.include ||
+            !_editableAudienceKinds.contains(rules.single.kind));
+  }
+
+  static const _editableAudienceKinds = [
+    FormAudienceRuleKind.institution,
+    FormAudienceRuleKind.group,
+    FormAudienceRuleKind.activity,
+    FormAudienceRuleKind.profile,
+  ];
+
   @override
   void initState() {
     super.initState();
@@ -123,7 +140,8 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
         widget.api.getEditor(widget.formId),
       ]);
       final context = values[0] as FormsEditorContext;
-      final application = (values[1] as FormEditorProjection).application;
+      final projection = values[1] as FormEditorProjection;
+      final application = projection.application;
       final allowedInstitutions = context.institutions
           .where((institution) => institution.canManageForms)
           .toList(growable: false);
@@ -132,7 +150,10 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
           'Você não tem permissão para distribuir este formulário.',
         );
       }
-      final institutionId = application?.institutionId ?? allowedInstitutions.first.id;
+      final institutionId = projection.definition.institutionId;
+      if (application != null && application.institutionId != institutionId) {
+        throw const _ScheduleAccessException('A distribuição não corresponde ao formulário.');
+      }
       if (!allowedInstitutions.any((institution) => institution.id == institutionId)) {
         throw const _ScheduleAccessException(
           'A instituição desta distribuição não está autorizada para sua sessão.',
@@ -148,7 +169,7 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
         _audienceId = application?.audienceRules.firstOrNull?.targetId ?? institutionId;
         _loading = false;
       });
-      await _loadAudienceCandidates();
+      if (!_preserveAudience) await _loadAudienceCandidates();
     } on FormApiException catch (error) {
       if (mounted) setState(() => _fail(error.message));
     } on _ScheduleAccessException catch (error) {
@@ -246,7 +267,7 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
       !_loadingAudience &&
       _error == null &&
       _institutionId != null &&
-      _audienceId != null;
+      (_preserveAudience || _audienceId != null);
 
   Widget _content(BuildContext context) {
     final application = _application;
@@ -260,7 +281,9 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Text(
-          'Escolha somente uma instituição e um público devolvidos pelas fontes autorizadas.',
+          _preserveAudience
+              ? 'O público existente será preservado ao salvar o agendamento. A edição dessas regras não está disponível nesta tela.'
+              : 'Escolha somente uma instituição e um público devolvidos pelas fontes autorizadas.',
           style: Theme.of(context).textTheme.bodyMedium,
         ),
         const SizedBox(height: CoeloSpacing.space4),
@@ -278,45 +301,47 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
           },
         ),
         const SizedBox(height: CoeloSpacing.space4),
-        CoeloAdminSingleSelectField<FormAudienceRuleKind>(
-          key: const Key('forms-schedule-audience-kind'),
-          label: 'Tipo de público',
-          value: _audienceKind,
-          options: const [
-            FormAudienceRuleKind.institution,
-            FormAudienceRuleKind.group,
-            FormAudienceRuleKind.activity,
-            FormAudienceRuleKind.profile,
-          ],
-          optionLabel: _audienceKindLabel,
-          prefixIcon: Icons.groups_outlined,
-          enabled: !_loadingAudience,
-          onChanged: (value) {
-            setState(() => _audienceKind = value);
-            _loadAudienceCandidates();
-          },
-        ),
-        const SizedBox(height: CoeloSpacing.space4),
-        if (_loadingAudience)
-          const Center(child: CircularProgressIndicator())
-        else if (_candidates.isEmpty)
-          const CoeloStatePanel(
-            icon: Icons.groups_outlined,
-            title: 'Nenhum público disponível',
-            message: 'Altere a instituição ou o tipo de público para continuar.',
+        if (_preserveAudience)
+          Text(
+            '${application!.audienceRules.length} regras de público preservadas, incluindo exclusões quando existentes.',
+            key: const Key('forms-schedule-preserved-audience'),
           )
-        else
-          CoeloAdminSingleSelectField<String>(
-            key: const Key('forms-schedule-audience'),
-            label: 'Público',
-            value: _audienceId ?? '',
-            options: _candidates.map((candidate) => candidate.id).toList(growable: false),
-            optionLabel: (id) =>
-                _candidates.where((candidate) => candidate.id == id).firstOrNull?.label ?? id,
-            prefixIcon: Icons.group_outlined,
-            enabled: true,
-            onChanged: (value) => setState(() => _audienceId = value),
+        else ...[
+          CoeloAdminSingleSelectField<FormAudienceRuleKind>(
+            key: const Key('forms-schedule-audience-kind'),
+            label: 'Tipo de público',
+            value: _audienceKind,
+            options: _editableAudienceKinds,
+            optionLabel: _audienceKindLabel,
+            prefixIcon: Icons.groups_outlined,
+            enabled: !_loadingAudience,
+            onChanged: (value) {
+              setState(() => _audienceKind = value);
+              _loadAudienceCandidates();
+            },
           ),
+          const SizedBox(height: CoeloSpacing.space4),
+          if (_loadingAudience)
+            const Center(child: CircularProgressIndicator())
+          else if (_candidates.isEmpty)
+            const CoeloStatePanel(
+              icon: Icons.groups_outlined,
+              title: 'Nenhum público disponível',
+              message: 'Altere a instituição ou o tipo de público para continuar.',
+            )
+          else
+            CoeloAdminSingleSelectField<String>(
+              key: const Key('forms-schedule-audience'),
+              label: 'Público',
+              value: _audienceId ?? '',
+              options: _candidates.map((candidate) => candidate.id).toList(growable: false),
+              optionLabel: (id) =>
+                  _candidates.where((candidate) => candidate.id == id).firstOrNull?.label ?? id,
+              prefixIcon: Icons.group_outlined,
+              enabled: true,
+              onChanged: (value) => setState(() => _audienceId = value),
+            ),
+        ],
         if (_error case final error?) ...[
           const SizedBox(height: CoeloSpacing.space3),
           Text(error, style: TextStyle(color: Theme.of(context).colorScheme.error)),
@@ -338,8 +363,10 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
         endsAt: _endDate(existingSchedule?.schedule.end) ?? now.add(const Duration(days: 30)),
         frequency: _frequency(existingSchedule?.schedule.recurrence),
         weekdays: _weekdays(existingSchedule?.schedule.recurrence),
-        audienceLabel:
-            _candidates.where((candidate) => candidate.id == _audienceId).firstOrNull?.label ?? '',
+        audienceLabel: _preserveAudience
+            ? '${application!.audienceRules.length} regras de público preservadas'
+            : _candidates.where((candidate) => candidate.id == _audienceId).firstOrNull?.label ??
+                  '',
       ),
       onSave: (draft) => _persist(draft, existingSchedule),
     );
@@ -351,7 +378,7 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
 
   Future<void> _persist(FormsScheduleDraft draft, FormApplicationSchedule? existingSchedule) async {
     final institutionId = _institutionId!;
-    final audienceId = _audienceId!;
+    final audienceId = _audienceId;
     final previous = _application;
     final application = FormApplication(
       // Distribuicao nova vai ao fio com id vazio (nulo): o wrapper publico
@@ -364,14 +391,16 @@ final class _FormsProductionAudienceDialogState extends State<_FormsProductionAu
       name: draft.name,
       status: draft.active ? FormApplicationStatus.active : FormApplicationStatus.paused,
       opensForDays: previous?.opensForDays ?? 7,
-      audienceRules: [
-        FormAudienceRule(
-          id: previous?.audienceRules.firstOrNull?.id ?? _newScheduleRequestId(),
-          kind: _audienceKind,
-          mode: FormAudienceRuleMode.include,
-          targetId: audienceId,
-        ),
-      ],
+      audienceRules: _preserveAudience
+          ? previous!.audienceRules
+          : [
+              FormAudienceRule(
+                id: previous?.audienceRules.firstOrNull?.id ?? _newScheduleRequestId(),
+                kind: _audienceKind,
+                mode: FormAudienceRuleMode.include,
+                targetId: audienceId!,
+              ),
+            ],
       schedules: previous?.schedules ?? const [],
       managementVersion: previous?.managementVersion ?? 0,
     );
