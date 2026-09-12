@@ -57,11 +57,11 @@
   },
   "environment": {
     "credencial": "Coelo-backups/qa-r06-publicacoes.env (ler localmente; nunca imprimir, registrar ou versionar o valor).",
-    "note": "R07 aberta sobre origin/dev 91d6aa287; primeiro checkpoint registra estado conhecido da R06 e gates, depois segue pela rota real sem aguardar aprovacao.",
+    "note": "R07 aberta sobre origin/dev 91d6aa287; primeiro checkpoint registra estado conhecido da R06 e gates, depois segue pela rota real sem aguardar aprovacao. Build web-qa concluido; Chrome dedicado criado, mas o adaptador CDP nao obteve Page.getFrameTree.",
     "rotaReal": "build web-qa com qa_main servido numa porta da lista CORS (3000, 3009, 3010, 3014, 3016, 3018 ou 3020); Chrome CDP proprio com --user-data-dir %TEMP%/coelo-chrome-publicacoes; um Chrome por vez.",
     "closedAt": ""
   },
-  "firstGate": "circulars.attach pela tela: deploy da circular-media (versao 12 em producao continua a anterior ao fix; conferido as 21:07)",
+  "firstGate": "circulars.attach pela tela: deploy da circular-media (versao em producao continua anterior ao fix x-client-info); rota real R07 tambem esta retida pelo adaptador CDP que nao concluiu Page.getFrameTree na aba do build web-qa.",
   "status": "em_execucao",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
@@ -70,7 +70,7 @@
   "packages": [],
   "compositionKeys": [],
   "tests": {
-    "passed": "circulars 66 + agenda 293 + goldens",
+    "passed": "circulars + agenda: 359 testes verdes (test/features/circulars test/features/agenda); flutter build web --release -t test_driver/qa_main.dart concluido em 689,8s",
     "failed": 0,
     "blocked": 0,
     "skipped": 0,
@@ -83,10 +83,10 @@
       "circulars 68/68 e agenda 291/291 apos 7e08cf834",
       "circulars.edit pela tela nova: rascunho cb77ed7f reaberto, titulo editado, Salvar rascunho, recarga completa mantem (ui-17, ui-18)"
     ],
-    "unknown": "suite completa nao repetida (um flutter test por vez)"
+    "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
-  "blocked": "circulars.attach retido somente pelo primeiro gate do deploy da Edge Function circular-media com o fix x-client-info; os demais itens seguem independentes.",
-  "next": "executar primeiro circulars.create/edit e agenda.create/edit na rota real, registrar capturas comparadas aos goldens aprovados, publicar commit e continuar para attach; cobrar/registrar deploy como dependencia.",
+  "blocked": "circulars.attach retido pelo deploy da Edge Function circular-media com o fix x-client-info; prova de qualquer item pela rota real retida adicionalmente pelo CDP (Chrome criado, servidor respondeu index/bootstrap, Page.getFrameTree expirou). Os testes locais e demais deltas seguem independentes.",
+  "next": "tentar uma única reanexação após o Chrome terminar o bootstrap; se persistir, registrar bloqueio de ferramenta e produzir apenas deltas comprovados por testes/código sem promover E2E.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2506,11 +2506,24 @@
         "notices.* e agenda.* restantes: selecionar apenas action_ids ainda fora de E2E",
         "sino do shell: somente após os itens prioritários"
       ],
-      "commitsPublished": [],
+      "commitsPublished": ["3685839dd — revisão inicial R07 publicada"],
+      "verification": {
+        "local": "test/features/circulars + test/features/agenda: 359/359; build web-qa concluído",
+        "route": "não obtida: Chrome dedicado recebeu index.html e flutter_bootstrap.js, mas CDP expirou em Page.getFrameTree antes da árvore AX/captura",
+        "security": "nenhum segredo impresso; nenhum status E2E promovido"
+      },
       "deltasFile": "docs/reviews/evidence/etapa-2/r07-publicacoes-agenda/deltas-r07-pa.json",
       "packages": [],
       "secrets": "nenhum segredo lido ou registrado; credencial permanece apenas no arquivo local informado"
     },
-    "checkpoints": []
+    "checkpoints": [
+      {
+        "at": "2026-09-11T23:50:00-03:00",
+        "done": ["revisão inicial publicada", "suite local circulars/agenda verde", "build web-qa concluído"],
+        "pending": ["prova da rota real bloqueada no CDP; circulars.attach mantém dependência do deploy circular-media", "capturas e deltas aplicáveis aguardam tela real"],
+        "commitsPublished": ["3685839dd"],
+        "firstGate": "Page.getFrameTree expirou na aba do Chrome; servidor respondeu index.html e flutter_bootstrap.js, sem promoção de E2E"
+      }
+    ]
   }
 }
