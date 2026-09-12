@@ -930,6 +930,8 @@ void main() {
     await tester.pump();
     final first = repository.requests.single;
     expect(locationCreate.commands, hasLength(1));
+    expect(locationCreate.commands.single.unitId, context.units.last.id);
+    expect(locationCreate.commands.single.locationSelection.snapshot.id, locationB);
     expect(first.record.id, '40000000-0000-4000-8000-000000000001');
     expect(first.record.managementVersion, 7);
     repository.pending.complete(
@@ -953,11 +955,27 @@ void main() {
         .widget<CoeloAdminSingleSelectField<GroupDirectoryFilterOption>>(
           find.byKey(const Key('group-unit-field')),
         )
-        .onChanged(context.units.last);
+        .onChanged(context.units.first);
     await tester.pumpAndSettle();
     expect(find.textContaining('já foi criada com este local'), findsOneWidget);
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<GroupDirectoryFilterOption>>(
+            find.byKey(const Key('group-unit-field')),
+          )
+          .value,
+      context.units.last,
+    );
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<String>>(
+            find.byKey(const Key('location-selection-option')),
+          )
+          .value,
+      locationB,
+    );
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     tester
@@ -1031,7 +1049,7 @@ final class _RecordingGroupLocationCreateRepository implements GroupLocationCrea
       groupId: '40000000-0000-4000-8000-000000000001',
       managementVersion: 7,
       status: 'draft',
-      locationId: locationA,
+      locationId: locationB,
     );
   }
 }
