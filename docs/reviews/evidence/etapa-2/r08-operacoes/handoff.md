@@ -50,13 +50,15 @@ aprovação visual; não promove Front-end, Back-end ou E2E.
 
 ## Revisão independente — Circular G6
 
-Revisão somente leitura do pacote `work/etapa2-r08-publicacoes-agenda` contra
-spec 037 e ADR 0034, decisão 20: o host produtivo ainda seleciona apenas o
-primeiro `CircularMediaBlock`, esconde **Adicionar mídia** depois dele e a
-prévia também reduz o conteúdo ao primeiro texto/mídia. Isso não representa
-`texto → mídia → pergunta → texto → mídia`; vários arquivos dentro do mesmo
-primeiro bloco não corrigem a ordem entre blocos. O limite agregado de 10.000
-e os cards ordenados de perguntas permanecem alinhados. O achado foi repassado
+Revisão somente leitura do SHA atual
+`origin/work/etapa2-r08-publicacoes-agenda` `d48525b04` contra spec 037 e ADR
+0034, decisão 20: o host produtivo ainda seleciona apenas o primeiro
+`CircularMediaBlock` e esconde **Adicionar mídia** depois dele. Isso impede o
+segundo bloco de mídia necessário a `texto → mídia → pergunta → texto → mídia`;
+vários arquivos no mesmo bloco não corrigem a ordem entre blocos. A observação
+anterior sobre prévia reduzida foi retirada: `_previewBlock` é iterativo neste
+SHA e `_bodyText` não está presente. O limite agregado de 10.000 e os cards
+ordenados de perguntas permanecem alinhados. O único achado foi corrigido junto
 ao C0 para a G6; nenhum arquivo da frente foi editado.
 
 ## Gates externos
