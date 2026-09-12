@@ -9,6 +9,86 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('sorted narrow column fits at 90 and 80 without widening the column', (tester) async {
+    await _pumpTable(
+      tester,
+      sortColumnId: 'name',
+      onSort: (_) {},
+      pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+        id: 'name',
+        label: 'Anexos',
+        initialWidth: 90,
+        minWidth: 80,
+        maxWidth: 120,
+        sortable: true,
+        cellBuilder: _nameCell,
+      ),
+    );
+    expect(tester.takeException(), isNull);
+    await tester.drag(find.bySemanticsLabel('Redimensionar coluna Anexos'), const Offset(-100, 0));
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 80);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('reserves disjoint 48 pixel resize target without stealing sort taps', (
+    tester,
+  ) async {
+    var sorts = 0;
+    await _pumpTable(
+      tester,
+      onSort: (_) => sorts++,
+      pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+        id: 'name',
+        label: 'Nome',
+        initialWidth: 160,
+        minWidth: 120,
+        maxWidth: 200,
+        sortable: true,
+        cellBuilder: _nameCell,
+      ),
+    );
+    final handle = find.bySemanticsLabel('Redimensionar coluna Nome');
+    final sort = find.bySemanticsLabel('Nome, não ordenado');
+    final resizeRect = tester.getRect(handle);
+    final sortRect = tester.getRect(sort);
+    expect(resizeRect.size, const Size(48, 56));
+    expect(sortRect.width, 112);
+    expect(sortRect.right, resizeRect.left);
+    await tester.tapAt(Offset(sortRect.right - 1, sortRect.center.dy));
+    await tester.pump();
+    expect(sorts, 1);
+    await tester.tapAt(Offset(resizeRect.left + 1, resizeRect.center.dy));
+    await tester.pump();
+    expect(sorts, 1);
+    await tester.sendKeyEvent(LogicalKeyboardKey.arrowRight);
+    await tester.pump();
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 168);
+    expect(sorts, 1);
+    await tester.drag(handle, const Offset(25, 0));
+    await tester.pump();
+    expect(sorts, 1);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('fixed width column has no ineffective resize target', (tester) async {
+    await _pumpTable(
+      tester,
+      pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+        id: 'name',
+        label: 'Ações',
+        initialWidth: 72,
+        minWidth: 72,
+        maxWidth: 72,
+        cellBuilder: _nameCell,
+      ),
+    );
+    expect(find.bySemanticsLabel('Redimensionar coluna Ações'), findsNothing);
+    expect(find.byKey(const Key('coelo-admin-table-resizer-indicator-name-pinned')), findsNothing);
+    expect(tester.getSize(find.byKey(const Key('coelo-admin-table-header-name'))).width, 72);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('uses the natural table width when columns are narrower than the viewport', (
     tester,
   ) async {
@@ -646,6 +726,8 @@ Future<void> _pumpTable(
   bool Function(TestRow row)? isSelected,
   CoeloAdminTableColumn<TestRow> pinnedColumn = _nameColumn,
   CoeloAdminTableController? controller,
+  ValueChanged<String>? onSort,
+  String? sortColumnId,
 }) async {
   Widget table(List<TestRow> currentRows) {
     return CoeloAdminResizableTable<TestRow>(
@@ -658,6 +740,8 @@ Future<void> _pumpTable(
       onRowPressed: onRowPressed,
       isSelected: isSelected,
       controller: controller,
+      onSort: onSort,
+      sortColumnId: sortColumnId,
     );
   }
 
