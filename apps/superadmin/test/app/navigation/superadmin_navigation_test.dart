@@ -5,6 +5,12 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/app/navigation/superadmin_navigation.dart';
 
 void main() {
+  test('exposes productive meal plans under Operations', () {
+    final node = coeloNavigationNodeById('meal-plans')!;
+    expect(node.isAvailable(CoeloNavigationEnvironment.production), isTrue);
+    expect(coeloNavigationAncestors('meal-plans'), {'operations'});
+  });
+
   test('declares the requested top-level order and preview name', () {
     expect(coeloSuperadminNavigation.map((node) => node.label).toList(), <String>[
       'Home',

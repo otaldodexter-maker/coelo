@@ -1,0 +1,23 @@
+[
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md"
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md"
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md"
+  }
+]

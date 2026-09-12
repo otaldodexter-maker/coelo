@@ -41,9 +41,9 @@ void main() {
   testWidgets('navigation without router uses production availability', (tester) async {
     await tester.pumpWidget(MaterialApp(theme: CoeloTheme.light, home: _navigationHost()));
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField), 'Cardápios');
+    await tester.enterText(find.byType(TextField), 'Planos');
     await tester.pumpAndSettle();
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -68,23 +68,23 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
     final originalElement = navigationKey.currentContext;
-    await tester.enterText(find.byType(TextField), 'Cardápios');
+    await tester.enterText(find.byType(TextField), 'Planos');
     await tester.pumpAndSettle();
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     router.go('/dev/home');
     await tester.pumpAndSettle();
     expect(navigationKey.currentContext, same(originalElement));
     expect(
       find.descendant(
         of: find.byKey(const Key('superadmin-navigation-scroll')),
-        matching: find.text('Cardápios'),
+        matching: _planLabel,
       ),
       findsOneWidget,
     );
     router.go('/home');
     await tester.pumpAndSettle();
     expect(navigationKey.currentContext, same(originalElement));
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     expect(tester.takeException(), isNull);
   });
   testWidgets('mounted navigation follows MaterialApp router replacement', (tester) async {
@@ -109,16 +109,16 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: first));
     await tester.pumpAndSettle();
     final element = navigationKey.currentContext;
-    await tester.enterText(find.byType(TextField), 'Cardápios');
+    await tester.enterText(find.byType(TextField), 'Planos');
     await tester.pumpAndSettle();
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: second));
     await tester.pumpAndSettle();
     expect(navigationKey.currentContext, same(element));
-    expect(find.text('Nenhum item de navegação encontrado.'), findsNothing);
+    expect(_planLabel, findsOneWidget);
     second.go('/home');
     await tester.pumpAndSettle();
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     expect(tester.takeException(), isNull);
   });
 
@@ -147,21 +147,21 @@ void main() {
     await tester.pumpWidget(host(first));
     await tester.pumpAndSettle();
     final element = navigationKey.currentContext;
-    await tester.enterText(find.byType(TextField), 'Cardápios');
+    await tester.enterText(find.byType(TextField), 'Planos');
     await tester.pumpAndSettle();
     expect(_hasListeners(first), isTrue);
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     await tester.pumpWidget(host(second));
     await tester.pumpAndSettle();
     expect(navigationKey.currentContext, same(element));
     expect(_hasListeners(first), isFalse);
     expect(_hasListeners(second), isTrue);
-    expect(find.text('Nenhum item de navegação encontrado.'), findsNothing);
+    expect(_planLabel, findsOneWidget);
     await tester.pumpWidget(host(null));
     await tester.pumpAndSettle();
     expect(navigationKey.currentContext, same(element));
     expect(_hasListeners(second), isFalse);
-    expect(find.text('Nenhum item de navegação encontrado.'), findsOneWidget);
+    expect(_planLabel, findsNothing);
     await tester.pumpWidget(host(first));
     await tester.pumpAndSettle();
     expect(_hasListeners(first), isTrue);
@@ -189,3 +189,5 @@ Widget _navigationHost({Key? key}) => Scaffold(
     ),
   ),
 );
+
+Finder get _planLabel => find.byWidgetPredicate((widget) => widget is Text && widget.data == 'Planos');

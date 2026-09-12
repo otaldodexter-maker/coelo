@@ -139,7 +139,6 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       'Cardápios',
       Icons.restaurant_menu_outlined,
       const [],
-      availability: _developmentOnly,
     ),
     _screen('forms', 'Formulários', Icons.dynamic_form_outlined, const []),
     _screen('import', 'Importações', Icons.upload_file_outlined, const []),
