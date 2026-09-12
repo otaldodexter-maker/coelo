@@ -125,6 +125,7 @@ import '../../features/forms/presentation/editor/forms_editor_page.dart';
 import '../../features/forms/data/development_forms_api.dart';
 import '../../features/groups/data/fake_group_directory_repository.dart';
 import '../../features/groups/domain/group_directory.dart' hide GroupDirectoryPage;
+import '../../features/groups/domain/group_location_create.dart';
 import '../../features/groups/presentation/group_directory_page.dart';
 import '../../features/groups/presentation/group_form_page.dart';
 import '../../features/help_center/presentation/screens/superadmin_help_center_page.dart';
@@ -421,6 +422,8 @@ GoRouter createSuperadminRouter({
   InstitutionDirectoryRepository institutionDirectoryRepository =
       const UnavailableInstitutionDirectoryRepository(),
   GroupDirectoryRepository groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
+  GroupLocationCreateRepository groupLocationCreateRepository =
+      const UnavailableGroupLocationCreateRepository(),
   GroupDetailRepository groupDetailRepository = const UnavailableGroupDetailRepository(),
   UnitDetailRepository unitDetailRepository = const UnavailableUnitDetailRepository(),
   LocationCatalogReader locationCatalogReader = const UnavailableLocationCatalogReader(),
@@ -452,6 +455,7 @@ GoRouter createSuperadminRouter({
   UnitBackendCommandsGateway unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
   bool enableStructureMutations = false,
   bool enableActivityLocationCreate = false,
+  bool enableGroupLocationCreate = false,
   AccessProfileRepository accessProfileRepository = const UnavailableAccessProfileRepository(),
   PlatformUserRepository? platformUserRepository,
   ResetPasswordAction resetPassword = unavailableResetPassword,
@@ -2210,6 +2214,9 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    groupLocationCreateRepository: groupLocationCreateRepository,
+                    groupLocationCreateEnabled: enableGroupLocationCreate,
                     checkHandleAvailability: structureHandleAvailability,
                     setHandle: structureHandleSet,
                     initialInstitutionId: state.uri.queryParameters['institutionId'],
@@ -2230,6 +2237,9 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    locationCatalogReader: locationCatalogReader,
+                    groupLocationCreateRepository: groupLocationCreateRepository,
+                    groupLocationCreateEnabled: enableGroupLocationCreate,
                     checkHandleAvailability: structureHandleAvailability,
                     setHandle: structureHandleSet,
                     groupId: state.pathParameters['groupId'],
