@@ -1,0 +1,41 @@
+[
+  {
+    "action_id": "acontece.create",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Coordenacao R06: a tela de publicar no Acontece foi reconstruida na familia Publicacao (14abb3b0a) e a G4 rebaixou o FE para local-green (rota real abre, create/publish com midia ainda nao provados apos a reconstrucao). O E2E da R05 (wizard antigo) deixa de valer para a tela nova: volta a pending-verification ate a prova na rota real com qa-r06-principal.",
+    "evidencia": "principal-chat-sistema rev 33 (revisao_final_T0_2h); deltas-r06-pcs.json entrada acontece.create frontend local-green",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json",
+      "revision": "coordenacao r57",
+      "environment": "repositorio (base integrada) + producao coelo; sem prova nova na rota real",
+      "recordedAt": "2026-09-11T21:28-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "Coordenacao R06 (regua do MVP, ADR 0034): RPCs de modelo de cardapio (meal_plan_template_* dos lotes 4 e 5) em producao; a G4 provou na rota real com qa-r06-principal: modelo d132698c criado (v1) e editado (v2) persistem no Supabase real, reload carrega do servidor, lista autorizada so com as instituicoes do ator. Com a prova de CRUD real, o backend deixa de ser local-green.",
+    "evidencia": "deltas-r06-pcs.json (entradas frontend verified + integrated verified-e2e de meal-plans.model-create); capturas 02..08 de r06-principal-chat-sistema/rota-real",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "coordenacao r57",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal (prova da G4)",
+      "recordedAt": "2026-09-11T21:30-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "Coordenacao R06 (regua do MVP, ADR 0034): RPCs de modelo de cardapio (meal_plan_template_* dos lotes 4 e 5) em producao; a G4 provou na rota real com qa-r06-principal: modelo d132698c criado (v1) e editado (v2) persistem no Supabase real, reload carrega do servidor, lista autorizada so com as instituicoes do ator. Com a prova de CRUD real, o backend deixa de ser local-green.",
+    "evidencia": "deltas-r06-pcs.json (entradas frontend verified + integrated verified-e2e de meal-plans.model-edit); capturas 02..08 de r06-principal-chat-sistema/rota-real",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "coordenacao r57",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal (prova da G4)",
+      "recordedAt": "2026-09-11T21:30-03:00"
+    }
+  }
+]
