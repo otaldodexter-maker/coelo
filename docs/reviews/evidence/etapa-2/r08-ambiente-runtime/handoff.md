@@ -403,3 +403,22 @@ finalizado e encerrou somente a sessão local (204). Recibo sanitizado:
 [forms-answer-image-api-v20-20260912.log](./forms-answer-image-api-v20-20260912.log).
 O gate focal foi enviado a G5/C0 para distinguir autorização do worker, shape
 real da RPC, descritor e assinatura GET, sem repetir a chamada.
+
+G5/C0 localizaram o 400: no fluxo identificado, `edit_secret` indefinido era
+omitido pelo cliente Supabase, impedindo o PostgREST de resolver a assinatura
+que exige o argumento anulável. O fix `6d0deecd2` normalizou somente esse valor
+para `null`; C0 integrou, testou 56/56 e implantou `form-media` v21.
+
+A primeira versão download-only parou antes da Edge porque reutilizar o
+`open_request_id` devolve corretamente o snapshot idempotente original,
+anterior ao save. Isso não invalida a persistência: distingue replay de comando
+de leitura fresca. Um único `reload_request_id` foi então pré-persistido no
+commit `3b134d456`, revisado pelo G5 e autorizado pelo C0.
+
+A execução final download-only passou: leitura fresca encontrou a resposta em
+management version 2 com o asset anexado; a URL autorizada devolveu exatamente
+68 bytes e SHA-256
+`431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460`;
+o replay do mesmo reload ID confirmou resposta e asset. Exit 0, logout local
+204, sem prepare, PUT, finalize, save ou cleanup. Recibo:
+[forms-answer-image-api-download-pass-20260912.log](./forms-answer-image-api-download-pass-20260912.log).
