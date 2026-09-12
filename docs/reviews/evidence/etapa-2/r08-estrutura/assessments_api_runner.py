@@ -5,6 +5,7 @@ import argparse
 import json
 import urllib.error
 import urllib.request
+import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 
@@ -46,7 +47,10 @@ def main() -> int:
     if not base or not key or not qa.get("QA_EMAIL") or not qa.get("QA_PASSWORD"):
         raise SystemExit("private_environment_incomplete")
     headers = {"apikey": key, "Content-Type": "application/json"}
-    manifest: dict[str, object] = {"mode": "dry-run", "mutations": False, "measured_at": datetime.now(timezone.utc).isoformat()}
+    manifest: dict[str, object] = {
+        "mode": "dry-run", "mutations": False, "measured_at": datetime.now(timezone.utc).isoformat(),
+        "request_ids": {name: str(uuid.uuid4()) for name in ("save_configuration", "activate_configuration", "save_gradebook", "submit", "review", "return")},
+    }
     status, login = call(base, headers, "/auth/v1/token?grant_type=password", {"email": qa["QA_EMAIL"], "password": qa["QA_PASSWORD"]})
     manifest["login_http_status"] = status
     if status == 200 and isinstance(login, dict) and isinstance(login.get("access_token"), str):
@@ -59,6 +63,12 @@ def main() -> int:
                 if name == "context_options":
                     entry["assignment_count"] = len(body.get("assignments", []))
                     entry["period_count"] = len(body.get("periods", []))
+                    assignments = body.get("assignments", [])
+                    entry["strict_projection"] = (
+                        isinstance(assignments, list) and len(assignments) == 1
+                        and isinstance(assignments[0], dict)
+                        and all(key in assignments[0] for key in ("activity_group_link_id", "activity_id", "institution_id", "unit_id", "group_id"))
+                    )
             manifest[name] = entry
         manifest["logout_http_status"] = call(base, headers, "/auth/v1/logout?scope=local", {})[0]
     output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
