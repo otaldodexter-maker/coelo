@@ -1,0 +1,6181 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T17:05:39.430Z",
+  "base": "c729090f9f1f9968059e074009f06e2c45c09530",
+  "inputSha256": "804e94758031d298b5e6994e5759b44401258b4f362836ed2ec2222d7481116b",
+  "done": {
+    "events": [
+      {
+        "success": false,
+        "time": 97850
+      }
+    ],
+    "duplicate": false
+  },
+  "nativeExitCode": 1,
+  "input": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo180-flutter.jsonl",
+  "counts": {
+    "passed": 411,
+    "failed": 4,
+    "skipped": 1,
+    "hidden": 6,
+    "loading": 16,
+    "errors": 4
+  },
+  "cases": [
+    {
+      "testID": 1,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 3,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "32 random bytes are persisted before return and survive a new store",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 4,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "account, project and occurrence partitions never reuse a capability",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 5,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "concurrent opens await one confirmed write",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 6,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "storage read fails safely without an ephemeral or replacement secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 7,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "storage write fails safely without an ephemeral or replacement secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 8,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "storage lost-write fails safely without an ephemeral or replacement secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 9,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "storage malformed fails safely without an ephemeral or replacement secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 10,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/data/forms_anonymous_edit_secret_store_test.dart",
+      "name": "account resolver is stable and drops the previous account context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 12,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 14,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "anonymous reader sends secret only in POST and requests an explicit original",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 15,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "anonymous reader rejects invalid TTL 0",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 16,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "anonymous reader rejects invalid TTL 61",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 17,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "anonymous reader rejects invalid TTL 60",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 18,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "anonymous reader counts network time against TTL and hides gateway errors",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 19,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "question images resolve through their separate purpose and expire within five minutes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 20,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "question resolve rejects an asset crossed with another question receipt",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 21,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "decodes MediaReadState.available using only the candidate read envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 22,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "decodes MediaReadState.processing using only the candidate read envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 23,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "decodes MediaReadState.expired using only the candidate read envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 24,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "decodes MediaReadState.unavailable using only the candidate read envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 25,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "independent concurrent reads are not cached and never fall back to original",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 26,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt null",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 27,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt []",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 28,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt not-a-response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 29,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 30,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {asset_id: 22222222-2222-4222-8222-222222222222, state: unavailable}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 31,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {asset_id: catalog-lookup-key, state: available}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 32,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {asset_id: 11111111-1111-4111-8111-111111111111, state: unknown}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 33,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {asset_id: 11111111-1111-4111-8111-111111111111, state: available, ticket: null}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 34,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed or crossed receipt {asset_id: 11111111-1111-4111-8111-111111111111, state: processing, ticket: {url: private}}",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 35,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 36,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 37,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 38,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 39,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 40,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects malformed URL without exposing it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 41,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects invalid expiry or TTL over 300 seconds",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 42,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects invalid expiry or TTL over 300 seconds",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 43,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects invalid expiry or TTL over 300 seconds",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 44,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects invalid expiry or TTL over 300 seconds",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 45,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "rejects invalid expiry or TTL over 300 seconds",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 46,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "expired receipt keeps the safe expired exception",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 47,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "expired receipt keeps the safe expired exception",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 48,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "absolute offset expiry is checked at receipt time",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 49,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "invalid headers are rejected through the shared ticket contract",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 50,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "backend failure is sanitized without implicit retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 51,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "backend failure is sanitized without implicit retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 52,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "backend failure is sanitized without implicit retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 53,
+      "suiteID": 11,
+      "path": "apps/superadmin/test/features/forms/data/forms_media_reader_test.dart",
+      "name": "consumer SessionMediaReader still rejects late invalidated results",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 55,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 57,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "Photo captures through the camera and accepts exactly one confirmed image",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 58,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "Photo honors an explicitly disabled camera without falling back to gallery",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 59,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "anonymous gallery forwards its secret to prepare finalize and pending discard only",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 60,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "session purge while picker is open clears its late bytes and disables upload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 61,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "question image uses its target for prepare and finalize with no answer API",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 62,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery UI adds only a confirmed image and removes only the answer reference",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 63,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "question UI deletes the backend binding at 375 pixels and 200 percent text",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 64,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "question upload applies its four MiB limit before contacting the backend",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 65,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery sends exact ticket headers and bytes, then accepts only finalized asset",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 66,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery rejects expired ticket before PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 67,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery rejects authorization ticket before PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 68,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery rejects redirect-url ticket before PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 69,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "gallery rejects wrong-mime ticket before PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 70,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "uncertain PUT keeps the asset for explicit verification without a second PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 71,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "uncertain finalize retries its original request ID",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 72,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "mismatched finalized item cannot enter an answer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 73,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "session invalidation during PUT clears bytes and suppresses finalize",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 74,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "explicit discard uses the authorized API and does not retry the PUT",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 75,
+      "suiteID": 54,
+      "path": "apps/superadmin/test/features/forms/data/forms_gallery_upload_test.dart",
+      "name": "invalid image bytes are cleared without preparing a ticket",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 77,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 79,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "Photo response preserves photo kind when a camera image is confirmed",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 80,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery capability uses the authorized response context FormIdentityMode.identified",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 81,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery capability uses the authorized response context FormIdentityMode.anonymous",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 82,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "anonymous draft waits for device persistence before opening",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 83,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "anonymous missing or failed storage cannot open and exposes honest retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 84,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "anonymous open retry and remount reuse the device secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 85,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "anonymous autosave submit and edit carry the same secret",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 86,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "late device secret cannot open the previous account context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 87,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.shortText remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 88,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.integer remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 89,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.decimal remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 90,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.money remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 91,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.date remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 92,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.yesNo remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 93,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.singleChoice remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 94,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.multipleChoice remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 95,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.scale remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 96,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.photo remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 97,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.gallery remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 98,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an omitted optional FormItemKind.location remains absent when submitted",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 99,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.scale explains the issue required=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 100,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.scale explains the issue required=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 101,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.singleChoice explains the issue required=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 102,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.singleChoice explains the issue required=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 103,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.multipleChoice explains the issue required=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 104,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "unanswerable legacy FormItemKind.multipleChoice explains the issue required=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 105,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "invalid legacy value can only be cleared explicitly before saving",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 106,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "location revoked option is disabled and cannot be answered",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 107,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required location without available option blocks with a warning",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 108,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "optional location without available option does not block",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 109,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "location server refusal is shown inline as the honest message",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 110,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 1 required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 111,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 2 required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 112,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 5 required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 113,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 6 required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 114,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 1 required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 115,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 2 required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 116,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 5 required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 117,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds restored count 6 required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 118,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty assets omitted from incomplete save FormItemKind.photo required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 119,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty assets omitted from incomplete save FormItemKind.photo required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 120,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty assets omitted from incomplete save FormItemKind.gallery required true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 121,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty assets omitted from incomplete save FormItemKind.gallery required false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 122,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "gallery bounds ignore hidden restored answer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 123,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "optional empty assets omitted from direct submit FormItemKind.photo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 124,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "optional empty assets omitted from direct submit FormItemKind.gallery",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 125,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty required gallery omitted from incomplete autosave",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 126,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored required media can be reviewed FormItemKind.photo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 127,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored required media can be reviewed FormItemKind.gallery",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 128,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored empty required media remains unavailable FormItemKind.photo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 129,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored empty required media remains unavailable FormItemKind.gallery",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 130,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored media never crosses to replacement context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 131,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "review restored submitted photo can cancel and confirm unchanged media",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 132,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response presents one section and preserves numeric text across navigation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 133,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "global response review navigates to the first missing section",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 134,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response section progress excludes a fully hidden conditional section",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 135,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "global review chooses first section even when a later number is invalid",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 136,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "navigation preserves pending autosave and focus stays in the active section",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 137,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "receipt hiding the active section chooses a visible destination",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 138,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response section context and focus reset on API replacement=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 139,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response section context and focus reset on API replacement=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 140,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response review includes answers from every presented section",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 141,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response section navigation fits 375px at 200 percent text",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 142,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave debounces edits and does not save hydration",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 143,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave saves incomplete draft without submitting",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 144,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave serializes local edits during receipt wait",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 145,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave rejects retained callback after api",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 146,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave rejects retained callback after occurrence",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 147,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave rejects retained callback after dispose",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 148,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave is paused in review and submit stays explicit",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 149,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave pauses after FormApiFailureKind.conflict",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 150,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave pauses after FormApiFailureKind.unauthorized",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 151,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave lost confirmation requires manual replay before later save",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 152,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave preserves numeric draft while invalid input is -",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 153,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave preserves numeric draft while invalid input is NaN",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 154,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave preserves numeric draft while invalid input is Infinity",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 155,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "retained submit cannot bypass fresh review after context change=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 156,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "retained submit cannot bypass fresh review after context change=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 157,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave clears invalid numeric state when its branch is hidden",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 158,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "confirmed submission clears transient invalid numeric edit before reopening",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 159,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "response autosave feedback fits 375px at 200 percent text",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 160,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "lost save replay preserves newer answers and the next intent uses the confirmed version",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 161,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "editing a submitted response changes nothing until review and confirmation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 162,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "cancelling a local submitted revision restores the confirmed answers",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 163,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "lost save confirmation retries the exact committed command",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 164,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "lost submit confirmation retries the exact committed command",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 165,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "lost edit confirmation retries the exact committed command",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 166,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty loaded FormItemKind.shortText does not satisfy a required answer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 167,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "empty loaded FormItemKind.multipleChoice does not satisfy a required answer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 168,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required FormItemKind.yesNo must be answered before review",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 169,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required FormItemKind.singleChoice must be answered before review",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 170,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required FormItemKind.multipleChoice must be answered before review",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 171,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required FormItemKind.scale must be answered before review",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 172,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "required FormItemKind.date must be answered before review",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 173,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "submitted summary shows the confirmed receipt, not edits during submit",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 174,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "residual hidden answers are removed from load",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 175,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "residual hidden answers are removed from receipt",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 176,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "late branch save receipt preserves newer hidden-branch intent",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 177,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "hidden branch values leave review and commands nested=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 178,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "hidden branch values leave review and commands nested=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 179,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "multiple-choice union drops only newly hidden branch answers before submit",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 180,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "one matching branch condition is enough, consistent with the domain",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 181,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "FormItemKind.photo required attachment follows visible=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 182,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "FormItemKind.photo required attachment follows visible=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 183,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "FormItemKind.gallery required attachment follows visible=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 184,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "FormItemKind.gallery required attachment follows visible=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 185,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "date picker result from an old context cannot populate the new response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 186,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "obsolete save receipt does not affect the next context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 187,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "obsolete save failure does not affect the next context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 188,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "production clears answers when occurrence changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 189,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "production clears answers when API changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 190,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "obsolete occurrence lookup cannot open a draft after context replacement",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 191,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "disposed occurrence lookup cannot open a response draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 192,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "production fails closed without an authorized occurrence",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 193,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "production opens, saves and submits the authorized response draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 194,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "autosave exposes one real state and reacts to editing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 195,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "development response preserves the selected form context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 196,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "cancelar upload preserva a resposta e encerra o progresso local",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 197,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "integer above the declared maximum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 198,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "integer below the declared minimum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 199,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "decimal above the declared maximum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 200,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "decimal below the declared minimum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 201,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "money above the declared maximum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 202,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "money below the declared minimum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 203,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "money answer is compared against the declared limit in the same unit",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 204,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a value inside the declared range still saves",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 205,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "short text longer than the declared maximum never reaches the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 206,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a saved money answer reopens in civil notation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 207,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "the review summary shows money in civil notation too",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 208,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "reopened money survives a round trip through the draft",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 209,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a refused text says what to review, not to review numbers",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 210,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "repairing a refused text back to the stored value still autosaves",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 211,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a choice reads as its label, never as the internal id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 212,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a multiple choice reads its labels in the authored order",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 213,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a date reads the same in the field and in the submitted summary",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 214,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "one form exercises every authored limit from filling to sending",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 215,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a scale without a declared minimum starts where the server accepts",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 216,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a scale that declares zero still offers zero",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 217,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "the date picker offers only the authored range",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 218,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a stored answer outside the authored range does not crash the picker",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 219,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an inconsistent authored date range says so instead of crashing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 220,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "without an authored range the picker keeps its wide fallback",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 221,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an out-of-range value cannot be submitted either",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 222,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "the authored maximum of selections is visible before choosing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 223,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "the authored minimum of selections is visible before choosing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 224,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a selection beyond the authored maximum is refused",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 225,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "deselecting below the maximum lets the next selection through",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 226,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a count below the authored minimum cannot be sent",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 227,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "reaching the authored minimum unlocks sending",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 228,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a required FormItemKind.photo blocks review while upload is unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 229,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a required FormItemKind.gallery blocks review while upload is unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 230,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a negative answer satisfies a required yes-no",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 231,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "zero satisfies a required number",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 232,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "a missing answer never satisfies a required item",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 233,
+      "suiteID": 76,
+      "path": "apps/superadmin/test/features/forms/presentation/response/form_response_page_test.dart",
+      "name": "an item without authored selection limits keeps every option open",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 235,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 237,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "loading at 200 percent in light",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 238,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "processing at 200 percent in light",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 239,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "expired at 200 percent in light",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 240,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "unavailable at 200 percent in light",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 241,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "available at 200 percent in light",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 242,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "loading at 200 percent in dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 243,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "processing at 200 percent in dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 244,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "expired at 200 percent in dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 245,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "unavailable at 200 percent in dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 246,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "available at 200 percent in dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 247,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "asset replacement ignores late result and old retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 248,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "reader replacement ignores late result and old retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 249,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "session replacement ignores late result and old retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 250,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "session purge removes decoded image and blocks retries",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 251,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "invalid session rejects new and pending reads",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 252,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "TTL evicts image without implicit refresh",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 253,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "resume checks wall clock expiry while the timer has not fired",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 254,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "removing the reader clears an active image and keeps download disabled",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 255,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "disposed page ignores pending results and captured retry cannot double-read",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 256,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "mismatched ID and private errors fail safely with explicit retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 257,
+      "suiteID": 234,
+      "path": "apps/superadmin/test/features/forms/presentation/operations/forms_media_reader_test.dart",
+      "name": "image error and disposal evict decoded cache",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 259,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 261,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "question image prepare uses the purpose payload and exact upload capability",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 262,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "question image finalize requires ready status and the prepared asset",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 263,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "question image delete never calls the answer discard operation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 264,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "queues the whole-form XLSX through the internal concurrency envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 265,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "defers FormExportKind.csv export without contacting the backend",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 266,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "defers FormExportKind.zip export without contacting the backend",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 267,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "defers FormExportKind.anonymousParticipation export without contacting the backend",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 268,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "defers nominal anonymous participation export for every format",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 269,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "occurrence export cannot silently broaden into whole-form export",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 270,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "directory maps opaque cursors without OFFSET and decodes the authorized projection",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 271,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "maps backend failures without exposing their messages",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 272,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "maps location detail codes to honest messages",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 273,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "loads only explicit institution form capabilities from the context RPC",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 274,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "applies the deployed top-level capabilities to authorized institutions",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 275,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "monitor hierarchy sends the scoped cursor to the authorized RPC",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 276,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "rascunho novo vai a form_save_draft sem status/versao e com id nulo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 277,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "response mutation preserves media kind and concurrency envelope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 278,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "open accepts the correlated receipt and preserves its confirmed status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 279,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "open rejects a receipt for another occurrence_id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 280,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "save accepts the correlated receipt and preserves its confirmed status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 281,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "save rejects a receipt for another occurrence_id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 282,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "save rejects a receipt for another id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 283,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "submit accepts the correlated receipt and preserves its confirmed status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 284,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "submit rejects a receipt for another occurrence_id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 285,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "submit rejects a receipt for another id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 286,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "edit accepts the correlated receipt and preserves its confirmed status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 287,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "edit rejects a receipt for another occurrence_id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 288,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "edit rejects a receipt for another id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 289,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "submit rejects a receipt that does not confirm its state transition",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 290,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "edit rejects a receipt that does not confirm its state transition",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 291,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "response decoder rejects unknown status and duplicate answer IDs",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 292,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "response reader rejects another occurrence before exposing its definition",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 293,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "distribuicao nova vai a form_save_application com id nulo; existente mantem o id",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 294,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "schedule commands preserve schedule id and schedule management version",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 295,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "asset preparation consumes the server upload capability",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 296,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "asset finalize and discard encode optional secret null",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 297,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "asset finalize and discard encode optional secret sssssssssssssssssssssssssssssssssssssssssss",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 298,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "file job list maps availability without accepting a storage path",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 299,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "internal monitor preserves every existing scope filter",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 300,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "ordinary monitor people keep scoped name cursor and never justify anonymous lookup",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 301,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "identified response cursor round trips its timestamp and response ID",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 302,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "anonymous response cursor needs only opaque ID and strips identity metadata",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 303,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "anonymous page rejects a correlation timestamp in its cursor",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 304,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "response list rejects absent or invalid identity mode",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 305,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "detail rejects absent or invalid identity mode",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 306,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "anonymous detail strips unexpected identity and timestamp from the receipt",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 307,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "detail uses internal envelope and preserves typed answers without invented labels",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 308,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "detail rejects mismatched response and duplicate answers",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 309,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "file job cursor preserves created time without forwarding private locators",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 310,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "every internal operation denies error envelopes before inspecting data",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 311,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "internal errors map SAI codes and hide backend diagnostics",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 312,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "every internal operation rejects missing or contradictory envelopes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 313,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "operational pages reject contradictory cursors and oversized pages",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 314,
+      "suiteID": 258,
+      "path": "apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart",
+      "name": "nominal anonymous lookup preserves legacy realm and explicit justification",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 316,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 318,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "underlying form disposal purges camera during finalizeTree",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 319,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "camera preview and confirmation fit 375 at 200 percent and close before returning bytes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 320,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "camera permission error closes resources and retry uses a new controller",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 321,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "cancel while permission is pending closes late camera without returning an image",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 322,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "camera session closes and wipes late captured bytes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 323,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "camera dispose closes and wipes late captured bytes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 324,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "leaving the app stops the camera and requires explicit restart",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 325,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "capture failure stops the camera and offers retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 326,
+      "suiteID": 315,
+      "path": "apps/superadmin/test/features/forms/presentation/response/forms_camera_capture_test.dart",
+      "name": "old capture failure cannot close a replacement context camera",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 328,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 330,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "SuperadminApp forwards live Forms media composition to its stable router",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 331,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "normal response detail forwards form and response to the contextual reader",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 332,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "same router renews file context and resolver on authorization revision",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 333,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "Forms route dispatches domain asset and survives logout and second login",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 334,
+      "suiteID": 327,
+      "path": "apps/superadmin/test/app/router/forms_media_composition_test.dart",
+      "name": "response route receives the current stable anonymous store context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 336,
+      "suiteID": 335,
+      "path": "apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 338,
+      "suiteID": 335,
+      "path": "apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "name": "defaults to hosted staging and keeps development previews disabled",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 339,
+      "suiteID": 335,
+      "path": "apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "name": "development previews stay disabled in every release build",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 340,
+      "suiteID": 335,
+      "path": "apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "name": "development previews require a non-release local build",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 341,
+      "suiteID": 335,
+      "path": "apps/superadmin/test/core/config/superadmin_app_config_test.dart",
+      "name": "canonical project identity uses the Supabase ref and supports local origins",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 343,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 345,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "loads the About page of the authorized subject",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 346,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "persists through the server and re-reads the saved page",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 347,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "does not confirm save when its reload is denied",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 348,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "does not confirm save when its reload is unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 349,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "does not confirm an old save after context changes during reload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 350,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "sends a fresh idempotency key per save command",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 351,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "does not claim success when the server reports a version conflict",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 352,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "falls back to the denied state when saving is not authorized",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 353,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "fails closed when loading is denied",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 354,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "offers a retry when loading is unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 355,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "drops the previous draft when the context changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 356,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "fails closed when the context is revoked while editing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 357,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "reloads when only the membership changes inside the same scope",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 358,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "drops the draft when only roleCode changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 359,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "drops the draft when only scopeKind changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 360,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "reloads when the person in context changes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 361,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "reload re-reads the authorized page on demand",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 362,
+      "suiteID": 342,
+      "path": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_edit_page_test.dart",
+      "name": "the reload action shows it is working and cannot be tapped twice",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 364,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 367,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "tokens usa snake_case compativel com os defaults da RPC",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 368,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "tokens token de ida e volta cobre todos os valores do dominio",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 369,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "tokens token desconhecido nao explode e cai no default seguro",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 370,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "tokens mapeia a coluna de sujeito de cada tipo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 372,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "payload de escrita serializa campos e secoes no formato esperado pela RPC",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 373,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "payload de escrita atualizacoes oficiais viram array de key/value",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 375,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "retorno da RPC le page_id, version e destinos oficiais",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 376,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "retorno da RPC retorno invalido vira FormatException",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 377,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "retorno da RPC official ausente resulta em lista vazia",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 379,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura das tabelas monta a pagina, ordena secoes e ignora linhas desconhecidas",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 380,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura das tabelas preview aplica o filtro de audiencia do dominio",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 381,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura das tabelas version invalido vira FormatException",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 383,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "mapeamento de erros privilegio insuficiente vira Unauthorized",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 384,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "mapeamento de erros conflito de versao e reuso de request_id viram Conflict",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 385,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "mapeamento de erros demais falhas viram Unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 387,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC le o objeto plano canonico com key e type devolvidos pela RPC",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 388,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC rejects different subject id in the canonical response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 389,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC rejects different subject type in the canonical response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 390,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC rejects missing subject id in the canonical response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 391,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC rejects missing subject type in the canonical response",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 392,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC objeto plano sem versao nao vira ausencia silenciosa de Sobre",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 393,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC resposta nula da RPC (sujeito sem pagina Sobre) e ausencia de conteudo",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 394,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC retorno que nao e objeto vira FormatException, que o load traduz em Unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 395,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC somente ausencia da funcao autoriza o fallback para a leitura por tabela",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 396,
+      "suiteID": 363,
+      "path": "apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart",
+      "name": "leitura autorizada por RPC negacao nunca e confundida com ausencia da funcao",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 398,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 400,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group initial context stays scoped loaded",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 401,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group initial context stays scoped find",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 402,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group initial context stays scoped context",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 403,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group initial context stays scoped same-props",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 404,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group retry rejects changed context repository",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 405,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group retry rejects changed context groupId",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 406,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group retry rejects changed context institution",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 407,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group retry rejects changed context unit",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 408,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited none",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 409,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited name",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 410,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 411,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited appearance",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 412,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited same-status",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 413,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group ambiguous retry keeps intent unless edited trim-name",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 414,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group pending save rejects duplicate submission and further editing failure=false",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 415,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "group pending save rejects duplicate submission and further editing failure=true",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 416,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "renders inherited access without a raw Material ListTile",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 417,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "identificador (@) da turma: criacao envia handle e edicao troca por Alterar @",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 418,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "uses six external-free steps and the canonical continuation footer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 419,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "supports 200 percent text at all approved widths",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 420,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "validates the identity step and preserves its draft when navigating back",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 421,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "creates a custom group type with its canonical description",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 422,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "locks hierarchy while editing and preserves dirty work on cancel",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 423,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "shows compact localized invite rows without overflow",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 424,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "shows not found instead of creating from an invalid edit route",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 425,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "restores the save action when the repository throws an Error",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 426,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "shows the catalogued location consumer only for group creation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 427,
+      "suiteID": 397,
+      "path": "apps/superadmin/test/features/groups/presentation/group_form_page_test.dart",
+      "name": "keeps the atomic group receipt through a failed composition retry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 429,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 431,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "(setUpAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 432,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches cards and table at supported widths and themes",
+      "result": "error",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 433,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches the approved models directory on desktop",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 434,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches hover, filter and pagination references",
+      "result": "error",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 435,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches approved shell overlays over Activities",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 436,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches mobile light and desktop dark read-only details",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 437,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches create mobile light and edit desktop dark forms",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 438,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches internal location dialog on mobile",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 439,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches professional permissions by class on desktop",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 440,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "matches text at 200 percent without sticky overlap",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 441,
+      "suiteID": 428,
+      "path": "apps/superadmin/test/features/activities/presentation/activity_golden_test.dart",
+      "name": "(tearDownAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 443,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 445,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "(setUpAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 446,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "unit approved D01 new baseline 375.0 ready focus reload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 447,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "unit approved D01 new baseline 1440.0 ready focus reload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 448,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "group approved D01 new baseline 375.0 ready focus reload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 449,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "group approved D01 new baseline 1440.0 ready focus reload",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 450,
+      "suiteID": 442,
+      "path": "apps/superadmin/test/app/router/structure_detail_golden_test.dart",
+      "name": "(tearDownAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 452,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 454,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "(setUpAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 455,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches the institution directory cards and table references",
+      "result": "error",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 456,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches loading, empty, failure, and unauthorized references",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 457,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches the no-results reference",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 458,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches disabled pagination references",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 459,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches hover, focus, and selected filter references",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 460,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches the collapsed navigation flyout reference",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 461,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "matches approved interactive directory state references",
+      "result": "error",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 462,
+      "suiteID": 451,
+      "path": "apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart",
+      "name": "(tearDownAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 464,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 466,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "H25 forms directory resize targets meet tap size at desktop and 375",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 467,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms directory meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": true,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": true,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 468,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms editor meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 469,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms overview meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 470,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the response surface meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 471,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the authored preview meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 472,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the development test surface meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 473,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "monitor meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 474,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "respostas meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 475,
+      "suiteID": 463,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "arquivos meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    }
+  ],
+  "orphanDone": [],
+  "unknown": [
+    {
+      "raw": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings"
+    },
+    {
+      "type": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: matches cards and table at supported widths and themes"
+    },
+    {
+      "type": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: matches hover, filter and pagination references"
+    },
+    {
+      "type": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: matches the institution directory cards and table references"
+    },
+    {
+      "type": "error",
+      "error": "Test failed. See exception logs above.\nThe test description was: matches approved interactive directory state references"
+    }
+  ]
+}
