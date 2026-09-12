@@ -1,18 +1,18 @@
 {
- "revision": 53,
+ "revision": 54,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:21-03:00",
+ "updatedAt": "2026-09-11T21:24-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "0068d499c (codigo/docs) + este commit",
+ "head": "09dd1792e + este commit",
  "base": "origin/dev ca60b096b",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -126,6 +126,11 @@
    "sha": "fd8e675af",
    "o_que": "feat(rotina): Arquivar modelo e rotina (V-15) com confirmacao, pelo superadmin_routine_save_model/save_application existentes com status archived (o servidor ja aceita status no payload: 010100 linhas 745 e 1126); archived() no dominio; coluna Acoes com tres icones; golden da tabela regravado",
    "prova": "daily_routine_create_everywhere_test 1/1 (+ caso Arquivar); goldens de rotina verdes; rota real pendente do build 5"
+  },
+  {
+   "sha": "09dd1792e",
+   "o_que": "feat(formularios): status Rascunho/Publicado/Arquivado na visao geral (pendencia FE da R05, forms.overview); 6 goldens forms_overview regravados (sem aprovacao previa do Owner: superficie sem ownerVisualApproval)",
+   "prova": "forms_overview_page_test 16/16; forms_additional_surfaces_golden_test 18/18; flutter analyze do app: so o warning pre-existente de test_driver/qa_login.dart (outra frente)"
   }
  ],
  "pendenciasRegistradas": [
@@ -1924,7 +1929,7 @@
  },
  "miniRevisao": {
   "quando": "2026-09-11T21:21-03:00",
-  "sha_final": "0068d499c + este commit (rev 53), publicados em work/etapa2-r06-formularios-cuidado-rotina; status limpo; sem WIP; sem stash",
+  "sha_final": "09dd1792e + este commit (rev 54), publicados; status limpo; sem WIP",
   "fechou_com_prova": [
    "item 0: health_care_golden_test 4/4 (golden da tabela regravado apos conferir que a diferenca era o composto)",
    "health-care.list: BE done + verified-e2e (directory 200, reload)",
