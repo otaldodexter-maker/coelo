@@ -28,13 +28,14 @@ function reply(origin: string | null, status: number, body: Json) {
     "Content-Type": "application/json",
     "Cache-Control": "no-store",
     "Vary": "Origin",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type",
+    "Access-Control-Allow-Headers":
+      "authorization, apikey, content-type, x-client-info",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) {
     headers["Access-Control-Allow-Origin"] = origin;
   }
-  return new Response(JSON.stringify(body), { status, headers });
+  return new Response(status === 204 ? null : JSON.stringify(body), { status, headers });
 }
 
 function serviceKey(): string {
