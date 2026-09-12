@@ -1,0 +1,197 @@
+[
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "P47 A: fail-closed de tenant removido (e689033ff); assistente abre na rota real, cria e edita o modelo pela tela; meal_plan_template_list mostra id d132698c published version 2 apos reload (07, 08)",
+    "evidencia": "capturas 02..08; sonda rpc.py meal_plan_template_list",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/07-cardapios-modelo-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "rota normal abre; modelo criado (v1) e editado (v2) persistem no Supabase real; reload da edicao carrega do servidor; RLS: lista autorizada so com as instituicoes do ator",
+    "evidencia": "capturas 02..08",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/08-cardapios-modelo-editar.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "P47 A: fail-closed de tenant removido (e689033ff); assistente abre na rota real, cria e edita o modelo pela tela; meal_plan_template_list mostra id d132698c published version 2 apos reload (07, 08)",
+    "evidencia": "capturas 02..08; sonda rpc.py meal_plan_template_list",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/07-cardapios-modelo-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "rota normal abre; modelo criado (v1) e editado (v2) persistem no Supabase real; reload da edicao carrega do servidor; RLS: lista autorizada so com as instituicoes do ator",
+    "evidencia": "capturas 02..08",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/08-cardapios-modelo-editar.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "lista abre na rota real e mostra o modelo publicado com Status e Duplicar (07)",
+    "evidencia": "captura 07",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/07-cardapios-modelo-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:44-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:44-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:44-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "goldens principal_*_publication_*; capturas 12, 16, 17",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/17-acontece-publicar-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:58-03:00"
+    }
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "goldens principal_*_publication_*; capturas 12, 16, 17",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/16-agora-publicar-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:58-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "goldens principal_*_publication_*; capturas 12, 16, 17",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/12-momentos-publicar-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:58-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "integrated",
+    "estado_proposto": "blocked-environment",
+    "delta": "midia entra pelo seletor (13), save_moments_draft 200 (rascunho b173843d-5ea4-46d4-a913-7d177443f591 v2); o PUT no R2 falha por CORS: o bucket coelo-media-prod aceita so a origem http://localhost:3000 (preflight 204) e nega 127.0.0.1:3009 (403), enquanto a allowlist da moments-media aceita 127.0.0.1:3009 e localhost:3000; a porta 3000 estava ocupada por outra frente. Gate: coordenador acrescentar http://127.0.0.1:3009 ao CORS do R2 (sem custo) ou reservar a 3000 para esta frente",
+    "evidencia": "capturas 13, 14, 15; sonda OPTIONS no upload_url",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/13-momentos-midia.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:58-03:00"
+    }
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota real abre com o contexto real (19); V-2 (degrade e clique inerte) nao aplicado nesta rodada",
+    "evidencia": "captura 19",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/19-para-voce-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T21:02-03:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota real abre (18); V-1 (avatar abre o Agora, contorno degrade, sombra, botao Acompanhar) nao aplicado nesta rodada",
+    "evidencia": "captura 18",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/18-perfil-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T21:02-03:00"
+    }
+  },
+  {
+    "action_id": "errors.404",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "rota inexistente na rota real mostra a pagina 404 com Voltar ao inicio (21)",
+    "evidencia": "captura 21",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/21-erro-404.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T21:04-03:00"
+    }
+  }
+]

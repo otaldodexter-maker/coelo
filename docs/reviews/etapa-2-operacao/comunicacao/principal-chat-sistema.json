@@ -1,6 +1,6 @@
 {
-  "revision": 31,
-  "updated_at": "2026-09-11T20:19-03:00",
+  "revision": 33,
+  "updated_at": "2026-09-11T21:16-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-principal-chat-sistema",
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
-  "head": "060d21e53 (publicado em origin/work/etapa2-r06-principal-chat-sistema)",
-  "status": "EM ANDAMENTO 20:19. Itens 0, 1 (cliente), 2 (telas) e 6 (pacote) feitos e publicados; agora rota real (Cardapios, publicadores com midia, perfil, Para voce, erros).",
+  "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
+  "status": "FINALIZADO 21:16 (T0+2h assumido = 21:24). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:34.",
   "T0_assumido": "2026-09-11T19:24-03:00 (qa-r06-*.env criados 19:44 = T0+20); T0+2h = 21:24; revisao ate 21:34. Corrigir se coordenacao.json disser outra coisa.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -22,11 +22,11 @@
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
   "ordem_de_trabalho": [
     "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
-    "1. Cardapios P47=A: cliente FEITO e689033ff/dcd2e3a84 (fail-closed removido; servidor valida); prova na rota real: EM ANDAMENTO",
-    "2. Familia Publicacao: FEITO 14abb3b0a (Acontece), c7a614737 (Agora), e9c67d9f9 (Momentos): PrincipalPublicationSheet/Block/Note em principal_shared, sem etapas, rodape em card, goldens regravados (67+95+88 verdes); prova create/publish com midia na rota real: EM ANDAMENTO",
-    "3. chat.create-group UI + chat.attach cliente: pendente",
-    "4. principal.profile-edit / for-you rota real + V-1/V-2/V-3: pendente",
-    "5. errors.* rota real: pendente",
+    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish BLOQUEADO NO BACKEND: meal_plan_create_or_update_draft itera p_payload->'scopeRules' com jsonb_array_elements (exige array) e grava o mesmo valor em meal_plans.scope_rules cuja check meal_plans_scope_rules_array_check exige objeto; medido na rota real com os dois formatos (captura 11: 'cannot extract elements from an object'; 23: 'violates check constraint'). O ajuste do cliente (2c377cbd4) foi revertido; correcao e um candidato de backend (RPC deriva as linhas de meal_plan_scopes do mapa e grava o objeto)",
+    "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
+    "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
+    "4. principal.for-you e profile-view abrem na rota real (18, 19); V-1/V-2/V-3 nao aplicados; profile-edit nao provado",
+    "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
     "6. P48=A: FEITO 060d21e53 candidatos/principal-chat-sistema/20260911130400 (pgTAP 16/16 + regressoes 22/22, 13/13, 17/17, 6/6 no descartavel coelo_pcs6_db)"
   ],
   "tests": {
@@ -96,12 +96,18 @@
     }
   ],
   "perguntas_ao_owner_via_coordenador": [],
-  "pendencias_registradas_sem_bloquear": [],
+  "pendencias_registradas_sem_bloquear": [
+    "meal_plan_template_save grava tenant_id/institution_id nulos no modelo (a lista devolve null) mesmo com instituicao escolhida; nao bloqueia a tela; conferir contrato",
+    "goldens da familia Publicacao sao da pagina isolada (sem shell do Superadmin); a comparacao com aprovadas-20260911 foi visual; golden com shell fica para a revisao de UI",
+    "com a semantica ligada, cdp_sem type nao alcanca o controller Flutter: usar clickxy no centro + qa_drive enter_text",
+    "V-1, V-2, V-3 (Perfil, Para voce, Acontece feed) pendentes; chat.create-group/attach pendentes"
+  ],
   "blocker": null,
   "perguntas_ao_coordenador": [
-    "T0 e usuario qa-r06-principal: nao encontrados na abertura (19:37); gravar em coordenacao.json / Coelo-backups. Ate la uso T0 assumido 19:17 e, para a rota real, qa-r03 se o .env nao aparecer."
+    "CORS do R2 (coelo-media-prod): acrescentar http://127.0.0.1:3009 (sem custo) para a prova de midia dos publicadores. Medido: OPTIONS 204 so para http://localhost:3000, 403 para 127.0.0.1:3009; a moments-media aceita as duas origens (prepare 200 por sonda). A porta 3000 estava em uso por outra frente.",
+    "Aplicar o candidato 20260911130400 (P48=A) na fila; depois de aplicar, o sync deve devolver 0 na segunda chamada."
   ],
-  "next_step": "rota real com qa-r06-principal: Cardapios list/create/edit/model/publish, depois Momentos/Agora com midia",
+  "next_step": null,
   "ack": null,
   "loop": "/loop 15m agendado na abertura",
   "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
@@ -172,5 +178,51 @@
         "gate": "revisao de UI; nao e regressao desta rodada"
       }
     ]
+  },
+  "revisao_final_T0_2h": {
+    "quando": "2026-09-11T21:16-03:00",
+    "sha_publicado": "commit desta rev (abaixo: 08c46b1b7, e689033ff, dcd2e3a84, 14abb3b0a, c7a614737, e9c67d9f9, 060d21e53, e0c2dfcf8, 2c377cbd4 e seu revert, 77042bb13); worktree limpa; sem stash; sem WIP",
+    "fechado_por_action_id_com_prova": [
+      "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
+      "meal-plans.list: FE verified (07)",
+      "acontece.create, agora.create, momentos.create: FE local-green na familia Publicacao (telas reconstruidas, goldens regravados, rota real abre 12/16/17)",
+      "principal.for-you, principal.profile-view: FE verified (18, 19)",
+      "errors.404: FE verified (21)",
+      "principal_real_route_test 4/4; suites dos publicadores 67/95/88; meal_plans 140/140 (+2 do contrato scopeRules)",
+      "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes"
+    ],
+    "aberto_com_primeiro_gate": [
+      {
+        "pendencia": "midia nos publicadores (momentos/agora/acontece create-publish)",
+        "gate": "CORS do R2 para 127.0.0.1:3009 (coordenador); rascunho b173843d v2 salvo"
+      },
+      {
+        "pendencia": "meal-plans.create/edit/publish",
+        "gate": "BACKEND: contrato contraditorio de scopeRules em meal_plan_create_or_update_draft (array na iteracao x objeto na check); candidato de backend na proxima rodada (familia meal_plans desta frente)"
+      },
+      {
+        "pendencia": "chat.create-group UI / chat.attach cliente",
+        "gate": "nao iniciado"
+      },
+      {
+        "pendencia": "V-1/V-2/V-3",
+        "gate": "nao iniciado"
+      },
+      {
+        "pendencia": "errors.403/409/500/503/retry",
+        "gate": "nao provados nesta rodada"
+      },
+      {
+        "pendencia": "agora.expire",
+        "gate": "agendador ausente"
+      }
+    ],
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (15; apply-tracker-delta OK e validate-trackers PASS na worktree; rastreadores revertidos)",
+    "pacotes_prontos": "candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
+    "duvidas_ao_owner": [],
+    "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d na instituicao d0c40000-0000-4000-8000-000000000001; asset 708456ae preparado sem upload; nenhum objeto no R2",
+    "chaves_criadas": "nenhuma",
+    "ambiente_encerrado": "Chrome 9410, servidores 3009/3010, cdp_net e o descartavel coelo_pcs6_db encerrados (ultima vez 21:15)",
+    "handoff": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/handoff.md"
   }
 }
