@@ -1,0 +1,1335 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T17:24:43.780Z",
+  "base": "ff1be194f2ac00a48aac5abbac7dd838019eb8da",
+  "inputSha256": "9c255abc26ad276b49b7772eb59c84bf6abfdd826e4d9895404b94f5a0d99401",
+  "done": {
+    "events": [
+      {
+        "success": true,
+        "time": 25017
+      }
+    ],
+    "duplicate": false
+  },
+  "nativeExitCode": 0,
+  "input": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-accessibility.jsonl",
+  "counts": {
+    "passed": 85,
+    "failed": 0,
+    "skipped": 0,
+    "hidden": 4,
+    "loading": 4,
+    "errors": 0
+  },
+  "cases": [
+    {
+      "testID": 1,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 3,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "H25 forms directory resize targets meet tap size at desktop and 375",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 4,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms directory meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 5,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms editor meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 6,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the forms overview meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 7,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the response surface meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 8,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the authored preview meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 9,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "the development test surface meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 10,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "monitor meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 11,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "respostas meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 12,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/forms/presentation/forms_accessibility_guidelines_test.dart",
+      "name": "arquivos meets tap size, labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 14,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 16,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "the care profile directory meets tap size",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 17,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "the medication plan directory meets tap size",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 18,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "the care profile directory meets labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 19,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "the care profile form meets labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 20,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_accessibility_guidelines_test.dart",
+      "name": "the medication plan directory meets labelling and contrast",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 22,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 24,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "(setUpAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 25,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "matches both sibling directories on mobile light and desktop dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 26,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "matches profile files flyout open",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 27,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "matches both forms on mobile light and desktop dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 28,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "matches profile directory tabs hover and table evidence",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 29,
+      "suiteID": 21,
+      "path": "apps/superadmin/test/features/health_care/presentation/health_care_golden_test.dart",
+      "name": "(tearDownAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 31,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 33,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "(setUpAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 34,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "renders appearance previews in light and dark, expanded and collapsed",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 35,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "renders the tour submenu preview in light and dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 36,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "matches the light and dark egg and carrot goldens",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 37,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "compact light shell uses the semantic surface at mobile and tablet widths",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 38,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "mobile drawer uses the semantic surface in light and dark",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 39,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "host shell shows the compact chat launcher on mobile",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 40,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "shows the approved floating hierarchical navigation",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 41,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "brand and Home destination open Home without router coupling",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 42,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens conversations through the generic navigation callback",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 43,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not expose a dead chat launcher without a navigation capability",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 44,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not reserve global bottom clearance for the launcher",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 45,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "expands through the specific conversations capability",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 46,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "hides the global launcher on the conversations route",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 47,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "hides the global launcher on the Coelo Principal chat destination",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 48,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "starts Home with Structure collapsed and opens the active section contextually",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 49,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "distinguishes the active section from its active destination",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 50,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "shows Activities after Groups as an active Structure destination",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 51,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "activates Units and gives Conversations a distinct icon",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 52,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "removes section and item geometry motion when reduced motion is requested",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 53,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the Superadmin brand background transparent in every interaction state",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 54,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "mobile brand closes the drawer before opening Home",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 55,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "collapses to an icon rail and opens a section flyout",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 56,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not overflow while the sidebar collapses",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 57,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not overflow while the sidebar expands",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 58,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses one sidebar tree throughout the collapse and expand motion",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 59,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "rotates the collapse chevron with the sidebar progress",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 60,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "coordinates sidebar geometry and content throughout collapse and expansion",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 61,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "collapses the sidebar immediately when reduced motion is requested",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 62,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the collapse toggle clickable at its right inner edge",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 63,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the visual collapse circle partly outside the sidebar",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 64,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "names the sidebar toggle without showing a visual tooltip",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 65,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps compact header actions four pixels below the app bar top",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 66,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses aligned compact headers and collapses the desktop sidebar",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 67,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses the Coelo orange hover state on inactive navigation items",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 68,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses a drawer navigation without putting the profile inside it",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 69,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the official brand in mobile and tablet drawers",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 70,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens profile actions and invokes logout only from its menu",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 71,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses canonical flyouts and keeps logout semantically negative",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 72,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses the canonical surface and elevation for profile and tour flyouts",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 73,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the compact profile menu subtly inset from the right edge",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 74,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens the rounded profile menu below its trigger",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 75,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses the official circular brand treatment for light and dark themes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 76,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "shows safe feedback when logout fails",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 77,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens notifications and the bug report form",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 78,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps a completion unread when a breakpoint replaces an open center",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 79,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not reactivate notifications when Bug or OC closes the panel",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 80,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "submits a bug report with current screen, multiline text and demo attachment",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 81,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "validates and submits one trimmed support draft from the bug report dialog",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 82,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "requires a custom subject for Outros and does not submit on cancel",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 83,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses the live navigation hierarchy and the approved bug menu states",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 84,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "underlines evidence in orange only on hover without duplicate tooltip",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 85,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "clears the notification focus after an outside close",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 86,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses a full-width carrot theme control and preserves the compact toggle",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 87,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "interpolates theme colors without changing geometry",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 88,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps navigation and status colors on the global 210 and 420 ms frames",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 89,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "switches navigation and status surfaces immediately under reduced motion",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 90,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps the theme marker and content on the global transition timing",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 91,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "switches theme instantly without changing geometry under reduced motion",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 92,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens the three demonstration tour options",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 93,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "repaints the onboarding egg when semantic colors change",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 94,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "swings and rests the onboarding egg",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 95,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "opens the tour menu beside expanded and collapsed triggers",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 96,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "does not schedule the egg timer in reduced motion and cancels it on dispose",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 97,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "keeps compact navigation in the official header and drawer",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 98,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "supports the final responsive, theme, text scaling and motion matrix",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 99,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "uses only the unread loader injected by the composition root",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 100,
+      "suiteID": 30,
+      "path": "apps/superadmin/test/app/shell/superadmin_shell_test.dart",
+      "name": "(tearDownAll)",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    }
+  ],
+  "orphanDone": [],
+  "unknown": [
+    {
+      "raw": "[rtk] /!\\ No hook installed — run `rtk init -g` for automatic token savings"
+    }
+  ]
+}

@@ -1,45 +1,32 @@
 ---
-fonte: R07 censo-final.md e verificacao-fechamento.md; gate C0 R08
-status: corrigido para fechamento integrado
+fonte: R07 censo-final.md, JSON privado R07 e gate C0 R08
+status: plano executável, não executado
 atualizado: 2026-09-12
 ---
 
-# Plano executável do censo completo de fechamento
+# Plano do censo completo de fechamento
 
-## Execução autorizada
-
-Executar uma única vez, na base integrada do C0, dentro da janela de fechamento de 30 minutos. A partir de `apps/superadmin`, o recorte é a suíte completa descoberta pelo diretório `test`, incluindo `test/app`, `test/core/config`, `test/shared` e todas as famílias `test/features`; não restringir aos três diretórios de G8.
+Executar uma única vez na base integrada final do C0, em um processo, a partir de `apps/superadmin`. A suíte completa é `test`, incluindo `test/app`, `test/core/config`, `test/shared` e `test/features`.
 
 ```powershell
-$ErrorActionPreference = 'Continue'
 $stamp = Get-Date -Format 'yyyyMMdd-HHmmss'
 $out = "../../docs/reviews/evidence/etapa-2/r08-suites/censo-fechamento-$stamp.jsonl"
-flutter test test --concurrency=1 --timeout=10m --reporter=json 2>&1 | Tee-Object -FilePath $out
-$flutterExit = $LASTEXITCODE
-"nativeExitCode=$flutterExit" | Add-Content -Path $out
-exit $flutterExit
+flutter test test --concurrency=2 --timeout=10m --reporter=json 2>&1 | Tee-Object -FilePath $out
+$exit = $LASTEXITCODE
+"nativeExitCode=$exit" | Add-Content -Path $out
+exit $exit
 ```
 
-O comando deve ser executado em `apps/superadmin`; o caminho `../../docs/...` aponta para a raiz do repositório. Não fazer rerun, não matar processos por nome genérico e não converter `exit 1` em sucesso. O timeout de 10 minutos é por unidade reportada pelo runner; a janela global de fechamento é 30 minutos.
+A previsão operacional do C0 é 35–45 minutos, aproximadamente até 15:10. Não fazer rerun, não matar processos por nome genérico e não converter exit code. O caminho `../../docs/...` é relativo a `apps/superadmin`.
 
-## Parser e identidade
+## Parser
 
-Consumir o JSONL bruto sem inferir casos por `print`, `testStart` ou `allSuites`. O parser deve indexar `suite.id -> suite.path` e `testStart.test.id -> {suiteID, name, metadata}`; contar somente `testDone.testID` ligado a um start conhecido. Preservar `testID`, `suiteID`, caminho e nome completos. Separar `passed`, `failed`, `skipped`, `hidden/loading`, timeout, órfãos e desconhecidos, mantendo `skipReason` e o exit code nativo.
+Usar `censo-parser.js` com `--input`, `--output`, `--base` e `--exit-code`. Indexar `suite.id -> suite.path` e `testStart.test.id -> suiteID/name/metadata`; contar somente `testDone.testID` ligado a start conhecido. Preservar IDs e path relativo. Separar passed, failed, skipped, hidden, loading, errors, órfãos e desconhecidos. Capturar evento `done` como `{success,time}`, marcar duplicidade e registrar SHA-256 do input. Não colapsar casos por nome.
 
-Chaves de caso são IDs/eventos ligados (`suiteID + testID`), não somente nomes. Nomes repetidos em arquivos diferentes ou no mesmo arquivo não podem ser colapsados. A reconciliação anônima R08 (`293` observados, `281` nomes únicos, `12` duplicações) é uma medição textual separada e não deve ser misturada ao censo JSONL.
+## Proveniência temporal
 
-## Skips e resultado esperado
+O R07 teve `426.010s` com `flutter test --reporter json -j 6`, portanto é referência paralela, não estimativa serial. A análise privada do JSON R07 encontrou `658` suítes, soma das durações por suíte `4130.980s`, mediana `4.688s` e máximo/span paralelo `59.166s`. Esses números informam o planejamento, mas o censo `--concurrency=2` deve medir sua duração própria.
 
-O ponto de comparação R07 é `6727 PASS, 33 FAIL, 11 SKIP`, medido em `426.010s` (`7m06.010s`) com exit `1`; os 11 skips devem ser listados individualmente pelo parser, com motivo, sem allowlist. O relatório deve publicar contagens e casos, não apenas totais, e explicar qualquer variação sem somar reruns históricos.
+## Critério de entrega
 
-## Estimativa medida
-
-A execução R07 levou `426.010s` no reporter. Para o censo serial (`concurrency=1`), reservar os `30m` do protocolo; o limite operacional é `1800s`, equivalente a `4,23x` o tempo R07 medido. A previsão deve registrar início/fim, duração real, p50/p95 por unidade quando os timestamps estiverem disponíveis, máximo, timeout e margem restante. Não usar contagem de testes como substituto de duração.
-
-## Recibo obrigatório
-
-Entregar ao C0 o JSONL bruto, relatório derivado, comando, SHA da base integrada, timestamp, exit code nativo, duração e listas de pass/fail/skip/timeout/órfãos. Sem esse pacote, não declarar o censo completo nem promover cobertura.
-
-## Proveniência da estimativa
-
-A medição R07 de `426.010s` (`7m06.010s`) veio de `flutter test --reporter json -j 6`; é uma referência paralela, não uma duração serial. O comando autorizado para o fechamento continua sendo `flutter test test --concurrency=1`, dentro da janela de 30 minutos (`1800s`), e deve medir sua própria duração sem extrapolar o tempo R07.
+Publicar JSONL bruto, resultado derivado, SHA da base integrada, SHA do input, comando, timestamp, exit code nativo, evento done e listas detalhadas de pass/fail/skip/timeout/órfãos. Não declarar fechamento ou promoção enquanto houver merge posterior pendente.

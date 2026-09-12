@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 46,
+  "revision": 53,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:10:00-03:00",
+  "updatedAt": "2026-09-12T14:28:00-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "7e450214e5bcf1e2fcf5b8bbe3291e4003b36a20",
+  "head": "4bc7f1f7932949c95ed99c3f34bc9c1de468cbcf",
   "upstream": "origin/dev",
   "base": "c729090f9f1f9968059e074009f06e2c45c09530",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -83,9 +83,16 @@
     "Proveniência anexada ao plano: R07 426.010s veio de -j6 paralelo; fechamento usa concurrency=1 e mede duração própria dentro de 30m, sem extrapolação.",
     "Parser geral materializa evento done e resultado versionado do ciclo180: base c729090f, inputSha256 804e94758031d298b5e6994e5759b44401258b4f362836ed2ec2222d7481116b, done success=false/time=97850, exit=1, 411 passed/4 failed/1 skipped, 0 órfãos. Sem Flutter.",
     "Correção documental C0: updatedAt ajustado ao relógio real; alegações refutadas removidas de feito e preservadas em historicoR08.contagensRefutadas; base completa c729090f9f1f9968059e074009f06e2c45c09530 registrada.",
-    "Estimativa privada R07 calculada sem expor raw: 658 suítes; soma serial observada 4130.980s, mediana 4.688s, máximo/span paralelo 59.166s. Resultado ciclo180 corrigido para base SHA completa."
+    "Estimativa privada R07 calculada sem expor raw: 658 suítes; soma serial observada 4130.980s, mediana 4.688s, máximo/span paralelo 59.166s. Resultado ciclo180 corrigido para base SHA completa.",
+    "Plano ajustado ao C0: censo único em um processo com concurrency=2, previsão operacional 35–45 minutos até 15:10; sem execução e sem declarar fechamento enquanto merges posteriores existirem.",
+    "Plano limpo de contradições: concurrency=2 em processo único, 35–45 minutos, referência R07 explicitamente paralela (-j6/426.010s), sem afirmação de janela serial de 30m.",
+    "Plano do censo reescrito sem contradições: suíte test completa, concurrency=2, processo único, previsão 35–45m, parser/IDs/done/SHA e estimativa R07 separada por proveniência. Não executado.",
+    "Plano R09 focal publicado conforme novo prazo C0 até 15:00: censo integral 35–45m não executado por janela/RAM; parser e reconciliação ciclo210 preparados sem inventar contagens.",
+    "Ciclo210 accessibility reprocessado sem Flutter: base 1eccbc591d47f962092dba2f083320b28fff768e, inputSha256 9c255abc..., done true/25017, exit0, 85/0/0, 0 órfãos. Plano R09 reescrito na ordem snapshot+censo primeiro, deltas depois.",
+    "Proveniência C0 corrigida: ciclo210 executou sobre first-parent ff1be194f2ac00a48aac5abbac7dd838019eb8da (merge G3 às 14:06:22); 85/0/0 e 25.017s preservados.",
+    "Handoff final R08 atualizado com feito/pendente/WIP/SHA e proveniência first-parent ciclo210; preparação R09 mantida sem execução global."
   ],
-  "pendente": "Resultado ciclo180 já reconciliado: done único false/97850, exit1, 411/4/1, 4 errors, loading16/hidden6 e 0 órfãos. Aguardar aceite documental do C0; não executar Flutter nem promover cobertura.",
+  "pendente": "Aguardar execução/resultado do censo completo pelo C0 e só então validar deltas pós-snapshot; não iniciar automaticamente.",
   "commitsPublicados": [
     "d5da3dfaf",
     "9dd3e1c76",
@@ -123,7 +130,14 @@
     "4e493a3a2 (rev 43)",
     "7e450214e (rev 44)",
     "0a7b0ad27 (rev 45)",
-    "7e450214e (rev 46)"
+    "7e450214e (rev 46)",
+    "e07f82461 (rev 47)",
+    "2f93e446a (rev 48)",
+    "d39ae637f (rev 49)",
+    "0a1104ec (rev 50)",
+    "e07f82461 (rev 51)",
+    "5350a6c4 (rev 52)",
+    "4bc7f1f7 (rev 53)"
   ],
   "foraDoRecorteRegistrado": [
     {

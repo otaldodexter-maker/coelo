@@ -102,3 +102,11 @@ Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de 
 - O `4/4 PASS` da rota de catálogo em G7 também é focal e não altera o `help_center` pendente do censo R07.
 - G1 documenta o teste do rodapé de Criar modelo; a expectativa textual pendente no recorte é remover a linha desse arquivo da allowlist de `superadmin_form_action_footer_adoption_test.dart` somente após a integração da prova.
 - Pendências textuais concretas no recorte: reconciliar a expectativa do rodapé canônico de Criar modelo (G1), manter a distinção entre recovery HTTPS canônico e origem CORS (G2), e registrar o fallback HTTPS real da rota `governanceCatalog` sem promover aprovação visual a E2E (G7).
+
+## Checkpoint final R08 / preparação R09
+
+- **Feito:** parser geral executável e matriz textual corrigida; ciclo180 versionado com `done=false/time=97850`, exit `1`, `411/4/1`, input SHA e base completa; ciclo210 accessibility reprocessado sem Flutter com base first-parent `ff1be194f2ac00a48aac5abbac7dd838019eb8da`, `done=true/time=25017`, exit `0`, `85/0/0`, 4 hidden e 0 órfãos.
+- **Pendente:** censo completo `flutter test test --concurrency=2` e validações focais posteriores ao snapshot; não iniciar automaticamente nesta worktree.
+- **WIP:** `censo-parser.js`, resultados versionados, plano R09 e reconciliação documental; nenhum código de produto alterado nesta frente.
+- **Commits:** `4bc7f1f7932949c95ed99c3f34bc9c1de468cbcf` (último push); base do ciclo210 confirmada no git log first-parent.
+- **Comandos medidos:** parser executado sem Flutter sobre JSONL existente; nenhum rerun ou censo global nesta branch.
