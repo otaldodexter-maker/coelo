@@ -1,5 +1,5 @@
 {
-  "revision": 68,
+  "revision": 70,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
@@ -2550,9 +2550,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-ambiente-runtime",
       "json": "ambiente-runtime.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado apos posse publicada"
+      "ultimoSHA": "23b439949",
+      "ackRevision": 2,
+      "status": "local independente liberado apos posse publicada",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G1": {
       "grupo": "estrutura",
@@ -2560,9 +2561,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-estrutura",
       "json": "estrutura.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado apos posse publicada"
+      "ultimoSHA": "cc79cbac8",
+      "ackRevision": 71,
+      "status": "local independente liberado apos posse publicada",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -2570,9 +2572,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-acessos-pessoas",
       "json": "acessos-pessoas.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado apos posse publicada"
+      "ultimoSHA": "66df09635",
+      "ackRevision": 151,
+      "status": "local independente liberado apos posse publicada",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -2580,19 +2583,21 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-formularios-cuidado-rotina",
       "json": "formularios-cuidado-rotina.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado apos posse publicada"
+      "ultimoSHA": "3ec1c1a86",
+      "ackRevision": 63,
+      "status": "local independente liberado apos posse publicada",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
       "threadId": "01a095e2-b6da-7043-9327-d5f0070c6041",
-      "modelo": "Sol medio",
+      "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-principal-chat-sistema",
       "json": "principal-chat-sistema.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado apos posse publicada"
+      "ultimoSHA": "1d09cb3c8",
+      "ackRevision": 50,
+      "status": "local independente liberado apos posse publicada",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -2600,9 +2605,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-realm-interno",
       "json": "realm-interno.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado; recursos pela fila"
+      "ultimoSHA": "c18e55943",
+      "ackRevision": 53,
+      "status": "local independente liberado; recursos pela fila",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -2610,9 +2616,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-publicacoes-agenda",
       "json": "publicacoes-agenda.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado; recursos pela fila"
+      "ultimoSHA": "4a84d6b3d",
+      "ackRevision": 55,
+      "status": "local independente liberado; recursos pela fila",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G7": {
       "grupo": "operacoes",
@@ -2620,9 +2627,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-operacoes",
       "json": "operacoes.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado; recursos pela fila"
+      "ultimoSHA": "343ccfe40",
+      "ackRevision": 56,
+      "status": "local independente liberado; recursos pela fila",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     },
     "G8": {
       "grupo": "suites",
@@ -2630,34 +2638,35 @@
       "modelo": "Spark medio",
       "branch": "work/etapa2-r08-suites",
       "json": "fase0.json",
-      "ultimoSHA": null,
-      "ackRevision": null,
-      "status": "local independente liberado; recursos pela fila"
+      "ultimoSHA": "7582a6a16",
+      "ackRevision": 20,
+      "status": "local independente liberado; recursos pela fila",
+      "ackAt": "2026-09-12T11:15:26.040372-03:00"
     }
   },
   "slotsR08": {
     "chrome": {
       "dono": "G0",
-      "pid": null,
+      "pid": 22592,
       "inicio": "2026-09-12T10:52:16.727826-03:00",
       "expira": "2026-09-12T11:22:16.727826-03:00",
-      "estado": "reservado para diagnostico runtime; G0 registra PID antes do uso"
+      "estado": "G0 CUA sem login; servidor16248 em3014; nenhum segundo Chrome",
+      "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G3",
+      "dono": "G2",
       "pid": null,
-      "inicio": "2026-09-12T10:58:14.291624-03:00",
-      "expira": "2026-09-12T11:18:14.291624-03:00",
-      "estado": "concedido medication/attendance concurrency1; C0 confirmou zero flutter_tester e zero flutter test antes da transferencia"
+      "inicio": "2026-09-12T11:12:30-03:00",
+      "expira": "2026-09-12T11:27:30-03:00",
+      "estado": "focalP15/platform_users; G7 liberou; zero processos confirmadoC0"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
     "filaFlutterTest": [
-      "G7 catalog_routes focal",
-      "G2 platform_users/P15 focal",
-      "G1 rodape/estrutura focal",
-      "G4 chat repository focal",
-      "G6 circular ordem focal"
+      "G1 rodape/estrutura",
+      "G4 chat repository",
+      "G6 circular ordem",
+      "G7 Help Center2A"
     ]
   },
   "filaSqlR08": {
@@ -2665,7 +2674,61 @@
     "estado": "retida ate espelho/pgTAP e backup",
     "candidatos": []
   },
-  "receiptsR08": [],
+  "receiptsR08": [
+    {
+      "ciclo": "20min",
+      "at": "2026-09-12T11:15:26.040372-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 2,
+          "sha": "23b439949"
+        },
+        {
+          "g": "G1",
+          "r": 71,
+          "sha": "cc79cbac8"
+        },
+        {
+          "g": "G2",
+          "r": 151,
+          "sha": "66df09635"
+        },
+        {
+          "g": "G3",
+          "r": 63,
+          "sha": "3ec1c1a86"
+        },
+        {
+          "g": "G4",
+          "r": 50,
+          "sha": "1d09cb3c8"
+        },
+        {
+          "g": "G5",
+          "r": 53,
+          "sha": "c18e55943"
+        },
+        {
+          "g": "G6",
+          "r": 55,
+          "sha": "4a84d6b3d"
+        },
+        {
+          "g": "G7",
+          "r": 56,
+          "sha": "343ccfe40"
+        },
+        {
+          "g": "G8",
+          "r": 20,
+          "sha": "7582a6a16"
+        }
+      ],
+      "metodo": "git show nas nove branches origin atuais; delta integral contra R07 para reutilizar historico; G7 publicado durante ciclo",
+      "certificacao": "ACK de recebimento nao certifica produto"
+    }
+  ],
   "ownershipR08": {
     "test/app/router/structure_detail_golden_test.dart": "G1",
     "test/app/router/person_detail_golden_test.dart": "G2",
@@ -2683,12 +2746,12 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T11:05:47.396780-03:00"
+    "ultimoCheckpoint": "2026-09-12T11:15:26.040372-03:00"
   },
   "recursosR08": {
-    "medidoEm": "2026-09-12T10:56:38.575717-03:00",
-    "ramLivreKB": 971072,
-    "acao": "G0 diagnostica processos; testes futuros concurrency1; nenhum processo alheio encerrado"
+    "medidoEm": "2026-09-12T11:10:37.573868-03:00",
+    "ramLivreKB": 2307740,
+    "acao": "concurrency1; zero flutter test antes transferenciaG7"
   },
   "continuidadeR08": {
     "medidoEm": "2026-09-12T11:05:47.396780-03:00",
@@ -2711,6 +2774,23 @@
       "preflight": "3014 e superadmin200; externo403",
       "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/moments-media-preflight.md",
       "promocaoE2E": false
+    },
+    {
+      "funcao": "chat-media",
+      "version": 4,
+      "status": "ACTIVE",
+      "commitAutor": "ebb227212",
+      "testes": "6PASS/0FAIL Deno integrado exit0",
+      "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/chat-media-preflight.md",
+      "promocaoE2E": false
     }
-  ]
+  ],
+  "limitesR08": {
+    "at": "2026-09-12T11:15:26.040372-03:00",
+    "codexUsedPercent": 10,
+    "gptReserveUsedPercent": 17,
+    "spark5hUsedPercent": 100,
+    "sparkResetUtc": "2026-09-12T18:53:01Z",
+    "acao": "sem reset/modelo global; C0 absorve trabalho documental se Spark bloquear"
+  }
 }
