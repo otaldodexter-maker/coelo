@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 15,
+  "revision": 16,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T00:27:00-03:00",
+  "updatedAt": "2026-09-12T09:22:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -48,10 +48,7 @@
     "Censo completo (execucao 1, 00:03-00:13, json -j 6): 6713 P / 42 F / 11 S (R05: 6692/53/11), por diretorio em docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md secao 3; as 42 falhas classificadas com causa e dono na secao 4.",
     "Depois do censo, mais 6 testes de test/app/router corrigidos (so teste): person_identity_fail_closed_routes_test, people_creation_requirements_red_test, superadmin_error_routes_test (/profile), persistent_shell_routes_test (2: Decisao 7 e publicadores sem etapas/Momentos em moldura), principal_moments_publication_route_test. Os tres ultimos tocam telas do Principal (G4): se a G4 alterar os mesmos testes, integrar por conteudo."
   ],
-  "pendente": [
-    "execucao 2 da suite completa ao fim da janela (~01:45) para o numero final",
-    "mini-revisao em 02:19"
-  ],
+  "pendente": [],
   "commitsPublicados": [
     "d5da3dfaf",
     "9dd3e1c76",
@@ -94,7 +91,7 @@
     "evidencia": "execucao 1 da suite completa (json -j 6, 00:03-00:13); depois dela 6 falhas de test/app/router corrigidas e provadas isoladamente (persistent_shell 14/14, moments route, people/identity 5/5, error routes 14/14); execucao 2 pendente"
   },
   "bloqueio": null,
-  "proximoPasso": "inspecionar rapidamente os diffs de attendance/help_center/invite/person/platform_user para dar causa ao coordenador; execucao 2 da suite; mini-revisao",
+  "proximoPasso": "nenhum: frente encerrada; o coordenador integra a branch e, se quiser o numero final, roda flutter test apps/superadmin (esperado 6719/36/11)",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
@@ -220,6 +217,35 @@
   },
   "avisosR07": [
     "00:21: ao abortar meu primeiro censo (reporter expanded intercala isolates e nao permite censo por diretorio; reiniciado com --reporter json -j 6 as 00:25) executei taskkill /F /IM dart.exe e flutter_tester.exe para limpar os processos do meu flutter test. Isso pode ter derrubado por alguns segundos servidores de analise (MCP dart) ou um flutter test de outra frente que estivesse ativo naquele instante; um flutter test de outra frente iniciado as 00:00 seguia vivo as 00:24. Se alguma frente viu um 'flutter test' morrer ~00:21, a causa fui eu; nao repito o comando por imagem de processo.",
-    "Carimbos updatedAt das revisoes 12 a 14 estavam adiantados (relogio estimado): as horas reais foram ~23:56, ~23:58 e ~00:02. Daqui em diante uso o relogio da maquina."
-  ]
+    "Carimbos updatedAt das revisoes 12 a 14 estavam adiantados (relogio estimado): as horas reais foram ~23:56, ~23:58 e ~00:02. Daqui em diante uso o relogio da maquina.",
+    "Sessao caiu ~00:30 de 12/09 (o 'flutter analyze test/app test/core/config test/shared' de 300 s ficou sem resultado) e foi retomada as 09:20, depois de T0+3h10; nesta retomada so foram gravados a mini-revisao e as causas conferidas por imagem que se perderam na queda. Nao houve trabalho novo nem execucao 2 da suite."
+  ],
+  "miniRevisao": {
+    "gravadaEm": "2026-09-12T09:22:00-03:00 (fora do prazo: a sessao caiu ~00:30 de 12/09, antes de T0+3h; retomada as 09:20 so para fechar, sem trabalho novo)",
+    "shaPublicado": "a gravar neste commit (anterior: 6381f61df); branch work/etapa2-r07-suites; status limpo; sem WIP retido",
+    "falhasCorrigidasPorArquivo": {
+      "test/app/dev_menu_test.dart": 1,
+      "test/app/router/prototype_navigation_routes_test.dart": 1,
+      "test/app/dev_menu/development_dataset_contract_test.dart": 1,
+      "test/app/dev_menu_overlay_test.dart (golden regravado: item Modelos de perfil removido em 320a6f09f)": 1,
+      "test/core/config/person_detail_composition_test.dart": 1,
+      "test/core/config/structure_detail_composition_test.dart": 1,
+      "test/core/config/unit_fail_closed_composition_source_test.dart": 2,
+      "test/core/config/superadmin_auth_scope_test.dart": 1,
+      "test/shared/presentation/widgets/superadmin_underline_tabs_test.dart": 9,
+      "test/shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart": 2,
+      "test/app/router/person_identity_fail_closed_routes_test.dart": 1,
+      "test/app/router/people_creation_requirements_red_test.dart": 1,
+      "test/app/router/superadmin_error_routes_test.dart": 1,
+      "test/app/router/persistent_shell_routes_test.dart": 2,
+      "test/app/router/principal_moments_publication_route_test.dart": 1,
+      "total": 26
+    },
+    "falhasQuePermanecem": "36, todas fora do recorte, com causa e dono sugerido na secao 4 de docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md: 17 goldens presos ao launcher/sino (P53 = B): activity_golden 9, institution pagination 2 (1 teste), structure_detail 4, person_detail 2; rpc_contract_test 1 (remover 5 RPCs de Unidades de _rpcsAusentesConhecidas, coordenacao); attendance 3 e medication_plan_ui_contract 1 (overflow 23 px em superadmin_form_frame.dart:37 a 375/200%) para G3; help_center 1 (Operacoes); invites 1, person_form_page_test 1 (respiro 24 -> 40 do P15), person_golden 1, platform_user 1 para G2; circular_composer 10 para G6 (Circular reconstruida na familia Publicacao sem regravar).",
+    "censoSuiteCompleta": "execucao 1 (00:03-00:13): 6713 P / 42 F / 11 S contra 6692/53/11 da R05; por diretorio na secao 3 do censo. Execucao 2 nao realizada; com as 6 correcoes posteriores o esperado e 6719/36/11, a confirmar pelo integrador.",
+    "foraDoRecorteParaOutrasFrentes": "Criar modelo de atividade sem rodape canonico (Estrutura) e os dois goldens de paginacao de Instituicoes (P53), detalhados em foraDoRecorteRegistrado.",
+    "duvidasAoOwner": "nenhuma nova; P53 continua decidindo 17 goldens.",
+    "dadosSinteticos": "nenhum (sem Chrome, sem rota real, sem usuario sintetico).",
+    "chaves": "nenhuma."
+  }
 }

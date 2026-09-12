@@ -1,7 +1,7 @@
 ---
 title: "R07 · Suítes pré-existentes (G8) — censo da suíte completa do Superadmin"
 source: "flutter test apps/superadmin --reporter json -j 6 na worktree e2-r07-suites; fase0.json (grupo suites, round E2-R07-20260911); R05-fechamento.md (suíte completa 6692/53/11)"
-status: "parcial; execucao 2 ao fim da janela"
+status: "encerrado; execucao 2 nao realizada (sessao caiu ~00:30, retomada apos o corte so para fechar)"
 generated_at: "2026-09-12"
 timezone: "America/Sao_Paulo"
 ---
@@ -129,8 +129,11 @@ Execução 1 (00:03–00:13 de 12/09, `flutter test --reporter json -j 6`, HEAD
 Contagem por teste (`testDone` não oculto, sem `loading`/`setUpAll`/
 `tearDownAll`); o log JSON bruto fica fora do Git (`%TEMP%/r07-censo.json`).
 
-Depois do censo, mais 6 falhas de `test/app/router` foram corrigidas (seção 4);
-a execução 2, ao fim da janela, confirma o número final.
+Depois do censo, mais 6 falhas de `test/app/router` foram corrigidas (seção 4)
+e provadas isoladamente; a execução 2 da suíte completa **não aconteceu**: a
+sessão caiu por volta de 00:30 e só foi retomada às 09:20, depois do corte
+(T0+3h10). Número esperado com as 6 correções: 6719 aprovados / 36 falhos /
+11 pulados — a confirmar por quem integrar (`flutter test apps/superadmin`).
 
 ## 4. As 42 falhas do censo, por causa e dono sugerido
 
@@ -157,11 +160,11 @@ se a G4 alterar os mesmos testes na R07, integrar por conteúdo.
 | `structure_detail_golden_test` (4: unit/group 375 claro e 1440 escuro) | sino do shell (R06), item ativo do menu no escuro (MENU, Fase 0) e launcher (P53); imagem conferida | Estrutura, depois de P53 |
 | `person_detail_golden_test` (2: 375 claro, 1440 escuro) | mesma causa (shell) | Acessos e Pessoas, depois de P53 |
 | `test/contracts/rpc_contract_test` (1) | `create_unit_for_superadmin`, `update_unit_for_superadmin`, `get_unit_form_for_superadmin`, `list_units_for_superadmin`, `unit_directory_filter_options` passaram a existir no pacote: remover de `_rpcsAusentesConhecidas` (a mensagem do teste já diz isso) | coordenação (correção de uma linha, fora do meu recorte) |
-| `attendance_pages_golden_test` (3: compact footer 375 claro/escuro 3,7%; new call marking 1440 escuro 0,14%) | não inspecionado nesta frente | Formulários, Cuidado e Rotina |
+| `attendance_pages_golden_test` (3: compact footer 375 claro/escuro 3,7%; new call marking 1440 escuro 0,14%) | imagem conferida: no compacto 375 mudou o bloco "Sentimento" (rótulos, "Ver mais" e aviso "não está disponível nesta etapa" reposicionados); no 1440 escuro só o item ativo "Chamada" do submenu (MENU) | Formulários, Cuidado e Rotina |
 | `medication_plan_ui_contract_test` (1) | **defeito de layout**: `RenderFlex overflowed by 23 pixels` na `Column` de `superadmin_form_frame.dart:37` a 375 px e 200% (o tap em "Selecionar data" cai fora) | Formulários, Cuidado e Rotina (`lib/shared/presentation`) |
-| `superadmin_help_center_page_golden_test` (1: help_center_empty_light_1440, 4,52%) | não inspecionado | Operações |
-| `invite_golden_test` (1: invite_form_mobile_light, 9,67%) | não inspecionado (provável rodapé P15/MENU-M) | Acessos e Pessoas |
+| `superadmin_help_center_page_golden_test` (1 teste, 2 goldens: empty 1440 claro 4,52% e 375 escuro) | imagem conferida: estados do menu (Home ativo/hover), bloco de texto do cabeçalho e o campo "Perguntar sobre o Coelo" com botão de enviar no rodapé — mudança de conteúdo da Central de ajuda, não ruído | Operações |
+| `invite_golden_test` (1: invite_form_mobile_light, 9,67%) | imagem conferida: rodapé Criar/Cancelar saiu do fim do conteúdo e ficou ancorado no fim da viewport (P15) | Acessos e Pessoas |
 | `person_form_page_test` · keeps the canonical footer after the compact scroll region (1) | espera respiro 24 e mede 40 (`space10` do P15) — teste desatualizado | Acessos e Pessoas |
-| `person_golden_test` (1: person_form_create_light_375, 5,33%) | não inspecionado (provável P15/@) | Acessos e Pessoas |
-| `platform_user_pages_golden_test` (1: platform_user_create_light_375, 9,44%) | não inspecionado | Acessos e Pessoas |
+| `person_golden_test` (1: person_form_create_light_375, 5,33%) | imagem conferida: rodapé ancorado (P15) e campos de "Endereço local" deslocados | Acessos e Pessoas |
+| `platform_user_pages_golden_test` (1: platform_user_create_light_375, 9,44%) | imagem conferida: rodapé ancorado (P15) | Acessos e Pessoas |
 | `principal_circular_golden_test` (10: composer 375/768/1024/1440 claro e escuro + 200%) | Circular reconstruída na família Publicação (R06, G6) sem regravar os goldens do composer do Principal | Publicações e Agenda |
