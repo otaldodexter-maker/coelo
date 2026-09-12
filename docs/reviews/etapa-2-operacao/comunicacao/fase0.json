@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 14,
+  "revision": 15,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T00:28:00-03:00",
+  "updatedAt": "2026-09-12T00:27:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -44,18 +44,27 @@
     "test/app: censo na base limpa 7b229593c = 637 P / 1 S / 16 F. Das 16, 4 estao nos arquivos do recorte e foram corrigidas: dev_menu_test (teste desatualizado: dependia de --dart-define=COELO_APP_ENV=local, que colide com superadmin_app_config_test; agora liga allowDevelopmentPreview no router), prototype_navigation_routes_test (teste desatualizado: sem allowDevelopmentPreview e secoes offstage apos a navegacao crescer), development_dataset_contract_test (teste desatualizado: dataset reduzido a 5 instituicoes em d9232a94d, 28 turmas em Mare Alta, 12 modelos), dev_menu_overlay_test golden 0,61% (golden defasado: ainda tinha 'Modelos de perfil', unificado em Perfis em 320a6f09f; regravado). import_development_routes_test ja passava.",
     "test/core/config: censo = 35 P / 5 F; as 5 eram teste desatualizado (afirmavam composicao fail-closed que a ADR 0034 ligou: structureMutationsEnabled, diretorios/adapters Supabase de Unidades e Turmas em 58bfe1fed, personIdentityRepository real em 7f13ee42d). Corrigidos; 40/40 verdes.",
     "test/shared: censo = 35 P / 11 F; todas teste desatualizado. underline_tabs (9): chave renomeada ao mover o widget para coelo_ui_admin (coelo-admin-underline-tab-*), 11/11 apos correcao. form_action_footer_adoption (2): Agenda e publicadores do Principal foram reconstruidos na familia Publicacao (0322e511d, 14abb3b0a) cujo rodape canonico e composto (PublicationSurface embute SuperadminFormActionFooter; Principal usa PrincipalPublicationActionFooter aprovado pelo Owner); 5 candidatos novos eram falsos positivos do regex (classe de dados, paginas de operacao de Formularios, edicao de perfil do Principal). 46/46 apos correcao.",
-    "golden institution_directory_pagination_disabled_light_1440 (0,21%, 2 goldens no mesmo teste: tambem pagination_page_size_open_light_1440): a diferenca e so o launcher do chat (bbox 1291,750-1412,802): golden guardado tem o circulo 'Mens.' com balao; render atual tem a pilula 'Mensagens' com icone de enviar. Nao e ruido de renderizacao; e a mesma causa de P53 (launcher Mensagens), que o Owner deixou sem resposta = B (manter golden e registrar). Nao regravado."
+    "golden institution_directory_pagination_disabled_light_1440 (0,21%, 2 goldens no mesmo teste: tambem pagination_page_size_open_light_1440): a diferenca e so o launcher do chat (bbox 1291,750-1412,802): golden guardado tem o circulo 'Mens.' com balao; render atual tem a pilula 'Mensagens' com icone de enviar. Nao e ruido de renderizacao; e a mesma causa de P53 (launcher Mensagens), que o Owner deixou sem resposta = B (manter golden e registrar). Nao regravado.",
+    "Censo completo (execucao 1, 00:03-00:13, json -j 6): 6713 P / 42 F / 11 S (R05: 6692/53/11), por diretorio em docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md secao 3; as 42 falhas classificadas com causa e dono na secao 4.",
+    "Depois do censo, mais 6 testes de test/app/router corrigidos (so teste): person_identity_fail_closed_routes_test, people_creation_requirements_red_test, superadmin_error_routes_test (/profile), persistent_shell_routes_test (2: Decisao 7 e publicadores sem etapas/Momentos em moldura), principal_moments_publication_route_test. Os tres ultimos tocam telas do Principal (G4): se a G4 alterar os mesmos testes, integrar por conteudo."
   ],
   "pendente": [
-    "censo da suite completa em execucao (JSON) desde 00:25 -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md",
-    "classificar as falhas de test/app fora dos arquivos nomeados a partir do JSON"
+    "execucao 2 da suite completa ao fim da janela (~01:45) para o numero final",
+    "mini-revisao em 02:19"
   ],
   "commitsPublicados": [
-    "d5da3dfaf abertura",
-    "9dd3e1c76 dev_menu/prototype/dataset",
-    "58af0696f golden dev menu",
-    "62fb286e8 core/config",
-    "(HEAD) test/shared"
+    "d5da3dfaf",
+    "9dd3e1c76",
+    "58af0696f",
+    "62fb286e8",
+    "(rev 11)",
+    "ef8fbe9e8",
+    "7d197a2ae",
+    "bc93f4b6c",
+    "d041e3562",
+    "6f8506c60",
+    "1aff0ad0b",
+    "(rev 15)"
   ],
   "foraDoRecorteRegistrado": [
     {
@@ -71,18 +80,21 @@
       "donoSugerido": "Owner (P53) e frente Estrutura ao regravar; os demais goldens de Instituicoes ja foram regravados com o launcher atual, so estes dois ficaram para tras",
       "proposta": "quando P53 = A, regravar os dois junto com os 9 de activity_golden_test em um unico commit (flutter test <arquivo> --update-goldens) apos conferir que a unica diferenca e o launcher.",
       "testeQueProva": "flutter test apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart"
+    },
+    {
+      "causa": "36 falhas restantes fora do recorte, com causa e dono sugerido na secao 4 do censo; destaque: rpc_contract_test (5 RPCs de Unidades ja existem no pacote; remover de _rpcsAusentesConhecidas, uma linha, coordenacao), medication_plan_ui_contract_test (overflow de 23 px em superadmin_form_frame.dart:37 a 375/200%, defeito de layout, G3), 10 goldens do composer de Circulares do Principal (G6), 17 goldens presos ao launcher/sino (P53)."
     }
   ],
   "testes": {
-    "P": 723,
-    "F": 0,
+    "P": 6713,
+    "F": 42,
     "B": 0,
-    "S": 1,
-    "U": null,
-    "evidencia": "test/app 637P/1S/16F antes (4 do recorte corrigidas); test/core/config 40/40; test/shared 46/46"
+    "S": 11,
+    "U": 0,
+    "evidencia": "execucao 1 da suite completa (json -j 6, 00:03-00:13); depois dela 6 falhas de test/app/router corrigidas e provadas isoladamente (persistent_shell 14/14, moments route, people/identity 5/5, error routes 14/14); execucao 2 pendente"
   },
   "bloqueio": null,
-  "proximoPasso": "flutter test apps/superadmin (suite completa, reporter expanded em arquivo), depois classificar por diretorio",
+  "proximoPasso": "inspecionar rapidamente os diffs de attendance/help_center/invite/person/platform_user para dar causa ao coordenador; execucao 2 da suite; mini-revisao",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
@@ -207,6 +219,7 @@
     ]
   },
   "avisosR07": [
-    "00:21: ao abortar meu primeiro censo (reporter expanded intercala isolates e nao permite censo por diretorio; reiniciado com --reporter json -j 6 as 00:25) executei taskkill /F /IM dart.exe e flutter_tester.exe para limpar os processos do meu flutter test. Isso pode ter derrubado por alguns segundos servidores de analise (MCP dart) ou um flutter test de outra frente que estivesse ativo naquele instante; um flutter test de outra frente iniciado as 00:00 seguia vivo as 00:24. Se alguma frente viu um 'flutter test' morrer ~00:21, a causa fui eu; nao repito o comando por imagem de processo."
+    "00:21: ao abortar meu primeiro censo (reporter expanded intercala isolates e nao permite censo por diretorio; reiniciado com --reporter json -j 6 as 00:25) executei taskkill /F /IM dart.exe e flutter_tester.exe para limpar os processos do meu flutter test. Isso pode ter derrubado por alguns segundos servidores de analise (MCP dart) ou um flutter test de outra frente que estivesse ativo naquele instante; um flutter test de outra frente iniciado as 00:00 seguia vivo as 00:24. Se alguma frente viu um 'flutter test' morrer ~00:21, a causa fui eu; nao repito o comando por imagem de processo.",
+    "Carimbos updatedAt das revisoes 12 a 14 estavam adiantados (relogio estimado): as horas reais foram ~23:56, ~23:58 e ~00:02. Daqui em diante uso o relogio da maquina."
   ]
 }
