@@ -1,18 +1,18 @@
 {
- "revision": 52,
+ "revision": 53,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:06-03:00",
+ "updatedAt": "2026-09-11T21:21-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "fd8e675af + este commit",
+ "head": "0068d499c (codigo/docs) + este commit",
  "base": "origin/dev ca60b096b",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -63,7 +63,7 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "recorte executavel esgotado antes de T0+2h; fechando Chrome/servidor e preparando a mini-revisao",
+  "gate": "finalizado as 21:21; Chrome 9418 e servidor 3018 fechados; aguardando a revisao de 10 minutos (21:36)",
   "screen": "Etapa 2 -> apps/superadmin",
   "actionIds": []
  },
@@ -166,8 +166,8 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "aguardar aplicacao do candidato; reprovar Local na rota real se houver tempo antes de 21:37; mini-revisao em 21:37",
- "finalizado": false,
+ "nextStep": "responder a revisao de 10 minutos do coordenador ate 21:47; depois de 21:47 nao retomo",
+ "finalizado": true,
  "dadosSinteticosCriados": [
   {
    "tabela": "public.medication_plans",
@@ -1921,5 +1921,40 @@
   "feito": "itens 0, 1, 2, 3 fechados com prova na rota real (25 deltas em deltas-r06-fcr.json); V-15 completo no cliente (Criar em toda aba, acoes na tabela, Lancar hoje, Arquivar); candidato 20260912220000 pronto (form_save_draft 42702)",
   "pendente": "forms.location-question/answer (bloqueado pelo candidato), item 4 (cliente question-image), item 6 (politicas macro), item 7 (Lancar chamada na familia Publicacao)",
   "commits_publicados": "ate 6e5cf8c97 na branch; fd8e675af e este commit no push desta revisao"
+ },
+ "miniRevisao": {
+  "quando": "2026-09-11T21:21-03:00",
+  "sha_final": "0068d499c + este commit (rev 53), publicados em work/etapa2-r06-formularios-cuidado-rotina; status limpo; sem WIP; sem stash",
+  "fechou_com_prova": [
+   "item 0: health_care_golden_test 4/4 (golden da tabela regravado apos conferir que a diferenca era o composto)",
+   "health-care.list: BE done + verified-e2e (directory 200, reload)",
+   "medication.create/detail/edit: verified-e2e (plano 12f816e8 v1->v2, reload, P0002 para id alheio)",
+   "medication.evidence: cliente novo + verified-e2e (record_evidence 200 -> 42e77772)",
+   "daily-routine.list: V-15 A+ completo (Criar em toda aba, acoes na tabela, Lancar hoje, Arquivar) + verified-e2e (Arquivar provado: copia 8d219282 archived)",
+   "daily-routine.edit: verified-e2e apos corrigir 23505 (id sempre enviado)",
+   "daily-routine.publish: verified-e2e (880b12a8 draft -> published v2)",
+   "child-safety.list / child-safety.child: verified-e2e (directory/get 200 no reload)",
+   "Decisao 7 em Assiduidade provada na rota real (sem balao em /attendance/new e /attendance/calls/:id)",
+   "pacote 20260912220000 form_save_draft (42702) pronto: pgTAP 17/17 com o candidato, erro sem ele"
+  ],
+  "aberto_primeiro_gate": [
+   "forms.location-question / forms.location-answer: bloqueadas por 42702 em form_save_draft (candidato pronto; reprovar apos aplicacao; a resposta exige ocorrencia nova com item Local publicado)",
+   "forms.upload/resolve-file/expire-file/delete-file (item 4): editor sem UI de imagem da pergunta; gate FE do grupo",
+   "item 6 (politicas macro da unidade) e item 7 (Lancar chamada na familia Publicacao): nao couberam nas 2 h",
+   "medication.create: Responsavel sem contrato no servidor; medication.evidence: imagem sem gateway; medication.edit: teste pre-existente 375/200% (overflow do frame)",
+   "child-safety.child: Relacao em enum cru (herdado)"
+  ],
+  "deltas": "deltas-r06-fcr.json (25; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido)",
+  "pacotes": "candidatos/formularios-cuidado-rotina/20260912220000_form_save_draft_version_number_fix_v1.sql (pronto; sem chave de composicao)",
+  "edge_functions": "form-media sem mudanca nesta rodada; COELO_FORMS_MEDIA_PROVIDER=r2 NAO deve ser ligada (cliente de respostas continua no fluxo legado)",
+  "duvidas_ao_owner": [
+   "Medicacao: o campo Responsavel deve sair do formulario ate existir contrato, ou ficar como esta (honesto, sem opcoes)?",
+   "Detalhe do plano de medicacao e do perfil de cuidado: manter o redirecionamento ao editor ou criar tela somente leitura (herdada da R05)?"
+  ],
+  "skills_deltas": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/skills-deltas.md",
+  "handoff": "docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina-handoff.md (R05 preservado em evidence/etapa-2/r05-formularios-cuidado-rotina/handoff-r05.md)",
+  "dados_sinteticos": "lista em dadosSinteticosCriados (limpeza no fim da Etapa 2)",
+  "chaves_criadas": "nenhuma",
+  "conhecimento": "comportamento novo para o coelo-knowledge (coordenador): Registros de dose no plano de medicacao (desfecho + motivo obrigatorio fora de Administrada); Rotina com Criar em toda aba, Lancar hoje e Arquivar (status archived, historico preservado)"
  }
 }
