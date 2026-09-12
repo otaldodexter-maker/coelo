@@ -1,15 +1,15 @@
 {
-  "revision": 143,
-  "updated_at": "2026-09-12T00:21:08.566681Z",
-  "relogio_local": "Fri Sep 11 2026 21:21:08 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 144,
+  "updated_at": "2026-09-12T00:24:17.138323Z",
+  "relogio_local": "Fri Sep 11 2026 21:24:17 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Opus 5 (esforco medio)",
-  "status": "finalizado (revisao de 10 minutos respondida abaixo)",
+  "status": "finalizado; revisao de 10 minutos respondida (REVISAO_FINAL_21h36 + complementos); nao retomo depois de 21:46",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "o commit desta rev 143 (publicado); status limpo; sem WIP",
+  "head": "o commit desta rev 144 (publicado); status limpo; sem WIP",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
     "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
@@ -165,8 +165,10 @@
     "edge_function": "internal-user-create ainda NAO escrita: (1) token do operador -> authorize; (2) service_role auth.admin.createUser({email, email_confirm:true, password aleatoria nunca devolvida}); (3) for_worker; falha no 3 apaga o auth user. Depende de P51 (SMTP) para o usuario definir a senha."
   },
   "REVISAO_FINAL_21h36_COMPLEMENTO": {
-    "sha_final": "o commit desta rev 143 publicado em origin/work/etapa2-r06-acessos-pessoas; status limpo; descartavel coelo_acessos_r06 parado; nenhum Chrome ou servidor desta frente em execucao",
-    "acrescimo": "cadeia completa de internal-users.create pronta para deploy (RPCs 170800 verdes, Edge Function com deno check, cliente e rota ligados, card Criar no diretorio); nao muda os 9 E2E ja relatados",
+    "sha_final": "o commit desta rev 144 publicado em origin/work/etapa2-r06-acessos-pessoas (12 commits sobre fcdded416); status limpo; descartavel coelo_acessos_r06 parado; nenhum Chrome ou servidor desta frente em execucao",
+    "fechado_nesta_rodada": "9 acoes E2E pela rota real (invites.create/detail/revoke, students.list/link/transfer/edit/revoke, internal-users.list); 4 pacotes SQL verdes (170500 P46, 170600 P45, 170700 people.create, 170800 internal-users.create); cliente: people.create resolvedor, P45 Editar/Excluir, P46 @ no interno, create pela Edge Function + rota + card Criar, @ da crianca em Alunos; Edge Function internal-user-create com deno check",
+    "aberto": "ver REVISAO_FINAL_21h36.3_aberto_com_primeiro_gate; acrescimos: internal-users.create depende de deploy + P51; @ em Alunos e V-11 em Usuarios internos dependem de build novo para a prova pela tela",
+    "deltas": "deltas-r06.json (18) inalterado; os itens de cliente desta rev nao mudam estado sem prova na rota real",
     "nao_retomo": "depois de 21:46 nao retomo por conta propria."
   },
   "INTERNAL_USERS_CREATE_CADEIA_21h20": {
@@ -176,6 +178,8 @@
     "estado_proposto": "internal-users.create FE local-green (formulario real ligado; prova pela tela depende do deploy), BE local-green (RPCs verdes; done com a funcao implantada e provada), E2E pendente",
     "decisao_pendente": "P51 (SMTP customizado) para o usuario novo definir a senha por 'Esqueci minha senha'"
   },
+  "ARROBA_ALUNOS_21h23": "item 6 no cliente (6c2a41ab8): a tela /students/<id>/manage mostra a secao Identificador (@) da crianca (PersonHandleSection com links.childPersonId; superadmin_person_handle_get/availability/set do 170100 decidem quem ve/edita: people.update, a propria pessoa ou responsavel ativo); testes de Alunos 15/15; prova pela tela depende de build novo. Em Pessoas o @ ja estava provado na R05 (people.links E2E).",
+  "CONVITES_CONCLUIR_21h22": "revisando o codigo, Concluir chama onSent -> goNamed(invites) na rota normal; o clique por CDP possivelmente caiu durante o fade do rodape. Pendencia rebaixada para 'reconferir na proxima prova'; nao e defeito confirmado.",
   "historico_r05": {
     "revision": 137,
     "updated_at": "2026-09-11T18:50:26.650Z",

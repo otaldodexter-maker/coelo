@@ -13,7 +13,7 @@ timezone: "America/Sao_Paulo"
 Recorte: people, access_profiles, access_models, invites, internal_users,
 students (32 acoes; 11 em E2E na abertura). Canal oficial:
 `docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json` (revisoes 138
-a 143). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
+a 144). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
 `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS FE 147 / BE 132 /
 E2E 114 e revertidas; o coordenador aplica). Capturas em `capturas/`.
 
@@ -42,7 +42,7 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 | 20260911170700 people_identity_lookup_v1 (people.create: resolvedor de identidade por e-mail/telefone/CPF/@/nome, sem gravar o valor) | people_identity_lookup_v1_test 11/11 |
 | 20260911170800 internal_user_create_v1 (internal-users.create em dois tempos: authorize com o token do operador; for_worker so service_role) | internal_user_create_v1_test 9/9 |
 
-## Cliente (commits 7f13ee42d, 316d1fd2c, 8b40c80cd, d58cc041a)
+## Cliente (commits 7f13ee42d, 316d1fd2c, 8b40c80cd, d58cc041a, 6c2a41ab8)
 
 - `SupabasePersonIdentityRepository` ligado no `createSuperadminAuthScope`
   atras de `enablePersonHandles`: `people.create` deixa de ser fail-closed
@@ -74,7 +74,7 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 | internal-users.create | cadeia pronta sem deploy: RPCs 170800 (pgTAP 9/9), Edge Function `internal-user-create` (deno check), cliente e rota `/internal-users/new` ligados; gate = deploy pelo coordenador + P51 (SMTP para definir a senha) |
 | access-profiles.edit E2E, assign, delete; access-models.edit/duplicate pela UI | build com 0aeb9b729 existe (ee35cce3a); faltou tempo de Chrome; delete de modelo de sistema depende do 170600 em producao |
 | people.create/edit pela UI | 170700 em producao + build novo com 7f13ee42d |
-| @ na tela de Alunos | nao iniciado (o @ da crianca ja e editavel no detalhe de Pessoas; a tela de gerir aluno nao mostra o @) |
+| @ na tela de Alunos | ligado no cliente (6c2a41ab8: secao do @ da crianca em /students/<id>/manage); prova pela tela depende de build novo |
 | V-11 (card Criar sempre presente, sem dados de demonstracao) | Usuarios internos: card Criar ligado na rota normal (d58cc041a), prova pela tela depende de build novo; Perfis ja mostrava; 'sem dados de demonstracao no app real' a conferir na R07 |
 
 ## Dados sinteticos desta rodada
