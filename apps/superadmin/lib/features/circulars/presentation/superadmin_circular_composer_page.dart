@@ -241,17 +241,7 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
           ],
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        PublicationRow(
-          icon: Icons.calendar_today_outlined,
-          title: 'Agendamento',
-          trailing: TextButton.icon(
-            key: const Key('circular-choose-schedule'),
-            onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
-            iconAlignment: IconAlignment.end,
-            icon: const Icon(Icons.expand_more_rounded),
-            label: Text(_publishAt == null ? 'Publicar agora' : _scheduleLabel(_publishAt!)),
-          ),
-        ),
+        _scheduleRow(context),
         const PublicationLabel('Opções'),
         PublicationToggleRow(
           icon: Icons.description_outlined,
@@ -292,6 +282,30 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
       question: block,
     ),
   };
+
+  Widget _scheduleRow(BuildContext context) {
+    final label = _publishAt == null ? 'Publicar agora' : _scheduleLabel(_publishAt!);
+    if (MediaQuery.textScalerOf(context).scale(1) >= 1.5) {
+      return PublicationRow(
+        key: const Key('circular-choose-schedule'),
+        icon: Icons.calendar_today_outlined,
+        title: 'Agendamento',
+        lines: [label],
+        onTap: widget.onChooseSchedule == null ? null : _chooseSchedule,
+      );
+    }
+    return PublicationRow(
+      icon: Icons.calendar_today_outlined,
+      title: 'Agendamento',
+      trailing: TextButton.icon(
+        key: const Key('circular-choose-schedule'),
+        onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
+        iconAlignment: IconAlignment.end,
+        icon: const Icon(Icons.expand_more_rounded),
+        label: Text(label),
+      ),
+    );
+  }
 
   _ResponsePreset? _responsePreset(List<CircularQuestionBlock> questions) {
     if (questions.isEmpty) return _ResponsePreset.readOnly;
@@ -557,7 +571,7 @@ final class _BlockActions extends StatelessWidget {
         const dragAndGapWidth = 24.0 + CoeloSpacing.space1;
         const actionWidth = 48.0;
         final requiredWidth = dragAndGapWidth + textPainter.width + actionCount * actionWidth;
-        if (constraints.maxWidth < requiredWidth) {
+        if (constraints.maxWidth <= requiredWidth + CoeloSpacing.space3) {
           return Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [

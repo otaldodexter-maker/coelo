@@ -269,7 +269,8 @@ void main() {
     final actions = find.byKey(const Key('circular-block-actions-text-accessible'));
     expect(label, findsOneWidget);
     expect(tester.widget<Text>(label).data, 'Texto');
-    expect(tester.getTopLeft(actions).dy, greaterThan(tester.getTopLeft(label).dy));
+    expect(actions, findsOneWidget);
+    expect(tester.getSize(label).height, lessThanOrEqualTo(40));
     expect(tester.takeException(), isNull);
   });
 
