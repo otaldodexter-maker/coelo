@@ -68,10 +68,10 @@
     "action_id": "meal-plans.create",
     "camada": "frontend",
     "estado_proposto": "local-green",
-    "delta": "P47 A: assistente abre na rota real (09, 10) e o fluxo chega a Enviar e publicar; a RPC meal_plan_create_or_update_draft caia com 'cannot extract elements from an object' porque o cliente enviava scopeRules como mapa; corrigido em (commit fix scopeRules) com teste de contrato; prova pela tela apos o rebuild ficou para o proximo gate (tempo)",
-    "evidencia": "capturas 09, 10, 11; test/features/meal_plans/domain/meal_plan_scope_rules_contract_test.dart",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
     "certificacao": {
-      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
       "revision": "principal-chat-sistema r32",
       "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
       "recordedAt": "2026-09-11T20:44-03:00"
@@ -81,10 +81,10 @@
     "action_id": "meal-plans.edit",
     "camada": "frontend",
     "estado_proposto": "local-green",
-    "delta": "P47 A: assistente abre na rota real (09, 10) e o fluxo chega a Enviar e publicar; a RPC meal_plan_create_or_update_draft caia com 'cannot extract elements from an object' porque o cliente enviava scopeRules como mapa; corrigido em (commit fix scopeRules) com teste de contrato; prova pela tela apos o rebuild ficou para o proximo gate (tempo)",
-    "evidencia": "capturas 09, 10, 11; test/features/meal_plans/domain/meal_plan_scope_rules_contract_test.dart",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
     "certificacao": {
-      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
       "revision": "principal-chat-sistema r32",
       "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
       "recordedAt": "2026-09-11T20:44-03:00"
@@ -94,10 +94,10 @@
     "action_id": "meal-plans.publish",
     "camada": "frontend",
     "estado_proposto": "local-green",
-    "delta": "P47 A: assistente abre na rota real (09, 10) e o fluxo chega a Enviar e publicar; a RPC meal_plan_create_or_update_draft caia com 'cannot extract elements from an object' porque o cliente enviava scopeRules como mapa; corrigido em (commit fix scopeRules) com teste de contrato; prova pela tela apos o rebuild ficou para o proximo gate (tempo)",
-    "evidencia": "capturas 09, 10, 11; test/features/meal_plans/domain/meal_plan_scope_rules_contract_test.dart",
+    "delta": "P47 A: assistente abre na rota real e chega a Enviar e publicar (09, 10); a RPC meal_plan_create_or_update_draft tem contrato contraditorio para scopeRules (itera como array, grava sob check que exige objeto): 'cannot extract elements from an object' (11) com o mapa e 'violates check constraint meal_plans_scope_rules_array_check' (23) com a lista; correcao e de backend (proxima rodada)",
+    "evidencia": "capturas 09, 10, 11, 23",
     "certificacao": {
-      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/23-cardapio-publicado.png",
       "revision": "principal-chat-sistema r32",
       "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
       "recordedAt": "2026-09-11T20:44-03:00"

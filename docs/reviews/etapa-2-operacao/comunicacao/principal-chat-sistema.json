@@ -1,6 +1,6 @@
 {
-  "revision": 32,
-  "updated_at": "2026-09-11T21:12-03:00",
+  "revision": 33,
+  "updated_at": "2026-09-11T21:16-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,7 +10,7 @@
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:12 (T0+2h assumido = 21:24). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:34.",
+  "status": "FINALIZADO 21:16 (T0+2h assumido = 21:24). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:34.",
   "T0_assumido": "2026-09-11T19:24-03:00 (qa-r06-*.env criados 19:44 = T0+20); T0+2h = 21:24; revisao ate 21:34. Corrigir se coordenacao.json disser outra coisa.",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -22,7 +22,7 @@
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
   "ordem_de_trabalho": [
     "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
-    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84, 2c377cbd4 fix scopeRules); rota real: model-create/model-edit verified-e2e (modelo d132698c v2); create/edit/publish local-green (RPC caia por scopeRules como mapa; corrigido; prova pela tela pendente)",
+    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish BLOQUEADO NO BACKEND: meal_plan_create_or_update_draft itera p_payload->'scopeRules' com jsonb_array_elements (exige array) e grava o mesmo valor em meal_plans.scope_rules cuja check meal_plans_scope_rules_array_check exige objeto; medido na rota real com os dois formatos (captura 11: 'cannot extract elements from an object'; 23: 'violates check constraint'). O ajuste do cliente (2c377cbd4) foi revertido; correcao e um candidato de backend (RPC deriva as linhas de meal_plan_scopes do mapa e grava o objeto)",
     "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
     "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
     "4. principal.for-you e profile-view abrem na rota real (18, 19); V-1/V-2/V-3 nao aplicados; profile-edit nao provado",
@@ -180,8 +180,8 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:12-03:00",
-    "sha_publicado": "commit desta rev (abaixo: 08c46b1b7, e689033ff, dcd2e3a84, 14abb3b0a, c7a614737, e9c67d9f9, 060d21e53, e0c2dfcf8, 2c377cbd4); worktree limpa apos este commit; sem stash; sem WIP",
+    "quando": "2026-09-11T21:16-03:00",
+    "sha_publicado": "commit desta rev (abaixo: 08c46b1b7, e689033ff, dcd2e3a84, 14abb3b0a, c7a614737, e9c67d9f9, 060d21e53, e0c2dfcf8, 2c377cbd4 e seu revert, 77042bb13); worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
       "meal-plans.list: FE verified (07)",
@@ -198,7 +198,7 @@
       },
       {
         "pendencia": "meal-plans.create/edit/publish",
-        "gate": "prova pela tela com o build corrigido (scopeRules); tempo"
+        "gate": "BACKEND: contrato contraditorio de scopeRules em meal_plan_create_or_update_draft (array na iteracao x objeto na check); candidato de backend na proxima rodada (familia meal_plans desta frente)"
       },
       {
         "pendencia": "chat.create-group UI / chat.attach cliente",
@@ -222,7 +222,7 @@
     "duvidas_ao_owner": [],
     "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d na instituicao d0c40000-0000-4000-8000-000000000001; asset 708456ae preparado sem upload; nenhum objeto no R2",
     "chaves_criadas": "nenhuma",
-    "ambiente_encerrado": "Chrome 9410, servidores 3009/3010, cdp_net e o descartavel coelo_pcs6_db encerrados as 21:05",
+    "ambiente_encerrado": "Chrome 9410, servidores 3009/3010, cdp_net e o descartavel coelo_pcs6_db encerrados (ultima vez 21:15)",
     "handoff": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/handoff.md"
   }
 }
