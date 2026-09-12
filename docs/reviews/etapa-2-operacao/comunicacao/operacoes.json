@@ -1,6 +1,6 @@
 {
-  "revision": 68,
-  "updated_at": "2026-09-12T13:34:00-03:00",
+  "revision": 73,
+  "updated_at": "2026-09-12T13:55:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -41,6 +41,33 @@
     "result": "somente os dois PNGs A foram regravados; teste focal verde 1/1 após a regravação",
     "state": "aprovação visual registrada; não propõe promoção frontend/backend/E2E"
   },
+  "worktreeClosingReviewR08": {
+    "scope": "inventário somente leitura das nove worktrees G0-G8 e C0; sem remoção, movimento, stash ou alteração em worktree alheia",
+    "observed_at": "2026-09-12T13:50:29-03:00",
+    "result": "nenhuma das dez branches tinha HEAD ancestral de origin/dev; todas devem ser retidas até a integração/dispensa central",
+    "wip_tracked": [
+      "G3 packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart",
+      "G4 apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart",
+      "C0 coordenacao.json e quatro evidências não rastreadas"
+    ],
+    "stash": "git stash list vazio",
+    "privacy": "env local, temp do Supabase e tmp/r08-p51-auth-config foram apenas identificados por caminho/tamanho e devem permanecer locais; nenhum conteúdo foi lido ou copiado",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/worktree-closing-inventory.md",
+    "next_gate": "C0 revalida após integração final e resolve WIP rastreado antes de qualquer encerramento"
+  },
+  "reviewH28PeopleR08": {
+    "reviewed_sha": "2eebea3f4",
+    "scope": "leitura do candidato SQL/pgTAP G2, sem edição G2, SQL remoto ou certificação",
+    "accepted_structure": "um EXISTS em context_rows combina os filtros no mesmo vínculo e total_count ocorre antes da paginação",
+    "blockers": [
+      "repositório Flutter não envia os quatro parâmetros novos nem lê suas options",
+      "parser de options não preserva state_code/municipality_id para a cascata",
+      "memberships não retorna activity_id/activity_name expostos pelo domínio",
+      "regressões A/B/cross-tenant são comentários, não asserts pgTAP executáveis"
+    ],
+    "verdict": "WIP de contrato; não serializar/aplicar até completar backend, fixture e cliente",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/h28-people-candidate-review.md"
+  },
   "reviewG6R08": {
     "scope": "somente leitura do pacote Circular da G6 contra spec037 e ADR0034 decisão20",
     "reviewedSha": "origin/work/etapa2-r08-publicacoes-agenda d48525b04",
@@ -73,6 +100,31 @@
     "oracle_red": "teste unitario puro deve passar a resposta plana exata da RPC com um key e um type conhecidos e esperar ProfileAboutPage nao nula; hoje falha por null.",
     "repair_boundary": "normalizar somente o contrato plano canonico antes do parser comum; preservar a leitura direta de tabelas e nao aceitar/documentar envelope inexistente.",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/profile-about-read-review.md"
+  },
+  "reviewAssessmentsPreflightR08": {
+    "scope": "leitura remota autenticada da fixture QA G1 e revisao de 0a7642dca/754af0368; sem Chrome, Flutter, SQL, fixture ou mutacao",
+    "measurement": "context_options retornou uma atribuicao na forma esperada, mas periods=0; configuration_read da atribuicao retornou sucesso com data nula; closing_queue retornou sucesso vazia.",
+    "finding": "a fixture 53b9c6d29 e transacional do espelho e nao materializa configuracao, periodo ou diario remoto. O roteiro nao pode iniciar gradebook/read nem certificar estados antes de criar e ativar configuracao.",
+    "contract": "configuration_read recebe target_activity/target_unit; gradebook_read recebe target_gradebook. Save/activate usam request_id e expected_version; o diario novo exige payload estrito activity_group_link_id, period_id, configuration_id e students.",
+    "states": "nao ha RPC close/reopen: diario transita draft -> submitted -> reviewed -> published, com return_gradebook para draft; cada comando e seguido de releitura.",
+    "reportedTo": "G1 e C0 diretamente; nenhum ID, segredo ou credencial registrado.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/assessments-api-preflight-review.md"
+  },
+  "groupsLocationSnapshotRefreshR08": {
+    "scope": "correcao focal autorizada de groups.location em group_form_page.dart e teste proprietario; sem SQL, Chrome ou fixture",
+    "defect": "mesmo ID/escopo com label ou kind renovados era tratado como no-op e retinha snapshot antigo ao remontar o seletor.",
+    "fix": "mesma identidade atualiza somente o snapshot se label/kind mudam, sem limpar recibo de create, request ID, fingerprint, save pendente ou contexto; metadados iguais permanecem no-op.",
+    "test": "RED fiel falhou esperando Patio atualizado e recebendo Sala de leitura; GREEN focal 1/1 PASS, concurrency=1, exit 0. O teste tambem mantem a assercao de um unico create no retry.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/groups-location-snapshot-refresh.md"
+  },
+  "reviewAssessmentsRunnerR08": {
+    "scope": "leitura de 9573aec0d contra o contrato SQL e preflight QA; sem executar runner, mutacao, Flutter, SQL ou editar G1",
+    "blocking": "periodo usa year/starts_at/ends_at/time_zone, mas SQL exige academic_year/starts_on/ends_on/timezone; save falha input antes do replay.",
+    "recovery": "manifest pre-save bloqueia reexecucao e o executor final perde plano/estado; falha entre save e activate nao reutiliza request IDs nem reconcilia estado autoritativo.",
+    "targeting": "dry-run exige uma assignment global, nao valida assignment-id exato; ack-file checa somente existencia do argumento.",
+    "condition": "corrigir payload e implementar resume por manifest redigido, alvo exato e releitura de configuracao/versao/estado antes de executar.",
+    "reportedTo": "G1 e C0 diretamente; execucao bloqueada por revisao.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/assessments-runner-review.md"
   },
   "reviewFormsR08": {
     "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",

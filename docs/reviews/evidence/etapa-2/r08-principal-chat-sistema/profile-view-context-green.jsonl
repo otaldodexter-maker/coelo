@@ -1,0 +1,84 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":5220,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":0}
+{"count":1,"time":3,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":1583}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":16,"line":null,"column":null,"url":null},"type":"group","time":1585}
+{"test":{"id":3,"name":"shows the authorized context identity and never the preview fixture","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":50,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":1586}
+{"testID":3,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2282}
+{"test":{"id":4,"name":"does not render the Acontece preview feed on the real route","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":63,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2282}
+{"testID":4,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2364}
+{"test":{"id":5,"name":"projects the authorized About content into the Sobre tab","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":70,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2364}
+{"testID":5,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2578}
+{"test":{"id":6,"name":"fails closed without retry when the About projection is denied","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":96,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2578}
+{"testID":6,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2603}
+{"test":{"id":7,"name":"offers a retry when the About projection is unavailable","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":105,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2603}
+{"testID":7,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2688}
+{"test":{"id":8,"name":"reloads and discards the previous context when the context is revoked","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":121,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2688}
+{"testID":8,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2774}
+{"test":{"id":9,"name":"re-reads the About when only the membership changes inside the same scope","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":153,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2774}
+{"testID":9,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2899}
+{"test":{"id":10,"name":"re-reads and drops About when only roleCode changes","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":193,"root_column":5,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2899}
+{"testID":10,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":2988}
+{"test":{"id":11,"name":"re-reads and drops About when only scopeKind changes","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":193,"root_column":5,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":2988}
+{"testID":11,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3074}
+{"test":{"id":12,"name":"never tells a real user the Perfil is a prototype","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":245,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3075}
+{"testID":12,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3166}
+{"test":{"id":13,"name":"an About without content is distinguishable from a failure","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":256,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3166}
+{"testID":13,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3267}
+{"test":{"id":14,"name":"a failure never renders as a profile without content","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":271,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3267}
+{"testID":14,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3293}
+{"test":{"id":15,"name":"requests the About page for the authorized subject only","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":280,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3294}
+{"testID":15,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3357}
+{"test":{"id":16,"name":"names every About field to assistive technology","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":291,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3358}
+{"testID":16,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3489}
+{"test":{"id":17,"name":"does not offer \"Ver mais\" when there is no bio to expand","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":319,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3489}
+{"testID":17,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3561}
+{"test":{"id":18,"name":"offers \"Ver mais\" once the authorized About carries a bio","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":331,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart"},"type":"testStart","time":3561}
+{"testID":18,"result":"success","skipped":false,"hidden":false,"type":"testDone","time":3623}
+{"success":true,"type":"done","time":3652}

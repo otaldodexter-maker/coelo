@@ -1,8 +1,8 @@
 ---
 title: "R08 G5 — P51 criação de usuário interno pela API"
 source: "gate nominal C0; internal-user-create v4 em produção; execução G5"
-status: "criacao-e-reload-verdes-redirect-runtime-falhou"
-generated_at: "2026-09-12T13:12:28-03:00"
+status: "api-producao-aprovada-entrega-smtp-nao-certificada"
+generated_at: "2026-09-12T13:17:49-03:00"
 ---
 
 # P51 — criação normal, link seguro e releitura
@@ -52,6 +52,21 @@ Portanto o redirect canônico na fonte e os Deno 8/8 não equivalem ao resultado
 produtivo: há uma negativa real do destino no link gerado. C0 está conferindo a
 semântica do SDK/configuração Auth antes de atribuir causa. Não gerar outro
 link, não mudar senha/SMTP/configuração e não declarar P51 concluído.
+
+## Correção focal e pós-prova
+
+O C0 confirmou por diff read-only que `additional_redirect_urls` remoto continha
+somente `http://127.0.0.1:8765/reset-password`, enquanto `site_url` era o
+fallback `http://localhost:3000`. Aplicou o delta mínimo exclusivamente nessa
+allowlist: preservou a entrada existente e acrescentou
+`https://superadmin.coelo.me/reset-password`; as outras 11 propriedades ficaram
+inalteradas. Não houve mudança de `site_url`, SMTP, senha ou identidade.
+
+Uma geração final para o mesmo Auth user, às 13:15:35 BRT, passou os sete
+booleanos: HTTP 200, HTTPS, host/path/type corretos, mesmo usuário e
+`redirect_exact=true`. Nenhum link, query ou token foi registrado ou aberto.
+A prova fecha o contrato API e do link seguro; não certifica envio SMTP, acesso
+ao endereço nem definição efetiva da senha.
 
 O modo read-only `--verify-existing-id` passou depois: `existing_count=1`,
 detail/list/reload verdes, perfil `support`, duas permissões, logout local 204.

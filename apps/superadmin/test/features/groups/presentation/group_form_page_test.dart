@@ -872,20 +872,20 @@ void main() {
       FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
     )..contextOverride = context;
     final locationCreate = _RecordingGroupLocationCreateRepository();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: GroupFormPage(
-          repository: repository,
-          locationCatalogReader: _FixedLocationCatalogReader(),
-          groupLocationCreateRepository: locationCreate,
-          groupLocationCreateEnabled: true,
-          logout: () async => const LogoutResult.success(),
-          onCancel: () {},
-          onSaved: (_) {},
-        ),
+    Widget app(LocationCatalogReader reader) => MaterialApp(
+      theme: CoeloTheme.light,
+      home: GroupFormPage(
+        key: const ValueKey('atomic-group-location-form'),
+        repository: repository,
+        locationCatalogReader: reader,
+        groupLocationCreateRepository: locationCreate,
+        groupLocationCreateEnabled: true,
+        logout: () async => const LogoutResult.success(),
+        onCancel: () {},
+        onSaved: (_) {},
       ),
     );
+    await tester.pumpWidget(app(_FixedLocationCatalogReader()));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
@@ -946,6 +946,15 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.pumpWidget(
+      app(
+        _FixedLocationCatalogReader(
+          locationBName: 'Patio atualizado',
+          locationBKind: LocationKind.external,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('step-identidade')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma B');
@@ -977,6 +986,17 @@ void main() {
           )
           .value,
       locationB,
+    );
+    final refreshedLocation = tester.widget<LocationSelectionField>(
+      find.byType(LocationSelectionField),
+    );
+    expect(
+      (refreshedLocation.initialSelection as CataloguedLocationSelection).snapshot.label,
+      'Patio atualizado',
+    );
+    expect(
+      (refreshedLocation.initialSelection as CataloguedLocationSelection).snapshot.kind,
+      LocationKind.external,
     );
     tester
         .widget<LocationSelectionField>(find.byType(LocationSelectionField))
@@ -1015,12 +1035,21 @@ void main() {
 }
 
 final class _FixedLocationCatalogReader implements LocationCatalogReader {
+  _FixedLocationCatalogReader({
+    this.locationBName = 'Sala de leitura',
+    this.locationBKind = LocationKind.internal,
+  });
+
   static const _unitB = '30000000-0000-4000-8000-000000000002';
+  final String locationBName;
+  final LocationKind locationBKind;
   late final _entries = [
     locationFixture(scope: scopeUnitA),
     locationFixture(
       id: locationB,
       scope: const LocationScope.unit(institutionId: institutionA, unitId: _unitB),
+      name: locationBName,
+      kind: locationBKind,
     ),
   ];
 

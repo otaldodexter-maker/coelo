@@ -11,6 +11,7 @@ import 'package:http/http.dart' as http;
 
 import '../../data/forms_image_upload.dart';
 import '../operations/forms_media_page.dart';
+import 'forms_camera_capture.dart';
 
 typedef FormsGalleryPicker = Future<Uint8List?> Function();
 
@@ -27,6 +28,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
     this.editSecret,
     this.enabled = true,
     this.pickImage = pickFormsGalleryImage,
+    this.capturePhoto = showFormsCameraCapture,
     this.createUploadClient,
     super.key,
   }) : questionApi = null,
@@ -44,6 +46,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
     required this.onBusyChanged,
     this.enabled = true,
     this.pickImage = pickFormsGalleryImage,
+    this.capturePhoto = showFormsCameraCapture,
     this.createUploadClient,
     super.key,
   }) : api = null,
@@ -67,6 +70,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
   final ValueChanged<bool> onBusyChanged;
   final bool enabled;
   final FormsGalleryPicker pickImage;
+  final FormsCameraCapture capturePhoto;
 
   @override
   State<FormsGalleryAnswerField> createState() => _FormsGalleryAnswerFieldState();
@@ -125,7 +129,9 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
     }
     _setBusy(true);
     try {
-      final bytes = await widget.pickImage();
+      final bytes = await (widget.questionApi == null && widget.item.kind == FormItemKind.photo
+          ? widget.capturePhoto(context, _lifetime)
+          : widget.pickImage());
       if (bytes == null) return;
       if (!_active) {
         bytes.fillRange(0, bytes.length, 0);
@@ -253,7 +259,9 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
       Text(
-        'Até ${widget.item.config.maxImages ?? 5} imagens. JPEG, PNG ou WebP, até ${widget.questionApi == null ? 10 : 4} MB por imagem.',
+        widget.questionApi == null && widget.item.kind == FormItemKind.photo
+            ? 'Uma foto capturada pela câmera, até 10 MB.'
+            : 'Até ${widget.item.config.maxImages ?? 5} imagens. JPEG, PNG ou WebP, até ${widget.questionApi == null ? 10 : 4} MB por imagem.',
       ),
       for (var index = 0; index < widget.assetIds.length; index++)
         Wrap(
@@ -297,12 +305,26 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
                 widget.enabled &&
                     !_busy &&
                     _operation == null &&
-                    widget.assetIds.length < (widget.item.config.maxImages ?? 5) &&
+                    widget.assetIds.length <
+                        (widget.questionApi == null && widget.item.kind == FormItemKind.photo
+                            ? 1
+                            : widget.item.config.maxImages ?? 5) &&
+                    (widget.questionApi != null ||
+                        widget.item.kind != FormItemKind.photo ||
+                        widget.item.config.allowCamera != false) &&
                     _active
                 ? _pick
                 : null,
-            icon: const Icon(Icons.photo_library_outlined),
-            label: const Text('Selecionar imagem'),
+            icon: Icon(
+              widget.questionApi == null && widget.item.kind == FormItemKind.photo
+                  ? Icons.photo_camera_outlined
+                  : Icons.photo_library_outlined,
+            ),
+            label: Text(
+              widget.questionApi == null && widget.item.kind == FormItemKind.photo
+                  ? 'Capturar foto'
+                  : 'Selecionar imagem',
+            ),
           ),
           if (_busy && _operation != null)
             TextButton(onPressed: _operation!.cancel, child: const Text('Cancelar envio')),
@@ -313,6 +335,10 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
         ],
       ),
       if (_busy) const LinearProgressIndicator(semanticsLabel: 'Enviando imagem'),
+      if (widget.questionApi == null &&
+          widget.item.kind == FormItemKind.photo &&
+          widget.item.config.allowCamera == false)
+        const Text('A captura de foto está desativada nesta pergunta.'),
       if (_message != null) Semantics(liveRegion: true, child: Text(_message!)),
     ],
   );

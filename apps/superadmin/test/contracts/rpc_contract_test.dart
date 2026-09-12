@@ -16,6 +16,55 @@ void main() {
   final calls = _callSites(Directory('${root.path}/apps/superadmin/lib'));
   final declared = _declaredFunctions(Directory('${root.path}/packages/coelo_database'));
 
+  test('reads quoted relation identifiers from the production dump', () {
+    final fixture = Directory.systemTemp.createTempSync('coelo-contract-relations-');
+    addTearDown(() => fixture.deleteSync(recursive: true));
+    File('${fixture.path}/baseline.sql').writeAsStringSync(
+      'CREATE TABLE IF NOT EXISTS "public"."profile_about_pages" (id uuid);'
+      'CREATE TABLE public.plain_table (id uuid);'
+      'CREATE OR REPLACE VIEW "public"."about_view" AS SELECT 1;'
+      'CREATE MATERIALIZED VIEW public.plain_view AS SELECT 1;',
+    );
+    expect(_declaredRelations(fixture), {
+      'profile_about_pages', 'plain_table', 'about_view', 'plain_view',
+    });
+  });
+
+  test('reads quoted function and parameter identifiers without changing required defaults', () {
+    final fixture = Directory.systemTemp.createTempSync('coelo-contract-functions-');
+    addTearDown(() => fixture.deleteSync(recursive: true));
+    File('${fixture.path}/baseline.sql').writeAsStringSync(
+      'CREATE OR REPLACE FUNCTION "public"."get_profile_about"('
+      '"p_subject_type" text, "p_subject_id" uuid, '
+      '"p_preview_audience" text DEFAULT NULL) RETURNS jsonb AS NULL;'
+      'CREATE FUNCTION public.plain_function(p_required uuid, p_optional text DEFAULT NULL) '
+      'RETURNS jsonb AS NULL;',
+    );
+    final functions = _declaredFunctions(fixture);
+    expect(functions.keys, containsAll(['get_profile_about', 'plain_function']));
+    expect(functions['get_profile_about']!.required, {'p_subject_type', 'p_subject_id'});
+    expect(functions['get_profile_about']!.all, {
+      'p_subject_type', 'p_subject_id', 'p_preview_audience',
+    });
+    expect(functions['plain_function']!.required, {'p_required'});
+  });
+
+  test('excludes pgTAP declarations using native Windows or POSIX paths', () {
+    final fixture = Directory.systemTemp.createTempSync('coelo-contract-tests-');
+    addTearDown(() => fixture.deleteSync(recursive: true));
+    final tests = Directory('${fixture.path}/tests')..createSync();
+    File('${tests.path}/fixture.sql').writeAsStringSync(
+      'CREATE TABLE public.test_only_relation (id uuid);'
+      'CREATE FUNCTION public.test_only_function() RETURNS jsonb AS NULL;',
+    );
+    File('${fixture.path}/migration.sql').writeAsStringSync(
+      'CREATE TABLE public.real_relation (id uuid);'
+      'CREATE FUNCTION public.real_function() RETURNS jsonb AS NULL;',
+    );
+    expect(_declaredRelations(fixture), {'real_relation'});
+    expect(_declaredFunctions(fixture).keys, ['real_function']);
+  });
+
   test('toda RPC chamada pelo Superadmin existe no pacote de banco', () {
     expect(calls, isNotEmpty, reason: 'o varredor nao encontrou chamadas .rpc');
 
@@ -108,21 +157,10 @@ void main() {
 /// docs/reviews/etapa-2-operacao/reports/E2-noturna-contrato-rpc-20260910.md
 const _rpcsAusentesConhecidas = <String, String>{};
 
-/// Relacoes lidas direto pelo cliente que nenhuma migration do pacote cria.
-///
-/// A unica migration versionada do dominio Sobre expoe somente a escrita, e a
-/// leitura depende inteiramente de RLS sobre tabelas que o versionamento nao
-/// descreve. As tres tabelas desta lista foram medidas por MIM, pela varredura deste
-/// proprio teste: nenhum arquivo do pacote as cria. A frente perfil-para-voce mediu o
-/// mesmo buraco pelo lado do SQL e
-/// deixou a proposta de leitura autorizada em
-/// packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que nao
-/// e migration e nao foi aplicada.
-const _relacoesAusentesConhecidas = <String, String>{
-  'profile_about_pages': 'Sobre: pagina. Nenhuma migration cria a tabela.',
-  'profile_about_sections': 'Sobre: secoes. Nenhuma migration cria a tabela.',
-  'profile_about_structured_fields': 'Sobre: campos. Nenhuma migration cria a tabela.',
-};
+/// Exceções de relações reconciliadas com a baseline de produção em12/09.
+/// profile_about_pages, sections e structured_fields são declaradas no dump;
+/// nomes SQL entre aspas agora participam do mesmo censo das migrations.
+const _relacoesAusentesConhecidas = <String, String>{};
 
 final class _Call {
   _Call(this.name, this.where, this.keys, this.spread);
@@ -188,7 +226,7 @@ List<_Call> _callSites(Directory lib) {
 Map<String, _Signature> _declaredFunctions(Directory package) {
   final declared = <String, _Signature>{};
   final pattern = RegExp(
-    r'create\s+(?:or\s+replace\s+)?function\s+(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)\s*\(',
+    r'create\s+(?:or\s+replace\s+)?function\s+(?:"?[A-Za-z0-9_]+"?\.)?"?([A-Za-z0-9_]+)"?\s*\(',
     caseSensitive: false,
   );
   for (final file in package.listSync(recursive: true).whereType<File>()) {
@@ -205,9 +243,12 @@ Map<String, _Signature> _declaredFunctions(Directory package) {
         final words = argument.trim().split(RegExp(r'\s+'));
         if (words.isEmpty || words.first.isEmpty) continue;
         final qualifier = RegExp(r'^(?:out|inout|in|variadic)$', caseSensitive: false);
-        final name = qualifier.hasMatch(words.first)
+        final rawName = qualifier.hasMatch(words.first)
             ? (words.length > 1 ? words[1] : '')
             : words.first;
+        final name = rawName.startsWith('"') && rawName.endsWith('"')
+            ? rawName.substring(1, rawName.length - 1)
+            : rawName;
         if (name.isEmpty) continue;
         all.add(name);
         if (!RegExp(r'\bdefault\b|=', caseSensitive: false).hasMatch(argument)) {
@@ -293,12 +334,12 @@ Set<String> _declaredRelations(Directory package) {
   final relations = <String>{};
   final pattern = RegExp(
     r'create\s+(?:or\s+replace\s+)?(?:materialized\s+)?(?:table|view)\s+'
-    r'(?:if\s+not\s+exists\s+)?(?:[A-Za-z0-9_]+\.)?([A-Za-z0-9_]+)',
+    r'(?:if\s+not\s+exists\s+)?(?:"?[A-Za-z0-9_]+"?\.)?"?([A-Za-z0-9_]+)"?',
     caseSensitive: false,
   );
   for (final file in package.listSync(recursive: true).whereType<File>()) {
     if (!file.path.endsWith('.sql')) continue;
-    if (file.path.replaceAll(r'', '/').contains('/tests/')) continue;
+    if (file.path.replaceAll(r'\', '/').contains('/tests/')) continue;
     for (final match in pattern.allMatches(file.readAsStringSync())) {
       relations.add(match.group(1)!);
     }

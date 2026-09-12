@@ -27,7 +27,10 @@ void main() {
     addTearDown(tester.view.resetPhysicalSize);
     final handle = tester.ensureSemantics();
     await tester.pumpWidget(
-      MaterialApp(theme: CoeloTheme.light, home: Scaffold(body: page)),
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(body: page),
+      ),
     );
     await tester.pumpAndSettle();
     if (tapSize) await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
@@ -71,6 +74,35 @@ void main() {
   //    label "Periodo", nem a tabela, que rotula suas alcas.
   //
   // Remover este skip quando os dois forem corrigidos.
+  testWidgets('H25 forms directory resize targets meet tap size at desktop and 375', (
+    tester,
+  ) async {
+    addTearDown(tester.view.resetDevicePixelRatio);
+    addTearDown(tester.view.resetPhysicalSize);
+    for (final width in [1440.0, 375.0]) {
+      tester.view.devicePixelRatio = 1;
+      tester.view.physicalSize = Size(width, 1000);
+      final semantics = tester.ensureSemantics();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
+            body: FormsDirectoryPage(api: DevelopmentFormsApi.seeded(), canManage: true),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(find.bySemanticsLabel('Redimensionar coluna Nome'), findsOneWidget);
+      await expectLater(tester, meetsGuideline(androidTapTargetGuideline));
+      await expectLater(tester, meetsGuideline(labeledTapTargetGuideline));
+      expect(tester.takeException(), isNull);
+      semantics.dispose();
+      await tester.pumpWidget(const SizedBox.shrink());
+    }
+    tester.view.resetDevicePixelRatio();
+    tester.view.resetPhysicalSize();
+  });
+
   testWidgets('the forms directory meets tap size, labelling and contrast', (tester) async {
     await check(tester, FormsDirectoryPage(api: DevelopmentFormsApi.seeded(), canManage: true));
   }, skip: true);

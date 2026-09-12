@@ -1,0 +1,31 @@
+{
+  "measured_at": "2026-09-12T13:50:19.727156-03:00",
+  "version": 20,
+  "verify_jwt": true,
+  "bundle_sha256": "a8527852d8e510975b9c1b052d7810726f6d9c1d5b25411411c0c290fcb46047",
+  "deno": {
+    "passed": 56,
+    "failed": 0,
+    "typecheck": true
+  },
+  "provider": "r2",
+  "provider_change": "Somente COELO_FORMS_MEDIA_PROVIDER=r2; CLI informou count1; prepare seguinte confirmou envelope R2",
+  "sequence_note": "Deploy despachado antes de coletar o exit final da sessao Deno; resultado final0/56PASS confirmado antes de liberar runtime. Preservar ordem estrita nos proximos deploys.",
+  "options": [
+    {
+      "origin": "http://localhost:3014",
+      "status": 204,
+      "acao": "http://localhost:3014"
+    },
+    {
+      "origin": "https://superadmin.coelo.me",
+      "status": 204,
+      "acao": "https://superadmin.coelo.me"
+    },
+    {
+      "origin": "https://fora.example",
+      "status": 403,
+      "acao": "null"
+    }
+  ]
+}
