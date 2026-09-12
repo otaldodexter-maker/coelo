@@ -173,3 +173,19 @@ Aplicações por tela (telas aprovadas pelo Owner em 11/09 às 17:19 no canvas
   nota de que as famílias com falta recebem aviso no sino, rodapé
   "Concluir chamada" (primária) e "Salvar e continuar depois"; no desktop,
   coluna de resumo (presentes/faltas/atrasos).
+
+## Atualização nominal do Owner — 12/09/2026 (ADR0034 Decisão20)
+
+Consultar `docs/reviews/etapa-2-operacao/next-round/R07-decisoes-owner-20260912.md`:
+arquivo, referência R, render A, diferença, A/A+/R, observação e versão salva
+formam o formato aprovado para futuras revisões. A+ exige ajuste; R conserva
+a referência. P53=A aprova o launcher atual; não todos os componentes da tela.
+
+Circulares preservam blocos ordenados de texto, mídia e perguntas simples
+intercalados, não anexados somente no fim (spec037). Os seis estados web R
+do compositor exigem comparar o rodapé indicado, não regravar por semelhança.
+O limite de4.000 mostrado na proposta acima diverge dos10.000 da spec037:
+é divergência registrada em docs/open-questions.md, não alteração tácita de
+contrato. Separar o compositor de teste do host de produção nas aprovações.
+Chamada compacta: revisar tamanho do título e abreviar retorno conforme os
+dois comentários de375; um comentário sem rádio não é A incondicional.

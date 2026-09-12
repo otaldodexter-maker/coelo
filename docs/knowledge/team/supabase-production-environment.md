@@ -4,7 +4,7 @@ knowledge_id: supabase-production-environment
 source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
 generated_at: 2026-09-01
-updated_at: 2026-09-11
+updated_at: 2026-09-12
 audience: team
 surfaces: [supabase, database, auth, storage, edge-functions]
 visibility: internal
@@ -107,3 +107,8 @@ instituição em rascunho e exigiu hotfix no mesmo dia). Pacote marcado pronto
 não muda de conteúdo: correção posterior nasce como pacote novo. Sessões da
 Conta são listadas por RPC própria e revogadas pelo GoTrue (`scope=others`),
 sem função de borda nem chave de serviço.
+
+Na execução coordenada (ADR0034 Decisão20), C0 publica os lotes integrados
+e mantém slots globais de um Chrome e um flutter test. Checkpoints agendados
+retomam trabalho executável até o corte, sem iniciar outra rodada. Deploy,
+preflightHTTP e teste local são evidências distintas de CRUD, RLS e reload.

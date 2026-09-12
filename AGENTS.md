@@ -243,6 +243,18 @@ mock ou teste isolado nunca deve ser declarada concluida ponta a ponta.
 
 ## Memoria De Conhecimento
 
+### Encerramento R07 e aprovações (ADR 0034, Decisão 20)
+
+Aprovação visual usa arquivo, referência R, render A, diferença, decisão
+A/A+/R, observação e versão salva. A+ ainda exige correção; R não é aprovado.
+Contar IDs únicos com A explícito, nunca quantidade de imagens ou objetos
+de revisão. Circulares preservam blocos ordenados de texto, mídia e perguntas
+simples intercaláveis conforme spec037 e decisão do Owner de12/09/2026.
+Rodadas coordenadas mantêm um Chrome e um flutter test globais, com slot e
+PID do dono; checkpoints agendados e publicação em dev evitam trabalho retido.
+Não iniciar rodada posterior automaticamente. Evidências ignoradas são
+preservadas fora do Git antes da remoção da worktree, mantendo a branch.
+
 Use `.agents/skills/coelo-knowledge/SKILL.md` sempre que uma tarefa Coelo
 alterar ou explicar produto, dominio, permissoes, UX, documentacao ou
 comportamento observavel.

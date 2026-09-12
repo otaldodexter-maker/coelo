@@ -785,3 +785,23 @@ concluída, unidade Backend `done` e produto ainda pendente.
   `instructor`; admins vivem em `activity_admin_assignments`).
 - Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`
   e em `acessos-pessoas.json` → `PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06`.
+
+## Pendências vigentes — Etapa 2 após R07
+
+Fonte vigente: `docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md`
+e `R08-backlog.md` no mesmo diretório; substituem gates R01–R06 superados.
+Decisões visuais/de conteúdo: `R07-decisoes-owner-20260912.md`, ADR0034 Decisão20.
+
+- Próximo lote SQL56; espelho/Docker não verificado após o incidente R07.
+  Sem pgTAP e dump do lote, não aplicar SQL novo em produção.
+- internal-user-create v3 e circular-media v13 foram implantadas; falta o
+  fluxo funcional pela UI, não outro deploy genérico. OPTIONS precisa ser
+  medido: resposta204 não tem corpo; cliente Supabase usa x-client-info.
+  CORS do bucket não prova CORS da Edge Function. Origem3014 foi medida.
+- Pendentes: cliente de mídia, expiração agendada Agora, RLS transversal e
+  resíduos de cuidado/concorrência de @ discriminados na varredura R01–R07.
+  180060 está resolvido quanto à decisão de papel; CHECK é revisão separada.
+- Segredos permanecem somente no cofre/arquivo privado; skill registra nomes
+  e roteiro, nunca valores. Credencial QA exposta exige recibo de rotação.
+- Recibos por revisão/SHA distinguem teste relatado, execução local, deploy,
+  SQL aplicado e BE done; contagem local não certifica produção.

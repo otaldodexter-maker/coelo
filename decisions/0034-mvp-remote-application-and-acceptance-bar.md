@@ -533,3 +533,33 @@ para a Rodada 6, não executadas pela coordenação da R05. Texto integral em
   (bloqueado na sessão do coordenador); decisão do launcher "Mensagens" para
   regravar os 9 goldens de Atividades; lista de arrobas reservados (fim do
   MVP).
+
+## Decisão 20 — encerramento R07: aprovações nominais, Circular e execução coordenada (12/09/2026)
+
+Fonte: pedido do Owner no fechamento, confirmado pelo repasse de G8;
+`docs/reviews/etapa-2-operacao/next-round/R07-decisoes-owner-20260912.md`
+preserva a lista do artefato oficial, versão 1789217640-8613.
+
+- Aprovações futuras usam nome do arquivo, referência R, render A, diferença,
+  decisão A/A+/R, observação e versão salva. A é aprovação do estado visto;
+  A+ pede ajuste e R mantém a referência. Nenhuma delas certifica persistência,
+  backend ou E2E. Contar IDs únicos com A explícito mapeado, não imagens nem
+  objetos `ownerVisualApproval` que contêm apenas R.
+- P53=A: launcher atual aprovado. Criar modelo de Atividade migra ao rodapé
+  canônico ancorado no MVP. Chamada compacta recebe revisão do tamanho do
+  título e retorno curto conforme observações nominais, antes da regravação.
+- Circulares permitem blocos de perguntas simples e mídia intercalados no
+  texto, não restritos ao final. Reafirma os blocos ordenados da spec037.
+  Os seis estados web R do compositor são corrigidos conforme o recorte
+  indicado; aprovação de um compositor de teste não aprova outro host.
+- C0 é o único integrador/publicador. Preparar a R08 toda no Codex, em janela
+  de quatro horas de execução e trinta minutos de revisão/fechamento,
+  com recebimento/ACK por revisão e publicação periódica em dev. Checkpoints
+  agendados retomam frente parada com gate executável até o corte; não
+  iniciam a R09 automaticamente nem superam ordem de parar do Owner.
+- Um Chrome e um flutter test por vez na máquina; posse por PID/slot,
+  nunca encerramento por nome genérico de processo. Preservar evidência
+  ignorada antes de remover worktree integrada, mantendo as branches.
+
+As decisões de layout do artefato não mudam os limites de conteúdo da spec037
+nem ampliam o escopo de exportações, autenticação ou cobrança.

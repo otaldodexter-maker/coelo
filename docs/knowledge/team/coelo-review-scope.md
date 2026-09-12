@@ -4,7 +4,7 @@ knowledge_id: "coelo-review-scope"
 source: "AGENTS.md"
 status: "validated"
 generated_at: "2026-09-08"
-updated_at: "2026-09-09"
+updated_at: "2026-09-12"
 audience: "team"
 surfaces: [documentation, frontend, backend, integration]
 visibility: "internal"
@@ -79,3 +79,10 @@ entrega integrada enquanto commit/push autorizado estiver pendente.
 Skills são instruções para o agente e orientam também a entrega do app real.
 A branch Git `dev` é a base atual de versionamento, não um ambiente de testes.
 As mesmas regras valem para produção, respeitando o escopo remoto autorizado.
+
+Revisões visuais seguem a Decisão20 da ADR0034: arquivo, referência R, render
+A, diferença, decisão A/A+/R, observação e versão salva. A+ exige ajuste e R
+não é aprovado. O indicador conta IDs únicos com A explícito mapeado ao estado,
+sem confundir quantidade de imagens com ações nem aprovação visual com E2E.
+Rodadas usam um Chrome e um flutter test globais por slots; C0 recebe e publica
+em ciclos agendados até o corte. Uma rodada encerrada não inicia a seguinte.

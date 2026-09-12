@@ -3,10 +3,30 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-09"
+updated_at: "2026-09-12"
 ---
 
 # Perguntas abertas e conflitos
+
+## R07 — resíduos reconciliados e Circular (12/09/2026)
+
+Lista com fonte, estado medido, dono e primeiro gate em
+`reviews/etapa-2-operacao/next-round/R07-varredura-r01-r07.md` e
+`R07-perguntas-ao-owner-20260912.md` no mesmo diretório. P52/deploy e
+P53/launcher estão resolvidos; não são novas perguntas. Revisão de segurança
+histórica fica separada da entrega por ordem do Owner de12/09.
+
+- **R07-CIRC-LIMITE:** spec037 permite10.000 caracteres e blocos ordenados;
+  a referência da família Publicação em coelo-ui mostra4.000. A decisão20
+  reafirma perguntas/mídias intercaladas, mas não redefine o limite. G6
+  mede host/contrato e apresenta opção focal ao Owner; não muda silenciosamente.
+- **R07-CIRC-RODAPE:** seis goldens web do compositor receberam R com observação
+  sobre o rodapé. Comparar recorte R/A da fonte oficial e o host real antes
+  de implementar; nome de golden homônimo não prova identidade do componente.
+- **R07-PLANO:** plans.assign permanece pendente na spec051 (leitura de
+  vínculos); é distinto de P51 SMTP e de activate/restaurar. Owner decide
+  se atribuição entra no MVP; manter indisponibilidade honesta até lá.
+
 
 ## R02 — alcance do shell nos viewers Principal — resolvido em 09/09/2026
 
@@ -280,4 +300,3 @@ C00 identificou assertions históricas em audit_production_test.sql:53–58/235�
 ## R02 - IDs de Sair em Auth e Conta - 2026-09-09T15:54:53.4387056-03:00
 
 O inventario vigente docs/reviews/inventario-etapa-2.json contem auth.logout e account.logout separadamente. O escopo R02 seleciona auth.logout para D01 e deixa account.logout fora; a nota historica R01 de14:30 nos rastreadores tratava auth.logout como shorthand de account.logout. Ha divergencia de mapeamento documental, nao evidencia de duas operacoes distintas. Decisao necessaria: confirmar decomposicao por superficie ou aprovar unificacao futura com recalculo de denominadores. Nesta rodada preservam-se os dois IDs e o denominador230; o aceite FE de Sair e atribuido apenas ao ID explicitamente selecionado auth.logout, sem promover account.logout. Fonte do certificado: docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md; lacuna tambem em escopo.json.
-

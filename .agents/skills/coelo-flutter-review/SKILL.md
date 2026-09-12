@@ -359,3 +359,23 @@ tela em `coelo-ui/references/approved-superadmin-visual-baselines.md`, seção
 - **Cardápios (P47):** o cliente não injeta tenant; o servidor valida
   (`scopeRules` como objeto, lote 55).
 - Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`.
+
+## Pendências vigentes — Etapa 2 após R07
+
+Ler `docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md`,
+`R08-backlog.md` e `R07-decisoes-owner-20260912.md`. O bloco R07 dos
+rastreadores é vigente; históricos não reabrem decisões já respondidas.
+
+- P53=A; regravar apenas os estados nominais aprovados, após comparar.
+  Criar modelo de Atividade usa rodapé canônico no MVP. Chamada compacta
+  recebe título/retorno curtos conforme observações. Circular admite
+  perguntas/mídias intercaladas; respeitar spec037 e ADR0034 Decisão20.
+- Aprovação: arquivo + R/A/diferença + A/A+/R + observação + versão salva.
+  A+ ainda pede correção; R e decisão inferida não contam como A explícito.
+  A imagem de um componente não aprova outro host com nome semelhante.
+- Chamada mark/finish/correct reconstruídas precisam de FE/E2E novos;
+  attendance.create não foi reconstruída. Alias do handoff é reconciliado
+  com action_id; não cria denominador nem permite ignorar perda de validade.
+- Um Chrome e um flutter test globais, com slot do C0; nunca matar dart ou
+  Chrome por nome de imagem. Ajuste textual de teste exige contrato vigente;
+  não criar allowlist/skip para esconder defeito de produção.

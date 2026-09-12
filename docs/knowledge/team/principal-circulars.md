@@ -4,7 +4,7 @@ knowledge_id: "principal-circulars"
 source: "specs/037-principal-circulars.md"
 status: "validated"
 generated_at: "2026-08-21"
-updated_at: "2026-09-09"
+updated_at: "2026-09-12"
 audience: "team"
 surfaces: [principal, perfil, acontece, supabase, authorization]
 visibility: "internal"
@@ -17,6 +17,12 @@ Circulares são comunicações institucionais privadas e versionadas. Possuem
 título de até 120 caracteres, texto total de até 10.000, quatro anexos e dez
 perguntas simples de escolha única ou múltipla. Não são posts comuns, popups ou
 formulários completos.
+
+Os blocos de texto, mídia e perguntas simples são ordenados e intercaláveis:
+perguntas e mídia podem aparecer no meio do texto, não apenas no final
+(spec037, reafirmada pelo Owner na ADR0034 Decisão20). O autor, o preview e
+o leitor preservam essa ordem. Uma imagem aprovada de um compositor de teste
+não certifica outro host nem prova salvar/publicar em produção.
 
 No diretório administrativo, mobile usa tile de criação e cards compactos;
 tablet e desktop usam faixa de criação e tabela no padrão de Instituições. Não

@@ -313,3 +313,25 @@ correção local verificada. Não confundir isso com integração ou publicaçã
 - Sino do shell: `context_notification_recipients` + `context_notification_events`
   bastam para leitura e marcação sem RPC nova (pendência de UI).
 - Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`.
+
+## Pendências vigentes — Etapa 2 após R07
+
+Fontes: `docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md`,
+`R08-backlog.md` e `R07-decisoes-owner-20260912.md`; ADR0034 Decisão20.
+R08 prepara C0 + G0–G8 no Codex, não inicia outra rodada automaticamente.
+
+- Priorizar runtime único (G0), mídia/arquivos, recertificação da Chamada,
+  resposta de Circular e provas reais restantes. A varredura R01–R07
+  preserva resíduos de produto/segurança, código arquivado e primeiro gate.
+- FE verified, BE done, E2E e aprovação visual são medições distintas.
+  Contar somente IDs com A explícito no indicador visual; objeto preenchido
+  só com R não é aprovação. Não somar arquivos, reruns ou camadas.
+- SQL de internal-users.create já aplicado na R06 foi reconciliado como
+  local-green; v3/OPTIONS não provam criar pela tela. Provas posteriores à
+  reconstrução preservam Agenda/Circulares; prova do compositor antigo
+  não certifica host diferente nem conteúdo intercalado ainda não exercitado.
+- C0 recebe JSON/SHA por revisão, integra por merge, regenera inventário e
+  três matrizes e publica em dev a cada ciclo. Checkpoint agendado retoma
+  frente ociosa com gate executável até o corte; limite externo é explícito.
+- Retirar worktree só depois de integrar e preservar ignorados/evidências
+  fora do Git; branches permanecem. Sintéticos saem só no fim da Etapa2.
