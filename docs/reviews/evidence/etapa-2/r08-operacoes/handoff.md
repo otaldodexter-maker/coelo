@@ -36,6 +36,18 @@ não exibe preview e apresenta o fallback para a origem HTTPS configurada.
 Isso não comprova que o host externo foi publicado; `catalog.publish` continua
 com esse gate aberto.
 
+## Help Center — dois A
+
+Os arquivos `help_center_empty_light_1440.png` e
+`help_center_empty_dark_375.png` foram comparados antes da regravação. A
+comparação inicial falhou em 4,52% (light 1440) e 90,85% (dark 375). As imagens
+de diferença mostram a atualização da shell/navegação e a composição mobile
+vigente, não uma regra nova do Help Center. Ambos constam como **A** nominais
+na decisão R07 do Owner, portanto somente esses dois PNGs foram regravados.
+
+O mesmo teste focal passou após a regravação: **1/1 PASS**. Esta é prova de
+aprovação visual; não promove Front-end, Back-end ou E2E.
+
 ## Gates externos
 
 Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
