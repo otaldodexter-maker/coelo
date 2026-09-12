@@ -4,14 +4,89 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'forms_backend_gateway.dart';
 import 'forms_editor_context.dart';
 import 'forms_file_jobs_reader.dart';
+import 'forms_media_reader.dart';
 
 final class SupabaseFormsApi
-    implements FormsApi, FormsEditorContextApi, FormsResponseContextReader, FormsFileJobsReader {
+    implements
+        FormsApi,
+        FormsEditorContextApi,
+        FormsResponseContextReader,
+        FormsFileJobsReader,
+        FormsQuestionImageApi {
   const SupabaseFormsApi(this._backend, {FormCursorCodec cursorCodec = const FormCursorCodec()})
     : _cursorCodec = cursorCodec;
 
   final FormsBackendGateway _backend;
   final FormCursorCodec _cursorCodec;
+
+  @override
+  MediaReader get questionImageReader => FormsQuestionImageReader(gateway: _backend);
+
+  @override
+  Future<FormAssetUploadTicket> prepareQuestionImage(
+    FormQuestionImageTarget target, {
+    required String requestId,
+    required MediaUploadMetadata sourceMetadata,
+  }) => _guard(() async {
+    final payload = _map(
+      await _backend.media({
+        'action': 'prepare',
+        'request_id': requestId,
+        'payload': {
+          'purpose': 'question-image',
+          'form_id': target.formId,
+          'form_version_id': target.formVersionId,
+          'item_id': target.itemId,
+          'mime_type': sourceMetadata.mimeType,
+          'byte_size': sourceMetadata.byteLength,
+          'sha256': sourceMetadata.checksumSha256,
+        },
+      }),
+    );
+    return FormAssetUploadTicket(
+      assetId: _string(payload, 'asset_id'),
+      uploadUrl: Uri.parse(_string(payload, 'upload_url')),
+      requiredHeaders: _stringMap(payload['required_headers']),
+      expiresAt: _dateTime(payload, 'expires_at'),
+    );
+  });
+
+  @override
+  Future<FormAsset> finalizeQuestionImage(
+    FormQuestionImageTarget target,
+    FormCommand<FormAssetIdPayload> command,
+  ) => _guard(() async {
+    final payload = _map(
+      await _backend.media({
+        'action': 'finalize',
+        'request_id': command.requestId,
+        'payload': {'purpose': 'question-image', 'asset_id': command.payload.assetId},
+      }),
+    );
+    if (_string(payload, 'asset_id') != command.payload.assetId || payload['status'] != 'ready') {
+      throw const WireFormatException('Question image was not confirmed.');
+    }
+    return FormAsset(
+      id: command.payload.assetId,
+      itemId: target.itemId,
+      mimeType: _string(payload, 'mime_type'),
+      byteLength: _integer(payload, 'byte_size'),
+    );
+  });
+
+  @override
+  Future<void> deleteQuestionImage(FormCommand<FormAssetIdPayload> command) => _guard(() async {
+    final payload = _map(
+      await _backend.media({
+        'action': 'delete',
+        'request_id': command.requestId,
+        'payload': {'purpose': 'question-image', 'asset_id': command.payload.assetId},
+      }),
+    );
+    if (_string(payload, 'asset_id') != command.payload.assetId || payload['status'] != 'deleted') {
+      throw const WireFormatException('Question image removal was not confirmed.');
+    }
+  });
 
   @override
   Future<FormsEditorContext> getEditorContext() => _guard(() async {
@@ -1021,10 +1096,7 @@ String _string(Map<String, Object?> value, String key) {
 Map<String, String> _stringMap(Object? value) {
   if (value == null) return const {};
   if (value is! Map) throw const WireFormatException('required_headers must be an object.');
-  return {
-    for (final entry in value.entries)
-      entry.key.toString(): entry.value.toString(),
-  };
+  return {for (final entry in value.entries) entry.key.toString(): entry.value.toString()};
 }
 
 int _integer(Map<String, Object?> value, String key) {

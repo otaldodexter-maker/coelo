@@ -2855,7 +2855,7 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => formsShell(
               title: 'Criar formulário',
               subtitle: 'Organize seções e perguntas para a rotina das equipes.',
-              child: FormsEditorPage(api: formsApi),
+              child: FormsEditorPage(api: formsApi, mediaSession: formsMediaScope?.current),
             ),
           ),
           GoRoute(
@@ -2913,7 +2913,11 @@ GoRouter createSuperadminRouter({
             builder: (context, state) => formsShell(
               title: 'Editar formulário',
               subtitle: 'Organize seções e perguntas para a rotina das equipes.',
-              child: FormsEditorPage(api: formsApi, formId: state.pathParameters['formId']),
+              child: FormsEditorPage(
+                api: formsApi,
+                formId: state.pathParameters['formId'],
+                mediaSession: formsMediaScope?.current,
+              ),
             ),
           ),
           GoRoute(
@@ -2975,6 +2979,8 @@ GoRouter createSuperadminRouter({
                   ),
                   api: formsApi,
                   occurrenceId: state.pathParameters['occurrenceId'],
+                  mediaSession: formsMediaScope?.current,
+                  mediaReader: formsMediaReader,
                 ),
               ),
             ),
