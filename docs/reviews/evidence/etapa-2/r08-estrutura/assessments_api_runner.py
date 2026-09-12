@@ -120,6 +120,7 @@ def main() -> int:
                     if (manifest.get("mode") != "execute" or manifest.get("mutations") is not True
                         or not isinstance(executor, dict) or executor.get("enabled") is not True
                         or executor.get("state") == "complete" or not isinstance(executor.get("plan"), dict)
+                        or executor.get("assignment_id") != args.assignment_id
                         or not isinstance(request_ids, dict)
                         or any(not _is_uuid(request_ids.get(name)) for name in ("save_configuration", "activate_configuration", "save_gradebook"))):
                         raise RuntimeError("resume_plan_invalid")
@@ -139,7 +140,7 @@ def main() -> int:
                     plan = _execution_plan(assignment, manifest["request_ids"])
                     manifest["mode"] = "execute"
                     manifest["mutations"] = True
-                    manifest["executor"] = {"enabled": True, "ack_file": args.ack_file, "plan": plan, "state": "planned"}
+                    manifest["executor"] = {"enabled": True, "ack_file": args.ack_file, "assignment_id": args.assignment_id, "plan": plan, "state": "planned"}
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 saved_configuration = manifest["executor"].get("save")
                 if isinstance(saved_configuration, dict):
@@ -182,11 +183,14 @@ def main() -> int:
                 visible = [item for item in periods if item.get("id") == period.get("id") and item.get("institution_id") == assignment["institution_id"] and item.get("unit_id") == assignment["unit_id"] and item.get("status") == "open"]
                 if len(visible) != 1:
                     raise RuntimeError("context_period_projection_invalid")
+                expected_gradebook = {"request_id": plan["gradebook_request_id"], "gradebook_id": None, "expected_version": 0, "payload": {"activity_group_link_id": assignment["activity_group_link_id"], "period_id": period["id"], "configuration_id": configuration["id"], "students": []}, "reason": None}
                 gradebook = manifest["executor"].get("gradebook")
                 if not isinstance(gradebook, dict):
-                    gradebook = {"request_id": plan["gradebook_request_id"], "gradebook_id": None, "expected_version": 0, "payload": {"activity_group_link_id": assignment["activity_group_link_id"], "period_id": period["id"], "configuration_id": configuration["id"], "students": []}, "reason": None}
+                    gradebook = expected_gradebook
                     manifest["executor"]["gradebook"] = gradebook
                     output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
+                elif gradebook != expected_gradebook:
+                    raise RuntimeError("resume_gradebook_plan_mismatch")
                 book = manifest["executor"].get("gradebook_result")
                 if not isinstance(book, dict):
                     book = data(_rpc(base, headers, "superadmin_assessment_save_gradebook", gradebook))
