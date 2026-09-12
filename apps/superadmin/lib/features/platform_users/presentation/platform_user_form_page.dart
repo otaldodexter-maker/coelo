@@ -362,6 +362,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       } else {
         final result = await widget.repository.create(_draft());
         if (!_isCurrent(revision)) return;
+        if (result.passwordSetupLink case final link?) {
+          await _presentPasswordSetupLink(link);
+          if (!_isCurrent(revision)) return;
+        }
         _confirmedCompletion = () => onCreated?.call(result);
       }
       _dirty = false;
@@ -400,6 +404,30 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       }
     }
   }
+
+  Future<void> _presentPasswordSetupLink(Uri link) => showDialog<void>(
+    context: context,
+    barrierDismissible: false,
+    builder: (context) => AlertDialog(
+      title: const Text('Link seguro de definição de senha'),
+      content: const Text(
+        'Copie e entregue este link ao novo usuário por um canal seguro. Ele não será enviado por e-mail.',
+      ),
+      actions: [
+        TextButton(
+          onPressed: () async {
+            await Clipboard.setData(ClipboardData(text: link.toString()));
+            if (context.mounted)
+              ScaffoldMessenger.of(
+                context,
+              ).showSnackBar(const SnackBar(content: Text('Link seguro copiado.')));
+          },
+          child: const Text('Copiar link'),
+        ),
+        FilledButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Concluir')),
+      ],
+    ),
+  );
 
   void _finishConfirmedSave() {
     if (!mounted || widget.capability != PlatformUserCapability.owner) return;
