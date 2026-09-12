@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 80,
+ "revision": 81,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T12:10:00-03:00",
+ "updatedAt": "2026-09-12T12:15:00-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -26,7 +26,7 @@
   "primeiroGate": "Executar o teste focal de activity_directory_page_test.dart na fila Flutter para validar a migracao de rodape ja implementada; depois iniciar activities.assessment com fixture transacional.",
   "evidenciaEsperada": "teste focal RED/GREEN, validacao visual administrativa e handoff/deltas em docs/reviews/evidence/etapa-2/r08-estrutura/.",
   "recursos": "Chrome: G0. Flutter test: solicitado a C0 para o teste focal activities, sem inicio sem posse.",
-  "feito": "origin/dev integrado por C0; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados; groups.location ganhou consumidor de criação atômica + saveComposition com recibo/retry, analyze focal PASS.",
+  "feito": "origin/dev integrado por C0; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados; groups.location ganhou consumidor de criação atômica + saveComposition com recibo/request_id por fingerprint para retry, analyze focal PASS e widget 27/27 PASS (PID 26092).",
   "pendente": "runtime/Chrome para usar a fixture transacional de Avaliacoes e provar groups.location; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
   "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22; teste focal sera publicado neste checkpoint.",
   "testes": "PASS: activities activity_directory_page_test 22/22 (PID 35588, exit 0); groups group_form_page_test 27/27 (PID 26092, exit 0); dart analyze focal do codigo e teste groups.location sem issues. Slots Flutter liberados apos cada teste; rota real permanece pendente."

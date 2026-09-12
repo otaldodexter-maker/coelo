@@ -196,6 +196,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final List<_GroupInviteBinding> _invites = [];
   CataloguedLocationSelection? _cataloguedLocationSelection;
   GroupLocationCreateResult? _createdWithLocation;
+  String? _locationCreateRequestId;
+  String? _locationCreateFingerprint;
   double _footerHeight = 0;
 
   bool get _editing => widget.groupId != null;
@@ -559,6 +561,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       final now = DateTime.now();
       final fingerprint = _saveFingerprint();
       if (_pendingSaveFingerprint != fingerprint) _pendingSave = null;
+      if (_locationCreateFingerprint != fingerprint) {
+        _createdWithLocation = null;
+        _locationCreateRequestId = null;
+        _locationCreateFingerprint = fingerprint;
+      }
       final original = _original;
       final institution = _selectedInstitution!;
       final unit = _selectedUnit!;
@@ -606,7 +613,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           ? createdWithLocation ??
                 await widget.groupLocationCreateRepository.create(
                   GroupLocationCreateCommand(
-                    requestId: widget.repository.createId(
+                    requestId: _locationCreateRequestId ??= widget.repository.createId(
                       institution.id,
                       unit.id,
                       _nameController.text.trim(),
@@ -1201,6 +1208,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             setState(() {
               _cataloguedLocationSelection = value as CataloguedLocationSelection?;
               _createdWithLocation = null;
+              _locationCreateRequestId = null;
+              _locationCreateFingerprint = null;
               _pendingSave = null;
               _pendingSaveFingerprint = null;
               _dirty = true;
