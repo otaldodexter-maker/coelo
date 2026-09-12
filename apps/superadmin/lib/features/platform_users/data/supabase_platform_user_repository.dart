@@ -160,11 +160,59 @@ final class SupabasePlatformUserRepository
   }
 
   @override
-  Future<PlatformUserCreateResult> create(PlatformUserDraft draft) =>
-      throw const PlatformUserRuleException(
-        'invitation-contract',
-        'Convites produtivos aguardam o contrato privilegiado de Auth.',
+  Future<PlatformUserCreateResult> create(PlatformUserDraft draft) async {
+    // Edge Function internal-user-create (170800): autoriza com o token do
+    // operador, cria o auth user pelo Admin API e grava a identidade interna.
+    // Sem a funcao implantada (404) a acao continua honestamente indisponivel.
+    final revision = _cacheRevision;
+    try {
+      final response = await _client.functions.invoke(
+        'internal-user-create',
+        body: {
+          'request_id': _requestId(),
+          'draft': {
+            'identity': _identityDraft(draft.identity),
+            'profile_id': draft.profile.id,
+            'scope': draft.scope.name,
+            'scope_ids': draft.scopeIds,
+          },
+        },
       );
+      final data = response.data;
+      final envelope = data is Map ? Map<String, dynamic>.from(data) : const <String, dynamic>{};
+      if (response.status < 200 || response.status >= 300 || envelope['ok'] != true) {
+        throw PlatformUserRuleException(
+          envelope['error']?.toString() ?? 'backend',
+          switch (envelope['error']) {
+            'not_authorized' => 'Você não pode criar usuários internos neste escopo.',
+            'auth_user_unavailable' => 'Já existe uma conta com este e-mail.',
+            _ => 'Não foi possível criar o usuário interno. Tente novamente.',
+          },
+        );
+      }
+      final record = _record(Map<String, dynamic>.from(envelope['data'] as Map));
+      _requireCurrentCache(revision);
+      _records[record.id] = record;
+      return PlatformUserCreateResult(
+        record: record,
+        message: 'Usuário interno criado. Ele define a senha por "Esqueci minha senha".',
+      );
+    } on PlatformUserRuleException {
+      rethrow;
+    } on FunctionException catch (error) {
+      throw PlatformUserRuleException(
+        error.status == 404 ? 'invitation-contract' : 'backend',
+        error.status == 404
+            ? 'A criação de usuários internos ainda não está disponível.'
+            : 'Não foi possível criar o usuário interno. Tente novamente.',
+      );
+    } on Object {
+      throw const PlatformUserRuleException(
+        'backend',
+        'Não foi possível criar o usuário interno. Tente novamente.',
+      );
+    }
+  }
 
   @override
   Future<PlatformUserRecord> update(String id, PlatformUserDraft draft) async {

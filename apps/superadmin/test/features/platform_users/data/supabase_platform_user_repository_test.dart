@@ -535,17 +535,14 @@ void main() {
     final repository = SupabasePlatformUserRepository(client);
     final record = await repository.fetchById(_identityId);
 
+    // R06: create passou a chamar a Edge Function internal-user-create
+    // (170800); sem a funcao (transporte simulado) continua fail-closed com
+    // uma regra, nunca com um registro criado.
     expect(
       () => repository.create(
         PlatformUserDraft(identity: record!.identity, profile: record.profile, scope: record.scope),
       ),
-      throwsA(
-        isA<PlatformUserRuleException>().having(
-          (error) => error.code,
-          'code',
-          'invitation-contract',
-        ),
-      ),
+      throwsA(isA<PlatformUserRuleException>()),
     );
     expect(
       () => repository.resendInvitation(_identityId),
