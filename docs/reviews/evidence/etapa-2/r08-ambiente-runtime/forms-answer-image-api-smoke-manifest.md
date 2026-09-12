@@ -1,7 +1,7 @@
 ---
 title: "R08 G0 — Manifesto do smoke API de answer-image"
 source: "Contratos produtivos de resposta de Formulários e form-media; revisão G3/G5"
-status: "preparado-nao-executado"
+status: "discovery-read-only-sem-candidato"
 generated_at: "2026-09-12T12:56:22-03:00"
 ---
 
@@ -15,6 +15,12 @@ O roteiro está preparado, mas não executou rede nem mutação remota. Sem
 aplicação, agenda, ocorrência, participação ou pergunta, evitando duplicar as
 fixtures das outras frentes. Não usa SQL direto, `service_role`, Storage legado,
 Chrome/CDP nem injeta sessão.
+
+O modo `--discover` é somente leitura: lista pelo RPC normal os formulários
+publicados/ativos identificados, conserva apenas os que têm pergunta de imagem,
+obtém ocorrências já referenciadas por respostas e testa cada UUID por
+`form_get_occurrence_for_response` com a própria identidade QA. Ele não abre
+rascunho nem chama prepare/finalize/save. O output omite títulos e pessoas.
 
 O fluxo é o de **imagem de resposta**: payload com `occurrence_id`, `item_id`,
 `byte_length` e `checksum`. Ele não envia `purpose=question-image`, `form_id` ou
@@ -52,8 +58,8 @@ O fluxo é o de **imagem de resposta**: payload com `occurrence_id`, `item_id`,
 - O deploy de `form-media` deve conter a correção final de G3 (linha de base
   `f0c7269fd`, sobre `dfe013cc5`), revisada por G5: finalize inicial e replay
   retornam os campos do `FormAsset` e `byte_length` medido; fonte nula ou
-  divergente é negada. G3 informou 53 testes Deno PASS / 0 FAIL, mas G0 ainda
-  aguarda confirmação de integração/deploy do C0.
+  divergente é negada. O C0 confirmou integração, 54 testes Deno PASS na base
+  conjunta e deploy CLI concluído.
 - A ocorrência precisa estar aberta para a identidade QA e conter pergunta
   `photo` ou `gallery`. O rascunho precisa continuar em estado `draft`.
 - Para identidade anônima, o segredo correto deve existir fora do Git/log em
@@ -66,6 +72,12 @@ Validação local, sem rede e sem mutação:
 
 ```powershell
 rtk python docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-smoke.py
+```
+
+Descoberta remota somente leitura, autorizada pelo C0:
+
+```powershell
+rtk python docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-smoke.py --discover
 ```
 
 Execução identificada, somente após liberação do C0:
@@ -85,3 +97,18 @@ Remove-Item Env:COELO_QA_FORM_EDIT_SECRET
 PASS futuro exige todos os gates acima. Prova por API não será rotulada como
 E2E/UI e não substitui o gate visual de login/leitura/reload, ainda bloqueado
 pela entrada de texto CUA no único Chrome compartilhado.
+
+## Resultado da descoberta autorizada
+
+O C0 autorizou a descoberta somente leitura pela API normal. A execução obteve
+Auth HTTP 200, `form_list` HTTP 200 e logout local 204. O filtro encontrou zero
+formulários identificados publicados/ativos com pergunta `photo/gallery`, zero
+occurrences para conferir e, portanto, zero candidatos. Nenhum rascunho foi
+aberto e `prepare/finalize/save` não foram chamados.
+
+A fixture preservada do smoke question-image (`f88005ab-...`) não serve: continua
+rascunho, possui pergunta `short_text` e não tem ocorrência. A execução mutante
+segue parada até o C0 fornecer uma occurrence já existente fora desse catálogo
+ou autorizar nominalmente uma única fixture mínima identificada. Nenhuma fixture
+duplicada ou cleanup foi gerado. Recibo sanitizado:
+[forms-answer-image-api-discovery-20260912.log](./forms-answer-image-api-discovery-20260912.log).

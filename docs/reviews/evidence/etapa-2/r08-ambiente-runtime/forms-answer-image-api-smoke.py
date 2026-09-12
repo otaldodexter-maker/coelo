@@ -150,7 +150,9 @@ def normalized_answers(raw: Any, item_id: str, item_kind: str, asset_id: str) ->
 
 def main() -> int:
     parser = argparse.ArgumentParser()
-    parser.add_argument("--execute", action="store_true")
+    mode = parser.add_mutually_exclusive_group()
+    mode.add_argument("--execute", action="store_true")
+    mode.add_argument("--discover", action="store_true")
     parser.add_argument("--occurrence-id")
     parser.add_argument("--item-id")
     parser.add_argument(
@@ -158,15 +160,18 @@ def main() -> int:
         help="Nome da variável que contém o edit_secret anônimo; o valor nunca é impresso.",
     )
     args = parser.parse_args()
-    if not args.execute:
+    if not args.execute and not args.discover:
         emit("guard", "READY_NO_MUTATION")
         return 0
-    try:
-        occurrence_id = str(uuid.UUID(args.occurrence_id or ""))
-        requested_item_id = str(uuid.UUID(args.item_id)) if args.item_id else None
-    except ValueError:
-        emit("guard", "INVALID_RUNTIME_FIXTURE")
-        return 2
+    occurrence_id = ""
+    requested_item_id = None
+    if args.execute:
+        try:
+            occurrence_id = str(uuid.UUID(args.occurrence_id or ""))
+            requested_item_id = str(uuid.UUID(args.item_id)) if args.item_id else None
+        except ValueError:
+            emit("guard", "INVALID_RUNTIME_FIXTURE")
+            return 2
 
     app = read_env(APP_ENV)
     qa = read_env(QA_ENV)
@@ -193,6 +198,93 @@ def main() -> int:
 
     def edge(body: dict[str, Any]) -> tuple[int, Any]:
         return request_json(f"{base}/functions/v1/form-media", body=body, headers=api_headers)
+
+    if args.discover:
+        candidates: list[dict[str, str]] = []
+        inspected_forms = 0
+        occurrence_ids: set[str] = set()
+        try:
+            status, directory = rpc("form_list", {"p_query": {
+                "institution_id": None,
+                "search": None,
+                "statuses": ["published"],
+                "operational_statuses": ["active"],
+                "kinds": ["form"],
+                "starts_on_or_after": None,
+                "ends_on_or_before": None,
+                "cursor_updated_at": None,
+                "cursor_id": None,
+                "limit": 100,
+            }})
+            if status != 200 or not isinstance(directory, dict):
+                raise SmokeFailure(f"discover_directory:{status}:{error_code(directory)}")
+            forms = directory.get("items")
+            if not isinstance(forms, list):
+                raise SmokeFailure("discover_directory:invalid_projection")
+            for form in forms:
+                if not isinstance(form, dict) or form.get("identity_mode") != "identified":
+                    continue
+                form_id = require_uuid(form.get("id"), "discover_form")
+                status, editor = rpc("form_get_editor", {"p_form_id": form_id})
+                if status != 200 or not isinstance(editor, dict):
+                    continue
+                definition = editor.get("definition")
+                image_items = photo_items(definition)
+                if not image_items:
+                    continue
+                inspected_forms += 1
+                status, responses = rpc("superadmin_forms_responses_v2", {"p_query": {
+                    "form_id": form_id,
+                    "occurrence_id": None,
+                    "cursor_submitted_at": None,
+                    "cursor_id": None,
+                    "limit": 100,
+                }})
+                if status != 200 or not isinstance(responses, dict) or responses.get("ok") is not True:
+                    continue
+                data = responses.get("data")
+                if not isinstance(data, dict) or not isinstance(data.get("items"), list):
+                    continue
+                for response_item in data["items"]:
+                    if isinstance(response_item, dict):
+                        try:
+                            occurrence_ids.add(require_uuid(response_item.get("occurrence_id"), "discover_occurrence"))
+                        except SmokeFailure:
+                            continue
+            for candidate_occurrence_id in sorted(occurrence_ids):
+                status, projection = rpc(
+                    "form_get_occurrence_for_response",
+                    {"p_occurrence_id": candidate_occurrence_id},
+                )
+                if status != 200 or not isinstance(projection, dict) or projection.get("can_edit") is not True:
+                    continue
+                definition = projection.get("definition")
+                items = photo_items(definition)
+                if not isinstance(definition, dict) or definition.get("identity_mode") != "identified":
+                    continue
+                for item in items:
+                    candidates.append({
+                        "occurrence_id": candidate_occurrence_id,
+                        "item_id": require_uuid(item.get("id"), "discover_item"),
+                        "item_kind": str(item.get("kind")),
+                    })
+            emit(
+                "discover",
+                "PASS",
+                active_identified_image_forms=inspected_forms,
+                occurrence_ids_checked=len(occurrence_ids),
+                candidates=candidates,
+            )
+        except SmokeFailure as error:
+            emit("discover", "FAILED", code=str(error))
+            return 1
+        finally:
+            logout_status, _ = request_json(
+                f"{base}/auth/v1/logout?scope=local",
+                headers=api_headers,
+            )
+            emit("logout_local", "PASS" if logout_status == 204 else "FAILED", http=logout_status)
+        return 0
 
     asset_id: str | None = None
     response_id: str | None = None

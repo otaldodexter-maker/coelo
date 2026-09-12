@@ -256,3 +256,38 @@ Passaram a ausência de grant no reader, o hint antigo `true` para admin autor e
 Após revisão G7 e ACK nominal do C0, `140550` (SHA-256 `9356F5E52C8D14B0C628540ECEEE35231C6BAF0044EFEE04AC71C6F23D69A996`) foi aplicado somente no espelho: COMMIT, native/wrapper `0/0`. O GREEN passou `4/4` estrutural e `11/11` comportamental; as regressões passaram `23/23` em `moments_feed_and_withdrawal_test.sql` e `30/30` em `moments_publication_mvp_test.sql`. Total único: **68/68**, todos com `finish`, rollback e exits `0/0`.
 
 Uma tentativa de iniciar a regressão 23 com redirecionamento `<` foi recusada pelo parser PowerShell antes de abrir o psql; nenhum SQL/teste executou. O comando foi corrigido para pipeline e a suíte rodou uma única vez. Produção e ledger ficaram intocados, fixtures comportamentais voltaram por rollback e o slot foi devolvido ao C0.
+
+## Smoke API de imagem de resposta preparado
+
+O próximo gate focal solicitado pelo C0 foi preparado sem rede nem mutação. O
+runner fail-safe está em [forms-answer-image-api-smoke.py](./forms-answer-image-api-smoke.py)
+e o contrato completo em
+[forms-answer-image-api-smoke-manifest.md](./forms-answer-image-api-smoke-manifest.md).
+Sem `--execute`, ele retorna somente `READY_NO_MUTATION`; com `--execute` sem
+fixture válida, para antes da autenticação com `INVALID_RUNTIME_FIXTURE`.
+
+O roteiro não cria formulário, aplicação, ocorrência, participação ou pergunta:
+exige uma `occurrence_id` autorizada já existente e seleciona uma única pergunta
+`photo/gallery`, ou o `--item-id` explícito. Ele abre/reutiliza o rascunho pelo
+contrato normal, preserva respostas existentes, faz prepare/PUT/finalize e replay
+do mesmo finalize, anexa o asset por `form_save_response_draft`, autoriza o
+download e reabre o mesmo rascunho para comprovar persistência. O ramo de resposta
+não envia `purpose=question-image`, `form_id` nem `form_version_id`.
+
+Para formulário anônimo, o runner exige o segredo correto em variável de ambiente
+indicada por `--edit-secret-env`, passa-o em open/prepare/finalize/save/download e
+nunca imprime ou persiste o valor. Ele não inventa segredo anônimo, evitando criar
+resposta concorrente. Não há discard, DELETE ou cleanup em qualquer caminho;
+asset e resposta são preservados inclusive em falha.
+
+G3 informou a correção final `f0c7269fd` sobre `dfe013cc5`, revisada por G5, com
+53 testes Deno PASS / 0 FAIL: o finalize inicial e o replay retornam
+`id/item_id/mime_type/byte_length`, usando bytes medidos e negando fonte nula ou
+divergente. O C0 integrou o fix, obteve 54 PASS na base conjunta e concluiu o
+deploy por CLI. A execução remota ainda aguarda uma ocorrência real reutilizável;
+G3 confirmou que não criou fixture remota nesta R08.
+
+O runner local passou parse AST, dry-run e guard de fixture inválida. Build,
+servidor, Chrome e baseline foram apenas conferidos: PID `44404` e PID raiz
+`22592` respondendo, `/login` 200, container `1abbc4f2cd13` healthy na porta
+57322. Não houve rebuild, novo Chrome ou nova execução do diagnóstico de texto.
