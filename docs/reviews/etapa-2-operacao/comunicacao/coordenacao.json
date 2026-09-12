@@ -2089,8 +2089,17 @@
    "ack": true,
    "integradoEm": null,
    "observacao": "checkpoint de auditoria pos-lotes 49-55; sem delta de estado, sem candidato SQL e sem codigo novo publicado; manter como handoff observado até próximo checkpoint"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 60,
+   "ack": true,
+   "integradoEm": "pendente de commit deste ciclo",
+   "testes": "flutter analyze limpo; familia attendance + forms: 140 PASS; touch-target: 3 PASS",
+   "deltas": "retido: attendance.entry/complete nao existe no inventario canônico; apply-tracker-delta rejeitou o action_id; nenhum estado rebaixado ou promovido",
+   "proximoGate": "prova na rota real e reconciliacao do identificador com attendance.mark/attendance.finish"
   }
- ],
+],
  "dockerR07": {
   "estado": "bloqueio ambiental temporario apos falha do Docker Desktop",
   "causaMedida": "backend falhava ao renomear sockets AF_UNIX stale em Docker\\run\\sailor-ingest.sock e docker-secrets-engine\\engine.sock; apos mover as arvores runtime, restaram processos GPU Docker Desktop orfaos que o Windows nao consegue finalizar",

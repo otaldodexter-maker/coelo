@@ -8,6 +8,7 @@ import '../../app/activity/superadmin_activity.dart';
 import '../../app/shell/superadmin_notice.dart';
 import '../../shared/presentation/widgets/superadmin_form_action_footer.dart';
 import '../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
+import '../../shared/presentation/widgets/publication_surface.dart';
 import '../auth/domain/logout_action.dart';
 import '../daily_routine/daily_routine.dart';
 import '../daily_routine/daily_routine_feeling_picker.dart';
@@ -678,6 +679,7 @@ class AttendanceCallPage extends StatefulWidget {
 
 class _AttendanceCallPageState extends State<AttendanceCallPage> {
   final _notes = <String, TextEditingController>{};
+  final _callNote = TextEditingController();
   AttendanceBulkReceipt? _lastBulkReceipt;
 
   DateTime get _today => DateUtils.dateOnly(widget.today ?? DateTime.now());
@@ -706,6 +708,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     for (final controller in _notes.values) {
       controller.dispose();
     }
+    _callNote.dispose();
     _notes.clear();
     _call = null;
     _lastBulkReceipt = null;
@@ -766,6 +769,71 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
 
   @override
   Widget build(BuildContext context) {
+    if (_loading || _initialLoadError != null || _call == null) {
+      return _legacyBuild(context);
+    }
+    final call = _call!;
+    final canWrite = call.canManage && widget.permissions.canOperate(call);
+    final writable = canWrite && !_commandInFlight;
+    final concluded = call.status == AttendanceCallStatus.completed;
+    final firstPendingRoutine = call.participants
+        .where((item) => widget.routinePendingParticipantIds.contains(item.id))
+        .firstOrNull;
+    return _publicationShell(
+      child: PublicationSurface(
+        subtitle: concluded ? 'Resumo da chamada' : 'Lançar chamada',
+        scrollKey: const Key('attendance-call-scroll'),
+        footerKey: const Key('attendance-call-footer'),
+        form: _publicationForm(
+          call,
+          writable: writable,
+          concluded: concluded,
+          firstPendingRoutine: firstPendingRoutine,
+        ),
+        preview: _attendancePreview(call),
+        feedback: _commandError == null
+            ? null
+            : _AttendanceCommandErrorBanner(
+                message: _commandError is AttendanceVersionConflictException
+                    ? 'A chamada foi atualizada em outro acesso.'
+                    : 'Não foi possível salvar a alteração.',
+                actionLabel: 'Recarregar chamada',
+                onAction: _loadCall,
+              ),
+        tertiaryAction: TextButton(
+          onPressed: widget.onBack,
+          child: const Text('Voltar para Assiduidade'),
+        ),
+        continuationActions: [
+          if (!concluded)
+            OutlinedButton(
+              key: const Key('attendance-call-save-and-continue'),
+              onPressed: writable ? () => showSuperadminNotice(context, 'Rascunho salvo') : null,
+              child: const Text('Salvar e continuar depois'),
+            ),
+          if (concluded && call.participants.isNotEmpty)
+            OutlinedButton.icon(
+              onPressed: () => _showCorrection(call),
+              icon: const Icon(Icons.history_rounded),
+              label: const Text('Corrigir chamada'),
+            )
+          else
+            FilledButton(
+              key: const Key('attendance-call-complete'),
+              onPressed:
+                  !writable || call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
+                  ? null
+                  : () => _applyCall(
+                      () => widget.repository.completeCall(call.id, expectedVersion: call.version),
+                    ),
+              child: const Text('Concluir chamada'),
+            ),
+        ],
+      ),
+    );
+  }
+
+  Widget _legacyBuild(BuildContext context) {
     if (_loading) {
       return _shell(
         child: const CoeloStatePanel(
@@ -853,7 +921,9 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                 FilledButton(
                   key: const Key('attendance-call-complete'),
                   onPressed:
-                      !writable || call.hasUnmarked || widget.routinePendingParticipantIds.isNotEmpty
+                      !writable ||
+                          call.hasUnmarked ||
+                          widget.routinePendingParticipantIds.isNotEmpty
                       ? null
                       : () => _applyCall(
                           () => widget.repository.completeCall(
@@ -1044,10 +1114,264 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     );
   }
 
+  Widget _publicationForm(
+    AttendanceCall call, {
+    required bool writable,
+    required bool concluded,
+    required AttendanceParticipant? firstPendingRoutine,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        if (constraints.maxWidth < 600) {
+          return _compactPublicationForm(call, writable: writable, concluded: concluded);
+        }
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            PublicationLabel('Contexto da chamada'),
+            PublicationCard(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    '${DateUtils.isSameDay(call.date, _today) ? 'Hoje · ' : ''}${_attendanceDate(call.date)}',
+                    style: Theme.of(context).textTheme.labelMedium,
+                  ),
+                  const SizedBox(height: CoeloSpacing.space1),
+                  Text(
+                    '${call.groupName} · ${call.contextName}',
+                    style: Theme.of(context).textTheme.titleMedium,
+                  ),
+                  Text(
+                    '${call.institutionName} · ${call.unitName} · ${call.participants.length} participantes',
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+                ],
+              ),
+            ),
+            const PublicationLabel('Presença', hint: 'marque cada aluno e registre observações'),
+            DecoratedBox(
+              key: const Key('attendance-participant-list'),
+              decoration: BoxDecoration(
+                color: colors.surface,
+                border: Border.all(color: colors.outlineVariant),
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+              ),
+              child: ClipRRect(
+                borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Padding(
+                      padding: const EdgeInsets.all(CoeloSpacing.space4),
+                      child: _AttendanceCallToolbar(
+                        call: call,
+                        writable: writable && !concluded,
+                        canUndo: _lastBulkReceipt != null,
+                        onMarkRemaining: () => _toggleBulk(call),
+                      ),
+                    ),
+                    Divider(height: 1, color: colors.outlineVariant),
+                    if (call.participants.isEmpty)
+                      const Padding(
+                        padding: EdgeInsets.all(CoeloSpacing.space6),
+                        child: Text('Nenhum participante encontrado para este contexto.'),
+                      )
+                    else
+                      for (var index = 0; index < call.participants.length; index++) ...[
+                        _participantForPublication(
+                          call,
+                          call.participants[index],
+                          writable: writable,
+                          concluded: concluded,
+                          firstPendingRoutine: firstPendingRoutine,
+                        ),
+                        if (index < call.participants.length - 1)
+                          Divider(height: 1, color: colors.outlineVariant),
+                      ],
+                  ],
+                ),
+              ),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+            _AttendanceCompletionHint(
+              call: call,
+              requiredRoutineCount: widget.routinePendingParticipantIds.length,
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _compactPublicationForm(
+    AttendanceCall call, {
+    required bool writable,
+    required bool concluded,
+  }) {
+    final colors = Theme.of(context).colorScheme;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        PublicationCard(
+          child: PublicationRow(
+            icon: Icons.groups_outlined,
+            title: 'Turma e data',
+            lines: ['${call.groupName} · ${call.unitName}', _attendanceDate(call.date)],
+          ),
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        Wrap(
+          alignment: WrapAlignment.spaceBetween,
+          crossAxisAlignment: WrapCrossAlignment.center,
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            Text(
+              'Alunos ${call.participants.length} · ${call.participants.where((p) => p.state == AttendancePresenceState.present).length} presentes',
+              style: Theme.of(context).textTheme.labelLarge,
+            ),
+            OutlinedButton(
+              onPressed: writable && !concluded ? () => _toggleBulk(call) : null,
+              child: const Text('Marcar todos presentes'),
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        DecoratedBox(
+          key: const Key('attendance-participant-list'),
+          decoration: BoxDecoration(
+            color: colors.surface,
+            border: Border.all(color: colors.outlineVariant),
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+          ),
+          child: Column(
+            children: [
+              for (var index = 0; index < call.participants.length; index++) ...[
+                _CompactAttendanceParticipantRow(
+                  participant: call.participants[index],
+                  enabled: writable && !concluded,
+                  onSelected: (state) => _applyCall(
+                    () => widget.repository.setParticipantState(
+                      call.id,
+                      call.participants[index].id,
+                      state,
+                      expectedVersion: call.version,
+                    ),
+                  ),
+                ),
+                if (index < call.participants.length - 1)
+                  Divider(height: 1, color: colors.outlineVariant),
+              ],
+            ],
+          ),
+        ),
+        const PublicationLabel('Observação da chamada'),
+        PublicationTextField(
+          controller: _callNote,
+          hintText: 'Ex.: saída antecipada, aula externa...',
+          maxLength: 280,
+          maxLines: 3,
+          enabled: false,
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        const PublicationNote(
+          'Ao concluir, as famílias dos alunos com falta recebem aviso no sino.',
+        ),
+      ],
+    );
+  }
+
+  Widget _participantForPublication(
+    AttendanceCall call,
+    AttendanceParticipant participant, {
+    required bool writable,
+    required bool concluded,
+    required AttendanceParticipant? firstPendingRoutine,
+  }) {
+    final notice = participant.notice;
+    return _ParticipantCard(
+      participant: participant,
+      notice: notice,
+      focused: participant.id == widget.focusedParticipantId,
+      writable: writable && !concluded,
+      routine: widget.participantRoutineBuilder?.call(context, participant),
+      routinePending: widget.routinePendingParticipantIds.contains(participant.id),
+      routineInitiallyExpanded: firstPendingRoutine?.id == participant.id,
+      noteController: _notes.putIfAbsent(
+        participant.id,
+        () => TextEditingController(text: participant.note),
+      ),
+      onSave: (state) => _applyCall(
+        () => widget.repository.setParticipantState(
+          call.id,
+          participant.id,
+          state,
+          expectedVersion: call.version,
+        ),
+      ),
+      onConfirmNotice: notice != null && notice.pending && writable
+          ? () => _applyCall(
+              () => widget.repository.confirmNotice(notice.id, expectedVersion: call.version),
+            )
+          : null,
+    );
+  }
+
+  Widget _attendancePreview(AttendanceCall call) => PublicationPreviewPanel(
+    title: 'Resumo da chamada',
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Text(call.groupName, style: Theme.of(context).textTheme.titleMedium),
+        const SizedBox(height: CoeloSpacing.space1),
+        Text('${call.institutionName} · ${call.unitName}'),
+        const SizedBox(height: CoeloSpacing.space3),
+        for (final item in [
+          (
+            'Presentes',
+            call.participants.where((p) => p.state == AttendancePresenceState.present).length,
+          ),
+          (
+            'Faltas',
+            call.participants.where((p) => p.state == AttendancePresenceState.absent).length,
+          ),
+          (
+            'Sem marcação',
+            call.participants.where((p) => p.state == AttendancePresenceState.unmarked).length,
+          ),
+        ])
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space1),
+            child: Row(
+              children: [
+                Expanded(child: Text(item.$1)),
+                Text('${item.$2}', style: Theme.of(context).textTheme.titleSmall),
+              ],
+            ),
+          ),
+        const PublicationNote('A prévia resume o registro oficial da chamada.'),
+      ],
+    ),
+  );
+
   Widget _shell({required Widget child}) => SuperadminShell(
     logout: widget.logout,
     title: 'Lançar chamada',
     subtitle: 'Consulte o registro autorizado da chamada.',
+    currentDestination: 'attendance',
+    activityController: widget.activityController,
+    showChatLauncher: false,
+    child: child,
+  );
+
+  Widget _publicationShell({required Widget child}) => SuperadminShell(
+    logout: widget.logout,
+    title: '',
+    subtitle: '',
     currentDestination: 'attendance',
     activityController: widget.activityController,
     showChatLauncher: false,
@@ -1507,6 +1831,69 @@ class _AttendanceStatusLabel extends StatelessWidget {
           ),
           child: Text(label, style: theme.textTheme.labelMedium?.copyWith(color: foregroundColor)),
         ),
+      ),
+    );
+  }
+}
+
+final class _CompactAttendanceParticipantRow extends StatelessWidget {
+  const _CompactAttendanceParticipantRow({
+    required this.participant,
+    required this.enabled,
+    required this.onSelected,
+  });
+
+  final AttendanceParticipant participant;
+  final bool enabled;
+  final ValueChanged<AttendancePresenceState> onSelected;
+
+  @override
+  Widget build(BuildContext context) {
+    final colors = Theme.of(context).colorScheme;
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: CoeloSpacing.space3,
+        vertical: CoeloSpacing.space2,
+      ),
+      child: Row(
+        children: [
+          CircleAvatar(
+            key: Key('attendance-participant-identity-${participant.id}'),
+            radius: 18,
+            backgroundColor: colors.primaryContainer,
+            foregroundColor: colors.primary,
+            child: Text(participant.name.characters.first),
+          ),
+          const SizedBox(width: CoeloSpacing.space3),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(participant.name, style: Theme.of(context).textTheme.titleSmall),
+                if (participant.note.trim().isNotEmpty)
+                  Text(
+                    participant.note,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+                  ),
+              ],
+            ),
+          ),
+          SegmentedButton<AttendancePresenceState>(
+            key: Key('attendance-participant-actions-${participant.id}'),
+            showSelectedIcon: false,
+            segments: const [
+              ButtonSegment(value: AttendancePresenceState.present, label: Text('P')),
+              ButtonSegment(value: AttendancePresenceState.absent, label: Text('F')),
+              ButtonSegment(value: AttendancePresenceState.late, label: Text('A')),
+            ],
+            selected: {participant.state},
+            onSelectionChanged: enabled ? (values) => onSelected(values.first) : null,
+          ),
+        ],
       ),
     );
   }

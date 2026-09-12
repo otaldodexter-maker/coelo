@@ -429,7 +429,8 @@ final class SupabaseFormsApi
         );
         return FormAssetUploadTicket(
           assetId: _string(payload, 'asset_id'),
-          signedUploadUrl: Uri.parse(_string(payload, 'signed_upload_url')),
+          uploadUrl: Uri.parse(_string(payload, 'upload_url')),
+          requiredHeaders: _stringMap(payload['required_headers']),
           expiresAt: _dateTime(payload, 'expires_at'),
         );
       });
@@ -1015,6 +1016,15 @@ String _string(Map<String, Object?> value, String key) {
   final result = value[key];
   if (result is! String) throw WireFormatException('$key must be a string.');
   return result;
+}
+
+Map<String, String> _stringMap(Object? value) {
+  if (value == null) return const {};
+  if (value is! Map) throw const WireFormatException('required_headers must be an object.');
+  return {
+    for (final entry in value.entries)
+      entry.key.toString(): entry.value.toString(),
+  };
 }
 
 int _integer(Map<String, Object?> value, String key) {

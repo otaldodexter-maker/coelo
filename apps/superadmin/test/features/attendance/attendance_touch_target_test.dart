@@ -40,15 +40,30 @@ void main() {
       await tester.pumpAndSettle();
 
       expect(tester.takeException(), isNull);
-      for (final label in _presenceActions) {
-        final action = find.widgetWithText(OutlinedButton, label).first;
-        await tester.ensureVisible(action);
-        await tester.pump();
-        expect(
-          tester.getSize(action).height,
-          greaterThanOrEqualTo(CoeloSize.touchMin),
-          reason: '$label at $width must keep the minimum touch target',
-        );
+      if (width < 600) {
+        final compactActions = find.byType(SegmentedButton<AttendancePresenceState>);
+        expect(compactActions, findsNWidgets(3));
+        for (var index = 0; index < compactActions.evaluate().length; index++) {
+          final action = compactActions.at(index);
+          await tester.ensureVisible(action);
+          await tester.pump();
+          expect(
+            tester.getSize(action).height,
+            greaterThanOrEqualTo(CoeloSize.touchMin),
+            reason: 'ações compactas em $width devem manter o alvo mínimo',
+          );
+        }
+      } else {
+        for (final label in _presenceActions) {
+          final action = find.widgetWithText(OutlinedButton, label).first;
+          await tester.ensureVisible(action);
+          await tester.pump();
+          expect(
+            tester.getSize(action).height,
+            greaterThanOrEqualTo(CoeloSize.touchMin),
+            reason: '$label at $width must keep the minimum touch target',
+          );
+        }
       }
     });
   }

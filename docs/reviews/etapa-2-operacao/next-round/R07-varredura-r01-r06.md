@@ -65,3 +65,18 @@ perguntas R06 que exija nova pergunta nesta abertura. O único deslocamento de
 estado observado foi P52: deploy executado e registrado; a prova funcional
 continua atribuída à frente de Acessos e Pessoas. A varredura permanece aberta
 para os handoffs que chegarem durante a R07.
+
+## Reconciliação R07 — item novo medido
+
+- Item: `attendance.entry/complete` publicado pelo FCR em
+  `deltas-r07-fcr.json`; a coordenação tentou o aplicador e ele rejeitou o ID
+  como desconhecido.
+- Rodada de origem: R07, frente Formulários, Cuidado e Rotina.
+- Fonte: `comunicacao/formularios-cuidado-rotina.json` checkpoints R07 e
+  `docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json`.
+- Estado atual medido: código integrado, analyzer limpo, 140 testes da família
+  verdes; sem rota real; os IDs canônicos de Assiduidade (`attendance.mark`,
+  `attendance.finish`) já estão terminais no inventário; nenhum tracker foi
+  rebaixado.
+- Dono: frente FCR para a prova real; coordenação para reconciliar o
+  identificador antes de novo delta.

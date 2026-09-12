@@ -21,6 +21,14 @@ tracker_sync_revisions: "R06 fechada: estrutura r63; acessos-pessoas r146; formu
 
 ## Estado vigente — Rodada 6 (E2-R06-20260911) consolidada às 23:10 de 11/09
 
+### R07 — checkpoint de integração (2026-09-12 00:30 BRT)
+
+O pacote FCR está integrado e localmente verde, mas a certificação cruzada
+permanece aberta: `attendance.entry/complete` não é um `action_id` do
+inventário canônico, não houve rota real nesta integração e nenhum estado FE,
+BE ou E2E foi promovido. Primeiro gate aberto: reconciliar o identificador e
+obter prova na rota normal antes de alterar a matriz integrada.
+
 Coordenação (Claude Opus 5, esforço médio) abriu a R06 às 19:36 (T0) sobre
 `origin/dev` `ca60b096b`, liberou as frentes às 19:56 com os sete usuários
 sintéticos `qa-r06-<grupo>@coelo.me` (lote 49) e fechou em `dev` (SHA do
