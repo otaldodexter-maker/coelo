@@ -2062,9 +2062,19 @@
    "grupo": "operacoes",
    "revisaoRecebida": 53,
    "ack": true,
-   "integradoEm": "82c70bb38a221cac4c861cfc2f2894bb36e591d8",
+   "integradoEm": "cece69ae0c5fdd3076f7fce85c29ad47af5a8435",
    "testes": "flutter test account/support/audit/imports/access_profile_file_actions/plans/catalog: 345 PASS, 1 skip esperado, warning de hit-test nao fatal",
-   "deltas": "[]; nenhum estado promovido sem rota real"
+   "deltas": "[]; nenhum estado promovido sem rota real",
+   "proximoGate": "CDP para prova real; bloqueio ambiental registrado no handoff"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 67,
+   "ack": true,
+   "integradoEm": "ja integrado na base conjunta",
+   "testes": "build QA concluído; assessments 43/43; suite conjunta 1200 executados com goldens retidos conhecidos",
+   "deltas": "[]; nenhum estado promovido sem rota real",
+   "proximoGate": "rota real/CDP para assessment e demais gates; sem novo SQL nesta revisão"
   },
   {
    "grupo": "estrutura",
