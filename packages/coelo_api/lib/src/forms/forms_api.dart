@@ -298,11 +298,13 @@ final class FormFileJob {
 final class FormAssetUploadTicket {
   const FormAssetUploadTicket({
     required this.assetId,
-    required this.signedUploadUrl,
+    required this.uploadUrl,
+    this.requiredHeaders = const {},
     required this.expiresAt,
   });
   final String assetId;
-  final Uri signedUploadUrl;
+  final Uri uploadUrl;
+  final Map<String, String> requiredHeaders;
   final DateTime expiresAt;
 }
 

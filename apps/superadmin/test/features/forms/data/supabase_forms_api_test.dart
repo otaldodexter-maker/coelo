@@ -522,11 +522,12 @@ void main() {
     expect(removePayload, {'schedule_id': 'schedule-2'});
   });
 
-  test('asset preparation keeps the short-lived signed upload capability', () async {
+  test('asset preparation consumes the server upload capability', () async {
     final backend = _Backend({
       'asset_id': 'asset-1',
-      'signed_upload_url':
+      'upload_url':
           'https://storage.example.test/object/upload/sign/coelo-forms-private/opaque/image.webp?token=short-lived',
+      'required_headers': {'content-type': 'image/webp'},
       'expires_at': '2026-08-13T15:00:00Z',
     });
     final api = SupabaseFormsApi(backend);
@@ -546,7 +547,8 @@ void main() {
     );
 
     expect(ticket.assetId, 'asset-1');
-    expect(ticket.signedUploadUrl.queryParameters['token'], 'short-lived');
+    expect(ticket.uploadUrl.queryParameters['token'], 'short-lived');
+    expect(ticket.requiredHeaders, {'content-type': 'image/webp'});
     expect(backend.mediaEnvelope?['action'], 'prepare');
     expect(backend.mediaEnvelope?['expected_version'], 3);
     expect((backend.mediaEnvelope!['payload']! as Map).containsKey('edit_secret'), isFalse);
