@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 22,
+  "revision": 23,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T12:53:09-03:00",
+  "updatedAt": "2026-09-12T13:17:14-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "3fdf2053134ed14a88bfc722e71fb184ec2f28b6",
+  "head": "a837bfed34df98bfeefbcf9dd587c3298d06d6b0",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -69,7 +69,8 @@
     "R08 G8: revisão documental corrigida; nenhuma suíte foi executada nesta posse por ausência de slot C0.",
     "R08 G8: mantido o único JSON autorizado, grupo suites, revisão monotônica e recorte exclusivo Superadmin.",
     "R08 G8: nenhuma expectativa textual foi alterada sem fonte; não houve alteração funcional, golden, imagem ou configuração global.",
-    "R08 G8: auditoria G4 corrigiu a proveniência do smoke de Momentos como API real em produção (20 PASS/1 FAIL, retirada 403) e separou a união autoral Principal de 101 casos em cinco arquivos da integração C0 de 79 casos em três arquivos, sem promover a UI/E2E."
+    "R08 G8: auditoria G4 corrigiu a proveniência do smoke de Momentos como API real em produção (20 PASS/1 FAIL, retirada 403) e separou a união autoral Principal de 101 casos em cinco arquivos da integração C0 de 79 casos em três arquivos, sem promover a UI/E2E.",
+    "R08 G8: G1 mantém 45 PNGs A somente em manifest, sem comparação/regravação; 22/22 PASS é teste FE focal, não E2E. P51 mantém 8/0 local como prova focal, enquanto o gate real após configuração/correção segue não executado no ciclo 120."
   ],
   "pendente": [],
   "commitsPublicados": [
@@ -85,7 +86,8 @@
     "6f8506c60",
     "1aff0ad0b",
     "(rev 15)",
-    "3fdf20531 (rev 22)"
+    "3fdf20531 (rev 22)",
+    "a837bfed3 (rev 23)"
   ],
   "foraDoRecorteRegistrado": [
     {
