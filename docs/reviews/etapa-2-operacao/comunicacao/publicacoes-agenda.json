@@ -1,15 +1,15 @@
 {
-  "revision": 82,
+  "revision": 83,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "66f1f6a07 (matriz G8 aceita; parser geral aceito nesta revisão)",
-  "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
+  "head": "04b37ad4c (merge limpo do ciclo 180; recibo nesta revisão)",
+  "base": "origin/dev 7d2b66a3e incorporado por merge 04b37ad4c",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T14:02:08.1267953-03:00",
+  "updatedAt": "2026-09-12T14:03:21.3753686-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
