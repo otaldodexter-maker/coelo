@@ -673,6 +673,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       '${item.label}${item.isRequired ? ' *' : ''}',
       style: Theme.of(context).textTheme.titleMedium,
     );
+    if (_unanswerableConfiguration(item) case final issue?) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          heading,
+          const SizedBox(height: CoeloSpacing.space2),
+          CoeloStatePanel(
+            icon: Icons.info_outline_rounded,
+            title: 'Pergunta indisponível',
+            message: item.isRequired
+                ? issue
+                : '$issue Você pode deixar esta pergunta sem resposta.',
+          ),
+          if (_hasAnswer(item))
+            TextButton(onPressed: () => update(null), child: const Text('Limpar resposta')),
+        ],
+      );
+    }
     // O limite autorado de selecoes e regra do formulario e precisa ser dito
     // ANTES da escolha, junto do texto de ajuda: descobrir a regra ao ser
     // recusado e o defeito que esta correcao fecha.
@@ -1194,6 +1212,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   String? _itemValidationMessage(FormItem item) {
+    if (_unanswerableConfiguration(item) case final issue?) {
+      if (item.isRequired || _hasAnswer(item)) return issue;
+    }
     if (_invalidAnswerReasons[item.id] case final reason?) return reason;
     if (item.kind == FormItemKind.location) {
       if (_locationBlockingMessage(item) case final blocking?) return blocking;
@@ -1236,6 +1257,18 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     return _hasAnswer(item)
         ? null
         : 'Responda às perguntas obrigatórias visíveis antes de revisar.';
+  }
+
+  String? _unanswerableConfiguration(FormItem item) {
+    if ((item.kind == FormItemKind.singleChoice || item.kind == FormItemKind.multipleChoice) &&
+        item.options.isEmpty) {
+      return 'Esta pergunta não tem opções disponíveis e não pode ser respondida.';
+    }
+    if (item.kind == FormItemKind.scale &&
+        (item.config.scaleMin ?? 1) > (item.config.scaleMax ?? 10)) {
+      return 'Esta pergunta tem um intervalo de escala inválido e não pode ser respondida.';
+    }
+    return null;
   }
 
   Future<void> _saveDraft() => _draft?.status == FormResponseDraftStatus.draft
@@ -1305,6 +1338,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (_pendingCommand == null && _invalidAnswerReasons.isNotEmpty) {
       setState(() => _message = 'Revise os valores numéricos antes de salvar.');
       return;
+    }
+    if (_pendingCommand == null) {
+      for (final item in occurrence.version.sections.expand((section) => section.items)) {
+        if (_isVisible(item) && _hasAnswer(item)) {
+          if (_unanswerableConfiguration(item) case final issue?) {
+            setState(() => _message = issue);
+            return;
+          }
+        }
+      }
     }
     if (automatic && _autosavePaused) return;
     if (!automatic) _autosavePaused = false;

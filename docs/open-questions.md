@@ -317,3 +317,13 @@ autorização, expiração e invalidação de contexto. A definição de ativo d
 A divergência separada sobre reutilizar a página administrativa foi reconciliada
 pela aprovação já existente da spec 050: Principal tem UI própria e compartilha
 o repository. Essa reconciliação não exige nova aprovação visual.
+
+## R08 — responsáveis de planos de medicação — 2026-09-12
+
+H19: specs/020 lista horários e responsáveis, e a especificação final de 01/09
+separa aprovar, administrar, suspender e registrar evidência. Nenhuma delas
+define quem pode ser selecionado como responsável. Decisão solicitada ao Owner:
+quais categorias são elegíveis (guardiões autorizados, equipe no escopo, ambas)
+e qual a semântica da atribuição? A seleção não concede automaticamente
+medication.record_evidence. Nenhum schema ou grant especulativo foi criado;
+a correção local preserva IDs ausentes sem lançar e não certifica persistência.

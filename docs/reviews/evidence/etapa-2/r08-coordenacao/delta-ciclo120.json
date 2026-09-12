@@ -1,0 +1,49 @@
+[
+  {
+    "action_id": "groups.location",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R08: consumidor de catálogo e criação atômica ligados na composição normal; receipt preservado no retry, contexto B→A bloqueado e cache por reader evita loop. C0 29PASS/0FAIL na base integrada após corrigir callback durante build. Persistência/rota UI ainda não certificadas; refresh de label/kind do snapshot é residual local.",
+    "evidencia": "docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md"
+  },
+  {
+    "action_id": "momentos.remove",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R08: defeito real403 do autor corrigido pelo lote58 20260912140550, backup/ledger/pós-check e68/68pgTAP. Mesmo registro retirado200, feed ausente, outro consumidor403; autor mantém leitura pelo contrato. Regressão resolvida sem novo done/E2E nem cross-tenant real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/moments-api-proof.md"
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: forms_question_media_r2_v1 (20260911210300, lote 33): superadmin_form_media_prepare_v2 + authorize_finalize_v2 (authenticated, forms.manage) e form_media_finalize_question_r2_v1 (service_role) sobre o catalogo 230007 (media_assets form-image/question-image + bindings + variants) no R2. pgTAP 25/25. Gate: form-media trocar os ramos de Supabase Storage por R2; answer-image (respostas) continua no fluxo legado form_assets. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica. R08 ciclo120: form-media v17 implantada com DTO answer-image confirmado/actual_byte_length e54PASS Deno. Question-image API passou; answer-image API ainda pendente. Nenhum aceite da ação inteira.",
+    "evidencia": "docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\form-media-v17-preflight.json"
+  },
+  {
+    "action_id": "medication.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "criar plano pela rota normal: crianca real, Dipirona R06 2.5 ml oral, vigencia 11/09 (seletor de data fecha com clique de 300 ms de hover: a falha da R05 era do harness), Criar plano -> lista; detalhe abre o editor carregado; edicao da dose 2.5 -> 5 salva; reload mantem. Pendencias: Responsavel sem opcoes (contrato sem responsaveis); \"Crianca do plano\" no lugar do nome apos reload direto; imagem/prescricao indisponiveis (sem gateway). R08 H19: seletor/revisão preserva ID ausente com rótulo honesto e remoção explícita;32 testes H19 integrados passaram. Aceite anterior textual/dose preservado; responsáveis produtivos aguardam definição nominal e contrato backend. Nenhuma recertificação E2E nesta rodada.",
+    "evidencia": "docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado-lista.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:21:00-03:00"
+    }
+  },
+  {
+    "action_id": "medication.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "dose 2.5 -> 5 e Salvar alteracoes: superadmin_medication_plan_save 200 (management_version 2); reload do editor mostra 5 ml. Teste pre-existente medication_plan_ui_contract_test 375/200% falha na base (overflow do frame), registrado. R08 H19: seletor/revisão preserva ID ausente com rótulo honesto e remoção explícita;32 testes H19 integrados passaram. Aceite anterior textual/dose preservado; responsáveis produtivos aguardam definição nominal e contrato backend. Nenhuma recertificação E2E nesta rodada.",
+    "evidencia": "docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:24:00-03:00"
+    }
+  }
+]

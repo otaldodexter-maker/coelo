@@ -1,0 +1,145 @@
+{
+  "source": "R08 G4 serial authenticated API smoke",
+  "environment": "production",
+  "ui_e2e": false,
+  "started_at": "2026-09-12T15:17:29.029234+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "unit_id": "d0c40000-0000-4000-8000-000000000002",
+  "group_id": "368a5cea-2bcf-4fa4-ad1f-18da58694551",
+  "fixture": {
+    "name": "R08-G4-synthetic.png",
+    "width": 16,
+    "height": 16,
+    "bytes": 82,
+    "sha256": "90353b260da72f023c895ee8dc7c392bc583565dcc930caa683cdde53d4dedff"
+  },
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "current_group_hierarchy",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_happens_posts",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "save_happens_draft",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "prepare_r2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "signed_content_type",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_put",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "finalize_binding",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "publish_happens_post",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_happens_posts",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "published_readback",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "anonymous_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "name": "invalid_ticket_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "authorized_read",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "bounded_read_ttl",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_bytes_match",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_happens_posts",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "fresh_server_reload",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "signed_url_expired",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "list_visible_happens_posts",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "withdraw_happens_post",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_happens_posts",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "withdrawal_readback_absent",
+      "passed": true,
+      "http_status": null
+    }
+  ],
+  "resources": {
+    "post_id": "f143a25d-c5ff-41e0-ac99-92d41c11e2b8",
+    "asset_id": "10e88d97-ee48-4453-ac01-b7a62c639d46"
+  },
+  "status": "passed",
+  "cleanup": "publication withdrawn; private master follows existing retention",
+  "logout_status": [
+    204
+  ],
+  "finished_at": "2026-09-12T15:18:39.744813+00:00",
+  "negative_coverage": "anonymous and invalid ticket only; real cross-tenant actor unavailable",
+  "execution_exit_code": 0
+}

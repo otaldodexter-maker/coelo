@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "momentos.remove",
+    "camada": "backend",
+    "estado_proposto": "regressed",
+    "delta": "R03 (10/09 noite): fundacao em producao (lote 6); withdraw_moment (20260909216000) ainda na fila do grupo. Gate para done: pos 13 da fila e prova com sessao. R08 12:37: retirada pelo proprio autor Owner retornou403 em producao; medicao readonly confirmou remove ativa mas nenhum grant no system institution_admin. Candidato140550 em revisao/pgTAP, ainda nao aplicado; preservar publicacao sintetica. Evidencia anterior local nao prova este gate.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/moments-api-proof.md"
+  }
+]

@@ -1,0 +1,127 @@
+{
+  "source": "R08 G4 serial authenticated API smoke",
+  "environment": "production",
+  "ui_e2e": false,
+  "started_at": "2026-09-12T15:24:34.223411+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "unit_id": "d0c40000-0000-4000-8000-000000000002",
+  "group_id": "368a5cea-2bcf-4fa4-ad1f-18da58694551",
+  "fixture": {
+    "name": "R08-G4-synthetic.png",
+    "width": 16,
+    "height": 16,
+    "bytes": 82,
+    "sha256": "90353b260da72f023c895ee8dc7c392bc583565dcc930caa683cdde53d4dedff"
+  },
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "current_group_hierarchy",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_now_publications",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "save_now_draft",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "prepare_r2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "signed_content_type",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_put",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "finalize_binding",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "publish_now",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_now_publications",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "published_readback",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "anonymous_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "name": "invalid_ticket_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "authorized_read",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "bounded_read_ttl",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_bytes_match",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_now_publications",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "fresh_server_reload",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "signed_url_expired",
+      "passed": true,
+      "http_status": 403
+    }
+  ],
+  "resources": {
+    "publication_id": "392ee49a-265b-42e3-9c5b-ed44a34028f8",
+    "asset_id": "0451e371-7f79-4501-b439-7da426ca4019"
+  },
+  "status": "passed",
+  "expires_at": "2026-09-13T15:24:39.452258+00:00",
+  "publication_expiry_verified": false,
+  "cleanup": "synthetic Agora retained until natural 24-hour expiry; private master preserved by existing retention",
+  "logout_status": [
+    204
+  ],
+  "finished_at": "2026-09-12T15:25:44.576953+00:00",
+  "negative_coverage": "anonymous and invalid ticket only; real cross-tenant actor unavailable",
+  "execution_exit_code": 0
+}
