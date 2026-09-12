@@ -136,3 +136,32 @@ Por orientação do C0, não foi aberto caminho alternativo de CDP nem outro nav
 - Bloqueado com diagnóstico: login/leitura/reload pelo Chrome compartilhado CUA.
 - Não executado: reset, factory reset, reboot, acesso destrutivo/linked, credenciais em log, testes Flutter ou deltas de estado.
 - Recursos intencionalmente mantidos: daemon Docker, containers baseline, servidor PID `16248` e aba Chrome `829822454`.
+
+## Gate adicional solicitado pelo C0: ACL compartilhada e lote 56
+
+Depois da primeira entrega, o C0 atribuiu o gate SQL local adicional. G5 identificou as suítes e definições finais em `76aed97cb`; G0 executou no mesmo baseline, sem aplicar migrations e sem cleanup externo.
+
+Ordem e resultado em [pgtap-acl-shared-20260912.log](./pgtap-acl-shared-20260912.log):
+
+| Ordem | Suíte | Resultado | Exit nativo |
+| ---: | --- | ---: | ---: |
+| 1 | `principal_internal_actor_bridge_v1_test.sql` | 22/22 | 0 |
+| 2 | `internal_actor_scope_root_v1_test.sql` | 46/46 | 0 |
+| 3 | `internal_actor_scope_root_v1_hotfix_test.sql` | 4/4 | 0 |
+| 4 | `internal_actor_institution_access_by_role_v1_test.sql` | 16/16 | 0 |
+
+Wrapper: exit 0. Cada suíte abriu transação própria e terminou em rollback. Os 88 testes provam a ponte people-based, escopo platform/institution, negação cross-tenant, reativação restrita do hotfix, idempotência, troca/revogação de papéis, Owner → `institution_admin`, Operations → `institution_reader`, Auditor sem vínculo e ausência de EXECUTE direto para clientes.
+
+O preflight somente leitura [preflight-lote56.sql](./preflight-lote56.sql) passou 20/20, com terminal em [preflight-lote56-20260912.log](./preflight-lote56-20260912.log), exits nativo e wrapper zero. Ele confirma:
+
+- `has_platform_permission(text,uuid)` com o ramo final do lote 50;
+- `scope_targets()` e o reativador na forma final do hotfix lote 52;
+- sincronizador na forma final do lote 55, sobre `scope_targets`, com mapeamentos por papel;
+- `security definer`, `search_path` fixado e ACLs restritas;
+- `institution_reader` somente com permissões ativas `%.read`;
+- `pg_cron`, `cron.job` e `sweep_expired_now_publications(uuid,integer)` disponíveis;
+- zero jobs existentes com o nome/comando de expiração do Agora.
+
+A primeira formulação local do check 2 procurava incorretamente `internal_actor.institution_id`; a função final usa o parâmetro `institution_id` junto de `not internal_actor.is_internal`, como definido pelo lote 50. A definição materializada foi inspecionada, a asserção foi corrigida sem alterar o banco e a execução registrada passou 20/20.
+
+Com isso, o espelho está comprovado para o preflight do lote 56. O ledger de uma linha continua explicitamente não autoritativo; aplicação, backup e ledger do lote 56 permanecem sob posse exclusiva do C0.

@@ -1,12 +1,12 @@
 {
-  "revision": 2,
+  "revision": 3,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:08:00-03:00",
+  "updatedAt": "2026-09-12T11:14:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -43,7 +43,9 @@
       "VHDX e volume nomeado preservados; baseline 1abbc4f2cd13 healthy em 57322",
       "paridade do espelho confirmada por marcadores dos lotes 52, 54 e 55; ledger isolado nao representa replay via psql",
       "build web QA release concluido e servidor ativo em 127.0.0.1:3014 PID 16248",
-      "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais"
+      "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais",
+      "gate SQL adicional do C0: suites ACL compartilhadas 22/22, 46/46, 4/4 e 16/16, todas com rollback e exit nativo 0",
+      "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -54,6 +56,11 @@
       "porta 57322 publicada para 5432",
       "flutter build web release: exit 0 em 74.1 s",
       "GET /login: HTTP 200; prova explicitamente nao promovida a E2E"
+      ,"principal_internal_actor_bridge_v1_test.sql: 22/22, exit 0"
+      ,"internal_actor_scope_root_v1_test.sql: 46/46, exit 0"
+      ,"internal_actor_scope_root_v1_hotfix_test.sql: 4/4, exit 0"
+      ,"internal_actor_institution_access_by_role_v1_test.sql: 16/16, exit 0"
+      ,"preflight-lote56.sql: 20/20, native exit 0, wrapper exit 0"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -68,7 +75,7 @@
     "server": "127.0.0.1:3014 PID 16248, ativo",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "espelho G0 confirmado ate marcadores do lote 55; pgTAP e liberacao do lote 56 permanecem com C0/G5"
+    "sql": "espelho confirmado por 88 testes ACL e preflight 20/20; lote 56, backup, aplicacao e ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -87,6 +94,11 @@
       "revision": 2,
       "at": "2026-09-12T11:08:00-03:00",
       "summary": "Docker recuperado com preservacao; baseline e ordem materializada conferidos; build/servidor entregues; E2E bloqueado por entrada CUA que nao atinge controller Flutter apos tres metodos documentados."
+    },
+    {
+      "revision": 3,
+      "at": "2026-09-12T11:14:00-03:00",
+      "summary": "Gate adicional C0 concluido: quatro suites ACL em ordem somam 88/88 com rollback; preflight lote 56 20/20 prova definicoes finais, ACL, pg_cron e sweep no espelho; ledger de uma linha permanece nao autoritativo."
     }
   ]
 }
