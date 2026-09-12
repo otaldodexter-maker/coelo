@@ -1,7 +1,7 @@
 -- pgTAP do candidato 20260912143000. Executar somente após o candidato, em banco local descartável.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(12);
 
 -- Contrato único PostgREST: a assinatura antiga é removida, defaults preservam
 -- chamadas anteriores e os quatro filtros novos são explicitamente tipados.
