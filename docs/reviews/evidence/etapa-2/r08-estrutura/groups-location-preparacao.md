@@ -1,9 +1,13 @@
 ---
 fonte: apps/superadmin/lib/features/groups e contrato superadmin_group_location_create_v2
-status: implementado localmente; teste Flutter pendente de slot
+status: teste focal verde; rota real pendente de Chrome
 data: 2026-09-12
 rodada: E2-R08-20260912
 ---
+
+## Checkpoint de retry
+
+Em 12/09, `flutter test test/features/groups/presentation/group_form_page_test.dart --concurrency=1` passou 28/28, exit 0. O novo cenário cobre criação atômica bem-sucedida, falha parcial de `saveComposition`, edição do nome, tentativa bloqueada de troca de unidade e retry com o mesmo `group_id`/versão e apenas uma chamada de criação. `dart analyze` focal passou sem issues. Chrome/rota real permanecem pendentes.
 
 # Turmas — Local catalogado
 

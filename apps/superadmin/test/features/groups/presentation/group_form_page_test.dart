@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
@@ -7,6 +8,8 @@ import 'package:coelo_superadmin/features/groups/domain/group_location_create.da
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_selection_field.dart';
+import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
+import '../../locations/location_read_fixtures.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
@@ -850,6 +853,132 @@ void main() {
 
     expect(find.byType(LocationSelectionField), findsOneWidget);
   });
+
+  testWidgets('keeps the atomic group receipt through a failed composition retry', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final context = GroupDirectoryFormContext(
+      institutions: const [GroupDirectoryFilterOption(id: institutionA, label: 'Instituição A')],
+      units: const [
+        GroupDirectoryFilterOption(id: unitA, label: 'Unidade A', institutionId: institutionA),
+        GroupDirectoryFilterOption(
+          id: '30000000-0000-4000-8000-000000000002',
+          label: 'Unidade B',
+          institutionId: institutionA,
+        ),
+      ],
+    );
+    final repository = _PendingGroupRepository(
+      FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+    )..contextOverride = context;
+    final locationCreate = _RecordingGroupLocationCreateRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: repository,
+          locationCatalogReader: _FixedLocationCatalogReader(),
+          groupLocationCreateRepository: locationCreate,
+          groupLocationCreateEnabled: true,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma A');
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('location-selection-option')),
+        )
+        .onChanged(locationA);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('step-convites')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-save')));
+    await tester.pump();
+    final first = repository.requests.single;
+    expect(locationCreate.commands, hasLength(1));
+    expect(first.record.id, '40000000-0000-4000-8000-000000000001');
+    expect(first.record.managementVersion, 7);
+    repository.pending.complete(
+      GroupDirectorySaveResult(
+        requestId: first.requestId,
+        steps: [
+          GroupDirectorySaveStepResult.failure(
+            stage: GroupDirectorySaveStage.people,
+            message: 'falha sintética',
+          ),
+        ],
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('step-identidade')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma B');
+    await tester.tap(find.byKey(const Key('step-hierarquia')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<GroupDirectoryFilterOption>>(
+          find.byKey(const Key('group-unit-field')),
+        )
+        .onChanged(context.units.last);
+    await tester.pumpAndSettle();
+    expect(find.textContaining('já foi criada com este local'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('step-convites')));
+    await tester.pumpAndSettle();
+    repository.pending = Completer<GroupDirectorySaveResult>();
+    await tester.tap(find.byKey(const Key('group-form-save')));
+    await tester.pump();
+    final second = repository.requests.last;
+    expect(repository.requests, hasLength(2));
+    expect(locationCreate.commands, hasLength(1));
+    expect(second.record.id, first.record.id);
+    expect(second.record.managementVersion, first.record.managementVersion);
+    expect(second.record.name, 'Turma B');
+    repository.pending.complete(
+      GroupDirectorySaveResult(
+        requestId: second.requestId,
+        steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+}
+
+final class _FixedLocationCatalogReader implements LocationCatalogReader {
+  final _entry = locationFixture(scope: scopeUnitA);
+
+  @override
+  Future<LocationDirectoryResult> fetchDirectory(LocationDirectoryRequest request) async =>
+      LocationDirectoryResult(items: [_entry], totalCount: 1);
+
+  @override
+  Future<LocationCatalogEntry> fetchDetail(String id) async => _entry;
+}
+
+final class _RecordingGroupLocationCreateRepository implements GroupLocationCreateRepository {
+  final commands = <GroupLocationCreateCommand>[];
+
+  @override
+  bool get available => true;
+
+  @override
+  Future<GroupLocationCreateResult> create(GroupLocationCreateCommand command) async {
+    commands.add(command);
+    return const GroupLocationCreateResult(
+      groupId: '40000000-0000-4000-8000-000000000001',
+      managementVersion: 7,
+      status: 'draft',
+      locationId: locationA,
+    );
+  }
 }
 
 final class _AvailableGroupLocationCreateRepository implements GroupLocationCreateRepository {
@@ -905,6 +1034,7 @@ final class _PendingGroupRepository implements GroupDirectoryRepository {
   final requests = <GroupDirectorySaveRequest>[];
   Completer<GroupRecord?>? pendingFind;
   Completer<GroupDirectoryFormContext>? pendingContext;
+  GroupDirectoryFormContext? contextOverride;
   int contextCalls = 0;
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) {
@@ -923,7 +1053,10 @@ final class _PendingGroupRepository implements GroupDirectoryRepository {
   @override
   Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) {
     contextCalls++;
-    return pendingContext?.future ?? delegate.fetchFormContext(institutionId: institutionId);
+    return pendingContext?.future ??
+        (contextOverride == null
+            ? delegate.fetchFormContext(institutionId: institutionId)
+            : Future.value(contextOverride));
   }
 
   @override

@@ -1210,9 +1210,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        const Text(
-          'Escolha um local do catálogo da unidade. A criação permanece atômica e não reserva horário.',
-        ),
+        const Text('Escolha um local do catálogo da unidade. Isso não reserva horário.'),
         const SizedBox(height: CoeloSpacing.space3),
         LocationSelectionField(
           key: ValueKey('group-catalogued-location-${institution.id}-${unit.id}'),

@@ -11,6 +11,13 @@
  "branch": "work/etapa2-r08-estrutura",
  "head": "379d9cb37; groups.location com retry idempotente publicado",
  "upstream": "origin/work/etapa2-r08-estrutura",
+ "estadoAtualR08": {
+  "conversa": "R08 · Estrutura (G1)",
+  "coordenador": "R08 · Coordenação (C0)",
+  "feito": "groups.location cobre create atômico, falha parcial, edição e retry sem nova criação; teste focal Flutter 28/28 PASS e analyze focal PASS.",
+  "pendente": "Chrome/rota real para Avaliações e groups.location; comparação e regravação dos 45 PNGs A.",
+  "sha": "a30956968 + delta local de retry, aguardando commit"
+ },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
   "T0": "2026-09-12T10:52:16-03:00",
