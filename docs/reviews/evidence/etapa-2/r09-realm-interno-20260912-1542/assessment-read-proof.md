@@ -62,3 +62,28 @@ O runner possui verificação offline que rejeita falso401, envelope sem data
 e vazamento de recurso; PASS, sem rede. Testes históricos não foram rerodados
 nem somados aos nove checks atuais. JSON e referências verificados localmente.
 Memória: no-op, apenas evidência/diagnóstico do recorte, sem regra nova.
+
+## Diagnóstico complementar da fixture, 16:13 BRT
+
+`assessment-fixture-read.py` leu somente a atribuição retida pelo contexto,
+participantes da atividade e opções de participantes da instituição, usando
+as RPCs do consumidor normal. `assessment-fixture-proof-final.json`: 5 checks
+PASS/0 FAIL, incluindo Auth/logout; três leituras de domínio.
+
+- Atribuição retida encontrada e conferida contra atividade/instituição R08.
+- Participantes da atividade: 0; da turma retida: 0.
+- Opções de aluno elegível: 0, com limite100; sem indício de truncamento.
+- Não foi lida nem gravada lista de nomes/PII em evidência. Nenhuma criação.
+
+A primeira tentativa `assessment-fixture-proof.json` falhou na opção de
+participantes por uso de limite200 pelo runner; o cliente usa100. Corrigido
+somente esse parâmetro e verificada a consulta. A falha permanece preservada,
+sem somar os checks repetidos nem classificá-la como regressão do produto.
+
+C0/G1: a próxima fatia precisa de **uma cadeia sintética elegível de aluno e
+participação na atribuição retida**. Não basta reabrir o diário vazio: a função
+`assessment_v2_initial_students` é chamada apenas no primeiro insert; um diário
+já existente precisa de atualização explícita de students pelo comando normal
+com sua versão atual, após os vínculos válidos. Não recriar o diário para
+contornar isso. Preparação/aplicação da fixture exige o próximo pacote nominal
+C0: a autorização atual restringe G5 a leitura sem dados/SQL novos.

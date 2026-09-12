@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 80,
+  "revision": 81,
   "round": "E2-R09-20260912-1542",
-  "updatedAt": "2026-09-12T19:11:01.458680+00:00",
+  "updatedAt": "2026-09-12T19:14:02.177906+00:00",
   "app": "Codex",
   "modelo": "gpt-6-astra / medium (configuracao declarada por C0)",
   "conversa": "R09 ? Realm interno e Back-end ? G5",
@@ -29,12 +29,12 @@
     ],
     "foraDoRecorte": "UI, auditoria ampla, Etapa 3, SQL sem espelho/posse, remoto/deploy, inventario e rastreadores C0"
   },
-  "primeiroGate": "C0 integrar proposta BE activities.assessment; autorizar diagnostico dos vinculos sinteticos que deixaram diario sem alunos para G1.",
+  "primeiroGate": "C0 atribuir fixture sintetica elegivel: atividade retida sem participantes e formulario sem opcoes de alunos; depois G1 atualizar diario existente por comando normal. G5 atual somente leitura, sem dados/SQL novos.",
   "provaLocal": "R09: nenhum teste de produto executado; ACK documental. Provas R08 permanecem historicas.",
   "bloqueio": null,
   "pedidosAoCoordenador": [
-    "Revisar/integrar deltas-assessment-be.json: 1 BE done proposto, sem FE/E2E; negativa real anon/ID inexistente + pgTAP cross-tenant reutilizado, sem segunda sessao real.",
-    "Autorizar leitura focal da cadeia activity_group_participants/child_group_links/child_unit_links do assignment retido; definir autoria da fixture e posse G0 se SQL for necessario."
+    "Integrar proposta BE activities.assessment e prova de leitura/negativas do commit3eee68451; FE/E2E nao promovidos.",
+    "Diagnostico read-only concluiu: participantes0 e opcoes elegiveis0 no contexto retido. Confirmar proximo pacote de fixture, autoria G5/G1/G3 e posse G0 se SQL necessario. Nao recriar configuracao/periodo/diario; atualizar students do diario pela versao atual apos vinculos."
   ],
   "perguntasParaOOwner": [
     "H19: quem pode ser Responsável de um plano de medicação (guardiões autorizados, equipe no escopo, ambos) e qual a semântica dessa atribuição, sem conceder implicitamente medication.record_evidence?"
@@ -1248,10 +1248,10 @@
     "memoria": "no-op: nenhuma regra duravel nova"
   },
   "checkpointR09": {
-    "revision": 80,
+    "revision": 81,
     "round": "E2-R09-20260912-1542",
     "coordenacaoRevision": 97,
-    "feito": "Runner minimo e prova API normal concluida, 9 checks PASS/0 FAIL; diario retido tem zero alunos; sem SQL novo",
+    "feito": "Negativas reais publicadas; diagnostico complementar concluiu participantes0 e opcoes elegiveis0. Falha do runner limite200 corrigida para100.",
     "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
     "actionIds": [
       "activities.assessment",
@@ -1264,15 +1264,22 @@
         "fail": 0
       },
       "oracleOffline": "PASS",
-      "pgTAP": "52/52 historicos R08 G0 reutilizados, nenhum rerun"
+      "pgTAP": "52/52 historicos R08 G0 reutilizados, nenhum rerun",
+      "diagnosticoAtual": {
+        "pass": 5,
+        "fail": 0,
+        "tentativaAnterior": "4PASS/1FAIL de runner, preservada; nao somar reruns"
+      }
     },
     "deltaArquivo": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/deltas-assessment-be.json",
     "aceitesBEPropostos": [
       "activities.assessment"
     ],
     "novosAceitesIntegrados": [],
-    "proximoGate": "C0 integrar proposta BE activities.assessment; autorizar diagnostico dos vinculos sinteticos que deixaram diario sem alunos para G1.",
+    "proximoGate": "C0 atribuir fixture sintetica elegivel: atividade retida sem participantes e formulario sem opcoes de alunos; depois G1 atualizar diario existente por comando normal. G5 atual somente leitura, sem dados/SQL novos.",
     "tituloInterface": "ferramenta de renomeacao indisponivel; conversa normalizada neste JSON",
-    "memoria": "no-op"
+    "memoria": "no-op",
+    "status": "Gate de leitura C0r97 executado; proxima escrita depende pacote nominal, sem polling",
+    "fixtureProof": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-fixture-proof-final.json"
   }
 }
