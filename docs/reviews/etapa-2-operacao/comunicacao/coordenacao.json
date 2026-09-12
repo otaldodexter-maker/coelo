@@ -1,12 +1,12 @@
 {
-  "revision": 83,
+  "revision": 85,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T13:18:39.375785-03:00",
+  "updatedAt": "2026-09-12T13:54:52.764333-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2550,10 +2550,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-ambiente-runtime",
       "json": "ambiente-runtime.json",
-      "ultimoSHA": "bed0bd125ecad3bdb9e6ae1b16468c067558e600",
-      "ackRevision": 21,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "353689d8506e183404705cf411f0cbe67f004810",
+      "ackRevision": 26,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G1": {
       "grupo": "estrutura",
@@ -2561,10 +2561,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-estrutura",
       "json": "estrutura.json",
-      "ultimoSHA": "5b79c1150ed58768646b2f424f5011abce7372c6",
-      "ackRevision": 86,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "318933e2209ab01901f21bbea80f2f032be7e2ff",
+      "ackRevision": 90,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -2572,10 +2572,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-acessos-pessoas",
       "json": "acessos-pessoas.json",
-      "ultimoSHA": "48fd021a26b185196095810deccdd47a785a5afa",
+      "ultimoSHA": "cec882e3d8d8f9487623059b141e07e94866fd48",
       "ackRevision": 156,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -2583,10 +2583,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-formularios-cuidado-rotina",
       "json": "formularios-cuidado-rotina.json",
-      "ultimoSHA": "8b9e784e56e1840662ea40594842305a3e84be93",
-      "ackRevision": 70,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "0c92198a02550ebcfbf83fdac9d37e6d0dfe3196",
+      "ackRevision": 75,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -2594,10 +2594,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-principal-chat-sistema",
       "json": "principal-chat-sistema.json",
-      "ultimoSHA": "dc357d71fa31701404ad3b8f4b5976a65d113d47",
-      "ackRevision": 63,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "d5aa7e2537c01318308fe5fd3762b801515e8e6e",
+      "ackRevision": 68,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -2605,10 +2605,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-realm-interno",
       "json": "realm-interno.json",
-      "ultimoSHA": "a43b464c39561e6b66ce056d527be2f5669ea8aa",
-      "ackRevision": 69,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "5927718f26eb80e3af051fbfb68413f294ef65cc",
+      "ackRevision": 72,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -2616,10 +2616,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-publicacoes-agenda",
       "json": "publicacoes-agenda.json",
-      "ultimoSHA": "770bb79e3427fa3c385ef334bec7a06b381893b0",
-      "ackRevision": 74,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "4ce8a34f86e5294c58d9e95080ecc5c69fe52166",
+      "ackRevision": 79,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G7": {
       "grupo": "operacoes",
@@ -2627,10 +2627,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-operacoes",
       "json": "operacoes.json",
-      "ultimoSHA": "789a664ec26e9be824a3e72e39c3974c26ebfec6",
-      "ackRevision": 67,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "8ec701dc010b57478025a5f88047e44b1aa2189e",
+      "ackRevision": 71,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     },
     "G8": {
       "grupo": "suites",
@@ -2638,10 +2638,10 @@
       "modelo": "Spark medio",
       "branch": "work/etapa2-r08-suites",
       "json": "fase0.json",
-      "ultimoSHA": "a837bfed34df98bfeefbcf9dd587c3298d06d6b0",
-      "ackRevision": 22,
-      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
-      "ackAt": "2026-09-12T13:18:39.375785-03:00"
+      "ultimoSHA": "efba31f93ab3d8e0ffeeffa242fbd9e500543da5",
+      "ackRevision": 28,
+      "status": "ACK180 integral recebido; continuacao focal atribuida",
+      "ackAt": "2026-09-12T13:54:52.764333-03:00"
     }
   },
   "slotsR08": {
@@ -2654,18 +2654,16 @@
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G1",
-      "inicio": "2026-09-12T13:04:00-03:00",
-      "expira": "2026-09-12T13:24:00-03:00",
-      "estado": "45A verificados informado; C0 exige liberação dos remanescentes PID34768/16100"
+      "dono": "G4",
+      "inicio": "2026-09-12T13:53:00-03:00",
+      "expira": "2026-09-12T13:58:00-03:00",
+      "estado": "Perfil view role/scope RED GREEN; C0 H25 integrado depois"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
     "filaFlutterTest": [
-      "G4 Perfil save/reload e parser",
-      "G3 Foto/câmera focal",
-      "G6 composição anônima",
-      "C0 base integrada"
+      "C0 base integrada",
+      "G2 H28 apos pacote revisado"
     ],
     "sqlEspelho": {
       "dono": "livre",
@@ -3111,6 +3109,131 @@
       ],
       "metodo": "git show por SHA fixo das nove branches, leitura integral com subárvores exatas já lidas",
       "certificacao": "recebimento não certifica"
+    },
+    {
+      "ciclo": "160min",
+      "at": "2026-09-12T13:34:00-03:00",
+      "registradoEm": "2026-09-12T13:43:32.751532-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 23,
+          "sha": "4c886e2f78e874b9f32e04f9248099ab550ef5f1",
+          "id": "01a095e0-ffff-7953-847d-6cc6a21433ed"
+        },
+        {
+          "g": "G1",
+          "r": 88,
+          "sha": "b01ddde2caaa6e3dd4ce64da76e71c34ce6bd823",
+          "id": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf"
+        },
+        {
+          "g": "G2",
+          "r": 156,
+          "sha": "cec882e3d8d8f9487623059b141e07e94866fd48",
+          "id": "01a095e1-a8af-7c00-8902-508a572ff643"
+        },
+        {
+          "g": "G3",
+          "r": 72,
+          "sha": "d3d3d5d630dda094f2df93bb70523cb716470e0e",
+          "id": "01a095e2-5dc2-7ad3-ae37-4742481ea99f"
+        },
+        {
+          "g": "G4",
+          "r": 65,
+          "sha": "68a0464fbb69a93d6630fae46b612b6fa606b8b2",
+          "id": "01a095e2-b6da-7043-9327-d5f0070c6041"
+        },
+        {
+          "g": "G5",
+          "r": 71,
+          "sha": "49bd4c83dda76de3c39b4a8240cf2f1059653335",
+          "id": "01a095e3-4532-75e3-a851-6873668a8814"
+        },
+        {
+          "g": "G6",
+          "r": 76,
+          "sha": "391e70888e2e50e2b9df050d87305b61a85c011c",
+          "id": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce"
+        },
+        {
+          "g": "G7",
+          "r": 70,
+          "sha": "133c3516d41c981d77c0cdeb2a750bb92566cae8",
+          "id": "01a095e3-e5ef-7c63-9db0-49f8df71e081"
+        },
+        {
+          "g": "G8",
+          "r": 28,
+          "sha": "f438a9e6d257310e3a4c849677c67988fe52e3b2",
+          "id": "01a095e4-57b7-7213-b151-8020b26521f3"
+        }
+      ],
+      "metodo": "git show das nove branches e leitura integral por subarvores exatas; registro posterior ao ACK enviado",
+      "certificacao": "ACK nao certifica"
+    },
+    {
+      "ciclo": "180min",
+      "at": "2026-09-12T13:54:52.764333-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 26,
+          "sha": "353689d8506e183404705cf411f0cbe67f004810",
+          "id": "01a095e0-ffff-7953-847d-6cc6a21433ed"
+        },
+        {
+          "g": "G1",
+          "r": 90,
+          "sha": "318933e2209ab01901f21bbea80f2f032be7e2ff",
+          "id": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf"
+        },
+        {
+          "g": "G2",
+          "r": 156,
+          "sha": "cec882e3d8d8f9487623059b141e07e94866fd48",
+          "id": "01a095e1-a8af-7c00-8902-508a572ff643"
+        },
+        {
+          "g": "G3",
+          "r": 75,
+          "sha": "0c92198a02550ebcfbf83fdac9d37e6d0dfe3196",
+          "id": "01a095e2-5dc2-7ad3-ae37-4742481ea99f"
+        },
+        {
+          "g": "G4",
+          "r": 68,
+          "sha": "d5aa7e2537c01318308fe5fd3762b801515e8e6e",
+          "id": "01a095e2-b6da-7043-9327-d5f0070c6041"
+        },
+        {
+          "g": "G5",
+          "r": 72,
+          "sha": "5927718f26eb80e3af051fbfb68413f294ef65cc",
+          "id": "01a095e3-4532-75e3-a851-6873668a8814"
+        },
+        {
+          "g": "G6",
+          "r": 79,
+          "sha": "4ce8a34f86e5294c58d9e95080ecc5c69fe52166",
+          "id": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce"
+        },
+        {
+          "g": "G7",
+          "r": 71,
+          "sha": "8ec701dc010b57478025a5f88047e44b1aa2189e",
+          "id": "01a095e3-e5ef-7c63-9db0-49f8df71e081"
+        },
+        {
+          "g": "G8",
+          "r": 28,
+          "sha": "efba31f93ab3d8e0ffeeffa242fbd9e500543da5",
+          "id": "01a095e4-57b7-7213-b151-8020b26521f3"
+        }
+      ],
+      "metodo": "snapshot imutavel de git show de nove SHAs, subarvores integralmente lidas",
+      "certificacao": "ACK nao certifica; G2 cabecalho antigo156 e G8 revision28/revisao34 divergentes cobrados"
     }
   ],
   "ownershipR08": {
@@ -3130,12 +3253,12 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T13:18:39.375785-03:00"
+    "ultimoCheckpoint": "2026-09-12T13:54:52.764333-03:00"
   },
   "recursosR08": {
-    "medidoEm": "2026-09-12T13:18:39.375785-03:00",
-    "ramLivreKB": 3123192,
-    "acao": "Chrome G0 root22592; dois flutter_tester remanescentes G1 sob confirmação antes de ceder slot G4."
+    "medidoEm": "2026-09-12T13:43:32.751532-03:00",
+    "ramLivreKB": 3615896,
+    "acao": "Chrome G0 exclusivo; Flutter G3 H25; demais trabalho independente"
   },
   "continuidadeR08": {
     "medidoEm": "2026-09-12T13:00:11.963757-03:00",
@@ -3191,11 +3314,27 @@
       "preflight": "3014/prod204 ACAOexato; externo403",
       "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v17-preflight.json",
       "promocaoE2E": false
+    },
+    {
+      "funcao": "form-media",
+      "versao": 18,
+      "sha": "49bd4c83d",
+      "bundle": "cd8cc5f1bd2a24e0becdce81b009f6eb0f0e22c09f691f6744a9bcf33c5379e4",
+      "estado": "ACTIVE verify_jwt=true; Deno56PASS; OPTIONS204/204/403",
+      "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v18-preflight.json"
+    },
+    {
+      "funcao": "form-media",
+      "versao": 20,
+      "sha": "5927718f2",
+      "bundle": "a8527852d8e510975b9c1b052d7810726f6d9c1d5b25411411c0c290fcb46047",
+      "estado": "ACTIVE verify_jwt=true; Deno56PASS; OPTIONS204/204/403; providerR2isolado; upload/finalize/save real passou, download400pendente",
+      "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v20-preflight.json"
     }
   ],
   "limitesR08": {
-    "medidoEm": "2026-09-12T13:18:39.375785-03:00",
-    "codexUsado": 33,
+    "medidoEm": "2026-09-12T13:43:32.751532-03:00",
+    "codexUsado": 38,
     "reservaUsada": 17,
     "sparkJanelaUsada": 100,
     "creditos": 0,
@@ -3288,5 +3427,22 @@
     "e2e": false,
     "passwordChanged": false,
     "smtp": false
+  },
+  "ciclo180R08": {
+    "baseTestada": "c729090f9",
+    "flutter": {
+      "passed": 411,
+      "failed": 4,
+      "skipped": 1,
+      "durationSeconds": 97.85,
+      "nativeExit": 1
+    },
+    "analyze": {
+      "issues": 0,
+      "seconds": 113.5,
+      "nativeExit": 0
+    },
+    "correcao": "f0e148a70 integrado; pintura H25 preservada semPNG; validacao focal C0 pendente de slot",
+    "publicacao": "em preparacao; sem promover resultados futuros"
   }
 }

@@ -1,0 +1,20 @@
+{
+  "measured_at": "2026-09-12T13:54:52.764333-03:00",
+  "asset_id": "e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195",
+  "state": "finalized",
+  "prepared_actor_matches": true,
+  "bytes": 68,
+  "media_count": 1,
+  "media_status": "ready",
+  "binding_count": 1,
+  "authorize_with_explicit_null": "flat object finalized",
+  "descriptor": {
+    "ok": true,
+    "asset_match": true,
+    "bucket_match": true,
+    "key_prefix_match": true,
+    "state": "finalized",
+    "media_status": "ready"
+  },
+  "hypothesis": "p_edit_secret undefined omitted by JS serialization; RPC has no default; pending focal proof"
+}
