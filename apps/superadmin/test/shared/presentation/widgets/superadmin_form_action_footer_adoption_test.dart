@@ -2,6 +2,16 @@ import 'dart:io';
 
 import 'package:flutter_test/flutter_test.dart';
 
+// A familia Publicacao (publication_surface.dart) embute o
+// SuperadminFormActionFooter; quem compoe PublicationSurface adota o rodape
+// canonico por composicao (Agenda desde 0322e511d, R06). Os publicadores do
+// Principal usam o rodape da propria familia (PrincipalPublicationActionFooter,
+// referencias aprovadas pelo Owner em 11/09/2026).
+bool _usesCanonicalFooter(String source) =>
+    source.contains('SuperadminFormActionFooter') ||
+    source.contains('PublicationSurface(') ||
+    source.contains('PrincipalPublicationActionFooter(');
+
 void main() {
   test('all current administrative creation and edit surfaces use the canonical footer', () {
     const consumers = <String>[
@@ -31,7 +41,7 @@ void main() {
     ];
 
     for (final path in consumers) {
-      expect(File(path).readAsStringSync(), contains('SuperadminFormActionFooter'), reason: path);
+      expect(_usesCanonicalFooter(File(path).readAsStringSync()), isTrue, reason: path);
     }
   });
 
@@ -44,19 +54,30 @@ void main() {
             .where((file) {
               final source = file.readAsStringSync();
               return RegExp(r'class .*?(Form|Wizard|Editor|Create|Edit).*Page').hasMatch(source) &&
-                  !source.contains('SuperadminFormActionFooter');
+                  !_usesCanonicalFooter(source);
             })
             .map((file) => file.path.replaceAll(r'\', '/'))
             .toList()
           ..sort();
 
     expect(candidates, <String>[
+      // Pendencia registrada na R07 (frente Estrutura): Criar modelo de
+      // atividade (_ActivityTemplateCreatePage) usa Wrap de botoes em vez do
+      // rodape canonico; ao migrar, remover esta linha.
+      'lib/features/activities/presentation/activity_directory_page.dart',
       'lib/features/daily_routine/daily_routine_pages.dart',
+      // Classe de dados (FormsAuthoringInstitutionPage), nao e tela.
+      'lib/features/forms/data/forms_authoring_api.dart',
       'lib/features/forms/presentation/directory/forms_directory_page.dart',
+      // Paginas de operacao de Formularios (Media/Operations casam com "Form").
+      'lib/features/forms/presentation/operations/forms_media_page.dart',
+      'lib/features/forms/presentation/operations/forms_operations_page.dart',
       'lib/features/forms/presentation/overview/forms_overview_page.dart',
       'lib/features/forms/presentation/response/form_response_page.dart',
       'lib/features/forms/presentation/response/forms_test_page.dart',
       'lib/features/people/presentation/person_edit_route_page.dart',
+      // Familia Principal: composicao propria, fora do rodape administrativo.
+      'lib/features/principal_profile/presentation/principal_profile_edit_page.dart',
     ]);
   });
 }

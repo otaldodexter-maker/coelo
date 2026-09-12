@@ -24,10 +24,9 @@ void main() {
             darkTheme: CoeloTheme.dark,
             themeMode: brightness == Brightness.dark ? ThemeMode.dark : ThemeMode.light,
             builder: (context, child) => MediaQuery(
-              data: MediaQuery.of(context).copyWith(
-                textScaler: const TextScaler.linear(2),
-                disableAnimations: true,
-              ),
+              data: MediaQuery.of(
+                context,
+              ).copyWith(textScaler: const TextScaler.linear(2), disableAnimations: true),
               child: child!,
             ),
             home: Scaffold(

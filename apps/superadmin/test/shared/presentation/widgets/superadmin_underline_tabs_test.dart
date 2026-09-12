@@ -11,7 +11,7 @@ void main() {
     await tester.pumpWidget(_tabsApp());
 
     final selected = tester.widget<Container>(
-      find.byKey(const ValueKey('superadmin-underline-tab-superadmin')),
+      find.byKey(const ValueKey('coelo-admin-underline-tab-superadmin')),
     );
     expect((selected.decoration! as BoxDecoration).color, Colors.transparent);
 
@@ -22,7 +22,7 @@ void main() {
     await tester.pumpAndSettle();
 
     final hovered = tester.widget<Container>(
-      find.byKey(const ValueKey('superadmin-underline-tab-admin')),
+      find.byKey(const ValueKey('coelo-admin-underline-tab-admin')),
     );
     final decoration = hovered.decoration! as BoxDecoration;
     final hoverInk = tester.widget<InkWell>(
@@ -50,7 +50,7 @@ void main() {
 
     final decoration =
         tester
-                .widget<Container>(find.byKey(const ValueKey('superadmin-underline-tab-admin')))
+                .widget<Container>(find.byKey(const ValueKey('coelo-admin-underline-tab-admin')))
                 .decoration!
             as BoxDecoration;
     expect(
@@ -73,7 +73,7 @@ void main() {
     final underlineDecoration =
         tester
                 .widget<Container>(
-                  find.byKey(const ValueKey('superadmin-underline-tab-superadmin')),
+                  find.byKey(const ValueKey('coelo-admin-underline-tab-superadmin')),
                 )
                 .foregroundDecoration!
             as BoxDecoration;
@@ -116,7 +116,7 @@ void main() {
 
   testWidgets('keyboard focus reveals a hidden tab completely', (tester) async {
     await tester.pumpWidget(_overflowTabsApp(selected: 'all'));
-    final tab = find.byKey(const ValueKey('superadmin-underline-tab-dual'));
+    final tab = find.byKey(const ValueKey('coelo-admin-underline-tab-dual'));
     tester
         .widget<InkWell>(find.ancestor(of: tab, matching: find.byType(InkWell)))
         .focusNode!
@@ -129,7 +129,7 @@ void main() {
     await tester.pumpWidget(_overflowTabsApp(selected: 'all'));
     await tester.pumpWidget(_overflowTabsApp(selected: 'dual'));
     await tester.pumpAndSettle();
-    _expectFullyVisible(tester, find.byKey(const ValueKey('superadmin-underline-tab-dual')));
+    _expectFullyVisible(tester, find.byKey(const ValueKey('coelo-admin-underline-tab-dual')));
   });
 
   testWidgets('shrinking constraints keeps the selected tab fully visible', (tester) async {
@@ -137,12 +137,12 @@ void main() {
     await tester.pumpWidget(_tabsAtWidthApp(width: 220, selected: 'dual'));
     await tester.pumpAndSettle();
 
-    _expectFullyVisible(tester, find.byKey(const ValueKey('superadmin-underline-tab-dual')));
+    _expectFullyVisible(tester, find.byKey(const ValueKey('coelo-admin-underline-tab-dual')));
   });
 
   testWidgets('focused tab stays clear of the trailing fade when more tabs follow', (tester) async {
     await tester.pumpWidget(_overflowTabsApp(selected: 'all'));
-    final tab = find.byKey(const ValueKey('superadmin-underline-tab-family'));
+    final tab = find.byKey(const ValueKey('coelo-admin-underline-tab-family'));
     tester
         .widget<InkWell>(find.ancestor(of: tab, matching: find.byType(InkWell)))
         .focusNode!
@@ -158,7 +158,7 @@ void main() {
   testWidgets('Enter and Space select the focused tab', (tester) async {
     final selected = <String>[];
     await tester.pumpWidget(_overflowTabsApp(selected: 'all', onSelected: selected.add));
-    final tab = find.byKey(const ValueKey('superadmin-underline-tab-team'));
+    final tab = find.byKey(const ValueKey('coelo-admin-underline-tab-team'));
     tester
         .widget<InkWell>(find.ancestor(of: tab, matching: find.byType(InkWell)))
         .focusNode!
@@ -176,7 +176,7 @@ void main() {
     await tester.pumpWidget(_overflowTabsApp(selected: 'dual', disableAnimations: true));
     await tester.pump();
 
-    _expectFullyVisible(tester, find.byKey(const ValueKey('superadmin-underline-tab-dual')));
+    _expectFullyVisible(tester, find.byKey(const ValueKey('coelo-admin-underline-tab-dual')));
     expect(tester.binding.hasScheduledFrame, isFalse);
   });
 }
