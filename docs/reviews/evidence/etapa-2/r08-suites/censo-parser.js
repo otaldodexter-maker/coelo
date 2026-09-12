@@ -10,7 +10,7 @@ for (const line of fs.readFileSync(args.input, 'utf8').split(/\r?\n/)) {
   let x; try { x = JSON.parse(line); } catch { unknown.push({ raw: line }); continue; }
   if (x.type === 'suite' && x.suite?.id != null) suites.set(x.suite.id, { id: x.suite.id, path: pathRel(x.suite.path) });
   if (x.type === 'testStart' && x.test?.id != null) {
-    const suite = suites.get(x.test.suiteID); const name = x.test.name || ''; const loading = suite && name === `loading ${x.test.url || suite.path}`;
+    const suite = suites.get(x.test.suiteID); const name = x.test.name || ''; const loading = Boolean(suite && name.startsWith('loading ') && pathRel(name.slice('loading '.length)) === suite.path);
     starts.set(x.test.id, { testID: x.test.id, suiteID: x.test.suiteID, path: pathRel(x.test.root_url || x.test.url || suite?.path), name, metadata: x.test.metadata || {}, loading });
   }
   if (x.type === 'error') { counts.errors++; unknown.push({ type: 'error', error: x.error || x }); }
