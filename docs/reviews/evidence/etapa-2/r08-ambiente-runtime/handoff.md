@@ -222,3 +222,11 @@ Com revisão G7 e posse C0, o baseline recebeu sequencialmente `140548` e `14054
 A primeira regressão de 33 testes ficou **32 ok / 1 not ok**: o caso 17 ainda espera ticket inválido no segundo finalize idêntico, enquanto 140548 passou a reconciliar resposta perdida com sucesso idempotente. Native `0`, wrapper `1`, rollback. O ciclo parou antes das regressões 17/159 e aguarda ajuste autoral da expectativa sem enfraquecer o mismatch fail-closed. Recibo: [pgtap-forms-question-media-3f494eb51.log](./pgtap-forms-question-media-3f494eb51.log).
 
 A expectativa foi alinhada no commit `684eea023`: replay idêntico exige sucesso, mesmo asset, status `ready`, `replayed=true`, uma única variante e medidas preservadas; mismatch alterado continua fail-closed no plano 9. O rerun final passou **33/33**, **17/17** e **159/159**, todos com `finish`, rollback e exits `0/0`. A falha 32/33 permanece apenas como histórico do ciclo anterior. Slot SQL liberado; produção continua exclusiva do C0 e intocada pelo G0.
+
+## Smoke API de Formulários preparado
+
+Por solicitação do C0, foi preparado — sem execução remota — um smoke autenticado do editor normal identificado com `question-image`. O roteiro completo está em [forms-question-image-api-smoke-manifest.md](./forms-question-image-api-smoke-manifest.md) e o runner fail-safe em [forms-question-image-api-smoke.py](./forms-question-image-api-smoke.py).
+
+O fluxo usa somente Auth, `form_save_draft`, `form_get_editor` e a Edge Function `form-media`: cria uma fixture institucional sem PII, prepara e envia um PNG válido de 1×1 pixel, finaliza, resolve e confere o SHA-256 baixado, repete o editor para provar o binding `ready` e executa `form-media delete` + `form_archive_or_delete delete` no `finally`. JWT, ticket, chave de objeto e URLs assinadas ficam somente em memória. Sem `--execute`, o runner encerra com `READY_NO_MUTATION`; dry-run, parse sintático e `git diff --check` passaram.
+
+O C0 recebeu antecipadamente a instituição medida, a fixture, a sequência e os critérios de parada. A execução aguarda liberação nominal após backup/lote 57 e confirmação de `140546..140549` e da Edge Function compatível em produção. Nenhuma chamada remota, migration, deploy ou mutação foi feita neste preparo.
