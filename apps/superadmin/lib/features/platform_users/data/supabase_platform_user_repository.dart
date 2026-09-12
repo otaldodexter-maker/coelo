@@ -10,7 +10,7 @@ import '../domain/platform_user.dart';
 /// Auth invitation and recovery deliberately remain outside this repository
 /// until OQ-039 defines their privileged gateway contract.
 final class SupabasePlatformUserRepository
-    implements PlatformUserRepository, PlatformUserRemoteLoader {
+    implements PlatformUserRepository, PlatformUserRemoteLoader, PlatformUserServicePersonResolver {
   SupabasePlatformUserRepository(this._client);
 
   final SupabaseClient _client;
@@ -140,6 +140,22 @@ final class SupabasePlatformUserRepository
         return null;
       }
       throw _requestError(error, revision);
+    }
+  }
+
+  @override
+  Future<String?> servicePersonId(String internalUserId) async {
+    try {
+      final response = await _client.rpc<Object?>(
+        'superadmin_internal_user_service_person_v1',
+        params: {'p_internal_identity_id': internalUserId},
+      );
+      final envelope = Map<String, dynamic>.from(response as Map);
+      final data = envelope['data'];
+      return data == null ? null : (Map<String, dynamic>.from(data as Map)['person_id'] as String?);
+    } on Object {
+      // RPC ausente (PGRST202), negada ou fora do ar: a secao do @ nao aparece.
+      return null;
     }
   }
 

@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../people/domain/person_handle.dart';
+import '../../people/presentation/person_handle_section.dart';
 import '../domain/platform_user.dart';
 
 enum _InternalUserAction {
@@ -27,11 +29,18 @@ final class PlatformUserDetailPage extends StatefulWidget {
     this.onEdit,
     this.onBack,
     this.onDestinationSelected,
+    this.handleRepository,
+    this.servicePerson,
     super.key,
   });
 
   final PlatformUserRepository repository;
   final String internalUserId;
+
+  /// P46: @ do usuario interno pela pessoa de servico (170500). Sem os dois, a
+  /// secao nao aparece.
+  final PersonHandleRepository? handleRepository;
+  final PlatformUserServicePersonResolver? servicePerson;
   final PlatformUserCapability capability;
   final LogoutAction logout;
   final VoidCallback? onEdit;
@@ -329,6 +338,22 @@ final class _PlatformUserDetailPageState extends State<PlatformUserDetailPage> {
         _field('CPF protegido', record.maskedCpf),
         _field('Nascimento', _formatDate(record.identity.birthDate, empty: 'Não informado')),
       ]),
+      if (widget.handleRepository case final handles?)
+        if (widget.servicePerson case final resolver?)
+          FutureBuilder<String?>(
+            future: resolver.servicePersonId(record.id),
+            builder: (context, snapshot) => switch (snapshot.data) {
+              final personId? => Padding(
+                padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                child: PersonHandleSection(
+                  key: const Key('platform-user-handle-section'),
+                  repository: handles,
+                  personId: personId,
+                ),
+              ),
+              _ => const SizedBox.shrink(),
+            },
+          ),
       _section('Contato', [
         _field('E-mail profissional protegido', record.maskedEmail),
         _field('Celular protegido', record.maskedMobile),

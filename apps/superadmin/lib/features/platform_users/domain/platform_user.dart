@@ -438,6 +438,13 @@ abstract interface class PlatformUserRepository {
   Future<PlatformUserRecord> createReplacementMembership(String id);
 }
 
+/// P46 (Owner, 11/09): o usuario interno tem @ pela pessoa de servico da
+/// ponte de ator. O resolvedor devolve o person_id (ou null quando a RPC
+/// 170500 ainda nao esta em producao) e a tela reaproveita o @ de Pessoas.
+abstract interface class PlatformUserServicePersonResolver {
+  Future<String?> servicePersonId(String internalUserId);
+}
+
 /// Optional production loader used by deep links before the directory cache exists.
 abstract interface class PlatformUserRemoteLoader {
   Future<List<PlatformAccessProfile>> fetchProfiles();
