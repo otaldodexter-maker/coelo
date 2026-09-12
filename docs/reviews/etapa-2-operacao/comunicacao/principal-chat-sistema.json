@@ -9,7 +9,7 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
   "branch": "work/etapa2-r07-principal-chat-sistema",
   "base": "origin/dev a50487878",
-  "head": "ab48ce68a71a4be4fd9baf4db6774c27ad173ccd antes do commit final deste JSON",
+  "head": "bc6069089c99147cb6b549708253558bc2853931 antes do commit final deste JSON",
   "status": "FECHAMENTO FORMAL R07; frente encerrada sem E2E novo por bloqueio Chrome/CDP; handoff publicado; sem retomada após T0+4h10.",
   "T0_assumido": "R07 desta frente: 2026-09-11T23:20:52-03:00; T0+4h = 2026-09-12T03:20:52-03:00; revisao final ate 03:30:52",
   "scope": [
@@ -264,7 +264,7 @@
       "checkpoint 23:50: servidor local 127.0.0.1:3009 responde HTTP 200; duas tentativas de controle da aba Chrome/CDP expiraram por timeout, sem captura ou CRUD real declarado"
     ],
     "pendente": ["publicadores com midia", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 condicionado a P54=A", "chat.create-group/chat.attach"],
-    "commits_publicados": ["4809bbc06: abertura R07 + deltas vazios; push concluído", "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído", "2abf24cc9: correção MIME no PUT de Momentos; push concluído", "244fed7b0: regressão curta 97/97; push concluído", "ab48ce68a: handoff formal R07; push pendente até este fechamento"],
+    "commits_publicados": ["4809bbc06: abertura R07 + deltas vazios; push concluído", "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído", "2abf24cc9: correção MIME no PUT de Momentos; push concluído", "244fed7b0: regressão curta 97/97; push concluído", "ab48ce68a: handoff formal R07; push concluído", "bc6069089: fechamento final do JSON; push concluído"],
     "evidencias_esperadas": "capturas commitadas em docs/reviews/evidence/etapa-2/r07-principal-chat-sistema/rota-real e deltas-r07-pcs.json no formato do aplicador",
     "cadencia": "checkpoint JSON a cada 30 minutos; checkpoint 23:50:52 publicado; revisao final T0+4h",
     "seguranca": "qa-r06-principal lido somente do arquivo local; nenhum segredo em Git, chat, log ou JSON; um Chrome e um flutter test por vez"
