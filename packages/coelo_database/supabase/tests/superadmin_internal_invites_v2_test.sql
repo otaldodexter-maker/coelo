@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(35);
 
 select has_function('public','superadmin_invite_directory_v2',array[
   'text','text[]','text[]','uuid[]','uuid[]','uuid[]','uuid[]',
@@ -175,6 +175,16 @@ select is((select body#>>'{error,code}' from invite_results where label='legacy_
  'SAI_PERMISSION_DENIED','legacy invitation remains read-only');
 select ok((select body#>>'{ok}'='true' and body#>>'{data,invite,management_version}'='2'
  from invite_results where label='owner_resend'),'expired internal invitation can be resent');
+select ok((select body#>>'{data,replayed}'='false'
+ and body#>>'{data,link}'~'^https://app[.]coelo[.]me/convites/[0-9a-f]{64}$'
+ and body#>>'{data,invite,status}'='pending'
+ and (body#>>'{data,invite,expires_at}')::timestamptz>now()
+ from invite_results where label='owner_resend'),
+ 'expired invitation fixture returns one ephemeral link and becomes pending');
+select ok((select result_json->'link'='null'::jsonb
+ from app_private.superadmin_internal_invite_receipts
+ where request_id='9d100000-0000-4000-8000-000000000603'),
+ 'resend receipt never persists the clear invitation link');
 select is((select body#>>'{error,code}' from invite_results where label='stale_revoke'),
  'SAI_CONCURRENT_CHANGE','stale mutation is rejected');
 select ok((select body#>>'{ok}'='true' and body#>>'{data,invite,status}'='revoked'
