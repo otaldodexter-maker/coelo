@@ -1,16 +1,16 @@
 {
-  "revision": 156,
-  "updated_at": "2026-09-12T11:42:58.6818446-03:00",
+  "revision": 160,
+  "updated_at": "2026-09-12T14:28:00-03:00",
   "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
   "round": "E2-R08-20260912",
   "group": "acessos-pessoas",
   "tool": "Codex",
   "model": "GPT-5.6 Terra (esforco medio)",
-  "status": "ativa; trabalho local independente liberado por C0 rev64; E2E aguarda runtime de G0",
+  "status": "ativa; H28 em candidato local para revisao/serializacao C0/G5; E2E continua dependente do runtime de G0",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
   "branch": "work/etapa2-r08-acessos-pessoas",
-  "head": "e9f7cafbd publicado em origin/work/etapa2-r08-acessos-pessoas; C0 integra/revisa P51 antes de qualquer deploy",
-  "base_observed": "origin/dev 6d6cbef32; coordenacao rev64; lote 56 retido ate espelho/pgTAP",
+  "head": "H28 candidato/payload publicado em 1cbc1f6a0; rollout do cliente permanece desligado até serialização confirmada",
+  "base_observed": "origin/dev materializado por merge antes do candidato H28; C0/G5 revisam e serializam lote 59",
   "T0": {
     "observacao": "coordenacao rev64 lida e incorporada; slots e cortes vigentes da R08.",
     "T0": "2026-09-12T10:52:16.727826-03:00",
@@ -2301,6 +2301,20 @@
     "testes": "Flutter focal inicial de Pessoas observou 18 casos sem resumo terminal e segue inconclusivo. Deno P51 corrigido: 8 passed, 0 failed, com handler simulado; inclui origem runtime 3014, retorno-error e excecao generateLink. P15: person_form_page_test.dart 23 passed, 0 failed. Platform users focal (repository + pages): 39 passed, 0 failed. 15 A: comparacao normal falhou nos 15 alvos; update-goldens posterior 12 passed, 0 failed.",
     "sha_publicado": "e9f7cafbd",
     "proximo_gate": "C0 confirma Redirect URL remota e decide deploy P51; Chrome G0 para E2E e convite expirado real."
+  },
+  "H28_PEOPLE_CONTEXT_FILTERS": {
+    "id": "H28",
+    "recorded_at": "2026-09-12T14:28:00-03:00",
+    "status": "candidato revisado localmente; espelho descartavel aplicou; nao aplicado em producao, nao e migration/fila/deploy",
+    "artefatos": [
+      "packages/coelo_database/candidatos/acessos-pessoas/20260912143000_people_directory_context_filters_v1.sql",
+      "packages/coelo_database/candidatos/acessos-pessoas/20260912143000_people_directory_context_filters_v1_test.sql"
+    ],
+    "contrato": "superadmin_people_list ganha activity_ids UUID e state/municipality/neighborhood textuais com defaults; uma unica linha context_rows satisfaz todos os filtros. Atividade usa assignment/link/participant vigentes; localidade deriva de unit_addresses ou institution_addresses. total_count e calculado antes da pagina.",
+    "seguranca": "mantem assert_people_permission, unica assinatura PostgREST, grants authenticated/service_role e rejeicoes unit/group cross-context; nao aceita ID de localidade nao verificavel do cliente.",
+    "teste": "pgTAP estrutural do candidato: 11/11 PASS no rollback do espelho descartavel. A fixture A/B de G7 cobre 10 cenarios reais, incluindo negativo e cross-tenant; a serializacao/aplicacao fica exclusivamente com C0/G5.",
+    "cliente_wip": "adapter encaminha p_activity_ids/p_state_codes/p_municipality_ids/p_neighborhood_ids e desserializa activities/states/municipalities/neighborhoods; composicao permanece com contextFiltersAvailable=false ate C0 confirmar a assinatura aplicada. Flutter focal repository + view model: 19 passed, 0 failed; inclui quatro cenarios de cascata/deduplicacao H28 no SHA df0a281cb.",
+    "pendente": "revisao tecnica C0/G3/G5, serializacao e aplicacao somente na fila autorizada; somente apos a confirmacao C0 habilitar contextFiltersAvailable. Nenhuma prova E2E ou deploy e alegada."
   },
   "R07_FECHAMENTO_C0": {
     "revision": 149,

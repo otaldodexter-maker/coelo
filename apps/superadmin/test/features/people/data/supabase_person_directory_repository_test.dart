@@ -78,6 +78,42 @@ void main() {
     expect(body['p_limit'], 20);
   });
 
+  test(
+    'context activity and locality filters are forwarded only after their contract is available',
+    () async {
+      Request? captured;
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          captured = request;
+          return Response(
+            jsonEncode({'items': <Object>[], 'total_count': 0}),
+            200,
+            headers: {'content-type': 'application/json'},
+            request: request,
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+
+      await SupabasePersonDirectoryRepository(client, contextFiltersAvailable: true).fetchPage(
+        PersonDirectoryQuery(
+          activityIds: {'activity-a'},
+          stateCodes: {'SP'},
+          municipalityIds: {'Sao Paulo'},
+          neighborhoodIds: {'Centro'},
+        ),
+      );
+
+      final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+      expect(body['p_activity_ids'], ['activity-a']);
+      expect(body['p_state_codes'], ['SP']);
+      expect(body['p_municipality_ids'], ['Sao Paulo']);
+      expect(body['p_neighborhood_ids'], ['Centro']);
+    },
+  );
+
   test('create and update call draft and concurrent RPCs', () async {
     final paths = <String>[];
     final client = SupabaseClient(
@@ -147,6 +183,23 @@ void main() {
                 'institution_id': 'institution-1',
               },
             ],
+            'activities': [
+              {
+                'id': 'activity-1',
+                'label': 'Musica',
+                'institution_id': 'institution-1',
+                'unit_id': 'unit-1',
+              },
+            ],
+            'states': [
+              {'id': 'SP', 'label': 'SP'},
+            ],
+            'municipalities': [
+              {'id': 'Sao Paulo', 'label': 'Sao Paulo', 'state_code': 'SP'},
+            ],
+            'neighborhoods': [
+              {'id': 'Centro', 'label': 'Centro', 'municipality_id': 'Sao Paulo'},
+            ],
           }),
           200,
           headers: {'content-type': 'application/json'},
@@ -160,6 +213,9 @@ void main() {
 
     expect(options.roles.single.id, 'guardian');
     expect(options.roles.single.institutionId, 'institution-1');
+    expect(options.activities.single.unitId, 'unit-1');
+    expect(options.municipalities.single.stateCode, 'SP');
+    expect(options.neighborhoods.single.municipalityId, 'Sao Paulo');
   });
 
   test('legacy write retains the backend read-only SQLSTATE mapping', () async {

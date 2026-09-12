@@ -417,6 +417,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(
         client,
         segmentFilterAvailable: true,
+        // H28 permanece desligado até C0 serializar a assinatura estendida.
+        contextFiltersAvailable: false,
       ),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
