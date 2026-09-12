@@ -1,6 +1,6 @@
 {
-  "revision": 62,
-  "updated_at": "2026-09-12T12:59:58.552248-03:00",
+  "revision": 63,
+  "updated_at": "2026-09-12T13:08:59.550458-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "d01f92023",
-  "status": "EXECUTANDO: PNG API Acontece/Agora/Momentos, Cardapios e Chat documentados; UI pendente; proximo gate solicitado C0",
+  "head": "e989ed042",
+  "status": "EXECUTANDO: baseC0ciclo120incorporada; quadroH02/H05/H06/H13pronto;3REDPerfilpreparadosaguardamslot",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -37,7 +37,9 @@
     "agora-api": "19checks/operacoesPASS exit0;TTLURL403,logout204;publicacao24hNAOverificada.",
     "momentos-api": "Inicial20PASS/1FAIL403; aposlote58retirada200+reloadausente; retry8PASS/1FAILoraculoautorreaderrado;outroconsumidor403/logout204. APIretiradaaprovada;UI/cross-tenantnao.",
     "cardapios-api": "24checks/operacoesPASS exit0;draft1/edit2/review3/publish4/archive5;modeloexistentev2intacto;scopeRulesobjetopersistido;naoE2EUI.",
-    "chat-api": "Inicial27PASS/1FAILoraculoR2400;continuacaomesmosIDs26PASS/0FAILexit0/logout204;hash/reload/replaysemPUT/TTL300403;naosomarreruns;naoE2EUI."
+    "chat-api": "Inicial27PASS/1FAILoraculoR2400;continuacaomesmosIDs26PASS/0FAILexit0/logout204;hash/reload/replaysemPUT/TTL300403;naosomarreruns;naoE2EUI.",
+    "perfil-save-reload": "3REDnovos preparados, NAOexecutados; codigoProdutoaindaintocado.",
+    "principal-integrado-C0": "79PASS/3arquivos baseb85fd00e0/analyze0 conforme ciclo120C0; naosomaraosrerunsG4."
   },
   "lotes": [
     {
@@ -72,8 +74,8 @@
     "conciliar spec028 bindingattachment_id semassetId antescertificacao",
     "proximo gate independente aposAPI, semconflito demaisfrentes"
   ],
-  "next_step": "C0 atribuiu revisao H02/H05/H06/H13 contra decisoes aprovadas: quadro fonte/decisao/acao remanescente; sem repetir smoke verde ou criar fixtures.",
-  "ack": "C0ciclo120rev61recebido; lote58permitiuretirada; outroconsumidornominalnegado403; ChatTTLconcluido; semprocessoativo. C0 confirmou proximo gate documental H02/H05/H06/H13.",
+  "next_step": "Executar RED Perfil save/reload em slotC0 aposG1; corrigir somente confirmacao aposreloadvalido. LeituraSobre existente independente enquantoaguarda.",
+  "ack": "C0ciclo1207cc6d4e7bincorporadopormergee989ed042/push; autorizou gatePerfil local; slotFlutteraindapendente.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1ChromeG0;1Fluttertest global mediante concessaoC0;nenhumprocessoG4ativo;semsegredos;semworktreeprincipal/pull;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
