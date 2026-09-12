@@ -7,7 +7,7 @@ generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---
 
-# Handoff R07 — checkpoint 23:52
+# Handoff R07 — checkpoint 23:58
 
 Recorte: `apps/superadmin` → Coelo (Principal) → Pessoas, Perfis/Modelos de
 acesso, Usuários internos e Convites.
@@ -22,6 +22,13 @@ acesso, Usuários internos e Convites.
   `No issues found!`.
 - Suíte direcionada: testes de `PersonHandleSection`, lookup de identidade,
   modelos/perfis, convites e students executados sem falha reportada no lote.
+- Suíte ampliada: 749 testes executados, 744 aprovados e 5 falhas. As falhas
+  ficam registradas como contratos de teste desalinhados/pendentes de triagem:
+  `people_creation_requirements_red_test` ainda espera bloqueio em
+  `people.create` apesar do gate produtivo 170700; o subconjunto de
+  `person_identity_fail_closed_routes_test` também reproduziu uma expectativa
+  de composição que não corresponde ao adapter atualmente importado. Nenhuma
+  dessas falhas foi promovida a defeito produtivo sem prova pela rota real.
 
 ## Rota real
 
@@ -39,5 +46,10 @@ checkpoint.
   foi criado sem fixture/pgTAP seguro.
 - `internal-users.suspend`: não suspender usuários QA em uso; requer interno
   sobressalente.
+
+## Commits publicados
+
+- `4626a1d56` — inicia revisão R07 de acessos e pessoas.
+- `1e6ac1077` — registra checkpoint local da R07 de acessos.
 
 Nenhum segredo foi copiado para Git, JSON ou este handoff.

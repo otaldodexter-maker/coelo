@@ -2240,5 +2240,40 @@
       "commits_publicados": ["inicia revisao R07 de acessos e pessoas"],
       "bloqueio_de_ferramenta": "qa_drive conectado ao CDP, mas Runtime.evaluate/driver expirou após 60s; sessão Flutter Chrome encerrada sem login"
     }
+  },
+  "R07_CHECKPOINT_2358": {
+    "revision": 148,
+    "round": "E2-R07-20260911",
+    "recorded_at": "2026-09-11T23:58:00-03:00",
+    "status": "aberta; checkpoint de testes locais; rota real ainda retida",
+    "feito": [
+      "flutter analyze das cinco familias do recorte: No issues found",
+      "build web release com test_driver/qa_main.dart concluido",
+      "suite direcionada inicial de handles, lookup, perfis/modelos, convites e students sem falha reportada",
+      "suite ampliada apps/superadmin executou 749 testes; 744 aprovados e 5 falharam",
+      "diagnostico reproduziu people_creation_requirements_red_test e dois testes do contrato de identity lookup"
+    ],
+    "pendente": [
+      "provas pela rota real de people.create/edit, @ de Pessoas/Alunos/Usuarios internos, perfis/modelos e internal-users.edit/suspend",
+      "internal-users.create permanece bloqueado: coordenacao.json ainda nao registra deploy de internal-user-create",
+      "invites.resend permanece sem fixture expirada segura e pgTAP",
+      "suite ampliada tem falhas de contratos de teste: people_creation_requirements_red_test ainda espera bloqueio em people.create apos 170700; person_identity_fail_closed_routes_test espera ausencia de adapter que a composicao atual importa; nao promovi nenhuma falha a defeito de producao sem rota real"
+    ],
+    "evidencias": {
+      "ambiente": "local; worktree R07; nenhum login nem write produtivo",
+      "chrome": "qa_drive Runtime.evaluate/window.$flutterDriver expirou em 60s; sessao encerrada",
+      "testes": "flutter test ... 749 executados, 744 aprovados, 5 falhas; duas falhas reproduzidas no subconjunto de rotas de Pessoas/identity",
+      "backend": "contratos 170500, 170600, 170700 e 170800 ja constavam aplicados no handoff R06; sem novo apply/deploy"
+    },
+    "commits_publicados": [
+      "4626a1d56 inicia revisao R07 de acessos e pessoas",
+      "1e6ac1077 registra checkpoint local da R07 de acessos"
+    ],
+    "bloqueios": [
+      "renderer/driver do Chrome nao respondeu",
+      "Edge Function internal-user-create sem deploy registrado",
+      "sem fixture expirada de invites.resend",
+      "teste de contrato de bloqueio de people.create desalinhado com a capacidade produtiva 170700"
+    ]
   }
 }
