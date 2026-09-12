@@ -34,3 +34,15 @@ classificacao: 140547 nao altera auth links; aparente incompatibilidade da fixtu
 acao: parada imediata, sem rerun e sem regressao adicional; reportado a G5 e C0
 
 Nenhuma migration foi aplicada em producao.
+
+[RERUN UNICO DA FIXTURE 0d52d5dbf]
+alteracao autoral: quatro transicoes incrementam version junto de status/revoked_at; nenhum guard/candidato alterado
+resultado parcial: ok 1..59
+progresso: revogacao do auth_link passou
+falha terminal seguinte: revoked internal access is terminal
+ponto: fixture tenta reativar a mesma linha revogada; o guard vigente torna a revogacao terminal
+finish/ROLLBACK explicito: nao alcancado
+rollback efetivo: conexao fechada com transacao abortada
+native exit: 3
+wrapper exit: 3 (propagacao do native; TAP incompleto)
+acao: parada sem novo rerun; fixture deve isolar os cenarios sem reativar acesso revogado

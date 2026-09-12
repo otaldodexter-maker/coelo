@@ -1,12 +1,12 @@
 {
-  "revision": 10,
+  "revision": 11,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:02:00-03:00",
+  "updatedAt": "2026-09-12T12:08:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -83,6 +83,7 @@
       ,"forms_question_media_r2_v1_test.sql em 28625efaf: 33/33, native/wrapper exit 0, rollback"
       ,"forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback"
       ,"superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida"
+      ,"rerun unico internal drafts em 0d52d5dbf: 59 ok, revogacao com version passou, reativacao falhou revoked internal access is terminal, native/wrapper exit 3, transacao revertida"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -93,8 +94,8 @@
     },
     "sqlBlocked": {
       "candidate": "28625efaf:20260912140547_forms_question_media_draft_bridge_fix_v1.sql aplicado sobre 140546",
-      "result": "focal 33/33 e behavioral 17/17 verdes; regressao internal drafts ok1-59 e abort internal auth link version mismatch, native/wrapper 3",
-      "diagnosis": "fixture internal drafts altera status/revoked_at do auth link sem incrementar version exigida pelo guard vigente; 140547 nao altera auth links",
+      "result": "focal 33/33 e behavioral 17/17 verdes; internal drafts 0d52d5dbf ok1-59, revoke passa e reativacao aborta revoked internal access is terminal, native/wrapper 3",
+      "diagnosis": "version bump corrigiu a primeira falha, mas a fixture tenta reativar o mesmo auth link revogado; guard vigente torna revogacao terminal e os cenarios precisam ser isolados",
       "baseline": "140546+140547 materializados localmente; ciclo parado sem rerun; producao intocada",
       "reportedToC0": true
     },
@@ -165,6 +166,11 @@
       "revision": 10,
       "at": "2026-09-12T12:02:00-03:00",
       "summary": "Forward fix Forms 140547 aplicado localmente; focal33 e behavioral17 verdes; internal drafts parou apos 59 ok por fixture sem version bump no auth link."
+    },
+    {
+      "revision": 11,
+      "at": "2026-09-12T12:08:00-03:00",
+      "summary": "Rerun unico da fixture com version bump passou a revogacao e expôs tentativa invalida de reativar acesso terminal; 59 ok, abort, rollback e slot liberado."
     }
   ]
 }
