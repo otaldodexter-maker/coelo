@@ -1,12 +1,12 @@
 {
-  "revision": 9,
+  "revision": 10,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:55:00-03:00",
+  "updatedAt": "2026-09-12T12:02:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -55,7 +55,8 @@
       "probe CUA com getByRole/fill/press Tab e click/typeText/setValue reproduziu controller vazio; sem chamada Auth",
       "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
       "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas",
-      "alternativa CUA pressSequentially encerrada: dois inputs DOM detectados, mas locator sem actionability e nenhuma insercao; sem CDP, bypass ou segundo browser"
+      "alternativa CUA pressSequentially encerrada: dois inputs DOM detectados, mas locator sem actionability e nenhuma insercao; sem CDP, bypass ou segundo browser",
+      "forward fix Forms 140547 aplicado somente baseline: focal 33/33 e behavioral 17/17 verdes, rollback e exits 0/0"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -79,6 +80,9 @@
       ,"now_publication_expiry_dispatch_v1_test.sql: 6/6, native/wrapper exit 0, rollback"
       ,"superadmin_internal_chat_attachments_v1_test.sql: 28/28, native exit 0, rollback"
       ,"chat_attachment_worker_claims_v1_test.sql: 3/3, native exit 0, rollback; wrapper agregado 0"
+      ,"forms_question_media_r2_v1_test.sql em 28625efaf: 33/33, native/wrapper exit 0, rollback"
+      ,"forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback"
+      ,"superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -88,10 +92,10 @@
       "safeContinuation": "reutilizar a aba somente com Chrome que ja tenha Dart Debug ou endpoint CDP nominalmente permitido; nao criar segundo navegador nem injetar sessao"
     },
     "sqlBlocked": {
-      "candidate": "444ac0246d7eadd62527990492f9797285594bec:20260912140546_forms_question_media_draft_bridge_v1.sql",
-      "result": "RED e GREEN: 1-18 ok, 19/20 not ok, abort forms.read required, native/wrapper 3; fixtures revertidas; regressões nao executadas",
-      "diagnosis": "autorizacao chama has_platform_permission sem institution_id para ator interno escopado; FK RESTRICT DEFERRABLE tambem foi bloqueada por G3 e media_context nulo precisa ajuste",
-      "baseline": "candidato antigo permaneceu aplicado localmente porque STOP chegou apos COMMIT; aguarda correcao forward; producao intocada",
+      "candidate": "28625efaf:20260912140547_forms_question_media_draft_bridge_fix_v1.sql aplicado sobre 140546",
+      "result": "focal 33/33 e behavioral 17/17 verdes; regressao internal drafts ok1-59 e abort internal auth link version mismatch, native/wrapper 3",
+      "diagnosis": "fixture internal drafts altera status/revoked_at do auth link sem incrementar version exigida pelo guard vigente; 140547 nao altera auth links",
+      "baseline": "140546+140547 materializados localmente; ciclo parado sem rerun; producao intocada",
       "reportedToC0": true
     },
     "nextGate": "C0 disponibilizar ferramenta de browser proposito-especifico compativel com Flutter, sem shell CDP, segundo navegador ou reconfiguracao global"
@@ -101,7 +105,7 @@
     "server": "127.0.0.1:3014 PID 14724, ativo; /login HTTP 200; build original SHA-256 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "slot devolvido ao C0; espelho inclui H09 verde e o candidato Forms 444ac024 bloqueado/aplicado localmente; aguarda forward fix, sem regressões; producao/backup/ledger permanecem com C0"
+    "sql": "slot devolvido ao C0; espelho inclui H09 e Forms 140546+140547; focal33 e behavioral17 verdes, internal drafts bloqueada apos 59 ok por fixture version; producao/backup/ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -156,6 +160,11 @@
       "revision": 9,
       "at": "2026-09-12T11:55:28-03:00",
       "summary": "pressSequentially da propria CUA falhou no actionability apesar de dois inputs DOM; metadados de branch, recurso local e ausencia de deploy reconciliados sem apagar historico."
+    },
+    {
+      "revision": 10,
+      "at": "2026-09-12T12:02:00-03:00",
+      "summary": "Forward fix Forms 140547 aplicado localmente; focal33 e behavioral17 verdes; internal drafts parou apos 59 ok por fixture sem version bump no auth link."
     }
   ]
 }
