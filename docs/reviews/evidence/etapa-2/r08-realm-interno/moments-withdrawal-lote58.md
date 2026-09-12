@@ -1,8 +1,8 @@
 ---
 title: "R08 G5 — retirada de Momentos e lote 58"
 source: "G4 smoke API produtivo; migrations 171600/130300/130400; candidato 140550; recibos G0/C0"
-status: "local-green-producao-pendente-c0"
-generated_at: "2026-09-12T12:47:00-03:00"
+status: "aplicado-em-producao-pos-prova-funcional-em-curso"
+generated_at: "2026-09-12T12:55:00-03:00"
 ---
 
 # Retirada de Momentos — defeito medido e correção mínima
@@ -29,8 +29,8 @@ remove para `institution_admin` e `institution_reader`, e ledger 140550 ausente.
 ## Candidato e ordem
 
 1. `20260912140550_moments_withdraw_permission_v1.sql`, SHA-256 `9356f5e52c8d14b0c628540eceee35231c6baf0044efee04ac71c6f23d69a996`;
-2. somente o C0 pode promover como lote 58, após backup e composição;
-3. pós-prova reutiliza a publicação preservada do G4: retirada 200, ausência no feed e leitura privada negada, sem DELETE físico.
+2. o C0 promoveu como lote 58 às 12:49 BRT, após backup e composição;
+3. a pós-prova reutiliza a publicação preservada do G4, sem DELETE físico.
 
 O delta concede remove somente ao template global `institution_admin` e torna
 `can_withdraw` conservador (`autoria AND has_institution_permission(remove)`).
@@ -50,4 +50,18 @@ A prova comportamental usa os templates reais e nunca concede remove pela
 fixture. Ela cobre administrador autor (hint, retirada, replay, feed e audit),
 outro autor, autor reader sem capacidade e administrador de outro escopo.
 
-Produção permanece pendente e exclusiva do C0 neste recibo.
+## Produção e replay funcional
+
+O C0 aplicou o lote 58 às 12:49 BRT, `exit 0`, com ledger 140550 na mesma
+transação. A pós-prova às 12:49:45 confirmou grant único `allow/active` para o
+template global `institution_admin`, nenhum grant ao `institution_reader`,
+hint consultando a capability, `authenticated EXECUTE=true` e `anon=false`.
+O recibo central é o commit `33dae9ab2`; backups e hashes ficam registrados
+somente nessa evidência central, sem duplicar caminhos privados neste arquivo.
+
+No replay produtivo do G4, a retirada da mesma publicação passou e o reload do
+feed não a listou. A leitura pelo próprio autor continuou 200, coerente com o
+ramo autoral de `authorize_moments_media_read`; portanto a antiga expectativa
+403 do harness não demonstra novo defeito. Falta apenas concluir a negativa
+read-only com outro consumidor autorizado da mesma instituição. Isso não será
+rotulado como prova cross-tenant.

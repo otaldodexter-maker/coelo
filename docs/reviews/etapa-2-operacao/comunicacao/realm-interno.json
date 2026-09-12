@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 64,
+  "revision": 65,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T12:47:00-03:00",
+  "updatedAt": "2026-09-12T12:55:00-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "e9a3dc18d publicado; lote 58 local-green e produção pendente C0",
+  "head": "c8aaf6f91 publicado; lote 58 aplicado e review form-media aprovado, checkpoint 65 pendente de commit",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,11 +26,13 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0 promover lote 58 após backup e G4 repetir retirada da fixture preservada; em paralelo, contrato H19 sem ampliar autoridade clínica",
+  "primeiroGate": "G4 concluir negativa read-only de Momentos com outro consumidor; C0 integrar/deployar form-media somente após f0c7269fd",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
-  "perguntasParaOOwner": [],
+  "perguntasParaOOwner": [
+    "H19: quem pode ser Responsável de um plano de medicação (guardiões autorizados, equipe no escopo, ambos) e qual a semântica dessa atribuição, sem conceder implicitamente medication.record_evidence?"
+  ],
   "pacotesProntos": [
     {
       "ordem": 0,
@@ -65,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; Forms API produção verde; lote 58 Momentos local-green, produção pendente C0; H19 em diagnóstico",
-  "proximoPasso": "aguardar aplicação exclusiva C0/pós-prova G4 do lote 58 e preparar contrato mínimo H19 sem confundir responsável do plano com autoridade de administrar dose",
+  "status": "recorte original entregue; lote 58 aplicado e retirada produtiva verde; negativa por outro consumidor em curso; review form-media aprovado com follow-up",
+  "proximoPasso": "receber negativa final G4 e recibo de integração/deploy form-media do C0; executar próximo gate autorizado sem inferir H19",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -976,6 +978,28 @@
         "executadoPorG5": "Deno já registrado; nenhum pgTAP, SQL remoto ou API produtiva"
       },
       "primeiroGate": "aplicação exclusiva C0 e pós-prova focal do lote 58"
+    },
+    "checkpoint12h55": {
+      "quando": "2026-09-12T12:55:00-03:00",
+      "feito": [
+        "C0 aplicou lote 58 em produção às 12:49 BRT, exit 0, ledger 140550; pós-prova confirmou grant único institution_admin, reader intacto, hint com capability, authenticated true e anon false; recibo 33dae9ab2.",
+        "G4 repetiu a fixture preservada: can_withdraw true, retirada 200 e publicação ausente do feed no reload. A leitura 200 pelo próprio autor é contrato preservado, não regressão; negativa com outro consumidor segue read-only.",
+        "Review focal G5 de form-media dfe013cc5 aprovou reautorização, escopo exato, replay sem R2 e envelope sem metadados sensíveis, mas bloqueou expected_byte_length.",
+        "Follow-up G3 f0c7269fd usa actual_byte_length, rejeita null/divergência e foi aprovado por G5 para integração; G3 informou Deno 53/53 e typecheck. Deploy permanece exclusivo C0.",
+        "H19 permaneceu sem candidato especulativo: fontes não definem categorias elegíveis; pergunta nominal ao Owner registrada."
+      ],
+      "pendente": [
+        "Receber do G4 a negativa de leitura por qa-r06-realm no asset retirado, sem classificar como cross-tenant.",
+        "Receber integração e eventual deploy C0 de dfe013cc5+f0c7269fd antes de qualquer prova produtiva adicional.",
+        "Receber do C0 os service person_ids para a fixture de grupo Chat; não criar identidade ou membership."
+      ],
+      "testes": {
+        "lote58ProducaoC0": "apply exit 0; pós-prova estrutural e ACL aprovada",
+        "lote58APIparcialG4": "withdraw 200 e reload sem publicação; leitura do próprio autor 200 por contrato",
+        "formMediaG3": "53/53 Deno + typecheck informados; G5 fez somente code review",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "negativa read-only G4 e integração/deploy form-media C0"
     }
   }
 }
