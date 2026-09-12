@@ -1,6 +1,6 @@
 {
-  "revision": 68,
-  "updated_at": "2026-09-12T13:34:00-03:00",
+  "revision": 69,
+  "updated_at": "2026-09-12T13:21:26-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -73,6 +73,15 @@
     "oracle_red": "teste unitario puro deve passar a resposta plana exata da RPC com um key e um type conhecidos e esperar ProfileAboutPage nao nula; hoje falha por null.",
     "repair_boundary": "normalizar somente o contrato plano canonico antes do parser comum; preservar a leitura direta de tabelas e nao aceitar/documentar envelope inexistente.",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/profile-about-read-review.md"
+  },
+  "reviewAssessmentsPreflightR08": {
+    "scope": "leitura remota autenticada da fixture QA G1 e revisao de 0a7642dca/754af0368; sem Chrome, Flutter, SQL, fixture ou mutacao",
+    "measurement": "context_options retornou uma atribuicao na forma esperada, mas periods=0; configuration_read da atribuicao retornou sucesso com data nula; closing_queue retornou sucesso vazia.",
+    "finding": "a fixture 53b9c6d29 e transacional do espelho e nao materializa configuracao, periodo ou diario remoto. O roteiro nao pode iniciar gradebook/read nem certificar estados antes de criar e ativar configuracao.",
+    "contract": "configuration_read recebe target_activity/target_unit; gradebook_read recebe target_gradebook. Save/activate usam request_id e expected_version; o diario novo exige payload estrito activity_group_link_id, period_id, configuration_id e students.",
+    "states": "nao ha RPC close/reopen: diario transita draft -> submitted -> reviewed -> published, com return_gradebook para draft; cada comando e seguido de releitura.",
+    "reportedTo": "G1 e C0 diretamente; nenhum ID, segredo ou credencial registrado.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/assessments-api-preflight-review.md"
   },
   "reviewFormsR08": {
     "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",
