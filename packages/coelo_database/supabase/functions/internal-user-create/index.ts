@@ -76,17 +76,10 @@ export function securePasswordSetupLink(value: unknown, expectedOrigin: string):
   }
 }
 
-export function passwordSetupRedirect(origin: string | null): string | null {
-  if (origin === null) return null;
-  try {
-    const url = new URL(origin);
-    return url.protocol === "https:" && url.origin === origin && !url.username && !url.password
-      ? new URL("/reset-password", url).toString()
-      : null;
-  } catch {
-    return null;
-  }
-}
+/// Destino canônico previamente permitido no Auth. A origem CORS do operador
+/// controla só a chamada à função; nunca passa a controlar onde um token de
+/// recuperação vai parar.
+export const passwordSetupRedirect = "https://superadmin.coelo.me/reset-password";
 
 async function rollbackAuthUser(admin: any, authUserId: string): Promise<boolean> {
   try {
@@ -118,10 +111,6 @@ export function createInternalUserCreateHandler({
   const service = serviceKey(environment);
   if (!/^Bearer \S+$/.test(authorization) || !url || !anon || !service) {
     return reply(origin, 401, { error: "unauthorized" }, environment);
-  }
-  const redirectTo = passwordSetupRedirect(origin);
-  if (redirectTo === null) {
-    return reply(origin, 400, { error: "password_setup_redirect_unavailable" }, environment);
   }
 
   let body: { request_id?: unknown; draft?: unknown };
@@ -162,11 +151,17 @@ export function createInternalUserCreateHandler({
   }
   const authUserId = created.data.user.id;
 
-  const generated = await admin.auth.admin.generateLink({
-    type: "recovery",
-    email,
-    options: { redirectTo },
-  });
+  let generated;
+  try {
+    generated = await admin.auth.admin.generateLink({
+      type: "recovery",
+      email,
+      options: { redirectTo: passwordSetupRedirect },
+    });
+  } catch {
+    await rollbackAuthUser(admin, authUserId);
+    return reply(origin, 409, { error: "password_setup_link_unavailable" }, environment);
+  }
   const passwordSetupLink = securePasswordSetupLink(generated.data?.properties?.action_link, url);
   if (generated.error || passwordSetupLink === null) {
     await rollbackAuthUser(admin, authUserId);
