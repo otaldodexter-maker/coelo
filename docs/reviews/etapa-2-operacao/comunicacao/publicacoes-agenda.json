@@ -1,15 +1,15 @@
 {
-  "revision": 51,
+  "revision": 52,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "ver git log da branch (esta revisao vira o head)",
+  "head": "661b6581d + este commit (revisao 52)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T21:14:00-03:00",
+  "updatedAt": "2026-09-11T21:41:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -59,10 +59,11 @@
   "environment": {
     "credencial": "Coelo-backups/qa-r06-publicacoes.env existe desde ~19:55; rota real comeca agora (build web-qa + Chrome proprio).",
     "note": "Comeco pelo que nao depende de credencial: reconstrucao das telas de Circular e Evento na familia Publicacao e o toggle web da lista da Agenda (V-8).",
-    "rotaReal": "build web-qa2 (profile, qa_main, b2e61a22e menos o fix de CORS) servido em 127.0.0.1:3000 (origem presente em *_MEDIA_ALLOWED_ORIGINS; 3006/3007 nao estao); Chrome CDP 9337 com --user-data-dir %TEMP%/coelo-chrome-publicacoes; sessao qa-r06-publicacoes aberta."
+    "rotaReal": "build web-qa2 (profile, qa_main, b2e61a22e menos o fix de CORS) servido em 127.0.0.1:3000 (origem presente em *_MEDIA_ALLOWED_ORIGINS; 3006/3007 nao estao); Chrome CDP 9337 com --user-data-dir %TEMP%/coelo-chrome-publicacoes; sessao qa-r06-publicacoes aberta.",
+    "closedAt": "21:40: Chrome 9337 e node 3000 encerrados"
   },
   "firstGate": "circulars.attach pela tela: deploy da circular-media (versao 12 em producao continua a anterior ao fix; conferido as 21:07)",
-  "status": "finalizado-aguardando-deploy",
+  "status": "finalizado",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -585,7 +586,7 @@
     "skillDeltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/skill-deltas.md",
     "capturas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ (20 png)",
     "paginaRA": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/duvidas-visuais-publicacao.html",
-    "ambiente": "Chrome CDP 9337 e servidor 3000 ficam abertos ate 21:46 para provar attach se a circular-media for reimplantada; depois fecho."
+    "ambiente": "Chrome de CDP e servidor estatico fechados as 21:40; nenhum processo meu restante; builds web-qa* em apps/superadmin/build (ignorados)"
   },
   "deliveryValidation": null,
   "skillDeltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/skill-deltas.md",
@@ -1954,10 +1955,10 @@
   "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (5 entradas; ensaio apply + validate PASS: FE 140, BE 132, E2E 107; revertido)",
   "ownerVisualApproval": null,
   "revisaoFinal": {
-    "quando": "2026-09-11T21:14:00-03:00 (antecipada; atualizo se o deploy chegar antes de 21:46)",
-    "pedidoPor": "coordenador R06 (T0+2h = 21:36)",
+    "quando": "2026-09-11T21:41:00-03:00 (resposta ao pedido de 21:36; conteudo da rev 51 confirmado)",
+    "pedidoPor": "coordenador R06 (coordenacao rev 57, 21:36)",
     "entregueTudo": "Sim: itens 1 a 6 tocados; 1 (attach) fica no gate do deploy; tudo publicado na branch; sem WIP; status limpo.",
-    "shaPublicado": "branch work/etapa2-r06-publicacoes-agenda publicada; head = commit desta revisao (git log -1); status limpo; sem WIP",
+    "shaPublicado": "661b6581d (+ commit desta revisao 52); branch work/etapa2-r06-publicacoes-agenda publicada; status limpo; sem WIP",
     "fechadoPorActionId": [
       {
         "action_id": "agenda.location",
@@ -2002,7 +2003,7 @@
     "dadosSinteticosCriados": "evento c7cf7370 (published, editado, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee editado, cb77ed7f) + 1 publicada com 1 resposta submetida; limpeza no fim da Etapa 2",
     "chavesCriadas": "nenhuma",
     "avisosAOutrasFrentes": "G4/G5: chat-media, moments-media, happens-media e now-media sem x-client-info no Access-Control-Allow-Headers (mesmo sintoma no navegador). G3/G4: PublicationSurface em shared/presentation/widgets/publication_surface.dart para a familia Publicacao.",
-    "ambiente": "Chrome 9337 e servidor 3000 abertos ate 21:46 (fechados ao final); builds web-qa* ignorados pelo Git"
+    "ambiente": "Chrome 9337 e servidor 3000 fechados as 21:40; circular-media continuava na versao 12 (sem o fix de CORS) as 21:40, entao circulars.attach pela tela fica para a proxima rodada apos o deploy"
   },
   "r05History": {
     "finalRevision": 43,
