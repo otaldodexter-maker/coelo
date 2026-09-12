@@ -1508,10 +1508,10 @@
       "family": "groups",
       "screen": "Turmas / Membros",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Adicionar/remover vínculo sintético de turma pela rota real e reler; negar contexto cruzado.",
+      "done": "R09: consumidor UUID/parser corrigidos e35 testes unicos verdes. UI resolveu pessoa draft (recusada) e depois QA R04 Responsavel9f04...0062 ativo existente; segunda inclusao tambem recusada, grupo1043c165 permanecev2/zero membros. Causa group_save/role guardian pendente C0/G5, sem retry cego/SQL G1; nao E2E.",
       "fe": "R05: etapa \"Pessoas da turma\" abre na rota real com estado vazio honesto, Cadastrar pessoa e Buscar por @, CPF, e-mail ou celular; inclusao de pessoa nao provada (a instituicao sintetica da turma nao tem pessoa vinculada alem da criada em institutions.edit, que pertence a outra instituicao). Gate: provar cadastro/busca de pessoa da propria instituicao.",
       "be": "R04: superadmin_group_detail_v2 (180310) em producao devolve membros; escrita por superadmin_group_save via ponte.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
@@ -1561,19 +1561,39 @@
       "family": "groups",
       "screen": "Turma / Local",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Selecionar Local válido e autorizado na turma, persistir e reler.",
-      "fe": "R08: consumidor de catálogo e criação atômica ligados na composição normal; receipt preservado no retry, contexto B→A bloqueado e cache por reader evita loop. C0 29PASS/0FAIL na base integrada após corrigir callback durante build. Persistência/rota UI ainda não certificadas; refresh de label/kind do snapshot é residual local.",
-      "be": "R04: superadmin_group_location_create_v2 (180200, 46/46) e bindings (180140, 30/30) em producao no lote 10.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; bf422d4f9; docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json;77a917de5+a075ba269 current-selection-composition-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json; 869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 77a917de5+a075ba269 current-selection-composition-manifest.json; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; coordenacao.json R03 rev 12; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-location-detalhe-sem-local.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md",
+      "done": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+      "fe": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+      "be": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; bf422d4f9; docs/reviews/evidence/etapa-2/noturna-estrutura/bindings-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json;869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json;77a917de5+a075ba269 current-selection-composition-manifest.json; 106a1076538a48e02166c9d446c6d294eeeade5d; group-atomic-client-manifest.json; 869174032; 5658023e414f516484295c3910a149abe2985dab current-selection-manifest.json; 7798fe9f1b964209fb89f6e990d2ae2d2f6f2509 historical-reservation-status-manifest.json; 33ff95fcee51097efe4ec6e71d1addc5d872e1fa activity-group-reservation-correlation-manifest.json; 44380219d078c17c090f68a1ce3c42919329cba1 reservation-justification-limit-manifest.json; cb817ca10aa1211bf904e5d9aec168b5fa40b759 reservation-justification-ui-manifest.json; 77a917de5+a075ba269 current-selection-composition-manifest.json; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; docs/reviews/evidence/etapa-2/noturna-estrutura/sql-retained-handoff.json; bindings-candidate-manifest.json; activity-location-candidate-manifest.json; group-location-candidate-manifest.json; coordenacao.json R03 rev 12; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-location-detalhe-sem-local.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md; docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md; docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "not-reviewed",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+          "revision": "R09-C0-r104",
+          "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+          "recordedAt": "2026-09-12T16:53:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+          "revision": "R09-C0-r104",
+          "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+          "recordedAt": "2026-09-12T16:53:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+          "revision": "R09-C0-r104",
+          "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+          "recordedAt": "2026-09-12T16:53:00-03:00"
+        }
+      }
     },
     {
       "id": "people.list",
@@ -8834,7 +8854,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T19:48:52.569Z",
+  "updatedAt": "2026-09-12T19:54:12.133Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

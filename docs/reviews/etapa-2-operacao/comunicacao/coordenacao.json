@@ -1,12 +1,12 @@
 {
-  "revision": 103,
+  "revision": 104,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:47:00Z",
+  "updatedAt": "2026-09-12T19:53:00Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3717,8 +3717,8 @@
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
       "ackRevision": 112,
-      "primeiroGate": "r103: pessoa sintetica ATIVA confirmada por leitura remota: QA R04 Responsavel, id9f040000-0000-4000-8000-000000000062. Buscar por Nome exato na UI normal, resolver UUID pelo repository e vincular no MESMO grupo1043c165-7f24-44fe-a868-5bfc6fb0b50f; papel Responsavel; salvar e reload. QA R04 Profissional id9f040000-0000-4000-8000-000000000061 tambem ativo, caso contrato exija profissional. Backend continua autorizando hierarquia; nao editar pessoas G2. C0 assume negativa de Local. Chrome22592/aba829822468 e runtime15452 continuam G1. Publicar handoff e liberar aba ao terminar; nenhuma Avaliacao antes do aceite Turmas.",
-      "status": "Local positivo entregue; segue Membros na mesma fatia e mesmo grupo",
+      "primeiroGate": "r104: Local ACEITO C0 FE/BE/E2E, recibo groups-location-acceptance.md. Membros: causa confirmada por catalogo remoto institution_roles: guardian/student/professional/admin NAO existem. Catalogo global ativo: teacher (Professor), coordinator, institution_admin, institution_reader, secretary. Nao mapear guardian para professor nem criar papel artificial. Inspecionar contrato aprovado de pessoas/child-group-links e perfis dinamicos; corrigir consumidor Profissionais para selecao de perfil institucional real via repository existente, mantendo familia visual; Aluno/Responsavel dependem cadeia propria, nao institution_roles. Sem novo build/Flutter ate reservar slot; C0 livre para gate focal se preciso. Na mesma fatia, sem novas Avaliacoes. Nao repetir save guardian. C0 segue SQL.",
+      "status": "Local entregue/aceito; Membros bloqueado por contrato de papeis, instrucao104 via Git pendente adocao",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -4104,10 +4104,13 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T19:47:00Z",
-    "feito": "G1 UI salvou Local, ativo v2 e reload; C0 corrige duas negativas anonimas SQL local,42PASS;backup fora Git completo",
-    "aberto": "negativa Local C0; Membros G1 fixture ativa indicada, adocao103 ainda nao confirmada; lote60 sem aplicacao",
-    "nextGate": "negativa contextual groups.location e integracao G1; esclarecer regressao SQL"
+    "at": "2026-09-12T19:53:00Z",
+    "novosAceites": [
+      "groups.location FE/BE/E2E"
+    ],
+    "feito": "negativa real de contexto fecha Local com UI/reloadG1; causa de Membros isolada no contrato de papeis",
+    "intervencao60min": "apos runtime e tentativa arquivo bloqueada pela extensao, Chrome transferidoG1 para Local sem picker; C0 completa negativa e corrige autorizacao de Formularios em paralelo",
+    "nextGate": "Membros G1: perfis reais sem fabricacao; C0 reconciliar teste/espelho lote60"
   },
   "tentativaAnteriorAviso": {
     "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
@@ -4116,13 +4119,13 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 60,
+    "usedPercent": 61,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T19:44:50Z",
+    "measuredAt": "2026-09-12T19:51:00Z",
     "source": "account/rateLimits/read; Codex app-server",
     "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
-    "nextCheckBy": "2026-09-12T19:54:50Z"
+    "nextCheckBy": "2026-09-12T20:01:00Z"
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",

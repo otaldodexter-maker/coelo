@@ -1,0 +1,41 @@
+[
+  {
+    "action_id": "groups.location",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+      "revision": "R09-C0-r104",
+      "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+      "recordedAt": "2026-09-12T16:53:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.location",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+      "revision": "R09-C0-r104",
+      "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+      "recordedAt": "2026-09-12T16:53:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.location",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 G1/C0 r104: UI normal criou e salvou Turma1043c165 ativa v2/Locald5461295; lista/detalhe/reload e API mantem hierarquia. C0 negativa real LocalA/contextoB SAI_PERMISSION_DENIED sem insercao; anon401; pgTAP46/46 cross-tenant valido reutilizado, corpos espelho/producao iguais. Aceite MVP de Local; Membros separado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/groups-location-acceptance.md",
+      "revision": "R09-C0-r104",
+      "environment": "Supabase producao; QA release integrado, rota normal localhost3014",
+      "recordedAt": "2026-09-12T16:53:00-03:00"
+    }
+  }
+]

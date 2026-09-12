@@ -1,0 +1,37 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:52:40.056417+00:00",
+  "request_id": "2144cba5-6a26-482e-aa4f-d09e7bc3f88c",
+  "group_id": "1043c165-7f24-44fe-a868-5bfc6fb0b50f",
+  "location_id": "d5461295-9273-4caa-9197-8f9d8c05c4f8",
+  "checks": [
+    {
+      "step": "anonymous_read_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "retained_location_read",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "foreign_institution_location_denied",
+      "pass": true,
+      "http": 200,
+      "code": "SAI_PERMISSION_DENIED"
+    },
+    {
+      "step": "logout_local",
+      "pass": true,
+      "http": 204
+    }
+  ],
+  "realCrossTenantSession": false,
+  "pass": true
+}
