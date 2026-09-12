@@ -26,13 +26,15 @@ houve bypass de constraint, alteração de schema ou aplicação remota por G5.
 
 ## Resultado do espelho
 
-O G0 executou o candidato H28 somente no baseline descartável e informou:
+O G0 executou o candidato H28 somente no baseline descartável. Após detectar um
+delta posterior (`neighborhood.state_code`), repetiu o conjunto sobre o corpo
+final `df0a281cb`/blob `707cc8b4` e publicou os logs nativos em `c34fc20d4`:
 
 - aplicação do candidato: exit 0;
 - teste estrutural: 11/11;
 - fixture funcional final `e1cad10e2`: 10/10;
 - regressões modernas: 8/8, 11/11 e 4/4;
-- total atual: 44/44, sempre com rollback das fixtures.
+- total final sobre o mesmo corpo: 44/44, sempre com rollback das fixtures.
 
 A suíte histórica `superadmin_people_directory_test.sql` registrou quatro
 falhas e abortou porque ainda espera permissões antigas e a assinatura removida

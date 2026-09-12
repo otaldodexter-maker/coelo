@@ -1,6 +1,6 @@
 ---
 fonte: R08 G5; candidato H28 G2; ordem nominal C0
-status: composição preparada; retida até revalidação do blob atual
+status: composição liberada para análise e aplicação exclusiva C0
 generated_at: 2026-09-12T14:29:00-03:00
 ---
 
@@ -16,8 +16,11 @@ generated_at: 2026-09-12T14:29:00-03:00
 - SHA-256 LF: `8b6c66091b89e7a319b00f894f80869cb764ba66106baa18e9acbec943761b6e`.
 
 O blob atual inclui a projeção `state_code` em `neighborhoods`, adicionada após
-o primeiro verde 44/44. Por isso a promoção está retida até o G0 reexecutar a
-versão atual no baseline descartável.
+o primeiro verde 44/44. O G0 reexecutou a versão atual no baseline descartável
+e publicou os recibos nativos em `c34fc20d4`: estrutural 11/11, funcional 10/10
+e regressões modernas 8/8 + 11/11 + 4/4, total final 44/44, com rollback e
+exit 0 em cada suíte. A retenção técnica do G5 está liberada; análise, backup e
+aplicação continuam exclusivos do C0.
 
 ## Composição exata para o C0
 
