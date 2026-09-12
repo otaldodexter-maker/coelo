@@ -1,7 +1,7 @@
 -- pgTAP do candidato 20260912143000. Executar somente após o candidato, em banco local descartável.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(12);
+select plan(13);
 
 -- Contrato único PostgREST: a assinatura antiga é removida, defaults preservam
 -- chamadas anteriores e os quatro filtros novos são explicitamente tipados.
@@ -31,6 +31,10 @@ select ok(pg_temp.people_list_def() like '%from context_rows c where c.person_id
   and pg_temp.people_list_def() like '%c.unit_id=any(p_unit_ids)%'
   and pg_temp.people_list_def() like '%c.group_id=any(p_group_ids)%',
   'instituição, unidade e grupo são resolvidos no mesmo contexto');
+select ok(pg_temp.people_list_def() like '%r.name contextual_role_name%'
+  and pg_temp.people_list_def() like '%b.contextual_role_name role_name%'
+  and pg_temp.people_list_def() not like '%left join public.institution_roles r on r.code=b.contextual_role%',
+  'nome do perfil vem da linha original, inclusive perfil global com institution_id nulo');
 select ok(pg_temp.people_list_def() like '%coalesce(ua.state,ia.state)%'
   and pg_temp.people_list_def() like '%coalesce(ua.city,ia.city)%'
   and pg_temp.people_list_def() like '%coalesce(ua.district,ia.district)%',

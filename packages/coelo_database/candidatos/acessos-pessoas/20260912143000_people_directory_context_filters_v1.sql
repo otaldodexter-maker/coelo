@@ -52,14 +52,14 @@ begin
   with base_context_rows as (
     -- Papel institucional vigente.
     select m.person_id, a.id row_id, m.institution_id, a.scope_unit_id unit_id,
-      a.scope_group_id group_id, r.code contextual_role, null::uuid activity_id
+      a.scope_group_id group_id, r.code contextual_role, r.name contextual_role_name, null::uuid activity_id
     from public.institution_memberships m
     join public.institution_role_assignments a on a.membership_id=m.id and a.status='active'
     join public.institution_roles r on r.id=a.role_id
     where m.status='active' and m.revoked_at is null
     union all
     -- Criança no contexto de unidade/grupo vigente.
-    select c.child_person_id, c.id, c.institution_id, ul.unit_id, gl.group_id, 'student', null::uuid
+    select c.child_person_id, c.id, c.institution_id, ul.unit_id, gl.group_id, 'student', 'Aluno', null::uuid
     from public.child_contexts c
     join public.child_unit_links ul on ul.child_context_id=c.id
       and ul.status in ('pending','awaiting_allocation','active') and ul.revoked_at is null
@@ -68,7 +68,7 @@ begin
     union all
     -- Profissional é elegível somente pela atribuição e vínculo de atividade ativos.
     select aga.person_id, aga.id, agl.institution_id, agl.unit_id, agl.group_id,
-      aga.assignment_role, agl.activity_id
+      aga.assignment_role, aga.assignment_role, agl.activity_id
     from public.activity_group_assignments aga
     join public.activity_group_links agl on agl.id=aga.activity_group_link_id
       and agl.institution_id=aga.institution_id and agl.status='active'
@@ -76,7 +76,7 @@ begin
     union all
     -- Criança: grupo/unidade ativo e participante ativo quando a atividade é selected.
     select c.child_person_id, cgl.id, agl.institution_id, agl.unit_id, agl.group_id,
-      'student', agl.activity_id
+      'student', 'Aluno', agl.activity_id
     from public.child_contexts c
     join public.child_unit_links cul on cul.child_context_id=c.id
       and cul.status in ('pending','awaiting_allocation','active') and cul.revoked_at is null
@@ -89,13 +89,12 @@ begin
   ), context_rows as (
     select b.*, coalesce(ua.state,ia.state) state_code,
       coalesce(ua.city,ia.city) municipality_id, coalesce(ua.district,ia.district) neighborhood_id,
-      i.public_name institution_name, u.name unit_name, g.name group_name, r.name role_name,
+      i.public_name institution_name, u.name unit_name, g.name group_name, b.contextual_role_name role_name,
       activity.name activity_name
     from base_context_rows b
     join public.institutions i on i.id=b.institution_id
     left join public.units u on u.id=b.unit_id and u.institution_id=b.institution_id
     left join public.groups g on g.id=b.group_id and g.unit_id=b.unit_id and g.institution_id=b.institution_id
-    left join public.institution_roles r on r.code=b.contextual_role and r.institution_id=b.institution_id
     left join public.activity_definitions activity on activity.id=b.activity_id and activity.institution_id=b.institution_id
     left join public.unit_addresses ua on ua.unit_id=b.unit_id and ua.status='active'
     left join public.institution_addresses ia on ia.institution_id=b.institution_id and ia.status='active'
