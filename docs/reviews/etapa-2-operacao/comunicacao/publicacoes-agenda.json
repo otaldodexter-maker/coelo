@@ -1,15 +1,15 @@
 {
-  "revision": 52,
-  "round": "E2-R06-20260911",
+  "revision": 53,
+  "round": "E2-R07-20260911",
   "group": "publicacoes-agenda",
-  "tool": "Claude Code",
-  "model": "Opus 5 (1M), esforco medio",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
-  "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "661b6581d + este commit (revisao 52)",
-  "base": "origin/dev ca60b096b",
-  "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T21:41:00-03:00",
+  "tool": "Codex",
+  "model": "Luna, esforco medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-publicacoes-agenda",
+  "branch": "work/etapa2-r07-publicacoes-agenda",
+  "head": "91d6aa287 (base R07; revisao inicial em andamento)",
+  "base": "origin/dev 91d6aa287",
+  "coordinator": "Codex (R07 · Coordenacao)",
+  "updatedAt": "2026-09-11T23:22:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -43,27 +43,26 @@
       "circulars.respond",
       "circulars.attach"
     ],
-    "included": "24 acoes (21 em E2E). Ordem R06: (1) circulars.attach pela tela com SuperadminQaHooks.circularFilePicker; (2) circulars.respond P50=B: tela de resposta a circular no Superadmin; (3) agenda.location pela tela com o seletor de contexto; (4) respostas do Owner as telas de Avisos/Circulares (V-9, V-10 = A) e V-8 (toggle web do R restaurado); (5) sino de notificacoes no shell se sobrar tempo; (6) circulars.create/edit e agenda.create/edit reconstruidos sobre a familia Publicacao (circular-*.png, evento-*.png), golden novo comparado as imagens e prova na rota real.",
+    "included": "24 acoes. R07: circulars.create/edit e agenda.create/edit nas telas novas da familia Publicacao com criar, salvar, reload e publicar; circulars.attach pela tela com PNG sintetico, upload em coelo-media-prod e leitura por signed_url; P50=B com tela de resposta no Superadmin e resumo das respostas; notices.* e agenda.* ainda fora de E2E no recorte; sino do shell somente se sobrar tempo.",
     "excluded": "Admin, Principal e Site; deploy da Edge Function circular-media (coordenador); aplicacao em producao; inventario e rastreadores.",
     "order": [
-      "(6) telas Publicacao circular/evento — nao depende de credencial",
-      "(4) V-8 toggle web",
-      "(1) circulars.attach pela tela",
-      "(2) circulars.respond tela",
-      "(3) agenda.location pela tela",
-      "(5) sino"
+      "(1) circulars.create/edit e agenda.create/edit — rota real, reload, publicar, goldens aprovados",
+      "(2) circulars.attach pela tela — PNG sintetico, R2 privado, signed_url",
+      "(3) circulars.respond — P50=B, owner responde e resumo persiste",
+      "(4) notices.* e agenda.* ainda nao E2E no recorte",
+      "(5) sino do shell, apenas se sobrar tempo"
     ],
-    "stop": "T0+2h (provisorio 21:38) ou ordem do Owner/coordenador.",
+    "stop": "T0+4h; em T0+4h responder revisao de 10 minutos; nao retomar apos T0+4h10; ou ordem do Owner/coordenador.",
     "evidence": "commits da branch, flutter test por familia, goldens comparados as referencias aprovadas, rota real com qa-r06-publicacoes quando a credencial existir."
   },
   "environment": {
-    "credencial": "Coelo-backups/qa-r06-publicacoes.env existe desde ~19:55; rota real comeca agora (build web-qa + Chrome proprio).",
-    "note": "Comeco pelo que nao depende de credencial: reconstrucao das telas de Circular e Evento na familia Publicacao e o toggle web da lista da Agenda (V-8).",
-    "rotaReal": "build web-qa2 (profile, qa_main, b2e61a22e menos o fix de CORS) servido em 127.0.0.1:3000 (origem presente em *_MEDIA_ALLOWED_ORIGINS; 3006/3007 nao estao); Chrome CDP 9337 com --user-data-dir %TEMP%/coelo-chrome-publicacoes; sessao qa-r06-publicacoes aberta.",
-    "closedAt": "21:40: Chrome 9337 e node 3000 encerrados"
+    "credencial": "Coelo-backups/qa-r06-publicacoes.env (ler localmente; nunca imprimir, registrar ou versionar o valor).",
+    "note": "R07 aberta sobre origin/dev 91d6aa287; primeiro checkpoint registra estado conhecido da R06 e gates, depois segue pela rota real sem aguardar aprovacao.",
+    "rotaReal": "build web-qa com qa_main servido numa porta da lista CORS (3000, 3009, 3010, 3014, 3016, 3018 ou 3020); Chrome CDP proprio com --user-data-dir %TEMP%/coelo-chrome-publicacoes; um Chrome por vez.",
+    "closedAt": ""
   },
   "firstGate": "circulars.attach pela tela: deploy da circular-media (versao 12 em producao continua a anterior ao fix; conferido as 21:07)",
-  "status": "finalizado",
+  "status": "em_execucao",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -86,8 +85,8 @@
     ],
     "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
-  "blocked": "rota real ate existir qa-r06-publicacoes.env",
-  "next": "aguardar deploy da circular-media para provar attach pela tela; revisao de 10 min as 21:36",
+  "blocked": "circulars.attach retido somente pelo primeiro gate do deploy da Edge Function circular-media com o fix x-client-info; os demais itens seguem independentes.",
+  "next": "executar primeiro circulars.create/edit e agenda.create/edit na rota real, registrar capturas comparadas aos goldens aprovados, publicar commit e continuar para attach; cobrar/registrar deploy como dependencia.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2479,5 +2478,39 @@
     "V-10": "A (Circulares diretorio)"
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/handoff.md",
-  "dadosSinteticos": "evento c7cf7370 (published, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee, cb77ed7f) e 1 publicada com 1 resposta submetida; nenhuma chave criada"
+  "dadosSinteticos": "evento c7cf7370 (published, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee, cb77ed7f) e 1 publicada com 1 resposta submetida; nenhuma chave criada",
+  "r07History": {
+    "initialReview": {
+      "revision": 53,
+      "round": "E2-R07-20260911",
+      "openedAt": "2026-09-11T23:22:00-03:00",
+      "t0": "2026-09-11T23:22:00-03:00 (relógio local na abertura desta conversa; coordenacao.json ainda não gravou T0 da R07)",
+      "base": "origin/dev 91d6aa287",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-publicacoes-agenda",
+      "branch": "work/etapa2-r07-publicacoes-agenda",
+      "knownDone": [
+        "circulars.create/edit e agenda.create/edit já possuem implementação na família Publicação e provas R06; R07 revalida na rota real com salvar, reload e publicar",
+        "circulars.respond P50=B já possui tela no Superadmin e prova R06 de resumo após reload",
+        "agenda.location já possui seletor concreto e prova R06; notices.* e agenda.* restantes precisam ser cruzados com o inventário antes de repetir",
+        "sino do shell possui composição e teste local; rota real é opcional no fim"
+      ],
+      "firstGates": [
+        "circulars.attach depende do deploy de circular-media b2e61a22e pelo coordenador; o fix lista x-client-info no CORS",
+        "verified/verified-e2e somente com rota real, persistência em produção, reload, RLS negativo e captura commitada"
+      ],
+      "done": [],
+      "pending": [
+        "circulars.create/edit e agenda.create/edit: repetir prova da tela nova e goldens comparados às referências aprovadas",
+        "circulars.attach: repetir após deploy; caso o deploy não ocorra, manter o dependente retido e seguir",
+        "circulars.respond: revalidar P50=B se a tela nova permitir evidência mais atual",
+        "notices.* e agenda.* restantes: selecionar apenas action_ids ainda fora de E2E",
+        "sino do shell: somente após os itens prioritários"
+      ],
+      "commitsPublished": [],
+      "deltasFile": "docs/reviews/evidence/etapa-2/r07-publicacoes-agenda/deltas-r07-pa.json",
+      "packages": [],
+      "secrets": "nenhum segredo lido ou registrado; credencial permanece apenas no arquivo local informado"
+    },
+    "checkpoints": []
+  }
 }
