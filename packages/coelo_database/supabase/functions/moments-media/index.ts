@@ -27,7 +27,7 @@ function reply(origin: string | null, status: number, body: Json) {
     "Cache-Control": "no-store",
     "Vary": "Origin",
     "Access-Control-Allow-Headers":
-      "authorization, apikey, content-type, x-worker-secret",
+      "authorization, apikey, content-type, x-client-info, x-worker-secret",
     "Access-Control-Allow-Methods": "POST, OPTIONS",
   };
   if (origin !== null && allowedOrigins().has(origin)) {
