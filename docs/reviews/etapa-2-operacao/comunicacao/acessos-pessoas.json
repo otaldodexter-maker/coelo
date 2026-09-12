@@ -1,7 +1,7 @@
 {
-  "revision": 142,
-  "updated_at": "2026-09-12T00:14:26.337650Z",
-  "relogio_local": "Fri Sep 11 2026 21:14:26 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 143,
+  "updated_at": "2026-09-12T00:21:08.566681Z",
+  "relogio_local": "Fri Sep 11 2026 21:21:08 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "finalizado (revisao de 10 minutos respondida abaixo)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "o commit desta rev 142 (publicado); status limpo; sem WIP",
+  "head": "o commit desta rev 143 (publicado); status limpo; sem WIP",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
     "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
@@ -42,9 +42,10 @@
   "primeiro_gate": "nenhum bloqueio total; o que ficou aberto esta em REVISAO_FINAL_21h36.3_aberto_com_primeiro_gate",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
-    "aplicar em producao, na ordem: 20260911170500 (P46), 20260911170600 (P45), 20260911170700 (people.create) e 20260911170800 (internal-users.create, RPCs), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 141 migrations da ordem real (inclui o lote 49)",
-    "aplicar deltas-r06.json (18 entradas): ensaiado + validate PASS (FE 147, BE 132, E2E 114) e revertido",
-    "integrar work/etapa2-r06-acessos-pessoas (7 commits sobre fcdded416)",
+    "aplicar em producao, na ordem: 20260911170500 (P46), 20260911170600 (P45), 20260911170700 (people.create), 20260911170800 (internal-users.create) - candidatos/acessos-pessoas, pgTAP verde no descartavel com a ordem real + lote 49",
+    "deploy da Edge Function internal-user-create (supabase functions deploy internal-user-create --workdir packages/coelo_database): usa SUPABASE_URL/ANON_KEY/SECRET_KEYS padrao e COELO_ALLOWED_ORIGINS ja existente; nenhum segredo novo; depois: prova pela tela /internal-users/new com qa-r06-acessos criando um interno sintetico (e-mail @coelo.me sintetico) e conferir P51 (SMTP) antes de esperar e-mail",
+    "aplicar deltas-r06.json (18 entradas): ensaiado + validate PASS e revertido",
+    "integrar work/etapa2-r06-acessos-pessoas (10 commits sobre fcdded416): analyze sem avisos nos arquivos tocados; testes: access_profile_system_models 4/4, supabase_platform_user_repository 36/36, composition_root_fail_closed_routes 1/1, platform_users (1 golden pre-existente P15)",
     "aplicar os deltas de skills (PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06)"
   ],
   "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
@@ -164,9 +165,16 @@
     "edge_function": "internal-user-create ainda NAO escrita: (1) token do operador -> authorize; (2) service_role auth.admin.createUser({email, email_confirm:true, password aleatoria nunca devolvida}); (3) for_worker; falha no 3 apaga o auth user. Depende de P51 (SMTP) para o usuario definir a senha."
   },
   "REVISAO_FINAL_21h36_COMPLEMENTO": {
-    "sha_final": "o commit desta rev 142 publicado em origin/work/etapa2-r06-acessos-pessoas; status limpo; descartavel coelo_acessos_r06 parado; nenhum Chrome ou servidor desta frente em execucao",
-    "acrescimo": "pacote 170800 (RPCs de internal-users.create) verde; internal-users.create BE proposto local-green (a Edge Function e o cliente ficam para a R07)",
+    "sha_final": "o commit desta rev 143 publicado em origin/work/etapa2-r06-acessos-pessoas; status limpo; descartavel coelo_acessos_r06 parado; nenhum Chrome ou servidor desta frente em execucao",
+    "acrescimo": "cadeia completa de internal-users.create pronta para deploy (RPCs 170800 verdes, Edge Function com deno check, cliente e rota ligados, card Criar no diretorio); nao muda os 9 E2E ja relatados",
     "nao_retomo": "depois de 21:46 nao retomo por conta propria."
+  },
+  "INTERNAL_USERS_CREATE_CADEIA_21h20": {
+    "backend": "170800 (RPCs authorize/for_worker) verde 9/9 - BE proposto local-green ate a funcao estar implantada e provada",
+    "edge_function": "supabase/functions/internal-user-create/index.ts (deno check verde; sem deploy): OPTIONS/CORS por COELO_ALLOWED_ORIGINS; POST {request_id, draft} com o token do operador -> authorize_v1; service_role -> auth.admin.createUser(email, email_confirm, senha aleatoria nunca devolvida, app_metadata.coelo_realm=superadmin_internal) -> for_worker_v1; falha no ultimo passo apaga o auth user; resposta {ok, data: projecao} ou {error: not_authorized|auth_user_unavailable|internal_user_not_created}",
+    "cliente": "SupabasePlatformUserRepository.create chama functions.invoke('internal-user-create') e mapeia os erros; sem a funcao (404) fica 'A criacao de usuarios internos ainda nao esta disponivel' (fail-closed honesto). Rota /internal-users/new abre o PlatformUserFormPage para quem tem platform.member.read/update/suspend (o servidor reautoriza) e o diretorio mostra o card Criar (V-11).",
+    "estado_proposto": "internal-users.create FE local-green (formulario real ligado; prova pela tela depende do deploy), BE local-green (RPCs verdes; done com a funcao implantada e provada), E2E pendente",
+    "decisao_pendente": "P51 (SMTP customizado) para o usuario novo definir a senha por 'Esqueci minha senha'"
   },
   "historico_r05": {
     "revision": 137,
