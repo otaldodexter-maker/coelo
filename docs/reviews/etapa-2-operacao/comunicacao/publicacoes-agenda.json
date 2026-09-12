@@ -1,15 +1,15 @@
 {
-  "revision": 50,
+  "revision": 51,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "7e08cf834 (+ commit desta revisao)",
+  "head": "ver git log da branch (esta revisao vira o head)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T21:09:00-03:00",
+  "updatedAt": "2026-09-11T21:14:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -62,7 +62,7 @@
     "rotaReal": "build web-qa2 (profile, qa_main, b2e61a22e menos o fix de CORS) servido em 127.0.0.1:3000 (origem presente em *_MEDIA_ALLOWED_ORIGINS; 3006/3007 nao estao); Chrome CDP 9337 com --user-data-dir %TEMP%/coelo-chrome-publicacoes; sessao qa-r06-publicacoes aberta."
   },
   "firstGate": "circulars.attach pela tela: deploy da circular-media (versao 12 em producao continua a anterior ao fix; conferido as 21:07)",
-  "status": "em-andamento",
+  "status": "finalizado-aguardando-deploy",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -578,7 +578,15 @@
     "circulars.create/publish": "Circular [R06-QA UI] publicada pela tela nova com Resposta esperada = Confirmar ciencia (ui-10, ui-11: \"0 anexos · 1 pergunta\"); ja eram verified/E2E; a familia nova nao regrediu o fluxo.",
     "sino": "build web-qa3 (7420dc323): ao abrir o shell, GET rest/v1/context_notification_recipients?select=...event:context_notification_events(...) responde 200 com [] para qa-r06-publicacoes (RLS own_read aplicada; a pessoa de servico ainda nao e destinataria de nenhum evento). Leitura provada; marcacao (update read_at) so tem prova unitaria ate existir um evento para este ator (gate: um evento do lote 36 gerado por G3 para a instituicao sintetica, ou insert pelo coordenador com service_role). ui-16."
   },
-  "finalizado": null,
+  "finalizado": {
+    "at": "2026-09-11T21:14:00-03:00",
+    "handoff": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/handoff.md",
+    "deltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (5)",
+    "skillDeltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/skill-deltas.md",
+    "capturas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ (20 png)",
+    "paginaRA": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/duvidas-visuais-publicacao.html",
+    "ambiente": "Chrome CDP 9337 e servidor 3000 ficam abertos ate 21:46 para provar attach se a circular-media for reimplantada; depois fecho."
+  },
   "deliveryValidation": null,
   "skillDeltas": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/skill-deltas.md",
   "miniRevisao": null,
@@ -1945,7 +1953,57 @@
   },
   "deltasFile": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/deltas-r06-pa.json (5 entradas; ensaio apply + validate PASS: FE 140, BE 132, E2E 107; revertido)",
   "ownerVisualApproval": null,
-  "revisaoFinal": null,
+  "revisaoFinal": {
+    "quando": "2026-09-11T21:14:00-03:00 (antecipada; atualizo se o deploy chegar antes de 21:46)",
+    "pedidoPor": "coordenador R06 (T0+2h = 21:36)",
+    "entregueTudo": "Sim: itens 1 a 6 tocados; 1 (attach) fica no gate do deploy; tudo publicado na branch; sem WIP; status limpo.",
+    "shaPublicado": "branch work/etapa2-r06-publicacoes-agenda publicada; head = commit desta revisao (git log -1); status limpo; sem WIP",
+    "fechadoPorActionId": [
+      {
+        "action_id": "agenda.location",
+        "prova": "FE pela tela (seletor concreto de unidade, local, publicar, reload ui-04..08) -> verified; E2E (BE done R05 + RLS 200300) -> verified-e2e"
+      },
+      {
+        "action_id": "circulars.respond",
+        "prova": "P50=B: Responder no detalhe -> tela de resposta no Superadmin -> submit em producao -> reload mostra Respostas 1 (ui-12..15) -> FE verified, E2E verified-e2e"
+      },
+      {
+        "action_id": "circulars.create/edit",
+        "prova": "familia Publicacao (41a4b4dcf); criar+publicar (ui-10/11) e editar+reload (ui-17/18) pela tela nova; goldens circular_composer_*; ja verified/E2E"
+      },
+      {
+        "action_id": "agenda.create/edit",
+        "prova": "familia Publicacao sem wizard (0322e511d); criar (ui-07/08) e editar (ui-19) pela tela nova; goldens agenda_create_*; ja verified/E2E"
+      },
+      {
+        "action_id": "agenda.view (V-8)",
+        "prova": "toggle do R no web, 50/50 no mobile (87c449d93); goldens 1440"
+      },
+      {
+        "action_id": "sino (item 5)",
+        "prova": "ContextNotificationFeed + repositorio real (7420dc323); leitura na rota real 200 (RLS) sem eventos para o ator; marcacao com teste unitario"
+      }
+    ],
+    "abertoComPrimeiroGate": [
+      {
+        "action_id": "circulars.attach",
+        "camada": "frontend/integrated",
+        "gate": "deploy da Edge Function circular-media (b2e61a22e, x-client-info no Allow-Headers); router ja entrega o mediaRepository; gancho do qa_main chega ao prepare. Prova pela tela: /circulars/new -> + -> chip -> Publicar -> reload."
+      },
+      {
+        "action_id": "sino",
+        "camada": "integrated",
+        "gate": "um evento de context_notification para a pessoa de servico do qa-r06-publicacoes (fluxo do lote 36 por G3 ou insert do coordenador) para provar read_at pela tela"
+      }
+    ],
+    "deltas": "deltas-r06-pa.json: 5 entradas (agenda.location FE verified + E2E; circulars.respond FE verified + E2E; circulars.attach FE local-green); ensaio apply+validate PASS e revertido",
+    "pacotesSqlRestantes": "nenhum (nenhum pacote SQL nesta rodada); Edge Function circular-media pendente de deploy",
+    "duvidasAoOwner": "duvidas-visuais-publicacao.html (R referencia 17:19 x A golden atual: circular 1440/375, evento 1440/375, lista da Agenda V-8)",
+    "dadosSinteticosCriados": "evento c7cf7370 (published, editado, Unidade QA R05 Transferencia); circulares [R06-QA UI]: 3 rascunhos (bd439ba5, 5f8d2aee editado, cb77ed7f) + 1 publicada com 1 resposta submetida; limpeza no fim da Etapa 2",
+    "chavesCriadas": "nenhuma",
+    "avisosAOutrasFrentes": "G4/G5: chat-media, moments-media, happens-media e now-media sem x-client-info no Access-Control-Allow-Headers (mesmo sintoma no navegador). G3/G4: PublicationSurface em shared/presentation/widgets/publication_surface.dart para a familia Publicacao.",
+    "ambiente": "Chrome 9337 e servidor 3000 abertos ate 21:46 (fechados ao final); builds web-qa* ignorados pelo Git"
+  },
   "r05History": {
     "finalRevision": 43,
     "head": "421d26991 (a371fce6d com a rev 43)",
