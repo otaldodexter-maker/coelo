@@ -375,3 +375,17 @@ legado de answer-image, cujo envelope usa `signed_upload_url`/`upload_token`,
 em vez do ramo R2 protegido por `COELO_FORMS_MEDIA_PROVIDER=r2`. Isto é uma
 inferência; a execução não registrou o corpo remoto e não será repetida sem nova
 decisão do C0. Não houve credencial em log, nova fixture ou cleanup.
+
+G5 confirmou essa causa e o C0 configurou somente
+`COELO_FORMS_MEDIA_PROVIDER=r2`, preservando as demais variáveis. Uma retomada
+idempotente autorizada reutilizou exatamente o mesmo draft, request IDs e asset.
+O envelope passou então a ter a forma R2 completa, mas o runner parou com
+`prepare:unsafe_ticket` antes do PUT. O código reduz a causa ao prazo: o
+transporte assina por 300 segundos e entrega o `content-type` solicitado, mas
+`handleAnswerR2` devolve `data.expires_at` do prepare legado/replay em vez de
+calcular a expiração da URL recém-assinada, como o ramo question-image já faz.
+Recibo: [forms-answer-image-api-r2-resume-20260912.log](./forms-answer-image-api-r2-resume-20260912.log).
+
+O segundo bloqueio foi enviado ao C0/G5 para RED de replay/relógio e correção
+focal. Novamente, PUT, finalize, save, download e reopen não rodaram; logout
+local foi 204, sem cleanup ou novo ID.
