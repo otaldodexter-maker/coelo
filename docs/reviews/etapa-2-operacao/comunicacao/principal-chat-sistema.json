@@ -1,6 +1,6 @@
 {
-  "revision": 59,
-  "updated_at": "2026-09-12T12:22:03.812164-03:00",
+  "revision": 60,
+  "updated_at": "2026-09-12T12:31:39.653844-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "9bee7eb26",
-  "status": "EXECUTANDO: Principal anexos publicado9bee7eb26; Acontece API23checksPASS; proximoPNG em preparo; UIreal pendente",
+  "head": "b3dd45c53",
+  "status": "EXECUTANDO: AconteceAPI23PASS,AgoraAPI19PASS;MomentosAPI20PASS/1FAILwithdraw403; aguardaACL C0;UIpendente",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -33,7 +33,9 @@
     "signed-put": "28PASS/0FAIL/0SKIP;11novos+17existentes;6casosChat sobrepoem pacote2;naosomar",
     "principal-anexos": "101IDs/5arquivos:43PASS previos+58PASS focais finais/0FAIL/0SKIP;4novos;3falhasintermediariasresolvidas. Nao somar reruns nem afirmar execucao unica101sobreultimoSHA. Analyze0.",
     "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E",
-    "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados."
+    "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados.",
+    "agora-api": "19checks/operacoesPASS exit0;TTLURL403,logout204;publicacao24hNAOverificada.",
+    "momentos-api": "20checksPASS/1FAILwithdraw_moment403 exit1;preparePUTfinalizepublishreadhashreloadTTL passaram;semretirada/semnegativaaposretirada;logout204."
   },
   "lotes": [
     {
@@ -62,14 +64,14 @@
     "com a semantica ligada, cdp_sem type nao alcanca o controller Flutter: usar clickxy no centro + qa_drive enter_text",
     "V-1, V-2, V-3 (Perfil, Para voce, Acontece feed) pendentes; chat.create-group/attach pendentes"
   ],
-  "blocker": "Somente E2EUI: runtimeG0 semlogin utilizavel. Flutterliberado apos58PASS; nenhumprocessoG4. Cross-tenant real sematorQAnegativo (todosOwner), nao inventar.",
+  "blocker": "Momentos:withdraw403autorQA,hipotesegrantinstitution_adminaindaamedirC0. UI:runtimeG0semacesso. Cross-tenantreal:sematorQAnegativo.",
   "perguntas_ao_coordenador": [
     "conceder slotPrincipal5arquivos aposG6/integrado",
     "runtimeUI paraPNG/Cardapios/create-group",
     "conciliar spec028 bindingattachment_id semassetId antescertificacao"
   ],
-  "next_step": "Publicar Principal e smokeAPI Acontece; mergeorigin/dev; preparar proximo PNG autorizado. UI PNG/Cardapios/create-group dependeG0.",
-  "ack": "C0 informado58PASS eFlutterliberado; smokeAPI autorizado no trio medido d0c4/d0c4/368a; aguardaintegracao.",
+  "next_step": "PublicarprovasNow/Momentos; aguardarC0review403antesretrymesmarecurso; prepararCardapioslote55semreimplementar; mergeorigin/deventre pacotes.",
+  "ack": "C0ciclo90dev2441725d5recebido; APIfixturesnominaisautorizadas; falhaMomentosencaminhadaeparada;semprocessoativo.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1ChromeG0;1Fluttertest global mediante concessaoC0;nenhumprocessoG4ativo;semsegredos;semworktreeprincipal/pull;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
@@ -333,14 +335,18 @@
       "e5e0797c7",
       "547bbd92a",
       "fee190810",
-      "9bee7eb26"
+      "9bee7eb26",
+      "bb0da7578",
+      "b3dd45c53"
     ],
     "h09": "C0 mediu cron.job_run_details:14:35/14:40UTC succeeded. Artefato publicado origin/dev2d97892d9 docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md. Nao prova expiracao visual/E2E.",
     "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
     "delta_proposto": "deltas-chat-client.json: FEchat.attach local-green; aplicacaoC0; BE/E2E preservados",
     "revisao_c0": "RequestPUT followRedirects=false e cabecalhosassinados exatos/MIMEcoerente noChat+Happens+Now+Moments. 11casosnovos preparados;nenhumtesterunatual.",
     "principal_chat_recebimento": "Local-green4casosnovos+regressoes; detalhes nohandoffPacote4;58focaisfinais e43previos,naosomarreruns;semE2E.",
-    "smoke_api_acontece": "PASS23checks/exit0; happens-api-proof.md e happens-api-manifest.json;16x16PNGprivateR2/readhash/reload/TTL403/withdrawausente/logout204. SemE2EUI ou cross-tenant. Hierarquiad0c4/d0c4/368amedida/autorizadaC0."
+    "smoke_api_acontece": "PASS23checks/exit0; happens-api-proof.md e happens-api-manifest.json;16x16PNGprivateR2/readhash/reload/TTL403/withdrawausente/logout204. SemE2EUI ou cross-tenant. Hierarquiad0c4/d0c4/368amedida/autorizadaC0.",
+    "smoke_api_agora": "now-api-proof.md/manifest;publicacao392ee49a-265b-42e3-9c5b-ed44a34028f8/asset0451e371-7f79-4501-b439-7da426ca4019;expires2026-09-13T15:24:39.452258Z;masterpreservado,semE2EUI.",
+    "smoke_api_momentos": "moments-api-proof.md/manifest;publicacaobd9f2361-548f-44f8-a595-fddec3ff1396/asset6f8f9fc8-215a-4e07-8b7f-583d210215c7;withdraw403mesmoautor;aguardaC0ACL;preservado,naorepetirupload."
   },
   "historico_pre_r08_operacional": {
     "tests": {
