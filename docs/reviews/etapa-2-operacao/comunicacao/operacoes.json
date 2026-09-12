@@ -1,6 +1,6 @@
 {
-  "revision": 65,
-  "updated_at": "2026-09-12T12:41:00-03:00",
+  "revision": 66,
+  "updated_at": "2026-09-12T13:07:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -57,6 +57,14 @@
     "condition": "o plan4 e estrutural/ACL. Antes de certificacao, C0/G0 devem provar no espelho: autor admin no mesmo escopo, outro autor negado, institution_reader negado e contexto fora de institution/unit/group negado sem alterar publicacao.",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/momentos-withdraw-review.md",
     "reportedTo": "C0 na thread da R08; nenhuma mutacao SQL, Flutter, producao ou rastreador por G7."
+  },
+  "reviewP51InternalUserR08": {
+    "scope": "leitura do roteiro/evidencia G5 1548780e1; action_id canonico internal-users.create",
+    "result": "uma identidade sintetica, perfil minimo support, authorize antes da EF e reautorizacao dentro da EF; detail/list reload e logout local passaram.",
+    "oracle": "password_setup_link_contract false e agregado sem subchecks registrados. Header case-sensitive e causa plausivel, mas nao prova a query redirect_to.",
+    "verdict": "nenhuma falha de produto medida; redirect_to dinamico permanece nao observado.",
+    "next": "C0 pode gerar link recovery da mesma identidade, inspecionar apenas em memoria e registrar booleans; nao criar usuario, nao registrar URL/query/token.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/p51-internal-user-review.md"
   },
   "reviewFormsR08": {
     "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",
