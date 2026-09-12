@@ -1,18 +1,18 @@
 {
-  "revision": 80,
+  "revision": 81,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T17:09:26.977Z",
+  "updatedAt": "2026-09-12T17:21:48.238Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "8fead7905 + reviewH28 desta revisão",
+  "head": "1096d455e + followups reviewH28 desta revisão",
   "base": "origin/dev7d2b66a3e ciclo180 materializado por8fead7905",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "ReviewreadonlyH28G2 SHA425aceaf8:2achadosbairrostate_code/atividadefirstOrNullenviadosautorC0; aguardaprova/followup. SemFlutter/SQL/ediçãoalheia.",
+  "currentGate": "Review H28: código36cfefa81 atende achados de cascata/UF/dedup. Favorável estruturalmente; aguarda4cenários G2 e provas antesfechamento. SemFlutter/SQLG3.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -335,7 +335,7 @@
       "o_que": "handoff/memória conciliados"
     }
   ],
-  "nextStep": "RevisarfollowupH28G2 apósprova; permanecernopróximogateautorizado até14:52:16. NenhumprocessoG3.",
+  "nextStep": "Revisar testes novos H28 e resultado do slot autor; manter suporte à integração C0 até corte.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",

@@ -27,3 +27,25 @@ Esses achados são incompatibilidades de filtro/UX, não demonstrações de vaza
 ## Limites e próximo passo
 
 Solicitar RED→GREEN focal dos dois casos a G2 no slot C0; revisar SHA de followup antes de recomendar integração. Fixture funcional A/B e pgTAP estão com G2/G7/G5, não foram duplicados. Não promover H28 nem métricas por leitura de código. A revisão não altera memória canônica: ainda se trata de correções propostas de um contrato existente.
+
+## Followup c83fd9ca1
+
+G2 enviou `c83fd9ca1`, efetivamente lido por diff contra425aceaf8. `setGroups` agora usa any e atende esse caminho. `setUnits` e `setInstitutions` ainda usam firstOrNull, e neighborhoods ainda não fornece state_code: os achados permanecem parcialmente abertos. Exemplo preciso para setInstitutions: atividadeX pertence à instituiçãoI e tem linksuA/gA e uB/gB; usuário mantémuB/gB/X e acrescenta instituiçãoJ sem removerI. A primeira opçãoX=uA é rejeitada pelo conjunto de unidades, apesar do linkuB compatível. Não pressupõe atividade pertencendo a dois tenants.
+
+Revisão enviada a G2/C0, sem promover fechamento por corrigir apenas um setter. Provas Flutter/pgTAP em execução por seus donos não foram duplicadas nem antecipadas por G3.
+
+## Followup 5d4ff2bbf
+
+Lido diff completo contra c83fd9ca1. Retenção usa any nos três setters, SQL de bairros agora emite state_code e atividades visíveis são deduplicadas porid após o filtro de grupos. Os dois achados iniciais estão atendidos em código; a execução dos cenários novos ainda foi declarada pendente pelo autor.
+
+A mesma classe de duplicação exige conciliação nas opções de localidade: SQL distingue objetos por city/state e district/city/state, mas os IDs enviados são city e district. Dois municípios selecionados com bairroCentro produzem dois objetos distintos com idCentro. O seletor marca ambos pelo queryid e desmarcar só um mantém o outro, restaurando ambos no reload. Enviado a G2 deduplicar as opções visíveis porid depois de limitar o contexto, conferirUF também em visibleNeighborhoods para cidades homônimas, e usar any em setMunicipalities para reter bairro com vínculo alternativo compatível. Não alterar os IDs textuais nem tratar isso como incidente de autorização.
+
+## Followup 8ce53fcf6
+
+Lido diff: cidades/bairros visíveis agora deduplicados porid, bairros limitados também porUF, setMunicipalities usa any. Resta alinhar o predicado deste último à UF atual: sem verificar stateCodes, opção de bairro deUFestranha/cidadehomônima pode manter queryid invisível. Exemplo sintético enviado: SP selecionado, trocar de cidadeA para cidadeB/SP; não reter bairroX apenas porque existe X/cidadeB/RJ.
+
+Critério focal de fechamento enviado ao autor/C0:4cenários (atividade alternativa nos três setters; UF aditiva preservando bairro; opções únicas/desmarcação; retenção sem UFestranha) e análise/execução no slot. Nenhum teste novo apareceu nos diffs de followup lidos até este SHA; aprovação continua condicional à última correção e à prova, sem novos itens fora desse conjunto.
+
+## Followup 36cfefa81
+
+Guard deUF em setMunicipalities efetivamente lido e adequado. Todos os achados de código desta revisão estão atendidos na ponta36cfefa81; resta a execução e revisão dos quatro cenários. O autor foi orientado a escrever os testes enquanto espera slot, pois a preparação não ocupa Flutter. Parecer estrutural favorável ao diff, condicionado às provas; não altera o estado produtivo nem libera a flag antes do gate C0.
