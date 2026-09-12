@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 16,
+  "revision": 17,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T09:22:00-03:00",
+  "updatedAt": "2026-09-12T09:25:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -222,7 +222,7 @@
   ],
   "miniRevisao": {
     "gravadaEm": "2026-09-12T09:22:00-03:00 (fora do prazo: a sessao caiu ~00:30 de 12/09, antes de T0+3h; retomada as 09:20 so para fechar, sem trabalho novo)",
-    "shaPublicado": "a gravar neste commit (anterior: 6381f61df); branch work/etapa2-r07-suites; status limpo; sem WIP retido",
+    "shaPublicado": "89640019f (rev 16); este commit atualiza o SHA final",
     "falhasCorrigidasPorArquivo": {
       "test/app/dev_menu_test.dart": 1,
       "test/app/router/prototype_navigation_routes_test.dart": 1,
@@ -247,5 +247,6 @@
     "duvidasAoOwner": "nenhuma nova; P53 continua decidindo 17 goldens.",
     "dadosSinteticos": "nenhum (sem Chrome, sem rota real, sem usuario sintetico).",
     "chaves": "nenhuma."
-  }
+  },
+  "finalizado": true
 }
