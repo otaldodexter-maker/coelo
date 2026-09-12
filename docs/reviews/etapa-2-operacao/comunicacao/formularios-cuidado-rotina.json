@@ -1,19 +1,19 @@
 {
- "revision": 55,
- "round": "E2-R06-20260911",
+ "revision": 56,
+ "round": "E2-R07-20260911",
  "group": "formularios-cuidado-rotina",
- "tool": "Claude Code (VS Code)",
- "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
- "coordinator": "Claude",
+ "tool": "Codex",
+ "model": "Codex Luna, esforco medio",
+ "coordinator": "coordenador da R07",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:28-03:00",
+ "updatedAt": "2026-09-11T23:40-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
- "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "09dd1792e (codigo) + este commit",
- "base": "origin/dev ca60b096b",
+ "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r07-formularios-cuidado-rotina",
+ "head": "a50487878 (base R07; revisao inicial em andamento)",
+ "base": "origin/dev a50487878",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
   "families": [
@@ -63,7 +63,7 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "finalizado as 21:21; Chrome 9418 e servidor 3018 fechados; aguardando a revisao de 10 minutos (21:36)",
+  "gate": "R07 aberta; inventario inicial lido; preparar prova da familia Publicacao e executar a ordem solicitada",
   "screen": "Etapa 2 -> apps/superadmin",
   "actionIds": []
  },
@@ -166,8 +166,8 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "encerrado; depois de 21:46 nao retomo",
- "finalizado": true,
+ "nextStep": "1) attendance.entry/complete na familia Publicacao; 2) forms.location-question/answer; 3) daily-routine; 4) child-safety; 5) form-media se houver tempo",
+ "finalizado": false,
  "dadosSinteticosCriados": [
   {
    "tabela": "public.medication_plans",
@@ -1993,5 +1993,38 @@
   "dados_sinteticos": "lista em dadosSinteticosCriados + nova versao de trabalho do formulario 4555ba07 com item Local (rascunho sobre o publicado)",
   "chaves_criadas": "nenhuma",
   "skills_deltas": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/skills-deltas.md"
+ },
+ "revisaoR07Inicial": {
+  "quando": "2026-09-11T23:40-03:00",
+  "round": "E2-R07-20260911",
+  "shaBase": "a5048787809422c637cb02d35eeb18dfe7528e35",
+  "worktreeCriada": true,
+  "status": "aberta",
+  "recorte": "Etapa 2 -> apps/superadmin -> Formulários, Cuidado e Rotina -> Publicação/Chamadas, Formulários, Rotina, Segurança infantil; fora: apps/admin, apps/principal, site e rastreadores/dev",
+  "familiaVisual": "Principal hospedado no Superadmin; attendance.entry/complete reconstruída sobre Família Publicação",
+  "ordem": [
+   "attendance.entry/complete",
+   "forms.location-question",
+   "forms.location-answer",
+   "daily-routine.edit",
+   "daily-routine.publish",
+   "daily-routine.list",
+   "child-safety.list",
+   "child-safety.child",
+   "forms.upload",
+   "forms.resolve-file",
+   "forms.expire-file",
+   "forms.delete-file"
+  ],
+  "feito": "Leitura inicial dos prompts R07/R06/R05/R04, JSON R06, skills-deltas R06, coordenação T0, pendências e referência visual; worktree recriada limpa sobre origin/dev.",
+  "pendente": "Todas as ações da ordem R07; primeiro gate executável é localizar a implementação de attendance.entry/complete e os componentes de publication_surface.dart.",
+  "bloqueios": "Nenhum bloqueio externo demonstrado nesta abertura; form-media fica condicionado ao tempo e não liga COELO_FORMS_MEDIA_PROVIDER.",
+  "evidenciasEsperadas": "goldens mobile-375/web-1440 comparados às referências aprovadas, provas na rota real, deltas-r07-fcr.json commitados e testes proporcionais.",
+  "commitsPublicados": [],
+  "pacotesSql": [],
+  "duvidasOwner": [],
+  "dadosSinteticos": "Reutilizar os dados sintéticos R06; qualquer novo dado será registrado aqui sem segredo.",
+  "chavesCriadas": "nenhuma",
+  "criterioParada": "Trabalhar até T0+4h; responder revisão de 10 minutos no JSON em T0+4h; não retomar após T0+4h10."
  }
 }
