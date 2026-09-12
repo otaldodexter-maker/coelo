@@ -7,6 +7,6 @@ result:
 {"asset_id": null, "code": "prepare:401:unauthorized", "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703", "preserved": true, "response_id": "bb1f3443-76a6-4049-b364-6215545625c8", "status": "FAILED", "step": "smoke"}
 {"http": 204, "status": "PASS", "step": "logout_local"}
 mutations: one identified response draft opened/reused; asset 0; PUT/finalize/save/download 0
-diagnosis: REST Auth, occurrence authorization and response command accepted the same session. The opaque 401 is emitted by form-media before answer prepare: missing runtime env/header, auth.getUser failure or active person_auth_links lookup failure. Bearer was present and C0 independently confirmed the active Auth-to-person link, leaving Edge runtime/env or internal getUser as the focused diagnosis.
+diagnosis: REST Auth, occurrence authorization and response command accepted the same session. C0 then confirmed zero active public.person_auth_links for this realm-internal auth user; its valid mapping is in app_private.superadmin_internal_auth_links/actor_people. The answer-image branch in form-media line 662 requires public.person_auth_links, so it returns the opaque 401 before R2. Question-image does not enter that branch. G5 owns the focal canonical-actor correction.
 preservation: response retained; no cleanup or global logout
 secrets: no email, password, JWT, signed URL or private env contents recorded

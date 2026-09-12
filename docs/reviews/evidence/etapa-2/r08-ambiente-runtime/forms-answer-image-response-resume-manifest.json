@@ -1,0 +1,15 @@
+{
+  "asset_id": null,
+  "download_request_id": "5442c6ae-182b-4b6f-bdc5-00b5bf65ef8b",
+  "finalize_request_id": "c53bbb40-6b38-43c2-be14-71ecf080bc49",
+  "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc",
+  "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703",
+  "open_request_id": "5d445d45-01c7-4ea1-a076-0148ddace8c2",
+  "participation_id": "095d0236-334b-460b-aaa2-e1fce7914d8f",
+  "prepare_request_id": "7c641b1c-ebe9-4ab9-a131-26da26fbee4f",
+  "preserved": true,
+  "response_id": "bb1f3443-76a6-4049-b364-6215545625c8",
+  "response_management_version": null,
+  "save_request_id": "08d137e5-bc1a-47c2-89c4-e502aa128fee",
+  "schema_version": 1
+}

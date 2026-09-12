@@ -333,3 +333,17 @@ Todos os sintéticos foram preservados; não houve cleanup, SQL direto, grants,
 usuário novo ou logout global. O próximo gate é C0 confirmar o ator efetivo e
 autorizar o uso da credencial QA correspondente à pessoa da participação, sem
 criar outra fixture.
+
+C0 confirmou depois a causa exata do segundo bloqueio: esse usuário de realm
+interno tem zero vínculo ativo em `public.person_auth_links`; o mapeamento
+válido fica em `app_private.superadmin_internal_auth_links/actor_people`. O ramo
+answer-image da Edge v17 ainda consulta somente a tabela pública, portanto
+retorna 401 antes de R2. Question-image não passa por esse ramo. G5 assumiu a
+correção focal de ator canônico.
+
+A retomada não repetirá criação nem usará IDs novos. O draft preservado
+`bb1f3443-76a6-4049-b364-6215545625c8` e os request IDs de open, prepare,
+finalize, save e download estão em
+[forms-answer-image-response-resume-manifest.json](./forms-answer-image-response-resume-manifest.json).
+O runner valida occurrence/participation/item e reutiliza esses IDs após o
+deploy; asset permanece nulo até um prepare efetivamente aceito.

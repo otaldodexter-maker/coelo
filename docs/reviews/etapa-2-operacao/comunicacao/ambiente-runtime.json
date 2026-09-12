@@ -76,7 +76,7 @@
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter",
-      "smoke answer-image bloqueado no prepare da Edge form-media v17: HTTP401 unauthorized depois de REST auth/occurrence/open draft verdes; aguarda diagnostico C0 de env/getUser/person_auth_links, sem novo retry"
+      "smoke answer-image bloqueado no prepare da Edge form-media v17: ramo answer exige public.person_auth_links, mas QA realm-interno mapeia por superadmin_internal_auth_links/actor_people; G5 assumiu correcao focal, sem novo retry"
     ],
     "tests": [
       "docker version: client/server 29.7.2",
@@ -133,7 +133,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "aguardar C0 diagnosticar 401 pre-dispatch da Edge form-media v17 (env/getUser/person_auth_links) e autorizar novo prepare somente se houver causa corrigida; nenhum retry automatico"
+    "nextGate": "aguardar fix/deploy G5 do ator canonico na Edge answer-image; depois retomar response bb1f3443 com manifest/request_ids estaveis, sem reabrir fixture ou criar outro draft"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",

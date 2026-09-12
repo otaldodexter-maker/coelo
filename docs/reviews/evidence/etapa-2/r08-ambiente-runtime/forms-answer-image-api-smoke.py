@@ -23,6 +23,15 @@ from typing import Any
 WORKTREE = Path(r"C:\Users\adrie\Documents\Coelo.worktrees\e2-r08-ambiente-runtime")
 APP_ENV = WORKTREE / "apps" / "superadmin" / ".env.local"
 QA_ENV = Path(r"C:\Users\adrie\Documents\Coelo-backups\qa-r06-principal.env")
+RUN_MANIFEST = (
+    WORKTREE
+    / "docs"
+    / "reviews"
+    / "evidence"
+    / "etapa-2"
+    / "r08-ambiente-runtime"
+    / "forms-answer-image-response-resume-manifest.json"
+)
 PNG = base64.b64decode(
     "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII="
 )
@@ -148,6 +157,10 @@ def normalized_answers(raw: Any, item_id: str, item_kind: str, asset_id: str) ->
     return answers
 
 
+def save_run_manifest(value: dict[str, Any]) -> None:
+    RUN_MANIFEST.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group()
@@ -171,6 +184,7 @@ def main() -> int:
     expected_participation_id = None
     requested_item_id = None
     expected_auth_uid = None
+    run_manifest: dict[str, Any] | None = None
     if args.execute or args.preflight:
         try:
             occurrence_id = str(uuid.UUID(args.occurrence_id or ""))
@@ -180,6 +194,41 @@ def main() -> int:
         except ValueError:
             emit("guard", "INVALID_RUNTIME_FIXTURE")
             return 2
+        if args.execute:
+            if RUN_MANIFEST.exists():
+                run_manifest = json.loads(RUN_MANIFEST.read_text(encoding="utf-8"))
+                if (
+                    run_manifest.get("occurrence_id") != occurrence_id
+                    or run_manifest.get("participation_id") != expected_participation_id
+                    or run_manifest.get("item_id") != requested_item_id
+                ):
+                    emit("guard", "RESUME_MANIFEST_SCOPE_MISMATCH")
+                    return 2
+                for key in (
+                    "open_request_id",
+                    "prepare_request_id",
+                    "finalize_request_id",
+                    "save_request_id",
+                    "download_request_id",
+                ):
+                    require_uuid(run_manifest.get(key), key)
+            else:
+                run_manifest = {
+                    "schema_version": 1,
+                    "preserved": True,
+                    "occurrence_id": occurrence_id,
+                    "participation_id": expected_participation_id,
+                    "item_id": requested_item_id,
+                    "response_id": None,
+                    "response_management_version": None,
+                    "asset_id": None,
+                    "open_request_id": str(uuid.uuid4()),
+                    "prepare_request_id": str(uuid.uuid4()),
+                    "finalize_request_id": str(uuid.uuid4()),
+                    "save_request_id": str(uuid.uuid4()),
+                    "download_request_id": str(uuid.uuid4()),
+                }
+                save_run_manifest(run_manifest)
 
     app = read_env(APP_ENV)
     qa_path = Path(args.qa_env).resolve() if args.qa_env else QA_ENV.resolve()
@@ -375,23 +424,31 @@ def main() -> int:
             "identity_mode": identity_mode,
             "edit_secret": edit_secret,
         }
+        assert run_manifest is not None
         status, draft = rpc("form_open_response_draft", {
-            "p_request_id": str(uuid.uuid4()),
+            "p_request_id": run_manifest["open_request_id"],
             "p_expected_version": 0,
             "p_payload": open_payload,
         })
         if status != 200 or not isinstance(draft, dict):
             raise SmokeFailure(f"open_draft:{status}:{error_code(draft)}")
         response_id = require_uuid(draft.get("id"), "response")
+        if run_manifest.get("response_id") not in {None, response_id}:
+            raise SmokeFailure("open_draft:response_mismatch")
         if draft.get("occurrence_id") != occurrence_id or draft.get("status") != "draft":
             raise SmokeFailure("open_draft:not_editable_draft")
         response_version = draft.get("management_version")
         if not isinstance(response_version, int) or response_version < 1:
             raise SmokeFailure("open_draft:invalid_version")
+        run_manifest.update({
+            "response_id": response_id,
+            "response_management_version": response_version,
+        })
+        save_run_manifest(run_manifest)
         emit("open_or_reuse_draft", "PASS", http=status, response_id=response_id)
 
         checksum = hashlib.sha256(PNG).hexdigest()
-        prepare_request_id = str(uuid.uuid4())
+        prepare_request_id = run_manifest["prepare_request_id"]
         prepare_payload = {
             "occurrence_id": occurrence_id,
             "item_id": item_id,
@@ -411,6 +468,10 @@ def main() -> int:
         if "purpose" in prepared:
             raise SmokeFailure("prepare:question_image_envelope")
         asset_id = require_uuid(prepared.get("asset_id"), "asset")
+        if run_manifest.get("asset_id") not in {None, asset_id}:
+            raise SmokeFailure("prepare:asset_mismatch")
+        run_manifest["asset_id"] = asset_id
+        save_run_manifest(run_manifest)
         upload_url = prepared.get("upload_url")
         required_headers = prepared.get("required_headers")
         expires_at = prepared.get("expires_at")
@@ -448,7 +509,7 @@ def main() -> int:
             raise SmokeFailure(f"put:{put_status}")
         emit("signed_put", "PASS", http=put_status, bytes=len(PNG), sha256=checksum)
 
-        finalize_request_id = str(uuid.uuid4())
+        finalize_request_id = run_manifest["finalize_request_id"]
         access_payload = {
             "asset_id": asset_id,
             **({"edit_secret": edit_secret} if edit_secret else {}),
@@ -482,7 +543,7 @@ def main() -> int:
             "answers": answers,
         }
         status, saved = rpc("form_save_response_draft", {
-            "p_request_id": str(uuid.uuid4()),
+            "p_request_id": run_manifest["save_request_id"],
             "p_expected_version": response_version,
             "p_payload": save_payload,
         })
@@ -500,7 +561,7 @@ def main() -> int:
 
         status, downloaded = edge({
             "action": "download",
-            "request_id": str(uuid.uuid4()),
+            "request_id": run_manifest["download_request_id"],
             "expected_version": 0,
             "payload": access_payload,
         })
