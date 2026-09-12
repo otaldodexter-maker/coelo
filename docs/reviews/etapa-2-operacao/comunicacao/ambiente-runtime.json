@@ -1,12 +1,12 @@
 {
-  "revision": 7,
+  "revision": 8,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:46:00-03:00",
+  "updatedAt": "2026-09-12T11:50:42-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -53,7 +53,8 @@
       "consumidores Chat pos-H09: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback",
       "tentativa debug autorizada: DTD/VM Service conectados, mas qa_login falhou no DWDS e Dart MCP confirmou ausencia da extensao Dart Debug Chrome",
       "probe CUA com getByRole/fill/press Tab e click/typeText/setValue reproduziu controller vazio; sem chamada Auth",
-      "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado"
+      "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
+      "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -85,6 +86,13 @@
       "toolBoundary": "exec_command ao iniciar Chrome CDP foi rejeitado automaticamente com blocked by policy; release estatico nao tem DTD/VM Service",
       "safeContinuation": "reutilizar a aba somente com Chrome que ja tenha Dart Debug ou endpoint CDP nominalmente permitido; nao criar segundo navegador nem injetar sessao"
     },
+    "sqlBlocked": {
+      "candidate": "444ac0246d7eadd62527990492f9797285594bec:20260912140546_forms_question_media_draft_bridge_v1.sql",
+      "result": "RED e GREEN: 1-18 ok, 19/20 not ok, abort forms.read required, native/wrapper 3; fixtures revertidas; regressões nao executadas",
+      "diagnosis": "autorizacao chama has_platform_permission sem institution_id para ator interno escopado; FK RESTRICT DEFERRABLE tambem foi bloqueada por G3 e media_context nulo precisa ajuste",
+      "baseline": "candidato antigo permaneceu aplicado localmente porque STOP chegou apos COMMIT; aguarda correcao forward; producao intocada",
+      "reportedToC0": true
+    },
     "nextGate": "C0 disponibilizar ferramenta de browser proposito-especifico compativel com Flutter, sem shell CDP, segundo navegador ou reconfiguracao global"
   },
   "resources": {
@@ -92,7 +100,7 @@
     "server": "127.0.0.1:3014 PID 14724, ativo; /login HTTP 200; build original SHA-256 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "slot devolvido ao C0; espelho inclui H09 local verde 6/6 e consumidores Chat 28/28+3/3; producao/backup/ledger permanecem com C0"
+    "sql": "slot devolvido ao C0; espelho inclui H09 verde e o candidato Forms 444ac024 bloqueado/aplicado localmente; aguarda forward fix, sem regressões; producao/backup/ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -136,6 +144,11 @@
       "revision": 7,
       "at": "2026-09-12T11:46:00-03:00",
       "summary": "Instrumentacao QA temporaria provou hit-testing e foco funcionais, mas canal de texto CUA sem evento/valor no DOM ou controller; instrumentacao removida, build original recompilado e release restaurado no PID 14724."
+    },
+    {
+      "revision": 8,
+      "at": "2026-09-12T11:50:42-03:00",
+      "summary": "Forms 444ac024 ficou vermelho apos apply local: autorizacao nao passa institution_id; G3 bloqueou tambem RESTRICT DEFERRABLE/media_context nulo. Regressões paradas e producao intocada."
     }
   ]
 }

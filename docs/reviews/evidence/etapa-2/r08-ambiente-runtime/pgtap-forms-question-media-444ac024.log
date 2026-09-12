@@ -1,0 +1,39 @@
+R08 G0 / baseline local somente
+fonte: 444ac0246d7eadd62527990492f9797285594bec
+container: supabase_db_coelo_baseline / 127.0.0.1:57322
+credenciais: nenhuma registrada
+
+[RED sem 20260912140546]
+comando: git show <sha>:packages/coelo_database/supabase/tests/forms_question_media_r2_v1_test.sql | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+plan: 1..32
+ok: 1..18
+not ok 19: prepare aceita autoria people-based do mesmo ator interno autorizado; have false, want true
+not ok 20: question-image produtiva finaliza no catalogo privado; have NULL, want ready
+erro terminal: forms.read required em app_private.require_forms_actor(text), chamado por app_private.form_get_editor(uuid)
+finish/ROLLBACK explicito: nao alcancado
+rollback efetivo: conexao fechada com transacao abortada; probe posterior fixture_rows=0
+native exit: 3
+wrapper exit: 3 (propagacao do native; TAP incompleto)
+
+[APPLY 20260912140546 somente baseline]
+BEGIN; preflight DO; ALTER TABLE x2; CREATE FUNCTION x3; ALTER FUNCTION x3; REVOKE x2; GRANT; COMMIT
+native exit: 0
+wrapper exit: 0
+
+[GREEN apos 20260912140546]
+plan: 1..32
+ok: 1..18
+not ok 19: prepare people-based continua false
+not ok 20: finalize people-based continua NULL
+erro terminal: forms.read required em app_private.require_forms_actor(text), chamado por app_private.form_get_editor(uuid)
+finish/ROLLBACK explicito: nao alcancado
+rollback efetivo: conexao fechada com transacao abortada; probe posterior fixture_rows=0
+native exit: 3
+wrapper exit: 3 (propagacao do native; TAP incompleto)
+
+[DIAGNOSTICO]
+app_private.has_platform_permission(text) delega para has_platform_permission(text, NULL::uuid).
+O overload institution-aware nega membership institucional quando o ator e interno e institution_id e NULL.
+O candidato chama o overload de um argumento em prepare people-based e em form_get_editor/require_forms_actor, logo o owner interno escopado nao recebe forms.manage/forms.read.
+Revisao G3 posterior tambem bloqueou o candidato: a FK materializada esta confdeltype=r (ON DELETE RESTRICT), condeferrable=true, condeferred=false; o esperado e NO ACTION DEFERRABLE para adiar o delete/reinsert. media_context deve tratar working_version_id nulo como JSON null.
+O STOP do G3 chegou depois do COMMIT local e do GREEN; nao houve rollback/reset destrutivo. Producao permaneceu intocada. Regressões nao foram executadas.
