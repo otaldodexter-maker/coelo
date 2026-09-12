@@ -183,6 +183,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
   }) {
     final colors = Theme.of(context).colorScheme;
     final sorted = widget.sortColumnId == column.id;
+    final resizable = column.minWidth < column.maxWidth;
     final label = sorted
         ? '${column.label}, ordenado ${widget.sortAscending ? 'crescente' : 'decrescente'}'
         : '${column.label}, não ordenado';
@@ -190,24 +191,29 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
       padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
       child: Align(
         alignment: Alignment.centerLeft,
-        child: Row(
-          children: [
-            Flexible(
-              child: Text(
-                column.label,
-                maxLines: 1,
-                overflow: TextOverflow.ellipsis,
-                style: Theme.of(context).dataTableTheme.headingTextStyle,
-              ),
-            ),
-            if (sorted) ...[
-              const SizedBox(width: CoeloSpacing.space1),
-              Icon(
-                widget.sortAscending ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
-                size: CoeloSize.iconSm,
-              ),
-            ],
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final directionIcon = Icon(
+              widget.sortAscending ? Icons.arrow_upward_rounded : Icons.arrow_downward_rounded,
+              size: CoeloSize.iconSm,
+            );
+            if (sorted && constraints.maxWidth < CoeloSpacing.space1 + CoeloSize.iconSm) {
+              return FittedBox(fit: BoxFit.scaleDown, child: directionIcon);
+            }
+            return Row(
+              children: [
+                Flexible(
+                  child: Text(
+                    column.label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).dataTableTheme.headingTextStyle,
+                  ),
+                ),
+                if (sorted) ...[const SizedBox(width: CoeloSpacing.space1), directionIcon],
+              ],
+            );
+          },
         ),
       ),
     );
@@ -218,6 +224,7 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
       child: Stack(
         children: [
           Positioned.fill(
+            right: resizable ? CoeloSize.touchMin : 0,
             child: column.sortable && interactive
                 ? _SortableHeader(
                     label: label,
@@ -229,25 +236,30 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                   )
                 : content,
           ),
-          Positioned(
-            right: 0,
-            top: 0,
-            bottom: 0,
-            child: interactive
-                ? _ColumnResizeHandle(
-                    indicatorKey: Key(
-                      'coelo-admin-table-resizer-indicator-${column.id}${pinned ? '-pinned' : ''}',
+          if (resizable)
+            Positioned(
+              right: 0,
+              top: 0,
+              bottom: 0,
+              width: CoeloSize.touchMin,
+              child: interactive
+                  ? _ColumnResizeHandle(
+                      indicatorKey: Key(
+                        'coelo-admin-table-resizer-indicator-${column.id}${pinned ? '-pinned' : ''}',
+                      ),
+                      label: 'Redimensionar coluna ${column.label}',
+                      idleColor: colors.outlineVariant,
+                      focusColor: Theme.of(context).extension<CoeloActionColors>()!.focusRing,
+                      onResize: (delta) => _resize(column, delta),
+                    )
+                  : Align(
+                      alignment: Alignment.centerRight,
+                      child: _ColumnResizeIndicator(
+                        indicatorKey: Key('coelo-admin-table-resizer-indicator-${column.id}'),
+                        color: colors.outlineVariant,
+                      ),
                     ),
-                    label: 'Redimensionar coluna ${column.label}',
-                    idleColor: colors.outlineVariant,
-                    focusColor: Theme.of(context).extension<CoeloActionColors>()!.focusRing,
-                    onResize: (delta) => _resize(column, delta),
-                  )
-                : _ColumnResizeIndicator(
-                    indicatorKey: Key('coelo-admin-table-resizer-indicator-${column.id}'),
-                    color: colors.outlineVariant,
-                  ),
-          ),
+            ),
         ],
       ),
     );
@@ -565,9 +577,12 @@ final class _ColumnResizeHandleState extends State<_ColumnResizeHandle> {
             onTap: _focusNode.requestFocus,
             onHorizontalDragStart: (_) => _focusNode.requestFocus(),
             onHorizontalDragUpdate: (details) => widget.onResize(details.delta.dx),
-            child: _ColumnResizeIndicator(
-              indicatorKey: widget.indicatorKey,
-              color: _focused ? widget.focusColor : widget.idleColor,
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: _ColumnResizeIndicator(
+                indicatorKey: widget.indicatorKey,
+                color: _focused ? widget.focusColor : widget.idleColor,
+              ),
             ),
           ),
         ),

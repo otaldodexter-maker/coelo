@@ -1,18 +1,18 @@
 {
-  "revision": 73,
+  "revision": 74,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:33:39.662Z",
+  "updatedAt": "2026-09-12T16:44:43.594Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "a7b081674 + followup purge câmera desta revisão",
+  "head": "d4c71277d + H25 desta revisão",
   "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Review G4 confirmado e corrigido: finalizeTree RED1FAIL -> GREEN9PASS/analyze0. Slot Flutter liberado; aguarda integração C0 e próximo gate independente.",
+  "currentGate": "H25 posse nominal C0: faixa48 sem sobreposição, min=max semhandle, narrow sorted adaptativo.21PASS0FAIL/analyze0; residual sort32/42 emSuporte comunicado semAAglobal. Flutter liberado.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -124,6 +124,18 @@
         "red": {
           "passed": 0,
           "failed": 1
+        }
+      },
+      {
+        "sha": "H25 desta revisão",
+        "passed": 21,
+        "failed": 0,
+        "novos": 4,
+        "overlap": "20 tabela +1composto Formulários; não somar19intermediários/reruns",
+        "evidencia": "10-h25-inspecao.md",
+        "red": {
+          "passed": 0,
+          "failed": 3
         }
       }
     ],

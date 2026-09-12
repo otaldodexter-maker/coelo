@@ -1,12 +1,12 @@
 ---
-source: "R08 prompts/contrato comum/G3; commits e evidências da worktree G3; integração C0 ciclo120; manifesto API G0"
+source: "R08 prompts/contrato comum/G3; commits e evidências da worktree G3; integração C0 ciclo150; manifesto API G0; revisão focal G4"
 status: "em execução; handoff parcial atualizado antes do corte"
 generated_at: "2026-09-12"
 ---
 
 # R08 G3 — Formulários, Cuidado e Rotina
 
-Worktree preservada: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina`. Branch `work/etapa2-r08-formularios-cuidado-rotina`. Base conjunta atual: `origin/dev 7cc6d4e7b`, incorporada por merge `8b9e784e5`, sem rebase/force e sem editar/puxar o checkout principal. C0 é o integrador e escritor dos rastreadores. Não houve deploy, migration, cleanup ou criação de fixture remota por G3.
+Worktree preservada: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina`. Branch `work/etapa2-r08-formularios-cuidado-rotina`. Base conjunta atual: `origin/dev 7e889abac`, incorporada por merge `a7b081674`, sem rebase/force e sem editar/puxar o checkout principal. C0 é o integrador e escritor dos rastreadores. Não houve deploy, migration, cleanup ou criação de fixture remota por G3.
 
 T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; ajustes até `15:22:16`. Este documento ainda é parcial: captura Foto local-green e a rodada continua nos próximos gates autorizados.
 
@@ -34,6 +34,9 @@ T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; aj
 - `dfe013cc5` + `f0c7269fd`: envelope answer-image e review de medida real.
 - `72e6e6f22` + `8344cb98a`: edição anônima e conciliação do timeout inicial.
 - `8b9e784e5`: merge da base C0 ciclo120.
+- `d3d3d5d63`: captura Foto, 182 testes aprovados no pacote.
+- `a7b081674`: merge da base C0 ciclo150.
+- `725155ec0` + `d4c71277d`: purge de câmera durante descarte da tela, revisão G4 reproduzida e corrigida; 9 testes aprovados, um novo, sem somar os oito anteriores. Evidência `09-camera-purge.md` e logs.
 
 Todos os commits acima foram enviados à branch remota. O SHA final deste handoff será informado no fechamento, sem usar um SHA do próprio arquivo como certificação circular.
 
