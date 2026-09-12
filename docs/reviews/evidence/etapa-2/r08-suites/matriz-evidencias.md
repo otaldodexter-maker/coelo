@@ -48,3 +48,12 @@ entre nomes de casos de ciclos diferentes quando não existe um identificador de
 - C0/G1: anexar ou apontar o JSONL final dos três testes dos 45 PNGs se a interseção por caso for exigida.
 - C0/G3: anexar os seis logs finais `07-anonymous-*` à base integrada ou fornecer seus SHAs de arquivo para fechar a auditoria dos 293.
 - C0: preservar os JSONL dos ciclos 30/60/90 no mesmo snapshot se a matriz precisar de união exata por caminho e caso.
+
+## Comparação reproduzível
+
+`matriz-exata.js` extraiu nomes dos JSONL 30/60/90 e do log anônimo final.
+O resultado está em `matriz-exata-result.json` e o resumo em `matriz-exata.md`:
+245/476/820 chaves únicas nos ciclos, 293 eventos anônimos com 281 chaves
+únicas e 12 duplicatas; interseção sintática 60∩90 de 224. Caminhos
+`package:flutter_test/src/widget_tester.dart` permanecem marcados como
+observação sintática, não equivalência semântica.
