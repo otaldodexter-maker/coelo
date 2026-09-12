@@ -165,3 +165,17 @@ O preflight somente leitura [preflight-lote56.sql](./preflight-lote56.sql) passo
 A primeira formulação local do check 2 procurava incorretamente `internal_actor.institution_id`; a função final usa o parâmetro `institution_id` junto de `not internal_actor.is_internal`, como definido pelo lote 50. A definição materializada foi inspecionada, a asserção foi corrigida sem alterar o banco e a execução registrada passou 20/20.
 
 Com isso, o espelho está comprovado para o preflight do lote 56. O ledger de uma linha continua explicitamente não autoritativo; aplicação, backup e ledger do lote 56 permanecem sob posse exclusiva do C0.
+
+## Driver suportado e reprodução
+
+A investigação dos scripts existentes e do Dart MCP está em [runtime-driver-reproduction.md](./runtime-driver-reproduction.md). O build release estático não expõe DTD/VM Service; `dtd.listDtdUris` não encontrou app conectado. `qa_drive.dart` depende de CDP, enquanto `qa_login.dart` e `flutter_driver_command` dependem de app debug/VM Service. Também ficou registrado o bloqueio automático `blocked by policy` recebido antes de qualquer Chrome por shell, distinguindo-o de aprovação humana.
+
+Há um procedimento preciso para a próxima sessão tentar `flutter run -d web-server` na mesma porta e reutilizar a mesma aba, somente após o C0 liberar a troca do servidor. Não foi executado nem promovido a solução nesta sessão.
+
+## Suítes focais adicionais de G5
+
+- `superadmin_assessments_internal_v2_test.sql` do commit `53b9c6d29`: **52/52**, native/wrapper 0 e rollback. Terminal: [pgtap-assessments-53b9c6d29.log](./pgtap-assessments-53b9c6d29.log).
+- preview de cleanup `086a654c6`: falhou antes da consulta porque `CREATE TABLE AS` é proibido pela própria transação read-only; native 3 e nenhum DML persistente. G5 foi notificado e corrigiu o script, sem edição por G0. Terminal: [cleanup-manifest-preview-086a654c6.log](./cleanup-manifest-preview-086a654c6.log).
+- preview corrigido `c9662b0ff`: native/wrapper 0, uma linha `ROLLBACK`, nove categorias com contagem zero, sem e-mails/IDs/segredos no output e sem mudança persistente. Terminal: [cleanup-manifest-preview-c9662b0ff.log](./cleanup-manifest-preview-c9662b0ff.log). Nenhuma limpeza foi executada.
+- `superadmin_internal_invites_v2_test.sql` do commit `76aed97cb`: primeira execução **34 ok / 1 not ok**, native 0, wrapper 1 e rollback. A fixture expirada (casos 18–20) passou; apenas o caso 8 ainda exigia `requires_aal2`, incompatível com MFA adiado e contraditório com o caso 27 da mesma suíte. Terminal: [pgtap-invites-expired-76aed97cb.log](./pgtap-invites-expired-76aed97cb.log).
+- G5 corrigiu somente essa expectativa em `95b501322`; rerun focal: **35/35**, native/wrapper 0 e rollback. Terminal: [pgtap-invites-expired-95b501322.log](./pgtap-invites-expired-95b501322.log). Nenhuma migration ou fixture persistente foi criada.

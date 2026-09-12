@@ -1,12 +1,12 @@
 {
-  "revision": 3,
+  "revision": 4,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:14:00-03:00",
+  "updatedAt": "2026-09-12T11:25:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -45,7 +45,10 @@
       "build web QA release concluido e servidor ativo em 127.0.0.1:3014 PID 16248",
       "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais",
       "gate SQL adicional do C0: suites ACL compartilhadas 22/22, 46/46, 4/4 e 16/16, todas com rollback e exit nativo 0",
-      "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados"
+      "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados",
+      "mecanismos QA existentes classificados: release atual sem DTD/VM Service; qa_drive exige CDP; qa_login e Dart MCP exigem app debug conectado",
+      "assessment focal G5 52/52 com rollback; preview cleanup corrigido c9662b0ff read-only com rollback e zero contagens",
+      "fixture de convite expirado: RED historico 34/35 classificado, corrigido pelo autor G5 e rerun 95b501322 em 35/35 com rollback"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -61,12 +64,17 @@
       ,"internal_actor_scope_root_v1_hotfix_test.sql: 4/4, exit 0"
       ,"internal_actor_institution_access_by_role_v1_test.sql: 16/16, exit 0"
       ,"preflight-lote56.sql: 20/20, native exit 0, wrapper exit 0"
+      ,"superadmin_assessments_internal_v2_test.sql em 53b9c6d29: 52/52, native/wrapper exit 0"
+      ,"cleanup preview c9662b0ff: native/wrapper exit 0, rollback, nove contagens zero"
+      ,"superadmin_internal_invites_v2_test.sql em 76aed97cb: 34 ok, 1 not ok, native 0, wrapper 1, rollback"
+      ,"superadmin_internal_invites_v2_test.sql corrigido em 95b501322: 35/35, native/wrapper exit 0, rollback"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
       "diagnosis": "setValue, paste e typeText nao alteram o controller dos campos Flutter; submit continua em Informe seu e-mail e nenhuma requisicao Auth foi emitida",
       "reportedToC0": true,
-      "safeContinuation": "reutilizar servidor 3014 e aba entregue quando houver entrada Flutter funcional ou CDP nominalmente autorizado"
+      "toolBoundary": "exec_command ao iniciar Chrome CDP foi rejeitado automaticamente com blocked by policy; release estatico nao tem DTD/VM Service",
+      "safeContinuation": "apos posse C0, substituir temporariamente o servidor por flutter run -d web-server na mesma porta, reutilizar a aba e tentar Dart MCP somente se DTD listar o app"
     },
     "nextGate": "C0 liberar executor capaz de preencher o formulario Flutter no Chrome entregue; sem criar segundo navegador"
   },
@@ -99,6 +107,11 @@
       "revision": 3,
       "at": "2026-09-12T11:14:00-03:00",
       "summary": "Gate adicional C0 concluido: quatro suites ACL em ordem somam 88/88 com rollback; preflight lote 56 20/20 prova definicoes finais, ACL, pg_cron e sweep no espelho; ledger de uma linha permanece nao autoritativo."
+    },
+    {
+      "revision": 4,
+      "at": "2026-09-12T11:25:00-03:00",
+      "summary": "Limite de driver documentado com reproducao; assessment 52/52 e preview cleanup read-only verdes; convites passou 35/35 apos G5 corrigir a unica expectativa MFA historica."
     }
   ]
 }
