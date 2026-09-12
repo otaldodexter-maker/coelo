@@ -4,42 +4,37 @@
 begin;
 set local transaction read only;
 
-create temporary table cleanup_auth_users on commit drop as
-select id, email
-from auth.users
-where email = any(array[
-  'qa-r06-estrutura@coelo.me',
-  'qa-r06-acessos@coelo.me',
-  'qa-r06-formularios@coelo.me',
-  'qa-r06-principal@coelo.me',
-  'qa-r06-realm@coelo.me',
-  'qa-r06-publicacoes@coelo.me',
-  'qa-r06-operacoes@coelo.me'
-]::text[]);
-
-create temporary table cleanup_internal_identities on commit drop as
-select distinct link.internal_identity_id
-from app_private.superadmin_internal_auth_links link
-join cleanup_auth_users target on target.id = link.auth_user_id;
-
-create temporary table cleanup_actor_people on commit drop as
-select distinct actor.person_id
-from app_private.superadmin_internal_actor_people actor
-join cleanup_internal_identities target
-  on target.internal_identity_id = actor.internal_identity_id;
-
-create temporary table cleanup_institutions on commit drop as
-select id, slug
-from public.institutions
-where id = '9f040000-0000-4000-8000-000000000010'
-   or slug = any(array[
-     'qa-r04-chat',
-     'qa-r04-cuidado-sintetico',
-     'qa-r04-escola'
-   ]::text[]);
-
-select category, relation_name, row_count, future_action
-from (
+with cleanup_auth_users as (
+  select id, email
+  from auth.users
+  where email = any(array[
+    'qa-r06-estrutura@coelo.me',
+    'qa-r06-acessos@coelo.me',
+    'qa-r06-formularios@coelo.me',
+    'qa-r06-principal@coelo.me',
+    'qa-r06-realm@coelo.me',
+    'qa-r06-publicacoes@coelo.me',
+    'qa-r06-operacoes@coelo.me'
+  ]::text[])
+), cleanup_internal_identities as (
+  select distinct link.internal_identity_id
+  from app_private.superadmin_internal_auth_links link
+  join cleanup_auth_users target on target.id = link.auth_user_id
+), cleanup_actor_people as (
+  select distinct actor.person_id
+  from app_private.superadmin_internal_actor_people actor
+  join cleanup_internal_identities target
+    on target.internal_identity_id = actor.internal_identity_id
+), cleanup_institutions as (
+  select id, slug
+  from public.institutions
+  where id = '9f040000-0000-4000-8000-000000000010'
+     or slug = any(array[
+       'qa-r04-chat',
+       'qa-r04-cuidado-sintetico',
+       'qa-r04-escola'
+     ]::text[])
+), inventory as (
   select 10 as sort_order, 'auth'::text as category,
     'auth.users'::text as relation_name, count(*)::bigint as row_count,
     'ban/delete only through Auth Admin after sessions are revoked'::text as future_action
@@ -87,7 +82,9 @@ from (
   where log.actor_internal_identity_id in (
     select internal_identity_id from cleanup_internal_identities
   )
-) inventory
+)
+select category, relation_name, row_count, future_action
+from inventory
 order by sort_order;
 
 rollback;

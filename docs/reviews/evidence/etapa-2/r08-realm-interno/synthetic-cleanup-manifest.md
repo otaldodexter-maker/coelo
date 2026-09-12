@@ -8,9 +8,9 @@ generated_at: "2026-09-12T11:10:17-03:00"
 # Manifesto de limpeza futura
 
 `packages/coelo_database/scripts/stage2-realm-chat-cleanup-manifest.sql` é uma
-consulta de inventário, não um limpador. Ela abre transação read-only, usa uma
-allowlist exata dos sete e-mails QA R06 e das três instituições QA R04 e termina
-em rollback.
+consulta de inventário, não um limpador. Ela abre transação read-only, usa CTEs
+e uma allowlist exata dos sete e-mails QA R06 e das três instituições QA R04,
+e termina em rollback.
 
 O resultado planejado separa Auth, identidades/perfis/memberships internos,
 pontes people-based, conversas, metadados de anexos e auditoria retida. Ele
@@ -26,3 +26,8 @@ O script não lê senha, não imprime token/chave R2, não contém DML persisten
 não cobre sintéticos das outras frentes. A versão executável central depende da
 allowlist final do C0 e só pode existir após o encerramento formal da Etapa 2.
 Nada foi executado por G5.
+
+Primeira validação G0 do commit `086a654c6`: falhou antes de qualquer consulta
+ou mudança porque `CREATE TEMP TABLE AS` não é permitido em transação
+read-only (exit 3). A versão seguinte substitui as quatro temporárias por CTEs;
+o rerun focal no espelho permanece necessário. Essa falha não executou cleanup.
