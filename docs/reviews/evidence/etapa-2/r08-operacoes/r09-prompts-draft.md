@@ -38,10 +38,6 @@ generated_at: 2026-09-12T14:23:00-03:00
 
 "Antes de retomar, reconcilie o fechamento R08 e reutilize as provas API 16/16/preflight sem delta. Para os seis R de Circular, pare até o Owner informar por arquivo: path/componente (legado, produtivo ou ambos), recorte shell/superfície e geometria do rodapé; não regrave R antes disso. Após a decisão, faça somente delta/rebaseline seletivo, preservando A+, ordem intercalada e teto 10.000. O gate independente é circulars.attach UI no runtime 3014 com fixture nova autorizada/retida; shell.load/read_at só complementa se houver evento e não cria action_id. Não reabra P50, 10k×4k ou provas R06/R08 sem delta, nem faça cleanup do manifesto antes de encerramento/ACK C0."
 
-## G1 + G4 — avaliações
-
-"Reveja o runner idempotente contra o SHA integrado. Faça prova local/fake de 401, resume e alvo exato antes de mutação. Não execute criação de configuração, período ou diário remoto sem ACK nominal do C0 e recibo de rollback/estado."
-
 ## G7 — operações
 
 "Retome apenas account.sessions, support, catalog, plans.assign, help_center e estados informativos de audit/imports. Preserve a indisponibilidade honesta de importação/exportação geral e não trabalhe em senha. Para sessões, só identidades sintéticas próprias; não afetar sessões alheias."
