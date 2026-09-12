@@ -1,6 +1,6 @@
 {
-  "revision": 37,
-  "updated_at": "2026-09-11T21:22-03:00",
+  "revision": 38,
+  "updated_at": "2026-09-11T21:25-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,7 +10,7 @@
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:22 (T0+2h = 21:36). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:46.",
+  "status": "FINALIZADO 21:25 (T0+2h = 21:36). Revisao de 10 minutos em revisao_final_T0_2h (completa). Respondo a pedidos do coordenador ate 21:46 e nao retomo depois.",
   "T0_assumido": "CORRIGIDO pelo coordenacao.json rev 56: T0 = 19:36; T0+2h = 21:36; T0+2h10 = 21:46",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -36,7 +36,9 @@
     "principal_now_publication": "95/95 goldens regravados",
     "principal_moments_publication": "88/88 goldens regravados (legenda 0/220 conforme referencia)",
     "principal_shared/principal_publication_frame_test": "verde (rodape em card sem blur)",
-    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)"
+    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)",
+    "analyze_final": "flutter analyze lib test: No issues found (21:22, 41463a08d)",
+    "regressao_final": "composition_root_sanitization + superadmin_auth_scope + meal_plans: 157/157; principal_happens_composition_gaps + principal_real_route + principal_shared: 27/27; principal_for_you 97/97; principal_happens 91/91; principal_profile 137/137"
   },
   "lotes": [
     {
@@ -195,8 +197,8 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:22-03:00",
-    "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema; worktree limpa; sem stash; sem WIP",
+    "quando": "2026-09-11T21:25-03:00",
+    "sha_publicado": "41463a08d em origin/work/etapa2-r06-principal-chat-sistema (+ este commit da rev 38); worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
       "meal-plans.list: FE verified (07)",
@@ -235,7 +237,7 @@
         "gate": "agendador ausente"
       }
     ],
-    "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (15; apply-tracker-delta OK e validate-trackers PASS na worktree; rastreadores revertidos)",
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (16; formato do aplicador; ensaiado na worktree, rastreadores revertidos)",
     "pacotes_prontos": "candidatos/principal-chat-sistema/20260911130400 (P48) e 20260911130500 (scopeRules de Cardapios)",
     "duvidas_ao_owner": [],
     "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d na instituicao d0c40000-0000-4000-8000-000000000001; asset 708456ae preparado sem upload; nenhum objeto no R2",
