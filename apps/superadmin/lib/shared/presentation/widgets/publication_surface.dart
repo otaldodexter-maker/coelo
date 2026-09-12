@@ -322,11 +322,17 @@ final class PublicationChip extends StatelessWidget {
               children: [
                 Icon(icon, size: CoeloSize.iconSm, color: foreground),
                 const SizedBox(width: CoeloSpacing.space1),
-                Text(
-                  label,
-                  style: Theme.of(context).textTheme.labelLarge?.copyWith(
-                    color: foreground,
-                    fontWeight: FontWeight.w600,
+                // Flexible: em larguras estreitas (ou fonte de teste larga) o
+                // rotulo encurta em vez de transbordar o chip.
+                Flexible(
+                  child: Text(
+                    label,
+                    maxLines: 1,
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.labelLarge?.copyWith(
+                      color: foreground,
+                      fontWeight: FontWeight.w600,
+                    ),
                   ),
                 ),
               ],

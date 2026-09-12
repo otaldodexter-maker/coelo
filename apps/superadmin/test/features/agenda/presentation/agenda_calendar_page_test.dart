@@ -118,10 +118,13 @@ void main() {
     await tester.tap(find.byKey(const Key('agenda-today')));
     await tester.pumpAndSettle();
     expect(find.text('agosto de 2026'), findsOneWidget);
-    // Toggle Calendário/Lista divide a largura em duas metades iguais.
+    // V-8 (Owner, 11/09): no web o par Calendário/Lista volta ao R (dois botões
+    // de 88 px à direita da toolbar); o 50/50 centralizado fica só no mobile.
     final calendar = tester.getSize(find.byKey(const Key('agenda-view-calendar')));
     final list = tester.getSize(find.byKey(const Key('agenda-view-list')));
-    expect(calendar.width, closeTo(list.width, 1));
+    expect(calendar.width, greaterThanOrEqualTo(88));
+    expect(list.width, greaterThanOrEqualTo(88));
+    expect(calendar.width + list.width, lessThan(400));
     expect(tester.takeException(), isNull);
   });
 }
