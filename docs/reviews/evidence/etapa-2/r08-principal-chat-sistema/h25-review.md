@@ -43,3 +43,19 @@ Composição Formulários incluída no mesmo SHA: um teste em1440/375 confere
 presença da alça, androidTapTargetGuideline e labeledTapTargetGuideline;1PASS
 atribuído a G3. Total do pacote21IDs únicos (20tabela+1composto), analyze0.
 O skip histórico de contraste permanece; nenhum rerun ou aceite visual G4.
+
+## Complemento após integração C0
+
+O ciclo integrado C0 encontrou quatro falhas de golden em Atividades e
+Instituições: a reserva48 encurtava a pintura do texto em36px. G4 inspecionou
+master/testImage e confirmou Unidades/Representantes legais abreviados pela
+nova geometria, sem regravar imagens.
+
+FixG3 f0e148a70 revisado: sort mantém hitbox disjunto até width-48 e pinta seu
+estado de foco abaixo; conteúdo passa para Positioned.fill/IgnorePointer na
+largura original, com ExcludeSemantics quando o sort já fornece rótulo. Resize
+continua último alvo48. Isso preserva a pintura aprovada e os limites de toque.
+G3 publicou RED1 da largura de pintura→GREEN21tabela+16nosdoisarquivosgolden,
+37PASS/0FAIL/analyze0, sem PNG modificado. Esses resultados substituem a fatia
+anterior correspondente; não somar reruns nem declarar AA global. Nenhum runner
+G4; C0 fará a verificação integrada após receber o slot13h55.
