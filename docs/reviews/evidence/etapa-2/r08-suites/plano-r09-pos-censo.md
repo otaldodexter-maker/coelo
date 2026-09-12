@@ -25,3 +25,7 @@ O censo completo permanece separado do ciclo210. O comando planejado é `flutter
 ## Dados preservados
 
 R08 G8 mantém o resultado ciclo180 `411/4/1`, done `false/97850`, exit `1`, quatro erros e zero órfãos; a matriz textual mantém `293 observedEvents`, `281 uniqueDisplayKeys` e `12 displayKeyCollisions`. Não misturar essas contagens com accessibility210 ou com o futuro censo R09.
+
+## Proveniência corrigida do ciclo210
+
+O `git log` first-parent do C0 fixa a base da execução em `ff1be194f2ac00a48aac5abbac7dd838019eb8da` (merge G3 às 14:06:22; execução às 14:10). O commit `1eccbc591` não foi HEAD da execução C0 e não é usado como base do resultado.
