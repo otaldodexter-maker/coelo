@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 86,
+ "revision": 87,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T13:12:00-03:00",
+ "updatedAt": "2026-09-12T13:18:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -15,8 +15,8 @@
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
   "feito": "groups.location foi corrigido e provado por C0; os 45 PNGs A foram comparados, regravados e verificados 20/20 pelos três testes proprietários em concurrency1.",
-  "pendente": "Chrome/rota real para Avaliações e groups.location; primeiro gate permanece activities.assessment com fixture sintética autorizada.",
-  "sha": "581b27f95 + 45 PNGs A locais, aguardando commit"
+  "pendente": "Chrome/rota real para Avaliações e groups.location; roteiro API normal de activities.assessment foi preparado para ACK, usando apenas IDs de action_id existentes e a fixture sintética autorizada.",
+  "sha": "5b79c1150 + roteiro API local, aguardando commit"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
