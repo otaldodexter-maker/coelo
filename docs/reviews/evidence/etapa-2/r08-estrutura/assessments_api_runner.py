@@ -135,6 +135,9 @@ def main() -> int:
                     raise RuntimeError("activation_reload_invalid")
                 if not isinstance(period, dict):
                     raise RuntimeError("open_period_missing")
+                visible = [item for item in periods if item.get("id") == period.get("id") and item.get("institution_id") == assignment["institution_id"] and item.get("unit_id") == assignment["unit_id"] and item.get("status") == "open"]
+                if len(visible) != 1:
+                    raise RuntimeError("context_period_projection_invalid")
                 gradebook = {"request_id": plan["gradebook_request_id"], "gradebook_id": None, "expected_version": 0, "payload": {"activity_group_link_id": assignment["activity_group_link_id"], "period_id": period["id"], "configuration_id": configuration["id"], "students": []}, "reason": None}
                 manifest["executor"]["gradebook"] = gradebook
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
