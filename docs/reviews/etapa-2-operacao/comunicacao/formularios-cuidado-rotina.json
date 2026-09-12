@@ -1,18 +1,18 @@
 {
-  "revision": 74,
+  "revision": 75,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:44:43.594Z",
+  "updatedAt": "2026-09-12T16:48:06.791Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "d4c71277d + H25 desta revisão",
+  "head": "54c892ebc + delta memória desta revisão",
   "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "H25 posse nominal C0: faixa48 sem sobreposição, min=max semhandle, narrow sorted adaptativo.21PASS0FAIL/analyze0; residual sort32/42 emSuporte comunicado semAAglobal. Flutter liberado.",
+  "currentGate": "Memória anônimo/Foto/H25: delta concreto11-memory-delta.md pronto para C0 aplicar primeirofonte depoisprojeção.64artigos válidos;12PASS0FAIL1SKIP ferramenta. H25reviewG4 d5aa7e253 aprovado focal, residualSuporte explícito.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -2456,5 +2456,16 @@
       "Histórico: mídia foi entregue no pacote7ba5077f9; lote57 aplicado C0",
       "attendance e location-answer sem recertificação real"
     ]
+  },
+  "memoryGate": {
+    "status": "delta proposto ao escritor central",
+    "evidencia": "11-memory-delta.md",
+    "artigosValidos": 64,
+    "tests": {
+      "passed": 12,
+      "failed": 0,
+      "skipped": 1
+    },
+    "noNewAdr": true
   }
 }
