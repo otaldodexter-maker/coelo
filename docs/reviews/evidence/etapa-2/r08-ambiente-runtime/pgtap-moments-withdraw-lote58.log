@@ -1,0 +1,23 @@
+R08 G0 / baseline local somente
+fonte RED: e9a3dc18d
+baseline inicial: H09 + Forms 140546..140549; sem 140550
+credenciais: nenhuma
+
+[RED moments_withdraw_permission_behavior_v1_test.sql]
+command: git show e9a3dc18d:<test> | docker exec -i supabase_db_coelo_baseline psql -X -v ON_ERROR_STOP=1 -U postgres -d postgres
+plan: 1..11
+resultado: 4 ok (2,3,10,11) / 7 not ok (1,4,5,6,7,8,9)
+falha 1: institution_admin template possui zero grants ativos de moments.publications.remove
+falhas 4-5: admin autor recebe hint antigo true, mas withdraw e replay morrem 42501 moments_permission_denied
+falha 6: publicação não retirada permanece no feed (1 em vez de 0)
+falha 7: auditoria de retirada bem-sucedida ausente
+falha 8: outro admin recebe moments_permission_denied antes de publication_not_authorized
+falha 9: reader autor recebe can_withdraw=true embora o comando negue
+passes 2,10,11: reader continua sem grant; comando reader e outro escopo negam 42501
+pass 3: registra explicitamente o hint antigo incorreto do admin autor antes do fix
+finish: failed 7 tests of 11
+ROLLBACK
+native exit: 0
+wrapper exit: 1
+apply: NÃO executado; aguardando ACK C0
+produção: intocada

@@ -246,3 +246,9 @@ sha256: 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285
 ```
 
 O servidor foi restaurado em `127.0.0.1:3014`, PID `44404`; `/login` respondeu `200`/1020 bytes e `flutter_bootstrap.js`, `200`/9975 bytes. O baseline `1abbc4f2cd13` continuou healthy na porta 57322. A mesma aba Chrome `829822454` foi recarregada; nenhum segundo navegador foi aberto e o diagnóstico de inserção de texto não foi repetido. Após o reload, a ponte CUA voltou ao botão `Enable accessibility`, o que não promove o gate visual a concluído.
+
+## Lote 58 — RED comportamental de Moments
+
+O C0 concedeu posse exclusiva do baseline apenas para o RED, proibindo o apply até novo ACK. Após G5 publicar a prova ampliada em `e9a3dc18d`, foi executado um único `moments_withdraw_permission_behavior_v1_test.sql`: plano 11, **4 ok / 7 not ok**, `finish` com sete falhas, rollback, native exit `0` e wrapper lógico `1`.
+
+Passaram a ausência de grant no reader, o hint antigo `true` para admin autor e as duas negações de comando para reader/outro escopo. Falharam exatamente os comportamentos-alvo: grant admin ausente; withdraw/replay do autor negados; publicação ainda visível; auditoria success ausente; outro admin barrado pela falta de permissão antes da autoria; reader autor ainda recebe hint incorreto. Recibo: [pgtap-moments-withdraw-lote58.log](./pgtap-moments-withdraw-lote58.log). Nenhuma migration foi aplicada e produção permaneceu intocada.

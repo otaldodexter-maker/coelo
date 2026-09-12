@@ -1,12 +1,12 @@
 {
-  "revision": 18,
+  "revision": 19,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:38:33-03:00",
+  "updatedAt": "2026-09-12T12:42:54-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -65,7 +65,8 @@
       "runner corrigido por ordem C0 para preservar formulário/asset sintéticos até fechamento e encerrar apenas a própria sessão Auth local",
       "preflight remoto read-only: form-media v16 ativa e quatro arquivos de runtime implantados byte a byte iguais à fonte local inspecionada",
       "smoke API autorizado executado uma vez: identified draft + question-image prepare/PUT/finalize/replay/resolve/reload PASS; fixture preservada e logout local 204",
-      "origin/dev 2441725d5 incorporado por merge; build QA integrado 615aaa6f verde e servidor 3014 restaurado no PID 44404"
+      "origin/dev 2441725d5 incorporado por merge; build QA integrado 615aaa6f verde e servidor 3014 restaurado no PID 44404",
+      "lote 58 RED comportamental e9a3dc18d executado uma vez no baseline: 4 ok/7 not ok de 11, rollback, native 0 e wrapper 1; sem apply"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -103,6 +104,7 @@
       ,"smoke API produção: auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload PASS, logout 204, exit 0, sem DELETE"
       ,"flutter build web release integrado: exit 0 em 84.3 s; main.dart.js 8399330 bytes SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285"
       ,"GET /login 200/1020 bytes e flutter_bootstrap.js 200/9975 bytes após restart PID 44404"
+      ,"moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -119,14 +121,14 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "preservar os IDs sintéticos para o fechamento formal e continuar gate independente atribuído pelo C0; gate visual segue bloqueado pela ferramenta de texto"
+    "nextGate": "aguardar ACK nominal C0 para apply local 140550; depois GREEN comportamental 11, focal estrutural 4 e regressões Moments 23/30, parando na primeira falha"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
     "server": "127.0.0.1:3014 PID 44404, ativo; /login HTTP 200; build integrado SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "slot devolvido ao C0; espelho inclui H09 e Forms 140546..140549; focais9+7 e regressões33+17+159 verdes; producao/backup/ledger permanecem com C0",
+    "sql": "baseline em posse exclusiva G0 para lote58; RED11 concluído e rollback; 140550 ainda não aplicado por ordem C0; produção intocada",
     "apiSmoke": "PASS exit 0; form f88005ab-af5e-4aa2-8cf7-f35de4ded376, version 4adae123-1aad-4e1f-a2f4-b59d661bc3d4, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605 preservados; logout local 204; sem DELETE"
   },
   "git": {
@@ -227,6 +229,11 @@
       "revision": 18,
       "at": "2026-09-12T12:38:33-03:00",
       "summary": "Base origin/dev 2441725d5 mergeada; build QA integrado verde, servidor 3014 no PID 44404 e mesma aba Chrome recarregada."
+    },
+    {
+      "revision": 19,
+      "at": "2026-09-12T12:42:54-03:00",
+      "summary": "RED comportamental lote58 executado uma vez: 4 ok/7 not ok de 11, rollback e sem apply; aguardando ACK C0."
     }
   ]
 }
