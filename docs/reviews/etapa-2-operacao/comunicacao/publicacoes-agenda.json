@@ -70,7 +70,7 @@
   "packages": [],
   "compositionKeys": [],
   "tests": {
-    "passed": "circulars + agenda: 359 testes verdes (test/features/circulars test/features/agenda); flutter build web --release -t test_driver/qa_main.dart concluido em 689,8s",
+    "passed": "circulars + agenda: 359 testes verdes (test/features/circulars test/features/agenda); flutter analyze apps/superadmin sem issues; flutter build web --release -t test_driver/qa_main.dart concluido em 689,8s",
     "failed": 0,
     "blocked": 0,
     "skipped": 0,
@@ -2523,6 +2523,13 @@
         "pending": ["prova da rota real bloqueada no CDP; circulars.attach mantém dependência do deploy circular-media", "capturas e deltas aplicáveis aguardam tela real"],
         "commitsPublished": ["3685839dd"],
         "firstGate": "Page.getFrameTree expirou na aba do Chrome; servidor respondeu index.html e flutter_bootstrap.js, sem promoção de E2E"
+      },
+      {
+        "at": "2026-09-12T00:06:00-03:00",
+        "done": ["flutter analyze apps/superadmin: No issues found (131,6s)"],
+        "pending": ["rota real continua retida no CDP; nenhum action_id novo recebeu certificação", "circulars.attach continua aguardando deploy circular-media"],
+        "commitsPublished": ["d27a7c5a6"],
+        "firstGate": "as abas R07 aparecem no Chrome, mas não solicitam main.dart.js; reanexação expirou antes da árvore AX"
       }
     ]
   }
