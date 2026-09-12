@@ -20,11 +20,15 @@ void main() {
   final mainSource = File('lib/main.dart').readAsStringSync();
   final routerSource = File('lib/app/router/superadmin_router.dart').readAsStringSync();
 
-  test('composition roots never import or construct the unavailable Supabase adapter', () {
-    for (final source in [authScope, app, mainSource, routerSource]) {
+  test('only the configured auth scope constructs the Supabase identity adapter', () {
+    // 170700 (people.create) esta em producao desde o lote 54: o auth scope
+    // configurado compoe o adapter real atras de enablePersonHandles; app,
+    // main e router continuam recebendo-o por injecao com o padrao indisponivel.
+    for (final source in [app, mainSource, routerSource]) {
       expect(source, isNot(contains('supabase_person_identity_repository.dart')));
       expect(source, isNot(contains('SupabasePersonIdentityRepository(')));
     }
+    expect(authScope, contains('SupabasePersonIdentityRepository(client)'));
     expect(
       authScope,
       contains('personIdentityRepository: const UnavailablePersonIdentityRepository()'),

@@ -100,7 +100,8 @@ void main() {
     SuperadminRoutes.profileModels,
     '/students/synthetic-context/manage',
     SuperadminRoutes.support,
-    SuperadminRoutes.profile,
+    // SuperadminRoutes.profile deixou de ser 503: a Conta abre a ProfilePage
+    // com o proprio estado de indisponibilidade (P43/P53 da R06, lotes 50/53).
   ]) {
     testWidgets('unavailable $path labels and performs home navigation', (tester) async {
       final session = SuperadminSession()..signInForTesting();
