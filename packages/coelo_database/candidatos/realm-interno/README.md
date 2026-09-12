@@ -140,3 +140,8 @@ GREEN: não deve ser agregado nem aplicado sem revisão e prova próprias. Em
 produção, qualquer promoção deve preservar a ordem 140546 -> 140547 -> 140548
 -> 140549 definida pelo C0; nenhum item intermediário deve ser usado como
 estado final. A ordem acima é explícita; G5 não aplica SQL.
+
+
+### Recibo vigente C0 — 12/09, 12:25 BRT
+
+O historico acima foi superado: os itens 2–5 foram aplicados juntos no lote57, em ordem, com ledger na mesma transacao. Os quatro arquivos estao em migrations/. Focais9+7 e regressoes33+17+159 verdes no espelho; backups privados e pos-provas em docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md. Nenhuma promocao E2E por este recibo.

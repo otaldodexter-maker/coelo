@@ -1,12 +1,12 @@
 {
-  "revision": 79,
+  "revision": 80,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:16:32.661833-03:00",
+  "updatedAt": "2026-09-12T12:29:11.322263-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2654,10 +2654,10 @@
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G6",
-      "inicio": "2026-09-12T12:16:32.661833-03:00",
-      "expira": "2026-09-12T12:21:00-03:00",
-      "estado": "H14 e A+375/200 focal; G3 liberou376unicos PASS"
+      "dono": "livre",
+      "inicio": "2026-09-12T12:29:11.322263-03:00",
+      "expira": "2026-09-12T12:29:11.322263-03:00",
+      "estado": "C0 integrado422PASS; G3H12/H26liberou273PASS; proximoC0Principal"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
@@ -2667,26 +2667,14 @@
       "G1 45A nominais"
     ],
     "sqlEspelho": {
-      "dono": "G0",
-      "estado": "140548+549 GREEN9+7; fixture684eea023 para regressao33/17/159; producao retida"
+      "dono": "livre",
+      "estado": "140546..549 baselineverde; lote57producaoC0aplicado"
     }
   },
   "filaSqlR08": {
-    "proximoLote": 57,
-    "estado": "140546..549 revisados; aguardam regressao final e backup/preflight C0",
-    "candidatos": [
-      {
-        "sha": "3f494eb51",
-        "migrations": [
-          "20260912140546",
-          "20260912140547",
-          "20260912140548",
-          "20260912140549"
-        ],
-        "fixture": "684eea023",
-        "estado": "baseline aplicado; sem producao57"
-      }
-    ]
+    "proximoLote": 58,
+    "estado": "57aplicado; nenhuma nova migration reservada",
+    "candidatos": []
   },
   "receiptsR08": [
     {
@@ -3053,5 +3041,33 @@
     "deltas": "2 evidenciasBE sem promocao +chat.attach FE local-green",
     "runtime": "G0 esgotou textoCUA; E2E bloqueado; sem contornoCDP",
     "pendente": "G6 pacote verde entra proximo ciclo com teste integrado; SQL57 retido"
+  },
+  "lote57R08": {
+    "aplicado": true,
+    "versoes": [
+      "20260912140546",
+      "20260912140547",
+      "20260912140548",
+      "20260912140549"
+    ],
+    "exit": 0,
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md",
+    "ledgerConfirmado": true
+  },
+  "ciclo90R08": {
+    "baseTestada": "8809dafcd",
+    "passou": 422,
+    "falhou": 0,
+    "ignorado": 0,
+    "arquivos": 11,
+    "analise": "No issues found; exit0",
+    "tempoSegundos": 63.811
+  },
+  "incidenteRetencaoR08": {
+    "frente": "G6",
+    "circular": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+    "asset": "429f1bc4-f579-4179-9193-0e6304aa3e0f",
+    "estado": "deleteexecutado contra retenção; semnovamutação; auditoriaresidualpendenteC0",
+    "sha": "84f5c1970"
   }
 }
