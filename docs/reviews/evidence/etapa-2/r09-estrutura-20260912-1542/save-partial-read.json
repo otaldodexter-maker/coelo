@@ -1,0 +1,22 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:38:35.611938+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "directoryReadable": true
+  },
+  "loginHttp": 200,
+  "directoryHttp": 200,
+  "unitGroupCount": 3,
+  "matches": [
+    {
+      "id": "1043c165-7f24-44fe-a868-5bfc6fb0b50f",
+      "institution_id": "190dd028-3125-452d-8502-612bfa1029de",
+      "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+      "status": "draft",
+      "management_version": null
+    }
+  ],
+  "logoutLocalHttp": 204
+}

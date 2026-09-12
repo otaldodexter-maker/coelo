@@ -1,6 +1,6 @@
 {
   "grupo": "estrutura",
-  "revision": 109,
+  "revision": 110,
   "round": "E2-R09-20260912-1542",
   "adocaoR09": {
     "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -44,7 +44,7 @@
   "entregaR09": {
     "codigo": "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
     "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-    "pedidoC0": "Diagnostico BE focal necessario: superadmin_group_directory com p_search Turma R09 Estrutura 1634 retorna400/code22025 invalid escape string, hint Escape string must be empty or one character. Impede verificar eventual draft criado pela primeira etapa Local. G1 tentara leitor sem search e filtragem local. Ver auditoria group.location.create ~19:35-19:37UTC (UI sessao OC herdada) e pessoa ec2a15a2-76bc-4e71-8419-94413d0c5c98; nao aplicar SQL G1. Fixture lookup retorna edit_global. Provas em save-diagnostic-errors.json e save-rejected.png.",
+    "pedidoC0": "Atualizacao critica: leitor sem busca passou200 e localizou draft1043c165-7f24-44fe-a868-5bfc6fb0b50f, Turma R09 Estrutura 1634, instituicao190dd028/unidadef5284f2f. Local create persistiu; composicao falhou. Preservar draft e rascunho. Verificar status pessoa ec2a15a2 (R04 originalmente draft) e auditoria group_save. Nao recriar turma nem flexibilizar identidade ativa. G1 vai reler detalhe/Local por API normal, sem repetir escrita.",
     "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
     "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
     "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
