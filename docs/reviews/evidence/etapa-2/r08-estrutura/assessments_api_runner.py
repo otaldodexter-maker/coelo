@@ -201,11 +201,13 @@ def main() -> int:
                     or loaded.get("status") != "draft" or not isinstance(reread.get("students"), list)
                     or loaded.get("management_version") != book.get("version")):
                     raise RuntimeError("gradebook_reload_invalid")
+                manifest["executor"]["state"] = "verified"
         finally:
             manifest["logout_http_status"] = call(base, headers, "/auth/v1/logout?scope=local", {})[0]
     if not args.execute:
         manifest["executor"] = {"enabled": False, "ack_required": "G5_C0", "sequence": ["save_configuration", "activate_configuration", "save_gradebook"], "payload_keys": {"save_configuration": ["activity_id", "institution_id", "unit_id", "periods", "instruments"], "save_gradebook": ["activity_group_link_id", "period_id", "configuration_id", "students"]}}
-    elif isinstance(manifest.get("executor"), dict):
+    elif (status == 200 and isinstance(manifest.get("executor"), dict)
+          and manifest["executor"].get("state") == "verified"):
         manifest["executor"]["state"] = "complete"
     output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"mode": manifest["mode"], "mutations": manifest["mutations"], "manifest": str(output)}))
