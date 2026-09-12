@@ -5,6 +5,10 @@ data: 2026-09-12
 rodada: E2-R08-20260912
 ---
 
+## Pré-checagem de arquivos
+
+Em 12/09, a listagem local confirmou 31 PNGs em `test/goldens/activities`, os 12 nomes de detalhe de Unidade/Turma em `test/app/router/goldens` e os 2 nomes de paginação de Instituições no teste proprietário. Esta checagem só confirma a base dos arquivos; comparação e eventual regravação continuam dependentes da posse Flutter.
+
 # PNGs A nominais — Estrutura
 
 P53=A autoriza a regravação, não dispensa comparação. A base contém os 45 alvos: 31 de Atividades, 12 de detalhe de Unidade/Turma e 2 de diretório de Instituições. Nenhum arquivo foi regravado nesta preparação, pois a fila global de `flutter test` ainda pertence a G3.
