@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Retido pela plataforma comum de midia: faltam o catalog_kind de chat no catalogo privado e o contrato de emissao de ticket de upload e leitura pelo gateway, escritos por publicacoes-midia. superadmin_chat_send_message_v2 e text-only e o repositorio recusa comando com anexo em vez de enviar parcialmente e fingir sucesso. Placeholder honesto preservado; nenhum gateway ou bucket criado por tela. R08: consumidor real prepare/PUT isolado sem redirect/finalize/read por attachment_id integrado; autoria G4 fee190810. Base C0 238 testes PASS em11arquivos incluindo Chat e publicadores; UI/reload/negativa reais continuam pendentes. Nenhum assetId inferido.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/flutter-integrado-ciclo60.jsonl"
+  }
+]
