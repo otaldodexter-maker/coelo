@@ -2105,7 +2105,7 @@
    "grupo": "formularios-cuidado-rotina",
    "revisaoRecebida": 60,
    "ack": true,
-   "integradoEm": "pendente de commit deste ciclo",
+   "integradoEm": "6bc0052887180d8e55446ec77b7a5926f2a71265",
    "testes": "flutter analyze limpo; familia attendance + forms: 140 PASS; touch-target: 3 PASS",
    "deltas": "retido: attendance.entry/complete nao existe no inventario canônico; apply-tracker-delta rejeitou o action_id; nenhum estado rebaixado ou promovido",
    "proximoGate": "prova na rota real e reconciliacao do identificador com attendance.mark/attendance.finish"
@@ -2114,7 +2114,7 @@
    "grupo": "publicacoes-agenda",
    "revisaoRecebida": 52,
    "ack": true,
-   "integradoEm": "pendente de commit deste ciclo",
+   "integradoEm": "4340462a5fe67fd48907f4ae73ec25a3f6c5b784",
    "testes": "grupo reporta circulars/agenda 359/359; sem codigo novo nesta revisao",
    "deltas": "[]; nenhum estado promovido sem rota real",
    "proximoGate": "CDP para rota real; circulars.attach depende de circular-media"
@@ -2123,7 +2123,7 @@
    "grupo": "acessos-pessoas",
    "revisaoRecebida": 148,
    "ack": true,
-   "integradoEm": "pendente de commit deste ciclo",
+   "integradoEm": "6bf1b576c2ed10456c924ddbfe7de30fdbf170d7",
    "testes": "handoff reporta build/análise e lookup/rota local; falhas de contrato permanecem registradas",
    "deltas": "people.create aplicado como local-green; people.handle é ID desconhecido; access-profiles.edit já verified e demais entradas sem promoção nova",
    "proximoGate": "prova de rota real com qa-r06-acessos; resolver people.handle no inventário antes de novo delta"
