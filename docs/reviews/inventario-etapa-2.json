@@ -1541,12 +1541,12 @@
       "screen": "Criar Pessoa",
       "scope": "mvp",
       "done": "Formulários com lifecycle protegido; detalhe READ com SupabasePersonDetailReader já composto. Isso não certifica writes/vínculos. C00 integrou teclado de status33fccac6, preservação de busca2b1664ae, remoção de dados inventados no formulário0ecc5955 e erro de identidade incompletaff5000ef. R02 consolidacao16:37: D04 formulario preserva nome legal opcional e recibo de save confirmado sem repetir escrita apos falha do callback;8192088a/9a816efb. Writes produtivos continuam sob contrato/rota retidos.",
-      "fe": "R04: /people/new abre o PersonIdentityLookupGate ('Verificar identidade'), mas o resolvedor de identidade composto e UnavailablePersonIdentityRepository: nao existe implementacao Supabase nem RPC de resolucao de identidade. Gate: contrato de resolucao de identidade (BE) + adapter.",
+      "fe": "Build release e testes locais de lookup/rota confirmam a composição do resolvedor 170700; E2E permanece pendente por renderer/driver sem resposta.",
       "be": "R04: superadmin_people_create_draft criou a pessoa sintetica 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, status draft) com o payload do cliente e a sessao qa-r03 (ponte de ator + MFA fora do MVP). O gate que resta e do cliente (resolvedor de identidade antes do formulario).",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST)",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST); docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "fail-closed",
+      "frontendStatus": "local-green",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 61,
@@ -8541,7 +8541,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T01:55:30.572Z",
+  "updatedAt": "2026-09-12T03:10:39.986Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

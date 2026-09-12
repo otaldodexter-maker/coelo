@@ -2164,5 +2164,116 @@
         "backend_por_escrever": "Nenhum."
       }
     }
+  },
+  "R07_PRIMEIRA_REVISAO": {
+    "revision": 147,
+    "round": "E2-R07-20260911",
+    "recorded_at": "2026-09-11T23:20:10-03:00",
+    "group": "acessos-pessoas",
+    "model": "Codex Luna medio",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-acessos-pessoas",
+    "branch": "work/etapa2-r07-acessos-pessoas",
+    "base": "origin/dev após git fetch; worktree criada",
+    "T0": "2026-09-11T23:20:10-03:00",
+    "corte_execucao": "2026-09-12T03:20:10-03:00",
+    "revisao_10_minutos": "2026-09-12T03:20:10-03:00 a 03:30:10-03:00",
+    "status": "aberta; ciclo R07 iniciado",
+    "recorte": {
+      "app": "apps/superadmin",
+      "menu": "Coelo (Principal)",
+      "familias": ["people", "access_profiles", "access_models", "internal_users", "invites"],
+      "ordem": [
+        "people.create",
+        "people.edit",
+        "people.handle",
+        "students.handle",
+        "internal-users.handle",
+        "access-profiles.edit/assign/delete",
+        "access-models.edit/duplicate",
+        "internal-users.edit/suspend",
+        "internal-users.create se houver deploy",
+        "invites.resend se houver fixture expirada simples"
+      ],
+      "fora_do_escopo": ["dev", "inventario", "rastreadores", "deploy sem autorização nominal do coordenador"]
+    },
+    "pendencias_abertura": [
+      {
+        "action_ids": ["internal-users.create"],
+        "estado": "FE/BE local-green; E2E retido",
+        "primeiro_gate": "coordenacao.json.edgeFunctionsR06 registra que internal-user-create ainda não foi deployada; somente o coordenador executa o deploy"
+      },
+      {
+        "action_ids": ["invites.resend"],
+        "estado": "backend pronto; prova de rota pendente",
+        "primeiro_gate": "não há convite expirado sintético disponível; criar pacote simples só se for seguro e houver pgTAP verde"
+      },
+      {
+        "action_ids": ["internal-users.suspend"],
+        "estado": "prova pendente",
+        "primeiro_gate": "usar interno sobressalente; não suspender os usuários qa das frentes"
+      }
+    ],
+    "feito": [],
+    "pendente": "iniciar prova pela rota real com qa-r06-acessos; preservar gates independentes",
+    "commits_publicados": [],
+    "deltas": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/deltas-r07.json será criado somente com evidência publicada",
+    "segredos": "credencial será lida apenas do arquivo de backup e não será registrada",
+    "checkpoint_23h52": {
+      "recorded_at": "2026-09-11T23:52:07-03:00",
+      "feito": [
+        "build web release de test_driver/qa_main.dart concluído em build/web",
+        "flutter analyze em people/access_profiles/platform_users/invites/students: sem issues",
+        "testes locais direcionados de PersonHandleSection, lookup, modelos/perfis, convites e students iniciados/passados sem falha reportada"
+      ],
+      "verificacao": {
+        "frontend": "local-green para a fatia local exercitada; sem promoção a verified",
+        "backend": "contratos 170500/170600/170700/170800 já constam aplicados no fechamento R06; sem novo pacote",
+        "integrated": "não executado: Chrome/driver real não respondeu após o build; nenhuma escrita produtiva foi contada"
+      },
+      "pendente_com_primeiro_gate": [
+        "people.create/people.edit e handles: abrir sessão qa-r06-acessos na rota real e provar persistência + reload",
+        "access-profiles.edit/assign/delete e access-models.edit/duplicate: mesma prova de rota real/reload",
+        "internal-users.edit/suspend: prova depende de renderer estável e interno sobressalente para suspend",
+        "internal-users.create: Edge Function ainda sem deploy em coordenacao.json.edgeFunctionsR06",
+        "invites.resend: sem fixture expirada segura; não criei migration sem contrato/pgTAP"
+      ],
+      "commits_publicados": ["inicia revisao R07 de acessos e pessoas"],
+      "bloqueio_de_ferramenta": "qa_drive conectado ao CDP, mas Runtime.evaluate/driver expirou após 60s; sessão Flutter Chrome encerrada sem login"
+    }
+  },
+  "R07_CHECKPOINT_2358": {
+    "revision": 148,
+    "round": "E2-R07-20260911",
+    "recorded_at": "2026-09-11T23:58:00-03:00",
+    "status": "aberta; checkpoint de testes locais; rota real ainda retida",
+    "feito": [
+      "flutter analyze das cinco familias do recorte: No issues found",
+      "build web release com test_driver/qa_main.dart concluido",
+      "suite direcionada inicial de handles, lookup, perfis/modelos, convites e students sem falha reportada",
+      "suite ampliada apps/superadmin executou 749 testes; 744 aprovados e 5 falharam",
+      "diagnostico reproduziu people_creation_requirements_red_test e dois testes do contrato de identity lookup"
+    ],
+    "pendente": [
+      "provas pela rota real de people.create/edit, @ de Pessoas/Alunos/Usuarios internos, perfis/modelos e internal-users.edit/suspend",
+      "internal-users.create permanece bloqueado: coordenacao.json ainda nao registra deploy de internal-user-create",
+      "invites.resend permanece sem fixture expirada segura e pgTAP",
+      "suite ampliada tem falhas de contratos de teste: people_creation_requirements_red_test ainda espera bloqueio em people.create apos 170700; person_identity_fail_closed_routes_test espera ausencia de adapter que a composicao atual importa; nao promovi nenhuma falha a defeito de producao sem rota real"
+    ],
+    "evidencias": {
+      "ambiente": "local; worktree R07; nenhum login nem write produtivo",
+      "chrome": "qa_drive Runtime.evaluate/window.$flutterDriver expirou em 60s; sessao encerrada",
+      "testes": "flutter test ... 749 executados, 744 aprovados, 5 falhas; duas falhas reproduzidas no subconjunto de rotas de Pessoas/identity",
+      "backend": "contratos 170500, 170600, 170700 e 170800 ja constavam aplicados no handoff R06; sem novo apply/deploy"
+    },
+    "commits_publicados": [
+      "4626a1d56 inicia revisao R07 de acessos e pessoas",
+      "1e6ac1077 registra checkpoint local da R07 de acessos"
+    ],
+    "bloqueios": [
+      "renderer/driver do Chrome nao respondeu",
+      "Edge Function internal-user-create sem deploy registrado",
+      "sem fixture expirada de invites.resend",
+      "teste de contrato de bloqueio de people.create desalinhado com a capacidade produtiva 170700"
+    ]
   }
 }

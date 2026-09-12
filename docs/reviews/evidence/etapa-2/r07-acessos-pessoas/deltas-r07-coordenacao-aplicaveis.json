@@ -1,0 +1,15 @@
+[
+  {
+    "action_id": "people.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Build release e testes locais de lookup/rota confirmam a composição do resolvedor 170700; E2E permanece pendente por renderer/driver sem resposta.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md",
+      "revision": 147,
+      "environment": "local worktree; produção não exercitada",
+      "recordedAt": "2026-09-12T00:52:00-03:00"
+    }
+  }
+]

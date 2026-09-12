@@ -80,3 +80,15 @@ para os handoffs que chegarem durante a R07.
   rebaixado.
 - Dono: frente FCR para a prova real; coordenação para reconciliar o
   identificador antes de novo delta.
+
+### Reconciliação de delta R07 — Acessos e Pessoas
+
+- `people.create` foi aplicado em `frontendStatus=local-green` com handoff
+  local; `people.handle` não existe no inventário e foi retido.
+- `access-profiles.edit` já era `verified`, então a prova local não o
+  rebaixou; `people.edit`, `access-models.edit` e `internal-users.edit` não
+  receberam promoção nova.
+- O delta original permanece preservado em
+  `docs/reviews/evidence/etapa-2/r07-acessos-pessoas/deltas-r07.json`; a
+  entrada aplicável foi normalizada em
+  `deltas-r07-coordenacao-aplicaveis.json`.
