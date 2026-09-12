@@ -2073,6 +2073,22 @@
    "testes": "nenhuma alteracao de codigo publicada nesta revisao; delta ensaiado vazio",
    "deltas": "deltas-r07-estrutura.json: estado inicial, []",
    "proximoGate": "activities.assessment pela rota real; depois groups.members/location"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 47,
+   "ack": true,
+   "integradoEm": "ddb4222ac201cf61b7eb500d0e3ac38d7dcaa80a",
+   "testes": "superadmin_error_routes_test.dart + principal_moments_publication: 102 PASS",
+   "deltas": "[]; nenhum estado promovido sem rota real",
+   "proximoGate": "fluxo de midia/CDP"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 50,
+   "ack": true,
+   "integradoEm": null,
+   "observacao": "checkpoint de auditoria pos-lotes 49-55; sem delta de estado, sem candidato SQL e sem codigo novo publicado; manter como handoff observado até próximo checkpoint"
   }
  ],
  "dockerR07": {
