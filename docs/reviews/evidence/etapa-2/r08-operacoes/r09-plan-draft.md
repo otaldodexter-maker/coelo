@@ -10,11 +10,11 @@ Este arquivo prepara a próxima rodada; não autoriza iniciá-la, aplicar SQL, a
 
 ## Ordem proposta
 
-1. C0 materializa `origin/dev`, registra T0, posses, slots e a base integrada. Reconciliar commits/WIP/stashes antes de qualquer remoção de worktree.
+1. C0 materializa `origin/dev`, registra T0, posses, slots e a base integrada. Cada frente reconcilia o estado final R08, commits/WIP/stashes e provas válidas antes de selecionar somente o primeiro gate ainda aberto; não rerodar candidato/teste já fechado sem delta.
 2. Retomar H28 Pessoas pelo primeiro gate ainda aberto: candidato/fixture já produzidos na R08 devem passar no espelho descartável, com pgTAP estrutural e funcional; C0 é a única autora de fila/deploy. Só depois da serialização confirmada habilitar o adapter Flutter e rodar o teste focal.
 3. Retomar avaliações pelo runner corrigido: validar primeiro a recuperação idempotente/falha 401 e alvo exato em ambiente permitido; não criar diário/configuração remota enquanto os recibos não forem revisados.
-4. Retomar os E2E reais pendentes usando um único Chrome e a disponibilidade medida de G0. Prioridade: sessões próprias/reload, Suporte por estado e destinos de Catálogo, sem transformar indisponibilidades honestas em implementações de importação/exportação.
-5. Executar censo Flutter somente numa base SHA fixa, uma vez por rodada, com parser que preserve os IDs; mudanças posteriores recebem teste focal e não alteram retrospectivamente o censo.
+4. Retomar os E2E reais pendentes explicitando os `action_id` ainda abertos, usando um único Chrome e a disponibilidade medida de G0. Reutilizar prova válida sem delta. Prioridade: sessões próprias/reload, Suporte por estado e destinos de Catálogo, sem transformar indisponibilidades honestas em implementações de importação/exportação.
+5. Executar o censo Flutter na primeira janela útil em que a base SHA fixa, memória e slot único permitirem, não apenas no fechamento; usar parser que preserve os IDs. Mudanças posteriores recebem teste focal e não alteram retrospectivamente o censo.
 6. Atualizar rastreadores/inventário exclusivamente via C0 após provas commitadas. Revisões visuais continuam distintas de FE/BE/E2E.
 
 ## Frentes reaproveitáveis
@@ -31,6 +31,6 @@ Este arquivo prepara a próxima rodada; não autoriza iniciá-la, aplicar SQL, a
 | G7 operações | sessões, Suporte, Catálogo, plans.assign e Help Center |
 | G8 suites | censo único, parser e reconciliação de evidências |
 
-## Critério de parada R09
+## Regra de continuidade R09
 
-Parar cada ação no primeiro gate não satisfeito e registrar: SHA/base, ambiente, prova executada, aprovado/falho/bloqueado e próximo gate. Não declarar ação E2E sem rota normal, persistência real, negação cross-tenant e reload quando aplicável.
+Ao encontrar gate bloqueado, registrar SHA/base, ambiente, prova executada, aprovado/falho/bloqueado e próximo gate; em seguida continuar pelo próximo trabalho independente autorizado. Não declarar ação E2E sem rota normal, persistência real, negação cross-tenant e reload quando aplicável. T0 e janela da R09 serão definidos pelo Owner.
