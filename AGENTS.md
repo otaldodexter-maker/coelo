@@ -243,6 +243,16 @@ mock ou teste isolado nunca deve ser declarada concluida ponta a ponta.
 
 ## Memoria De Conhecimento
 
+### Etapa 3 do MVP — somente planejamento reservado
+
+Seguir `decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md`.
+A Etapa 3 ainda entrega o MVP, mas não começa agora nem automaticamente após
+uma rodada da Etapa 2. Na abertura explícita, revisar todo o escopo previsto
+para entregar o app e propor ordem/aceites antes de implementar. Inclui acesso
+temporal/afastamento por vínculo profissional (sem bloquear outros contextos),
+popups opcionais, Fazer tour, home IA funcional e páginas em Admin/Principal
+nos respectivos subdomínios, sem publicação nas lojas nesse momento.
+
 ### Encerramento R07 e aprovações (ADR 0034, Decisão 20)
 
 Aprovação visual usa arquivo, referência R, render A, diferença, decisão

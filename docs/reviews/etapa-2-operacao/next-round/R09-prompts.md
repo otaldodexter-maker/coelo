@@ -98,6 +98,11 @@ acompanha o código; não conta como avanço funcional.
 
 ## Contrato comum obrigatório
 
+R09 permanece exclusivamente na Etapa 2. A ADR 0035 registra a futura Etapa 3
+do MVP (acesso temporal/afastamento contextual, tour, home IA, Admin/Principal),
+sem autorizar implementação, SQL ou deploy agora. Não puxar esse escopo para
+esta rodada; a abertura futura exige proposta após revisar todas as entregas.
+
 Este pacote prepara a rodada; a execução só começa com envio do prompt de
 abertura pelo Owner e T0/janela registrados por C0. Não prolongar R08.
 

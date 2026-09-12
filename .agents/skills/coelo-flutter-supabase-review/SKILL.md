@@ -9,6 +9,24 @@ metadata:
 
 # Coelo Front-end + Back-end
 
+## Entrega atual e limite da Etapa 3
+
+Na Etapa 2, conduzir fatias de CRUD pela composição produtiva até persistência,
+reload e autorização real, preservando a régua MVP de RLS e hierarquia. Intervir
+quando trabalho não fechar gates, em vez de repetir relatórios; o protocolo R09
+em `docs/reviews/etapa-2-operacao/next-round/R09-prompts.md` define Astra médio,
+rodízio e consumo. Contar FE/BE/E2E separadamente, sem promover estado por meta.
+
+A [ADR 0035](../../../decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md)
+reserva a Etapa 3 como parte do MVP; não a inicia. Quando autorizada a abertura,
+revisar todas as entregas previstas e propor escopo/ordem/aceites antes de código.
+Incluir acesso temporal/plataformas e afastamento por vínculo de funcionário,
+popups opcionais, Fazer tour, home IA funcional e páginas em admin.coelo.me e
+app.coelo.me, sem publicação nas lojas nesse momento. A prova futura deve mostrar
+negação no contexto profissional A e acesso preservado como responsável e no
+contexto B; restrição não pode virar bloqueio global da pessoa. Não acrescentar
+esses itens aos denominadores/execução da Etapa 2 por antecipação.
+
 > O caminho `coelo-flutter-supabase-review/` foi mantido para compatibilidade.
 > O nome e o contrato canônicos são **Coelo Front-end + Back-end**
 > (`coelo-frontend-backend`).

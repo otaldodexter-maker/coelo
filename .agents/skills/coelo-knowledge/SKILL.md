@@ -9,6 +9,18 @@ metadata:
 
 # Memória de conhecimento Coelo
 
+## Escopo futuro não é comportamento disponível
+
+A Etapa 3 ainda faz parte do MVP, mas seu registro não inicia implementação.
+Consultar `decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md` e a
+projeção `docs/knowledge/team/etapa3-mvp-planned-scope.md`. Quando o Owner abrir
+a etapa, revisar todas as fontes/pendências previstas para entregar o app e
+propor escopo antes de executar. Manter requisitos planejados na audiência
+team com limite explícito; não oferecê-los como ajuda de recurso disponível
+na home IA. Restrição temporal/afastamento pertence ao vínculo profissional,
+preservando os demais contextos da identidade global. Mudanças de estado só
+ocorrem quando implementação e provas sustentarem a nova afirmação.
+
 ## Overview
 
 Tratar `docs/knowledge` como projeção pesquisável, nunca como fonte canônica ou depósito de conversas.

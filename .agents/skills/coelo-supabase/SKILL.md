@@ -9,6 +9,24 @@ metadata:
 
 # Coelo Back-end
 
+## Entrega atual e limite da Etapa 3
+
+Na Etapa 2, fechar o backend das ações por contratos produtivos, persistência,
+RLS e hierarquia, aplicando o autorizado pelo integrador; não esperar UI para
+um aceite próprio BE já comprovado. Seguir protocolo vigente: R09 usa Astra
+médio e reserva de consumo em `docs/reviews/etapa-2-operacao/next-round/R09-prompts.md`.
+Não repetir auditoria ampla ou provas verdes sem mudança pertinente.
+
+A [ADR 0035](../../../decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md)
+registra a Etapa 3, ainda MVP, somente para proposta futura. Não criar SQL ou
+deploy agora. Na abertura explícita, revisar o conjunto previsto para entregar
+o app antes de propor: acesso de funcionário por plataforma/dias/horas/vigência
+e afastamento, sempre no vínculo profissional da instituição/unidade que o
+configurou. Não bloquear Auth global, @, papel familiar ou outros vínculos.
+Impor as regras no servidor; popup é opcional e não controla permissão. Fuso,
+precedência e identificação de plataforma exigem definição na futura spec.
+Tour, home IA e Admin/Principal também pertencem à proposta, sem lojas agora.
+
 > O caminho desta skill permanece `coelo-supabase/` por compatibilidade com
 > documentos e prompts antigos. O nome e o contrato canônicos são **Coelo
 > Back-end** (`coelo-backend`).
