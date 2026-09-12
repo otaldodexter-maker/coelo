@@ -31,3 +31,7 @@ O roteiro usa somente a fixture sintética já preparada por G5/C0, pela sessão
 - C0 concede Chrome/runtime e confirma qual contexto sintético está ativo no ambiente;
 - a UI retorna a combinação da fixture em `superadmin_assessment_context_options`;
 - nenhuma outra frente mantém Chrome aberto.
+
+## Preflight de contrato concluído
+
+Leitura de `SupabaseAssessmentRepository` confirmou que a rota normal usa: `superadmin_assessment_context_options`, `superadmin_assessment_configuration_read(target_activity, target_unit)`, `superadmin_assessment_save_configuration(request_id, configuration_id, expected_version, payload)` e `superadmin_assessment_activate_configuration(request_id, configuration_id, expected_version)`. Para o diário, usa `superadmin_assessment_save_gradebook`, `superadmin_assessment_gradebook_read` e `superadmin_assessment_closing_queue`; as transições seguem RPCs de comando com `request_id`, id e `expected_version`. O cliente recarrega configuração e diário após as mutações, portanto a prova pelo fluxo normal já observa o estado autoritativo sem chamar tabelas diretamente.
