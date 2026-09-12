@@ -19,5 +19,24 @@ finish: failed 7 tests of 11
 ROLLBACK
 native exit: 0
 wrapper exit: 1
-apply: NÃO executado; aguardando ACK C0
-produção: intocada
+apply naquele checkpoint: NÃO executado; aguardando ACK C0
+
+[APPLY LOCAL AUTORIZADO]
+fonte: b74e8c9f1:20260912140550_moments_withdraw_permission_v1.sql
+sha256: 9356F5E52C8D14B0C628540ECEEE35231C6BAF0044EFEE04AC71C6F23D69A996
+resultado: BEGIN; SET; SET; DO; INSERT 0 1; CREATE FUNCTION; REVOKE; GRANT; COMMIT
+native exit: 0
+wrapper exit: 0
+
+[GREEN]
+moments_withdraw_permission_v1_test.sql: 4/4; finish limpo; ROLLBACK; native/wrapper 0/0
+moments_withdraw_permission_behavior_v1_test.sql: 11/11; finish limpo; ROLLBACK; native/wrapper 0/0
+moments_feed_and_withdrawal_test.sql: 23/23; finish limpo; ROLLBACK; native/wrapper 0/0
+moments_publication_mvp_test.sql: 30/30; finish limpo; ROLLBACK; native/wrapper 0/0
+total único: 68/68
+
+[NOTA DE HARNESS]
+Uma tentativa de usar redirecionamento `<` para iniciar a regressão 23 foi recusada pelo parser PowerShell antes de abrir psql; native exit 1, nenhum SQL executado. O comando foi corrigido para pipeline e a suíte foi executada uma única vez, 23/23.
+
+slot SQL: devolvido ao C0
+produção e ledger: intocados
