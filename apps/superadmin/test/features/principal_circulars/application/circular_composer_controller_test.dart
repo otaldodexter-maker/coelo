@@ -285,7 +285,7 @@ void main() {
     controller.updateTextBlock(after.id, 'Depois');
     controller.addMediaAsset('asset-1');
     final media = controller.draft.blocks.whereType<CircularMediaBlock>().single;
-    controller.moveBlock(media.id, 1);
+    controller.moveBlock(media.id, -1);
 
     expect(controller.draft.blocks.map((block) => block.id), [
       'before',
