@@ -1,12 +1,12 @@
 {
  "grupo": "estrutura",
- "revision": 103,
+ "revision": 104,
  "round": "E2-R09-20260912-1542",
  "adocaoR09": {
   "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
   "hostId": "local",
   "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
-  "coordinatorRevision": 98,
+  "coordinatorRevision": 99,
   "instructionReceived": true,
   "status": "vaga inicial adotada; unico C0 reconhecido; sem posse ou timers anteriores",
   "T0": "2026-09-12T15:42:18-03:00",
@@ -36,7 +36,7 @@
    "condicao": "C0 atribuiu vaga G1; flutterTest sem dono e instrucao reservar antes de executar; medicao local sem flutter test concorrente",
    "memoriaLivreKiB": 2710096,
    "comando": "flutter test test/features/groups/presentation/group_form_page_test.dart --plain-name 'does not accept an unresolved group member' --concurrency=1",
-   "estado": "LIBERADO: RED/2GREEN/30PASS regressao finalizados, exit0 no GREEN; analyze final exit0; nenhum flutter test G1 ativo",
+   "estado": "G1 retoma o slot ainda atribuido por C0 r99 para novo defeito material de reload: parser espera profile aninhado mas payload vigente fornece profile_id/code/name planos. RED/GREEN somente supabase_group_directory_repository_test; nao repetir formulario verde.",
    "limite": "somente caso novo; nenhuma suite/golden duplicada; Chrome permanece G0"
   },
   "memoria": "no-op na adocao; nenhuma regra de produto alterada"

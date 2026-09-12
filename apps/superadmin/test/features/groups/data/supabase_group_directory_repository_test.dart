@@ -8,6 +8,38 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('reload preserves the flat role payload used by group management', () async {
+    final client = _client(
+      (request) async => _json({
+        ..._groupRow(),
+        'effective_access': [
+          {
+            'person_id': '44444444-4444-4444-8444-444444444444',
+            'display_name': 'Pessoa sintética',
+            'origin': 'group_local',
+            'inherited': false,
+            'profile_id': '55555555-5555-4555-8555-555555555555',
+            'profile_code': 'guardian',
+            'profile_name': 'Responsável',
+            'capabilities': ['groups.read'],
+            'restrictions': [],
+          },
+        ],
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final record = await SupabaseGroupDirectoryRepository(
+      client,
+    ).findById('33333333-3333-4333-8333-333333333333');
+    final access = record!.effectiveAccess.single;
+    expect(access.profileCode, 'guardian');
+    expect(access.profileId, '55555555-5555-4555-8555-555555555555');
+    expect(access.profileName, 'Responsável');
+    expect(access.inherited, isFalse);
+    expect(access.capabilities, ['groups.read']);
+  });
+
   test('uses the protected group directory RPC with real search and pagination', () async {
     Request? captured;
     final client = _client((request) async {
