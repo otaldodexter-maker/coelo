@@ -95,26 +95,30 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
   Future<void> setStatuses(Set<PersonStatus> value) => _replace(_copy(statuses: value));
   Future<void> setInstitutions(Set<String> value) {
     final units = _query.unitIds.where((id) {
-      final option = _filterOptions.units.where((item) => item.id == id).firstOrNull;
-      return option != null && value.contains(option.institutionId);
+      return _filterOptions.units.any(
+        (item) => item.id == id && value.contains(item.institutionId),
+      );
     }).toSet();
     final groups = _query.groupIds.where((id) {
-      final option = _filterOptions.groups.where((item) => item.id == id).firstOrNull;
-      if (option == null || !value.contains(option.institutionId)) {
-        return false;
-      }
-      return _query.unitIds.isEmpty || units.contains(option.unitId);
+      return _filterOptions.groups.any(
+        (item) =>
+            item.id == id &&
+            value.contains(item.institutionId) &&
+            (_query.unitIds.isEmpty || units.contains(item.unitId)),
+      );
     }).toSet();
     final roles = _query.contextualRoles.where((id) {
       final option = _filterOptions.roles.where((item) => item.id == id).firstOrNull;
       return option != null && value.contains(option.institutionId);
     }).toSet();
     final activities = _query.activityIds.where((id) {
-      final option = _filterOptions.activities.where((item) => item.id == id).firstOrNull;
-      return option != null &&
-          value.contains(option.institutionId) &&
-          units.contains(option.unitId) &&
-          groups.contains(option.groupId);
+      return _filterOptions.activities.any(
+        (item) =>
+            item.id == id &&
+            value.contains(item.institutionId) &&
+            units.contains(item.unitId) &&
+            groups.contains(item.groupId),
+      );
     }).toSet();
     return _replace(
       _copy(
@@ -129,15 +133,17 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
 
   Future<void> setUnits(Set<String> value) {
     final groups = _query.groupIds.where((id) {
-      final option = _filterOptions.groups.where((item) => item.id == id).firstOrNull;
-      if (option == null) return false;
-      final matchesInstitution =
-          _query.institutionIds.isEmpty || _query.institutionIds.contains(option.institutionId);
-      return matchesInstitution && value.contains(option.unitId);
+      return _filterOptions.groups.any(
+        (item) =>
+            item.id == id &&
+            (_query.institutionIds.isEmpty || _query.institutionIds.contains(item.institutionId)) &&
+            value.contains(item.unitId),
+      );
     }).toSet();
     final activities = _query.activityIds.where((id) {
-      final option = _filterOptions.activities.where((item) => item.id == id).firstOrNull;
-      return option != null && value.contains(option.unitId) && groups.contains(option.groupId);
+      return _filterOptions.activities.any(
+        (item) => item.id == id && value.contains(item.unitId) && groups.contains(item.groupId),
+      );
     }).toSet();
     return _replace(_copy(unitIds: value, groupIds: groups, activityIds: activities));
   }
@@ -152,14 +158,17 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
   Future<void> setActivities(Set<String> value) => _replace(_copy(activityIds: value));
   Future<void> setStates(Set<String> value) {
     final municipalities = _query.municipalityIds.where((id) {
-      final option = _filterOptions.municipalities.where((item) => item.id == id).firstOrNull;
-      return option != null && value.contains(option.stateCode);
+      return _filterOptions.municipalities.any(
+        (item) => item.id == id && value.contains(item.stateCode),
+      );
     }).toSet();
     final neighborhoods = _query.neighborhoodIds.where((id) {
-      final option = _filterOptions.neighborhoods.where((item) => item.id == id).firstOrNull;
-      return option != null &&
-          value.contains(option.stateCode) &&
-          municipalities.contains(option.municipalityId);
+      return _filterOptions.neighborhoods.any(
+        (item) =>
+            item.id == id &&
+            value.contains(item.stateCode) &&
+            municipalities.contains(item.municipalityId),
+      );
     }).toSet();
     return _replace(
       _copy(stateCodes: value, municipalityIds: municipalities, neighborhoodIds: neighborhoods),
