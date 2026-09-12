@@ -35,6 +35,7 @@ void main() {
       await tester.pumpWidget(page(_detail, (_) => pending.future));
       await tester.tap(find.byKey(const Key('circular-option-question-1-yes')));
       await tester.tap(find.byKey(const Key('circular-option-question-2-uniform')));
+      await tester.ensureVisible(find.byKey(const Key('circular-submit-responses')));
       await tester.tap(find.byKey(const Key('circular-submit-responses')));
       await tester.pump();
       await tester.pumpWidget(
@@ -85,6 +86,7 @@ void main() {
       expect(find.text('Renovação de matrícula'), findsOneWidget);
       await tester.tap(find.byKey(const Key('circular-option-question-1-yes')));
       await tester.tap(find.byKey(const Key('circular-option-question-2-uniform')));
+      await tester.ensureVisible(find.byKey(const Key('circular-submit-responses')));
       await tester.tap(find.byKey(const Key('circular-submit-responses')));
       await tester.pumpAndSettle();
 
@@ -109,6 +111,24 @@ void main() {
     await tester.pump();
 
     expect(find.text('Responda às perguntas obrigatórias.'), findsOneWidget);
+  });
+
+  testWidgets('reader preserves the published interleaved block order', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: PrincipalCircularReader(detail: _detail, onSubmit: (_) async {}),
+        ),
+      ),
+    );
+
+    double top(String id) => tester.getTopLeft(find.byKey(Key('circular-reader-$id'))).dy;
+    expect(top('text-1'), lessThan(top('media-1')));
+    expect(top('media-1'), lessThan(top('question-1')));
+    expect(top('question-1'), lessThan(top('media-2')));
+    expect(top('media-2'), lessThan(top('question-2')));
   });
 }
 
@@ -137,6 +157,7 @@ final _detail = CircularDetail(
         CircularQuestionOption(id: 'no', label: 'Não'),
       ],
     ),
+    CircularMediaBlock(id: 'media-2', assetIds: ['asset-3']),
     CircularQuestionBlock(
       id: 'question-2',
       prompt: 'Quais itens deseja reservar?',

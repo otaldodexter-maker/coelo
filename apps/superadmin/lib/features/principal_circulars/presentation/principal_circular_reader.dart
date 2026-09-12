@@ -160,7 +160,10 @@ final class _PrincipalCircularReaderState extends State<PrincipalCircularReader>
                       _CircularHeader(detail: widget.detail),
                       const SizedBox(height: CoeloSpacing.space6),
                       for (final block in widget.detail.blocks) ...[
-                        _block(block),
+                        KeyedSubtree(
+                          key: Key('circular-reader-${block.id}'),
+                          child: _block(block),
+                        ),
                         const SizedBox(height: CoeloSpacing.space5),
                       ],
                       if (_questions.isNotEmpty) ...[
