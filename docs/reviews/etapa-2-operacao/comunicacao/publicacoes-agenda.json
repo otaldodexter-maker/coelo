@@ -1,5 +1,5 @@
 {
-  "revision": 66,
+  "revision": 67,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -7,9 +7,9 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
   "head": "3a00e88f2 (smoke API 16/16; inclui A+ dd332b98c e shell.load 702e75873)",
-  "base": "origin/dev incorporado por merge b55141824",
+  "base": "origin/dev 2441725d5 incorporado por merge 21c357685",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T12:28:00-03:00",
+  "updatedAt": "2026-09-12T12:31:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2570,6 +2570,13 @@
       },
       "incident": "retencao ate o fim da Etapa 2 constava do contrato original; C0 avisado; nenhuma restauracao, recriacao ou nova mutacao",
       "status": "api-green-fixture-unavailable"
+    },
+    "principalChatMediaReview": {
+      "commits": ["9bee7eb26", "bb0da7578"],
+      "scope": "MediaSession didUpdateWidget; callbacks/dispose; bytes/preview; fronteira visual Principal",
+      "result": "nenhum defeito concreto; nenhum rerun generico; nenhum codigo alterado",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/principal-chat-media-review.md",
+      "status": "reviewed-no-concrete-defect"
     }
   },
   "r07History": {
