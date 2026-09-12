@@ -1,0 +1,42 @@
+{
+  "at": "2026-09-12T15:26:08.033Z",
+  "ids": {
+    "circularId": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+    "assetId": "429f1bc4-f579-4179-9193-0e6304aa3e0f"
+  },
+  "detail": {
+    "status": 200,
+    "code": "CIRCULAR_NOT_FOUND"
+  },
+  "mediaRead": {
+    "status": 403,
+    "code": null,
+    "ticketReturned": false
+  },
+  "circularCatalog": {
+    "status": 403,
+    "rowCount": null,
+    "rows": []
+  },
+  "assetCatalog": {
+    "status": 403,
+    "rowCount": null,
+    "rows": []
+  },
+  "coordinatorSqlMeasurement": {
+    "at": "2026-09-12T12:34:55-03:00",
+    "circular": {
+      "exists": true,
+      "status": "archived",
+      "deletedAtPresent": true
+    },
+    "asset": {
+      "exists": true,
+      "status": "READY",
+      "bytes": 70,
+      "cleanupAttempted": false
+    },
+    "source": "docs/reviews/evidence/etapa-2/r08-coordenacao/circular-incidente-auditoria.sql"
+  },
+  "note": "read-only post-incident audits; no signed URL or credential recorded; the client audit could not see catalog status, while the coordinator SQL measurement confirmed logical archival and retained READY asset"
+}

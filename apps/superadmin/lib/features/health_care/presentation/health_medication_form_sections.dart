@@ -138,7 +138,9 @@ final class _ResponsibleState extends State<CoeloMedicationResponsibleSelector> 
     final value = available.any((item) => item.id == candidate)
         ? candidate
         : available.firstOrNull?.id;
-    String label(String id) => widget.options.firstWhere((item) => item.id == id).label;
+    String label(String id) =>
+        widget.options.where((item) => item.id == id).firstOrNull?.label ??
+        'Responsável indisponível';
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [

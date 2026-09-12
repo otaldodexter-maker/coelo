@@ -1,0 +1,67 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Check index_test.ts
+Check media_contract_test.ts
+Check question_image_test.ts
+------- pre-test output -------
+(node:44760) [DEP0040] DeprecationWarning: The `punycode` module is deprecated. Please use a userland alternative instead.
+----- pre-test output end -----
+running 31 tests from ./index_test.ts
+internal read bypasses People and Storage and preserves Forms ID ... ok (16ms)
+internal read denies malformed or mismatched grants before redeem or R2 ... ok (3ms)
+internal read denies mismatched catalog descriptors before R2 ... ok (2ms)
+internal read bounds ticket TTL by both receipts and 120 seconds ... ok (664µs)
+internal read rechecks expiry after redeem and asynchronous signing ... ok (379µs)
+internal read sanitizes denial, RPC errors and secret-bearing exceptions ... ok (999µs)
+internal read uses the shared signer with a frozen clock and no network ... ok (6ms)
+internal read signs original only when both receipts authorize original ... ok (385µs)
+internal read rejects invalid provider configuration before constructing R2 ... ok (524µs)
+HTTP rejects invalid commands before creating backend clients ... ok (1ms)
+HTTP keeps preflight and unauthorized origins away from backend ... ok (355µs)
+HTTP sanitizes unexpected backend failures ... ok (434µs)
+HTTP prepare preserves the authorized command and safe upload ticket ... ok (959µs)
+HTTP preserves legacy finalize, download and discard for People actors ... ok (796µs)
+question-image prepare reauthorizes by JWT and signs a short PUT on coelo-media-prod ... ok (1ms)
+question-image passes FORM_MEDIA and SAI codes with the database status ... ok (989µs)
+question-image finalize measures the stored object and commits with service_role ... ok (636µs)
+question-image finalize reconciles an identical retry already ready ... ok (381µs)
+question-image finalize reports a mismatch as 422 and leaves the object to the cleanup queue ... ok (514µs)
+question-image finalize answers NOT_READY when the object was never uploaded ... ok (421µs)
+question-image resolve signs a GET bounded by the database TTL ... ok (766µs)
+question-image refuses to sign a key that is not the canonical one of the asset ... ok (331µs)
+question-image delete is idempotent through the database request id ... ok (237µs)
+worker cleanup requires the forms worker bearer and never a user session ... ok (772µs)
+worker cleanup expires, claims, deletes on R2 and marks each key purged ... ok (665µs)
+answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, sem Storage ... ok (915µs)
+answer R2 finalize confirma pelo legado, mede bytes/sha256/dimensoes e finaliza pelo service_role ... ok (921µs)
+answer R2 finalize replay returns the same Flutter asset envelope without touching R2 ... ok (278µs)
+answer R2 finalize never returns an unconfirmed or mismatched source ... ok (875µs)
+answer R2 download exige legado finalized e espelho ready e assina o GET por 60 s ... ok (286µs)
+sem COELO_FORMS_MEDIA_PROVIDER o legado de respostas continua no Storage ... ok (288µs)
+running 16 tests from ./media_contract_test.ts
+read receipts reject normalized calendars, clocks, offsets and trailing characters ... ok (2ms)
+read grant rejects contradictory success envelopes ... ok (209µs)
+read envelope accepts only the isolated asset and rendition contract ... ok (563µs)
+answers only allowlisted browser preflights ... ok (6ms)
+denies unlisted or malformed browser origins ... ok (286µs)
+media envelope validates every action and preserves anonymous payload ... ok (271µs)
+media envelope rejects forged shape, action, IDs and versions safely ... ok (371µs)
+reads only bounded UTF8 JSON before requesting authorization ... ok (2ms)
+cancels oversized request even with forged Content-Length ... ok (631µs)
+accepts only the approved MIME types and ten megabyte limit ... ok (148µs)
+rejects unknown keys and personally identifying paths ... ok (106µs)
+accepts an opaque anonymous edit secret without exposing extra keys ... ok (175µs)
+computes a stable SHA-256 checksum ... ok (315µs)
+does not verify an asset that the server already finalized ... ok (38µs)
+treats a committed discarded verification result as failure ... ok (79µs)
+detects only the approved image formats from their binary signatures ... ok (79µs)
+running 7 tests from ./question_image_test.ts
+question-image prepare accepts legacy and contract field names ... ok (1ms)
+question-image access keeps only the asset id ... ok (222µs)
+envelope routes question-image by purpose, form ids or contract action names ... ok (677µs)
+rpc envelope passes FORM_MEDIA and SAI codes with the database status ... ok (335µs)
+only the canonical question-image key of the same asset is signed ... ok (516µs)
+image dimensions come from the real headers of the three approved types ... ok (641µs)
+worker bearer requires a configured token and constant-time equality ... ok (167µs)
+
+ok | 54 passed | 0 failed (281ms)
+
