@@ -206,5 +206,44 @@
    "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false) | pgTAP save_v2 46/46; handles 24/24",
    "recordedAt": "2026-09-11T20:40:00-03:00"
   }
+ },
+ {
+  "action_id": "activities.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (21:03-21:06): assistente de Atividades com @ escolhido (\"arroba-r06\", disponibilidade enquanto digita), categoria, Escola R04 Estrutura / Unidade Centro R04 e turma vinculada (P36); Salvar rascunho -> lista; o diretorio em producao devolve handle_stem \"arroba-r06\" para \"Atividade R06 Arroba\" (definition.handle via save_v2, lote 51).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+   "revision": "estrutura.json rev 60",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main (9a729c4f1 nao incluido no build; build 0434548b9+fcdded416) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me | provas: activities-create-handle-disponivel.jpg; activities-create-vinculo-turma-p36.jpg; activities-directory-handles.txt",
+   "recordedAt": "2026-09-11T21:08:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.create",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: superadmin_activity_save_v2 com definition.handle (candidato 20260912180000, lote 51) criou activity_definitions \"Atividade R06 Arroba\" com handle_stem arroba-r06 em producao; pgTAP structure_handles_client_v1 9/10 + regressao no espelho (coordenacao rev 56: 10/10).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+   "revision": "estrutura.json rev 60",
+   "environment": "producao coelo, lote 51 (20:15) | pgTAP no espelho R06",
+   "recordedAt": "2026-09-11T21:08:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: criacao de atividade com @ escolhido ponta a ponta (assistente, save_v2 em producao, diretorio recarregado com o handle_stem).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/activities-directory-handles.txt",
+   "revision": "estrutura.json rev 60",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main (9a729c4f1 nao incluido no build; build 0434548b9+fcdded416) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me",
+   "recordedAt": "2026-09-11T21:08:00-03:00"
+  }
  }
 ]
