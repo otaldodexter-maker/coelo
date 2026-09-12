@@ -1,8 +1,8 @@
 ---
 title: "Handoff R07 — Operações"
-source: "R07-prompts.md; comunicacao/operacoes.json rev 56; execucao local da frente"
-status: "checkpoint-local-green"
-generated_at: "2026-09-11"
+source: "R07-prompts.md; comunicacao/operacoes.json rev 54; execucao local da frente"
+status: "final-local-green"
+generated_at: "2026-09-12"
 timezone: "America/Sao_Paulo"
 ---
 
@@ -44,9 +44,10 @@ hosting; não publicar recurso por inferência.
 
 ## Commits publicados
 
-- `e2d10ce3978d92c572a52f9e1117f2f55e1dbc55` — warning e abertura R07.
-- `15d3390bd` — abertura/primeiro gate registrado.
-- checkpoint posterior — testes locais, estados e bloqueios registrados em
-  `comunicacao/operacoes.json`.
+- `e2d10ce39` — warning e abertura R07.
+- `15d3390bd`, `a1045abf1`, `86f5380a8` — abertura e checkpoints de testes.
+- `1c6bb0665`, `ffaa50af2`, `f19431469`, `53ac6c305` — handoff, build/analyze e revisão final publicados.
 
-Nenhuma credencial, chave ou dado sintético novo foi gravado.
+Nenhuma credencial, chave ou dado sintético novo foi gravado. Não há arquivos
+modificados, untracked ou stash; a worktree pode ser removida após a
+conferência do SHA acima.
