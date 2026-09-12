@@ -1,7 +1,7 @@
 {
-  "revision": 141,
-  "updated_at": "2026-09-12T00:10:13.067147Z",
-  "relogio_local": "Fri Sep 11 2026 21:10:13 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 142,
+  "updated_at": "2026-09-12T00:14:26.337650Z",
+  "relogio_local": "Fri Sep 11 2026 21:14:26 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
@@ -9,7 +9,7 @@
   "status": "finalizado (revisao de 10 minutos respondida abaixo)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "o commit desta rev 141 (publicado em origin/work/etapa2-r06-acessos-pessoas); status limpo; sem WIP",
+  "head": "o commit desta rev 142 (publicado); status limpo; sem WIP",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
     "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
@@ -42,10 +42,10 @@
   "primeiro_gate": "nenhum bloqueio total; o que ficou aberto esta em REVISAO_FINAL_21h36.3_aberto_com_primeiro_gate",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
-    "aplicar em producao, na ordem: 20260911170500 (P46), 20260911170600 (P45), 20260911170700 (people.create), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 141 migrations da ordem real (inclui o lote 49)",
-    "aplicar deltas-r06.json (18 entradas) com apply-tracker-delta.cjs: ensaiado nesta worktree + validate-trackers.cjs PASS (FE 147, BE 132, E2E 114) e revertido",
-    "integrar work/etapa2-r06-acessos-pessoas (5 commits sobre fcdded416): flutter analyze dos arquivos tocados sem avisos; testes: access_profile_system_models_test 4/4, platform_users (1 golden pre-existente P15 platform_user_create_light_375), person_handle_section_test",
-    "aplicar os deltas de skills abaixo (PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06)"
+    "aplicar em producao, na ordem: 20260911170500 (P46), 20260911170600 (P45), 20260911170700 (people.create) e 20260911170800 (internal-users.create, RPCs), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 141 migrations da ordem real (inclui o lote 49)",
+    "aplicar deltas-r06.json (18 entradas): ensaiado + validate PASS (FE 147, BE 132, E2E 114) e revertido",
+    "integrar work/etapa2-r06-acessos-pessoas (7 commits sobre fcdded416)",
+    "aplicar os deltas de skills (PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06)"
   ],
   "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
   "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P (reprovado apos o lote 49); person_handles_v1_test 22/22 P; institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; people_identity_lookup_v1_test 11/11 P; superadmin_internal_users_directory_test 44/45 (teste 7 requires_mfa pre-existente). Rota real: 8 acoes provadas (abaixo).",
@@ -154,6 +154,19 @@
       "Prova E2E de Alunos: transferir exige turma em outra unidade da mesma instituicao; a turma sintetica 1a247741 fica em producao para as proximas rodadas; devolver a crianca a turma original ao fim para nao alterar a fixture das outras frentes.",
       "Convites: o caminho positivo de resend so existe com convite expirado; registrar como gate de fixture, nao como defeito."
     ]
+  },
+  "PACOTE_170800_INTERNAL_USERS_CREATE_21h20": {
+    "id": "AP-INTERNAL-USER-CREATE-170800",
+    "migration": "packages/coelo_database/candidatos/acessos-pessoas/20260911170800_internal_user_create_v1.sql",
+    "estado": "VERDE - PRONTO PARA APLICAR (BE de internal-users.create sai de fail-closed para local-green; done so com a Edge Function implantada e provada)",
+    "pgTAP": "supabase/tests/internal_user_create_v1_test.sql 9/9; superadmin_internal_users_directory_test 44/45 (teste 7 pre-existente); internal_user_handles 12/12; read_minimization 3/3",
+    "contrato": "superadmin_internal_user_create_authorize_v1(p_draft) [authenticated; platform.member.update em escopo de plataforma; valida rascunho (mesmas chaves do update), perfil ativo, owner so plataforma, CPF/e-mail inexistentes, escopos existentes; sem escrita; envelope {ok,data:{actor_internal_identity_id, professional_email, display_name}} ou erro SAI_*] e superadmin_internal_user_create_for_worker_v1(p_request_id, p_actor_internal_identity_id, p_auth_user_id, p_draft) [service_role; reconfere ator com membership interna ativa de plataforma e auth user existente sem vinculo people-based; cria identidade+perfil+vinculo auth+membership(+escopos); ponte 220400/170500 cria a pessoa de servico com @; auditoria em audit_logs; replay pelo auth user devolve a mesma identidade].",
+    "edge_function": "internal-user-create ainda NAO escrita: (1) token do operador -> authorize; (2) service_role auth.admin.createUser({email, email_confirm:true, password aleatoria nunca devolvida}); (3) for_worker; falha no 3 apaga o auth user. Depende de P51 (SMTP) para o usuario definir a senha."
+  },
+  "REVISAO_FINAL_21h36_COMPLEMENTO": {
+    "sha_final": "o commit desta rev 142 publicado em origin/work/etapa2-r06-acessos-pessoas; status limpo; descartavel coelo_acessos_r06 parado; nenhum Chrome ou servidor desta frente em execucao",
+    "acrescimo": "pacote 170800 (RPCs de internal-users.create) verde; internal-users.create BE proposto local-green (a Edge Function e o cliente ficam para a R07)",
+    "nao_retomo": "depois de 21:46 nao retomo por conta propria."
   },
   "historico_r05": {
     "revision": 137,
