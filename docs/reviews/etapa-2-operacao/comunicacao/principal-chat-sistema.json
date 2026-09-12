@@ -1,6 +1,6 @@
 {
-  "revision": 52,
-  "updated_at": "2026-09-12T11:30:53.153034-03:00",
+  "revision": 53,
+  "updated_at": "2026-09-12T11:31:47.565467-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "8d1003e3aabc435f3308922d0db3b4493feadcd6",
-  "status": "EXECUTANDO: cliente chat.attach local-green56PASS/analyze limpo; PNG/UI e demais gates dependem runtime; pacote preparado para C0",
+  "head": "e5e0797c7",
+  "status": "EXECUTANDO: clientechat publicadoe5e0797c7,56PASS/analyze limpo; aguarda integracaoC0 e provasUI",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -384,7 +384,8 @@
     },
     "commits_publicados": [
       "1d09cb3c8",
-      "8d1003e3a"
+      "8d1003e3a",
+      "e5e0797c7"
     ],
     "h09": "G5 candidato76aed97cb cron5min/sweep500 sem apagar midia; pgTAP/aplicacao e medicao cron.job por C0 pendentes",
     "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",

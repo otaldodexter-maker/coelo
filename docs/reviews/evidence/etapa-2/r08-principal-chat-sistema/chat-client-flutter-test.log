@@ -60,4 +60,3 @@ Ambiente: Windows, apps/superadmin, slot C0 G4 2026-09-12 11:28 -03. Exit code: 
 00:18 +54: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_test.dart: same-conversation refresh preserves in-flight send (readonly=false)
 00:18 +55: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_test.dart: same-conversation refresh preserves in-flight send (readonly=true)
 00:18 +56: All tests passed!
-
