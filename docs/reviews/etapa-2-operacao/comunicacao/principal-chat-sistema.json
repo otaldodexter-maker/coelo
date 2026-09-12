@@ -1,6 +1,6 @@
 {
-  "revision": 58,
-  "updated_at": "2026-09-12T12:20:19.301554-03:00",
+  "revision": 59,
+  "updated_at": "2026-09-12T12:22:03.812164-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "fee190810",
-  "status": "EXECUTANDO: Principal anexos local-green58focais/43previos; smokeAPI Acontece PASS aguardando publicacao; UI real pendente",
+  "head": "9bee7eb26",
+  "status": "EXECUTANDO: Principal anexos publicado9bee7eb26; Acontece API23checksPASS; proximoPNG em preparo; UIreal pendente",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -32,7 +32,8 @@
     "chat-client": "56PASS/0FAIL/0SKIP;11novos+45regressoes; pacote2",
     "signed-put": "28PASS/0FAIL/0SKIP;11novos+17existentes;6casosChat sobrepoem pacote2;naosomar",
     "principal-anexos": "101IDs/5arquivos:43PASS previos+58PASS focais finais/0FAIL/0SKIP;4novos;3falhasintermediariasresolvidas. Nao somar reruns nem afirmar execucao unica101sobreultimoSHA. Analyze0.",
-    "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E"
+    "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E",
+    "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados."
   },
   "lotes": [
     {
@@ -331,14 +332,15 @@
       "8d1003e3a",
       "e5e0797c7",
       "547bbd92a",
-      "fee190810"
+      "fee190810",
+      "9bee7eb26"
     ],
     "h09": "C0 mediu cron.job_run_details:14:35/14:40UTC succeeded. Artefato publicado origin/dev2d97892d9 docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md. Nao prova expiracao visual/E2E.",
     "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
     "delta_proposto": "deltas-chat-client.json: FEchat.attach local-green; aplicacaoC0; BE/E2E preservados",
     "revisao_c0": "RequestPUT followRedirects=false e cabecalhosassinados exatos/MIMEcoerente noChat+Happens+Now+Moments. 11casosnovos preparados;nenhumtesterunatual.",
     "principal_chat_recebimento": "Local-green4casosnovos+regressoes; detalhes nohandoffPacote4;58focaisfinais e43previos,naosomarreruns;semE2E.",
-    "smoke_api_acontece": "PASS23checks/exit0, privatePNG82bytes,read/hash/reload/TTL403/withdraw/ausente; manifesto local ainda sera publicado. NaoE2EUI;semnegativocrosstenant."
+    "smoke_api_acontece": "PASS23checks/exit0; happens-api-proof.md e happens-api-manifest.json;16x16PNGprivateR2/readhash/reload/TTL403/withdrawausente/logout204. SemE2EUI ou cross-tenant. Hierarquiad0c4/d0c4/368amedida/autorizadaC0."
   },
   "historico_pre_r08_operacional": {
     "tests": {
