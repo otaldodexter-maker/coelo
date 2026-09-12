@@ -76,6 +76,34 @@ void main() {
     expect(createFromModel, 1);
   });
 
+  // P45 = B (Owner, 11/09): modelo do sistema de Admin criado pelo Superadmin
+  // pode ser excluido (e editado, P31) pela plataforma; o de plataforma nao.
+  testWidgets('institution system model offers edit, delete and create from model', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileDetailPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.institution,
+          profileId: 'demo-admin-owner',
+          onBack: () {},
+          onEdit: () {},
+          onDeleted: () {},
+          onCreateFromModel: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('access-profile-system-notice')), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-system-delete')), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-system-edit')), findsOneWidget);
+    expect(find.byKey(const Key('access-profile-create-from-model')), findsOneWidget);
+  });
+
   testWidgets('form created from a model starts with its permissions and no identity', (
     tester,
   ) async {

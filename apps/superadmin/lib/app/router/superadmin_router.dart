@@ -3489,6 +3489,10 @@ GoRouter createSuperadminRouter({
                   ),
                   repository: repository,
                   internalUserId: state.pathParameters['internalUserId']!,
+                  handleRepository: personHandleRepository,
+                  servicePerson: repository is PlatformUserServicePersonResolver
+                      ? repository as PlatformUserServicePersonResolver
+                      : null,
                   capability: canManage
                       ? PlatformUserCapability.owner
                       : canRead

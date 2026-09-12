@@ -293,7 +293,10 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
                         icon: const Icon(Icons.arrow_back_rounded),
                         label: const Text('Voltar'),
                       ),
-                      if (_profile!.isSystem)
+                      // P31/P45: modelo do sistema de Admin (dominio institution)
+                      // e editado e excluido pela plataforma (170300/170600); o
+                      // modelo de plataforma continua somente leitura.
+                      if (_profile!.isSystem && widget.domain != AccessProfileDomain.institution)
                         Wrap(
                           spacing: CoeloSpacing.space2,
                           crossAxisAlignment: WrapCrossAlignment.center,
@@ -309,6 +312,36 @@ final class _AccessProfileDetailPageState extends State<AccessProfileDetailPage>
                                 icon: const Icon(Icons.control_point_duplicate_outlined),
                                 label: const Text('Criar a partir deste modelo'),
                               ),
+                          ],
+                        )
+                      else if (_profile!.isSystem)
+                        Wrap(
+                          spacing: CoeloSpacing.space2,
+                          crossAxisAlignment: WrapCrossAlignment.center,
+                          children: [
+                            const Text(
+                              'Modelo do sistema',
+                              key: Key('access-profile-system-notice'),
+                            ),
+                            if (widget.onCreateFromModel != null)
+                              OutlinedButton.icon(
+                                key: const Key('access-profile-create-from-model'),
+                                onPressed: widget.onCreateFromModel,
+                                icon: const Icon(Icons.control_point_duplicate_outlined),
+                                label: const Text('Criar a partir deste modelo'),
+                              ),
+                            OutlinedButton.icon(
+                              key: const Key('access-profile-system-delete'),
+                              onPressed: _deleting ? null : _delete,
+                              icon: const Icon(Icons.delete_outline_rounded),
+                              label: const Text('Excluir'),
+                            ),
+                            FilledButton.icon(
+                              key: const Key('access-profile-system-edit'),
+                              onPressed: widget.onEdit,
+                              icon: const Icon(Icons.edit_outlined),
+                              label: const Text('Editar modelo'),
+                            ),
                           ],
                         )
                       else
