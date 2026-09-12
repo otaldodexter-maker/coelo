@@ -1,5 +1,5 @@
 ---
-title: "Handoff final — grupo suites pré-existentes, R08"
+title: "Checkpoint — grupo suites pré-existentes, R08"
 source: "worktree e2-r08-suites, branch work/etapa2-r08-suites"
 status: "checkpoint; pendente integração pelo coordenador C0"
 generated_at: "2026-09-12T11:01:15-03:00"
@@ -59,16 +59,23 @@ timezone: "America/Sao_Paulo"
 
 ## Reconciliação documental R08 (refs remotas verificadas)
 
-| Frente | Ref e evidência commitada | SHA da evidência | Leitura | Resultado documental |
-|---|---|---|---|---|
-| G0 | `origin/work/etapa2-r08-ambiente-runtime` / `r08-ambiente-runtime/handoff.md` | `0a9811a86e94cdca4cc425c85bc1d73042f8dd41` | `2026-09-12T11:24:55-03:00` | build exit 0 e HTTP 200; login/leitura/reload não comprovados |
-| G1 | `origin/work/etapa2-r08-estrutura` / `r08-estrutura/rodape-modelo-teste.md` | `3d2125356c368d46129fd92436e7098126f33e32` | `2026-09-12T11:17:07-03:00` | prova específica do rodapé de Criar modelo |
-| G2 | `origin/work/etapa2-r08-acessos-pessoas` / `r08-acessos-pessoas/handoff.md` | `bd3f4f7cdfe090eaa25d1ab76b1fed880a22f144` | `2026-09-12T11:20:45-03:00` | `deno test`: 7 passed / 0 failed; E2E pendente |
-| G3 | `origin/work/etapa2-r08-formularios-cuidado-rotina` / `r08-formularios-cuidado-rotina/medication-after.log` | `7bc243cdb05204a307f38fe4b5286d9487176cec` | `2026-09-12T11:13:15-03:00` | evidência própria de correção do overflow/formulário |
-| G4 | `origin/work/etapa2-r08-principal-chat-sistema` / `r08-principal-chat-sistema/handoff.md` | `8d1003e3aabc435f3308922d0db3b4493feadcd6` | `2026-09-12T11:26:13-03:00` | pacote local medido; deploy/CRUD/reload separados |
-| G5 | `origin/work/etapa2-r08-realm-interno` / `r08-realm-interno/fixtures-g1-g3.md` | `cc74ebbd541b14950140f07f6f546812cfecb3e8` | `2026-09-12T11:27:48-03:00` | recibos do espelho e fixtures consolidados |
-| G6 | `origin/work/etapa2-r08-publicacoes-agenda` / `r08-publicacoes-agenda/handoff.md` | `da3e13711333018c10d93152721fefb613a2967c` | `2026-09-12T11:28:47-03:00` | checkpoint de preset/P50; gates posteriores pendentes |
-| G7 | `origin/work/etapa2-r08-operacoes` / `r08-operacoes/handoff.md` | `343ccfe403b4060165b3947d26dcbaf6569a9b8b` | `2026-09-12T11:12:38-03:00` | catálogo com destino real; demais gates conforme handoff |
-| G8 | `origin/work/etapa2-r08-suites` / `r08-suites/handoff.md` | `15cac2e79df835857daaf4d7c0efedf4b5c25465` | `2026-09-12T11:20:04-03:00` | revisão documental; testes R08 G8 não executados |
+| Frente | Ref e evidência commitada | SHA do commit | Data do commit | Data da leitura | Resultado documental |
+|---|---|---|---|---|---|
+| G0 | `origin/work/etapa2-r08-ambiente-runtime` / `r08-ambiente-runtime/handoff.md` | `0a9811a86e94cdca4cc425c85bc1d73042f8dd41` | `2026-09-12T11:24:55-03:00` | `2026-09-12T11:52:51-03:00` | build exit 0 e HTTP 200; login/leitura/reload não comprovados |
+| G1 | `origin/work/etapa2-r08-estrutura` / `r08-estrutura/rodape-modelo-teste.md` | `3d2125356c368d46129fd92436e7098126f33e32` | `2026-09-12T11:17:07-03:00` | `2026-09-12T11:52:51-03:00` | prova específica do rodapé de Criar modelo |
+| G2 | `origin/work/etapa2-r08-acessos-pessoas` / `r08-acessos-pessoas/handoff.md` | `bd3f4f7cdfe090eaa25d1ab76b1fed880a22f144` | `2026-09-12T11:20:45-03:00` | `2026-09-12T11:52:51-03:00` | `deno test`: 8 passed / 0 failed; E2E pendente |
+| G3 | `origin/work/etapa2-r08-formularios-cuidado-rotina` / `r08-formularios-cuidado-rotina/medication-after.log` | `7bc243cdb05204a307f38fe4b5286d9487176cec` | `2026-09-12T11:13:15-03:00` | `2026-09-12T11:52:51-03:00` | evidência própria de correção do overflow/formulário |
+| G4 | `origin/work/etapa2-r08-principal-chat-sistema` / `r08-principal-chat-sistema/handoff.md` | `8d1003e3aabc435f3308922d0db3b4493feadcd6` | `2026-09-12T11:26:13-03:00` | `2026-09-12T11:52:51-03:00` | pacote local medido; deploy/CRUD/reload separados |
+| G5 | `origin/work/etapa2-r08-realm-interno` / `r08-realm-interno/fixtures-g1-g3.md` | `cc74ebbd541b14950140f07f6f546812cfecb3e8` | `2026-09-12T11:27:48-03:00` | `2026-09-12T11:52:51-03:00` | recibos do espelho e fixtures consolidados |
+| G6 | `origin/work/etapa2-r08-publicacoes-agenda` / `r08-publicacoes-agenda/handoff.md` | `da3e13711333018c10d93152721fefb613a2967c` | `2026-09-12T11:28:47-03:00` | `2026-09-12T11:52:51-03:00` | checkpoint de preset/P50; gates posteriores pendentes |
+| G7 | `origin/work/etapa2-r08-operacoes` / `r08-operacoes/handoff.md` | `343ccfe403b4060165b3947d26dcbaf6569a9b8b` | `2026-09-12T11:12:38-03:00` | `2026-09-12T11:52:51-03:00` | catálogo com destino real; rota focal 4/4 PASS; Help Center pendente |
+| G8 | `origin/work/etapa2-r08-suites` / `r08-suites/handoff.md` | `15cac2e79df835857daaf4d7c0efedf4b5c25465` | `2026-09-12T11:20:04-03:00` | `2026-09-12T11:52:51-03:00` | revisão documental; testes R08 G8 não executados |
 
-Os caminhos foram descobertos por `git ls-tree -r --name-only` e os SHAs/timestamps por `git log -1` nas refs remotas. Esta tabela é reconciliação documental, não novo censo nem execução desta frente.
+Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de commit por `git log -1`; a data de leitura é o momento desta auditoria. Esta tabela é reconciliação documental, não novo censo nem execução desta frente.
+
+## Auditoria de coerência com o censo R07
+
+- Os `23 PASS` de `person_form_page_test.dart` e `39 PASS` de `platform_user_pages_test.dart` documentados por G2 são suítes focais diferentes das falhas nominais do censo R07; não reduzem nem reclassificam os `33 FAIL` históricos.
+- O `4/4 PASS` da rota de catálogo em G7 também é focal e não altera o `help_center` pendente do censo R07.
+- G1 documenta o teste do rodapé de Criar modelo; a expectativa textual pendente no recorte é remover a linha desse arquivo da allowlist de `superadmin_form_action_footer_adoption_test.dart` somente após a integração da prova.
+- Pendências textuais concretas no recorte: reconciliar a expectativa do rodapé canônico de Criar modelo (G1), manter a distinção entre recovery HTTPS canônico e origem CORS (G2), e registrar o fallback HTTPS real da rota `governanceCatalog` sem promover aprovação visual a E2E (G7).
