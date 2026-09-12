@@ -1,12 +1,12 @@
 {
- "revision": 58,
+ "revision": 59,
  "round": "E2-R06-20260911",
  "role": "Coordenacao R06 - Claude Opus 5 esforco medio (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:42:00-03:00",
+ "updatedAt": "2026-09-11T22:55:00-03:00",
  "relogio": "relogio da maquina; posse as 19:36 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -248,6 +248,7 @@
   "56": "20:58 lote 53 em producao; deltas de 4 frentes aplicados (FE 151 / BE 144 / E2E 121); cobranca de 30 min a todas; acessos-pessoas cobrada",
   "57": "21:36 lote 54 (4 pacotes) em producao; deltas de todas as frentes aplicados (FE 162 / BE 146 / E2E 131); CORS do R2 alinhado; pedido de revisao final",
   "58": "21:42 lote 55 (3 pacotes) em producao; fila vazia; deploy de internal-user-create bloqueado (pendencia); revisoes finais recebidas; inicio do fechamento",
+  "59": "22:55 pausa segura a pedido do Owner; estado e pendencias do fechamento registrados",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -2030,5 +2031,15 @@
  },
  "edgeFunctionsR06": {
   "internal-user-create": "codigo em supabase/functions/internal-user-create (deno check verde pela G2); DEPLOY NAO FEITO: comando bloqueado pelo classificador da sessao do coordenador (Auth Admin/createUser). Precisa de: [functions.internal-user-create] verify_jwt=false no config.toml (OPTIONS sem JWT; o POST reautoriza pelo RPC) + supabase functions deploy internal-user-create --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database. Sem segredo novo."
+ },
+ "pausaSegura2255": {
+  "ordem": "Owner: \"pause brevemente de forma segura\" (22:53)",
+  "estado": "dev = 19d391437 publicado; worktree e2-r06-coordenacao limpa; fila SQL vazia (lotes 49-55 em producao, ledger e ordem anotados); rastreadores e inventario validados (FE 164 / BE 149 / E2E 134); sete branches integradas ate as revisoes finais (estrutura 63, acessos 146, formularios 55, principal 39, realm 48, publicacoes 51, operacoes 51); loop de 20 min cancelado (job ea33ccdc)",
+  "pendenteAoRetomar": [
+   "deploy de internal-user-create (bloqueado pelo classificador; ver edgeFunctionsR06)",
+   "fechamento formal: bloco \"Estado vigente — Rodada 6\" nos tres md, skills (skills-deltas de G2/G4/G5 em evidence/etapa-2/r06-*/), ADR 0034 Decisao 19, portao coelo-knowledge, R06-fechamento.md, R06-perguntas-ao-owner (180060, P51 SMTP, launcher Mensagens dos goldens de Atividades), prompts da R07 para o Codex (Luna medio) citando qa-r06-<grupo>.env",
+   "remocao das worktrees e2-r06-* das frentes depois de conferir status limpo (branches preservadas)",
+   "percentual final ao Owner no formato fixo"
+  ]
  }
 }
