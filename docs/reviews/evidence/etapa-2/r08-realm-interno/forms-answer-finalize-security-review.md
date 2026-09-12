@@ -1,8 +1,8 @@
 ---
 title: "R08 G5 — revisão focal do finalize de imagem-resposta"
 source: "commits G3 dfe013cc5 e f0c7269fd; contrato form-media"
-status: "aprovado-para-integracao-deploy-exclusivo-c0"
-generated_at: "2026-09-12T12:55:00-03:00"
+status: "integrado-e-deployado-v17"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # Finalize de imagem-resposta — revisão de segurança e contrato
@@ -29,3 +29,12 @@ follow-up `f0c7269fd` passou a selecionar e devolver `actual_byte_length`, exige
 valor numérico igual ao tamanho confirmado pelo descriptor e acrescenta casos
 fail-closed para valor nulo ou divergente. Com esse follow-up, a revisão G5 foi
 aprovada para integração; implantação continua exclusiva do C0.
+
+## Integração e deploy
+
+O C0 integrou os dois commits no ciclo 120, executou a suíte conjunta Deno em
+54/54 com typecheck e implantou `form-media` v17 (`verify_jwt=true`), bundle
+SHA-256 `ea77bf6721130bb0717dae4bcd4dff7ee8350727c0842d26d3d1fc16e243a762`.
+OPTIONS retornou 204 com origem exata para 3014 e produção; origem externa foi
+negada com 403. O answer-image ainda requer seu smoke produtivo próprio; o
+smoke question-image já aprovado não certifica esse ramo.

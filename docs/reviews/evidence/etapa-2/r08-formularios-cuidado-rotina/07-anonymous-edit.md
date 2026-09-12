@@ -49,7 +49,7 @@ Não criar o store a cada rebuild: identidade nova reinicia a carga para impedir
 
 Slot Flutter nominal C0, concurrency 1, liberado ao terminar; nenhum processo retido.
 
-- Primeira execução `2260`, log `07-anonymous-tests.log`: interrompida no primeiro teste ao identificar callback `whenComplete` retornando o próprio Future removido do mapa. Corrigido com callback sem retorno. Não conta como teste aprovado/falho; não houve RED de asserção concluído nesta execução.
+- Primeira execução `2260`, log `07-anonymous-tests.log`: **0 aprovados / 1 falho por timeout** no primeiro teste; processo interrompido quando iniciava o segundo. Causa: callback `whenComplete` retornava o próprio Future removido do mapa. Corrigido com callback sem retorno. O segundo teste interrompido não conta como aprovado/falho. A leitura final do log confirmou o timeout anterior à interrupção.
 - GREEN `64926`, log `07-anonymous-tests-final.log`: **293 casos únicos aprovados / 0 falhos**, seis arquivos: store 7, reader 40, upload 17, resposta 154, viewer 21, API 54. São 18 casos novos; os demais se sobrepõem aos pacotes anteriores e não devem ser somados.
 - `07-anonymous-analyze.log`: warning de mutabilidade do fake, corrigido sem alterar código produtivo. `07-anonymous-analyze-final.log`: **0 apontamentos**.
 - `git diff --check`: sem erros. Não foi executado E2E UI nem storage real de navegador neste pacote.
