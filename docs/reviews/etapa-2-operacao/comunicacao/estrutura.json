@@ -206,6 +206,12 @@
   "U": 0,
   "evidencia": "commits 0434548b9, 9c14eddeb"
  },
+ "testesR07": {
+  "build": "flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local PASS; build/web/main.dart.js gerado; 676,3s; env lido sem imprimir valores",
+  "assessments": "flutter test test/features/assessments PASS: 43 testes, 0 falhas",
+  "estrutura": "flutter test test/features/groups test/features/institutions test/features/locations test/features/activities: 1200 testes executados; 10 falhas de golden conhecidas/retidas, sem regravar por P53 sem A",
+  "rotaReal": "nao certificada: Chrome/CDP isolado nao controlavel nesta janela; nenhum action_id promovido por teste local"
+ },
  "pacotesProntos": [
   {
    "carimbo": "20260912180000_structure_handles_client_v1",
@@ -263,7 +269,8 @@
   "2036": "rev 55/56: @ no cliente feito e provado na rota real; candidato 180000 verde",
   "2106": "rev 57-59: handoff; candidatos 180100 (configuration_read) e 180200 (detail_v2 com @) verdes e publicados; teste de widget do @ em Turmas; goldens analisados. Commits publicados: 0434548b9, 9c14eddeb, 102a80b58, ee113cc08, 5005d47c7, 515a95363, 2b2b11413, 9a729c4f1",
   "2320": "R07 rev 65: worktree criada sobre origin/dev a5048787; primeira revisao registrada; T0 pendente na coordenacao; nenhum commit R07 publicado ainda",
-  "2340": "R07 rev 66: build release QA iniciado com qa_main e env local seguro; concorrencia ambiental deixou apenas shell sem main.dart.js; rota ainda nao e prova; sem delta proposto novo; commit e44bc9bf publicado"
+  "2340": "R07 rev 66: build release QA iniciado com qa_main e env local seguro; concorrencia ambiental deixou apenas shell sem main.dart.js; rota ainda nao e prova; sem delta proposto novo; commit e44bc9bf publicado",
+  "2352": "R07 rev 67: build concluido (main.dart.js); assessments 43/43; suite conjunta 1200 executados com 10 goldens retidos/falhos conhecidos; Chrome/CDP nao controlavel; commit desta revisao sera publicado"
  },
  "miniRevisao": {
   "shaPublicado": "codigo: ate o commit do assistente (apos 9a729c4f1); docs: commit desta revisao; status limpo; nenhum WIP",
