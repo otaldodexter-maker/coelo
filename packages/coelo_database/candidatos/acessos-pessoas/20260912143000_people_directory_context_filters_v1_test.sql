@@ -1,7 +1,7 @@
 -- pgTAP do candidato 20260912143000. Executar somente após o candidato, em banco local descartável.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(11);
+select plan(12);
 
 -- Contrato único PostgREST: a assinatura antiga é removida, defaults preservam
 -- chamadas anteriores e os quatro filtros novos são explicitamente tipados.
@@ -35,6 +35,9 @@ select ok(pg_temp.people_list_def() like '%coalesce(ua.state,ia.state)%'
   and pg_temp.people_list_def() like '%coalesce(ua.city,ia.city)%'
   and pg_temp.people_list_def() like '%coalesce(ua.district,ia.district)%',
   'localidade percorre unidade/instituição canônicas, não ID de endereço do cliente');
+select ok(pg_temp.people_list_def() like '%''activity_id'',c.activity_id%'
+  and pg_temp.people_list_def() like '%''activity_name'',c.activity_name%',
+  'membership emite a atividade que o domínio Dart já declara');
 select ok(pg_temp.people_list_def() like '%''total_count'',(select count(*) from filtered)%'
   and pg_temp.people_list_def() like '%page_rows as (select * from ranked%',
   'contagem é de pessoas distintas antes da paginação');

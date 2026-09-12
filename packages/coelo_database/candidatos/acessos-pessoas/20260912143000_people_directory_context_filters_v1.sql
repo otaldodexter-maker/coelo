@@ -89,12 +89,14 @@ begin
   ), context_rows as (
     select b.*, coalesce(ua.state,ia.state) state_code,
       coalesce(ua.city,ia.city) municipality_id, coalesce(ua.district,ia.district) neighborhood_id,
-      i.public_name institution_name, u.name unit_name, g.name group_name, r.name role_name
+      i.public_name institution_name, u.name unit_name, g.name group_name, r.name role_name,
+      activity.name activity_name
     from base_context_rows b
     join public.institutions i on i.id=b.institution_id
     left join public.units u on u.id=b.unit_id and u.institution_id=b.institution_id
     left join public.groups g on g.id=b.group_id and g.unit_id=b.unit_id and g.institution_id=b.institution_id
     left join public.institution_roles r on r.code=b.contextual_role and r.institution_id=b.institution_id
+    left join public.activity_definitions activity on activity.id=b.activity_id and activity.institution_id=b.institution_id
     left join public.unit_addresses ua on ua.unit_id=b.unit_id and ua.status='active'
     left join public.institution_addresses ia on ia.institution_id=b.institution_id and ia.status='active'
   ), filtered as (
@@ -137,7 +139,7 @@ begin
       case when p_sort_ascending and p_sort='auth_link' then f.auth_link_state end asc, case when not p_sort_ascending and p_sort='auth_link' then f.auth_link_state end desc, lower(f.display_name),f.id) ordinal
     from filtered f
   ), page_rows as (select * from ranked where ordinal>p_offset and ordinal<=p_offset+p_limit)
-  select jsonb_build_object('items',coalesce((select jsonb_agg(jsonb_build_object('id',q.id,'display_name',q.display_name,'type',q.person_type,'status',q.status,'auth_link',q.auth_link_state,'memberships',coalesce((select jsonb_agg(jsonb_build_object('id',c.row_id,'institution_id',c.institution_id,'institution_name',c.institution_name,'unit_id',c.unit_id,'unit_name',c.unit_name,'group_id',c.group_id,'group_name',c.group_name,'role',c.contextual_role,'role_name',c.role_name) order by lower(c.institution_name),lower(c.unit_name),lower(c.group_name),c.row_id) from context_rows c where c.person_id=q.id),'[]'::jsonb),'updated_at',q.updated_at) order by q.ordinal) from page_rows q),'[]'::jsonb),'total_count',(select count(*) from filtered)) into result;
+  select jsonb_build_object('items',coalesce((select jsonb_agg(jsonb_build_object('id',q.id,'display_name',q.display_name,'type',q.person_type,'status',q.status,'auth_link',q.auth_link_state,'memberships',coalesce((select jsonb_agg(jsonb_build_object('id',c.row_id,'institution_id',c.institution_id,'institution_name',c.institution_name,'unit_id',c.unit_id,'unit_name',c.unit_name,'group_id',c.group_id,'group_name',c.group_name,'activity_id',c.activity_id,'activity_name',c.activity_name,'role',c.contextual_role,'role_name',c.role_name) order by lower(c.institution_name),lower(c.unit_name),lower(c.group_name),c.row_id) from context_rows c where c.person_id=q.id),'[]'::jsonb),'updated_at',q.updated_at) order by q.ordinal) from page_rows q),'[]'::jsonb),'total_count',(select count(*) from filtered)) into result;
   return result;
 end $$;
 
