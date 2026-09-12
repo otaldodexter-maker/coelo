@@ -220,3 +220,19 @@ Usuário: qa-r06-operacoes@coelo.me (credencial em C:/Users/adrie/Documents/Coel
 
 Horário: até T0+4h sem parar; em T0+4h responda à revisão de 10 minutos no JSON. Depois de T0+4h10 não retome. Só o coordenador escreve em dev, inventário e rastreadores; nenhum segredo em Git, chat ou JSON; um Chrome e um flutter test por vez; commits pequenos em português.
 ```
+
+## G8 — «R07 · Suítes pré-existentes» — Codex, Luna (esforço médio) — opcional, 3 h, sem colisão com G1–G7
+
+**Resumo:** frente extra que só toca `test/app`, `test/core/config`,
+`test/shared`, `lib/dev` e `lib/core/config` do Superadmin (as 49 falhas
+pré-existentes registradas desde a R05) e mede a suíte completa; escreve
+em `comunicacao/fase0.json`; nunca edita `lib/features` nem
+`lib/shared/presentation` (registra em vez de mexer).
+
+```text
+Você é a conversa «R07 · Suítes pré-existentes» da Rodada 7 (E2-R07-<AAAAMMDD>) da Etapa 2 do Coelo (Codex, Luna, esforço médio; frente extra de 3 horas). Leia integralmente C:/Users/adrie/Documents/Coelo/docs/reviews/etapa-2-operacao/next-round/R07-prompts.md, R06-prompts.md, R05-prompts.md e R04-prompts.md, depois next-round/R05-fechamento.md (seção "Pendências de revisão profunda": suítes pré-existentes) e R06-fechamento.md, docs/reviews/coelo-flutter-pendencias.md (bloco "Estado vigente — Rodada 6"), comunicacao/fase0.json (histórico da Fase 0; você escreve nele com round E2-R07), coordenacao.json (T0), AGENTS.md e as skills /rtk, /ponytail, /coelo-frontend e /coelo-frontend-backend. Crie sua worktree: git fetch origin && git worktree add C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-suites -b work/etapa2-r07-suites origin/dev. Grave a primeira revisão em comunicacao/fase0.json (round E2-R07-<AAAAMMDD>, grupo "suites") e não pare até T0+3h: trabalhe em ciclo contínuo; a cada 30 min registre no JSON feito/pendente/commits publicados (git push da sua branch).
+
+Recorte estrito, para não colidir com as sete frentes: apps/superadmin/test/app (dev_menu, import_development_routes, prototype_navigation_routes: 18 falhas pré-existentes), apps/superadmin/test/core/config (4), apps/superadmin/test/shared (underline_tabs e form_action_footer_adoption: 11), o golden institution_directory_pagination_disabled_light_1440 (diferença de 0,21%), e os arquivos de produção que esses testes cobrem: lib/dev, lib/core/config e as rotas /dev. Proibido editar lib/features/**, lib/shared/presentation/**, packages/coelo_ui*/**, goldens de outras famílias, pubspec e qualquer arquivo de outra frente; se a correção exigir isso, registrar no JSON a causa, o arquivo e a proposta (com o teste que provaria) e seguir para o próximo item. Ordem: (1) rodar flutter test apps/superadmin/test/app, test/core/config e test/shared na base limpa e registrar causa por teste (teste desatualizado × código quebrado × golden defasado); (2) corrigir o que for teste desatualizado ou código de /dev (sem mudar comportamento de produção); (3) o golden de 0,21%: conferir a imagem de diferença e regravar só se for ruído de renderização, senão registrar; (4) ao final, flutter test completo do Superadmin (um por vez, sem Chrome) e registrar aprovados/falhos/pulados por diretório, comparando com os 6692/53/11 da R05, em docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md; (5) sem deltas de estado por action_id (esta frente não muda estados do inventário). Não use Chrome nem rota real; sem usuário sintético. Escreva só em comunicacao/fase0.json e nos seus commits/handoffs; commits pequenos em português; um flutter test por vez.
+
+Horário: até T0+3h sem parar; em T0+3h grave a mini-revisão de 10 minutos no JSON (SHA publicado, falhas corrigidas por arquivo, falhas que permanecem com a causa e o dono sugerido, censo da suíte completa). Depois de T0+3h10 não retome. Só o coordenador escreve em dev e nos rastreadores; ele integra a sua branch no ciclo seguinte.
+```
