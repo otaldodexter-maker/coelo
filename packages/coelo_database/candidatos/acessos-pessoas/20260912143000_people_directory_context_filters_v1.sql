@@ -140,7 +140,7 @@ begin
   ), page_rows as (select * from ranked where ordinal>p_offset and ordinal<=p_offset+p_limit)
   select jsonb_build_object('items',coalesce((select jsonb_agg(jsonb_build_object('id',q.id,'display_name',q.display_name,'type',q.person_type,'status',q.status,'auth_link',q.auth_link_state,'memberships',coalesce((select jsonb_agg(jsonb_build_object('id',c.row_id,'institution_id',c.institution_id,'institution_name',c.institution_name,'unit_id',c.unit_id,'unit_name',c.unit_name,'group_id',c.group_id,'group_name',c.group_name,'activity_id',c.activity_id,'activity_name',c.activity_name,'role',c.contextual_role,'role_name',c.role_name) order by lower(c.institution_name),lower(c.unit_name),lower(c.group_name),c.row_id) from context_rows c where c.person_id=q.id),'[]'::jsonb),'updated_at',q.updated_at) order by q.ordinal) from page_rows q),'[]'::jsonb),'total_count',(select count(*) from filtered)) into result;
   return result;
-end $$;
+end; $$;
 
 alter function public.superadmin_people_list(text,public.person_type[],public.record_status[],uuid[],uuid[],uuid[],text[],text[],text,boolean,integer,integer,text,uuid[],text[],text[],text[]) owner to postgres;
 revoke all on function public.superadmin_people_list(text,public.person_type[],public.record_status[],uuid[],uuid[],uuid[],text[],text[],text,boolean,integer,integer,text,uuid[],text[],text[],text[]) from public,anon;
@@ -162,7 +162,7 @@ begin
     'municipalities',coalesce((select jsonb_agg(distinct jsonb_build_object('id',x.city,'label',x.city,'state_code',x.state_code)) from (select coalesce(ua.state,ia.state) state_code,coalesce(ua.city,ia.city) city from public.units u left join public.unit_addresses ua on ua.unit_id=u.id and ua.status='active' left join public.institution_addresses ia on ia.institution_id=u.institution_id and ia.status='active' where u.status='active') x where nullif(btrim(x.city),'') is not null),'[]'::jsonb),
     'neighborhoods',coalesce((select jsonb_agg(distinct jsonb_build_object('id',x.district,'label',x.district,'municipality_id',x.city)) from (select coalesce(ua.city,ia.city) city,coalesce(ua.district,ia.district) district from public.units u left join public.unit_addresses ua on ua.unit_id=u.id and ua.status='active' left join public.institution_addresses ia on ia.institution_id=u.institution_id and ia.status='active' where u.status='active') x where nullif(btrim(x.district),'') is not null),'[]'::jsonb)
   );
-end $$;
+end; $$;
 
 alter function public.superadmin_people_filter_options() owner to postgres;
 revoke all on function public.superadmin_people_filter_options() from public,anon;
