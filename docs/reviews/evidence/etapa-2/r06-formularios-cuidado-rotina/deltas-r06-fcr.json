@@ -185,13 +185,13 @@
   "action_id": "daily-routine.list",
   "camada": "frontend",
   "estado_proposto": "verified",
-  "delta": "V-15 A+ aplicado (03ccdbf41): card Criar em Modelos/Rotinas/Lancamentos em cards e tabela mesmo com dados, acoes da tabela iguais ao card; rota normal lista modelo, rotina e lancamento reais; reload mantem. Golden da tabela regravado apos a observacao. Pendencia: Arquivar sem comando no servidor.",
-  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/23-routine-lancar-hoje.png",
+  "delta": "V-15 A+ aplicado (03ccdbf41): card Criar em Modelos/Rotinas/Lancamentos em cards e tabela mesmo com dados, acoes da tabela iguais ao card; rota normal lista modelo, rotina e lancamento reais; reload mantem. Golden da tabela regravado apos a observacao. Arquivar (fd8e675af): confirmacao e save com status archived; copia 8d219282 arquivada pela tabela na rota real (save_model 200, diretorio recarregado com status archived).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/64-routine-arquivado.png",
   "certificacao": {
-   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/23-routine-lancar-hoje.png",
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/64-routine-arquivado.png",
    "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-   "recordedAt": "2026-09-11T20:26:00-03:00"
+   "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; 2164739b3; Arquivar em fd8e675af) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+   "recordedAt": "2026-09-11T21:05:00-03:00"
   }
  },
  {

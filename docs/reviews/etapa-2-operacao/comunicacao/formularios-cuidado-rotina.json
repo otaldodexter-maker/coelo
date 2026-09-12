@@ -1,12 +1,12 @@
 {
- "revision": 51,
+ "revision": 52,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:00-03:00",
+ "updatedAt": "2026-09-11T21:06-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
@@ -63,11 +63,9 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "build 5 (fd8e675af) em andamento para provar Arquivar na rota real; depois mini-revisao",
-  "screen": "Etapa 2 -> apps/superadmin -> Acompanhamento -> Rotina diaria -> tabela",
-  "actionIds": [
-   "daily-routine.list"
-  ]
+  "gate": "recorte executavel esgotado antes de T0+2h; fechando Chrome/servidor e preparando a mini-revisao",
+  "screen": "Etapa 2 -> apps/superadmin",
+  "actionIds": []
  },
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
  "tests": {},
@@ -190,6 +188,11 @@
    "tabela": "public.routine_models",
    "id": "176882c5-e35f-4db9-b763-dc7ffe31b276",
    "nota": "renomeado para \"Modelo R05 rota real (R06)\" (versao 2)"
+  },
+  {
+   "tabela": "public.routine_models",
+   "id": "8d219282-af46-44ac-b22f-1b9f5f728137",
+   "nota": "copia do modelo 176882c5, arquivada (prova de Arquivar)"
   }
  ],
  "chavesCriadas": "nenhuma",
@@ -1900,6 +1903,17 @@
     "53",
     "54",
     "55"
+   ]
+  },
+  "daily-routine.list (Arquivar)": {
+   "resultado": "P",
+   "prova": "Duplicar modelo -> Salvar (save_model 200 -> 8d219282, management_version 0) -> tabela -> Arquivar -> confirmacao -> model_detail + save_model 200 (versao 2) -> directory recarregado com status archived",
+   "capturas": [
+    "60",
+    "61",
+    "62",
+    "63",
+    "64"
    ]
   }
  },
