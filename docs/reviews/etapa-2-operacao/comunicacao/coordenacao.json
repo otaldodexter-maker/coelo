@@ -2044,18 +2044,19 @@
   "semDeltasDeEstado": true,
   "ciclo": "ler fase0.json a cada 20 min; ACK/recibo por revisao; cobrar feito/pendente/commits a cada 30 min; integrar por merge quando publicar; rodar suites tocadas",
   "ack": true,
-  "revisaoRecebida": 10,
+  "revisaoRecebida": 14,
   "recebidoEm": "2026-09-11T23:36:00-03:00",
-  "headObservado": "d5da3dfaf",
-  "recibo": "G8 reconhecida; escopo restrito confirmado; sem deltas de estado; coordenacao acompanhará fase0.json"
+  "headObservado": "bc93f4b6c",
+  "recibo": "G8 reconhecida; escopo restrito confirmado; fase0 rev14 lida; sem deltas de estado; branch integrada por conteúdo permitido"
  },
  "receiptsR07": [
   {
    "grupo": "suites",
-   "revisaoRecebida": 10,
+   "revisaoRecebida": 14,
    "ack": true,
-   "integradoEm": "5d57969b4",
-   "observacao": "somente fase0.json; sem codigo/testes publicados"
+   "integradoEm": "1eafb23af2b939a0a08af0d7e599269740043aae",
+   "testes": "suítes tocadas em test/app, test/core/config e test/shared: 87 PASS",
+   "observacao": "fase0.json rev14 + censo commitado; mudanças efetivas dentro do recorte permitido; nenhum toque em lib/features ou lib/shared/presentation; sem delta de estado"
   },
   {
    "grupo": "operacoes",
