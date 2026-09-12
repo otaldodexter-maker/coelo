@@ -1,15 +1,15 @@
 {
-  "revision": 140,
-  "updated_at": "2026-09-11T23:54:05.446149Z",
-  "relogio_local": "Fri Sep 11 2026 20:54:05 GMT-0300 (Horario Padrao de Brasilia)",
+  "revision": 141,
+  "updated_at": "2026-09-12T00:10:13.067147Z",
+  "relogio_local": "Fri Sep 11 2026 21:10:13 GMT-0300 (Horario Padrao de Brasilia)",
   "round": "E2-R06-20260911",
   "group": "acessos-pessoas",
   "tool": "Claude Code (VS Code)",
   "model": "Claude Opus 5 (esforco medio)",
-  "status": "em andamento",
+  "status": "finalizado (revisao de 10 minutos respondida abaixo)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
   "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "o commit desta rev 140 (publicado); inclui ee35cce3a (170700) e o merge de origin/dev fcdded416 (lote 49)",
+  "head": "o commit desta rev 141 (publicado em origin/work/etapa2-r06-acessos-pessoas); status limpo; sem WIP",
   "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
   "T0": {
     "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
@@ -39,11 +39,13 @@
       "transversal: V-11 A+ (Perfis: sem dados de demonstracao no app real; card Criar sempre presente em cards e tabela, mesmo vazio); V-13 e V-14 aprovados"
     ]
   },
-  "primeiro_gate": "nenhum bloqueio total; rota real em andamento com qa-r06-acessos (build ee35cce3a em 127.0.0.1:3016, Chrome CDP 9416 com perfil proprio C:/Users/adrie/AppData/Local/Temp/coelo-chrome-acessos).",
+  "primeiro_gate": "nenhum bloqueio total; o que ficou aberto esta em REVISAO_FINAL_21h36.3_aberto_com_primeiro_gate",
   "leitura_feita": "R06-prompts.md, R05-prompts.md e R04-prompts.md integrais; acessos-pessoas.json rev 137 (REVISAO_FINAL_15h50, gates abertos, pendencias de code review, proposta de skills); handoff r05; inventario (32 acoes com FE/BE/E2E); bloco Estado vigente R05 dos tres md; coordenacao.json rev 51 (respostasDoOwnerR05: P45=B, P46=A, V-11 A+); AGENTS.md; skills coelo-frontend-backend, coelo-backend (regras R4/R5), coelo-frontend (regras R5), coelo-ui, coelo-knowledge; rtk/ponytail/flutter-dart-code-review/supabase reutilizadas.",
   "dependencias_do_coordenador": [
-    "aplicar em producao, na ordem: 20260911170500_internal_user_handles_v1 (P46), 20260911170600_institution_system_model_delete_v1 (P45) e 20260911170700_people_identity_lookup_v1 (people.create), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 (baseline + 141 migrations da ordem real incluindo o lote 49 + candidatos)",
-    "aplicar deltas-r06.json (16 entradas) com apply-tracker-delta.cjs: ensaiado nesta worktree + validate-trackers.cjs PASS (FE 146, BE 132, E2E 113) e revertido"
+    "aplicar em producao, na ordem: 20260911170500 (P46), 20260911170600 (P45), 20260911170700 (people.create), todos em candidatos/acessos-pessoas, pgTAP verde no descartavel coelo_acessos_r06 com as 141 migrations da ordem real (inclui o lote 49)",
+    "aplicar deltas-r06.json (18 entradas) com apply-tracker-delta.cjs: ensaiado nesta worktree + validate-trackers.cjs PASS (FE 147, BE 132, E2E 114) e revertido",
+    "integrar work/etapa2-r06-acessos-pessoas (5 commits sobre fcdded416): flutter analyze dos arquivos tocados sem avisos; testes: access_profile_system_models_test 4/4, platform_users (1 golden pre-existente P15 platform_user_create_light_375), person_handle_section_test",
+    "aplicar os deltas de skills abaixo (PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06)"
   ],
   "loop": "/loop 15m agendado na abertura (ScheduleWakeup)",
   "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P (reprovado apos o lote 49); person_handles_v1_test 22/22 P; institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; people_identity_lookup_v1_test 11/11 P; superadmin_internal_users_directory_test 44/45 (teste 7 requires_mfa pre-existente). Rota real: 8 acoes provadas (abaixo).",
@@ -99,6 +101,60 @@
     "groups 1a247741-1bc8-4bbd-bf81-a0787d57f77a 'Turma QA R06 Transferencia' (unidade cce78909, instituicao d0c4...0001, @turmaqar06transferen.qar05transfer.qar04cuidado) - criada por superadmin_group_save para provar a transferencia; fica ate o fim da Etapa 2",
     "child_unit_links/child_group_links da crianca d0c4...0003: transferida e revogada na Unidade QA R05 Transferencia e vinculada de volta a Turma QA R04 Estrutura (368a5cea) sem data de fim (antes: 2026-12-15)"
   ],
+  "INTERNAL_USERS_21h05": {
+    "internal-users.list": "E2E: /internal-users lista os 8 internos reais (qa-r04 sintetico + sete qa-r06) e o card abre o detalhe (superadmin_internal_users_list/detail 200). capturas/internal-users-list.png, internal-users-detail.png",
+    "internal-users.edit": "aberto: Editar abre a partir do detalhe, mas a segunda carga do diretorio ficou lenta demais (Chrome com 1,5 GB livres) e a prova nao coube no tempo; cliente inalterado desde a R05 (local-green).",
+    "internal-users.suspend": "aberto: os oito internos de producao estao em uso pelas frentes (suspender derruba a sessao de outra conversa); precisa de um interno sobressalente - vira trivial quando internal-users.create existir.",
+    "internal-users.create (contrato proposto, nao escrito)": "Edge Function internal-user-create (dona: acessos-pessoas; deploy pelo coordenador): (1) com o token do operador chama superadmin_internal_user_create_authorize_v1(p_draft) que exige platform.member.update, valida o rascunho (identidade, perfil ativo, escopo/escopo_ids, CPF/e-mail unicos) e devolve o ator; (2) com service_role cria o auth user (auth.admin.createUser, email_confirm true, senha aleatoria nunca devolvida; o usuario entra por 'Esqueci minha senha' - depende de SMTP customizado no projeto, o SMTP padrao do Supabase so entrega a membros do time); (3) com service_role chama superadmin_internal_user_create_for_worker_v1(p_request_id, p_actor_internal_identity_id, p_auth_user_id, p_draft) que cria identidade + perfil + vinculo auth ativo + membership (+ escopos) numa transacao e devolve a projecao; falha no passo 3 apaga o auth user. Pendencia de decisao: SMTP customizado (custo zero em Resend/Brevo no nivel gratuito, mas exige dominio) para convite/recuperacao chegarem a e-mails fora do time.",
+    "V-11": "pendencia registrada: o diretorio de Usuarios internos nao mostra o card Criar (create fail-closed); Perfis ja mostra. Sem dados de demonstracao no app real: conferir na proxima rodada."
+  },
+  "REVISAO_FINAL_21h36": {
+    "entreguei_tudo": "sim. Nada ficou fora do JSON, do handoff (evidence/etapa-2/r06-acessos-pessoas/handoff.md) ou dos deltas.",
+    "1_sha_final": "o commit desta rev 141, publicado em origin/work/etapa2-r06-acessos-pessoas (base fcdded416 = origin/dev com o lote 49); status limpo; sem WIP; nenhum processo desta frente em execucao (Chrome 9416, servidor 3016 e descartavel coelo_acessos_r06 encerrados as 21:10/21:20).",
+    "2_fechou_por_action_id_com_prova": {
+      "E2E (rota real com qa-r06-acessos + producao + reload)": "invites.create, invites.detail, invites.revoke, students.list, students.link, students.transfer, students.edit, students.revoke, internal-users.list (9 acoes; capturas em evidence/etapa-2/r06-acessos-pessoas/capturas)",
+      "BE pacotes verdes (pgTAP no descartavel com a ordem real + lote 49)": "170500 P46 (12/12 + 3 suites do @), 170600 P45 (7/7 + 8/8), 170700 people.create (11/11)",
+      "cliente": "SupabasePersonIdentityRepository ligado (people.create abre com o 170700); P45 Editar/Excluir de modelo de sistema de Admin (teste 4/4); P46 secao do @ no detalhe de Usuarios internos; nenhum aviso no analyze"
+    },
+    "3_aberto_com_primeiro_gate": {
+      "invites.resend pela UI": "so convite expirado mostra Reenviar; nao ha convite expirado em producao (fixture com expires_at no passado por pacote, ou 48 h)",
+      "internal-users.edit pela UI": "Chrome lento na segunda carga; cliente inalterado (local-green)",
+      "internal-users.suspend": "interno sobressalente (todos em uso pelas frentes)",
+      "internal-users.create": "Edge Function internal-user-create + duas RPCs (contrato em INTERNAL_USERS_21h05); SMTP customizado e decisao do Owner",
+      "access-profiles.edit E2E, assign, delete; access-models.edit/duplicate pela UI": "tempo de Chrome; delete de modelo de sistema depende do 170600 em producao",
+      "people.create/edit pela UI": "170700 em producao + build com 7f13ee42d",
+      "@ na tela de Alunos": "nao iniciado (o @ da crianca ja e editavel no detalhe de Pessoas)",
+      "V-11 em Usuarios internos": "card Criar ausente enquanto create e fail-closed"
+    },
+    "4_deltas": "deltas-r06.json (18): 9 acoes FE verified + 9 integrated verified-e2e; ensaiado e revertido; o coordenador aplica.",
+    "5_pacotes": "170500, 170600, 170700 em candidatos/acessos-pessoas (commits fb96e9374 e ee35cce3a); nenhuma chave de composicao nova (o cliente ja esta atras de enablePersonHandles e detecta PGRST202).",
+    "6_duvidas_ao_owner": [
+      "P51 (nova): internal-users.create precisa de e-mail para o usuario definir a senha (convite ou 'Esqueci minha senha'); o SMTP padrao do Supabase so entrega a membros do time do projeto. Opcoes: A) configurar SMTP customizado sem custo (Resend/Brevo nivel gratuito, exige verificar o dominio coelo.me) - recomendo; B) no MVP o Superadmin ve uma senha provisoria uma unica vez e a repassa por canal seguro; C) adiar internal-users.create para depois do MVP."
+    ],
+    "dados_sinteticos": "invitations a5496b70 (revoked); groups 1a247741 'Turma QA R06 Transferencia'; vinculos da crianca d0c4...0003 (de volta a turma 368a5cea, sem data de fim)",
+    "chaves_criadas": "nenhuma",
+    "nao_retomo": "depois de 21:46 nao retomo por conta propria."
+  },
+  "PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06": {
+    "nota": "deltas para o coordenador aplicar nas skills (so ele escreve nelas); tambem em evidence/etapa-2/r06-acessos-pessoas/handoff.md.",
+    "coelo-backend": [
+      "P46 em producao (170500): usuario interno tem @ pela pessoa de servico; a ponte 220400 atribui o @ depois de gravar o espelho (o gatilho de people pula service); platform.member.read/update veem/editam; RPC superadmin_internal_user_service_person_v1 devolve o person_id.",
+      "P45 em producao (170600): modelo de sistema de Admin e excluido so por membership de plataforma sem escopo (has_scoped_platform_permission(..., null)); perfil escopado em instituicao recebe 'system profile is protected'.",
+      "people.create (170700): resolvedor superadmin_people_identity_lookup_v1 exige people.create, normaliza no servidor e nunca grava o valor consultado; o mascaramento de audit_logs redige reason/after_json com valores que parecam identificadores (nao tentar guardar hash no reason).",
+      "Descartavel: sete migrations dependem de storage.objects/buckets (Cardapios 190000-190200, Seguranca infantil 170500-171800); subir o descartavel com Storage ligado (-x realtime,studio,inbucket,imgproxy,edge-runtime,logflare,vector,supavisor).",
+      "Usuario interno novo exige Auth Admin API (Edge Function) e e-mail de definicao de senha; o SMTP padrao do Supabase so entrega a membros do time (P51)."
+    ],
+    "coelo-frontend": [
+      "Rota real por CDP: Input.dispatchMouseEvent precisa de buttons:1 no mousePressed (sem isso o Flutter web ignora o clique); comandos do driver chamados por Runtime.evaluate sem esperar resposta (o qa_drive cmd trava esperando); tap por texto acerta o Text errado em menus com rotulos repetidos - usar coordenada.",
+      "P45/P31 na UI: modelo de sistema de Admin (dominio institution) mostra Editar modelo, Excluir e Criar a partir deste modelo; modelo de plataforma continua somente leitura.",
+      "P46 na UI: detalhe de Usuarios internos reaproveita PersonHandleSection com o person_id da pessoa de servico (PlatformUserServicePersonResolver); sem a RPC a secao nao aparece.",
+      "Pendencias vistas na rota real: Concluir do convite emitido nao volta a lista; resumo 'Entrega por e-mail nao solicitada' com canal E-mail; card de /students nao abre /students/<id>/manage; dialogo de turmas sem 'tentar de novo'."
+    ],
+    "coelo-frontend-backend": [
+      "Prova E2E de Alunos: transferir exige turma em outra unidade da mesma instituicao; a turma sintetica 1a247741 fica em producao para as proximas rodadas; devolver a crianca a turma original ao fim para nao alterar a fixture das outras frentes.",
+      "Convites: o caminho positivo de resend so existe com convite expirado; registrar como gate de fixture, nao como defeito."
+    ]
+  },
   "historico_r05": {
     "revision": 137,
     "updated_at": "2026-09-11T18:50:26.650Z",

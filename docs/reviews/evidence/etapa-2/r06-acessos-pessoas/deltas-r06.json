@@ -206,5 +206,31 @@
       "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
       "recordedAt": "2026-09-11T23:50:00-03:00"
     }
+  },
+  {
+    "action_id": "internal-users.list",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06: /internal-users pela rota real lista os 8 usuarios internos reais (qa-r04 sintetico + os sete qa-r06) com perfil, escopo, convite e ultima revisao (superadmin_internal_users_list 200); o card abre /internal-users/<id> (superadmin_internal_user_detail 200). Pendencia V-11: o diretorio nao mostra o card Criar (create fail-closed).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/internal-users-list.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/internal-users-list.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T21:03:00-03:00"
+    }
+  },
+  {
+    "action_id": "internal-users.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06: rota normal + superadmin_internal_users_list/detail em producao (BE done desde a R04) + reload (carga completa da rota).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/internal-users-detail.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-acessos-pessoas/capturas/internal-users-detail.png",
+      "revision": "ee35cce3a",
+      "environment": "producao, rota real (build web de qa_main ee35cce3a servido em 127.0.0.1:3016 + Chrome CDP 9416 com perfil proprio, sessao qa-r06-acessos@coelo.me)",
+      "recordedAt": "2026-09-11T21:04:00-03:00"
+    }
   }
 ]
