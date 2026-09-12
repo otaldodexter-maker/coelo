@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 10,
+  "revision": 11,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-11T23:36:00-03:00",
+  "updatedAt": "2026-09-11T23:55:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-11T23:19:34-03:00 (coordenacao.json rev 61); corte T0+3h = 02:19 de 12/09, mini-revisao ate 02:29, nao retomar depois de 02:29",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-suites",
   "branch": "work/etapa2-r07-suites",
-  "head": "7b229593c",
+  "head": "62fb286e8",
   "upstream": "origin/dev",
   "base": "7b229593c (origin/dev com R07-prompts.md e frentes liberadas)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -40,22 +40,33 @@
     "(4) flutter test completo do Superadmin -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md",
     "(5) mini-revisao em T0+3h"
   ],
-  "feito": [],
-  "pendente": [
-    "(1) censo inicial das tres suites do recorte"
+  "feito": [
+    "test/app: censo na base limpa 7b229593c = 637 P / 1 S / 16 F. Das 16, 4 estao nos arquivos do recorte e foram corrigidas: dev_menu_test (teste desatualizado: dependia de --dart-define=COELO_APP_ENV=local, que colide com superadmin_app_config_test; agora liga allowDevelopmentPreview no router), prototype_navigation_routes_test (teste desatualizado: sem allowDevelopmentPreview e secoes offstage apos a navegacao crescer), development_dataset_contract_test (teste desatualizado: dataset reduzido a 5 instituicoes em d9232a94d, 28 turmas em Mare Alta, 12 modelos), dev_menu_overlay_test golden 0,61% (golden defasado: ainda tinha 'Modelos de perfil', unificado em Perfis em 320a6f09f; regravado). import_development_routes_test ja passava.",
+    "test/core/config: censo = 35 P / 5 F; as 5 eram teste desatualizado (afirmavam composicao fail-closed que a ADR 0034 ligou: structureMutationsEnabled, diretorios/adapters Supabase de Unidades e Turmas em 58bfe1fed, personIdentityRepository real em 7f13ee42d). Corrigidos; 40/40 verdes."
   ],
-  "commitsPublicados": [],
+  "pendente": [
+    "classificar as 12 falhas restantes de test/app fora dos arquivos nomeados (rodar test/app completo com reporter expanded no censo final)",
+    "test/shared (underline_tabs, form_action_footer_adoption)",
+    "golden institution_directory_pagination_disabled_light_1440 (0,21%)",
+    "censo da suite completa -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md"
+  ],
+  "commitsPublicados": [
+    "d5da3dfaf abertura",
+    "9dd3e1c76 dev_menu/prototype/dataset",
+    "58af0696f golden dev menu",
+    "62fb286e8 core/config"
+  ],
   "foraDoRecorteRegistrado": [],
   "testes": {
-    "P": null,
-    "F": null,
-    "B": null,
-    "S": null,
+    "P": 677,
+    "F": 0,
+    "B": 0,
+    "S": 1,
     "U": null,
-    "evidencia": "ainda nao executado nesta rodada"
+    "evidencia": "test/app: 637P/1S/16F antes (4 corrigidas neste recorte, 12 fora dos arquivos nomeados, ainda a classificar); test/core/config 40/40 apos correcao"
   },
   "bloqueio": null,
-  "proximoPasso": "flutter test apps/superadmin/test/app",
+  "proximoPasso": "flutter test apps/superadmin/test/shared",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
