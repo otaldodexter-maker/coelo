@@ -39,3 +39,18 @@ foram tocados.
 
 Os achados foram enviados ao C0 e diretamente ao G4. Nenhum teste foi repetido;
 a evidência nativa de G4 registra 37 aprovados.
+
+## Revisão da correção
+
+O G4 publicou `b58cbaec9`. A revisão estática final confirmou, sem novo achado
+bloqueador:
+
+- `subject_type` e `subject_id` agora precisam coincidir exatamente com o
+  sujeito solicitado antes da construção da página;
+- quatro casos negativos cobrem tipo/id diferente ou ausente;
+- `roleCode` e `scopeKind` agora participam da identidade de
+  `didUpdateWidget`, com dois casos isolados de reload fail-closed;
+- nenhum campo ou requisito de actor foi adicionado ao DTO.
+
+A prova pertence ao G4: RED 6 esperado, depois 43 PASS/0 FAIL/0 SKIP e análise
+sem apontamentos. O G6 não repetiu Flutter.
