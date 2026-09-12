@@ -1,12 +1,12 @@
 {
-  "revision": 34,
+  "revision": 35,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:35:57-03:00",
+  "updatedAt": "2026-09-12T14:47:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:40:00-03:00",
@@ -168,9 +168,9 @@
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "e2769f7beff5215e9a3cc7988c15d1de6784b523",
+    "head": "068021440243dc4e2eb7ab98debe5fe119a4d7ac",
     "buildSourceSha": "e2769f7beff5215e9a3cc7988c15d1de6784b523",
-    "publishedSha": "c34fc20d4",
+    "publishedSha": "068021440243dc4e2eb7ab98debe5fe119a4d7ac",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -343,6 +343,11 @@
       "revision": 34,
       "at": "2026-09-12T14:35:57-03:00",
       "summary": "Build QA final sobre origin/dev477e6c8df passou em99.1s; servidor PID7476/porta3014 e mesma aba Chrome recarregada; UI/E2E não promovida."
+    },
+    {
+      "revision": 35,
+      "at": "2026-09-12T14:47:00-03:00",
+      "summary": "Revisão de entrega: corrigido o head publicado para 068021440; handoff, evidências e metadados conferidos na branch remota; recibo direto enviado ao C0, sem novo teste nem nova mutação."
     }
   ]
 }
