@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 78,
+  "revision": 79,
   "round": "E2-R09-20260912-1542",
-  "updatedAt": "2026-09-12T15:59:05.912016-03:00",
+  "updatedAt": "2026-09-12T19:00:38.782034+00:00",
   "app": "Codex",
   "modelo": "gpt-6-astra / medium (configuracao declarada por C0)",
   "conversa": "R09 G5 Realm interno e Back-end",
@@ -29,7 +29,7 @@
     ],
     "foraDoRecorte": "UI, auditoria ampla, Etapa 3, SQL sem espelho/posse, remoto/deploy, inventario e rastreadores C0"
   },
-  "primeiroGate": "G1: revisar provas existentes groups.members/location e Avaliacoes; publicar contratos e lacunas BE sem repetir API/SQL verdes",
+  "primeiroGate": "G1/C0: prova real Turmas (vinculo/Local e negativas); Avaliacoes confirmar aluno elegivel antes de nota, reutilizando diario R08. Posse SQL/E2E pendente.",
   "provaLocal": "R09: nenhum teste de produto executado; ACK documental. Provas R08 permanecem historicas.",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -1243,5 +1243,26 @@
     "novosAceites": [],
     "pacotesNovos": [],
     "memoria": "no-op: nenhuma regra duravel nova"
+  },
+  "checkpointR09": {
+    "revision": 79,
+    "round": "E2-R09-20260912-1542",
+    "feito": "Revisao focal das provas existentes G1 concluida; sem defeito SQL demonstrado ou promocao BE",
+    "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/handoff.md",
+    "actionIds": [
+      "groups.members",
+      "groups.location",
+      "activities.assessment",
+      "assessments.entry",
+      "assessments.gradebook",
+      "assessments.detail"
+    ],
+    "consumidora": "G1 estrutura",
+    "testesProdutoExecutados": 0,
+    "novosAceites": [],
+    "deltas": [],
+    "proximoGate": "G1/C0: prova real Turmas (vinculo/Local e negativas); Avaliacoes confirmar aluno elegivel antes de nota, reutilizando diario R08. Posse SQL/E2E pendente.",
+    "donoDesbloqueio": "C0/G1 e G0 para posse de espelho",
+    "status": "checkpoint curto publicado; aguarda confirmacao do proximo pacote/recursos sem polling"
   }
 }
