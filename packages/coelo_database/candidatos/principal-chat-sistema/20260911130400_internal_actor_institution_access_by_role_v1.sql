@@ -1,6 +1,8 @@
 -- 20260911130400_internal_actor_institution_access_by_role_v1.sql
 -- Rodada 6, frente principal-chat-sistema. P48 (Owner, 11/09/2026 16:45,
--- opcao A): o sincronizador "Superadmin ve tudo" (130000) passa a distinguir o
+-- opcao A). Reescrito (21:30) sobre o corpo do 20260912210100 (realm-interno),
+-- que ja esta em producao: escopo por superadmin_internal_actor_scope_targets()
+-- e reconciliacao fora do escopo preservadas. O sincronizador passa a distinguir o
 -- papel interno do usuario Superadmin:
 --   * owner      -> membership owner + papel de sistema institution_admin
 --                   (como hoje);
@@ -22,8 +24,8 @@ begin
   if current_user not in ('postgres', 'supabase_admin') then
     raise insufficient_privilege using message = 'must run as postgres';
   end if;
-  if to_regprocedure('app_private.superadmin_internal_actor_institution_access_sync()') is null then
-    raise object_not_in_prerequisite_state using message = 'pacote 20260911130000 e prerequisito';
+  if to_regprocedure('app_private.superadmin_internal_actor_scope_targets()') is null then
+    raise object_not_in_prerequisite_state using message = 'pacote 20260912210100 (realm-interno) e prerequisito';
   end if;
   if to_regclass('public.institution_permissions') is null
      or to_regclass('public.institution_role_permissions') is null then
@@ -59,7 +61,10 @@ begin
 end
 $reader$;
 
--- 2. Sincronizador por papel interno.
+-- 2. Sincronizador por papel interno, sobre o corpo do 20260912210100
+--    (realm-interno): o escopo vem de superadmin_internal_actor_scope_targets()
+--    (platform -> toda instituicao; institution -> so a instituicao do vinculo)
+--    e a reconciliacao fora do escopo continua desativando.
 create or replace function app_private.superadmin_internal_actor_institution_access_sync()
 returns integer
 language plpgsql
@@ -80,58 +85,62 @@ begin
   order by created_at limit 1;
   if admin_role_id is null or reader_role_id is null then return 0; end if;
 
-  -- Alvo por espelho interno ativo: papel interno -> (role_code da membership, papel de sistema).
+  -- Alvo = escopo (210100) x papel interno (P48): owner -> owner/institution_admin;
+  -- operations -> professional/institution_reader; demais -> sem alvo.
   drop table if exists internal_actor_targets;
   create temp table internal_actor_targets on commit drop as
-  select actor.person_id,
+  select t.person_id, t.institution_id, t.institution_status,
          pr.code as platform_role_code,
          case pr.code when 'owner' then 'owner' when 'operations' then 'professional' end as membership_role_code,
          case pr.code when 'owner' then admin_role_id when 'operations' then reader_role_id end as target_role_id
-  from app_private.superadmin_internal_actor_people actor
+  from app_private.superadmin_internal_actor_scope_targets() t
+  join app_private.superadmin_internal_actor_people actor on actor.person_id = t.person_id
   join public.platform_memberships pm on pm.id = actor.platform_membership_id
-    and pm.status = 'active' and pm.revoked_at is null
   join public.platform_roles pr on pr.id = pm.role_id;
 
-  -- 2a. Revoga papeis de sistema concedidos pelo sincronizador que nao batem com o alvo
-  -- (ex.: institution_admin dado a operations pelo 130000; ou papel interno rebaixado).
+  -- 2a. Reconciliacao (210100): membership de espelho interno fora do escopo, de
+  -- espelho sem platform_membership ativa ou de papel interno sem alvo deixa de valer.
+  update public.institution_memberships m set status = 'inactive', revoked_at = now()
+  from app_private.superadmin_internal_actor_people actor
+  where m.person_id = actor.person_id
+    and m.status = 'active' and m.revoked_at is null
+    and not exists (
+      select 1 from internal_actor_targets t
+      where t.person_id = m.person_id and t.institution_id = m.institution_id
+        and t.target_role_id is not null
+    );
+  get diagnostics n = row_count; touched := touched + n;
+
+  -- 2b. Papel de sistema que nao bate com o alvo (ex.: institution_admin dado a
+  -- operations pelo 130000/210100; papel interno rebaixado ou promovido).
   update public.institution_role_assignments a
      set status = 'inactive', updated_at = now(), version = a.version + 1
     from public.institution_memberships m
-    join internal_actor_targets t on t.person_id = m.person_id
+    join internal_actor_targets t on t.person_id = m.person_id and t.institution_id = m.institution_id
    where a.membership_id = m.id
      and a.status = 'active' and a.scope_kind = 'institution'
      and a.role_id in (admin_role_id, reader_role_id)
      and a.role_id is distinct from t.target_role_id;
   get diagnostics n = row_count; touched := touched + n;
 
-  -- 2b. Espelhos sem alvo (auditor, content, support...) perdem a membership automatica.
-  update public.institution_memberships m
-     set status = 'inactive', revoked_at = now()
-    from internal_actor_targets t
-   where m.person_id = t.person_id and t.target_role_id is null
-     and m.status = 'active' and m.revoked_at is null
-     and m.role_code in ('owner', 'professional');
-  get diagnostics n = row_count; touched := touched + n;
-
-  -- 2c. Membership com o role_code do alvo em toda instituicao ativa.
+  -- 2c. role_code da membership acompanha o alvo.
   update public.institution_memberships m
      set role_code = t.membership_role_code
     from internal_actor_targets t
-   where m.person_id = t.person_id and t.target_role_id is not null
+   where m.person_id = t.person_id and m.institution_id = t.institution_id
+     and t.target_role_id is not null
      and m.status = 'active' and m.revoked_at is null
      and m.role_code in ('owner', 'professional')
      and m.role_code <> t.membership_role_code;
   get diagnostics n = row_count; touched := touched + n;
 
   insert into public.institution_memberships (person_id, institution_id, role_code, status, scope_kind)
-  select t.person_id, inst.id, t.membership_role_code, 'active', 'institution'
+  select t.person_id, t.institution_id, t.membership_role_code, 'active', 'institution'
   from internal_actor_targets t
-  cross join public.institutions inst
-  where t.target_role_id is not null
-    and inst.status = 'active' and inst.deleted_at is null
+  where t.target_role_id is not null and t.institution_status = 'active'
     and not exists (
       select 1 from public.institution_memberships m
-      where m.person_id = t.person_id and m.institution_id = inst.id
+      where m.person_id = t.person_id and m.institution_id = t.institution_id
         and m.status = 'active' and m.revoked_at is null
     );
   get diagnostics n = row_count; touched := touched + n;
@@ -140,10 +149,10 @@ begin
   insert into public.institution_role_assignments (membership_id, role_id, scope_kind, status)
   select m.id, t.target_role_id, 'institution', 'active'
   from public.institution_memberships m
-  join internal_actor_targets t on t.person_id = m.person_id and t.target_role_id is not null
-  join public.institutions inst on inst.id = m.institution_id
-    and inst.status = 'active' and inst.deleted_at is null
+  join internal_actor_targets t
+    on t.person_id = m.person_id and t.institution_id = m.institution_id
   where m.status = 'active' and m.revoked_at is null
+    and t.target_role_id is not null and t.institution_status = 'active'
     and not exists (
       select 1 from public.institution_role_assignments a
       where a.membership_id = m.id and a.role_id = t.target_role_id
@@ -155,6 +164,7 @@ begin
   return touched;
 end
 $$;
+alter function app_private.superadmin_internal_actor_institution_access_sync() owner to postgres;
 revoke all on function app_private.superadmin_internal_actor_institution_access_sync() from public, anon, authenticated;
 
 -- 3. Backfill agora (os gatilhos do 130000 continuam chamando esta funcao).
