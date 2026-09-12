@@ -1,12 +1,12 @@
 {
-  "revision": 104,
+  "revision": 105,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:53:00Z",
+  "updatedAt": "2026-09-12T19:55:00Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3861,7 +3861,7 @@
       "dono": "C0",
       "inicio": "2026-09-12T19:31:15.648Z",
       "container": "supabase_db_coelo_baseline",
-      "estado": "teste transacional focal forms_answer_media_r2_v1; sem migration ou escrita remota. Hashes authorizer e audit_actor iguais producao/espelho."
+      "estado": "lote60 pronto; aplicar somente candidato NULL guard; demais ACLs ja corretas em producao"
     },
     "ativas": [
       "C0",
@@ -3869,7 +3869,7 @@
     ],
     "atribuicoesPendentes": [],
     "e2eLiberado": true,
-    "sqlLiberado": false,
+    "sqlLiberado": true,
     "runtime": {
       "dono": "G1",
       "pid": 15452,
@@ -4138,7 +4138,10 @@
     "proximo": 60,
     "dono": "C0",
     "candidato": "20260912193603_forms_answer_media_authorization_null_guard_v1.sql",
-    "status": "somente espelho;42PASS pertinentes;8FAIL preexistentes na suite ampliada; producao bloqueada ate esclarecer gate",
-    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
+    "status": "VERDE112PASS unicos:25focal+17behavioral+70security;backup schema/dados completo/hash conferido; proxima operacao aplicar lote60 forward-only",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
+    "regressoes": "8falhas iniciais resolvidas:4 testes desatualizados e ACL/cron do espelho divergentes. Sem mudanca remota ampla; jobs do espelho desativados.",
+    "espelho": "supabase_db_coelo_baseline; candidato aplicado e provas112PASS",
+    "backup": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
   }
 }

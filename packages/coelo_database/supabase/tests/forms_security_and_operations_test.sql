@@ -259,7 +259,11 @@ select ok(
   pg_get_functiondef('app_private.form_reconcile_occurrence_audience(uuid)'::regprocedure)
     like '%form_participation_responders%'
   and pg_get_functiondef('app_private.form_resolve_child_audience(uuid)'::regprocedure)
-    like '%guardian_context_permissions%',
+    like '%public.child_contexts%'
+  and pg_get_functiondef('app_private.form_reconcile_occurrence_audience(uuid)'::regprocedure)
+    like '%guardian_context_permissions%'
+  and pg_get_functiondef('app_private.form_reconcile_occurrence_audience(uuid)'::regprocedure)
+    like '%permission.status = ''active'' and permission.can_view%',
   'child family participation derives only normalized child contexts and responders'
 );
 
@@ -269,7 +273,7 @@ select ok(
   and pg_get_functiondef('app_private.form_enqueue_due_reminders(interval)'::regprocedure)
     like '%delivery_state = ''cancelled''%'
   and pg_get_functiondef('app_private.form_enqueue_due_reminders(interval)'::regprocedure)
-    like '%response_state = ''pending''%',
+    like '%response_state in (''pending'', ''draft'')%',
   'reminders use the contextual outbox and cancel after response or lost eligibility'
 );
 
@@ -284,7 +288,8 @@ select ok(
 select ok(
   (select bool_and(c.relrowsecurity and c.relforcerowsecurity)
      from pg_class c join pg_namespace n on n.oid = c.relnamespace
-    where n.nspname = 'public' and c.relname like 'form_%'),
+    where n.nspname = 'public' and c.relname like 'form_%'
+      and c.relkind in ('r', 'p')),
   'all public form tables force RLS'
 );
 
@@ -311,9 +316,9 @@ select ok(
 );
 
 select is(
-  (select count(*) from cron.job where jobname like 'coelo-forms-%'),
-  3::bigint,
-  'forms module installs no more than its three approved cron jobs'
+  (select array_agg(jobname::text order by jobname) from cron.job where jobname like 'coelo-forms-%'),
+  array['coelo-forms-media-expire','coelo-forms-occurrences','coelo-forms-reminders','coelo-forms-worker-dispatch']::text[],
+  'forms cron allowlist includes the R06 media cleanup dispatcher and no extra job'
 );
 
 select ok(

@@ -1,6 +1,6 @@
 ---
 source: C0 R09; pgTAP no espelho; preflight Supabase; ADR0034
-status: candidato-local; producao-nao-aplicada
+status: preflight-verde; aguardando-aplicacao-serializada
 generated_at: 2026-09-12
 ---
 
@@ -38,3 +38,24 @@ Backup lógico completo fora de Git, conforme ADR0034 Decisão8:
 Próximo gate C0: classificar as oito falhas sem enfraquecer invariantes,
 validar regressões pertinentes e renovar preflight antes de aplicar forward-only.
 Sem promoção FE, BE ou E2E por este candidato local.
+
+## Gate resolvido ? revis?o105, 16:55 BRT
+
+As oito falhas foram classificadas e resolvidas, sem alterar produ??o:
+41 conferia guardian_context_permissions na fun??o errada (a autoriza??o est?
+na reconcilia??o de responders);42 exclu?a draft, j? previsto na implementa??o;
+44 inclu?a ?ndices no conjunto de tabelas RLS;47 ignorava o quarto job de m?dia
+j? aplicado na R06 (migration20260911210900). Os testes agora conferem o
+contrato vigente sem retirar a autoriza??o, a nega??o nem a allowlist exata.
+As falhas53/57/58/70 eram ACLs extras do espelho; produ??o foi medida e j?
+nega execute/UPDATE. Reconciliado somente localmente. Os tr?s crons antigos
+faltantes foram restaurados com comandos can?nicos e TODOS os quatro jobs
+locais de forms desativados antes do commit, evitando execu??o de dispatch.
+N?o houve chamada remota nem leitura de segredo para essa reconcilia??o.
+
+Resultado: su?te ampliada70PASS/0FAIL/0SKIP/native0, arquivo
+lote60-reconciled-security.log. Total pertinente ?nico112PASS (25+17+70).
+Falhas e logs anteriores ficam preservados, n?o somados como novos testes.
+Schema e dados t?m marcador dump complete e SHA256 reconferido. Preflight
+renovado, ledger59 presente e candidato ausente. Lote60 liberado para aplica??o
+somente do NULL guard; n?o reaplicar lotes anteriores nem SQL de reconcilia??o.

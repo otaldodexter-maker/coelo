@@ -1,0 +1,76 @@
+BEGIN
+CREATE EXTENSION
+CREATE FUNCTION
+1..70
+ok 1 - applications exist
+ok 2 - audience rules are normalized
+ok 3 - schedules exist
+ok 4 - reminders exist
+ok 5 - an application accepts independent schedules
+ok 6 - occurrences retain their schedule and deduplicate per schedule
+ok 7 - schedule RPCs and projections address independent schedules by id and version
+ok 8 - generation and reminders stay schedule-scoped and drafts cannot move directly
+ok 9 - occurrences freeze a form version
+ok 10 - participations exist independently
+ok 11 - context responders are normalized
+ok 12 - responses exist
+ok 13 - answers use typed columns
+ok 14 - choice answers use child rows
+ok 15 - media answers use child rows
+ok 16 - response revisions exist
+ok 17 - occurrence metrics exist
+ok 18 - scope metrics exist
+ok 19 - file jobs exist
+ok 20 - command receipts are private
+ok 21 - worker jobs are private
+ok 22 - multipart uploads and their parts are normalized in the private schema
+ok 23 - multipart persistence validates state, monotonic position, byte progress and checksums
+ok 24 - anonymous responses cannot persist a participation correlation key
+ok 25 - anonymous response identity is constrained
+ok 26 - anonymous media stores a secret hash instead of an actor identifier
+ok 27 - idempotency binds request id to actor command version and payload hash
+ok 28 - lifecycle commands enforce optimistic concurrency
+ok 29 - hidden answers are rejected server-side
+ok 30 - response mutations enforce typed catalog bounds and reject forged or duplicate choices
+ok 31 - submission requires every visible required answer
+ok 32 - every response mutation rechecks eligibility and action state without persisting correlation
+ok 33 - a submitted response cannot be submitted again
+ok 34 - anonymous editing stores and verifies only a secret hash
+ok 35 - submitted responses reopen for authorized editing without anonymous correlation
+ok 36 - anonymous idempotency does not create an actor-to-response command receipt
+ok 37 - anonymous media avoids actor-linked receipts and authorizes with its opaque secret
+ok 38 - worker claims are leased and non-blocking
+ok 39 - occurrence generation is timezone-aware, recurrence-aware and idempotent
+ok 40 - audience reconciliation deduplicates response units and records lost eligibility
+ok 41 - child family participation derives only normalized child contexts and responders
+ok 42 - reminders use the contextual outbox and cancel after response or lost eligibility
+ok 43 - anonymous participation export requires Owner and justification
+ok 44 - all public form tables force RLS
+ok 45 - browser roles have no direct form table privileges
+ok 46 - tenant triggers reject forged audience participation and media links
+ok 47 - forms cron allowlist includes the R06 media cleanup dispatcher and no extra job
+ok 48 - worker dispatch reads opaque credentials from Vault without embedding secrets
+ok 49 - only authenticated clients execute public form RPCs
+ok 50 - published definitions and identity mode are immutable
+ok 51 - hot occurrence scan uses a partial index
+ok 52 - worker claim uses a partial index
+ok 53 - export snapshots are bounded, protected, query valid participation data, and expose media only through the authorized route
+ok 54 - export and cleanup workers expose only lease-bound server RPCs
+ok 55 - export transitions and cleanup snapshots bind work to a current worker lease
+ok 56 - multipart lifecycle exposes explicit private worker transitions
+ok 57 - multipart transitions require a current export lease and remain service-only
+ok 58 - multipart resume snapshot is ordered, lease-bound and service-only
+ok 59 - hierarchy RPC and materialized scope rebuild are installed
+ok 60 - monitor hierarchy is capability-gated, tenant-scoped and cursor-paginated
+ok 61 - selected monitor scope changes aggregate metrics only after form and tenant validation
+ok 62 - scope projection rebuild stays private while the guarded RPC is callable
+ok 63 - directory derives operational situations from occurrence windows without persisting them
+ok 64 - asset reservation outlives the two-hour signed upload token with margin
+ok 65 - response answers can attach only assets owned by that identified or anonymous response actor
+ok 66 - asset prepare serializes the five-image quota and never replays an expired anonymous reservation
+ok 67 - verification mismatch commits the discarded state before the Edge handler reports failure
+ok 68 - administrative media reads require attached assets and artifact cleanup closes multipart uploads
+ok 69 - notification dispatch claims outside-network work with a lease and persists bounded retry backoff
+ok 70 - notification delivery state is service-only while recipients retain read acknowledgement access
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
