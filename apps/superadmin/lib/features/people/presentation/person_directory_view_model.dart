@@ -54,14 +54,22 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
         }.values.toList(growable: false);
   List<PersonFilterOption> get visibleMunicipalities => _query.stateCodes.isEmpty
       ? const []
-      : _filterOptions.municipalities
-            .where((item) => _query.stateCodes.contains(item.stateCode))
-            .toList(growable: false);
+      : {
+          for (final item in _filterOptions.municipalities.where(
+            (item) => _query.stateCodes.contains(item.stateCode),
+          ))
+            item.id: item,
+        }.values.toList(growable: false);
   List<PersonFilterOption> get visibleNeighborhoods => _query.municipalityIds.isEmpty
       ? const []
-      : _filterOptions.neighborhoods
-            .where((item) => _query.municipalityIds.contains(item.municipalityId))
-            .toList(growable: false);
+      : {
+          for (final item in _filterOptions.neighborhoods.where(
+            (item) =>
+                _query.municipalityIds.contains(item.municipalityId) &&
+                _query.stateCodes.contains(item.stateCode),
+          ))
+            item.id: item,
+        }.values.toList(growable: false);
 
   Future<void> load() => _load(_query);
   Future<void> retry() => _load(_query);
@@ -180,8 +188,9 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
 
   Future<void> setMunicipalities(Set<String> value) {
     final neighborhoods = _query.neighborhoodIds.where((id) {
-      final option = _filterOptions.neighborhoods.where((item) => item.id == id).firstOrNull;
-      return option != null && value.contains(option.municipalityId);
+      return _filterOptions.neighborhoods.any(
+        (item) => item.id == id && value.contains(item.municipalityId),
+      );
     }).toSet();
     return _replace(_copy(municipalityIds: value, neighborhoodIds: neighborhoods));
   }
