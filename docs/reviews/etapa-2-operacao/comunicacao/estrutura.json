@@ -1,22 +1,22 @@
 {
  "grupo": "estrutura",
- "revision": 91,
+ "revision": 92,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T14:02:00-03:00",
+ "updatedAt": "2026-09-12T14:14:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
  "branch": "work/etapa2-r08-estrutura",
-  "head": "4ecb4215e; executor de Avaliações com projeção exata de período",
+  "head": "a0a6d5b5c; executor de Avaliações com resume seguro publicado",
  "upstream": "origin/work/etapa2-r08-estrutura",
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20; runner de Avaliações ganhou dry-run autenticado, payload 180350, replay e guardas de alvo/ACK/reload, compilado localmente.",
-  "pendente": "Executor de Avaliações: período/roster/versões/replay validados no código, mas --resume idempotente ainda bloqueia execução. Chrome/rota real e groups.location continuam pendentes.",
-  "sha": "4ecb4215e; executor bloqueado até resume G5, sem mutação"
+  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20; runner de Avaliações ganhou dry-run autenticado, payload 180350, replay, projeção exata e resume seguro, compilado localmente.",
+  "pendente": "Executor de Avaliações aguarda revisão e ACK G5/C0 antes de --execute; Chrome/rota real e groups.location continuam pendentes.",
+  "sha": "a0a6d5b5c; resume seguro aguardando revisão G5/C0, sem mutação"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
