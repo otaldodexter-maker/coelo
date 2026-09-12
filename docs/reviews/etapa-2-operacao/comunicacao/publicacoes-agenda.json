@@ -1,15 +1,15 @@
 {
-  "revision": 73,
+  "revision": 74,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "d263f8b93 (merge do ciclo 120; inclui origin/dev 7cc6d4e7b e deltas R08 ate 5ed2c0b1d)",
+  "head": "4603ce35c (recibo do ciclo 120; revisão focal G3 adicionada nesta revisão)",
   "base": "origin/dev 7cc6d4e7b incorporado por merge d263f8b93",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:05:06-03:00",
+  "updatedAt": "2026-09-12T13:08:58-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T13:05:06-03:00",
-    "sha": "d263f8b93",
+    "checkpoint": "2026-09-12T13:08:58-03:00",
+    "sha": "4603ce35c",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2607,6 +2607,15 @@
       "verification": "analise read-only; valor vazio do select confirmado como string vazia; Flutter nao executado",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/groups-location-source-cache-review.md",
       "status": "reviewed-no-concrete-defect-not-executed"
+    },
+    "g3AnonymousEditSecretReview": {
+      "commit": "72e6e6f22",
+      "scope": "identidade project/account/occurrence, callbacks obsoletos, persistência antes de openResponseDraft e erro/retry",
+      "result": "store e página sem defeito concreto nos focos; rota produtiva não passa anonymousEditSecrets e mantém a resposta anônima indisponível",
+      "requiredComposition": "C0 deve criar instância estável fora de build com projeto e usuário autenticado canônicos, trocar junto do contexto e passá-la à rota normal",
+      "verification": "revisão somente leitura; Flutter, Chrome, SQL, deploy e produção não tocados",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g3-anonymous-edit-secret-review.md",
+      "status": "reviewed-package-sound-production-composition-pending"
     }
   },
   "r07History": {
