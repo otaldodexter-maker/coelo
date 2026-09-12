@@ -1,6 +1,6 @@
 ---
 source: "G7 R09 drafts at b99a67f4e01eecb1e8cdaaf425387285f5829078"
-status: "reviewed-read-only; corrections-sent-to-g7"
+status: "reviewed-read-only; final-package-accepted"
 generated_at: "2026-09-12"
 ---
 
@@ -44,3 +44,16 @@ Parecer sobre `b99a67f4e`: plano aproveitável com correções; prompts ainda n�
 aceitos como pacote final até os nove recortes e a parada visual de G6 estarem
 explícitos.
 
+## Corretivo e aceite
+
+`22d119de53e743b76c9c3516f504d2804d78740a` incorporou reconciliação R08,
+reuso de provas, `action_id` explícito, censo na primeira janela e o gate G6
+completo. A revisão encontrou ainda o bloco legado `G1 + G4 — avaliações`, que
+duplicava os prompts individuais e poderia repetir o runner.
+
+`4e5fd717709602ba30d62b5af094a529eb21d82a` remove somente essa duplicata. A
+estrutura final contém exatamente C0 e G0 a G8; G6 para diante da decisão do
+Owner e não reabre API, P50, 10.000 versus 4.000 ou provas sem delta.
+
+Parecer final: pacote aprovado para integração pelo C0; R09 permanece não
+iniciada.

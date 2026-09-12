@@ -1,15 +1,15 @@
 {
-  "revision": 88,
+  "revision": 89,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "36721cf35 (revisão dos drafts R09 G7 nesta revisão)",
+  "head": "fcc69a55d (aceite final dos drafts R09 G7 nesta revisão)",
   "base": "origin/dev 7d2b66a3e incorporado por merge 04b37ad4c",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T14:25:58.6078809-03:00",
+  "updatedAt": "2026-09-12T14:29:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2702,7 +2702,12 @@
       ],
       "requiredCorrections": "reconcile final R08 state before H28/assessments/E2E; explicit pending action IDs; nine G0-G8 prompts; G6 stops six R before Owner path/component/crop/footer decision and does not repeat API/P50/10k evidence",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/r09-g7-draft-review.md",
-      "status": "reviewed-corrections-sent-final-package-pending"
+      "correctiveCommits": [
+        "22d119de53e743b76c9c3516f504d2804d78740a",
+        "4e5fd717709602ba30d62b5af094a529eb21d82a"
+      ],
+      "finalVerification": "exactly C0 plus G0-G8 headings; duplicate G1+G4 block removed; G6 stop and evidence reuse explicit",
+      "status": "reviewed-final-package-accepted"
     }
   },
   "r07History": {
