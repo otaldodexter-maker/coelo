@@ -39,8 +39,8 @@ insert into public.groups(id,institution_id,unit_id,name,group_type,handle,statu
  ('a2800000-0000-4000-8000-000000000122','a2800000-0000-4000-8000-000000000102','a2800000-0000-4000-8000-000000000112','H28 Turma B','class','h28.turma.b','active'),
  ('a2800000-0000-4000-8000-000000000123','a2800000-0000-4000-8000-000000000101','a2800000-0000-4000-8000-000000000111','H28 Turma A2','class','h28.turma.a2','active');
 insert into public.institution_roles(id,institution_id,code,name,is_system,status,max_scope_kind) values
- ('a2800000-0000-4000-8000-000000000131',null,'h28-global-a','H28 Global A',false,'active','institution'),
- ('a2800000-0000-4000-8000-000000000132',null,'h28-global-b','H28 Global B',false,'active','institution');
+ ('a2800000-0000-4000-8000-000000000131',null,'h28-global-a','H28 Global A',true,'active','institution'),
+ ('a2800000-0000-4000-8000-000000000132',null,'h28-global-b','H28 Global B',true,'active','institution');
 insert into public.institution_memberships(id,person_id,institution_id,role_code,status,scope_kind) values
  ('a2800000-0000-4000-8000-000000000141','a2800000-0000-4000-8000-000000000041','a2800000-0000-4000-8000-000000000102','h28-global-b','active','institution'),
  ('a2800000-0000-4000-8000-000000000142','a2800000-0000-4000-8000-000000000042','a2800000-0000-4000-8000-000000000101','h28-global-a','active','institution'),
