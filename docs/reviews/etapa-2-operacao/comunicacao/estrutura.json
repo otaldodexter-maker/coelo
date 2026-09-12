@@ -1,22 +1,22 @@
 {
  "grupo": "estrutura",
- "revision": 96,
+ "revision": 97,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T14:23:00-03:00",
+ "updatedAt": "2026-09-12T14:31:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
  "branch": "work/etapa2-r08-estrutura",
-  "head": "273e5abed; executor de Avaliações com cinco guards offline",
+  "head": "execução API autorizada; commit pendente deste checkpoint",
  "upstream": "origin/work/etapa2-r08-estrutura",
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20 com hashes materializados; runner de Avaliações ganhou dry-run autenticado, payload 180350, replay, projeção exata e resume seguro vinculado à turma, com cinco guards offline 5/5. Preflight remoto atual confirmou alvo único e configuration_read null.",
-  "pendente": "Executor de Avaliações aguarda arquivo ACK nominal C0 para --execute; Chrome/rota real e groups.location continuam pendentes.",
-  "sha": "273e5abed; G5 aprovado, aguardando ACK C0, sem mutação"
+  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20 com hashes materializados; Avaliações executou sob ACK C0: configuração ativa, período aberto e diário draft persistido/recarregado, exit 0; cinco guards offline 5/5.",
+  "pendente": "Chrome/rota real; lançamento e transições do diário; groups.location UI continuam pendentes e fora do ACK executado.",
+  "sha": "manifesto assessments-api-execution-20260912.json; commit pendente deste checkpoint"
  },
  "ackInputAvaliacoes": {
   "measuredAt": "2026-09-12T14:13:00-03:00",

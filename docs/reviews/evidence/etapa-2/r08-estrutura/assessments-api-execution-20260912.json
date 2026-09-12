@@ -1,0 +1,106 @@
+{
+  "mode": "execute",
+  "mutations": true,
+  "measured_at": "2026-09-12T17:30:19.008845+00:00",
+  "request_ids": {
+    "save_configuration": "cd60049c-f06e-452b-a2ae-5c207d04849d",
+    "activate_configuration": "cb2060b4-e78b-4ef1-b84c-cb783ce11c6d",
+    "save_gradebook": "1a8b0870-38d5-444a-abd5-d823032c8952",
+    "submit": "de5cdb2b-5fe3-4430-be73-d56ea65393c8",
+    "review": "f8103e06-617b-4aab-8972-91e0b402f46d",
+    "return": "f445a81c-4ce3-411b-82a2-cffb7f76f1e3"
+  },
+  "login_http_status": 200,
+  "context_options": {
+    "http_status": 200,
+    "keys": [
+      "assignments",
+      "periods"
+    ],
+    "assignment_count": 1,
+    "period_count": 0,
+    "strict_projection": true
+  },
+  "closing_queue": {
+    "http_status": 200
+  },
+  "executor": {
+    "enabled": true,
+    "ack_file": "docs/reviews/evidence/etapa-2/r08-coordenacao/assessments-execution-ack.json",
+    "assignment_id": "41e161da-ebaa-4fed-b0ba-132640e6a59f",
+    "plan": {
+      "save_configuration": {
+        "request_id": "cd60049c-f06e-452b-a2ae-5c207d04849d",
+        "configuration_id": null,
+        "expected_version": 0,
+        "payload": {
+          "activity_id": "95b98978-19e2-43ba-aa0c-70ae81557e08",
+          "institution_id": "190dd028-3125-452d-8502-612bfa1029de",
+          "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+          "periodicity": "annual",
+          "result_scale_kind": "numeric_0_10",
+          "scale_options": {},
+          "concepts": [],
+          "periods": [
+            {
+              "name": "R08 sint\u00e9tico",
+              "ordinal": 1,
+              "academic_year": 2026,
+              "starts_on": "2026-09-12",
+              "ends_on": "2026-12-31",
+              "entry_closes_at": "2026-12-31T20:00:00-03:00",
+              "family_release_at": "2026-12-31T20:00:00-03:00",
+              "timezone": "America/Sao_Paulo"
+            }
+          ],
+          "allow_final_override": false,
+          "instruments": [
+            {
+              "name": "Instrumento R08",
+              "weight": 100,
+              "sort_order": 0
+            }
+          ],
+          "categories": []
+        }
+      },
+      "activate_request_id": "cb2060b4-e78b-4ef1-b84c-cb783ce11c6d",
+      "gradebook_request_id": "1a8b0870-38d5-444a-abd5-d823032c8952"
+    },
+    "state": "complete",
+    "save": {
+      "id": "833a89d8-466f-4ff4-8ab9-4ffb7f33a1cb",
+      "status": "draft",
+      "version": 1,
+      "replayed": false,
+      "correlation_id": "cda726fe-6cbd-4001-8d55-f1810bf62b61"
+    },
+    "activate": {
+      "id": "833a89d8-466f-4ff4-8ab9-4ffb7f33a1cb",
+      "status": "active",
+      "version": 2,
+      "replayed": false,
+      "correlation_id": "19cd7103-cd61-4028-9ce8-52acc1d25bc7"
+    },
+    "gradebook": {
+      "request_id": "1a8b0870-38d5-444a-abd5-d823032c8952",
+      "gradebook_id": null,
+      "expected_version": 0,
+      "payload": {
+        "activity_group_link_id": "41e161da-ebaa-4fed-b0ba-132640e6a59f",
+        "period_id": "c4e38ada-e062-4466-a22d-88dca177fa30",
+        "configuration_id": "833a89d8-466f-4ff4-8ab9-4ffb7f33a1cb",
+        "students": []
+      },
+      "reason": null
+    },
+    "gradebook_result": {
+      "id": "d2c945d8-3809-4d84-b836-2bc6da7c381d",
+      "status": "draft",
+      "version": 1,
+      "replayed": false,
+      "correlation_id": "2df1eb97-62b5-4a34-bb99-8c97a3ed5c45"
+    }
+  },
+  "logout_http_status": 204
+}
