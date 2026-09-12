@@ -103,6 +103,7 @@ void main() {
       await tester.tap(find.byKey(const Key('form-response-review')));
       await tester.pumpAndSettle();
       await tester.ensureVisible(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
       await tester.tap(find.byKey(const Key('form-response-submit')));
       await tester.pumpAndSettle();
       expect(api.submitCommand, isNotNull);
