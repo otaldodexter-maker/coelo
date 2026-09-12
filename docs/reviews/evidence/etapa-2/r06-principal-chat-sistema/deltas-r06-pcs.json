@@ -159,7 +159,7 @@
     "action_id": "principal.for-you",
     "camada": "frontend",
     "estado_proposto": "verified",
-    "delta": "rota real abre com o contexto real (19); V-2 (degrade e clique inerte) nao aplicado nesta rodada",
+    "delta": "rota real abre com o contexto real (19); V-2 aplicado: faixa do texto dos cards quase opaca (.98 ate 50%) e clique do card informa 'ainda nao esta disponivel' sem navegar; goldens for_you regravados 97/97",
     "evidencia": "captura 19",
     "certificacao": {
       "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/19-para-voce-web.png",
@@ -172,7 +172,7 @@
     "action_id": "principal.profile-view",
     "camada": "frontend",
     "estado_proposto": "verified",
-    "delta": "rota real abre (18); V-1 (avatar abre o Agora, contorno degrade, sombra, botao Acompanhar) nao aplicado nesta rodada",
+    "delta": "rota real abre (18); V-1 parcial: botao Acompanhar de volta (acao honesta) e sombra do avatar igual a do menu flutuante; goldens principal_profile 137/137; avatar->Agora e contorno degrade ficam abertos",
     "evidencia": "captura 18",
     "certificacao": {
       "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/18-perfil-web.png",
@@ -192,6 +192,19 @@
       "revision": "principal-chat-sistema r32",
       "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
       "recordedAt": "2026-09-11T21:04-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.feed",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "V-3 parcial: foto do feed e dos cards do Agora sem esticar (_SpriteImage cobre a caixa com escala uniforme e recorte); goldens principal_happens regravados 91/91; conteiner mobile, separacoes e fontes/cores ficam abertos",
+    "evidencia": "test/features/principal_happens/presentation/goldens/principal_happens_light_1440.png; rota real 20",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/20-acontece-feed-web.png",
+      "revision": "principal-chat-sistema r36",
+      "environment": "golden local + rota real com qa-r06-principal (build anterior a esta correcao)",
+      "recordedAt": "2026-09-11T21:19-03:00"
     }
   }
 ]

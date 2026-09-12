@@ -111,7 +111,7 @@ void main() {
     expect(find.byKey(const Key('principal-global-dock')), findsOneWidget);
     expect(find.text('Colégio Horizonte'), findsOneWidget);
     expect(find.text('Instituição de Ensino'), findsOneWidget);
-    expect(find.text('Acompanhar'), findsNothing);
+    expect(find.text('Acompanhar'), findsOneWidget); // V-1 (Owner, 11/09): o botao voltou
     expect(find.text('Mensagem'), findsOneWidget);
     expect(find.text('Destaques'), findsOneWidget);
     expect(find.text('Vínculos'), findsOneWidget);
@@ -139,7 +139,8 @@ void main() {
 
     expect(find.text('Seguidores'), findsNothing);
     expect(find.text('Seguindo'), findsNothing);
-    expect(find.byKey(const Key('principal-profile-follow')), findsNothing);
+    // V-1 (Owner, 11/09/2026): o botao Acompanhar volta; contagens publicas continuam fora.
+    expect(find.byKey(const Key('principal-profile-follow')), findsOneWidget);
     expect(find.text('Mensagem'), findsOneWidget);
     expect(find.byKey(const Key('principal-profile-tab-acontece')), findsOneWidget);
     expect(find.byKey(const Key('principal-profile-tab-momentos')), findsOneWidget);

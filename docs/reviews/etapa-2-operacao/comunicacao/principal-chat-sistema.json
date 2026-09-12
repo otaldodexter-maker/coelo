@@ -1,6 +1,6 @@
 {
-  "revision": 33,
-  "updated_at": "2026-09-11T21:16-03:00",
+  "revision": 39,
+  "updated_at": "2026-09-11T21:30-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,8 +10,8 @@
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:16 (T0+2h assumido = 21:24). Revisao de 10 minutos em revisao_final_T0_2h. Nao retomo depois de 21:34.",
-  "T0_assumido": "2026-09-11T19:24-03:00 (qa-r06-*.env criados 19:44 = T0+20); T0+2h = 21:24; revisao ate 21:34. Corrigir se coordenacao.json disser outra coisa.",
+  "status": "FINALIZADO 21:30. Resposta ao pedidoDeRevisao2136 em revisao_final_T0_2h. Nao retomo depois de 21:46.",
+  "T0_assumido": "CORRIGIDO pelo coordenacao.json rev 56: T0 = 19:36; T0+2h = 21:36; T0+2h10 = 21:46",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
     "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
@@ -22,12 +22,12 @@
   "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
   "ordem_de_trabalho": [
     "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
-    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish BLOQUEADO NO BACKEND: meal_plan_create_or_update_draft itera p_payload->'scopeRules' com jsonb_array_elements (exige array) e grava o mesmo valor em meal_plans.scope_rules cuja check meal_plans_scope_rules_array_check exige objeto; medido na rota real com os dois formatos (captura 11: 'cannot extract elements from an object'; 23: 'violates check constraint'). O ajuste do cliente (2c377cbd4) foi revertido; correcao e um candidato de backend (RPC deriva as linhas de meal_plan_scopes do mapa e grava o objeto)",
+    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
     "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
     "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
-    "4. principal.for-you e profile-view abrem na rota real (18, 19); V-1/V-2/V-3 nao aplicados; profile-edit nao provado",
+    "4. principal.for-you/profile-view abrem na rota real (18, 19); V-2 APLICADO; V-3 PARCIAL (foto sem esticar); V-1 PARCIAL: botao Acompanhar de volta (acao honesta, sem porta de follow) e sombra do avatar igual a do menu flutuante (goldens principal_profile 137/137); avatar clicavel abrindo o Agora do perfil e contorno degrade quando ha Agora nao visto: nao feitos; profile-edit nao provado",
     "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
-    "6. P48=A: FEITO 060d21e53 candidatos/principal-chat-sistema/20260911130400 (pgTAP 16/16 + regressoes 22/22, 13/13, 17/17, 6/6 no descartavel coelo_pcs6_db)"
+    "6. P48=A: candidato 130400 REESCRITO sobre o 210100 (escopo por scope_targets, reconciliacao preservada) e republicado: scope_root 46/46, hotfix 4/4, by_role 16/16, bridge 22/22"
   ],
   "tests": {
     "principal_real_route_test": "4/4 (08c46b1b7)",
@@ -36,7 +36,9 @@
     "principal_now_publication": "95/95 goldens regravados",
     "principal_moments_publication": "88/88 goldens regravados (legenda 0/220 conforme referencia)",
     "principal_shared/principal_publication_frame_test": "verde (rodape em card sem blur)",
-    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)"
+    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)",
+    "analyze_final": "flutter analyze lib test: No issues found (21:22, 41463a08d)",
+    "regressao_final": "composition_root_sanitization + superadmin_auth_scope + meal_plans: 157/157; principal_happens_composition_gaps + principal_real_route + principal_shared: 27/27; principal_for_you 97/97; principal_happens 91/91; principal_profile 137/137"
   },
   "lotes": [
     {
@@ -86,13 +88,28 @@
   "pacotesProntos": [
     {
       "grupo": "principal-chat-sistema",
-      "commit": "060d21e53",
+      "commit": "commit desta rev",
       "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
       "assunto": "P48=A: institution_reader (so *.read) + sincronizador owner->institution_admin, operations->institution_reader, demais sem vinculo; revoga o que o 130000 deu a operations/auditor (inactive+revoked_at)",
-      "pgTAP": "internal_actor_institution_access_by_role_v1_test 16/16; principal_internal_actor_bridge_v1 22/22; principal_runtime_contexts 13/13; internal_actor_service_person_v1 17/17; happens_feed_owner_visibility_v1 6/6",
+      "pgTAP": "reescrito sobre o 210100: internal_actor_scope_root_v1_test 46/46, internal_actor_scope_root_v1_hotfix_test 4/4, internal_actor_institution_access_by_role_v1_test 16/16, principal_internal_actor_bridge_v1_test 22/22 (clone do espelho com lotes 50+52)",
       "chave_de_composicao": "nenhuma",
       "depois_de_aplicar": "select app_private.superadmin_internal_actor_institution_access_sync() = 0 na segunda chamada; qa-r06-* (owner) mantem 3 contextos",
       "risco": "baixo: so afeta espelhos internos; usuario interno operations perde escrita nas instituicoes (regra P48)"
+    },
+    {
+      "grupo": "principal-chat-sistema",
+      "commit": "commit desta rev",
+      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130500_meal_plan_scope_rules_object_v1.sql",
+      "assunto": "Cardapios: meal_plan_create_or_update_draft_unreceipted aceita scopeRules como objeto (formato do assistente) ou lista; helpers app_private.meal_plan_scope_rules_object/array; grava objeto (check) e deriva meal_plan_scopes",
+      "pgTAP": "meal_plan_scope_rules_object_v1_test 9/9; regressoes 6/6, 6/6; receipts 28/30 e security_lifecycle 21/22 falham so em grants de service_role/anon de funcoes nao tocadas (artefato do clone)",
+      "chave_de_composicao": "nenhuma",
+      "depois_de_aplicar": "esta frente prova meal-plans.create/edit/publish pela tela (payload do assistente, captura 23 deve virar lista com Status)",
+      "risco": "baixo: so os tres pontos de scopeRules mudam no corpo da baseline; wrapper com recibo (190000) intacto",
+      "action_ids": [
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.publish"
+      ]
     }
   ],
   "perguntas_ao_owner_via_coordenador": [],
@@ -104,11 +121,12 @@
   ],
   "blocker": null,
   "perguntas_ao_coordenador": [
-    "CORS do R2 (coelo-media-prod): acrescentar http://127.0.0.1:3009 (sem custo) para a prova de midia dos publicadores. Medido: OPTIONS 204 so para http://localhost:3000, 403 para 127.0.0.1:3009; a moments-media aceita as duas origens (prepare 200 por sonda). A porta 3000 estava em uso por outra frente.",
-    "Aplicar o candidato 20260911130400 (P48=A) na fila; depois de aplicar, o sync deve devolver 0 na segunda chamada."
+    "130400 reescrito sobre o 210100 conforme a retencao (rev 55/57): aplicar na fila; segunda chamada do sync deve devolver 0",
+    "CORS alinhado (21:35): obrigado; a prova de midia dos publicadores fica para a proxima rodada (janela encerrada)",
+    "130500 (scopeRules de Cardapios) aguarda aplicacao; depois disso esta frente reprova create/edit/publish pela tela"
   ],
   "next_step": null,
-  "ack": null,
+  "ack": "coordenacao rev 57 lida (retencao do 130400 e CORS alinhado): 130400 reescrito sobre o 210100 e republicado; capturas 01-10 restauradas na branch",
   "loop": "/loop 15m agendado na abertura",
   "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
   "historico_r05": {
@@ -180,8 +198,8 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:16-03:00",
-    "sha_publicado": "commit desta rev (abaixo: 08c46b1b7, e689033ff, dcd2e3a84, 14abb3b0a, c7a614737, e9c67d9f9, 060d21e53, e0c2dfcf8, 2c377cbd4 e seu revert, 77042bb13); worktree limpa; sem stash; sem WIP",
+    "quando": "2026-09-11T21:30-03:00 (responde ao pedidoDeRevisao2136)",
+    "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema (capturas 01-10 restauradas em 66677e45d); worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
       "meal-plans.list: FE verified (07)",
@@ -189,24 +207,27 @@
       "principal.for-you, principal.profile-view: FE verified (18, 19)",
       "errors.404: FE verified (21)",
       "principal_real_route_test 4/4; suites dos publicadores 67/95/88; meal_plans 140/140 (+2 do contrato scopeRules)",
-      "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes"
+      "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes",
+      "principal.for-you: V-2 aplicado (degrade dos cards) e goldens for_you regravados (97/97)",
+      "acontece.feed / agora.view: V-3 parcial (foto sem esticar: _SpriteImage com cobertura), goldens principal_happens regravados 91/91",
+      "principal.profile-view: V-1 parcial (Acompanhar de volta, sombra do avatar = menu flutuante), goldens principal_profile regravados 137/137"
     ],
     "aberto_com_primeiro_gate": [
       {
         "pendencia": "midia nos publicadores (momentos/agora/acontece create-publish)",
-        "gate": "CORS do R2 para 127.0.0.1:3009 (coordenador); rascunho b173843d v2 salvo"
+        "gate": "CORS alinhado pelo coordenador as 21:35; repetir a prova pela tela na proxima rodada (rascunho b173843d v2 salvo)"
       },
       {
         "pendencia": "meal-plans.create/edit/publish",
-        "gate": "BACKEND: contrato contraditorio de scopeRules em meal_plan_create_or_update_draft (array na iteracao x objeto na check); candidato de backend na proxima rodada (familia meal_plans desta frente)"
+        "gate": "aplicar o candidato 20260911130500 (verde 9/9) e reprovar pela tela"
       },
       {
         "pendencia": "chat.create-group UI / chat.attach cliente",
         "gate": "nao iniciado"
       },
       {
-        "pendencia": "V-1/V-2/V-3",
-        "gate": "nao iniciado"
+        "pendencia": "V-1 restante (avatar abre o Agora do perfil; contorno degrade laranja com Agora nao visto) e V-3 restante (conteiner mobile, separacoes, fontes/cores)",
+        "gate": "nao iniciados"
       },
       {
         "pendencia": "errors.403/409/500/503/retry",
@@ -217,12 +238,12 @@
         "gate": "agendador ausente"
       }
     ],
-    "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (15; apply-tracker-delta OK e validate-trackers PASS na worktree; rastreadores revertidos)",
-    "pacotes_prontos": "candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
+    "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (16; formato do aplicador; ensaiado na worktree, rastreadores revertidos)",
+    "pacotes_prontos": "candidatos/principal-chat-sistema/20260911130400 (P48, reescrito sobre o 210100, 4 suites verdes) e 20260911130500 (scopeRules de Cardapios, 9/9)",
     "duvidas_ao_owner": [],
     "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d na instituicao d0c40000-0000-4000-8000-000000000001; asset 708456ae preparado sem upload; nenhum objeto no R2",
     "chaves_criadas": "nenhuma",
-    "ambiente_encerrado": "Chrome 9410, servidores 3009/3010, cdp_net e o descartavel coelo_pcs6_db encerrados (ultima vez 21:15)",
+    "ambiente_encerrado": "Chrome, servidores e cdp_net encerrados 21:15; descartavel coelo_pcs6_db removido 21:16",
     "handoff": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/handoff.md"
   }
 }

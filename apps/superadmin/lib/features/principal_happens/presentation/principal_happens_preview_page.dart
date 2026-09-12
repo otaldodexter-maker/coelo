@@ -1,3 +1,4 @@
+import 'dart:math' as math;
 import 'dart:async';
 
 import 'package:coelo_tokens/coelo_tokens.dart';
@@ -466,8 +467,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
                     error: _feedError,
                     onRetry: _loadFeed,
                     compact: compact,
-                    onCreatePost: () =>
-                        (widget.onPublishNow ?? widget.onCreatePost)?.call(),
+                    onCreatePost: () => (widget.onPublishNow ?? widget.onCreatePost)?.call(),
                     onMoments: () => widget.onOpenMoments?.call(),
                     onProfile: () => widget.onOpenProfile?.call(),
                     onOpenNow: () => widget.onOpenNow?.call(),
@@ -507,8 +507,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
               selected: PrincipalDestination.home,
               onHome: () {},
               onForYou: () => widget.onOpenForYou?.call(),
-              onPublishNow: () =>
-                  (widget.onPublishNow ?? widget.onCreatePost)?.call(),
+              onPublishNow: () => (widget.onPublishNow ?? widget.onCreatePost)?.call(),
               onMoments: () => widget.onOpenMoments?.call(),
               onSearch: () => widget.onOpenSearch?.call(),
               onMessages: () => widget.onOpenMessages?.call(),
@@ -640,12 +639,7 @@ final class _Feed extends StatelessWidget {
           ),
         if (canLoadMore || loadingMore || loadMoreError != null)
           SliverPadding(
-            padding: EdgeInsets.fromLTRB(
-              horizontal,
-              CoeloSpacing.space3,
-              horizontal,
-              0,
-            ),
+            padding: EdgeInsets.fromLTRB(horizontal, CoeloSpacing.space3, horizontal, 0),
             sliver: SliverToBoxAdapter(
               child: _LoadMoreFooter(
                 loading: loadingMore,
@@ -949,10 +943,7 @@ final class _PublishNowCard extends StatelessWidget {
                     // continua sendo o que responde ao hover.
                     DecoratedBox(
                       key: const Key('principal-happens-publish-now-action'),
-                      decoration: BoxDecoration(
-                        color: colors.primary,
-                        shape: BoxShape.circle,
-                      ),
+                      decoration: BoxDecoration(color: colors.primary, shape: BoxShape.circle),
                       child: SizedBox(
                         width: 44,
                         height: 44,
@@ -1177,11 +1168,7 @@ final class _PostCard extends StatelessWidget {
                     ],
                   ),
                 ),
-                _PostOverflowAction(
-                  index: index,
-                  onWithdraw: onWithdraw,
-                  withdrawing: withdrawing,
-                ),
+                _PostOverflowAction(index: index, onWithdraw: onWithdraw, withdrawing: withdrawing),
               ],
             ),
             if (post.media.isNotEmpty || post.mediaIndices.isNotEmpty) ...[
@@ -1305,10 +1292,7 @@ final class _PostOverflowAction extends StatelessWidget {
       itemBuilder: (context) => [
         const PopupMenuItem<String>(
           value: 'withdraw',
-          child: Text(
-            'Retirar publicação',
-            key: Key('principal-happens-withdraw-label'),
-          ),
+          child: Text('Retirar publicação', key: Key('principal-happens-withdraw-label')),
         ),
       ],
     );
@@ -1873,33 +1857,57 @@ final class _SpriteImage extends StatelessWidget {
   final int index;
   final int count;
 
+  // V-3 (Owner, 11/09/2026): a foto do feed parecia esticada porque cada
+  // quadro do sprite era ajustado com BoxFit.fill a caixa do card. Agora o
+  // quadro (1983/count x 793) cobre a caixa como BoxFit.cover: escala uniforme
+  // pelo maior fator e recorte centralizado.
   @override
   Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => ClipRect(
-      child: OverflowBox(
-        alignment: Alignment.centerLeft,
-        minWidth: constraints.maxWidth * count,
-        maxWidth: constraints.maxWidth * count,
-        minHeight: constraints.maxHeight,
-        maxHeight: constraints.maxHeight,
-        child: Transform.translate(
-          offset: Offset(-constraints.maxWidth * index, 0),
-          child: SizedBox(
-            width: constraints.maxWidth * count,
-            height: constraints.maxHeight,
-            child: Image.asset(
-              asset,
-              fit: BoxFit.fill,
-              semanticLabel: 'Registro da comunidade escolar',
-              errorBuilder: (_, _, _) => ColoredBox(
-                color: Theme.of(context).colorScheme.surfaceContainerHighest,
-                child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+    builder: (context, constraints) {
+      const stripWidth = 1983.0;
+      const stripHeight = 793.0;
+      final frameWidth = stripWidth / count;
+      final scale = math.max(
+        constraints.maxWidth / frameWidth,
+        constraints.maxHeight / stripHeight,
+      );
+      final drawnWidth = frameWidth * scale;
+      final drawnHeight = stripHeight * scale;
+      return ClipRect(
+        child: OverflowBox(
+          alignment: Alignment.center,
+          minWidth: drawnWidth,
+          maxWidth: drawnWidth,
+          minHeight: drawnHeight,
+          maxHeight: drawnHeight,
+          child: ClipRect(
+            child: OverflowBox(
+              alignment: Alignment.centerLeft,
+              minWidth: drawnWidth * count,
+              maxWidth: drawnWidth * count,
+              minHeight: drawnHeight,
+              maxHeight: drawnHeight,
+              child: Transform.translate(
+                offset: Offset(-drawnWidth * index, 0),
+                child: SizedBox(
+                  width: drawnWidth * count,
+                  height: drawnHeight,
+                  child: Image.asset(
+                    asset,
+                    fit: BoxFit.fill,
+                    semanticLabel: 'Registro da comunidade escolar',
+                    errorBuilder: (_, _, _) => ColoredBox(
+                      color: Theme.of(context).colorScheme.surfaceContainerHighest,
+                      child: const Center(child: Icon(Icons.image_not_supported_outlined)),
+                    ),
+                  ),
+                ),
               ),
             ),
           ),
         ),
-      ),
-    ),
+      );
+    },
   );
 }
 
