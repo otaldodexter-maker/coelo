@@ -38,4 +38,10 @@ desse caso pertence à revisão de segurança e não é alegada como resolvida a
   test/features/platform_users/data/supabase_platform_user_repository_test.dart
   test/features/platform_users/presentation/platform_user_pages_test.dart`
   terminou com 39 passed, 0 failed.
-- Os 15 goldens A ainda exigem comparação visual antes de regravação.
+- Os 15 goldens A foram comparados na base integrada `67bdf9128`: os 12
+  estados de detalhe de Pessoas divergiram 0,59% em 375 e 1,90% em 1440; os
+  formulários de Pessoa, usuário interno e convite divergiram 5,33%, 9,44% e
+  9,67%. A inspeção das imagens isoladas confirmou o launcher flutuante e o
+  rodapé/respiro atualizados como diferenças coerentes. Foram regravados
+  somente esses 15 arquivos A; a chamada de atualização terminou com 12
+  testes aprovados, 0 falhos (`--concurrency=1 --update-goldens`).
