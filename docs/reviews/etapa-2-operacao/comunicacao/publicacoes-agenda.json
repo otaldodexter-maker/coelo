@@ -1,15 +1,15 @@
 {
-  "revision": 56,
+  "revision": 57,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "7a388ac3b (implementacao intercalada; testes Flutter aguardam slot)",
-  "base": "origin/dev 0e7042bab",
+  "head": "9994179fb (ordem intercalada e preset estavel; testes Flutter aguardam slot)",
+  "base": "origin/dev incorporado por merge a33d85111",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T11:22:00-03:00",
+  "updatedAt": "2026-09-12T11:28:24-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2520,20 +2520,21 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T11:22:00-03:00",
-    "sha": "7a388ac3b",
+    "checkpoint": "2026-09-12T11:28:24-03:00",
+    "sha": "9994179fb",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
       "autoria produtiva percorre blocos em ordem e permite adicionar/mover texto, midia e perguntas simples",
       "previa percorre a mesma lista ordenada; leitor Principal ja fazia isso e recebeu chaves focais de prova",
+      "aplicar um preset de resposta atualiza a pergunta existente sem desloca-la entre texto e midia",
       "limite agregado de texto preservado em 10000; nenhum contrato reduzido para 4000",
       "H14 reconciliado com C0 como subaceite de shell.load sem novo denominador",
       "seis R comparados pelo recorte do rodape e preservados sem regravacao"
     ],
     "verification": {
-      "analyze": "dart analyze focal em 6 arquivos: No issues found",
-      "flutter": "nao executado: fila global C0, G2 ate 11:27 e depois G1/G4/G6",
+      "analyze": "dart analyze focal em 6 arquivos apos o ajuste de preset: No issues found (11:27 BRT)",
+      "flutter": "nao executado: fila global C0; G1 concluiu e C0/G4 precedem G6",
       "visual": "comparacao commitada; nenhum PNG R alterado"
     },
     "pending": [

@@ -35,6 +35,8 @@ generated_at: 2026-09-12
 
 - O controlador agora prepara operacoes por identidade para adicionar, editar e mover blocos de texto e mover qualquer bloco, mantendo o teto agregado de 10.000.
 - O compositor produtivo renderiza os blocos na ordem do dominio e expoe texto, midia e pergunta simples com movimento; a previa percorre a mesma lista.
+- Os presets de resposta atualizam a pergunta existente e preservam sua posicao relativa; o teste focal confere os quatro IDs antes/depois do preset.
 - O leitor do Principal ja percorria a lista em ordem; foi acrescentada uma chave semantica por bloco para a prova focal, sem alterar a composicao.
 - Testes focais preparados; execucao aguarda a posse serializada do slot Flutter.
-- Analise focal dos seis arquivos Dart tocados: No issues found (11:16 BRT).
+- Analise focal dos seis arquivos Dart tocados: No issues found (11:27 BRT).
+- P50 foi reconciliado em `p50-hierarchy.md`; as provas R06 permanecem vigentes e a regressao local do leitor segue na fila Flutter.
