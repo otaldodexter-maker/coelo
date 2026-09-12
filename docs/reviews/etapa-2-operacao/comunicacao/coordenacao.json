@@ -2099,6 +2099,15 @@
    "testes": "flutter analyze limpo; familia attendance + forms: 140 PASS; touch-target: 3 PASS",
    "deltas": "retido: attendance.entry/complete nao existe no inventario canônico; apply-tracker-delta rejeitou o action_id; nenhum estado rebaixado ou promovido",
    "proximoGate": "prova na rota real e reconciliacao do identificador com attendance.mark/attendance.finish"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 52,
+   "ack": true,
+   "integradoEm": "pendente de commit deste ciclo",
+   "testes": "grupo reporta circulars/agenda 359/359; sem codigo novo nesta revisao",
+   "deltas": "[]; nenhum estado promovido sem rota real",
+   "proximoGate": "CDP para rota real; circulars.attach depende de circular-media"
   }
 ],
  "dockerR07": {
