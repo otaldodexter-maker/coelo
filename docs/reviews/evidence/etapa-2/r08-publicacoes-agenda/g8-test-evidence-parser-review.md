@@ -1,6 +1,6 @@
 ---
 source: "C0 R08; commit d106ee5a5; logs commitados dos ciclos 30/60/90 e anonymous final"
-status: "reviewed-read-only; anonymous-filter-defect-found"
+status: "reviewed-read-only; matrix-and-general-parser-accepted"
 generated_at: "2026-09-12"
 ---
 
@@ -93,3 +93,17 @@ passed, 11 loading, 0 hidden e 0 órfãos validam a extração, mas não validam
 preservação do exit. A prova do parser geral permanece pendente até reprocessar
 o ciclo 180 com seu arquivo de exit real, hash do input e metadado
 `done/success`. Nenhum Flutter deve ser executado para isso.
+
+## Parecer final do ciclo 180
+
+O conjunto `0a7b0ad27321cccc80df393d1b6566563d73e072` e
+`bd192fdbcea30ddc4e072c167a901fd8ae18caf5` fecha a prova sem nova execução
+Flutter. O SHA-256 gravado coincide com o JSONL integrado; o evento terminal é
+`success=false`, `time=97850`; a saída nativa é 1; e as contagens são 411
+passed, 4 failed, 1 skipped, 4 errors, 16 loading, 6 hidden e nenhum `done`
+órfão. A base abreviada no resultado é desambiguada pelo SHA completo no
+documento de fase. C0 confirmou a mesma fonte e aceitou essa representação.
+
+Parecer: matriz e parser geral aprovados para merge. O aviso do hook RTK e os
+quatro eventos de erro permanecem classificados como entradas desconhecidas;
+isso é relato fiel da fonte, não sucesso do lote.

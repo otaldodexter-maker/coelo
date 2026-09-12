@@ -1,15 +1,15 @@
 {
-  "revision": 84,
+  "revision": 85,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "ef8c55b78 (base ciclo 180 integrada; correção de proveniência G8 nesta revisão)",
+  "head": "91f589212 (parecer final G8 nesta revisão)",
   "base": "origin/dev 7d2b66a3e incorporado por merge 04b37ad4c",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T14:03:57.3456693-03:00",
+  "updatedAt": "2026-09-12T14:09:38.2831188-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "G8 reprocessar ciclo 180 com exit real, hash e done/success; C0 integrar os SHAs publicados; seguir sem Flutter e sem remover esta worktree.",
+  "next": "C0 integrar os SHAs G8 aprovados e indicar o próximo gate não conflitante; seguir sem Flutter e sem remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2653,9 +2653,9 @@
       "followUp": "7c2735a61 fecha a matriz; 122293fc6/29528d150 corrigem o parser geral com loader canonicalizado e precedência sobre hidden",
       "matrix": "accepted-read-only: 121/238/422 observed JSONL; anonymous 293 events, 281 display keys, 12 collisions; intersections 112 and 221",
       "loaderDiagnostics": "8/11/11; cycle30 also has 2 hidden non-loaders setUpAll/tearDownAll",
-      "generalParser": "logic accepted by inspection; ciclo90 extraction 422/11/0/0 but provenance rejected because exit 1 was manually injected while source succeeded",
-      "requiredProof": "reprocess ciclo180 JSONL with its real exit file, input hash and done/success metadata, without Flutter",
-      "status": "matrix-accepted-general-parser-proof-pending"
+      "generalParser": "accepted from 0a7b0ad27321cccc80df393d1b6566563d73e072 + bd192fdbcea30ddc4e072c167a901fd8ae18caf5: ciclo180 input hash matches; done false/time 97850; native exit 1; 411 passed, 4 failed, 1 skipped, 4 errors, 16 loading, 6 hidden and 0 orphan done",
+      "requiredProof": "satisfied by reprocessing the existing ciclo180 JSONL and real exit file; no Flutter rerun",
+      "status": "matrix-and-general-parser-accepted-read-only"
     },
     "retainedR08ResourcesReview": {
       "sourceCommit": "57259e29c",
