@@ -1,0 +1,9 @@
+command: rtk proxy python -X utf8 docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-smoke.py --execute --occurrence-id 5762fe8f-2d58-48ef-b410-30bfd0fe6703 --item-id 95cdf8cf-d993-4325-ac7c-941f041210cc
+environment: producao Supabase; form-media v17; QA credential from qa-r06-principal.env
+result:
+{"http": 200, "status": "PASS", "step": "auth"}
+{"asset_id": null, "code": "occurrence:500:P0002", "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703", "preserved": true, "response_id": null, "status": "FAILED", "step": "smoke"}
+{"http": 204, "status": "PASS", "step": "logout_local"}
+mutations: 0
+diagnosis: form_get_occurrence_for_response requires the current actor to equal participation.person_id or an authorized responder. C0 measured the preserved participation as person 007a; the QA credential used by the runner is likely mapped to another person. No retry was executed.
+secrets: not recorded

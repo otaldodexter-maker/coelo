@@ -1,0 +1,3 @@
+{"http": 200, "status": "PASS", "step": "auth"}
+{"active_identified_image_forms": 0, "candidates": [], "occurrence_ids_checked": 0, "status": "PASS", "step": "discover"}
+{"http": 204, "status": "PASS", "step": "logout_local"}
