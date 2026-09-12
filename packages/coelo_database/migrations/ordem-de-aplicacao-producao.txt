@@ -219,3 +219,9 @@
 
 # lote 56 (12/09 11:32) - R08 realm-interno: cron bounded de expiracao do Agora; backup esquema+dados e pgTAP local verdes
 20260912140545_now_publication_expiry_dispatch_v1.sql
+
+# lote 57 (12/09 12:24) - R08 formularios: ponte de imagens, retry e unbind terminal; quatro versoes e ledger na mesma transacao; backups privados e pgTAP verdes
+20260912140546_forms_question_media_draft_bridge_v1.sql
+20260912140547_forms_question_media_draft_bridge_fix_v1.sql
+20260912140548_forms_question_media_retry_delete_v1.sql
+20260912140549_forms_question_media_terminal_unbind_v1.sql

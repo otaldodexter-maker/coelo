@@ -10,6 +10,56 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final narrow in [false, true]) {
+    testWidgets(
+      'question images require authorized context and reload after dialog narrow=$narrow',
+      (tester) async {
+        await tester.binding.setSurfaceSize(Size(narrow ? 375 : 1200, 1100));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        tester.platformDispatcher.textScaleFactorTestValue = narrow ? 2 : 1;
+        addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+        final session = MediaSession();
+        addTearDown(session.invalidate);
+        final api = _EditorApi(
+          mediaContext: FormEditorMediaContext(
+            formVersionId: 'version-1',
+            questionImages: const [],
+          ),
+        );
+        await tester.pumpWidget(
+          _host(FormsEditorPage(api: api, formId: 'form-1', mediaSession: session)),
+        );
+        await tester.pumpAndSettle();
+        final images = find.byKey(const ValueKey('forms-question-images-item-1'));
+        await tester.ensureVisible(images);
+        await tester.tap(images);
+        await tester.pumpAndSettle();
+        expect(find.byType(AlertDialog), findsOneWidget);
+        expect(find.text('Selecionar imagem'), findsOneWidget);
+        await tester.tap(find.text('Voltar ao formulário'));
+        await tester.pumpAndSettle();
+        expect(api.requestedForms, ['form-1', 'form-1']);
+        expect(api.savedCommands, isEmpty);
+        expect(tester.takeException(), isNull);
+      },
+    );
+  }
+
+  testWidgets('question images stay disabled when the server omits their context', (tester) async {
+    final session = MediaSession();
+    addTearDown(session.invalidate);
+    await tester.pumpWidget(
+      _host(FormsEditorPage(api: _EditorApi(), formId: 'form-1', mediaSession: session)),
+    );
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<OutlinedButton>(find.byKey(const ValueKey('forms-question-images-item-1')))
+          .onPressed,
+      isNull,
+    );
+  });
+
   testWidgets('production author autosaves after debounce using the management version', (
     tester,
   ) async {
@@ -2136,9 +2186,10 @@ Future<void> _addChoiceBranch(WidgetTester tester, String optionId) async {
   await tester.pumpAndSettle();
 }
 
-final class _EditorApi implements FormsApi, FormsEditorContextApi {
+final class _EditorApi implements FormsApi, FormsEditorContextApi, FormsQuestionImageApi {
   _EditorApi({
     this.failuresRemaining = 0,
+    this.mediaContext,
     this.title = 'Form title',
     this.savedTitle,
     this.publishedTitle,
@@ -2159,6 +2210,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   });
   final String title;
   int failuresRemaining;
+  final FormEditorMediaContext? mediaContext;
   final String? savedTitle;
   final String? publishedTitle;
   final Future<void>? contextGate;
@@ -2198,7 +2250,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   Future<FormEditorProjection> getEditor(String formId) async {
     requestedForms.add(formId);
     if (projectionGate != null) await projectionGate;
-    return FormEditorProjection(definition: definition(formId));
+    return FormEditorProjection(definition: definition(formId), mediaContext: mediaContext);
   }
 
   FormDefinition definition(String id, {int version = 1, String? confirmedTitle}) => FormDefinition(

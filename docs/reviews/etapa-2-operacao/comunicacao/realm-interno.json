@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 54,
+  "revision": 60,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T11:10:17.4386248-03:00",
+  "updatedAt": "2026-09-12T12:04:58-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "76aed97cb (branch publicada)",
+  "head": "c82fa53f5 publicado e mesclado com origin/dev; candidato 140549 nesta revisão a publicar",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,8 +26,8 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "T0/ambiente do coordenador ainda não publicado; para correções, preflight no descartável com a ordem real de produção incluindo lotes 49–55 e regressão comparada R06",
-  "provaLocal": "descartável Supabase por conversa a iniciar/parar: baseline + migrations em ordem-de-aplicacao-producao.txt até lotes 49–55; pgTAP por psql -qtA; sem credenciais no JSON",
+  "primeiroGate": "C0/G7 revisar a composição 140548+140549 antes de RED/GREEN sequencial no espelho",
+  "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "finalizado; handoff R07 gravado",
-  "proximoPasso": "coordenador integrar/conferir a branch; não retomar esta frente sem novo recorte",
+  "status": "R08 em execução; H09 entregue; 140547 e regressões verdes; revisão 140548/140549 pendente",
+  "proximoPasso": "C0/G7 revisar a composição final e só então autorizar RED/aplicação local/GREEN; G5 continua sem aplicar SQL",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -769,8 +769,8 @@
       },
       "primeiroGate": "aguardar resultado ACL/RLS do G0 e revisar qualquer falha antes de propor novo SQL"
     },
-    "checkpoint11h35": {
-      "quando": "2026-09-12T11:35:00-03:00",
+    "checkpoint11h27": {
+      "quando": "2026-09-12T11:27:48-03:00",
       "feito": [
         "ACL/RLS pós-lotes 49–55 aprovada pelo G0: 22/22 + 46/46 + 4/4 + 16/16, native/wrapper 0 e rollback; preflight final 20/20; recibo b1ec76b120d62557e457749adc100940c0c039c1.",
         "Fixture G1 de avaliações aprovada no espelho em 52/52, native/wrapper 0 e rollback.",
@@ -789,6 +789,106 @@
         "falhaIntermediaria": "convites 34/35 por expectativa histórica de MFA; corrigida e preservada como evidência, sem somar reruns"
       },
       "primeiroGate": "aguardar C0 concluir H09 e liberar o espelho para a prova focal de chat"
+    },
+    "checkpoint11h31": {
+      "quando": "2026-09-12T11:31:30-03:00",
+      "feito": [
+        "G0 aplicou o candidato H09 somente no baseline e aprovou now_publication_expiry_dispatch_v1_test.sql em 6/6; job único, ativo, */5 e sweep limitado a 500.",
+        "G0 aprovou os consumidores compartilhados de chat: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback.",
+        "Recibo e logs commitados em 9533e4dc2c2fb99a1835b73202410dd74592c597; G5 não executou pgTAP, não aplicou SQL e não soma esses resultados como execução própria.",
+        "Contrato chat-media preserva attachment_id; divergência de assetId ficou com G4/C0, sem inventar catálogo ou ampliar o recorte."
+      ],
+      "pendente": [
+        "Receber do C0 o recibo de backup, aplicação forward-only H09 em produção, ledger e pós-prova; nenhuma ação remota por G5.",
+        "Publicar handoff final após o recibo C0; não emitir delta de estado sem certificação da coordenação."
+      ],
+      "testes": {
+        "h09EspelhoG0": "6/6, native/wrapper 0 e rollback",
+        "chatEspelhoG0": "28/28 + 3/3, native/wrapper 0 e rollback",
+        "executadosPorG5": "Deno chat-media 6/6; nenhum pgTAP"
+      },
+      "primeiroGate": "C0 aplicar e provar H09 em produção após backup, serialização e ledger"
+    },
+    "checkpoint11h46": {
+      "quando": "2026-09-12T11:45:59-03:00",
+      "feito": [
+        "C0 aplicou H09 em produção como lote 56: exit 0, ledger 20260912140545, cron único ativo */5 com sweep 500; recibo dev 67bdf9128 e ciclo30.md.",
+        "Backups privados informados pelo C0: esquema 4.136.628 bytes SHA-256 cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2; dados 4.231.711 bytes SHA-256 9f8c9ad6d3cc2c94f7efa088cf2fccf195ff49bcc89be4ac12d05c47e913b4ed.",
+        "Gate adicional G3 medido no caminho produtivo: form_get_editor/form_save_draft mantêm autoria people-based da ponte, mas question-image exigia form internal-only e o replace bloqueava bindings.",
+        "Teste plan 32 e candidato forward-only 20260912140546 preparados: realm/autoria preservados, media_context sem URL/chave, item_id estável somente na mesma working version e remoção fail-closed."
+      ],
+      "pendente": [
+        "G0/C0 executar RED sem candidato, aplicar 140546 somente no baseline e rodar GREEN/regressões; G5 não executa SQL.",
+        "Somente após prova verde C0 decide lote 57; nenhum deploy ou aplicação remota foi autorizado a G5.",
+        "Corrigir no handoff os horários futuros publicados nas revisões 54/55: os commits reais foram 11:27:48 e 11:31:30 BRT."
+      ],
+      "testes": {
+        "questionImage": "32 casos preparados; não executados por G5; RED/GREEN aguardam slot do espelho",
+        "h09ProducaoC0": "aplicação exit 0; ledger e cron pós-prova confirmados"
+      },
+      "primeiroGate": "receber RED/GREEN e regressões do candidato 140546 no baseline antes de qualquer lote 57"
+    },
+    "checkpoint11h55": {
+      "quando": "2026-09-12T11:55:12-03:00",
+      "feito": [
+        "G0 confirmou RED e primeiro GREEN falho: casos 1–18 verdes, 19/20 falhos e aborto forms.read required; 140546 foi consumido somente pelo baseline, produção permaneceu intocada.",
+        "Causa localizada nos consumidores: form_get_editor, form_save_draft e superadmin_form_media_prepare_v2 usavam has_platform_permission(text), que a raiz do lote 49 nega corretamente a identidade interna institution-scoped.",
+        "Candidato corretivo forward-only 20260912140547 preparado sem mutar 140546: autorização recebe a instituição real, FK vira NO ACTION DEFERRABLE e media_context é nulo sem working version.",
+        "Teste focal ampliado para plano 33, preservando item_id estável na mesma working version, reorder por ID e remoção fail-closed. G5 não executou pgTAP nem aplicou SQL."
+      ],
+      "pendente": [
+        "G0 aplicar 140547 somente sobre o baseline que já contém 140546 e executar GREEN; em falha, parar sem empilhar outra alteração.",
+        "Se GREEN focal passar, executar regressões indicadas por C0 e devolver recibo native/wrapper; somente C0 pode decidir/aplicar o lote 57 em produção.",
+        "Em produção, serializar 140546 e 140547 como uma única unidade ordenada; nunca promover 140546 isoladamente."
+      ],
+      "testes": {
+        "questionImagePrimeiroCicloG0": "RED e GREEN falho; casos 1–18 verdes, 19/20 falhos, aborto forms.read required, native/wrapper 3; transação encerrada sem certificação",
+        "questionImageRevisao2": "plano 33 preparado; não executado por G5",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "GREEN focal de 140547 sobre o baseline já corrigido por 140546, antes de regressões ou produção"
+    },
+    "checkpoint12h05": {
+      "quando": "2026-09-12T12:04:58-03:00",
+      "feito": [
+        "G0 aplicou 140547 apenas no baseline: aplicação native/wrapper 0; focal question-image 33/33 e forms_behavioral_rpc 17/17, ambos rollback/native/wrapper 0.",
+        "Regressão internal form drafts passou casos 1–59 e abortou em internal auth link version mismatch; causa isolada à fixture que mudava status/revoked_at sem incrementar version, sem relação causal com 140547.",
+        "Fixture corrigida sem enfraquecer guard: após um rerun intermediário mostrar que revogação é terminal, os cenários passaram a usar identidades independentes 105/106; commit final afcebccd0 publicado.",
+        "Dois resíduos G3 confirmados por inspeção: authorize/finalize não reconciliam resposta perdida após ready; delete nominal não remove binding. C0 confirmou também enumeração por mensagem distinta no editor.",
+        "Candidato forward-only 140548 e suíte focal plano 9 preparados separadamente; G5 não aplicou SQL nem executou pgTAP."
+      ],
+      "pendente": [
+        "Regressão internal drafts concluída pelo G0 com a fixture afcebccd0: 159/159, finish 1..159, rollback, native/wrapper 0.",
+        "C0/G7 revisar 140548; somente depois executar RED, aplicar no baseline e GREEN da suíte retry/delete plano 9.",
+        "Nenhuma produção 57 antes de composição, regressões e ordem final do C0."
+      ],
+      "testes": {
+        "questionImage140547G0": "33/33 e behavioral 17/17; native/wrapper 0; rollback",
+        "internalDraftsG0": "primeiros reruns falharam na fixture (version e depois reativação terminal); resultado final afcebccd0 159/159, rollback, native/wrapper 0; reruns não somados",
+        "retryDelete140548": "plano 9 preparado; não executado por G5"
+      },
+      "primeiroGate": "revisão C0/G7 do 140548 e rerun isolado da fixture antes de qualquer nova aplicação local"
+    },
+    "checkpoint12h10": {
+      "quando": "2026-09-12T12:10:00-03:00",
+      "feito": [
+        "Fixture terminal afcebccd0 aprovada pelo G0: internal form drafts 159/159, finish 1..159, rollback, native/wrapper 0; resultados intermediários não somados.",
+        "140548 publicado em c82fa53f5 com suíte plano 9; review G3 confirmou compatibilidade com DTO e fluxo, sem SQL aplicado.",
+        "Review G3 localizou resíduo em mismatch/expire: ambos ocultavam asset deleted sem soltar binding. 140548 permaneceu imutável.",
+        "140549 preparado com trigger restrito à transição question-image -> deleted, backfill somente de bindings já encerrados e suíte focal plano 7.",
+        "Branch mesclada e publicada sobre origin/dev 2d97892d9 sem conflito; checkout principal não foi tocado."
+      ],
+      "pendente": [
+        "C0/G7 revisar conjuntamente 140548 e 140549, inclusive trigger/backfill e ordem explícita.",
+        "Após autorização, G0 executar RED das suítes plano 9/7, aplicar 140548 e 140549 somente no baseline em ordem e executar GREEN/regressões.",
+        "Produção 57 continua retida e exclusiva do C0."
+      ],
+      "testes": {
+        "questionImage140547G0": "33/33 + behavioral 17/17 + internal drafts 159/159; resultados finais rollback/native/wrapper 0",
+        "retryDelete140548": "plano 9 preparado; não executado por G5",
+        "terminalUnbind140549": "plano 7 preparado; não executado por G5"
+      },
+      "primeiroGate": "review final da composição 140548+140549 antes do espelho"
     }
   }
 }
