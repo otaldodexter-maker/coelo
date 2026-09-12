@@ -1,18 +1,18 @@
 {
-  "revision": 64,
+  "revision": 65,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:12:45.594Z",
+  "updatedAt": "2026-09-12T14:47:58.787Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "3ec1c1a86 + pacote local frame/chamada nesta revisão",
+  "head": "7bc243cdb + pacote H10/H11 desta revisão",
   "base": "origin/dev 6d6cbef32",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Mídia Formulários/contratos H10H11; attendance.mark/finish/correct aguarda runtime G0",
+  "currentGate": "Forms: H10 audiência preservada e H11 autosave local; Galeria/question-image em preparação; E2E depende do runtime G0",
   "tests": {
     "round": "E2-R08-20260912",
     "uniqueCases": 142,
@@ -89,7 +89,7 @@
       "o_que": "abertura R08 publicada"
     }
   ],
-  "nextStep": "Concluir upload_url/required_headers e pergunta/resposta separados; fixture Local com C0/G5; preservar audiência H10 e conciliar autosave H11",
+  "nextStep": "Concluir upload_url/required_headers e UI de imagens com testes focais; C0 integra router e SQL quando autorizado.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",
@@ -2264,5 +2264,24 @@
         "frame": "confirmado C0"
       }
     }
+  },
+  "checkpointH10H11": {
+    "feito": [
+      "H10: preserva regras múltiplas/exclusão/tipo não representável ao agendar",
+      "H11: debounce 800 ms no editor produtivo, versão, mudanças durante envio, contexto e retry idempotente"
+    ],
+    "testes": {
+      "editorContexto": 112,
+      "agenda": 9,
+      "autorNominal": 95,
+      "resultado": "216 PASS, 0 FAIL atuais; reruns não somados",
+      "e2e": 0
+    },
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/02-audiencia-autosave.md",
+    "pendente": [
+      "Galeria e question-image ainda WIP local não incluído neste pacote",
+      "question-image depende de contrato G5 e aplicação C0",
+      "attendance e location-answer sem recertificação real"
+    ]
   }
 }
