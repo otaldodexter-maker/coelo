@@ -1244,14 +1244,23 @@ const answerPng = new Uint8Array([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 2, 128, 0, 0, 1, 224, 8, 6, 0, 0, 0, 0, 0, 0,
 ]);
 
-function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boolean; source?: unknown; denied?: boolean } = {}) {
+function answerR2Harness(options: {
+  finalizeOk?: boolean;
+  alreadyFinalized?: boolean;
+  source?: unknown;
+  denied?: boolean;
+  internalActor?: boolean;
+  internalContexts?: unknown;
+} = {}) {
   const calls: string[] = [];
   const r2: string[] = [];
   let finalizeParameters: unknown;
   const query = {
     select: () => query,
     eq: () => query,
-    maybeSingle: () => Promise.resolve({ data: { person_id: id } }),
+    maybeSingle: () => Promise.resolve({
+      data: options.internalActor ? null : { person_id: id },
+    }),
   };
   const client = {
     auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
@@ -1273,6 +1282,11 @@ function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boo
     storage: { from: () => { throw new Error("answer R2 must not use Storage"); } },
     rpc: (name: string, parameters: unknown) => {
       calls.push(name);
+      if (name === "list_my_principal_contexts") {
+        return Promise.resolve({
+          data: options.internalContexts ?? [{ person_id: id }],
+        });
+      }
       if (name === "form_prepare_asset_upload_r2_v1") {
         return Promise.resolve({ data: { asset_id: id, storage_path: `ab/${id}`, expires_at: "2026-09-08T16:00:00Z",
           media_asset_id: mediaId, bucket: "coelo-media-prod", object_key: answerKey, storage_provider: "r2" } });
@@ -1317,6 +1331,31 @@ Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, s
   const body = await response.json();
   assertEquals(body.asset_id, id);
   assertEquals(body.storage_provider, "r2");
+});
+
+Deno.test("answer R2 resolve ator do realm interno pelo contexto Principal canonico", async () => {
+  const harness = answerR2Harness({ internalActor: true });
+  const result = await handleFormMediaRequest(
+    request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(harness.calls, ["list_my_principal_contexts", "form_prepare_asset_upload_r2_v1"]);
+});
+
+Deno.test("answer R2 nega fallback interno vazio ou com pessoas divergentes", async () => {
+  for (const internalContexts of [
+    [],
+    [{ person_id: id }, { person_id: mediaId }],
+  ]) {
+    const harness = answerR2Harness({ internalActor: true, internalContexts });
+    const result = await handleFormMediaRequest(
+      request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 401);
+    assertEquals(harness.calls, ["list_my_principal_contexts"]);
+  }
 });
 
 Deno.test("answer R2 finalize confirma pelo legado, mede bytes/sha256/dimensoes e finaliza pelo service_role", async () => {

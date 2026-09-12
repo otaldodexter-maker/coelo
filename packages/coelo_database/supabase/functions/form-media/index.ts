@@ -37,6 +37,7 @@ import {
 } from "./question_image.ts";
 
 type Json = Record<string, unknown>;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /** Superficie do R2 usada pelo ramo question-image e pelo worker. */
 export type FormMediaTransport = Pick<
@@ -197,6 +198,35 @@ function answerEnvelope(value: unknown): Json {
     throw new Error("asset_unavailable");
   }
   return envelope.data as Json;
+}
+
+async function resolveActorPersonId(
+  authUserId: string,
+  userClient: SupabaseClient,
+  serviceClient: SupabaseClient,
+): Promise<string | null> {
+  const peopleActor = await serviceClient.from("person_auth_links").select(
+    "person_id",
+  )
+    .eq("auth_user_id", authUserId).eq("status", "active")
+    .maybeSingle();
+  if (peopleActor.error) return null;
+  if (typeof peopleActor.data?.person_id === "string") {
+    return peopleActor.data.person_id;
+  }
+  const internalActor = await userClient.rpc("list_my_principal_contexts");
+  if (internalActor.error || !Array.isArray(internalActor.data) || internalActor.data.length === 0) {
+    return null;
+  }
+  const personIds = new Set<string>();
+  for (const context of internalActor.data) {
+    const personId = context && typeof context === "object"
+      ? (context as Json).person_id
+      : null;
+    if (typeof personId !== "string" || !UUID.test(personId)) return null;
+    personIds.add(personId);
+  }
+  return personIds.size === 1 ? [...personIds][0] : null;
 }
 
 async function handleAnswerR2(
@@ -659,13 +689,12 @@ export async function handleFormMediaRequest(
     }
     // Daqui para baixo e o fluxo legado de answer-image (Supabase Storage,
     // bucket coelo-forms-private): respostas continuam nele por contrato.
-    const actorLookup = await serviceClient.from("person_auth_links").select(
-      "person_id",
-    )
-      .eq("auth_user_id", userData.user.id).eq("status", "active")
-      .maybeSingle();
-    const actorPersonId = actorLookup.data?.person_id;
-    if (actorLookup.error || typeof actorPersonId !== "string") {
+    const actorPersonId = await resolveActorPersonId(
+      userData.user.id,
+      userClient,
+      serviceClient,
+    );
+    if (!actorPersonId) {
       return response(origin, 401, { error: "unauthorized" });
     }
 
