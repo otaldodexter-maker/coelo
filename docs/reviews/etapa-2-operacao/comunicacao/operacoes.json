@@ -1168,5 +1168,6 @@
     "ambiente": "Chrome CDP 9421 fechado; servidor 3021 parado; descartavel coelo_ops_r06 parado (volume mantido); build web em apps/superadmin/build/web-r06ops (nao versionado)",
     "skills": "secao 5 de docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md; conhecimento: no-op nesta frente (regras propostas ao coordenador)",
     "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
-  }
+  },
+  "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa."
 }
