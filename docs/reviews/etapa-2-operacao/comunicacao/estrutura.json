@@ -1,6 +1,6 @@
 {
  "grupo": "estrutura",
- "revision": 101,
+ "revision": 102,
  "round": "E2-R09-20260912-1542",
  "adocaoR09": {
   "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -30,6 +30,15 @@
   "handoff": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/handoff.md",
   "pedidoG5": "groups.members: dialogos produzem person-pending-* mas superadmin_group_save exige UUID de identidade global ativa. Confirmar resolvedor contextual superadmin_people_identity_lookup_v1/capacidade e role_codes; G1 corrige consumidor apos primeira fatia. Evidencia e caminhos no handoff.",
   "pedidoC0": "Owner pediu continuidade sem parar: G1 prepara regressao do defeito de identidade na mesma fatia Turmas. Solicito slot flutterTest para RED/GREEN focal group_form_page_test e transferencia Chrome depois do gate G0. Arquivos G1: groups/presentation/group_form_page.dart, teste correspondente e somente injecao do parametro de identidade nas duas rotas normais de Turmas; sem alterar composition root. G5: lookup170700 exige people.create e nao filtra resultados por institution/unit (parametros apenas auditados no corpo inspecionado); confirmar contrato elegivel antes de ligar busca generica. Sem ampliar SQL/grants.",
+  "reservaFlutterG1": {
+   "dono": "G1",
+   "baseCoordenacao": 97,
+   "condicao": "C0 atribuiu vaga G1; flutterTest sem dono e instrucao reservar antes de executar; medicao local sem flutter test concorrente",
+   "memoriaLivreKiB": 2710096,
+   "comando": "flutter test test/features/groups/presentation/group_form_page_test.dart --plain-name 'does not accept an unresolved group member' --concurrency=1",
+   "estado": "reserva publicada para RED focal; liberar imediatamente apos resultado",
+   "limite": "somente caso novo; nenhuma suite/golden duplicada; Chrome permanece G0"
+  },
   "memoria": "no-op na adocao; nenhuma regra de produto alterada"
  },
  "updatedAt": "2026-09-12T16:01:38.6198770-03:00",

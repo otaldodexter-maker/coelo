@@ -20,6 +20,36 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('does not accept an unresolved group member', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) => fail('An unresolved identity cannot be saved'),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-search-person')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-person-name-field')), '@nao-resolvido');
+    await tester.tap(find.byKey(const Key('group-person-save')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('group-person-dialog')), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final phase in ['loaded', 'find', 'context', 'same-props']) {
     testWidgets('group initial context stays scoped $phase', (tester) async {
       await tester.binding.setSurfaceSize(const Size(1024, 1100));
