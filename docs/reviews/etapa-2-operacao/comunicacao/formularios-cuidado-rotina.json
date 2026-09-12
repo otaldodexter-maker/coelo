@@ -1,18 +1,18 @@
 {
-  "revision": 75,
+  "revision": 76,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:48:06.791Z",
+  "updatedAt": "2026-09-12T16:51:46.464Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "54c892ebc + delta memória desta revisão",
+  "head": "0c92198a0 + correção pinturaH25 desta revisão",
   "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Memória anônimo/Foto/H25: delta concreto11-memory-delta.md pronto para C0 aplicar primeirofonte depoisprojeção.64artigos válidos;12PASS0FAIL1SKIP ferramenta. H25reviewG4 d5aa7e253 aprovado focal, residualSuporte explícito.",
+  "currentGate": "H25 regressão golden integrada corrigida semrebaseline: pintura fullwidth separada dohitbox48.37PASS0FAIL/analyze0 (21tabela+16goldens),1novo. Flutterliberado; prontoC0reintegrar.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -136,6 +136,18 @@
         "red": {
           "passed": 0,
           "failed": 3
+        }
+      },
+      {
+        "sha": "pinturaH25 desta revisão",
+        "passed": 37,
+        "failed": 0,
+        "novos": 1,
+        "overlap": "21tabela+16goldens; não somar20anteriores/integraçãoC0",
+        "evidencia": "12-h25-paint.md",
+        "red": {
+          "passed": 0,
+          "failed": 1
         }
       }
     ],

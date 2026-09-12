@@ -9,6 +9,23 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('resize hit area preserves the approved full width header painting', (tester) async {
+    const label = 'Nome longo da coluna administrativa';
+    await _pumpTable(
+      tester,
+      pinnedColumn: const CoeloAdminTableColumn<TestRow>(
+        id: 'name',
+        label: label,
+        initialWidth: 160,
+        minWidth: 120,
+        maxWidth: 200,
+        cellBuilder: _nameCell,
+      ),
+    );
+    expect(tester.getSize(find.text(label).first).width, 136);
+    expect(tester.getSize(find.bySemanticsLabel('Redimensionar coluna $label')).width, 48);
+  });
+
   testWidgets('sorted narrow column fits at 90 and 80 without widening the column', (tester) async {
     await _pumpTable(
       tester,
