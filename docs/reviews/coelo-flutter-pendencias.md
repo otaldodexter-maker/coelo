@@ -930,3 +930,7 @@ Front-end: a coluna de pendência e o estado avaliam os aceites do cliente.
 [Coordenação Claude, grupos e prompts atuais](etapa-2-operacao/TRABALHO-ATUAL.md). A retomada noturna usa conversas novas e preserva as entregas R01/R02.
 
 [Histórico integral dos cortes anteriores](archive/2026-09-09-r01-r02-historico.json), com texto original, origem e hash; não contém ordens vigentes. Os registros de 08/09 continuam no arquivo histórico original.
+
+### R08 checkpoint integrado 12/09 11h35
+
+G1 rodape, G3 frame/Chamada e G7 Catalogo integrados; Flutter121PASS/0FAIL/0SKIP e analyze global exit0. Lote56 Agora aplicado/ledger, cron ativo5min; sem nova certificacao E2E. Evidencia: [ciclo30](evidence/etapa-2/r08-coordenacao/ciclo30.md). Estados oficiais preservados; avanços locais separados dos aceites.
