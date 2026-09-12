@@ -531,7 +531,7 @@ Deno.test("HTTP preserves legacy finalize, download and discard for People actor
           assertEquals(parameters, {
             p_asset_id: id,
             p_actor_person_id: id,
-            p_edit_secret: undefined,
+            p_edit_secret: null,
           });
           return Promise.resolve({
             data: { state: "finalized", storage_path: `ab/${id}` },
@@ -1257,6 +1257,7 @@ function answerR2Harness(options: {
   const calls: string[] = [];
   const r2: string[] = [];
   let finalizeParameters: unknown;
+  let authorizeParameters: unknown;
   const query = {
     select: () => query,
     eq: () => query,
@@ -1294,7 +1295,10 @@ function answerR2Harness(options: {
           media_asset_id: mediaId, bucket: "coelo-media-prod", object_key: answerKey, storage_provider: "r2" } });
       }
       if (name === "form_finalize_asset_upload") return Promise.resolve({ data: { asset_id: id, state: "uploaded" }, error: options.denied });
-      if (name === "form_media_authorize_for_worker") return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
+      if (name === "form_media_authorize_for_worker") {
+        authorizeParameters = parameters;
+        return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
+      }
       if (name === "form_asset_r2_descriptor_v1") {
         return Promise.resolve({ data: { ok: true, data: { asset_id: id, media_asset_id: mediaId, bucket: "coelo-media-prod",
           object_key: answerKey, mime_type: "image/png", expected_byte_size: answerPng.length, expected_sha256: "x".repeat(64),
@@ -1322,7 +1326,13 @@ function answerR2Harness(options: {
     createTransport: () => transport,
     now: () => new Date(answerSigningAt),
   };
-  return { calls, r2, dependencies, finalizeParameters: () => finalizeParameters };
+  return {
+    calls,
+    r2,
+    dependencies,
+    authorizeParameters: () => authorizeParameters,
+    finalizeParameters: () => finalizeParameters,
+  };
 }
 
 Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, sem Storage", async () => {
@@ -1413,6 +1423,11 @@ Deno.test("answer R2 download exige legado finalized e espelho ready e assina o 
   const response = await handleFormMediaRequest(request({ ...command, action: "download", payload: { asset_id: id } }), harness.dependencies);
   assertEquals(response.status, 200);
   assertEquals(harness.calls, ["form_media_authorize_for_worker", "form_asset_r2_descriptor_v1"]);
+  assertEquals(harness.authorizeParameters(), {
+    p_asset_id: id,
+    p_actor_person_id: id,
+    p_edit_secret: null,
+  });
   assertEquals(harness.r2, [`get:${answerKey}:60`]);
   assertEquals(await response.json(), { signed_url: "https://r2.example.test/get", expires_in: 60 });
 });

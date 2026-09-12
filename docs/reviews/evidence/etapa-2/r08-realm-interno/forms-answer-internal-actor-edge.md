@@ -63,3 +63,25 @@ autorização e os request IDs não mudam.
 - `deno check index.ts` e `git diff --check`: exit 0.
 
 Deploy e nova retomada continuam exclusivos do C0/G0, respectivamente.
+
+## Download identificado e argumento nulo da RPC
+
+Após PUT, finalize, replay e save passarem, a retomada recebeu 400 somente no
+download. A leitura feita pelo C0 provou que o ativo legado estava `finalized`,
+o espelho estava `ready` e as RPCs retornavam envelopes válidos quando
+`p_edit_secret` era enviado explicitamente como `null`.
+
+A assinatura `form_media_authorize_for_worker(uuid, uuid, text)` não possui
+default. Para atores identificados, `parseAssetAccess` não produz
+`edit_secret`; o cliente Supabase omite propriedades `undefined`, impedindo o
+PostgREST de resolver a chamada de três argumentos. A correção focal envia
+`access.edit_secret ?? null` em todos os caminhos dessa RPC. Segredos anônimos
+válidos continuam sendo preservados sem mudança.
+
+- RED focal: 0/1; o teste recebeu `undefined` onde o contrato exige `null`.
+- GREEN focal: 1/1.
+- Regressão `form-media/index_test.ts`: 33/33.
+- `deno check index.ts` e `git diff --check`: exit 0.
+
+Nenhum retry produtivo, deploy, SQL remoto ou pgTAP foi executado por G5. A
+retomada do mesmo ativo permanece exclusiva de C0/G0 após integração e deploy.
