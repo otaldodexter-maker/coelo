@@ -5,6 +5,12 @@ data: 2026-09-12
 rodada: E2-R08-20260912
 ---
 
+## Atualização do ciclo 120
+
+- `groups.location` possui consumidor de criação atômica no formulário; o retry com recibo, contexto B e falha parcial foi corrigido por C0 e a suíte integrada de Grupos passou 29 testes. A prova de rota real permanece aberta.
+- Os 45 PNGs A foram comparados, regravados e repetidos pelos três testes proprietários: 20/20 PASS em `--concurrency=1`. O commit `41d3c518a` altera exatamente os 45 PNGs nominais, sem A+/R nem frame de G3.
+- Primeiro gate aberto: `activities.assessment` na rota real, com fixture sintética de G5/C0; depois `assessments.entry`, `assessments.gradebook`, `assessments.close`, `assessments.reopen` e `assessments.detail` com reload e negativa de escopo.
+
 # Handoff parcial — G1 Estrutura
 
 ## Entregue e publicado
