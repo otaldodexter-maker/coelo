@@ -1,6 +1,6 @@
 {
-  "revision": 49,
-  "updated_at": "2026-09-11T21:10:00-03:00",
+  "revision": 50,
+  "updated_at": "2026-09-11T21:06:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -1169,5 +1169,6 @@
     "skills": "secao 5 de docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md; conhecimento: no-op nesta frente (regras propostas ao coordenador)",
     "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
   },
-  "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa."
+  "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa.",
+  "loop_2105": "retomada pelo loop as 21:05: sem item executavel restante no recorte sem decisao do Owner (plans.assign P51, catalog.publish nominal, audit.export adiado, texto MFA no Perfil muda golden aprovado). 7 commits publicados na branch ainda nao integrados em dev (1e94633a5..a06d5cb78: rota /imports/new na shell, handoff, revs 46-49). Nada mais a fazer ate 21:36; revisao final ja gravada (rev 49)."
 }
