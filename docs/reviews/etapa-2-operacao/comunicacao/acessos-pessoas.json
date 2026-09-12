@@ -1,6 +1,6 @@
 {
-  "revision": 150,
-  "updated_at": "2026-09-12T10:53:48.3759016-03:00",
+  "revision": 151,
+  "updated_at": "2026-09-12T11:01:00-03:00",
   "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
   "round": "E2-R08-20260912",
   "group": "acessos-pessoas",
@@ -9,7 +9,7 @@
   "status": "ativa; trabalho local independente liberado por C0 rev64; E2E aguarda runtime de G0",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
   "branch": "work/etapa2-r08-acessos-pessoas",
-  "head": "6d6cbef32 (origin/dev incorporado por fast-forward; sem WIP proprio)",
+  "head": "d1d83c4c2 publicado em origin/work/etapa2-r08-acessos-pessoas; C0 revisa fronteira Auth antes do deploy",
   "base_observed": "origin/dev 6d6cbef32; coordenacao rev64; lote 56 retido ate espelho/pgTAP",
   "T0": {
     "observacao": "coordenacao rev64 lida e incorporada; slots e cortes vigentes da R08.",
@@ -2278,7 +2278,7 @@
     ]
   },
   "R08_ABERTURA_G2": {
-    "revision": 150,
+    "revision": 151,
     "recorded_at": "2026-09-12T10:53:48.3759016-03:00",
     "status": "ativa; posse do golden de Pessoas confirmada por C0; Chrome reservado a G0 e E2E ainda nao liberado",
     "contrato": {
@@ -2299,6 +2299,7 @@
     "feito": ["git fetch origin e fast-forward para 6d6cbef32", "leitura do contrato R08, R07 fechamento/decisoes, plano, backlog, JSONs e linhas afetadas dos tres rastreadores", "pedido de slot Flutter e confirmacao de posse ao C0"],
     "pendente": ["rota real people.create/edit/@", "fluxo v3 de internal-users.create com link seguro sem alegar SMTP", "convite expirado com G5", "comparacao/regravacao dos 15 A", "correcao da expectativa P15 24 para 40 onde aplicavel"],
     "testes": "Flutter focal de Pessoas iniciou no slot e observou 18 casos sem falha, mas a ferramenta retornou sem resumo terminal; resultado inconclusivo, sem P/F alegado e sem processo proprio localizado. Deno P51: 4 passed, 0 failed.",
+    "sha_publicado": "d1d83c4c2",
     "proximo_gate": "aguardar novo slot Flutter para analisar/testar platform_users; Chrome segue G0."
   },
   "R07_FECHAMENTO_C0": {
