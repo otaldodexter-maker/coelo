@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 21,
+  "revision": 22,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T15:02:16-03:00",
+  "updatedAt": "2026-09-12T12:53:09-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "d615bd9b84ac0d218ed76f2e209d3edcacb953dc",
+  "head": "3fdf2053134ed14a88bfc722e71fb184ec2f28b6",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -68,7 +68,8 @@
   "feito": [
     "R08 G8: revisão documental corrigida; nenhuma suíte foi executada nesta posse por ausência de slot C0.",
     "R08 G8: mantido o único JSON autorizado, grupo suites, revisão monotônica e recorte exclusivo Superadmin.",
-    "R08 G8: nenhuma expectativa textual foi alterada sem fonte; não houve alteração funcional, golden, imagem ou configuração global."
+    "R08 G8: nenhuma expectativa textual foi alterada sem fonte; não houve alteração funcional, golden, imagem ou configuração global.",
+    "R08 G8: auditoria G4 corrigiu a proveniência do smoke de Momentos como API real em produção (20 PASS/1 FAIL, retirada 403) e separou a união autoral Principal de 101 casos em cinco arquivos da integração C0 de 79 casos em três arquivos, sem promover a UI/E2E."
   ],
   "pendente": [],
   "commitsPublicados": [
@@ -83,7 +84,8 @@
     "d041e3562",
     "6f8506c60",
     "1aff0ad0b",
-    "(rev 15)"
+    "(rev 15)",
+    "3fdf20531 (rev 22)"
   ],
   "foraDoRecorteRegistrado": [
     {
