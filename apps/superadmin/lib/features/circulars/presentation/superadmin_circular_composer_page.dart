@@ -510,35 +510,66 @@ final class _BlockActions extends StatelessWidget {
   final VoidCallback? onDelete;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      const Icon(Icons.drag_indicator_rounded),
-      const SizedBox(width: CoeloSpacing.space1),
-      Expanded(
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ),
-      IconButton(
-        tooltip: 'Mover para cima',
-        onPressed: () => controller.moveBlock(blockId, -1),
-        icon: const Icon(Icons.arrow_upward_rounded),
-      ),
-      IconButton(
-        tooltip: 'Mover para baixo',
-        onPressed: () => controller.moveBlock(blockId, 1),
-        icon: const Icon(Icons.arrow_downward_rounded),
-      ),
-      if (onDelete != null)
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800);
+    final textPainter = TextPainter(
+      text: TextSpan(text: label, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final actionCount = onDelete == null ? 2 : 3;
+
+    Widget labelRow() => Row(
+      children: [
+        const Icon(Icons.drag_indicator_rounded),
+        const SizedBox(width: CoeloSpacing.space1),
+        Text(key: Key('circular-block-label-$blockId'), label, style: style),
+      ],
+    );
+
+    Widget actions() => Row(
+      key: Key('circular-block-actions-$blockId'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
         IconButton(
-          tooltip: 'Excluir',
-          color: Theme.of(context).colorScheme.error,
-          onPressed: onDelete,
-          icon: const Icon(Icons.delete_outline_rounded),
+          tooltip: 'Mover para cima',
+          onPressed: () => controller.moveBlock(blockId, -1),
+          icon: const Icon(Icons.arrow_upward_rounded),
         ),
-    ],
-  );
+        IconButton(
+          tooltip: 'Mover para baixo',
+          onPressed: () => controller.moveBlock(blockId, 1),
+          icon: const Icon(Icons.arrow_downward_rounded),
+        ),
+        if (onDelete != null)
+          IconButton(
+            tooltip: 'Excluir',
+            color: Theme.of(context).colorScheme.error,
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_outline_rounded),
+          ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const dragAndGapWidth = 24.0 + CoeloSpacing.space1;
+        const actionWidth = 48.0;
+        final requiredWidth = dragAndGapWidth + textPainter.width + actionCount * actionWidth;
+        if (constraints.maxWidth < requiredWidth) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              labelRow(),
+              Align(alignment: Alignment.centerRight, child: actions()),
+            ],
+          );
+        }
+        return Row(children: [labelRow(), const Spacer(), actions()]);
+      },
+    );
+  }
 }
 
 final class _QuestionCard extends StatefulWidget {
