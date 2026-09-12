@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
+import 'package:coelo_superadmin/features/groups/domain/group_location_create.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
@@ -508,10 +509,7 @@ void main() {
     expect(footer, findsOneWidget);
     expect(
       tester.getBottomLeft(footer).dy,
-      closeTo(
-        tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4,
-        0.5,
-      ),
+      closeTo(tester.getBottomLeft(find.byType(SuperadminFormFrame)).dy - CoeloSpacing.space4, 0.5),
     );
   });
 
@@ -827,6 +825,41 @@ void main() {
       isNotNull,
     );
   });
+
+  testWidgets('shows the catalogued location consumer only for group creation', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+          groupLocationCreateRepository: const _AvailableGroupLocationCreateRepository(),
+          groupLocationCreateEnabled: true,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma local');
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('group-catalogued-location-context-required')), findsOneWidget);
+  });
+}
+
+final class _AvailableGroupLocationCreateRepository implements GroupLocationCreateRepository {
+  const _AvailableGroupLocationCreateRepository();
+
+  @override
+  bool get available => true;
+
+  @override
+  Future<GroupLocationCreateResult> create(GroupLocationCreateCommand command) async =>
+      throw UnimplementedError();
 }
 
 final class _ErrorOnSaveGroupDirectoryRepository implements GroupDirectoryRepository {
