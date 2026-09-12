@@ -250,3 +250,18 @@ Acontece/Agora/Cardapios mantem resultados publicados. Nenhuma nova promocao
 UI/E2E ou cross-tenant. Agora24h permanece futuro; agendador H09 tem prova C0.
 Sem processo, slot Flutter ou Chrome G4 ativo. Proximo gate solicitado ao C0
 para continuar sem conflitar com as outras frentes ate14:52:16 BRT.
+
+
+## Gate Perfil — confirmação depois de reload (abertura 13h08 BRT)
+
+Autorização C0: corrigir somente PrincipalProfileEditPage._save após RED focal.
+apps/superadmin → Coelo → Perfil → Editar → principal.profile-edit.
+Incluído: confirmação apenas após reload aceito no contexto que iniciou o save;
+falha/403 e troca de contexto não disparam sucesso. Fora: dados oficiais/H02,
+SQL, fixtures, router e mudanças visuais. Testes preparados: três regressões
+locais, mais suíte existente do editor; sem rerun API ou golden. Parada: RED
+reproduzido, correção mínima verde/analyze e publicação para integração C0.
+Estimativa do delta inspecionado: cerca de20min após slot disponível, calibrada
+pela pequena alteração de retorno de _load e pelos testes já existentes.
+Slot ainda não concedido: nenhum Flutter iniciado. Quadro H02/H05/H06/H13
+preserva ambiguidades reais, elimina apenas repetição de decisões adjacentes.
