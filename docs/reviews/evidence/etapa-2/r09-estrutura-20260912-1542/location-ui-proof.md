@@ -30,6 +30,8 @@ Removida somente inclusao nao persistida da pessoa draft. Segundo salvar,
 com payload corrigido e mesmo recibo Local, retornou a lista. Leitura normal
 apos esta mutacao confirma MESMO grupo ativo v2 e MESMO Local:
 location-after-save-proof.json (2 checks PASS; Auth200/logout204).
+Lista apos reload mostrou o card R09 abaixo dos primeiros cards (location-list.png);
+clique Abrir turma abriu a edicao normal do MESMO ID. Nenhuma falha de lista sem busca.
 Detalhe produtivo /groups/1043c165-7f24-44fe-a868-5bfc6fb0b50f e reload
 mostram nome, hierarquia, Ativo e Sala R04 Estrutura, Local interno Ativo.
 location-reload.png e location-selection-reload.png. Nao e mock/golden.

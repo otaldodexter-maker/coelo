@@ -1,6 +1,6 @@
 {
   "grupo": "estrutura",
-  "revision": 111,
+  "revision": 112,
   "round": "E2-R09-20260912-1542",
   "adocaoR09": {
     "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -44,7 +44,7 @@
   "entregaR09": {
     "codigo": "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
     "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-    "pedidoC0": "Prova positiva Local pronta em location-ui-proof.md; aplicar deltas factuais deltas-turmas.json. Grupo1043c165 ativo v2, Locald5461295; precisa negativa real da familia. Membros: pessoaec2a15a2 draft; indicar identidade ativa sintetica existente, sem mudar G2 por G1. Erro SQL search22025 separado para C0. Chrome G1 no detalhe sem draft aberto.",
+    "pedidoC0": "Local positivo completo: lista/reabertura normal, API e detalhe/reload, location-ui-proof.md. C0/G5 precisa fornecer negativa real cross-tenant/hierarquia e fixture ativa para members. Candidato draft ec2a15a2 foi corretamente recusado e inclusao retirada; grupo1043c165 ativo v2 preservado. Sem SQL G1. UI no edit do grupo, ainda sem mudancas.",
     "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
     "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
     "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
