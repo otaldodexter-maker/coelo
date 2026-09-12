@@ -219,5 +219,44 @@
       "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (1e94633a5) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
       "recordedAt": "2026-09-11T21:02:00-03:00"
     }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
   }
 ]

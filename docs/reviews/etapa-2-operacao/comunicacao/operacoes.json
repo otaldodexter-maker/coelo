@@ -1,6 +1,6 @@
 {
-  "revision": 47,
-  "updated_at": "2026-09-11T21:03:00-03:00",
+  "revision": 48,
+  "updated_at": "2026-09-11T21:06:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -167,6 +167,13 @@
       ],
       "what": "ROTA REAL (build novo): /imports/new abre dentro da shell com o texto honesto; captura 31. Delta FE verified (adiamento honesto) acrescentado: deltas-r06-ops.json agora com 17.",
       "evidence": "rota-real/31-imports-new-deferred-shell.png"
+    },
+    {
+      "when": "21:05",
+      "action_ids": [
+        "account.profile"
+      ],
+      "what": "ROTA REAL: apos o lote 53 (200300), Meu perfil mostra o e-mail da pessoa de servico (captura 40). Chrome CDP 9421 havia sido fechado (orfaos 9xxx) e foi reaberto com o mesmo perfil. Nota: o bloco Meu acesso diz \"MFA pendente\" com MFA fora do MVP (Decisao 12) — texto a revisar, registrado."
     }
   ],
   "tests": [
@@ -255,7 +262,7 @@
       "path": "packages/coelo_database/candidatos/operacoes/20260911200300_account_profile_service_person_email_v1.sql",
       "pgtap": "supabase/tests/account_profile_service_person_email_v1_test.sql 3/3; superadmin_account_profile_v1_test 16/16 (descartavel coelo_ops_r06 com lotes ate 48 + 200200)",
       "composition_key": "nenhuma",
-      "state": "PRONTO para o coordenador aplicar"
+      "state": "APLICADO em producao (lote 53, 20:55); provado na rota real 21:05"
     }
   ],
   "questions_to_owner": [
@@ -276,7 +283,7 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "encerrar Chrome/servidor/descartavel; responder a revisao de 10 min as 21:36",
+  "next_step": "encerrar Chrome/servidor/descartavel; revisao de 10 min as 21:36",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -1114,9 +1121,14 @@
       "action_id": "shell.navigate",
       "tipo": "teste-pre-existente",
       "o_que": "em ca60b096b (antes da R06) ja falham: superadmin_error_routes_test \"unavailable /profile\", persistent_shell_routes_test (2), prototype_navigation_routes_test; em test/app/router tambem structure_detail_golden_test (4), person_detail_golden_test (2), principal_moments_publication_route_test, people_creation_requirements_red_test (frentes estrutura/acessos/principal)."
+    },
+    {
+      "action_id": "account.profile",
+      "tipo": "ui-texto",
+      "o_que": "Meu acesso mostra \"MFA pendente\" embora MFA esteja fora do MVP (Decisao 12); trocar por rotulo honesto (\"MFA desativado no MVP\") ou omitir."
     }
   ],
-  "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (17 deltas; os 16 primeiros ensaiados com apply-tracker-delta.cjs + validate-trackers.cjs PASS e revertidos)",
+  "proposed_deltas_file": "docs/reviews/evidence/etapa-2/r06-operacoes/deltas-r06-ops.json (20 deltas)",
   "pagina_aprovacao_owner": {
     "url": "https://claude.ai/code/artifact/1d18a357-f2ed-40ee-827b-63798967a700",
     "copia": "docs/reviews/evidence/etapa-2/r06-operacoes/aprovacao-r06-ops/pagina-lado-a-lado-r06-ops.html",
