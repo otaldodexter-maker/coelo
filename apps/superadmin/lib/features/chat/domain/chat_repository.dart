@@ -4,6 +4,8 @@
 /// a conversation id supplied by the client is never sufficient authorization.
 library;
 
+import 'dart:typed_data';
+
 enum ChatInboxLoadState { loading, ready, empty, noResults, failure, unauthorized, offline }
 
 final class ChatCursor {
@@ -380,6 +382,7 @@ abstract interface class ChatRepository {
   Future<ChatMessageRevocation> revokeMessage(ChatRevokeMessageCommand command);
   Future<void> markRead({required String conversationId, required String upToMessageId});
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId});
+
   /// Um repositorio que ainda nao fala com o realm interno recusa a
   /// preferencia em vez de fingir um estado local, que era exatamente o que o
   /// reload apagava antes.
@@ -428,7 +431,6 @@ final class UnavailableChatRepository implements ChatRepository {
   Future<ChatRealtimeRefresh> refreshAfterRealtime({required String conversationId}) =>
       Future<ChatRealtimeRefresh>.error(const ChatFailureException());
 
-
   @override
   Future<ChatConversationPreference> setPinned({
     required String conversationId,
@@ -470,4 +472,48 @@ final class ChatFailureException implements Exception {
   const ChatFailureException([this.cause]);
 
   final Object? cause;
+}
+
+/// Explicit chat binding gateway. A binding id is not a canonical media asset.
+abstract interface class ChatAttachmentRepository {
+  Future<String> uploadAttachment(ChatAttachmentUpload command);
+  Future<ChatAttachmentRead> readAttachment(String attachmentId);
+}
+
+final class ChatAttachmentUpload {
+  ChatAttachmentUpload({
+    required this.conversationId,
+    required this.requestId,
+    required this.fileName,
+    required this.contentType,
+    required Uint8List bytes,
+  }) : bytes = Uint8List.fromList(bytes).asUnmodifiableView();
+
+  final String conversationId;
+  final String requestId;
+  final String fileName;
+  final String contentType;
+  final Uint8List bytes;
+
+  void validate() {
+    final limit = contentType == 'application/pdf' ? 10 * 1024 * 1024 : 4 * 1024 * 1024;
+    if (!const {'image/jpeg', 'image/png', 'image/webp', 'application/pdf'}.contains(contentType) ||
+        bytes.isEmpty ||
+        bytes.length > limit ||
+        fileName.isEmpty ||
+        fileName.length > 255 ||
+        RegExp(r'[\x00-\x1f/\\]').hasMatch(fileName)) {
+      throw const ChatAttachmentInvalidException();
+    }
+  }
+}
+
+final class ChatAttachmentRead {
+  const ChatAttachmentRead({required this.url, required this.expiresAt});
+  final Uri url;
+  final DateTime expiresAt;
+}
+
+final class ChatAttachmentInvalidException implements Exception {
+  const ChatAttachmentInvalidException();
 }

@@ -1,6 +1,8 @@
 import 'dart:async';
 
 import 'package:http/http.dart' show ClientException;
+import 'package:http/http.dart' as http;
+import 'package:crypto/crypto.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/chat_repository.dart';
@@ -9,10 +11,122 @@ import '../domain/chat_repository.dart';
 ///
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
-final class SupabaseChatRepository implements ChatRepository {
-  const SupabaseChatRepository(this._client);
+final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepository {
+  const SupabaseChatRepository(this._client, {http.Client? uploadClient})
+    : _uploadClient = uploadClient;
+
+  final http.Client? _uploadClient;
 
   final SupabaseClient _client;
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) async {
+    command.validate();
+    try {
+      final prepared = await _attachmentAction({
+        'action': 'prepare',
+        'request_id': command.requestId,
+        'conversation_id': command.conversationId,
+        'file_name': command.fileName,
+        'content_type': command.contentType,
+        'byte_size': command.bytes.length,
+        'sha256': sha256.convert(command.bytes).toString(),
+      });
+      final attachmentId = _string(prepared, 'attachment_id');
+      final messageId = _string(prepared, 'message_id');
+      if (prepared['replayed'] == true) {
+        // A consumed/failed ticket also reports replayed. Only an authorised
+        // read proves that the previous attempt reached the ready state.
+        await readAttachment(attachmentId);
+        return messageId;
+      }
+      final expiresAt = _date(prepared, 'expires_at');
+      if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
+      final url = _signedUrl(prepared, 'upload_url');
+      final headers = <String, String>{};
+      final requiredHeaders = prepared['required_headers'];
+      if (requiredHeaders is! Map) throw const ChatFailureException();
+      for (final entry in requiredHeaders.entries) {
+        if (entry.key is! String || entry.value is! String) throw const ChatFailureException();
+        final key = (entry.key as String).toLowerCase();
+        if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
+          throw const ChatFailureException();
+        }
+        headers[key] = entry.value as String;
+      }
+      if (headers['content-type'] != command.contentType) throw const ChatFailureException();
+      // This client never receives the authenticated Supabase client's headers.
+      final upload = _uploadClient ?? http.Client();
+      try {
+        final request = http.Request('PUT', url)
+          ..followRedirects = false
+          ..headers.addAll(headers)
+          ..bodyBytes = command.bytes;
+        final response = await http.Response.fromStream(await upload.send(request));
+        if (response.statusCode < 200 || response.statusCode >= 300) {
+          throw const ChatFailureException();
+        }
+      } finally {
+        if (_uploadClient == null) upload.close();
+      }
+      final finalized = await _attachmentAction({
+        'action': 'finalize',
+        'attachment_id': attachmentId,
+      });
+      if (_string(finalized, 'message_id') != messageId ||
+          _string(finalized, 'attachment_id') != attachmentId) {
+        throw const ChatFailureException();
+      }
+      return messageId;
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
+    try {
+      final startedAt = DateTime.now().toUtc();
+      final data = await _attachmentAction({'action': 'read', 'attachment_id': attachmentId});
+      final seconds = _int(data['expires_in']);
+      if (_string(data, 'attachment_id') != attachmentId || seconds <= 0 || seconds > 300) {
+        throw const ChatFailureException();
+      }
+      return ChatAttachmentRead(
+        url: _signedUrl(data, 'signed_url'),
+        expiresAt: startedAt.add(Duration(seconds: seconds)),
+      );
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  Future<Map<String, dynamic>> _attachmentAction(Map<String, dynamic> body) async {
+    try {
+      final response = await _client.functions.invoke('chat-media', body: body);
+      if (response.status != 200 || response.data is! Map) throw const ChatFailureException();
+      return Map<String, dynamic>.from(response.data as Map);
+    } on FunctionException catch (error) {
+      final details = error.details;
+      final code = details is Map ? details['error'] : null;
+      if (code == 'chat_read_only') throw const ChatConflictException(ChatConflictReason.readOnly);
+      if (const {
+        'sai_auth_required',
+        'sai_session_invalid',
+        'sai_internal_context_denied',
+        'sai_membership_suspended',
+        'sai_membership_revoked',
+        'sai_permission_denied',
+        'sai_mfa_required',
+        'chat_not_found',
+        'chat_attachment_not_found',
+      }.contains(code)) {
+        throw const ChatUnauthorizedException();
+      }
+      if (error.status == 401 || error.status == 403) throw const ChatUnauthorizedException();
+      throw const ChatFailureException();
+    }
+  }
 
   @override
   Future<int> fetchUnreadTotal() async {
@@ -216,10 +330,7 @@ final class SupabaseChatRepository implements ChatRepository {
     }
   }
 
-  Future<ChatConversationPreference> _preference(
-    String rpc,
-    Map<String, Object?> params,
-  ) async {
+  Future<ChatConversationPreference> _preference(String rpc, Map<String, Object?> params) async {
     try {
       final payload = _data(await _client.rpc<Object?>(rpc, params: params));
       return ChatConversationPreference(
@@ -420,4 +531,12 @@ DateTime _date(Map<String, dynamic> json, String key) {
   final value = json[key];
   if (value is String) return DateTime.parse(value);
   throw const ChatFailureException();
+}
+
+Uri _signedUrl(Map<String, dynamic> data, String key) {
+  final url = Uri.tryParse(_string(data, key));
+  if (url == null || url.scheme != 'https' || url.host.isEmpty || url.userInfo.isNotEmpty) {
+    throw const ChatFailureException();
+  }
+  return url;
 }

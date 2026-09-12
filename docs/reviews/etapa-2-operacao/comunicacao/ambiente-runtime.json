@@ -1,12 +1,12 @@
 {
-  "revision": 5,
+  "revision": 8,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:30:00-03:00",
+  "updatedAt": "2026-09-12T11:50:42-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -42,7 +42,7 @@
       "causa do Docker identificada nos logs: inicializacao abortada por falso processo residual PID 6984; daemon recuperado na primeira inicializacao preservadora",
       "VHDX e volume nomeado preservados; baseline 1abbc4f2cd13 healthy em 57322",
       "paridade do espelho confirmada por marcadores dos lotes 52, 54 e 55; ledger isolado nao representa replay via psql",
-      "build web QA release concluido e servidor ativo em 127.0.0.1:3014 PID 16248",
+      "build web QA release concluido e servidor release restaurado em 127.0.0.1:3014 PID 14724",
       "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais",
       "gate SQL adicional do C0: suites ACL compartilhadas 22/22, 46/46, 4/4 e 16/16, todas com rollback e exit nativo 0",
       "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados",
@@ -50,7 +50,11 @@
       "assessment focal G5 52/52 com rollback; preview cleanup corrigido c9662b0ff read-only com rollback e zero contagens",
       "fixture de convite expirado: RED historico 34/35 classificado, corrigido pelo autor G5 e rerun 95b501322 em 35/35 com rollback",
       "H09 20260912140545 aplicado somente no espelho por liberacao C0; job nominal ativo a cada 5 minutos e teste 6/6",
-      "consumidores Chat pos-H09: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback"
+      "consumidores Chat pos-H09: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback",
+      "tentativa debug autorizada: DTD/VM Service conectados, mas qa_login falhou no DWDS e Dart MCP confirmou ausencia da extensao Dart Debug Chrome",
+      "probe CUA com getByRole/fill/press Tab e click/typeText/setValue reproduziu controller vazio; sem chamada Auth",
+      "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
+      "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -77,19 +81,26 @@
     ],
     "blocked": {
       "gate": "login/leitura/reload",
-      "diagnosis": "setValue, paste e typeText nao alteram o controller dos campos Flutter; submit continua em Informe seu e-mail e nenhuma requisicao Auth foi emitida",
+      "diagnosis": "hit-testing e foco funcionam: click fisico foca email e Tab move o foco para senha. O canal de texto da extensao nao gera valor no DOM/controller Flutter: typeText e pressKey individual mantem length 0. No web-server, qa_login falha no DWDS e Dart MCP nao encontra Flutter Driver porque o Chrome compartilhado nao tem Dart Debug",
       "reportedToC0": true,
       "toolBoundary": "exec_command ao iniciar Chrome CDP foi rejeitado automaticamente com blocked by policy; release estatico nao tem DTD/VM Service",
-      "safeContinuation": "apos posse C0, substituir temporariamente o servidor por flutter run -d web-server na mesma porta, reutilizar a aba e tentar Dart MCP somente se DTD listar o app"
+      "safeContinuation": "reutilizar a aba somente com Chrome que ja tenha Dart Debug ou endpoint CDP nominalmente permitido; nao criar segundo navegador nem injetar sessao"
     },
-    "nextGate": "C0 liberar executor capaz de preencher o formulario Flutter no Chrome entregue; sem criar segundo navegador"
+    "sqlBlocked": {
+      "candidate": "444ac0246d7eadd62527990492f9797285594bec:20260912140546_forms_question_media_draft_bridge_v1.sql",
+      "result": "RED e GREEN: 1-18 ok, 19/20 not ok, abort forms.read required, native/wrapper 3; fixtures revertidas; regressões nao executadas",
+      "diagnosis": "autorizacao chama has_platform_permission sem institution_id para ator interno escopado; FK RESTRICT DEFERRABLE tambem foi bloqueada por G3 e media_context nulo precisa ajuste",
+      "baseline": "candidato antigo permaneceu aplicado localmente porque STOP chegou apos COMMIT; aguarda correcao forward; producao intocada",
+      "reportedToC0": true
+    },
+    "nextGate": "C0 disponibilizar ferramenta de browser proposito-especifico compativel com Flutter, sem shell CDP, segundo navegador ou reconfiguracao global"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
-    "server": "127.0.0.1:3014 PID 16248, ativo",
+    "server": "127.0.0.1:3014 PID 14724, ativo; /login HTTP 200; build original SHA-256 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "slot devolvido ao C0; espelho inclui H09 local verde 6/6 e consumidores Chat 28/28+3/3; producao/backup/ledger permanecem com C0"
+    "sql": "slot devolvido ao C0; espelho inclui H09 verde e o candidato Forms 444ac024 bloqueado/aplicado localmente; aguarda forward fix, sem regressões; producao/backup/ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -123,6 +134,21 @@
       "revision": 5,
       "at": "2026-09-12T11:30:00-03:00",
       "summary": "H09 aplicado somente no espelho e provado 6/6; consumidores Chat 28/28+3/3 verdes; slot SQL devolvido ao C0 para lote 56 em producao."
+    },
+    {
+      "revision": 6,
+      "at": "2026-09-12T11:37:33-03:00",
+      "summary": "Web-server debug autorizado esgotou qa_login e Dart MCP sem a extensao Dart Debug Chrome; probe CUA semantico confirmou controller vazio e Tab inoperante; release restaurado no PID 33856."
+    },
+    {
+      "revision": 7,
+      "at": "2026-09-12T11:46:00-03:00",
+      "summary": "Instrumentacao QA temporaria provou hit-testing e foco funcionais, mas canal de texto CUA sem evento/valor no DOM ou controller; instrumentacao removida, build original recompilado e release restaurado no PID 14724."
+    },
+    {
+      "revision": 8,
+      "at": "2026-09-12T11:50:42-03:00",
+      "summary": "Forms 444ac024 ficou vermelho apos apply local: autorizacao nao passa institution_id; G3 bloqueou tambem RESTRICT DEFERRABLE/media_context nulo. Regressões paradas e producao intocada."
     }
   ]
 }
