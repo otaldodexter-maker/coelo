@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 47,
+  "revision": 48,
   "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T20:38-03:00",
+  "updatedAt": "2026-09-11T21:24-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R06 · Realm interno e segurança",
   "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
   "branch": "work/etapa2-r06-realm-interno",
-  "head": "(merge de origin/dev 2a579335e+)",
+  "head": "(commit desta revisao; origin/dev mesclada)",
   "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
   "t0": "T0 = 19:36 (coordenacao rev 52); T0+2h = 21:36 (revisao de 10 min ate 21:46); minha abertura 19:37",
   "escopo": {
@@ -64,8 +64,8 @@
   "deltaPropostoBE": {
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
-  "loop": "a agendar: /loop 15m",
-  "status": "recorte concluido: 20260912210000 (lote 50) + hotfix 20260912210100 (lote 52) em producao; 180060 vai ao Owner como pergunta (decisao do coordenador); code review 210500/211100 registrado; aguardando o pedido de revisao de 10 min em T0+2h (21:36)",
+  "loop": "cron cf28bf71 a cada 15 min; cancelado ao gravar esta revisao",
+  "status": "finalizado; revisao final gravada (rev 48); descartavel parado",
   "proximoPasso": "em T0+2h responder a revisao de 10 minutos; parar o descartavel coelo_realm_r06 ao encerrar",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
@@ -595,5 +595,30 @@
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
   "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md",
-  "recibosDoCoordenador": "ACK rev 40 (20:05) e rev 43 (20:19) lidos em coordenacao rev 53/54; o hotfix da rev 45 ainda nao foi lido: em producao continuam 7 memberships de espelho inactive (medido 20:19, contagens) e o ledger termina em 20260912210000 | 20:35: hotfix aplicado (lote 52) e conferido pelo coordenador e por esta frente"
+  "recibosDoCoordenador": "ACK rev 40 (20:05) e rev 43 (20:19) lidos em coordenacao rev 53/54; o hotfix da rev 45 ainda nao foi lido: em producao continuam 7 memberships de espelho inactive (medido 20:19, contagens) e o ledger termina em 20260912210000 | 20:35: hotfix aplicado (lote 52) e conferido pelo coordenador e por esta frente",
+  "revisaoFinalT0mais2h": {
+    "quando": "2026-09-11T21:24-03:00 (antecipada ao pedido de T0+2h = 21:36; vale como resposta da revisao de 10 minutos)",
+    "entregueiTudo": "sim: os 4 itens do recorte fechados; nada retido, sem WIP",
+    "shaPublicado": "commit desta revisao em origin/work/etapa2-r06-realm-interno (origin/dev mesclada); status limpo",
+    "fechadoComProva": {
+      "seguranca transversal (raiz da ponte de ator)": "20260912210000 (lote 50) + hotfix 20260912210100 (lote 52) em producao; pgTAP internal_actor_scope_root_v1_test 46/46 e hotfix_test 4/4; regressao das 201 suites sem regressao atribuivel; producao conferida por contagem: 0 identidades escopadas, 33 memberships de espelho ativas, 0 inativas recentes",
+      "item 2 usuarios qa-r06": "feito pelo coordenador (lote 49); minha semente descartada",
+      "item 3 180060": "confirmado sem mudanca de comportamento (analise no handoff); o coordenador leva ao Owner como pergunta",
+      "item 4 code review 210500/211100": "registrado no handoff e em item4CodeReview; sem achado bloqueante"
+    },
+    "abertoComPrimeiroGate": {
+      "P48 (G4) no sync do 130000": "pacote da G4 deve nascer sobre o corpo do 20260912210100 (usar superadmin_internal_actor_scope_targets())",
+      "familias people-based negam identidade interna escopada": "decisao de produto quando existir a primeira escopada (aceitar por contexto como Rotina/Cuidado ou manter fail-closed)",
+      "P7 people-based": "RPCs de plataforma passarem institution_id (revisao profunda)",
+      "ap_models_nominal_rollback_test": "polui o banco de prova (DDL fora de transacao): rodar por ultimo ou arquivar"
+    },
+    "deltas": "nenhum delta de estado por action_id (correcao transversal); o coordenador anota a correcao de seguranca nos tres md",
+    "pacotes": "20260912210000 e 20260912210100 aplicados (lotes 50 e 52); candidatos/realm-interno sem pendente",
+    "duvidasAoOwner": "nenhuma nova (180060 vai pela coordenacao)",
+    "chavesCriadas": "nenhuma",
+    "dadosSinteticos": "nenhum criado por esta frente em producao",
+    "skills": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md (inclui a regra: pacote marcado pronto nao muda de conteudo; reconciliacao nao filtra por status da instituicao)",
+    "descartavel": "coelo_realm_r06 parado ao gravar esta revisao (supabase stop --no-backup)",
+    "aposT0mais2h10": "nao retomo por conta propria"
+  }
 }
