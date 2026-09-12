@@ -33,5 +33,34 @@ haviam passado, o recorte atual fica em 67 testes verdes e zero falhas abertas.
 
 Analise estatica dos dois testes apos a correcao: `No issues found!`.
 
+## Recertificacao dos multiplos blocos de midia
+
+Apos o ajuste para que cada upload crie um bloco proprio na ancora escolhida,
+foram recertificados, com concorrencia 1:
+
+- controlador: 20/20 PASS;
+- compositor produtivo: 23/23 PASS;
+- leitor do Principal: 8/8 PASS;
+- anexos produtivos: 7/7 PASS.
+
+Total final do delta multimidia: 58/58 PASS. A primeira passagem revelou duas
+falhas apenas no harness: o botao de envio do leitor precisava ser trazido para
+a area visivel e o teste de quota ainda esperava `OutlinedButton`, embora o
+componente vigente seja `TextButton`. Corrigidos os testes, os lotes focais
+passaram sem falha aberta.
+
+## Estados A+
+
+Foram regravados exclusivamente os tres estados autorizados:
+
+- `circular_composer_light_375.png`;
+- `circular_composer_light_375_text_200.png`;
+- `circular_composer_light_1440_text_200.png`.
+
+A inspecao visual confirmou a ordem `texto -> midia -> pergunta -> texto`, o
+rodape fixo sem overflow e o conteudo rolavel em 200%. Nenhum dos seis R web
+`{light,dark}_{768,1024,1440}` foi alterado. Analise estatica final dos tres
+arquivos de teste: `No issues found!`.
+
 Esta e prova local. Nao promove E2E nem substitui a prova de
-`circulars.attach` no runtime 3014.
+`circulars.attach` pela UI no runtime 3014.

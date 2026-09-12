@@ -1,15 +1,15 @@
 {
-  "revision": 61,
+  "revision": 62,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "3def837bf (multiplos blocos de midia analyze-green; Flutter pendente)",
-  "base": "origin/dev incorporado por merge a33d85111",
+  "head": "4c4aaae68 (multiplos blocos de midia 58/58 e tres A+ inspecionados)",
+  "base": "origin/dev incorporado por merge b55141824",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T11:46:30-03:00",
+  "updatedAt": "2026-09-12T12:03:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -58,12 +58,12 @@
   },
   "environment": {
     "credencial": "Coelo-backups/qa-r06-publicacoes.env (ler localmente; nunca imprimir, registrar ou versionar o valor).",
-    "note": "R07 aberta sobre origin/dev 91d6aa287; primeiro checkpoint registra estado conhecido da R06 e gates, depois segue pela rota real sem aguardar aprovacao. Build web-qa concluido; Chrome dedicado criado, mas o adaptador CDP nao obteve Page.getFrameTree.",
+    "note": "R08 sobre origin/dev incorporado em b55141824. circular-media v13 esta implantada e o preflight direto em 3014 passou com x-client-info; a prova UI permanece bloqueada porque o Chrome unico pertence a G0 e C0 vedou novo browser/CDP.",
     "rotaReal": "build web-qa com qa_main servido numa porta da lista CORS (3000, 3009, 3010, 3014, 3016, 3018 ou 3020); Chrome CDP proprio com --user-data-dir %TEMP%/coelo-chrome-publicacoes; um Chrome por vez.",
     "closedAt": ""
   },
-  "firstGate": "Incorporar a base integrada mais recente e conferir o rodape canonico trazido por G1; depois solicitar Chrome/runtime 3014 para circulars.attach.",
-  "status": "multimidia-analyze-green-flutter-em-fila",
+  "firstGate": "Quando C0 liberar e2e, provar circulars.attach pela UI no runtime 3014; ate la, seguir apenas gates locais independentes, comecando pelo sino/shell.load.",
+  "status": "local-green-a-plus-commitado-browser-blocked",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -86,7 +86,7 @@
     ],
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
-  "blocked": "circulars.attach retido pelo deploy da Edge Function circular-media com o fix x-client-info; prova de qualquer item pela rota real retida adicionalmente pelo CDP (Chrome criado, servidor respondeu index/bootstrap, Page.getFrameTree expirou). Os testes locais e demais deltas seguem independentes.",
+  "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
   "next": "entrega final ao C0; integrar por conteúdo após conferir o SHA publicado; não remover esta worktree antes da integração.",
   "changes": [
     {
@@ -160,7 +160,7 @@
       "actionIds": [
         "circulars.attach"
       ],
-      "pending": "DEPLOY da Edge Function circular-media a partir de b2e61a22e (Allow-Headers + x-client-info). Sem custo; sem segredo novo. Depois eu provo attach pela tela. Deltas em deltas-r06-pa.json (5)."
+      "pending": "Deploy circular-media v13 concluido pelo C0 e preflight direto 3014 verde. Falta somente a prova pela UI quando o C0 liberar e2e/Chrome; nao promover antes disso. Historico do delta permanece em deltas-r06-pa.json (5)."
     },
     {
       "actionIds": [
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T11:46:30-03:00",
-    "sha": "3def837bf",
+    "checkpoint": "2026-09-12T12:03:00-03:00",
+    "sha": "4c4aaae68",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2531,22 +2531,20 @@
       "limite agregado de texto preservado em 10000; nenhum contrato reduzido para 4000",
       "H14 reconciliado com C0 como subaceite de shell.load sem novo denominador",
       "seis R comparados pelo recorte do rodape e preservados sem regravacao",
-      "fixture visual A+ agora prova texto-midia-pergunta-texto e inclui variantes light 375/1440 a 200 por cento, sem PNG regravado",
+      "tres A+ autorizados foram regravados e inspecionados: light 375 normal/200 por cento e light 1440/200 por cento; os seis R web permanecem intocados",
       "circular-media em producao respondeu OPTIONS 200 para a origem 127.0.0.1:3014 com x-client-info autorizado",
       "cada upload agora cria bloco de midia separado na posicao escolhida; selecao multipla encadeia a ordem e preserva teto agregado de quatro"
     ],
     "verification": {
-      "analyze": "dart analyze focal em 11 arquivos apos multiplos blocos de midia: No issues found (11:45 BRT)",
-      "flutter": "67 testes relevantes verdes, zero falhas abertas; execucao inicial 66/67 e rerun dos dois arquivos afetados 43/43 PASS",
-      "visual": "comparacao commitada; nenhum PNG R alterado",
+      "analyze": "dart analyze focal em 11 arquivos apos multiplos blocos de midia e nos tres testes finais: No issues found",
+      "flutter": "delta multimidia final: controller 20 + composer 23 + reader 8 + attachments 7 = 58/58 PASS; falhas intermediarias eram somente do harness e foram resolvidas",
+      "visual": "tres A+ autorizados commitados e inspecionados; nenhum dos seis PNGs R web foi alterado",
       "preflight3014": "HTTP 200; Allow-Origin exata; Allow-Headers inclui x-client-info; prova UI ainda pendente"
     },
     "pending": [
-      "executar regressao Flutter focal dos multiplos blocos quando C0 conceder o proximo slot",
-      "incorporar a base integrada e conferir o rodape canonico sem sobrescrever os seis R",
-      "gerar somente as tres evidencias A+ apos nova concessao de slot Flutter, sem alterar imagens R",
       "circulars.attach no Chrome/runtime 3014 quando e2eLiberado",
-      "provar P50 apenas se a base integrada alterar o caminho ja recertificado localmente"
+      "provar P50 apenas se a base integrada alterar o caminho ja recertificado localmente",
+      "integrar 3def837bf e 4c4aaae68 por conteudo no consolidado do C0"
     ],
     "c0": "ACK55 recebido; H14 shell.load aceito; publication_surface.dart nao tocado"
   },

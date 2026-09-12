@@ -1,6 +1,6 @@
 ---
 source: R08-prompts.md common contract and G6; spec 037; ADR 0034 decision 20
-status: em-andamento
+status: local-green-browser-blocked
 generated_at: 2026-09-12
 ---
 
@@ -42,6 +42,7 @@ generated_at: 2026-09-12
 - P50 foi reconciliado em `p50-hierarchy.md`; as provas R06 permanecem vigentes e a regressao local do leitor passou.
 - Prova detalhada em `flutter-verification.md`. O slot global foi liberado imediatamente ao C0.
 - Gate de memoria: 64 artigos validados; nenhuma regra duravel nova, pois ordem intercalada e limite de 10.000 ja constam nas fontes canonicas/projecoes. No-op documental.
-- A fixture visual dos tres A+ usa `texto -> midia -> pergunta -> texto` e cobre claro 375 normal/200% e claro 1440/200%. So o codigo da prova foi preparado; nenhum PNG foi regravado e os seis R permanecem intocados.
+- A fixture visual dos tres A+ usa `texto -> midia -> pergunta -> texto` e cobre claro 375 normal/200% e claro 1440/200%. Somente esses tres PNGs autorizados foram regravados e inspecionados; os seis R permanecem intocados.
 - `circular-media-preflight-3014.md` registra OPTIONS 200 em producao para a origem 3014, inclusive `x-client-info`; o aceite de `circulars.attach` continua aguardando a rota real.
-- Revisao de G7 encontrou o segundo gate funcional: novos arquivos ainda eram agregados ao primeiro bloco. Corrigido em `3def837bf`: cada upload vira bloco proprio depois do bloco escolhido; selecao multipla encadeia os novos IDs, preserva a ordem e o teto agregado de quatro. Analyze focal verde; regressao Flutter aguarda novo slot.
+- Revisao de G7 encontrou o segundo gate funcional: novos arquivos ainda eram agregados ao primeiro bloco. Corrigido em `3def837bf`: cada upload vira bloco proprio depois do bloco escolhido; selecao multipla encadeia os novos IDs, preserva a ordem e o teto agregado de quatro. Regressao final 58/58 PASS e tres A+ commitados em `4c4aaae68`; analyze focal verde.
+- O runtime produtivo `circular-media` v13 passou no preflight direto com origem `http://127.0.0.1:3014`, inclusive `x-client-info`. O aceite E2E de `circulars.attach` nao foi promovido: o unico Chrome pertence a G0 e o C0 vedou novo browser/CDP nesta janela.
