@@ -2033,6 +2033,25 @@
  "edgeFunctionsR06": {
   "internal-user-create": "deploy realizado pela coordenacao R07 em 2026-09-11T23:21:18-03:00; [functions.internal-user-create] verify_jwt=false em config.toml; deno check verde; POST reautoriza pelo RPC; sem segredo novo"
  },
+ "frenteG8R07": {
+  "grupo": "suites",
+  "comunicacao": "docs/reviews/etapa-2-operacao/comunicacao/fase0.json",
+  "branch": "work/etapa2-r07-suites",
+  "app": "Claude Opus esforco medio",
+  "janela": "3h a partir da abertura da G8",
+  "escopo": "apps/superadmin/test/app; apps/superadmin/test/core/config; apps/superadmin/test/shared; apps/superadmin/lib/dev; apps/superadmin/lib/core/config",
+  "foraDoEscopo": "apps/superadmin/lib/features e apps/superadmin/lib/shared/presentation; se tocar, devolver para a frente",
+  "semDeltasDeEstado": true,
+  "ciclo": "ler fase0.json a cada 20 min; ACK/recibo por revisao; cobrar feito/pendente/commits a cada 30 min; integrar por merge quando publicar; rodar suites tocadas"
+ },
+ "dockerR07": {
+  "estado": "bloqueio ambiental temporario apos falha do Docker Desktop",
+  "causaMedida": "backend falhava ao renomear sockets AF_UNIX stale em Docker\\run\\sailor-ingest.sock e docker-secrets-engine\\engine.sock; apos mover as arvores runtime, restaram processos GPU Docker Desktop orfaos que o Windows nao consegue finalizar",
+  "evidencia": "AppData/Local/Docker/log/host/com.docker.backend.exe.log em 2026-09-12T02:31-02:47Z; docker info sem pipe dockerDesktopLinuxEngine",
+  "acaoReversivel": "Docker\\run -> run.stale-r07-20260911-2; docker-secrets-engine -> docker-secrets-engine.stale-r07-20260911-2; nenhum volume/imagem/VM/reset tocado",
+  "proximoGate": "reiniciar Windows se os PIDs GPU 6984/36664 continuarem orfaos; depois iniciar uma unica instancia e conferir docker info + supabase_db_coelo_baseline:57322",
+  "impactoR07": "nao bloqueia integracao Git, leitura dos JSONs, testes Flutter/Node nem trabalho das frentes; bloqueia somente preflight SQL local ate o daemon voltar"
+ },
  "posseR07": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
   "branch": "work/etapa2-r07-coordenacao",
@@ -2104,7 +2123,8 @@
     "principal-chat-sistema",
     "realm-interno",
     "publicacoes-agenda",
-    "operacoes"
+    "operacoes",
+    "suites"
    ],
    "regra": "trabalhar sem parar ate T0+4h; registrar feito/pendente/commits a cada 30 min; sem aguardar Owner"
   }
