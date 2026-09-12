@@ -145,9 +145,8 @@ def _rpc(base: str, headers: dict[str, str], name: str, payload: object) -> obje
 
 
 def _execution_plan(assignment: dict[str, object], request_ids: dict[str, str]) -> dict[str, object]:
-    now = datetime.now(timezone.utc)
-    period = {"name": "R08 sintético", "ordinal": 1, "year": now.year, "starts_at": now.isoformat(), "ends_at": now.replace(month=12, day=31).isoformat(), "entry_closes_at": now.replace(month=12, day=31).isoformat(), "family_release_at": now.replace(month=12, day=31).isoformat(), "time_zone": "America/Sao_Paulo"}
-    payload = {"activity_id": assignment["activity_id"], "institution_id": assignment["institution_id"], "unit_id": assignment["unit_id"], "periodicity": "annual", "result_scale_kind": "numeric_0_10", "scale_options": {"step": 0.5}, "concepts": [], "periods": [period], "allow_final_override": False, "instruments": [{"name": "Instrumento R08", "weight": 100, "sort_order": 0}], "categories": []}
+    period = {"name": "R08 sintético", "ordinal": 1, "academic_year": 2026, "starts_on": "2026-09-12", "ends_on": "2026-12-31", "entry_closes_at": "2026-12-31T20:00:00-03:00", "family_release_at": "2026-12-31T20:00:00-03:00", "timezone": "America/Sao_Paulo"}
+    payload = {"activity_id": assignment["activity_id"], "institution_id": assignment["institution_id"], "unit_id": assignment["unit_id"], "periodicity": "annual", "result_scale_kind": "numeric_0_10", "scale_options": {}, "concepts": [], "periods": [period], "allow_final_override": False, "instruments": [{"name": "Instrumento R08", "weight": 100, "sort_order": 0}], "categories": []}
     return {"save_configuration": {"request_id": request_ids["save_configuration"], "configuration_id": None, "expected_version": 0, "payload": payload}, "activate_request_id": request_ids["activate_configuration"], "gradebook_request_id": request_ids["save_gradebook"]}
 
 
