@@ -1,18 +1,18 @@
 {
- "revision": 49,
+ "revision": 52,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T20:42-03:00",
+ "updatedAt": "2026-09-11T21:06-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "2164739b3 + este commit",
+ "head": "fd8e675af + este commit",
  "base": "origin/dev ca60b096b",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -63,21 +63,30 @@
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
  "currentGate": {
-  "gate": "itens 0-3 fechados na rota real; seguindo para forms.location-question/answer (item 5); itens 4, 6 e 7 registrados com o primeiro gate",
-  "screen": "Etapa 2 -> apps/superadmin -> Comunicacao -> Formularios -> editor (pergunta Local)",
-  "actionIds": [
-   "forms.location-question",
-   "forms.location-answer"
-  ]
+  "gate": "recorte executavel esgotado antes de T0+2h; fechando Chrome/servidor e preparando a mini-revisao",
+  "screen": "Etapa 2 -> apps/superadmin",
+  "actionIds": []
  },
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
  "tests": {},
  "reservedFiles": [],
- "blocking": [],
+ "blocking": [
+  {
+   "action_id": "forms.location-question / forms.edit (publicado)",
+   "bloqueio": "form_save_draft 42702 em producao para formulario publicado",
+   "desbloqueio": "coordenador aplica candidatos/formularios-cuidado-rotina/20260912220000 (pgTAP 17/17)"
+  }
+ ],
  "deltaProposals": [
   "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (25 deltas; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido): health-care.list BE done + E2E; medication.create/detail/edit/evidence FE verified + BE done + E2E; daily-routine.list FE/BE/E2E; daily-routine.edit E2E; daily-routine.publish FE/BE/E2E; child-safety.list E2E; child-safety.child FE/BE/E2E"
  ],
- "packages": [],
+ "packages": [
+  {
+   "arquivo": "candidatos/formularios-cuidado-rotina/20260912220000_form_save_draft_version_number_fix_v1.sql",
+   "estado": "PRONTO para o coordenador aplicar. Motivo: app_private.form_save_draft (230004, unica definicao em producao) responde 42702 \"column reference version_number is ambiguous\" ao salvar rascunho de formulario JA PUBLICADO (working_version_id nulo): a variavel version_number colide com a coluna de form_versions no select ... into. Medido na rota real (forms.location-question sobre 4555ba07). Mesmo corpo com a variavel renomeada (next_version_number) e alias fv; sem mudanca de assinatura, grants ou contrato. Prova: supabase/tests/forms_behavioral_rpc_test.sql no espelho supabase_db_coelo_baseline: SEM o candidato aborta na linha 279 (edicao apos publicar) com o 42702; COM o candidato, em transacao com rollback (espelho nao mutado), 17/17. Efeito: forms.edit de formulario publicado volta a funcionar; forms.location-question pode ser provada em seguida.",
+   "contrato": "sem mudanca: form_save_draft(request_id uuid, expected_version bigint, payload jsonb) -> jsonb"
+  }
+ ],
  "commits": [
   {
    "sha": "70c44f75a",
@@ -102,6 +111,21 @@
    "sha": "2164739b3",
    "o_que": "fix(rotina): editar modelo/rotina/lancamento envia o id sempre que existe (23505 medido na rota real: modelo 176882c5 com management_version 0 era tratado como criacao)",
    "prova": "supabase_routine_data_test 6/6; rota real: save_model 200 versao 2"
+  },
+  {
+   "sha": "168cb64eb",
+   "o_que": "fix(formularios): candidato 20260912220000 form_save_draft_version_number_fix_v1",
+   "prova": "pgTAP 17/17 com o candidato (rollback no espelho); erro 42702 sem ele"
+  },
+  {
+   "sha": "d027e3aa5",
+   "o_que": "fix(cuidado,assiduidade): nome da crianca do detalhe no editor de medicacao; dialogo Registrar dose 520 px sem icone; Sentimento na chamada sem texto de demonstracao (D3)",
+   "prova": "analyzer limpo; attendance_pages_test + medication_plan_evidence_test 54/54"
+  },
+  {
+   "sha": "fd8e675af",
+   "o_que": "feat(rotina): Arquivar modelo e rotina (V-15) com confirmacao, pelo superadmin_routine_save_model/save_application existentes com status archived (o servidor ja aceita status no payload: 010100 linhas 745 e 1126); archived() no dominio; coluna Acoes com tres icones; golden da tabela regravado",
+   "prova": "daily_routine_create_everywhere_test 1/1 (+ caso Arquivar); goldens de rotina verdes; rota real pendente do build 5"
   }
  ],
  "pendenciasRegistradas": [
@@ -121,26 +145,6 @@
    "gate": "BE midia (pos-MVP)"
   },
   {
-   "action_id": "daily-routine.list",
-   "o_que": "Arquivar (pedido do Owner em V-15) nao tem comando no servidor (routine_models/applications tem status archived, mas nenhuma RPC superadmin_routine_* muda status); candidato SQL se sobrar tempo, senao pendencia de contrato",
-   "gate": "BE contrato"
-  },
-  {
-   "action_id": "medication.detail",
-   "o_que": "apos reload direto na URL o campo Crianca mostra \"Crianca do plano\" (childLabelFor so conhece planos ja listados); ler o nome do detalhe",
-   "gate": "FE"
-  },
-  {
-   "action_id": "medication.evidence",
-   "o_que": "segmento Administrada quebra em duas linhas no dialogo de 420 px (showSelectedIcon/largura)",
-   "gate": "FE visual"
-  },
-  {
-   "action_id": "attendance.mark",
-   "o_que": "texto \"Sentimento (demonstracao local)\" e \"Nao persistido nesta etapa\" aparecem na chamada de producao (D3: sem texto de demonstracao)",
-   "gate": "FE"
-  },
-  {
    "action_id": "forms.upload/resolve-file/expire-file/delete-file",
    "o_que": "nao coube: o editor nao tem UI de imagem da pergunta (picker, PUT com required_headers, finalize, resolve na exibicao, delete); a pagina /forms/media/:assetId so le pelo action read; question-image em R2 implantada sem cliente. Primeiro gate: implementar o cliente da question-image no editor (FE do grupo)",
    "gate": "FE"
@@ -154,10 +158,15 @@
    "action_id": "politicas macro da unidade (item 6)",
    "o_que": "nao coube (superadmin_unit_care_policy_get_v1/set_v1 do lote 36 sem tela)",
    "gate": "FE"
+  },
+  {
+   "action_id": "forms.edit",
+   "o_que": "a suite historica forms_behavioral_rpc_test ja cobria editar apos publicar e falha no espelho com o corpo de producao (42702); a prova E2E de forms.edit da R05 foi sobre formulario em rascunho. Reabrir forms.edit para \"publicado -> nova versao de trabalho\" depois do candidato",
+   "gate": "BE (candidato pronto)"
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "forms.location-question/answer na rota real; depois mini-revisao",
+ "nextStep": "aguardar aplicacao do candidato; reprovar Local na rota real se houver tempo antes de 21:37; mini-revisao em 21:37",
  "finalizado": false,
  "dadosSinteticosCriados": [
   {
@@ -179,6 +188,11 @@
    "tabela": "public.routine_models",
    "id": "176882c5-e35f-4db9-b763-dc7ffe31b276",
    "nota": "renomeado para \"Modelo R05 rota real (R06)\" (versao 2)"
+  },
+  {
+   "tabela": "public.routine_models",
+   "id": "8d219282-af46-44ac-b22f-1b9f5f728137",
+   "nota": "copia do modelo 176882c5, arquivada (prova de Arquivar)"
   }
  ],
  "chavesCriadas": "nenhuma",
@@ -1878,6 +1892,34 @@
     "42"
    ]
   },
-  "negativas": "superadmin_medication_plan_detail e record_evidence com plano inexistente/alheio -> P0002 medication plan unavailable (rpc6.py, sessao qa-r06)"
+  "negativas": "superadmin_medication_plan_detail e record_evidence com plano inexistente/alheio -> P0002 medication plan unavailable (rpc6.py, sessao qa-r06)",
+  "forms.location-question": {
+   "resultado": "F (backend)",
+   "prova": "editor de 4555ba07: Adicionar pergunta -> busca Local -> tipo Local (grupo Escolhas) -> \"Em qual local?\" obrigatoria; Salvar rascunho -> form_save_draft 42702 ambiguous version_number (formulario publicado sem working version). Candidato 20260912220000 escrito e provado; reprovar apos aplicacao",
+   "capturas": [
+    "50",
+    "51",
+    "52",
+    "53",
+    "54",
+    "55"
+   ]
+  },
+  "daily-routine.list (Arquivar)": {
+   "resultado": "P",
+   "prova": "Duplicar modelo -> Salvar (save_model 200 -> 8d219282, management_version 0) -> tabela -> Arquivar -> confirmacao -> model_detail + save_model 200 (versao 2) -> directory recarregado com status archived",
+   "capturas": [
+    "60",
+    "61",
+    "62",
+    "63",
+    "64"
+   ]
+  }
+ },
+ "cobranca2106": {
+  "feito": "itens 0, 1, 2, 3 fechados com prova na rota real (25 deltas em deltas-r06-fcr.json); V-15 completo no cliente (Criar em toda aba, acoes na tabela, Lancar hoje, Arquivar); candidato 20260912220000 pronto (form_save_draft 42702)",
+  "pendente": "forms.location-question/answer (bloqueado pelo candidato), item 4 (cliente question-image), item 6 (politicas macro), item 7 (Lancar chamada na familia Publicacao)",
+  "commits_publicados": "ate 6e5cf8c97 na branch; fd8e675af e este commit no push desta revisao"
  }
 }

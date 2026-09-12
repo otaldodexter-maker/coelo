@@ -158,6 +158,23 @@ final class RoutineModel {
     this.versionId,
   });
 
+  /// V-15: arquivar e o mesmo save com status archived; o servidor revalida
+  /// escopo, capacidade e versao esperada.
+  RoutineModel archived() => RoutineModel(
+    id: id,
+    name: name,
+    description: description,
+    version: version,
+    status: RoutineModelStatus.archived,
+    sections: sections,
+    expectedVersion: expectedVersion,
+    originScope: originScope,
+    institutionId: institutionId,
+    originUnitId: originUnitId,
+    canManage: canManage,
+    versionId: versionId,
+  );
+
   final String id;
   final String name;
   final String description;
@@ -241,6 +258,28 @@ final class RoutineApplication {
   final String visibility;
   final List<RoutineApplicationAssignee> assignees;
   final bool canManage;
+
+  /// V-15: arquivar e o mesmo save com status archived.
+  RoutineApplication archived() => RoutineApplication(
+    id: id,
+    modelVersionId: modelVersionId,
+    institutionId: institutionId,
+    status: RoutineApplicationStatus.archived,
+    inheritanceMode: inheritanceMode,
+    effectiveVersion: effectiveVersion,
+    expectedVersion: expectedVersion,
+    unitId: unitId,
+    groupId: groupId,
+    parentApplicationId: parentApplicationId,
+    activityId: activityId,
+    validFrom: validFrom,
+    validUntil: validUntil,
+    startsAt: startsAt,
+    endsAt: endsAt,
+    visibility: visibility,
+    assignees: assignees,
+    canManage: canManage,
+  );
 
   @Deprecated('Use assignees to preserve responsibility.')
   List<String> get assigneeMembershipIds =>

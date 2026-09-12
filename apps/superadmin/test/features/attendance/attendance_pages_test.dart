@@ -1125,8 +1125,8 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    expect(find.text('Sentimento (demonstração local)'), findsWidgets);
-    expect(find.text('Não persistido nesta etapa.'), findsWidgets);
+    expect(find.text('Sentimento'), findsWidgets);
+    expect(find.text('Ainda não está disponível nesta versão.'), findsWidgets);
     final feeling = find.byKey(const Key('attendance-feeling-participant-1-animated'));
     await tester.ensureVisible(feeling);
     await tester.pump();

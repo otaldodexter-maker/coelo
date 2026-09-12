@@ -1636,7 +1636,7 @@ class _ParticipantCardState extends State<_ParticipantCard> {
               },
             ),
             const SizedBox(height: CoeloSpacing.space3),
-            Text('Sentimento (demonstração local)', style: Theme.of(context).textTheme.labelLarge),
+            Text('Sentimento', style: Theme.of(context).textTheme.labelLarge),
             const SizedBox(height: CoeloSpacing.space1),
             DailyRoutineFeelingPicker(
               keyPrefix: 'attendance-feeling-${widget.participant.id}',
@@ -1650,7 +1650,7 @@ class _ParticipantCardState extends State<_ParticipantCard> {
               },
             ),
             Text(
-              'Não persistido nesta etapa.',
+              'Ainda não está disponível nesta versão.',
               style: Theme.of(
                 context,
               ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),

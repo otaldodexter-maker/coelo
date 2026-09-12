@@ -1,61 +1,91 @@
 ---
-title: "Handoff — grupo formularios-cuidado-rotina, Rodada 5 (tarde de 11/09/2026)"
-source: "Execução da frente G3 em 2026-09-11 12:00–15:45; comunicacao/formularios-cuidado-rotina.json revisões 34 a 40; deltas-r05-fcr.json, -2, -3 e -4; produção conferida por leitura"
-status: "entregue; todos os pacotes SQL desta rodada aplicados pelo coordenador; Edge Functions form-media, form-operations e form-export-download implantadas"
+title: "Handoff — grupo formularios-cuidado-rotina, Rodada 6 (noite de 11/09/2026)"
+source: "Execução da frente G3 em 2026-09-11 19:37–21:37 (T0 19:36 pelo coordenador); comunicacao/formularios-cuidado-rotina.json revisões 47 a 53; deltas-r06-fcr.json; produção conferida pela aba Network e por RPC direta"
+status: "entregue; 1 candidato SQL pronto para o coordenador aplicar; sem deploy de Edge Function nesta rodada"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---
 
-# Handoff — formularios-cuidado-rotina (Rodada 5)
+# Handoff — formularios-cuidado-rotina (Rodada 6)
 
 Recorte: 43 ações das famílias `forms_authoring`, `forms_responses`,
 `forms_files`, `child_safety`, `health_care`, `medication`, `attendance` e
-`daily_routine`. Branch `work/etapa2-r05-formularios-cuidado-rotina`, base
-`origin/dev 2f6a6114f` (merge de `4bf0cfe51` em `7fe204565`). O handoff da R04
-foi preservado em `docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/handoff-r04.md`.
+`daily_routine`; 26 já em E2E na abertura. Branch
+`work/etapa2-r06-formularios-cuidado-rotina`, base `origin/dev ca60b096b`.
+Usuário `qa-r06-formularios@coelo.me` (credencial só no `.env` de backups).
+O handoff da R05 foi preservado em
+`docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/handoff-r05.md`.
 
-## O que fechou (prova na rota real com `qa-r03`, produção)
+## O que fechou (prova na rota real, produção, sessão qa-r06)
 
 | Ação | Estado proposto | Prova |
 | --- | --- | --- |
-| forms.publish, forms.overview | verified-e2e (aplicado) | `form_publish` 200, versão 3, auditoria; visão geral recarregada |
-| forms.monitor, forms.respond, forms.responses, forms.response-detail | verified-e2e (aplicado) | distribuição a0ee4530 → ocorrência 6b0bd1ef pelo cron → resposta 1f365626 |
-| forms.responses.export, forms.download | verified-e2e (deltas-3) | job 09f86ec7 succeeded (3975 bytes, R2), `form-export-download` 200 com URL presignada |
-| child-safety.create/edit/suspend | verified-e2e (deltas-2) | `child_safety_request/edit_pending/decide/change_lifecycle` 200 com auditoria |
-| health-care.create/detail/edit | verified-e2e (deltas-2) | perfil 5712371e, revisão 2 |
-| attendance.dashboard/create/mark/finish/correct | verified-e2e (deltas-3) | chamada d3821901 (open → closed → corrected, versão 4) |
-| daily-routine.create | verified-e2e (deltas-4) | modelo 176882c5 |
-| daily-routine.edit | FE verified, BE done (deltas-4) | edição abre o modelo real |
-| forms.list | FE verified | card Criar em produção |
+| health-care.list | BE done, verified-e2e | `superadmin_health_care_directory` 200, perfil real listado, reload |
+| medication.create/detail/edit | verified-e2e | plano `12f816e8` criado (v1), reaberto, dose 2.5→5 (v2), reload; P0002 para id alheio |
+| medication.evidence | verified-e2e (novo no cliente) | `superadmin_medication_plan_record_evidence` 200 → `42e77772` (recusada, motivo); detalhe relido |
+| daily-routine.list | verified-e2e (V-15 A+) | Criar em Modelos/Rotinas/Lançamentos (cards e tabela), ações na tabela, Arquivar (cópia `8d219282` arquivada) |
+| daily-routine.edit | verified-e2e | 23505 medido e corrigido (id enviado sempre); `save_model` 200 v2, lista recarregada |
+| daily-routine.publish | verified-e2e (D7) | Lançar hoje → `880b12a8` (rascunho) → Publicar → `published` v2, reload |
+| child-safety.list / child-safety.child | verified-e2e | `child_safety_directory` e `child_safety_get` 200 no reload |
+| Decisão 7 em Assiduidade | prova na rota real | `/attendance/new` e `/attendance/calls/d3821901` sem balão (capturas 40/42) |
 
-## Código entregue (commits na branch, pequenos, em português)
+Deltas: `docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json`
+(25; ensaiados com `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS e
+revertidos). Capturas em `.../r06-formularios-cuidado-rotina/rota-real/`.
 
-- `f17c2fa15` card Criar de Formulários; `/respond` composto com api; botão Distribuir.
-- `b05078dc3` distribuição nova com `id` nulo (P0002).
-- `1f4b02e28`, `05968beef` e o commit de adesão a `ChildSafetyMutationSupport`: Segurança infantil criar/editar/gerenciar em produção.
-- `30cb982ca`, `a1ca952cc`, `294a88780` Rotina: `can_manage` no topo, request_id uuid, duplicar/criar a partir do modelo.
-- `f5d1f0c91` Cuidado: gravidade nula sem data de episódio (23514).
-- `b7f61b571` Assiduidade: contrato de 14 RPCs (`20260911220100`) + pgTAP 141/141.
-- `7323c9220` Edge Function `form-media` (question-image em R2) + cron `20260911230000`.
-- `05968beef` pgTAP do `20260911220000` (15/15).
-- Spec: `docs/superpowers/specs/2026-09-11-child-safety-medication-policies-and-notifications-design.md` (P32, regra alvo).
+## Código entregue (commits pequenos, em português)
+
+- `19e00ba7a` golden `profile_directory_table_light_1440` regravado (item 0: célula alinhada pelo composto).
+- `7ab1a05f8` medication.evidence: `recordEvidence` no repositório, evidências no detalhe, diálogo Registrar dose.
+- `03ccdbf41` V-15: card Criar em toda aba (cards e tabela), seletor de origem, ações da tabela, Lançar hoje (D7).
+- `2164739b3` Rotina: editar envia `model_id/application_id/launch_id` sempre que o id existe (23505 medido).
+- `168cb64eb` candidato `20260912220000_form_save_draft_version_number_fix_v1.sql` (42702 ao salvar rascunho de formulário publicado).
+- `d027e3aa5` nome da criança no editor de medicação após reload; diálogo de dose 520 px; Sentimento sem texto de demonstração (D3).
+- `fd8e675af` Arquivar modelo/rotina (status `archived` pelo save existente), coluna Ações com três ícones.
+
+## Pacote SQL pronto (coordenador aplica)
+
+`packages/coelo_database/candidatos/formularios-cuidado-rotina/20260912220000_form_save_draft_version_number_fix_v1.sql`:
+`app_private.form_save_draft` (230004, única definição em produção) falha com
+42702 quando `working_version_id` é nulo (formulário já publicado). Mesmo corpo
+com a variável renomeada; sem mudança de contrato. Prova no espelho
+`supabase_db_coelo_baseline` em transação com rollback:
+`forms_behavioral_rpc_test` aborta na linha 279 sem o candidato e passa 17/17
+com ele. Desbloqueia `forms.edit` de formulário publicado e
+`forms.location-question`.
 
 ## O que ficou aberto (primeiro gate)
 
-- **medication.create/detail/edit/evidence**: seletor de hora não fecha ao Aplicar sob CDP e o Chrome caiu; "Responsável: nenhuma opção"; imagem "Envio indisponível". FE.
-- **forms.upload/resolve-file/expire-file/delete-file**: cliente Dart do editor ainda no fluxo legado por `occurrence_id`; adaptar ao ramo `question-image` da `form-media`. FE.
-- **forms.location-answer**: exige formulário com item Local publicado; não exercitado.
-- **daily-routine.apply/publish**: composição `onCreateFromModel` entregue em `294a88780` sem prova na rota real; aba Rotinas/Lançamentos vazia esconde o card Criar (regra do estado vazio).
-- **child-safety.suspend (exibição)**: linha suspensa continua verde/"Aprovado" após reload; Relação em enum cru; etapa Pessoa pede UUID.
-- **Decisão 7**: balão de chat cobre "Lançar/Concluir chamada" em `/attendance/new` e `/attendance/calls/:id`.
-- **Harness**: rebuild na pasta servida derruba o app aberto; Chrome sob SwiftShader perde o canvas a cada ~20 min; servidor `node serve.js` morre com a chamada do shell (usar `Start-Process`).
+- **forms.location-question / forms.location-answer**: pergunta Local
+  adicionada pelo catálogo do editor (capturas 50–55); Salvar rascunho → 42702.
+  Gate: aplicar o candidato acima e repetir a prova; a resposta exige nova
+  ocorrência (cron) com o item Local publicado.
+- **forms.upload/resolve-file/expire-file/delete-file** (item 4): não coube.
+  O editor não tem UI de imagem da pergunta (picker, PUT com
+  `required_headers`, finalize, resolve na exibição, delete); `/forms/media/:assetId`
+  só lê pelo `action: read`. Gate FE do grupo; a `form-media` question-image em R2 já está implantada.
+- **Item 6 (políticas macro da unidade)** e **item 7 (Lançar chamada na
+  família Publicação)**: não couberam; a tela atual de chamada segue sem balão.
+- **medication.create**: campo Responsável sem opções — o contrato de
+  `superadmin_medication_plan_save` não recebe responsáveis (decisão/contrato).
+- **medication.edit**: teste pré-existente `medication_plan_ui_contract_test`
+  "375 pixels and 200 percent text" falha na base (overflow do `SuperadminFormFrame`).
+- **child-safety.child**: Relação em enum cru (mother/father), herdado.
+- **medication.evidence**: imagem da dose sem gateway (`media_asset_id` nulo).
 
-## Dúvidas ao Owner
+## Harness (regras medidas nesta rodada)
 
-1. Medicação deve ter abas de status como Perfis de cuidado?
-2. Detalhe do perfil de cuidado: manter o redirecionamento ao editor ou criar a tela somente leitura com histórico (spec 020)?
-3. Títulos das telas de Formulários sem golden (visão geral, monitor, respostas, arquivos) são proposta da frente.
+- Botões preenchidos e o Aplicar do seletor de data só respondem ao clique com
+  hover de ~300 ms e press de ~250 ms (`slowclick`); o clique rápido do
+  `cdp_sem` não fecha o seletor. A "falha do seletor de hora/data" da R05 era
+  do harness, não da tela.
+- `set_semantics` e `get_diagnostics_tree` do driver travam no release; `login`,
+  `get_health` e `enter_text` (após foco por CDP) funcionam.
+- Chrome dedicado com `--user-data-dir=%TEMP%/coelo-chrome-formularios`
+  preserva a sessão entre reaberturas.
 
-## Dados sintéticos criados nesta rodada (limpeza no fim da Etapa 2)
+## Dados sintéticos criados (limpeza no fim da Etapa 2)
 
-Listados em `dadosSinteticosCriados` do JSON: distribuição a0ee4530 e agendamento 2860c35a, ocorrência 6b0bd1ef, resposta 1f365626, job XLSX 09f86ec7 (+ media_asset), autorizações 7fcb6761 e 34d29829, perfil de cuidado 5712371e, chamada d3821901, modelo de rotina 176882c5. Nenhuma chave criada por esta frente.
+Plano de medicação `12f816e8` (v2) e evidência `42e77772`; lançamento
+`880b12a8` (publicado) da rotina `3d9f0a32`; modelo `176882c5` renomeado
+"(R06)" (v2); cópia `8d219282` arquivada. Nenhuma chave criada por esta frente.

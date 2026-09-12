@@ -30,6 +30,7 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onCreateFromModel,
     this.onPublishLaunch,
     this.onCreateLaunch,
+    this.onArchive,
     this.onImport,
     this.onExport,
     this.activityController,
@@ -55,6 +56,9 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   /// D7: cria o rascunho do lançamento de hoje para uma rotina aplicada; o
   /// servidor recalcula escopo e capacidade (routine.record).
   final Future<bool> Function(RoutineDirectoryItem application)? onCreateLaunch;
+
+  /// V-15: arquivar modelo ou rotina (status archived pelo save existente).
+  final Future<bool> Function(RoutineDirectoryItem item)? onArchive;
   final VoidCallback? onImport;
   final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
@@ -168,6 +172,39 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       final published = await publish(item);
       if (!mounted) return;
       if (published) _load(page: _controller.state.page?.page ?? 1);
+    } finally {
+      if (mounted) setState(() => _publishing.remove(item.id));
+    }
+  }
+
+  Future<void> _archive(RoutineDirectoryItem item) async {
+    final archive = widget.onArchive;
+    if (archive == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('daily-routine-archive-dialog'),
+        title: Text('Arquivar ${item.name}?'),
+        content: const Text('O item sai das listas ativas; o histórico é preservado.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            key: const Key('daily-routine-archive-confirm'),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Arquivar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _publishing.add(item.id));
+    try {
+      final archived = await archive(item);
+      if (!mounted) return;
+      if (archived) _load(page: _controller.state.page?.page ?? 1);
     } finally {
       if (mounted) setState(() => _publishing.remove(item.id));
     }
@@ -547,9 +584,9 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             CoeloAdminTableColumn(
               id: 'actions',
               label: 'Ações',
-              initialWidth: 120,
-              minWidth: 100,
-              maxWidth: 200,
+              initialWidth: 168,
+              minWidth: 150,
+              maxWidth: 240,
               cellBuilder: (_, item) =>
                   Row(mainAxisSize: MainAxisSize.min, children: _itemActions(item, tableRow: true)),
             ),
@@ -613,6 +650,8 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             Icons.playlist_add_rounded,
             () => widget.onCreateFromModel!(item),
           ),
+        if (widget.onArchive != null && item.status != 'archived')
+          action('archive', 'Arquivar', Icons.archive_outlined, busy ? null : () => _archive(item)),
       ],
       RoutineEntryKind.application => [
         if (widget.onCreateLaunch != null)
@@ -622,6 +661,8 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             Icons.today_rounded,
             busy ? null : () => _createLaunch(item),
           ),
+        if (widget.onArchive != null && item.status != 'archived')
+          action('archive', 'Arquivar', Icons.archive_outlined, busy ? null : () => _archive(item)),
       ],
       RoutineEntryKind.launch => [
         if (item.status == 'draft' && widget.onPublishLaunch != null)

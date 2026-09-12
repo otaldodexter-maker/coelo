@@ -465,9 +465,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
       builder: (dialogContext) => CoeloAdminDialogShell(
         dialogKey: const Key('daily-routine-exit-dialog'),
         title: 'Sair sem salvar?',
-        body: const Text(
-          'As alterações feitas nesta rotina serão perdidas se você sair agora.',
-        ),
+        body: const Text('As alterações feitas nesta rotina serão perdidas se você sair agora.'),
         secondaryAction: OutlinedButton(
           onPressed: () => Navigator.of(dialogContext).pop(false),
           child: const Text('Continuar editando'),
@@ -1093,10 +1091,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
     try {
       model.validate();
       setState(() => _saving = true);
-      final id = await repository.saveModel(
-        model,
-        requestId: _requestIdFor('save-model'),
-      );
+      final id = await repository.saveModel(model, requestId: _requestIdFor('save-model'));
       if (!_isCurrentCommand(generation, repository: repository, entry: current)) return;
       if (id.trim().isEmpty) {
         throw const FormatException('O modelo salvo não pôde ser validado.');
