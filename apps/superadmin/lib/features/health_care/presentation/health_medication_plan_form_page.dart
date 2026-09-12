@@ -645,7 +645,15 @@ final class _HealthMedicationPlanFormPageState extends State<HealthMedicationPla
       _row('Dias da semana', _weekdays.map(_weekday).join(', ')),
       _row(
         'Responsáveis',
-        _responsibles.map((id) => _choiceLabel(widget.responsibleOptions, id)).join(', '),
+        _responsibles
+            .map(
+              (id) => _choiceLabel(
+                widget.responsibleOptions,
+                id,
+                unavailableLabel: 'Responsável indisponível',
+              ),
+            )
+            .join(', '),
       ),
       if (_editing && widget.onRecordEvidence != null) _evidenceSection(),
     ],
@@ -841,9 +849,13 @@ String _dateTime(DateTime value) {
   return '${_date(local)} $hour:$minute';
 }
 
-String _choiceLabel(List<HealthCareFormChoice> options, String? id) {
+String _choiceLabel(
+  List<HealthCareFormChoice> options,
+  String? id, {
+  String unavailableLabel = 'Criança indisponível',
+}) {
   if (id == null) return 'Não selecionada';
-  return options.where((item) => item.id == id).firstOrNull?.label ?? 'Criança indisponível';
+  return options.where((item) => item.id == id).firstOrNull?.label ?? unavailableLabel;
 }
 
 String _routeLabel(String value) => switch (value) {
