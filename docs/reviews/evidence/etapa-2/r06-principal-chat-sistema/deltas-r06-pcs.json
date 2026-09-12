@@ -159,7 +159,7 @@
     "action_id": "principal.for-you",
     "camada": "frontend",
     "estado_proposto": "verified",
-    "delta": "rota real abre com o contexto real (19); V-2 (degrade e clique inerte) nao aplicado nesta rodada",
+    "delta": "rota real abre com o contexto real (19); V-2 aplicado: faixa do texto dos cards quase opaca (.98 ate 50%) e clique do card informa 'ainda nao esta disponivel' sem navegar; goldens for_you regravados 97/97",
     "evidencia": "captura 19",
     "certificacao": {
       "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/19-para-voce-web.png",

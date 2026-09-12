@@ -1,6 +1,6 @@
 {
-  "revision": 34,
-  "updated_at": "2026-09-11T21:15-03:00",
+  "revision": 35,
+  "updated_at": "2026-09-11T21:20-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -25,7 +25,7 @@
     "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
     "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
     "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
-    "4. principal.for-you e profile-view abrem na rota real (18, 19); V-1/V-2/V-3 nao aplicados; profile-edit nao provado",
+    "4. principal.for-you e profile-view abrem na rota real (18, 19); V-2 APLICADO (faixa do texto dos cards quase opaca; clique mostra 'ainda nao esta disponivel', sem navegar) com goldens regravados 97/97; V-1/V-3 nao aplicados; profile-edit nao provado",
     "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
     "6. P48=A: FEITO 060d21e53 candidatos/principal-chat-sistema/20260911130400 (pgTAP 16/16 + regressoes 22/22, 13/13, 17/17, 6/6 no descartavel coelo_pcs6_db)"
   ],
@@ -195,7 +195,7 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:15-03:00",
+    "quando": "2026-09-11T21:20-03:00",
     "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema; worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
@@ -204,7 +204,8 @@
       "principal.for-you, principal.profile-view: FE verified (18, 19)",
       "errors.404: FE verified (21)",
       "principal_real_route_test 4/4; suites dos publicadores 67/95/88; meal_plans 140/140 (+2 do contrato scopeRules)",
-      "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes"
+      "backend: candidato 130400 (P48=A) pgTAP 16/16 + regressoes",
+      "principal.for-you: V-2 aplicado (degrade dos cards) e goldens for_you regravados (97/97)"
     ],
     "aberto_com_primeiro_gate": [
       {
@@ -220,8 +221,8 @@
         "gate": "nao iniciado"
       },
       {
-        "pendencia": "V-1/V-2/V-3",
-        "gate": "nao iniciado"
+        "pendencia": "V-1 (Perfil) e V-3 (Acontece feed)",
+        "gate": "nao iniciados; V-2 feito"
       },
       {
         "pendencia": "errors.403/409/500/503/retry",

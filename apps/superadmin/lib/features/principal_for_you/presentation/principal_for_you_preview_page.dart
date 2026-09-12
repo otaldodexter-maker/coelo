@@ -596,16 +596,22 @@ final class _EditorialCard extends StatelessWidget {
                   count: _spriteCount(item.assetPath),
                   semanticLabel: item.title,
                 ),
+                // V-2 (Owner, 11/09/2026): o degrade antigo (.96 -> .72 ->
+                // transparente) deixava a imagem atravessar o texto. A faixa
+                // do texto agora e quase opaca e so depois dela a imagem
+                // aparece inteira.
                 DecoratedBox(
                   decoration: BoxDecoration(
                     gradient: LinearGradient(
                       begin: Alignment.topCenter,
                       end: Alignment.bottomCenter,
                       colors: [
-                        Theme.of(context).colorScheme.surface.withValues(alpha: .96),
-                        Theme.of(context).colorScheme.surface.withValues(alpha: .72),
+                        Theme.of(context).colorScheme.surface.withValues(alpha: .98),
+                        Theme.of(context).colorScheme.surface.withValues(alpha: .98),
+                        Theme.of(context).colorScheme.surface.withValues(alpha: .55),
                         Colors.transparent,
                       ],
+                      stops: const [0, .5, .72, 1],
                     ),
                   ),
                 ),
