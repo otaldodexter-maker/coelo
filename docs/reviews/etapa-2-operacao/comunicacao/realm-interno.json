@@ -590,8 +590,8 @@
   "item2UsuariosSinteticos": "ja feito pelo coordenador: 7 auth users qa-r06-*, 7 vinculos internos e 7 perfis medidos em producao (somente leitura, 19:5x) com a semente dele 20260911230100 no ledger; a semente desta frente (20260912230000) foi removida da branch (commit d6088a1fa) para nao colidir com o teste de mesmo nome",
   "item3Decisao180060": "sem mudanca de comportamento e sem decisao de produto: activity_group_assignments so recebe instructor em todos os caminhos (baseline assign_activity_professionals, 180080, 180110); activity_admin vive em activity_admin_assignments; producao tem 0 atribuicoes; activity_v2_effective_permission mantem a precedencia da baseline e so insere a camada de acao explicita (modelo v2); unico chamador can_access_attendance_child. Proposta ao coordenador: fechar 180060 como confirmado, sem pacote (opcional pos-MVP: validar o CHECK e reduzi-lo a instructor)",
   "item4CodeReview": {
-    "210500": "policy unit_care_policies_platform_read com has_platform_permission de um argumento (pessoa people-based escopada le politicas de todas as unidades; identidade interna escopada passa a ser negada pelo 20260912210000) - baixa sensibilidade, registrar; set_v1 restringe por role_code owner|operations alem da capacidade (uniformizar com P23 na revisao profunda); destinatarios/not_tracked/on conflict corretos; sem achado bloqueante",
-    "211100": "structure_handle_in_use e check-then-insert: unicidade dentro da tabela vem do indice, mas entre tabelas (unidade x turma x pessoa) nao ha constraint - concorrencia entre tipos diferentes pode passar; risco baixo no MVP; revisao profunda: tabela unica de handles ou advisory lock por handle normalizado; sem achado bloqueante"
+    "210500": "R07 releu o corpo e o teste: unit_care_policies tem RLS, revoga anon/authenticated/service_role na tabela privada e revoga anon nas oito security definer; somente as RPCs publicas de get/set recebem authenticated. A policy direta usa has_platform_permission(text), portanto people-based escopado continua com risco de leitura ampla em RPCs de plataforma; identidade interna escopada fica fail-closed pelo lote 50. Destinatarios, not_tracked e cross-tenant das RPCs permanecem corretos; sem achado bloqueante no MVP.",
+    "211100": "R07 releu o corpo e o teste: funcoes auxiliares de payload, create_unit e group_save ficam sem EXECUTE para anon/authenticated/service_role; activity_create recebe authenticated explicitamente. O payload valida no servidor e a unicidade por tabela funciona, mas check-then-insert entre tipos (unidade/turma/pessoa) continua TOCTOU sem indice unico global; risco baixo e pendencia de revisao profunda. Sem achado bloqueante no MVP."
   },
   "handoff": "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
   "skillsPropostas": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md",
@@ -620,5 +620,37 @@
     "skills": "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md (inclui a regra: pacote marcado pronto nao muda de conteudo; reconciliacao nao filtra por status da instituicao)",
     "descartavel": "coelo_realm_r06 parado ao gravar esta revisao (supabase stop --no-backup)",
     "aposT0mais2h10": "nao retomo por conta propria"
+  },
+  "r07": {
+    "contratoAbertura": {
+      "objetivo": "Auditar segurança transversal pós-lotes 49–55, revisar 210500/211100 e apoiar G1/G2 somente mediante pedido explícito no JSON.",
+      "incluido": "grants anon/authenticated sem policy; security definer sem revoke anon; RLS de tabelas novas; negativas cross-tenant de 210500/211100; pacote corretivo somente para achado reproduzível; esboço de limpeza apenas se houver tempo.",
+      "fora": "UI, Flutter/MCP Dart, aplicação em produção, escrita em dev/inventário/rastreadores, Cloudflare e segredos.",
+      "ownership": "esta frente propõe em branch; coordenador é o único aplicador e escritor de dev/rastreadores.",
+      "ordem": "varredura pós-lotes 49–55; code review 210500/211100; pedidos G1/G2; esboço de limpeza.",
+      "criterioDeParada": "T0+4h; responder revisão de 10 minutos no JSON até T0+4h10; depois não retomar.",
+      "evidenciasEsperadas": "SQL/testes pgTAP em descartável com ordem real, delta candidato commitado somente se necessário, SHA publicado e primeiro gate explícito.",
+      "tempoEstimado": "T0 ainda não publicado pela coordenação; janela operacional de quatro horas a partir do T0."
+    },
+    "checkpoint23h00": {
+      "feito": [
+        "Worktree criada sobre origin/dev; revisão 49 publicada na branch.",
+        "Varredura estática dos lotes 49–55: tabelas novas identificadas com RLS; institution_reader confirmado como catálogo; auth.sessions preexistente.",
+        "210500 e 211100 relidos integralmente no corpo e nos testes; nenhum achado bloqueante confirmado.",
+        "Sem pedido de G1/G2 recebido no JSON consultado."
+      ],
+      "pendente": [
+        "Repetir pgTAP/regressão comparada no descartável R07 quando Docker estiver disponível.",
+        "Confirmar varredura dinâmica de ACL/RLS e registrar resultado; se reproduzir achado, criar candidato novo, nunca alterar pacote marcado pronto.",
+        "Aguardar pedidos de convite expirado sintético G2 ou período avaliativo sintético G1.",
+        "T0 da coordenação e revisão final."
+      ],
+      "commitsPublicados": ["abertura R07: revisão 49 (push em work/etapa2-r07-realm-interno)"],
+      "bloqueios": [
+        "Docker Desktop deixou de responder após a tentativa de iniciar o descartável; container coelo_baseline estava disponível antes, mas não é seguro reutilizá-lo para replay destrutivo. Retém apenas o replay dinâmico; a revisão estática continua.",
+        "Nenhum bloqueio de implementação ou dependência de G1/G2."
+      ],
+      "estado": "varredura estática concluída; sem pacote corretivo nesta checkpoint"
+    }
   }
 }
