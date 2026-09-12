@@ -1,15 +1,15 @@
 {
-  "revision": 75,
+  "revision": 76,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "e71bc1777d (wiring anônimo c17df4900 sobre ciclo 150 origin/dev 7e889abac)",
+  "head": "739c55059 (wiring anônimo provado; revisão focal G4 adicionada nesta revisão)",
   "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:27:49-03:00",
+  "updatedAt": "2026-09-12T13:31:49-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T13:27:49-03:00",
-    "sha": "e71bc1777d",
+    "checkpoint": "2026-09-12T13:31:49-03:00",
+    "sha": "739c55059",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2626,6 +2626,19 @@
       "formsTestPage": "rota produtiva formTest é preview read-only e não abre resposta; store não aplicável",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/anonymous-edit-secret-production-wiring.md",
       "status": "local-green-production-route-composed-e2e-not-executed"
+    },
+    "g4ProfileSaveReloadReview": {
+      "commit": "9863512b9",
+      "scope": "save/reload, parser plano, troca de contexto e fidelidade da baseline",
+      "correct": "key/type normalizados; null legítimo; confirmação somente após reload aceito; generation guard; retry não repete save",
+      "findings": [
+        "parser ignora subject_type/subject_id canônicos e relabela retorno divergente com o sujeito pedido",
+        "didUpdateWidget ignora roleCode/scopeKind e pode conservar draft quando só o papel muda na mesma membership"
+      ],
+      "actor": "baseline não devolve actor; nenhuma validação client-side inventada",
+      "verification": "somente leitura; 37 PASS da evidência G4 preservados e não repetidos",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g4-profile-save-reload-review.md",
+      "status": "reviewed-two-concrete-findings-sent-to-c0-and-g4"
     }
   },
   "r07History": {
