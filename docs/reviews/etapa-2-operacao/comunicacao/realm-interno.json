@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 50,
+  "revision": 51,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-11T23:34-03:00",
+  "updatedAt": "2026-09-12T00:00-03:00",
   "app": "Codex",
   "modelo": "Luna (esforco medio)",
   "conversa": "R07 · Realm interno e segurança",
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "em execução; primeira revisão R07 gravada",
-  "proximoPasso": "auditar pós-lotes 49–55 e só criar pacote candidato se houver achado reproduzível",
+  "status": "finalizado; handoff R07 gravado",
+  "proximoPasso": "coordenador integrar/conferir a branch; não retomar esta frente sem novo recorte",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -651,6 +651,57 @@
         "Nenhum bloqueio de implementação ou dependência de G1/G2."
       ],
       "estado": "varredura estática concluída; sem pacote corretivo nesta checkpoint; T0 da coordenação pendente"
+    },
+    "fechamentoFinal": {
+      "quando": "2026-09-12T00:00-03:00",
+      "branch": "work/etapa2-r07-realm-interno",
+      "shaPublicado": "cf20f892a23e5f1440884539cdf44ff3f44520a5 (origin/work/etapa2-r07-realm-interno)",
+      "arquivosModificados": "nenhum fora de comunicacao/realm-interno.json; worktree limpa",
+      "untracked": "nenhum",
+      "stash": "nenhum",
+      "feito": [
+        "Worktree criada sobre origin/dev e três commits pequenos publicados.",
+        "JSON com contrato, checkpoints, feito/pendente, bloqueios e commits publicado.",
+        "Varredura estática pós-lotes 49–55: tabelas novas relevantes com RLS; institution_reader é catálogo; auth.sessions é preexistente; sem security definer público novo sem revogação de anon identificado.",
+        "Code review 210500: RLS, revogações e grants conferidos; negativa cross-tenant existente no teste; risco residual P7 people-based registrado para revisão profunda.",
+        "Code review 211100: payload/ACL conferidos; negativa e teste existentes; TOCTOU entre tipos de handle registrado como risco de revisão profunda.",
+        "Nenhum pedido de pacote sintético para G1/G2 apareceu nos JSONs consultados; nenhum dado novo ou chave foi criado."
+      ],
+      "testesEvidencias": {
+        "statico": "revisão dos corpos SQL, grants/revokes, RLS e testes existentes; JSON validado com ConvertFrom-Json; git diff --check verde",
+        "pgTAP": "não executado nesta retomada: Docker Desktop indisponível; replay dinâmico permanece pendente, sem afirmar verde",
+        "evidenciasAnteriores": [
+          "docs/reviews/evidence/etapa-2/r04-realm-interno/handoff.md",
+          "docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+          "docs/reviews/evidence/etapa-2/r05-realm-interno/handoff.md",
+          "docs/reviews/evidence/etapa-2/r05-realm-interno/prova-producao-2026-09-11.md",
+          "docs/reviews/evidence/etapa-2/r06-realm-interno/handoff.md",
+          "docs/reviews/evidence/etapa-2/r06-realm-interno/regressao-pgtap-2026-09-11.md",
+          "docs/reviews/evidence/etapa-2/r06-realm-interno/skills-deltas-r06.md"
+        ]
+      },
+      "pendenciasComPrimeiroGate": [
+        {
+          "item": "replay pgTAP/regressão comparada e ACL/RLS dinâmica pós-lotes 49–55",
+          "primeiroGate": "Docker Desktop disponível para criar/usar um descartável próprio; executar na ordem real e registrar resultado antes de qualquer candidato",
+          "deltaEstimado": "somente verificação; zero implementação prevista enquanto a varredura estática não produzir achado"
+        },
+        {
+          "item": "apoio a G1/G2",
+          "primeiroGate": "pedido explícito no JSON da frente com contrato e fixture sintética definida",
+          "deltaEstimado": "zero no fechamento; nenhum pedido recebido"
+        },
+        {
+          "item": "limpeza sintética",
+          "primeiroGate": "tempo e descartável disponíveis após gates anteriores; esboço não aplicado",
+          "deltaEstimado": "não iniciado; não necessário para a entrega"
+        }
+      ],
+      "handoffR01R07": "R04, R05 e R06 têm handoffs/evidências listados acima; R07 não criou arquivo separado por não haver pacote ou delta novo, e este JSON é o handoff final. Não identifiquei item R01–R07 sem registro acionável nesta frente além do replay dinâmico pendente já explicitado.",
+      "dadosSinteticos": "nenhum criado nesta frente; apenas referências existentes qa-r06-* e qa-r04-* foram lidas por nome/localização, sem valores de credencial",
+      "chaves": "nenhuma criada nesta frente; nenhum valor de segredo foi lido, registrado ou transmitido",
+      "transmissaoCompleta": true,
+      "podeRemoverWorktree": "sim, após o coordenador confirmar o SHA cf20f892a23e5f1440884539cdf44ff3f44520a5 e integrar/conferir a branch; não remover automaticamente nesta conversa"
     }
   }
 }
