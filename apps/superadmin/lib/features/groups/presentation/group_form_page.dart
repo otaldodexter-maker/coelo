@@ -1195,8 +1195,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           onChanged: (value) {
             if (value != null &&
                 (value is! CataloguedLocationSelection ||
-                    !sameLocationScope(value.snapshot.scope, scope)))
+                    !sameLocationScope(value.snapshot.scope, scope))) {
               return;
+            }
             setState(() {
               _cataloguedLocationSelection = value as CataloguedLocationSelection?;
               _createdWithLocation = null;
