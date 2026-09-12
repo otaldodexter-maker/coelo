@@ -53,7 +53,7 @@ def main() -> int:
     output = Path(args.manifest)
     if output.exists():
         raise SystemExit("manifest_exists_do_not_overwrite")
-    if args.execute and (not args.ack_file or not args.assignment_id):
+    if args.execute and (not args.ack_file or not args.assignment_id or not Path(args.ack_file).is_file()):
         raise SystemExit("execution_requires_G5_C0_ack_file")
     qa, app = env(Path(args.qa_env)), env(Path(args.app_env))
     base, key = app.get("COELO_SUPABASE_URL", "").rstrip("/"), app.get("COELO_SUPABASE_PUBLISHABLE_KEY", "")
@@ -101,10 +101,17 @@ def main() -> int:
                 if prior is not None:
                     raise RuntimeError("configuration_already_exists")
                 plan = _execution_plan(assignment, manifest["request_ids"])
-                manifest["executor"] = {"enabled": True, "ack_file": args.ack_file, "plan": plan}
+                ack = json.loads(Path(args.ack_file).read_text(encoding="utf-8"))
+                if ack.get("approved") is not True or ack.get("assignment_id") != args.assignment_id:
+                    raise RuntimeError("ack_invalid_for_assignment")
+                manifest["mode"] = "execute"
+                manifest["mutations"] = True
+                manifest["executor"] = {"enabled": True, "ack_file": args.ack_file, "plan": plan, "state": "planned"}
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 saved = _rpc(base, headers, "superadmin_assessment_save_configuration", plan["save_configuration"])
                 configuration = data(saved)
+                manifest["executor"]["save"] = configuration
+                output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 replay = data(_rpc(base, headers, "superadmin_assessment_save_configuration", plan["save_configuration"]))
                 if (not isinstance(configuration, dict) or not isinstance(replay, dict)
                     or replay.get("id") != configuration.get("id")
@@ -117,9 +124,15 @@ def main() -> int:
                 activated = data(_rpc(base, headers, "superadmin_assessment_activate_configuration", {"request_id": plan["activate_request_id"], "configuration_id": configuration["id"], "expected_version": configuration["version"]}))
                 if activated.get("status") != "active":
                     raise RuntimeError("activation_invalid")
+                manifest["executor"]["activate"] = activated
+                output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 opened = data(_rpc(base, headers, "superadmin_assessment_context_options", {}))
                 periods = opened.get("periods", []) if isinstance(opened, dict) else []
-                period = next((item for item in periods if item.get("status") == "open" and item.get("unit_id") == assignment["unit_id"]), None)
+                active_read = data(_rpc(base, headers, "superadmin_assessment_configuration_read", {"target_activity": assignment["activity_id"], "target_unit": assignment["unit_id"]}))
+                active = active_read.get("configuration", {}) if isinstance(active_read, dict) else {}
+                period = next((item for item in periods if item.get("status") == "open" and item.get("unit_id") == assignment["unit_id"] and item.get("configuration_id") == configuration["id"]), None)
+                if active.get("id") != configuration["id"] or active.get("status") != "active":
+                    raise RuntimeError("activation_reload_invalid")
                 if not isinstance(period, dict):
                     raise RuntimeError("open_period_missing")
                 gradebook = {"request_id": plan["gradebook_request_id"], "gradebook_id": None, "expected_version": 0, "payload": {"activity_group_link_id": assignment["activity_group_link_id"], "period_id": period["id"], "configuration_id": configuration["id"], "students": []}, "reason": None}
@@ -127,7 +140,12 @@ def main() -> int:
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 book = data(_rpc(base, headers, "superadmin_assessment_save_gradebook", gradebook))
                 reread = data(_rpc(base, headers, "superadmin_assessment_gradebook_read", {"target_gradebook": book["id"]}))
-                if not isinstance(reread, dict) or reread.get("gradebook", {}).get("id") != book["id"]:
+                loaded = reread.get("gradebook", {}) if isinstance(reread, dict) else {}
+                if (not isinstance(loaded, dict) or loaded.get("id") != book["id"]
+                    or loaded.get("activity_group_link_id") != assignment["activity_group_link_id"]
+                    or loaded.get("period_id") != period["id"] or loaded.get("configuration_id") != configuration["id"]
+                    or loaded.get("status") != "draft" or not isinstance(loaded.get("students"), list)
+                    or not isinstance(loaded.get("management_version"), int)):
                     raise RuntimeError("gradebook_reload_invalid")
         finally:
             manifest["logout_http_status"] = call(base, headers, "/auth/v1/logout?scope=local", {})[0]
