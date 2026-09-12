@@ -56,7 +56,7 @@ select ok(pg_temp.people_list_def() like '%p_segment=''children''%'
 -- 4) atividade A retorna profissional e criança elegíveis, nunca B;
 -- 5) assignment/link/participant revoked, inactive ou removed não entram;
 -- 6) atividade+localidade+segmento compõem e total_count não duplica antes da página.
-select lives_ok($$select public.superadmin_people_list(p_search=>'__h28_no_fixture__',p_limit=>8)$$,
-  'defaults antigos continuam chamáveis antes da fixture A/B');
+select throws_ok($$select public.superadmin_people_list(p_search=>'__h28_no_fixture__',p_limit=>8)$$,
+  '42501', 'permission denied%', 'defaults não furam people.read sem ator autenticado');
 select * from finish();
 rollback;
