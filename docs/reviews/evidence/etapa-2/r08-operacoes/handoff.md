@@ -88,3 +88,12 @@ negativo do editor. `item_id` continua limitado à mesma working version e
 Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
 alheia foi afetada; nenhuma exportação, importação, job, parser ou arquivo novo
 foi criado.
+
+## Sessões da Conta — prova API condicionada
+
+Com a credencial privada do QA (não registrada), foram abertas duas sessões
+novas A/B e A chamou `superadmin_account_sessions_list_v1`: logins 200/200 e
+listagem 200, porém com **3** sessões vivas. Como a condição autorizada exigia
+exatamente A/B, `logout?scope=others` não foi chamado. A e B receberam somente
+`logout?scope=local` (204/204); a sessão preexistente foi preservada. Não há
+prova de revogação, token rejeitado ou reload nesta rodada.

@@ -1,6 +1,6 @@
 {
-  "revision": 63,
-  "updated_at": "2026-09-12T11:58:00-03:00",
+  "revision": 64,
+  "updated_at": "2026-09-12T12:18:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -66,6 +66,13 @@
     "deploy": "lote 56/H09 já está em produção pelo C0; o lote 57 de Forms permanece bloqueado até candidato corrigido e provas RED/GREEN no espelho.",
     "next_gate": "revisar o SHA corrigido de Forms contra ownership e cross-tenant; E2E próprio de Sessões/Suporte continua dependente do runtime G0.",
     "history": "os checkpoints anteriores preservam suas posses e resultados; este campo descreve somente o estado atual."
+  },
+  "accountSessionsApiR08": {
+    "credential": "C:/Users/adrie/Documents/Coelo-backups/qa-r06-operacoes.env (lida localmente; nenhum valor registrado)",
+    "endpoints": "POST /auth/v1/token?grant_type=password; POST /rest/v1/rpc/superadmin_account_sessions_list_v1; cleanup POST /auth/v1/logout?scope=local",
+    "result": "duas sessões sintéticas próprias A/B foram criadas (200/200). A listagem autorizada por A respondeu 200 com 3 sessões, não exclusivamente A/B; scope=others não foi chamado. A/B foram encerradas localmente (204/204).",
+    "state": "gate de revogar outras não executado por segurança: uma sessão preexistente foi preservada. Não há alegação sobre revogação imediata de JWT, reload ou E2E.",
+    "secrets": "nenhum segredo, token, e-mail, ID de sessão ou valor de credencial foi salvo."
   },
   "scope": {
     "app": "apps/superadmin",
