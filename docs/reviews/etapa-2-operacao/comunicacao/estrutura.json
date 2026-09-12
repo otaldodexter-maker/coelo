@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 62,
+ "revision": 63,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T21:15:00-03:00",
+ "updatedAt": "2026-09-11T21:20:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
@@ -284,6 +284,11 @@
   "pacotesSqlRestantes": "candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (verdes; independentes; sem chave de composicao)",
   "duvidasAoOwner": "nenhuma nova; ao coordenador: confirmar se o launcher \"Mensagens\" inteiro e o aprovado (goldens de diretorio de Atividades)",
   "dadosSinteticosCriados": "groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro); activity_definitions \"Atividade R06 Arroba\" (@arroba-r06, rascunho, Escola R04 Estrutura / Unidade Centro R04 / Turma R06 Arroba); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42)",
-  "chavesCriadas": "nenhuma. Credencial exposta: a senha de qa-r06-estrutura apareceu numa captura temporaria (apagada, nao versionada) as 20:10 por enter_text no campo errado; rotacionar no fim da rodada (roteiro no handoff)"
+  "chavesCriadas": "nenhuma. Credencial exposta: a senha de qa-r06-estrutura apareceu numa captura temporaria (apagada, nao versionada) as 20:10 por enter_text no campo errado; rotacionar no fim da rodada (roteiro no handoff)",
+  "skillsDeltas": "docs/reviews/evidence/etapa-2/r06-estrutura/skills-deltas.md"
+ },
+ "propostasDeSkills": {
+  "arquivo": "docs/reviews/evidence/etapa-2/r06-estrutura/skills-deltas.md",
+  "resumo": "driver web via CDP (set_frame_sync, enter_text no campo focado, taps por coordenada), servidor estatico em tarefa de fundo, regra do @ implementada, ambiguidade variavel x coluna em 180350, lista fechada de codigos de Atividades, chave aditiva no detail_v2, rotacao da senha do qa-r06-estrutura"
  }
 }
