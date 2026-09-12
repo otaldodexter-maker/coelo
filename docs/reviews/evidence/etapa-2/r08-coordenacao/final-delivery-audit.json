@@ -7,7 +7,8 @@
       "head": "a8176c297666b4d89b48e972e618cc9db9308d21",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G1",
@@ -15,7 +16,8 @@
       "head": "558b3d35715e83a8f29699b6bea64cdf450acacf",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G2",
@@ -23,7 +25,8 @@
       "head": "942955410699007fd86515fd34fb804b6b96903d",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G3",
@@ -31,7 +34,8 @@
       "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G4",
@@ -39,7 +43,8 @@
       "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G5",
@@ -47,7 +52,8 @@
       "head": "2a7609507414e3aca77fdfa63895478a9f51fa15",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G6",
@@ -55,7 +61,8 @@
       "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G7",
@@ -63,7 +70,8 @@
       "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     },
     {
       "group": "G8",
@@ -71,7 +79,8 @@
       "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
       "localEqualsRemote": true,
       "integratedInC0": true,
-      "worktreeClean": true
+      "worktreeClean": true,
+      "physicalWorktreePreservedFinal": true
     }
   ],
   "allNineIntegrated": true,
@@ -130,5 +139,7 @@
     "trackers": "PASS231actions39families161FE149BE131E2E",
     "knowledge": "PASS64articles",
     "newTerminalCertifications": 0
-  }
+  },
+  "finalPhysicalWorktreeCheckAt": "2026-09-12T14:53:40.679770-03:00",
+  "restoration": "Seven temporarily removed worktrees restored exact HEAD/branch and important ignored files; generated caches excluded; no missing deliveries"
 }

@@ -1,12 +1,12 @@
 {
-  "revision": 88,
+  "revision": 90,
   "round": "E2-R08-20260912",
-  "role": "C0 Coordenacao R08 ativa",
+  "role": "C0 Coordenacao R08 encerrada",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:32:18.377560-03:00",
+  "updatedAt": "2026-09-12T14:53:40.679770-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2534,10 +2534,10 @@
     "T0+4h": "2026-09-12T14:52:16.727826-03:00",
     "T0+4h10": "2026-09-12T15:02:16.727826-03:00",
     "T0+4h30": "2026-09-12T15:22:16.727826-03:00",
-    "status": "ativa",
+    "status": "encerrada",
     "threadId": "01a095e0-3c9f-7601-b736-7935c11fffcb",
     "regraDeEscrita": "C0 unica escritora de dev, inventario, tres rastreadores, decisoes finais e deploys",
-    "escopo": "Etapa 2 apps/superadmin; nove frentes G0-G8; quatro horas de execucao e trinta minutos de revisao/fechamento",
+    "escopo": "Etapa2 apps/superadmin; janela antecipada nominalmente pelo Owner; R09 preparada nao iniciada",
     "fora": "outros apps, R09, exportacoes gerais adiadas, correcao de senha, revisao historica de credenciais e endurecimento amplo",
     "primeiroGate": "G0 runtime medido e espelho; trabalho local independente liberado apos publicacao desta posse",
     "evidencia": "arquivos commitados por action_id; merges reais, testes na base integrada, deltas e validadores",
@@ -2548,7 +2548,8 @@
       "revisaoAte": "2026-09-12T14:50:00-03:00",
       "fechamentoAte": "2026-09-12T15:00:00-03:00",
       "decisao": "Entrega total ate15:00; preparar R09 sem iniciar automaticamente; marcos T0 originais preservados como historico"
-    }
+    },
+    "encerradaEm": "2026-09-12T14:51:18.457445-03:00"
   },
   "frentesR08": {
     "G0": {
@@ -2557,10 +2558,11 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-ambiente-runtime",
       "json": "ambiente-runtime.json",
-      "ultimoSHA": "353689d8506e183404705cf411f0cbe67f004810",
-      "ackRevision": 26,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "a8176c297666b4d89b48e972e618cc9db9308d21",
+      "ackRevision": 36,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G1": {
       "grupo": "estrutura",
@@ -2568,10 +2570,11 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-estrutura",
       "json": "estrutura.json",
-      "ultimoSHA": "318933e2209ab01901f21bbea80f2f032be7e2ff",
-      "ackRevision": 90,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "558b3d35715e83a8f29699b6bea64cdf450acacf",
+      "ackRevision": 98,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -2579,10 +2582,11 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-acessos-pessoas",
       "json": "acessos-pessoas.json",
-      "ultimoSHA": "cec882e3d8d8f9487623059b141e07e94866fd48",
-      "ackRevision": 156,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "942955410699007fd86515fd34fb804b6b96903d",
+      "ackRevision": 160,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -2590,10 +2594,11 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-formularios-cuidado-rotina",
       "json": "formularios-cuidado-rotina.json",
-      "ultimoSHA": "0c92198a02550ebcfbf83fdac9d37e6d0dfe3196",
-      "ackRevision": 75,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "ackRevision": 84,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -2601,10 +2606,11 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-principal-chat-sistema",
       "json": "principal-chat-sistema.json",
-      "ultimoSHA": "d5aa7e2537c01318308fe5fd3762b801515e8e6e",
-      "ackRevision": 68,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "ackRevision": 73,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -2612,10 +2618,11 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-realm-interno",
       "json": "realm-interno.json",
-      "ultimoSHA": "5927718f26eb80e3af051fbfb68413f294ef65cc",
-      "ackRevision": 72,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "2a7609507414e3aca77fdfa63895478a9f51fa15",
+      "ackRevision": 77,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -2623,10 +2630,11 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-publicacoes-agenda",
       "json": "publicacoes-agenda.json",
-      "ultimoSHA": "4ce8a34f86e5294c58d9e95080ecc5c69fe52166",
-      "ackRevision": 79,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "ackRevision": 90,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G7": {
       "grupo": "operacoes",
@@ -2634,10 +2642,11 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-operacoes",
       "json": "operacoes.json",
-      "ultimoSHA": "8ec701dc010b57478025a5f88047e44b1aa2189e",
-      "ackRevision": 71,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "ackRevision": 81,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     },
     "G8": {
       "grupo": "suites",
@@ -2645,34 +2654,32 @@
       "modelo": "Spark medio",
       "branch": "work/etapa2-r08-suites",
       "json": "fase0.json",
-      "ultimoSHA": "efba31f93ab3d8e0ffeeffa242fbd9e500543da5",
-      "ackRevision": 28,
-      "status": "ACK180 integral recebido; continuacao focal atribuida",
-      "ackAt": "2026-09-12T13:54:52.764333-03:00"
+      "ultimoSHA": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "ackRevision": 53,
+      "status": "handoff final integrado e revisado; nenhuma entrega pendente de push",
+      "ackAt": "2026-09-12T14:51:18.457445-03:00",
+      "worktreeFinal": "preservada; sete frentes restauradas ao HEAD/branch original e ignorados apos divergencia temporaria de fechamento"
     }
   },
   "slotsR08": {
     "chrome": {
-      "dono": "G0",
+      "dono": "runtime G0 preservado",
       "pid": 22592,
       "inicio": "2026-09-12T10:52:16.727826-03:00",
-      "expira": "2026-09-12T14:40:00-03:00",
-      "estado": "G0 exclusivo; server3014 PID14072; CUA controller bloqueado",
+      "expira": "2026-09-12T14:51:18.457445-03:00",
+      "estado": "server3014 PID7476; aba829822454 preservada, sem UI certificado",
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "livre",
-      "estado": "C0People19PASS0FAIL/native0; analise final segue"
+      "dono": "nenhum",
+      "estado": "sem teste ativo; ultimasprovasC0People19PASS/accessibility85PASS eanalyze0"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
-    "filaFlutterTest": [
-      "C0 base integrada",
-      "G2 H28 apos pacote revisado"
-    ],
+    "filaFlutterTest": [],
     "sqlEspelho": {
-      "dono": "livre",
-      "estado": "H28 final44/44; producao lote59 aplicado"
+      "dono": "nenhum",
+      "estado": "baseline preservado;lot59aplicado;proximo60"
     }
   },
   "filaSqlR08": {
@@ -3361,10 +3368,11 @@
   },
   "heartbeatR08": {
     "id": "r08-coordena-o-10-minutos",
-    "status": "ACTIVE",
+    "status": "PAUSED",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:00:00-03:00",
-    "ultimoCheckpoint": "2026-09-12T14:32:18.377560-03:00"
+    "ultimoCheckpoint": "2026-09-12T14:51:18.457445-03:00",
+    "pausedAt": "2026-09-12T14:51:18.457445-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T13:43:32.751532-03:00",
@@ -3383,7 +3391,7 @@
       "G7 revisãoH19",
       "G8 contagens de evidências"
     ],
-    "limite": "Owner alterou:14:40 entregas;14:50 revisao;15:00 fechamento. Preparar R09 sem iniciar.",
+    "limite": "R08 encerrada por novo corte Owner; R09 nao iniciada",
     "bloqueioRuntime": "G0 login CUA nao atualiza controller; sem contornar bloqueio CDP; espelho/paridade continua"
   },
   "deploysR08": [
@@ -3596,5 +3604,63 @@
     "composicao": "contextFiltersAvailable:true apospostflight",
     "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json",
     "proximoLote": 60
+  },
+  "fechamentoR08": {
+    "at": "2026-09-12T14:53:40.679770-03:00",
+    "ownerOverride": "entrega total ate15:00",
+    "review": "nove frentes consultadas, achados materiais G4/G6 aplicados",
+    "nineBranchesIntegrated": true,
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R08-fechamento.md",
+    "audit": "docs/reviews/evidence/etapa-2/r08-coordenacao/final-delivery-audit.json",
+    "sevenWorktreesRemoved": false,
+    "retainedWorktrees": [
+      "G0",
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G6",
+      "G7",
+      "G8",
+      "C0"
+    ],
+    "importantIgnoredBackup": "450 arquivos;23229377 bytesZIP; CRC/SHAverificados; privadoCoelo-backups/r08-worktrees-20260912",
+    "R09Prepared": true,
+    "R09Started": false,
+    "etapa2Completed": false,
+    "temporarilyRemovedThenRestored": [
+      "G1",
+      "G2",
+      "G3",
+      "G4",
+      "G5",
+      "G7",
+      "G8"
+    ],
+    "restorationEvidence": "docs/reviews/evidence/etapa-2/r08-coordenacao/worktree-restorations.json"
+  },
+  "ciclo210R08": {
+    "accessibility": {
+      "base": "ff1be194f2ac00a48aac5abbac7dd838019eb8da",
+      "passed": 85,
+      "failed": 0,
+      "skipped": 0,
+      "seconds": 25.017,
+      "exit": 0
+    },
+    "people": {
+      "base": "3c7ebbd5dcef2643677fc453b742c0fca02fe451",
+      "passed": 19,
+      "failed": 0,
+      "exit": 0
+    },
+    "analyze": {
+      "base": "477e6c8dfbd481e011493def1468aece9ec2485f",
+      "issues": 0,
+      "seconds": 126.8,
+      "exit": 0
+    },
+    "fullCensus": "nao executado; proxima janela autorizada R09"
   }
 }

@@ -1,6 +1,6 @@
 ---
 source: C0; inventario-etapa-2.json; nove handoffs R08; evidencias commitadas
-status: em-revisao-final
+status: encerrada-entrega-publicada
 generated_at: 2026-09-12
 ---
 
@@ -138,5 +138,39 @@ endurecimento amplo ficam na revisão de segurança, preservando controles obrig
 
 R09-plano, R09-backlog e R09-prompts acompanham o estado final; T0/duração
 da R09 dependem da abertura pelo Owner. Perguntas estão em
-R08-perguntas-owner-20260912.md. Reconciliação final de worktrees/ignorados,
-validadores, remoto e pausa do heartbeat serão selados após a revisão.
+R08-perguntas-owner-20260912.md. Reconciliação, validadores e pausa dos heartbeats foram concluídos após a revisão.
+
+
+## Selo da revisão e conferência solicitada pelo Owner
+
+Revisão encerrada às14:50 BRT. As nove pontas remotas foram comparadas com a
+base C0 e integradas por conteúdo. A auditoria encontrou e integrou o recibo
+final G2 942955410; aplicou os próximos gates G4 de Perfil/Erros também no
+inventário e nos três MDs; e explicitou fixture NOVA autorizada para Circular
+sem restaurar o recurso do incidente. Nenhuma frente tem pacote por publicar.
+Evidência: final-delivery-audit.json, na pasta r08-coordenacao.
+
+Os três MDs de pendências das skills receberam a mesma seção R08 de avanços,
+métricas, provas e pendências, além das matrizes regeneradas. O validador
+confirma231ações/39famílias,161FE,149BE e131E2E consistentes. Memória:64artigos
+válidos. A comparação com a base inicial confirma exatamente três alterações
+de estado FE; zero promoção terminal. Não confundir atualização documental
+ou de referências de skill com certificado novo do produto.
+
+Backup privado verificado:450arquivos ignorados importantes,23.229.377bytes
+em dez ZIPs, com CRC e SHA conferidos, sem publicar conteúdo privado.
+C0 removeu temporariamente sete worktrees encerradas/limpas/integradas
+(G1/G2/G3/G4/G5/G7/G8), mas as frentes apontaram orientações específicas de
+preservação física. C0 corrigiu a divergência: restaurou exatamente os sete
+caminhos/branches/HEADs e todos os ignorados importantes salvos, com status
+limpo. Todas as dez worktrees R08 estão preservadas no estado final.
+Caches de build/.dart_tool/node_modules são regeneráveis e não foram copiados.
+Branches, commits, evidências e arquivos importantes não foram perdidos.
+G0/runtime, G6, C0 e R07 histórica não foram removidos; checkout principal intacto.
+worktree-removals.json preserva o evento e worktree-restorations.json confirma
+a correção. Não apresentar o snapshot de remoção como estado final.
+
+Heartbeat C0 e heartbeat G3 PAUSADOS. R09-plano/backlog/prompts preparados,
+nenhuma tarefa R09 iniciada. Entrega dentro do novo limite15:00; Etapa2 permanece
+aberta. O commit de selo e o remoto são conferidos pela coordenação após gravar
+este documento, evitando autorreferência de SHA no próprio commit.

@@ -1,0 +1,62 @@
+{
+  "at": "2026-09-12T14:52:34.419375-03:00",
+  "reason": "Preservacao fisica especifica reportada pelas frentes; restaura sete caminhos/branches/ignorados, sem reset/pull e sem tocar principal",
+  "items": [
+    {
+      "group": "estrutura",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-estrutura",
+      "head": "558b3d35715e83a8f29699b6bea64cdf450acacf",
+      "restored": true,
+      "importantIgnoredRestored": 182,
+      "clean": true
+    },
+    {
+      "group": "acessos-pessoas",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "restored": true,
+      "importantIgnoredRestored": 61,
+      "clean": true
+    },
+    {
+      "group": "formularios-cuidado-rotina",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "restored": true,
+      "importantIgnoredRestored": 17,
+      "clean": true
+    },
+    {
+      "group": "principal-chat-sistema",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "restored": true,
+      "importantIgnoredRestored": 3,
+      "clean": true
+    },
+    {
+      "group": "realm-interno",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-realm-interno",
+      "head": "2a7609507414e3aca77fdfa63895478a9f51fa15",
+      "restored": true,
+      "importantIgnoredRestored": 1,
+      "clean": true
+    },
+    {
+      "group": "operacoes",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "restored": true,
+      "importantIgnoredRestored": 9,
+      "clean": true
+    },
+    {
+      "group": "suites",
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "restored": true,
+      "importantIgnoredRestored": 93,
+      "clean": true
+    }
+  ]
+}
