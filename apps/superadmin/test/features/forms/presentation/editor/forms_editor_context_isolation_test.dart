@@ -10,6 +10,92 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final width in [375.0, 1200.0]) {
+    testWidgets('author edits multiple selection limits at width $width', (tester) async {
+      await tester.binding.setSurfaceSize(Size(width, 1100));
+      addTearDown(() => tester.binding.setSurfaceSize(null));
+      tester.platformDispatcher.textScaleFactorTestValue = width == 375 ? 2 : 1;
+      addTearDown(tester.platformDispatcher.clearTextScaleFactorTestValue);
+      final api = _EditorApi(firstItems: [_optionsItem(3)]);
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final minimum = find.byKey(const ValueKey('forms-selection-min-parent'));
+      final maximum = find.byKey(const ValueKey('forms-selection-max-parent'));
+      await tester.ensureVisible(minimum);
+      await tester.enterText(minimum, '2');
+      await tester.ensureVisible(maximum);
+      await tester.enterText(maximum, '3');
+      _save(tester).onPressed!();
+      await tester.pumpAndSettle();
+      final config = api.savedCommands.last.payload.sections.first.items.first.config;
+      expect(config.minSelections, 2);
+      expect(config.maxSelections, 3);
+      expect(tester.takeException(), isNull);
+    });
+  }
+  testWidgets('duplicating a question preserves edited selection limits', (tester) async {
+    final api = _EditorApi(firstItems: [_optionsItem(3)]);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    final minimum = find.byKey(const ValueKey('forms-selection-min-parent'));
+    await tester.ensureVisible(minimum);
+    await tester.enterText(minimum, '2');
+    final maximum = find.byKey(const ValueKey('forms-selection-max-parent'));
+    await tester.ensureVisible(maximum);
+    await tester.enterText(maximum, '3');
+    final duplicate = find.byTooltip('Duplicar pergunta').first;
+    await tester.ensureVisible(duplicate);
+    await tester.tap(duplicate);
+    await tester.pumpAndSettle();
+    _save(tester).onPressed!();
+    await tester.pumpAndSettle();
+    final items = api.savedCommands.last.payload.sections.first.items
+        .where((item) => item.kind == FormItemKind.multipleChoice)
+        .toList();
+    expect(items, hasLength(2));
+    for (final item in items) {
+      expect(item.config.minSelections, 2);
+      expect(item.config.maxSelections, 3);
+    }
+  });
+  for (final limits in [('0', '2'), ('1.5', '2'), ('3', '2'), ('4', '50'), ('1', '51')]) {
+    testWidgets('invalid authored selection limits $limits never reach save', (tester) async {
+      final api = _EditorApi(firstItems: [_optionsItem(3)]);
+      await tester.pumpWidget(_app(api, 'form-1'));
+      await tester.pumpAndSettle();
+      final minimum = find.byKey(const ValueKey('forms-selection-min-parent'));
+      final maximum = find.byKey(const ValueKey('forms-selection-max-parent'));
+      await tester.ensureVisible(minimum);
+      await tester.enterText(minimum, limits.$1);
+      await tester.ensureVisible(maximum);
+      await tester.enterText(maximum, limits.$2);
+      await tester.pump(const Duration(milliseconds: 800));
+      _save(tester).onPressed?.call();
+      await tester.pumpAndSettle();
+      expect(api.savedCommands, isEmpty);
+      expect(tester.takeException(), isNull);
+    });
+  }
+  testWidgets('clearing authored selection limits keeps both wire fields absent', (tester) async {
+    final api = _EditorApi(
+      firstItems: [
+        _optionsItem(3, config: const FormItemConfig(minSelections: 2, maxSelections: 3)),
+      ],
+    );
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    for (final bound in ['min', 'max']) {
+      final field = find.byKey(ValueKey('forms-selection-$bound-parent'));
+      await tester.ensureVisible(field);
+      await tester.enterText(field, '');
+    }
+    _save(tester).onPressed!();
+    await tester.pumpAndSettle();
+    final config = api.savedCommands.last.payload.sections.first.items.first.config;
+    expect(config.minSelections, isNull);
+    expect(config.maxSelections, isNull);
+  });
+
   for (final narrow in [false, true]) {
     testWidgets(
       'question images require authorized context and reload after dialog narrow=$narrow',

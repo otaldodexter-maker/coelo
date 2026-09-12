@@ -1,8 +1,8 @@
 ---
 title: "R08 G5/G3 — ponte de question-image no rascunho produtivo"
 source: "R08-plano.md G3/G5; contratos form_get_editor/form_save_draft e forms_question_media_r2_v1"
-status: "correção forward-only verde no espelho; produção pendente C0"
-generated_at: "2026-09-12T12:04:58-03:00"
+status: "composição aplicada em produção pelo C0 no lote 57"
+generated_at: "2026-09-12T12:25:15-03:00"
 ---
 
 # Ponte de mídia do rascunho produtivo
@@ -85,4 +85,7 @@ O G0 aplicou 140547 somente sobre o baseline que já continha 140546 e obteve:
 - todos os resultados finais com rollback e native/wrapper 0.
 
 G5 não executou pgTAP nem aplicou SQL. Esses verdes não autorizam produção: o
-C0 reteve o lote 57 até a revisão e prova do candidato posterior 140548.
+C0 reteve o lote 57 até a revisão e prova dos candidatos posteriores. Depois
+dos verdes finais, aplicou 140546..140549 como uma unidade ordenada em produção
+às 12:25 BRT; o ledger e as pós-provas estão detalhados no recibo de retry e
+delete.

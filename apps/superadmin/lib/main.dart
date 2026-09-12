@@ -21,6 +21,7 @@ import 'features/locations/data/supabase_location_consumer_selection_reader.dart
 import 'features/locations/domain/location_consumer_selection_reader.dart';
 import 'features/activities/data/supabase_activity_read_detail_repository.dart';
 import 'features/activities/domain/activity_read_detail.dart';
+import 'features/groups/data/supabase_group_location_create_repository.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -48,6 +49,10 @@ Future<void> main() async {
       unitBackendCommands: authScope.unitBackendCommands,
       structureMutationsEnabled: authScope.structureMutationsEnabled,
       groupDirectoryRepository: authScope.groupDirectoryRepository,
+      groupLocationCreateRepository: SupabaseGroupLocationCreateRepository(
+        Supabase.instance.client,
+        available: true,
+      ),
       groupDetailRepository: authScope.groupDetailRepository,
       unitDetailRepository: authScope.unitDetailRepository,
       locationCatalogReader: _locationCatalogReader(),
@@ -61,6 +66,7 @@ Future<void> main() async {
       activityCommandRepository: authScope.activityCommandRepository,
       // 180150 (superadmin_activity_location_create_v2) esta em producao.
       activityLocationCreateEnabled: true,
+      groupLocationCreateEnabled: true,
       assessmentRepository: authScope.assessmentRepository,
       assessmentMutationsEnabled: authScope.assessmentMutationsEnabled,
       personDirectoryRepository: authScope.personDirectoryRepository,

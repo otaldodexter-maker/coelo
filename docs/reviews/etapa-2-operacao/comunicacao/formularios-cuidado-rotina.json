@@ -1,19 +1,19 @@
 {
-  "revision": 66,
+  "revision": 68,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T15:15:19.329Z",
+  "updatedAt": "2026-09-12T15:39:40.675Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "0d6024076 + pacote mídia desta revisão",
-  "base": "origin/dev 6d6cbef32",
+  "head": "5a421a7b9 + pacote H19 desta revisão",
+  "base": "origin/dev 2441725d5 materializado no merge 5a421a7b9",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
     "objetivo": "Fechar primeiro gate executável do recorte G3 com correção e evidências por action_id.",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "Mídia local-green preparada para integração C0; próximo delta independente H12/H26, enquanto runtime G0/SQL permanecem externos",
+  "currentGate": "H19 UI local-green; candidato backend em revisão G5 após lote58. E2E runtime G0/C0 pendente.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -78,6 +78,20 @@
         "failed": 0,
         "overlap": "115 editor incluem112 do pacote0d6024076; não somar pacotes",
         "evidencia": "03-form-media.md"
+      },
+      {
+        "sha": "42e10d0cb + evidências desta revisão",
+        "passed": 273,
+        "failed": 0,
+        "overlap": "124 editor/149 resposta substituem115/130 do pacote mídia; não somar",
+        "evidencia": "04-h12-h26.md"
+      },
+      {
+        "sha": "pacote H19 desta revisão",
+        "passed": 31,
+        "failed": 0,
+        "overlap": "3 novos + 28 regressão já incluída anteriormente; não somar",
+        "evidencia": "05-h19-responsaveis.md"
       }
     ],
     "e2eExecutados": 0,
@@ -85,7 +99,9 @@
     "evidencias": [
       "01-frame-attendance.md",
       "02-audiencia-autosave.md",
-      "03-form-media.md"
+      "03-form-media.md",
+      "04-h12-h26.md",
+      "05-h19-responsaveis.md"
     ]
   },
   "reservedFiles": [
@@ -93,17 +109,33 @@
     "apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart (delta focal G3 C0)"
   ],
   "resources": {
-    "flutterTest": "Liberado 12:14 BRT, sessões65667 exit0 e81532 exit1 corrigida por rerun DTO exit0; nenhum processo G3 ativo.",
+    "flutterTest": "Liberado após processo57539 exit0:31PASS0FAIL. Analyze75288 exit0. Nenhum processo G3.",
     "chrome": "G0; sem posse G3; runtime E2E ainda não liberado",
-    "sql": "C0/G0/G5; nenhum SQL G3. Candidato question-image em correção/prova.",
+    "sql": "C0/G0/G5; lote57 aplicado peloC0, candidatos question-image integrados. H19 candidato em revisão G5.",
     "deploy": "Somente C0 integra e publica; nenhum deploy G3"
   },
   "blocking": [
-    "Recertificação real de attendance/location-answer e mídia depende runtime G0/Chrome",
-    "Question-image depende aplicação candidatosG5 peloC0",
-    "Foto/câmera e segredo de edição anônimo não implementados neste pacote"
+    "Recertificação real attendance/location-answer/mídia depende runtime G0/Chrome",
+    "H19 responsável: contrato de catálogo/save/detail ausente; candidato G5/C0",
+    "Foto/câmera, H20 imagem da dose e segredo de edição anônimo continuam gates separados"
   ],
-  "deltaProposals": [],
+  "deltaProposals": [
+    {
+      "backlogId": "H12",
+      "resultado": "autoria min/max local-green, 124 testes editor; E2E pendente",
+      "evidencia": "04-h12-h26.md"
+    },
+    {
+      "backlogId": "H26",
+      "resultado": "omissão opcional e legados reconciliados localmente;149 testes resposta; E2E pendente",
+      "evidencia": "04-h12-h26.md"
+    },
+    {
+      "backlogId": "H19",
+      "resultado": "Seletor/revisão com ID ausente não lançam nem exibem UUID;375/200 e rascunho local verdes. Persistência de responsável depende contratoG5/C0.",
+      "evidencia": "05-h19-responsaveis.md"
+    }
+  ],
   "packages": [
     {
       "nome": "Form-media pergunta e Galeria identificada",
@@ -115,7 +147,6 @@
         "FormResponsePage.mediaSession/mediaReader"
       ],
       "pendencias": [
-        "SQL G5/C0",
         "Foto/câmera",
         "edit_secret anônimo",
         "runtime real e expiração/exclusão remotas"
@@ -134,9 +165,29 @@
     {
       "sha": "0d6024076",
       "o_que": "H10/H11, 216 testes locais aprovados"
+    },
+    {
+      "sha": "7ba5077f9",
+      "o_que": "mídia privada,376PASS locais"
+    },
+    {
+      "sha": "4c9f0375a",
+      "o_que": "merge origin/dev2d97892d9"
+    },
+    {
+      "sha": "42e10d0cb",
+      "o_que": "H12/H26 preservado antes de RED; provaGREEN nesta revisão"
+    },
+    {
+      "sha": "851c6cc95",
+      "o_que": "H12/H26 provas273PASS e JSON67"
+    },
+    {
+      "sha": "5a421a7b9",
+      "o_que": "merge origin/dev2441725d5 com lote57"
     }
   ],
-  "nextStep": "Publicar/merge origin/dev; seguir H12/H26 e conciliar H19/H20 por contrato, mantendo E2E separado.",
+  "nextStep": "Publicar H19 e conciliar contrato G5; executar próximo gate nominal independente até corte.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",
@@ -2326,8 +2377,7 @@
     },
     "evidencia": "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/02-audiencia-autosave.md",
     "pendente": [
-      "Galeria e question-image ainda WIP local não incluído neste pacote",
-      "question-image depende de contrato G5 e aplicação C0",
+      "Histórico: mídia foi entregue no pacote7ba5077f9; lote57 aplicado C0",
       "attendance e location-answer sem recertificação real"
     ]
   }

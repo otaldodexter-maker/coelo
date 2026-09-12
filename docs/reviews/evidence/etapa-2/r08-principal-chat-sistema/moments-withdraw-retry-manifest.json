@@ -1,0 +1,60 @@
+{
+  "source": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/moments-api-manifest.json",
+  "ui_e2e": false,
+  "environment": "production",
+  "started_at": "2026-09-12T15:51:11.731590+00:00",
+  "publication_id": "bd9f2361-548f-44f8-a595-fddec3ff1396",
+  "asset_id": "6f8f9fc8-215a-4e07-8b7f-583d210215c7",
+  "request_id": "554685af-6f7e-4374-864d-37af071094dc",
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "same_retained_publication_visible",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "withdrawal_projected_authorized",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "withdraw_moment",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "withdrawal_timestamp_returned",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "fresh_reload_absent",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "withdrawn_asset_read_denied",
+      "passed": false,
+      "http_status": 200
+    }
+  ],
+  "status": "failed",
+  "failure_type": "RuntimeError",
+  "logout_status": 204,
+  "finished_at": "2026-09-12T15:51:14.198500+00:00"
+}
