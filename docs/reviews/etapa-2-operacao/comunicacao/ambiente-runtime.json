@@ -1,12 +1,12 @@
 {
-  "revision": 15,
+  "revision": 16,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:25:51-03:00",
+  "updatedAt": "2026-09-12T12:30:10-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -61,7 +61,9 @@
       "inventario sanitizado das capacidades CUA, Dart MCP e extensoes presentes concluido sem instalar/reconfigurar",
       "Forms 140548+140549 aplicados somente baseline; focais retry/delete 9/9 e terminal unbind 7/7 verdes com rollback",
       "ciclo final 684eea023: regressões 33/33, 17/17 e 159/159 verdes, rollback e native/wrapper 0",
-      "smoke API identificado + question-image preparado sem mutação: runner fail-safe e manifesto enviados ao C0 antes de qualquer escrita"
+      "smoke API identificado + question-image preparado sem mutação: runner fail-safe e manifesto enviados ao C0 antes de qualquer escrita",
+      "runner corrigido por ordem C0 para preservar formulário/asset sintéticos até fechamento e encerrar apenas a própria sessão Auth local",
+      "preflight remoto read-only: form-media v16 ativa e quatro arquivos de runtime implantados byte a byte iguais à fonte local inspecionada"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -95,6 +97,7 @@
       ,"regressao forms_question_media_r2 pos-140548/49: 32 ok e 1 not ok de 33, native 0 wrapper 1 rollback; parada antes de 17/159"
       ,"rerun final 684eea023: forms question media 33/33, behavioral 17/17 e internal drafts 159/159; native/wrapper 0 e rollback"
       ,"forms-question-image-api-smoke.py: dry-run READY_NO_MUTATION, parse sintático PASS, PNG 68 bytes SHA-256 431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460"
+      ,"supabase functions list/download read-only: form-media ACTIVE v16 verify_jwt=true; index/media_contract/question_image/r2_s3 iguais por bytes"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -111,7 +114,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "C0 liberar nominalmente o smoke API após backup/lote 57 e confirmar 140546..140549 + Edge form-media compatível; gate visual continua aguardando ferramenta de browser compatível"
+    "nextGate": "C0 liberar nominalmente a execução do smoke API; lote 57 e compatibilidade byte a byte da Edge v16 já confirmados; gate visual continua aguardando ferramenta de browser compatível"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
@@ -119,7 +122,7 @@
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
     "sql": "slot devolvido ao C0; espelho inclui H09 e Forms 140546..140549; focais9+7 e regressões33+17+159 verdes; producao/backup/ledger permanecem com C0",
-    "apiSmoke": "manifesto e runner em evidence/r08; nenhum acesso remoto feito; execução exige --execute, institution-id explícito e liberação C0"
+    "apiSmoke": "manifesto e runner em evidence/r08; somente preflight de gestão read-only executado; fixture não criada; execução exige --execute, institution-id explícito e liberação C0; sintéticos serão preservados"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -204,6 +207,11 @@
       "revision": 15,
       "at": "2026-09-12T12:25:51-03:00",
       "summary": "Smoke API identificado + question-image preparado sem mutação; runner protegido e manifesto enviados ao C0 antes de qualquer escrita remota."
+    },
+    {
+      "revision": 16,
+      "at": "2026-09-12T12:30:10-03:00",
+      "summary": "Runner ajustado para preservar sintéticos; preflight remoto somente leitura confirmou form-media v16 e igualdade byte a byte dos quatro arquivos de runtime implantados."
     }
   ]
 }

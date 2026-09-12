@@ -1,4 +1,4 @@
-"""Smoke autenticado de Formulários + question-image, com limpeza nominal.
+"""Smoke autenticado de Formulários + question-image, preservando a fixture.
 
 Por padrão não acessa a rede. A execução remota exige --execute e o contexto
 institucional explícito. Credenciais, JWTs, tickets e URLs assinadas ficam só
@@ -67,6 +67,8 @@ def request_json(
         except json.JSONDecodeError:
             parsed = None
         return error.code, parsed
+    except urllib.error.URLError:
+        return 0, {"error": "network_error"}
 
 
 def error_code(value: Any) -> str:
@@ -78,6 +80,15 @@ def error_code(value: Any) -> str:
             if isinstance(value.get(key), str):
                 return value[key][:80]
     return "opaque_error"
+
+
+def require_uuid(value: Any, label: str) -> str:
+    if not isinstance(value, str):
+        raise SmokeFailure(f"{label}:invalid_uuid")
+    try:
+        return str(uuid.UUID(value))
+    except ValueError as error:
+        raise SmokeFailure(f"{label}:invalid_uuid") from error
 
 
 def main() -> int:
@@ -124,7 +135,6 @@ def main() -> int:
     source_section_id = str(uuid.uuid4())
     source_item_id = str(uuid.uuid4())
     asset_id: str | None = None
-    form_created = False
     form_version = 1
     failed = False
     try:
@@ -136,7 +146,7 @@ def main() -> int:
             "identity_mode": "identified",
             "response_unit": "person",
             "title": "QA R08 question-image synthetic",
-            "description": "Fixture temporária; remover ao fim do smoke.",
+            "description": "Fixture temporária; preservar até o fechamento formal da Etapa 2.",
             "sections": [{
                 "id": source_section_id,
                 "title": "Seção QA",
@@ -162,7 +172,6 @@ def main() -> int:
         })
         if status != 200 or not isinstance(saved, dict) or saved.get("id") != form_id:
             raise SmokeFailure(f"save:{status}:{error_code(saved)}")
-        form_created = True
         form_version = int(saved.get("management_version", 1))
         emit("save_identified_draft", "PASS", http=status, form_id=form_id, version=form_version)
 
@@ -171,8 +180,8 @@ def main() -> int:
             raise SmokeFailure(f"editor_before:{status}:{error_code(editor)}")
         context = editor.get("media_context")
         sections = editor.get("definition", {}).get("sections", [])
-        item_id = sections[0]["items"][0]["id"]
-        version_id = context["form_version_id"]
+        item_id = require_uuid(sections[0]["items"][0]["id"], "editor_item")
+        version_id = require_uuid(context["form_version_id"], "editor_version")
         if context.get("question_images") != []:
             raise SmokeFailure("editor_before:unexpected_media")
         emit("editor_before", "PASS", http=status, item_id=item_id, form_version_id=version_id)
@@ -194,7 +203,7 @@ def main() -> int:
         })
         if status != 200 or not isinstance(prepared, dict):
             raise SmokeFailure(f"prepare:{status}:{error_code(prepared)}")
-        asset_id = prepared.get("asset_id")
+        asset_id = require_uuid(prepared.get("asset_id"), "prepared_asset")
         upload_url = prepared.get("signed_upload_url") or prepared.get("upload_url")
         required_headers = prepared.get("required_headers") or {}
         if not isinstance(asset_id, str) or not isinstance(upload_url, str) or not isinstance(required_headers, dict):
@@ -217,7 +226,15 @@ def main() -> int:
             "action": "finalize",
             "payload": {"purpose": "question-image", "asset_id": asset_id},
         })
-        if status != 200 or not isinstance(finalized, dict) or finalized.get("status") != "ready":
+        if (
+            status != 200
+            or not isinstance(finalized, dict)
+            or finalized.get("asset_id") != asset_id
+            or finalized.get("status") != "ready"
+            or finalized.get("byte_size") != len(PNG)
+            or finalized.get("pixel_width") != 1
+            or finalized.get("pixel_height") != 1
+        ):
             raise SmokeFailure(f"finalize:{status}:{error_code(finalized)}")
         emit(
             "finalize",
@@ -228,6 +245,21 @@ def main() -> int:
             width=finalized.get("pixel_width"),
             height=finalized.get("pixel_height"),
         )
+
+        status, replayed_finalize = edge({
+            "action": "finalize",
+            "payload": {"purpose": "question-image", "asset_id": asset_id},
+        })
+        if (
+            status != 200
+            or not isinstance(replayed_finalize, dict)
+            or replayed_finalize.get("asset_id") != asset_id
+            or replayed_finalize.get("status") != "ready"
+            or replayed_finalize.get("pixel_width") != 1
+            or replayed_finalize.get("pixel_height") != 1
+        ):
+            raise SmokeFailure(f"finalize_replay:{status}:{error_code(replayed_finalize)}")
+        emit("finalize_replay", "PASS", http=status, asset_id=asset_id, media_status="ready")
 
         status, resolved = edge({
             "action": "resolve",
@@ -245,35 +277,38 @@ def main() -> int:
 
         status, reloaded = rpc("form_get_editor", {"p_form_id": form_id})
         images = reloaded.get("media_context", {}).get("question_images", []) if isinstance(reloaded, dict) else []
-        match = [item for item in images if item.get("asset_id") == asset_id]
-        if status != 200 or len(match) != 1 or match[0].get("status") != "ready":
+        match = [item for item in images if isinstance(item, dict) and item.get("asset_id") == asset_id]
+        if (
+            status != 200
+            or len(match) != 1
+            or match[0].get("status") != "ready"
+            or match[0].get("item_id") != item_id
+            or match[0].get("mime_type") != MIME
+            or match[0].get("position") != 0
+        ):
             raise SmokeFailure(f"editor_reload:{status}:binding_missing")
         emit("editor_reload", "PASS", http=status, asset_id=asset_id, media_status="ready")
-    except (SmokeFailure, KeyError, IndexError, TypeError, ValueError, urllib.error.URLError) as error:
+    except urllib.error.URLError:
+        failed = True
+        emit("smoke", "FAILED", reason="network_error", form_id=form_id, asset_id=asset_id)
+    except (SmokeFailure, AttributeError, KeyError, IndexError, TypeError, ValueError) as error:
         failed = True
         emit("smoke", "FAILED", reason=str(error)[:160], form_id=form_id, asset_id=asset_id)
     finally:
-        cleanup_ok = True
-        if asset_id is not None:
-            status, deleted = edge({
-                "action": "delete",
-                "request_id": str(uuid.uuid4()),
-                "payload": {"purpose": "question-image", "asset_id": asset_id},
-            })
-            cleanup_ok &= status == 200 and isinstance(deleted, dict) and deleted.get("status") == "deleted"
-            emit("cleanup_media", "PASS" if cleanup_ok else "FAILED", http=status, asset_id=asset_id)
-        if form_created:
-            status, deleted_form = rpc("form_archive_or_delete", {
-                "p_request_id": str(uuid.uuid4()),
-                "p_expected_version": form_version,
-                "p_payload": {"form_id": form_id, "action": "delete"},
-            })
-            form_cleanup_ok = status == 200
-            cleanup_ok &= form_cleanup_ok
-            emit("cleanup_form", "PASS" if form_cleanup_ok else "FAILED", http=status, form_id=form_id, code=None if form_cleanup_ok else error_code(deleted_form))
-        if not cleanup_ok:
+        logout_status, _ = request_json(
+            f"{base}/auth/v1/logout?scope=local",
+            headers=api_headers,
+        )
+        if logout_status not in (200, 204):
             failed = True
-    emit("result", "FAIL" if failed else "PASS")
+        emit("session_end", "PASS" if logout_status in (200, 204) else "FAILED", http=logout_status)
+    emit(
+        "result",
+        "FAIL" if failed else "PASS",
+        fixture="PRESERVED_FOR_ETAPA2_CLOSE",
+        form_id=form_id,
+        asset_id=asset_id,
+    )
     return 1 if failed else 0
 
 
