@@ -2046,17 +2046,17 @@
   "ack": true,
   "revisaoRecebida": 14,
   "recebidoEm": "2026-09-11T23:36:00-03:00",
-  "headObservado": "bc93f4b6c",
-  "recibo": "G8 reconhecida; escopo restrito confirmado; fase0 rev14 lida; sem deltas de estado; branch integrada por conteúdo permitido"
+  "headObservado": "6f8506c60",
+  "recibo": "G8 reconhecida; escopo restrito confirmado; fase0 rev14 lida; novo commit de test/app/router integrado por conteúdo permitido"
  },
  "receiptsR07": [
   {
    "grupo": "suites",
    "revisaoRecebida": 14,
    "ack": true,
-   "integradoEm": "1eafb23af2b939a0a08af0d7e599269740043aae",
-   "testes": "suítes tocadas em test/app, test/core/config e test/shared: 87 PASS",
-   "observacao": "fase0.json rev14 + censo commitado; mudanças efetivas dentro do recorte permitido; nenhum toque em lib/features ou lib/shared/presentation; sem delta de estado"
+   "integradoEm": "pendente de commit deste merge",
+   "testes": "suítes tocadas em test/app/router: 19 PASS; ciclos anteriores test/app, test/core/config e test/shared: 87 PASS",
+   "observacao": "novo commit 6f8506c60 dentro do recorte permitido; nenhum toque em lib/features ou lib/shared/presentation; sem delta de estado"
   },
   {
    "grupo": "operacoes",
