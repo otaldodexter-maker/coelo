@@ -1,12 +1,12 @@
 {
-  "revision": 99,
+  "revision": 101,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:15:24.249Z",
+  "updatedAt": "2026-09-12T19:26:50.903Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -258,6 +258,8 @@
     "97": "ACKs novos por ID/round; G0 runtime confirmado; G5 primeiro handoff integrado; prova API download/TTL sem promocao; nenhum SQL/deploy.",
     "98": "Runtime real G0 integrado; BE activities.assessment aceito por provas combinadas; consumo real57%; leitura dos nove threads via App Server; G6 recebe Chrome apos liberacao G0. Nenhuma mensagem de liberacao ainda confirmada.",
     "99": "CLI resume G6 rejeitado por active writer; nenhuma instrucao entregue/turno iniciado. C0 recolhe o slot Chrome nao adotado G6 e executa gate UI enquanto frentes existentes entregam por Git.",
+    "100": "G1 integrado; C0 executa testes focais na base conjunta antes de publicar codigo e transferir Chrome a G1. Upload Circular bloqueado por permissao da extensao; nenhum anexo enviado. Primeira tentativa de registrar reserva falhou por cwd; registro corrigido sem segunda suite.",
+    "101": "35PASS base conjunta G1; C0 transfere Chrome/build/servidor a G1 para fechar Turmas. Seletor Circular normal validado ate abertura, upload bloqueado por permissao da extensao. G5 entregue; C0 assume dependencia backend.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3713,9 +3715,9 @@
       "branch": "work/etapa2-r09-estrutura-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
-      "ackRevision": 99,
-      "primeiroGate": "groups.members/location ou institutions.status",
-      "status": "ativa; adocao confirmada via Git",
+      "ackRevision": 105,
+      "primeiroGate": "ACAO AGORA: git fetch/merge origin/dev na propria worktree; codigo membros ja integrado e C0 testou35PASS. Compilar QA com COELO_QA_TEXT_ENTRY_EMULATION=false e COELO_QA_SYNTHETIC_CIRCULAR_FILE=false, env publico ignorado retido G0. Assumir Chrome22592/tab829822462 e servidor51168/3014. Provar groups.location e groups.members via busca normal, contexto sintetico retido, criar turma R09 autorizada e preservar. Backend reautoriza. Nao certificar formulario manual que exige UUID. Publicar provas/deltas e liberar slot; nenhuma outra fatia antes de fechar esta.",
+      "status": "vaga ativa; Chrome/build transferidos rev101; adocao seguinte pendente",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -3783,7 +3785,7 @@
       "json": "realm-interno.json",
       "ackRevision": 80,
       "primeiroGate": "Provar negativa real do contrato activities.assessment e assessments.detail com fixture retida e API normal; preparar runner minimo sem criar dados/SQL. Leitura remota autorizada C0; nao depende slot SQL.",
-      "status": "ativa; adocao confirmada via Git",
+      "status": "fatia leitura entregue; vaga liberada; dependencia alunos elegiveis",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -3844,16 +3846,15 @@
   },
   "slotsR09": {
     "chrome": {
-      "dono": "C0",
+      "dono": "G1",
       "pid": 22592,
-      "browser": "1",
       "tab": "829822462",
-      "inicio": "2026-09-12T19:15:24.249Z",
-      "estado": "C0 assume apos falha de entrega G6; nenhuma adocao rev98; servidor39504/3014 e tab829822462 confirmados"
+      "inicio": "2026-09-12T19:26:50.903Z",
+      "estado": "TRANSFERENCIA NOMINAL C0->G1. BrowserID varia por sessao: descobrir CUA; tab preservada em /circulars, sem draft aberto."
     },
     "flutterTest": {
-      "dono": "G1",
-      "estado": "G1 registrou reserva e RED de membros na conversa; nao iniciar outro teste ate entrega/liberacao"
+      "dono": "nenhum",
+      "estado": "C035PASS terminado; nao repetir sem mudanca pertinente"
     },
     "sqlEspelho": {
       "dono": "nenhum",
@@ -3861,12 +3862,19 @@
     },
     "ativas": [
       "C0",
-      "G1",
-      "G5"
+      "G1"
     ],
     "atribuicoesPendentes": [],
     "e2eLiberado": true,
-    "sqlLiberado": false
+    "sqlLiberado": false,
+    "runtime": {
+      "dono": "G1",
+      "pid": 51168,
+      "port": 3014,
+      "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/build/web",
+      "buildSha": "9eb24fbf1",
+      "next": "G1 autorizado a compilar UMA base integrada na sua worktree apos merge origin/dev; substituir SOMENTE servidor transferido51168 apos medir comando. Nao editar build/arquivos de outra worktree. Mesma origem3014 preserva login. Sem mock picker/sessao injetada."
+    }
   },
   "consumoR09": {
     "inicialUsedPercent": null,
@@ -4108,13 +4116,13 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 57,
+    "usedPercent": 59,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T19:13:00Z",
+    "measuredAt": "2026-09-12T19:25:17.299Z",
     "source": "account/rateLimits/read; Codex app-server",
-    "measurementNote": "primeira consulta real desta abertura, nao T0; horario aproximado dentro do minuto da chamada",
-    "nextCheckBy": "2026-09-12T19:23:00Z"
+    "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
+    "nextCheckBy": "2026-09-12T19:35:17.299Z"
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",
