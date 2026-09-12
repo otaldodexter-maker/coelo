@@ -2312,7 +2312,7 @@
     ],
     "contrato": "superadmin_people_list ganha activity_ids UUID e state/municipality/neighborhood textuais com defaults; uma unica linha context_rows satisfaz todos os filtros. Atividade usa assignment/link/participant vigentes; localidade deriva de unit_addresses ou institution_addresses. total_count e calculado antes da pagina.",
     "seguranca": "mantem assert_people_permission, unica assinatura PostgREST, grants authenticated/service_role e rejeicoes unit/group cross-context; nao aceita ID de localidade nao verificavel do cliente.",
-    "teste": "pgTAP estrutural do candidato: 11/11 PASS no rollback do espelho descartavel. A fixture A/B de G7 cobre 10 cenarios reais, incluindo negativo e cross-tenant; a serializacao/aplicacao fica exclusivamente com C0/G5.",
+    "teste": "pgTAP estrutural do candidato: 11/11 PASS na prova anterior do espelho descartavel. A prova funcional final deve compor a fixture A/B corrigida de G5 (e1cad10e2), com 10 cenarios reais incluindo negativo e cross-tenant; o blob SQL atual com state_code exige reexecucao focal antes da serializacao/aplicacao exclusiva C0/G5.",
     "cliente_wip": "adapter encaminha p_activity_ids/p_state_codes/p_municipality_ids/p_neighborhood_ids e desserializa activities/states/municipalities/neighborhoods; composicao permanece com contextFiltersAvailable=false ate C0 confirmar a assinatura aplicada. Flutter focal repository + view model: 19 passed, 0 failed; inclui quatro cenarios de cascata/deduplicacao H28 no SHA df0a281cb.",
     "pendente": "revisao tecnica C0/G3/G5, serializacao e aplicacao somente na fila autorizada; somente apos a confirmacao C0 habilitar contextFiltersAvailable. Nenhuma prova E2E ou deploy e alegada."
   },

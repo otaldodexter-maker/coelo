@@ -50,8 +50,10 @@ desse caso pertence à revisão de segurança e não é alegada como resolvida a
 
 O candidato `20260912143000_people_directory_context_filters_v1.sql` permanece
 fora da fila e não foi aplicado em produção. A revisão no espelho descartável
-confirmou aplicação e rollback; o teste estrutural passou 11/11. A fixture A/B
-de G7 acrescenta dez cenários funcionais para a serialização de C0/G5.
+confirmou aplicação e rollback; o teste estrutural passou 11/11 para o blob
+anterior. O blob atual inclui `state_code` em bairros e requer a reexecução
+focal de C0/G0; a prova funcional deve usar a fixture A/B corrigida de G5
+(`e1cad10e2`), não a cópia anterior sem a correção de `canonical_handle`.
 
 No cliente, `contextFiltersAvailable` continua `false`: o adaptador só envia os
 quatro parâmetros H28 depois que C0 confirmar a assinatura remota. O SHA
