@@ -25,6 +25,7 @@ final class PublicationSurface extends StatelessWidget {
     this.scrollKey,
     this.footerKey,
     this.previewMinimumWidth = 1200,
+    this.compactHeaderScale = 1,
     this.padding = const EdgeInsets.symmetric(horizontal: CoeloSpacing.space6),
     super.key,
   });
@@ -39,6 +40,7 @@ final class PublicationSurface extends StatelessWidget {
   final Key? scrollKey;
   final Key? footerKey;
   final double previewMinimumWidth;
+  final double compactHeaderScale;
 
   /// Respiro lateral dentro do conteiner do hospedeiro.
   final EdgeInsetsGeometry padding;
@@ -52,20 +54,24 @@ final class PublicationSurface extends StatelessWidget {
       child: LayoutBuilder(
         builder: (context, constraints) {
           final sidePreview = preview != null && constraints.maxWidth >= previewMinimumWidth;
+          final headerScale = constraints.maxWidth < CoeloBreakpoints.medium.minWidth
+              ? compactHeaderScale
+              : 1.0;
           final header = Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Text(
                 'Sua publicação',
-                style: textTheme.headlineSmall?.copyWith(fontWeight: FontWeight.w700),
+                style: textTheme.headlineSmall
+                    ?.copyWith(fontWeight: FontWeight.w700)
+                    .apply(fontSizeFactor: headerScale),
               ),
               const SizedBox(height: CoeloSpacing.space1),
               Text(
                 subtitle,
-                style: textTheme.titleMedium?.copyWith(
-                  fontWeight: FontWeight.w600,
-                  color: colors.onSurfaceVariant,
-                ),
+                style: textTheme.titleMedium
+                    ?.copyWith(fontWeight: FontWeight.w600, color: colors.onSurfaceVariant)
+                    .apply(fontSizeFactor: headerScale),
               ),
               const SizedBox(height: CoeloSpacing.space5),
             ],
@@ -88,10 +94,7 @@ final class PublicationSurface extends StatelessWidget {
                       ),
                     ],
                   )
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    children: [header, form],
-                  ),
+                : Column(crossAxisAlignment: CrossAxisAlignment.stretch, children: [header, form]),
           );
           return Column(
             children: [
@@ -267,10 +270,7 @@ final class PublicationRow extends StatelessWidget {
               children: [
                 Text(title, style: textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700)),
                 for (final line in lines)
-                  Text(
-                    line,
-                    style: textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
-                  ),
+                  Text(line, style: textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant)),
               ],
             ),
           ),
@@ -422,7 +422,9 @@ final class PublicationPreviewPanel extends StatelessWidget {
             Expanded(
               child: Text(
                 title,
-                style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w700),
               ),
             ),
             Icon(

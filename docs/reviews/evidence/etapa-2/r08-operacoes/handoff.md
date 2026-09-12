@@ -1,0 +1,43 @@
+---
+title: "Handoff R08 — Operações"
+source: "R08-prompts.md; R08-backlog.md; spec 051; inspeção focal de código"
+status: "em andamento"
+generated_at: "2026-09-12"
+---
+
+# Recorte
+
+Etapa 2 → `apps/superadmin` → Operações → Conta, Suporte, Catálogo, Planos,
+Help Center e estados informativos de Auditoria/Importações.
+
+## Checkpoint inicial
+
+- Sessões e Suporte preservam a evidência E2E válida da R06. Uma nova
+  revogação só será feita com o usuário sintético próprio e o slot Chrome.
+- `plans.assign` permanece bloqueado por decisão: a spec 051 permite somente
+  leitura de vínculos de instituição; não se confunde com SMTP P51 nem com
+  arquivar/restaurar (`plans.activate`).
+- A rota protegida `governanceCatalog` passa `localPreview: true`, impedindo o
+  destino HTTPS configurado de ser usado. O teste RED já exige o fallback do
+  destino real e exclusão do painel de preview; aguarda a fila Flutter do C0.
+- Os dois goldens A de Help Center aguardam a mesma fila para comparação e
+  regravação, sem promoção de estado por aprovação visual.
+
+## Catálogo — correção focal
+
+O teste de rota foi escrito antes da alteração e falhou como esperado: a rota
+autenticada mostrava `catalog-local-preview`. A causa era a passagem indevida
+de `localPreview: true` para `governanceCatalog`. A alteração removeu somente
+esse argumento; a rota de desenvolvimento continua explicitamente em preview.
+
+`flutter test test/app/router/catalog_routes_test.dart --concurrency=1`
+terminou em **4/4 PASS** após a correção. O teste verifica que a rota protegida
+não exibe preview e apresenta o fallback para a origem HTTPS configurada.
+Isso não comprova que o host externo foi publicado; `catalog.publish` continua
+com esse gate aberto.
+
+## Gates externos
+
+Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
+alheia foi afetada; nenhuma exportação, importação, job, parser ou arquivo novo
+foi criado.

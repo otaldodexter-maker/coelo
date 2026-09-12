@@ -1,12 +1,12 @@
 {
-  "revision": 70,
+  "revision": 75,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T10:58:14.291624-03:00",
+  "updatedAt": "2026-09-12T11:34:59.470876-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2550,10 +2550,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-ambiente-runtime",
       "json": "ambiente-runtime.json",
-      "ultimoSHA": "23b439949",
-      "ackRevision": 2,
+      "ultimoSHA": "9533e4dc2c2fb99a1835b73202410dd74592c597",
+      "ackRevision": 5,
       "status": "local independente liberado apos posse publicada",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G1": {
       "grupo": "estrutura",
@@ -2561,10 +2561,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-estrutura",
       "json": "estrutura.json",
-      "ultimoSHA": "cc79cbac8",
-      "ackRevision": 71,
+      "ultimoSHA": "74277b0a4ec686b528beeab40827b246f27d203b",
+      "ackRevision": 76,
       "status": "local independente liberado apos posse publicada",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -2572,10 +2572,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-acessos-pessoas",
       "json": "acessos-pessoas.json",
-      "ultimoSHA": "66df09635",
-      "ackRevision": 151,
+      "ultimoSHA": "4dab7bd96e4416533a4ce0d7eaf6625bc98262f3",
+      "ackRevision": 154,
       "status": "local independente liberado apos posse publicada",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -2583,10 +2583,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-formularios-cuidado-rotina",
       "json": "formularios-cuidado-rotina.json",
-      "ultimoSHA": "3ec1c1a86",
-      "ackRevision": 63,
+      "ultimoSHA": "7bc243cdb05204a307f38fe4b5286d9487176cec",
+      "ackRevision": 64,
       "status": "local independente liberado apos posse publicada",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -2594,10 +2594,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-principal-chat-sistema",
       "json": "principal-chat-sistema.json",
-      "ultimoSHA": "1d09cb3c8",
-      "ackRevision": 50,
+      "ultimoSHA": "547bbd92a31b4fe3f4e307bc953cb78ca6f8eb7e",
+      "ackRevision": 53,
       "status": "local independente liberado apos posse publicada",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -2605,10 +2605,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-realm-interno",
       "json": "realm-interno.json",
-      "ultimoSHA": "c18e55943",
-      "ackRevision": 53,
+      "ultimoSHA": "a433e3756057345a23d0299e7fedf7157e8887d2",
+      "ackRevision": 55,
       "status": "local independente liberado; recursos pela fila",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -2616,10 +2616,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-publicacoes-agenda",
       "json": "publicacoes-agenda.json",
-      "ultimoSHA": "4a84d6b3d",
-      "ackRevision": 55,
+      "ultimoSHA": "452898a675b70fcb72f0be3393e76a082b33771f",
+      "ackRevision": 57,
       "status": "local independente liberado; recursos pela fila",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G7": {
       "grupo": "operacoes",
@@ -2627,10 +2627,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-operacoes",
       "json": "operacoes.json",
-      "ultimoSHA": "343ccfe40",
-      "ackRevision": 56,
+      "ultimoSHA": "fe679fa5178ea3da0999ad12cddda2926db7c3c6",
+      "ackRevision": 57,
       "status": "local independente liberado; recursos pela fila",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     },
     "G8": {
       "grupo": "suites",
@@ -2638,10 +2638,10 @@
       "modelo": "Spark medio",
       "branch": "work/etapa2-r08-suites",
       "json": "fase0.json",
-      "ultimoSHA": "7582a6a16",
-      "ackRevision": 20,
+      "ultimoSHA": "84d5d9e7aeb1d3581a07766054622420080b2ed9",
+      "ackRevision": 21,
       "status": "local independente liberado; recursos pela fila",
-      "ackAt": "2026-09-12T11:15:26.040372-03:00"
+      "ackAt": "2026-09-12T11:33:27.541077-03:00"
     }
   },
   "slotsR08": {
@@ -2649,29 +2649,33 @@
       "dono": "G0",
       "pid": 22592,
       "inicio": "2026-09-12T10:52:16.727826-03:00",
-      "expira": "2026-09-12T11:22:16.727826-03:00",
+      "expira": "2026-09-12T11:58:53.624492-03:00",
       "estado": "G0 CUA sem login; servidor16248 em3014; nenhum segundo Chrome",
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G2",
-      "pid": null,
-      "inicio": "2026-09-12T11:12:30-03:00",
-      "expira": "2026-09-12T11:27:30-03:00",
-      "estado": "focalP15/platform_users; G7 liberou; zero processos confirmadoC0"
+      "dono": "G7",
+      "inicio": "2026-09-12T11:34:59.470876-03:00",
+      "expira": "2026-09-12T11:44:59.470876-03:00",
+      "estado": "Help Center2A; G6 liberou67 finais verdes"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
     "filaFlutterTest": [
-      "G1 rodape/estrutura",
-      "G4 chat repository",
-      "G6 circular ordem",
-      "G7 Help Center2A"
-    ]
+      "C0 integrado",
+      "G6 circular",
+      "G7 Help Center2A",
+      "G2 15A",
+      "G3 H10 H11"
+    ],
+    "sqlEspelho": {
+      "dono": "C0",
+      "estado": "H09 verde; G0 liberou"
+    }
   },
   "filaSqlR08": {
-    "proximoLote": 56,
-    "estado": "retida ate espelho/pgTAP e backup",
+    "proximoLote": 57,
+    "estado": "56 aplicado e ledger confirmado; nenhum candidato seguinte verde",
     "candidatos": []
   },
   "receiptsR08": [
@@ -2727,6 +2731,68 @@
       ],
       "metodo": "git show nas nove branches origin atuais; delta integral contra R07 para reutilizar historico; G7 publicado durante ciclo",
       "certificacao": "ACK de recebimento nao certifica produto"
+    },
+    {
+      "ciclo": "40min",
+      "at": "2026-09-12T11:33:27.541077-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 5,
+          "sha": "9533e4dc2c2fb99a1835b73202410dd74592c597",
+          "id": "01a095e0-ffff-7953-847d-6cc6a21433ed"
+        },
+        {
+          "g": "G1",
+          "r": 76,
+          "sha": "74277b0a4ec686b528beeab40827b246f27d203b",
+          "id": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf"
+        },
+        {
+          "g": "G2",
+          "r": 154,
+          "sha": "4dab7bd96e4416533a4ce0d7eaf6625bc98262f3",
+          "id": "01a095e1-a8af-7c00-8902-508a572ff643"
+        },
+        {
+          "g": "G3",
+          "r": 64,
+          "sha": "7bc243cdb05204a307f38fe4b5286d9487176cec",
+          "id": "01a095e2-5dc2-7ad3-ae37-4742481ea99f"
+        },
+        {
+          "g": "G4",
+          "r": 53,
+          "sha": "547bbd92a31b4fe3f4e307bc953cb78ca6f8eb7e",
+          "id": "01a095e2-b6da-7043-9327-d5f0070c6041"
+        },
+        {
+          "g": "G5",
+          "r": 55,
+          "sha": "a433e3756057345a23d0299e7fedf7157e8887d2",
+          "id": "01a095e3-4532-75e3-a851-6873668a8814"
+        },
+        {
+          "g": "G6",
+          "r": 57,
+          "sha": "452898a675b70fcb72f0be3393e76a082b33771f",
+          "id": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce"
+        },
+        {
+          "g": "G7",
+          "r": 57,
+          "sha": "fe679fa5178ea3da0999ad12cddda2926db7c3c6",
+          "id": "01a095e3-e5ef-7c63-9db0-49f8df71e081"
+        },
+        {
+          "g": "G8",
+          "r": 21,
+          "sha": "84d5d9e7aeb1d3581a07766054622420080b2ed9",
+          "id": "01a095e4-57b7-7213-b151-8020b26521f3"
+        }
+      ],
+      "metodo": "git show nove JSONs integrais com reutilizacao de subarvores historicas identicas",
+      "certificacao": "recebimento nao certifica"
     }
   ],
   "ownershipR08": {
@@ -2746,7 +2812,7 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T11:15:26.040372-03:00"
+    "ultimoCheckpoint": "2026-09-12T11:28:53.624492-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T11:10:37.573868-03:00",
@@ -2792,5 +2858,26 @@
     "spark5hUsedPercent": 100,
     "sparkResetUtc": "2026-09-12T18:53:01Z",
     "acao": "sem reset/modelo global; C0 absorve trabalho documental se Spark bloquear"
+  },
+  "lote56R08": {
+    "aplicadoEm": "2026-09-12T11:34:59.470876-03:00",
+    "migration": "20260912140545_now_publication_expiry_dispatch_v1",
+    "backup": [
+      {
+        "arquivo": "C:\\Users\\adrie\\Documents\\Coelo-backups\\schema-producao-20260912-r08-lote56.sql",
+        "bytes": 4136628,
+        "sha256": "cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2"
+      },
+      {
+        "arquivo": "C:\\Users\\adrie\\Documents\\Coelo-backups\\dados-producao-20260912-r08-lote56.sql",
+        "bytes": 4231711,
+        "sha256": "9f8c9ad6d3cc2c94f7efa088cf2fccf195ff49bcc89be4ac12d05c47e913b4ed"
+      }
+    ],
+    "pitr": "false; backup logico autorizado ADR0034 Decisao8 enquanto sem cliente real",
+    "pgTAP": "G0 H09 6/6; consumidoresChat28/28+3/3; ACL88/88 e preflight20/20",
+    "producao": "job unico ativo */5 sweep500; ledger version/name confirmado",
+    "composicao": "nenhuma chave cliente necessaria; scheduler servidor",
+    "e2e": "nao promovido; execucao agendada/fluxo real pendentes"
   }
 }

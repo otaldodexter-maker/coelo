@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(47);
+select plan(52);
 
 select has_table('public','activity_assessment_configurations','assessment configurations exist');
 select has_table('public','assessment_instruments','assessment instruments exist');
@@ -65,7 +65,8 @@ insert into public.units(id,institution_id,unit_type_id,name,slug,status,handle)
  ('8d200000-0000-4000-8000-000000000021','8d200000-0000-4000-8000-000000000020','7c0000f0-0000-4000-8000-000000000901','Unidade B','assessment-v2-b-unit','active','u.000000000021');
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values
  ('8d200000-0000-4000-8000-000000000601','adult','Fixture','Creator','Fixture Creator','active'),
- ('8d200000-0000-4000-8000-000000000602','adult','People','Only','People Only','active');
+ ('8d200000-0000-4000-8000-000000000602','adult','People','Only','People Only','active'),
+ ('8d200000-0000-4000-8000-000000000603','child','Aluno','Sintético','Aluno Sintético','active');
 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('8d200000-0000-4000-8000-000000000101','authenticated','authenticated','assessment-owner@invalid.test',now(),now(),now(),'{}','{}'),
@@ -113,6 +114,31 @@ insert into public.activity_definitions(
  id,institution_id,name,origin_scope_kind,created_by_person_id,status,handle_stem) values
  ('8d200000-0000-4000-8000-000000000701','8d200000-0000-4000-8000-000000000010','Activity A','institution',null,'active','assessment-activity-a'),
  ('8d200000-0000-4000-8000-000000000702','8d200000-0000-4000-8000-000000000020','Activity B','institution',null,'active','assessment-activity-b');
+insert into public.groups(id,institution_id,unit_id,name,status) values
+ ('8d200000-0000-4000-8000-000000000711','8d200000-0000-4000-8000-000000000010','8d200000-0000-4000-8000-000000000011','Turma A','active');
+insert into public.activity_unit_links(
+ id,activity_id,institution_id,unit_id,linked_by_person_id,status
+) values (
+ '8d200000-0000-4000-8000-000000000710','8d200000-0000-4000-8000-000000000701',
+ '8d200000-0000-4000-8000-000000000010','8d200000-0000-4000-8000-000000000011',null,'active');
+insert into public.activity_group_links(
+ id,activity_id,institution_id,unit_id,group_id,linked_by_person_id,status
+) values (
+ '8d200000-0000-4000-8000-000000000712','8d200000-0000-4000-8000-000000000701',
+ '8d200000-0000-4000-8000-000000000010','8d200000-0000-4000-8000-000000000011',
+ '8d200000-0000-4000-8000-000000000711',null,'active');
+
+insert into public.child_contexts(id,child_person_id,institution_id,status) values
+ ('8d200000-0000-4000-8000-000000000720','8d200000-0000-4000-8000-000000000603','8d200000-0000-4000-8000-000000000010','active');
+insert into public.child_unit_links(id,child_context_id,unit_id,status,accepted_by,accepted_at) values
+ ('8d200000-0000-4000-8000-000000000721','8d200000-0000-4000-8000-000000000720','8d200000-0000-4000-8000-000000000011','active','8d200000-0000-4000-8000-000000000601',now());
+insert into public.child_group_links(id,child_unit_link_id,group_id,status) values
+ ('8d200000-0000-4000-8000-000000000722','8d200000-0000-4000-8000-000000000721','8d200000-0000-4000-8000-000000000711','active');
+insert into public.activity_group_participants(
+ id,activity_group_link_id,child_group_link_id,status,added_by_person_id
+) values (
+ '8d200000-0000-4000-8000-000000000723','8d200000-0000-4000-8000-000000000712',
+ '8d200000-0000-4000-8000-000000000722','active',null);
 select set_config('app_private.activity_v2_internal_marker','',true);
 
 select set_config('request.jwt.claims',jsonb_build_object(
@@ -125,6 +151,10 @@ select ok((select body->>'ok'='true' from assessment_context_result),
 select ok((select jsonb_typeof(body#>'{data,assignments}')='array'
   and jsonb_typeof(body#>'{data,periods}')='array' from assessment_context_result),
  'context response uses the stable v2 envelope and collections');
+select ok((select body#>'{data,assignments}' @> jsonb_build_array(jsonb_build_object(
+  'activity_group_link_id','8d200000-0000-4000-8000-000000000712'))
+  from assessment_context_result),
+ 'context exposes the synthetic activity and group assignment');
 
 create temporary table assessment_save_result as
 select public.superadmin_assessment_save_configuration(
@@ -161,6 +191,35 @@ select ok((select audit_record.actor_kind='superadmin_internal'
     on receipt.correlation_id=audit_record.correlation_id
   where receipt.request_id='8d200000-0000-4000-8000-000000000801'),
   'audit is internal, minimized and never fabricates a person');
+
+create temporary table assessment_activate_result as
+select public.superadmin_assessment_activate_configuration(
+ '8d200000-0000-4000-8000-000000000810',
+ (select id from public.activity_assessment_configurations
+  where activity_id='8d200000-0000-4000-8000-000000000701'),1) body;
+select ok((select body#>>'{data,status}'='active' from assessment_activate_result),
+ 'valid synthetic configuration activates');
+select is((select status::text from public.assessment_periods
+ where configuration_id=(select id from public.activity_assessment_configurations
+  where activity_id='8d200000-0000-4000-8000-000000000701')),'open',
+ 'activation opens the synthetic period');
+
+create temporary table assessment_gradebook_fixture as
+select public.superadmin_assessment_save_gradebook(
+ '8d200000-0000-4000-8000-000000000811',null,0,
+ jsonb_build_object(
+  'activity_group_link_id','8d200000-0000-4000-8000-000000000712',
+  'period_id',(select id from public.assessment_periods
+   where configuration_id=(select id from public.activity_assessment_configurations
+    where activity_id='8d200000-0000-4000-8000-000000000701')),
+  'configuration_id',(select id from public.activity_assessment_configurations
+   where activity_id='8d200000-0000-4000-8000-000000000701'),
+  'students','[]'::jsonb),null) body;
+select ok((select body#>>'{data,status}'='draft' from assessment_gradebook_fixture),
+ 'open period creates the synthetic gradebook');
+select is((select jsonb_array_length(students_payload) from public.assessment_gradebooks
+ where activity_group_link_id='8d200000-0000-4000-8000-000000000712'),1,
+ 'the synthetic gradebook contains one active student row');
 select ok((select (public.superadmin_assessment_save_configuration(
  '8d200000-0000-4000-8000-000000000801',null,0,
  jsonb_build_object(
