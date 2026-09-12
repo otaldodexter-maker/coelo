@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 76,
+  "revision": 77,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:36:00-03:00",
+  "updatedAt": "2026-09-12T14:40:00-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
@@ -67,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; answer-image produtivo completo e H28 local-green no espelho descartável",
-  "proximoPasso": "revisão e handoff; C0 analisa/aplica lote59 e G5 só atende ajuste focal solicitado",
+  "status": "handoff final publicado; answer-image produtivo completo e lote59 aplicado/verificado pelo C0",
+  "proximoPasso": "somente ajuste focal solicitado pelo C0 até 14:50; não iniciar R09 nem remover worktree",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -1194,6 +1194,26 @@
         "lote59G0": "corpo final df0a281cb/blob707cc8: 11/11+10/10+8/8+11/11+4/4 = 44/44, rollback, exit0; recibos c34fc20d4"
       },
       "primeiroGate": "revisão/handoff G5; aplicação e pós-prova lote59 exclusivas C0"
+    },
+    "checkpoint14h40": {
+      "quando": "2026-09-12T14:40:00-03:00",
+      "feito": [
+        "C0 publicou origin/dev 477e6c8df: lote59 aplicado em produção às14:31 com backup, ledger, ACL e neighborhood.state_code pós-provados; não reaplicar.",
+        "C0 informou contextFiltersAvailable=true, testes People19 e accessibility85 integrados.",
+        "Handoff final G5 registra feito/pendente/commits, evidências, dados sintéticos, limpeza futura não executada e worktree preservada.",
+        "Gate coelo-knowledge: nenhuma regra durável nova exigiu projeção adicional; documentação de execução permaneceu em evidence/comunicação.",
+        "R09 não foi iniciada."
+      ],
+      "pendente": [
+        "Somente ajuste focal solicitado pelo C0 até o fim da revisão 14:50."
+      ],
+      "testes": {
+        "lote59EspelhoG0": "44/44 no corpo final df0a281cb, rollback/exit0",
+        "lote59ProducaoC0": "apply exit0; ledger/signature/owner/security-definer/ACL/state_code confirmados",
+        "integradoC0": "People19 e accessibility85 PASS informados",
+        "executadoPorG5": "code review, testes Deno locais já registrados e validações documentais; nenhum pgTAP/Docker/SQL remoto/deploy/Dart/Chrome"
+      },
+      "primeiroGate": "encerrado; aguardar somente correção pedida pelo C0"
     }
   }
 }
