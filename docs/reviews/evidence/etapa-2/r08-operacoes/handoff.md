@@ -50,14 +50,28 @@ aprovação visual; não promove Front-end, Back-end ou E2E.
 
 ## Revisão independente — Circular G6
 
-Revisão somente leitura do pacote `work/etapa2-r08-publicacoes-agenda` contra
-spec 037 e ADR 0034, decisão 20: o host produtivo ainda seleciona apenas o
-primeiro `CircularMediaBlock`, esconde **Adicionar mídia** depois dele e a
-prévia também reduz o conteúdo ao primeiro texto/mídia. Isso não representa
-`texto → mídia → pergunta → texto → mídia`; vários arquivos dentro do mesmo
-primeiro bloco não corrigem a ordem entre blocos. O limite agregado de 10.000
-e os cards ordenados de perguntas permanecem alinhados. O achado foi repassado
+Revisão somente leitura do SHA atual
+`origin/work/etapa2-r08-publicacoes-agenda` `d48525b04` contra spec 037 e ADR
+0034, decisão 20: o host produtivo ainda seleciona apenas o primeiro
+`CircularMediaBlock` e esconde **Adicionar mídia** depois dele. Isso impede o
+segundo bloco de mídia necessário a `texto → mídia → pergunta → texto → mídia`;
+vários arquivos no mesmo bloco não corrigem a ordem entre blocos. A observação
+anterior sobre prévia reduzida foi retirada: `_previewBlock` é iterativo neste
+SHA e `_bodyText` não está presente. O limite agregado de 10.000 e os cards
+ordenados de perguntas permanecem alinhados. O único achado foi corrigido junto
 ao C0 para a G6; nenhum arquivo da frente foi editado.
+
+## Revisão independente — Forms G3/G5
+
+No candidato `444ac0246d7eadd62527990492f9797285594bec`, a FK
+`media_bindings_item_id_fkey` é recriada como `ON DELETE RESTRICT DEFERRABLE`.
+Em PostgreSQL, `RESTRICT` é verificado imediatamente; portanto o `SET
+CONSTRAINTS ... DEFERRED` não permite apagar a árvore de itens durante o
+replace. O `DELETE FROM form_sections` falha antes de reinserir o mesmo
+`item_id`, bloqueando o caso de salvar texto depois da imagem. O achado foi
+encaminhado ao C0. A revisão confirmou que o ID é limitado à mesma working
+version e que `media_context` não vaza `object_key`, URL, ticket ou segredo.
+Nenhum SQL foi executado ou editado.
 
 ## Gates externos
 
