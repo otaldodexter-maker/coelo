@@ -1,0 +1,31 @@
+environment: producao Supabase; authenticated QA; form-media v17; segredos nao registrados
+preservation: sem cleanup; sem SQL/grants/users; f880 intocado
+
+attempt 1 command: rtk proxy python -X utf8 docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-fixture.py --execute
+attempt 1 result:
+{"http": 200, "status": "PASS", "step": "auth"}
+{"http": 200, "status": "PASS", "step": "audience", "target_present": true}
+{"exact_matches": 0, "http": 200, "status": "PASS", "step": "duplicate_preflight"}
+{"form_id": "afa8f922-b27d-4258-9322-8b3f96ee7df9", "http": 200, "item_id": "65cb5a00-6775-429b-b02c-f5bd4226e57b", "status": "PASS", "step": "save_draft"}
+{"code": "publish:projection_item_mismatch", "status": "FAILED", "step": "fixture"}
+{"http": 204, "status": "PASS", "step": "logout"}
+diagnosis: publish succeeded; the rejected oracle compared client input ids, while form_replace_working_definition materializes section/item ids server-side.
+mutations after attempt 1: exactly 1 form draft + 1 publication; 0 application; 0 schedule; 0 occurrence; 0 participation.
+
+read-only projection diagnosis:
+{"config": {"allow_camera": true, "max_images": 1, "min_images": 1}, "form_id_match": true, "http": 200, "identity_mode": "identified", "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc", "kind": "photo", "response_unit": "person", "section_id": "2b16b0de-1e68-4fb4-a0c6-653f44110c11", "status": "published"}
+{"logout_http": 204}
+
+resume command after G5 approval: rtk proxy python -X utf8 docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-fixture.py --resume
+resume result:
+{"http": 200, "status": "PASS", "step": "auth"}
+{"form_id": "afa8f922-b27d-4258-9322-8b3f96ee7df9", "http": 200, "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc", "status": "PASS", "step": "resume_editor"}
+{"http": 200, "status": "PASS", "step": "audience", "target_present": true}
+{"application_id": "c87a7e84-cbd4-43f8-9135-74efa0711edb", "http": 200, "status": "PASS", "step": "save_application"}
+{"application_id": "c87a7e84-cbd4-43f8-9135-74efa0711edb", "form_id": "afa8f922-b27d-4258-9322-8b3f96ee7df9", "http": 200, "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc", "schedule_id": "5af5a32f-5ab0-4cf5-94a7-f618793becba", "status": "PASS_NEEDS_SERVER_OCCURRENCE_LOOKUP", "step": "save_schedule"}
+{"http": 204, "status": "PASS", "step": "logout"}
+
+post-resume read-only projection:
+{"application_id": "c87a7e84-cbd4-43f8-9135-74efa0711edb", "application_management_version": 1, "form_management_version": 2, "http": 200, "schedule_id": "5af5a32f-5ab0-4cf5-94a7-f618793becba", "schedule_management_version": 1, "schedule_status": "active"}
+{"logout_http": 204}
+mutations total: exactly 1 form, 1 publication, 1 application, 1 audience rule and 1 schedule; occurrence/reconcile delegated exclusively to C0.

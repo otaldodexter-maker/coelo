@@ -1,12 +1,12 @@
 {
-  "revision": 86,
+  "revision": 87,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:02:37.579215-03:00",
+  "updatedAt": "2026-09-12T14:23:45.421813-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2541,7 +2541,14 @@
     "fora": "outros apps, R09, exportacoes gerais adiadas, correcao de senha, revisao historica de credenciais e endurecimento amplo",
     "primeiroGate": "G0 runtime medido e espelho; trabalho local independente liberado apos publicacao desta posse",
     "evidencia": "arquivos commitados por action_id; merges reais, testes na base integrada, deltas e validadores",
-    "estimativa": "janela autorizada 4h+30min; delta de integracao sera calibrado pelos pacotes recebidos"
+    "estimativa": "janela autorizada 4h+30min; delta de integracao sera calibrado pelos pacotes recebidos",
+    "alteracaoOwner": {
+      "registradoEm": "2026-09-12T14:23:45.421813-03:00",
+      "execucaoAte": "2026-09-12T14:40:00-03:00",
+      "revisaoAte": "2026-09-12T14:50:00-03:00",
+      "fechamentoAte": "2026-09-12T15:00:00-03:00",
+      "decisao": "Entrega total ate15:00; preparar R09 sem iniciar automaticamente; marcos T0 originais preservados como historico"
+    }
   },
   "frentesR08": {
     "G0": {
@@ -2649,15 +2656,15 @@
       "dono": "G0",
       "pid": 22592,
       "inicio": "2026-09-12T10:52:16.727826-03:00",
-      "expira": "2026-09-12T14:52:16-03:00",
-      "estado": "G0 exclusivo; release3014 PID44404; texto CUA não atualiza controller; sem contorno CDP",
+      "expira": "2026-09-12T14:40:00-03:00",
+      "estado": "G0 exclusivo; server3014 PID14072; CUA controller bloqueado",
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G3",
-      "inicio": "2026-09-12T14:02:00-03:00",
-      "expira": "2026-09-12T14:08:00-03:00",
-      "estado": "Care/Medication alvo_ProfileSummary44para48; RED2medidos"
+      "dono": "G2",
+      "inicio": "2026-09-12T14:23:45.421813-03:00",
+      "expira": "2026-09-12T14:28:00-03:00",
+      "estado": "Quatro cenarios H28; C0 accessibility native0 terminado"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
@@ -2666,8 +2673,8 @@
       "G2 H28 apos pacote revisado"
     ],
     "sqlEspelho": {
-      "dono": "livre",
-      "estado": "140550 espelho68/68 e produção C0 aplicada"
+      "dono": "G0",
+      "estado": "H28 44/44 moderno; C0 revisa lote59"
     }
   },
   "filaSqlR08": {
@@ -3234,6 +3241,59 @@
       ],
       "metodo": "snapshot imutavel de git show de nove SHAs, subarvores integralmente lidas",
       "certificacao": "ACK nao certifica; G2 cabecalho antigo156 e G8 revision28/revisao34 divergentes cobrados"
+    },
+    {
+      "ciclo": "200min",
+      "at": "2026-09-12T14:23:45.421813-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 29,
+          "sha": "5112159737b38d1cb9e8edf31b61c7686877c056"
+        },
+        {
+          "g": "G1",
+          "r": 93,
+          "sha": "273e5abed8950a98ee4b154f9383f498e58861f9"
+        },
+        {
+          "g": "G2",
+          "r": 159,
+          "sha": "26f1423c0b891c115ed4cfaeb7e70af91d47c776"
+        },
+        {
+          "g": "G3",
+          "r": 80,
+          "sha": "1096d455eba6ca327c7beb48623b4dfb96b711f0"
+        },
+        {
+          "g": "G4",
+          "r": 70,
+          "sha": "00def54c7ac13b28008e555d2e3613a9fcfeb63a"
+        },
+        {
+          "g": "G5",
+          "r": 73,
+          "sha": "cebde7c56ac2dbaf5ddecae8aab25c61e31df272"
+        },
+        {
+          "g": "G6",
+          "r": 85,
+          "sha": "1eccbc591d47f962092dba2f083320b28fff768e"
+        },
+        {
+          "g": "G7",
+          "r": 75,
+          "sha": "f4a8ab4f5dcbc2e23a783da7c5f628bbc93ddf83"
+        },
+        {
+          "g": "G8",
+          "r": 49,
+          "sha": "0a1104ecf13224fdd927f880bdb5ce6f72a125c2"
+        }
+      ],
+      "metodo": "git show por SHA, leitura integral com reutilizacao exata de subarvores ja lidas; ACK enviado nove frentes",
+      "certificacao": "ACK nao certifica produto"
     }
   ],
   "ownershipR08": {
@@ -3252,8 +3312,8 @@
     "id": "r08-coordena-o-10-minutos",
     "status": "ACTIVE",
     "intervaloMinutos": 10,
-    "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T14:02:37.579215-03:00"
+    "corte": "2026-09-12T15:00:00-03:00",
+    "ultimoCheckpoint": "2026-09-12T14:23:45.421813-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T13:43:32.751532-03:00",
@@ -3272,7 +3332,7 @@
       "G7 revisãoH19",
       "G8 contagens de evidências"
     ],
-    "limite": "14:52:16 execucao;15:02:16 handoff;15:22:16 fechamento; sem R09",
+    "limite": "Owner alterou:14:40 entregas;14:50 revisao;15:00 fechamento. Preparar R09 sem iniciar.",
     "bloqueioRuntime": "G0 login CUA nao atualiza controller; sem contornar bloqueio CDP; espelho/paridade continua"
   },
   "deploysR08": [

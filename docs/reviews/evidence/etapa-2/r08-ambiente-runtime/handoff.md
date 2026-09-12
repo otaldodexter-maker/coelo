@@ -256,3 +256,169 @@ Passaram a ausência de grant no reader, o hint antigo `true` para admin autor e
 Após revisão G7 e ACK nominal do C0, `140550` (SHA-256 `9356F5E52C8D14B0C628540ECEEE35231C6BAF0044EFEE04AC71C6F23D69A996`) foi aplicado somente no espelho: COMMIT, native/wrapper `0/0`. O GREEN passou `4/4` estrutural e `11/11` comportamental; as regressões passaram `23/23` em `moments_feed_and_withdrawal_test.sql` e `30/30` em `moments_publication_mvp_test.sql`. Total único: **68/68**, todos com `finish`, rollback e exits `0/0`.
 
 Uma tentativa de iniciar a regressão 23 com redirecionamento `<` foi recusada pelo parser PowerShell antes de abrir o psql; nenhum SQL/teste executou. O comando foi corrigido para pipeline e a suíte rodou uma única vez. Produção e ledger ficaram intocados, fixtures comportamentais voltaram por rollback e o slot foi devolvido ao C0.
+
+## Smoke API de imagem de resposta preparado
+
+O próximo gate focal solicitado pelo C0 foi preparado sem rede nem mutação. O
+runner fail-safe está em [forms-answer-image-api-smoke.py](./forms-answer-image-api-smoke.py)
+e o contrato completo em
+[forms-answer-image-api-smoke-manifest.md](./forms-answer-image-api-smoke-manifest.md).
+Sem `--execute`, ele retorna somente `READY_NO_MUTATION`; com `--execute` sem
+fixture válida, para antes da autenticação com `INVALID_RUNTIME_FIXTURE`.
+
+O roteiro não cria formulário, aplicação, ocorrência, participação ou pergunta:
+exige uma `occurrence_id` autorizada já existente e seleciona uma única pergunta
+`photo/gallery`, ou o `--item-id` explícito. Ele abre/reutiliza o rascunho pelo
+contrato normal, preserva respostas existentes, faz prepare/PUT/finalize e replay
+do mesmo finalize, anexa o asset por `form_save_response_draft`, autoriza o
+download e reabre o mesmo rascunho para comprovar persistência. O ramo de resposta
+não envia `purpose=question-image`, `form_id` nem `form_version_id`.
+
+Para formulário anônimo, o runner exige o segredo correto em variável de ambiente
+indicada por `--edit-secret-env`, passa-o em open/prepare/finalize/save/download e
+nunca imprime ou persiste o valor. Ele não inventa segredo anônimo, evitando criar
+resposta concorrente. Não há discard, DELETE ou cleanup em qualquer caminho;
+asset e resposta são preservados inclusive em falha.
+
+G3 informou a correção final `f0c7269fd` sobre `dfe013cc5`, revisada por G5, com
+53 testes Deno PASS / 0 FAIL: o finalize inicial e o replay retornam
+`id/item_id/mime_type/byte_length`, usando bytes medidos e negando fonte nula ou
+divergente. O C0 integrou o fix, obteve 54 PASS na base conjunta e concluiu o
+deploy por CLI. A execução remota ainda aguarda uma ocorrência real reutilizável;
+G3 confirmou que não criou fixture remota nesta R08.
+
+O runner local passou parse AST, dry-run e guard de fixture inválida. Build,
+servidor, Chrome e baseline foram apenas conferidos: PID `44404` e PID raiz
+`22592` respondendo, `/login` 200, container `1abbc4f2cd13` healthy na porta
+57322. Não houve rebuild, novo Chrome ou nova execução do diagnóstico de texto.
+
+## Fixture identificada de answer-image
+
+Como a descoberta read-only não encontrou ocorrência reutilizável, C0 autorizou
+uma única fixture mínima identificada e delegou sua revisão focal ao G5. O
+executor fail-closed está em
+[forms-answer-image-fixture.py](./forms-answer-image-fixture.py), o estado
+retomável em
+[forms-answer-image-fixture-manifest.json](./forms-answer-image-fixture-manifest.json)
+e o recibo sanitizado em
+[forms-answer-image-fixture-execution-20260912.log](./forms-answer-image-fixture-execution-20260912.log).
+
+O preflight confirmou por RPC normal a pessoa QA elegível no tenant e zero
+formulário com o marcador exato. A única criação materializou o form
+`afa8f922-b27d-4258-9322-8b3f96ee7df9` e o publicou. A assertion seguinte
+parou porque comparava IDs enviados pelo cliente; a leitura normal mostrou que
+`form_replace_working_definition` gera IDs server-side. Não houve segunda
+fixture. Após dois reviews do G5, `--resume` fixou o mesmo form, exigiu
+`editor.application == null`, capturou section/item server-side e pré-persistiu
+os request IDs idempotentes.
+
+A continuação única terminou com HTTP 200 para application
+`c87a7e84-cbd4-43f8-9135-74efa0711edb` e schedule ativo
+`5af5a32f-5ab0-4cf5-94a7-f618793becba`. Projeção read-only confirmou form
+version 2, application version 1 e schedule version 1; o item `photo` efetivo é
+`95cdf8cf-d993-4325-ac7c-941f041210cc`. G0 parou antes do worker, como exigido.
+C0 confirmou a ocorrência aberta `5762fe8f-2d58-48ef-b410-30bfd0fe6703` e a
+participação elegível `095d0236-334b-460b-aaa2-e1fce7914d8f`, ambas únicas.
+
+O primeiro smoke answer-image parou antes de qualquer mutação: Auth 200, mas
+`form_get_occurrence_for_response` devolveu HTTP 500/P0002; response e asset
+permaneceram nulos e o logout local foi 204. A função exige que o ator atual
+seja a pessoa da participação ou responder autorizado. A participação é da
+pessoa `007a4ca5-31bd-4a77-956f-ce879695042e`, enquanto o runner usou a
+credencial privada `qa-r06-principal.env`, provavelmente vinculada a outra
+pessoa. Não houve retry. Recibo:
+[forms-answer-image-api-first-attempt-20260912.log](./forms-answer-image-api-first-attempt-20260912.log).
+
+Todos os sintéticos foram preservados; não houve cleanup, SQL direto, grants,
+usuário novo ou logout global. O próximo gate é C0 confirmar o ator efetivo e
+autorizar o uso da credencial QA correspondente à pessoa da participação, sem
+criar outra fixture.
+
+C0 confirmou depois a causa exata do segundo bloqueio: esse usuário de realm
+interno tem zero vínculo ativo em `public.person_auth_links`; o mapeamento
+válido fica em `app_private.superadmin_internal_auth_links/actor_people`. O ramo
+answer-image da Edge v17 ainda consulta somente a tabela pública, portanto
+retorna 401 antes de R2. Question-image não passa por esse ramo. G5 assumiu a
+correção focal de ator canônico.
+
+A retomada não repetirá criação nem usará IDs novos. O draft preservado
+`bb1f3443-76a6-4049-b364-6215545625c8` e os request IDs de open, prepare,
+finalize, save e download estão em
+[forms-answer-image-response-resume-manifest.json](./forms-answer-image-response-resume-manifest.json).
+O runner valida occurrence/participation/item e reutiliza esses IDs após o
+deploy; asset permanece nulo até um prepare efetivamente aceito.
+
+G0 revisou o fix G5 `49bd4c83d` sem achar bloqueio: o RPC
+`list_my_principal_contexts` retorna diretamente linhas com `person_id`; o
+resolver mantém precedência do vínculo People e só usa o fallback autenticado
+quando ele não existe. Erro no lookup People, contexto vazio, UUID inválido ou
+pessoas divergentes continuam negados. Múltiplos contextos da mesma pessoa são
+deduplicados, e as RPCs de prepare/finalize mantêm a validação de ownership no
+backend. Integração, suíte Deno e deploy continuam sob posse do C0.
+
+O C0 integrou o fix, classificou o primeiro vermelho de type-check como uma
+invocação sem o `deno.json`, e obteve 56 PASS / 0 FAIL com a configuração
+correta. Depois implantou `form-media` v18, ativa com `verify_jwt=true`, e
+autorizou exatamente uma retomada do mesmo draft e request IDs.
+
+A retomada passou Auth, ocorrência/participação/item e reutilizou o draft
+`bb1f3443-76a6-4049-b364-6215545625c8`. O prepare HTTP 200 materializou ou
+reproduziu o asset `e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195`, mas o envelope não
+continha o ticket R2 completo nos tipos esperados (`upload_url`,
+`required_headers`, `expires_at`). O runner parou com
+`prepare:invalid_ticket` antes de PUT, finalize, save, download ou reopen;
+logout local foi 204 e draft/asset ficaram preservados. Recibo sanitizado:
+[forms-answer-image-api-resume-20260912.log](./forms-answer-image-api-resume-20260912.log).
+
+Pelo código implantado, a explicação mais forte é o runtime ter seguido o ramo
+legado de answer-image, cujo envelope usa `signed_upload_url`/`upload_token`,
+em vez do ramo R2 protegido por `COELO_FORMS_MEDIA_PROVIDER=r2`. Isto é uma
+inferência; a execução não registrou o corpo remoto e não será repetida sem nova
+decisão do C0. Não houve credencial em log, nova fixture ou cleanup.
+
+G5 confirmou essa causa e o C0 configurou somente
+`COELO_FORMS_MEDIA_PROVIDER=r2`, preservando as demais variáveis. Uma retomada
+idempotente autorizada reutilizou exatamente o mesmo draft, request IDs e asset.
+O envelope passou então a ter a forma R2 completa, mas o runner parou com
+`prepare:unsafe_ticket` antes do PUT. O código reduz a causa ao prazo: o
+transporte assina por 300 segundos e entrega o `content-type` solicitado, mas
+`handleAnswerR2` devolve `data.expires_at` do prepare legado/replay em vez de
+calcular a expiração da URL recém-assinada, como o ramo question-image já faz.
+Recibo: [forms-answer-image-api-r2-resume-20260912.log](./forms-answer-image-api-r2-resume-20260912.log).
+
+O segundo bloqueio foi enviado ao C0/G5 para RED de replay/relógio e correção
+focal. Novamente, PUT, finalize, save, download e reopen não rodaram; logout
+local foi 204, sem cleanup ou novo ID.
+
+G5 publicou o fix TTL `5927718f2`, aprovado no review focal G0; C0 integrou,
+obteve 56/56 e implantou a função ativa v20. A retomada seguinte reutilizou o
+mesmo asset e passou prepare R2, PUT de 68 bytes (SHA-256
+`431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460`),
+finalize, replay do finalize e save do draft. Isto é prova API/metadata, não
+prova visual ou UI.
+
+A autorização de download devolveu HTTP 400 `media_request_failed`. O runner
+parou antes do GET e do reopen, preservou a resposta já salva e o asset
+finalizado e encerrou somente a sessão local (204). Recibo sanitizado:
+[forms-answer-image-api-v20-20260912.log](./forms-answer-image-api-v20-20260912.log).
+O gate focal foi enviado a G5/C0 para distinguir autorização do worker, shape
+real da RPC, descritor e assinatura GET, sem repetir a chamada.
+
+G5/C0 localizaram o 400: no fluxo identificado, `edit_secret` indefinido era
+omitido pelo cliente Supabase, impedindo o PostgREST de resolver a assinatura
+que exige o argumento anulável. O fix `6d0deecd2` normalizou somente esse valor
+para `null`; C0 integrou, testou 56/56 e implantou `form-media` v21.
+
+A primeira versão download-only parou antes da Edge porque reutilizar o
+`open_request_id` devolve corretamente o snapshot idempotente original,
+anterior ao save. Isso não invalida a persistência: distingue replay de comando
+de leitura fresca. Um único `reload_request_id` foi então pré-persistido no
+commit `3b134d456`, revisado pelo G5 e autorizado pelo C0.
+
+A execução final download-only passou: leitura fresca encontrou a resposta em
+management version 2 com o asset anexado; a URL autorizada devolveu exatamente
+68 bytes e SHA-256
+`431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460`;
+o replay do mesmo reload ID confirmou resposta e asset. Exit 0, logout local
+204, sem prepare, PUT, finalize, save ou cleanup. Recibo:
+[forms-answer-image-api-download-pass-20260912.log](./forms-answer-image-api-download-pass-20260912.log).
