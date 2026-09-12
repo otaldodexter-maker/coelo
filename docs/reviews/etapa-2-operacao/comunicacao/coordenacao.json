@@ -1,12 +1,12 @@
 {
- "revision": 57,
+ "revision": 58,
  "round": "E2-R06-20260911",
  "role": "Coordenacao R06 - Claude Opus 5 esforco medio (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:36:00-03:00",
+ "updatedAt": "2026-09-11T21:42:00-03:00",
  "relogio": "relogio da maquina; posse as 19:36 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -247,6 +247,7 @@
   "55": "20:40 lote 52 (hotfix do escopo) em producao; 130400 (P48) retido e devolvido a G4; branches integradas",
   "56": "20:58 lote 53 em producao; deltas de 4 frentes aplicados (FE 151 / BE 144 / E2E 121); cobranca de 30 min a todas; acessos-pessoas cobrada",
   "57": "21:36 lote 54 (4 pacotes) em producao; deltas de todas as frentes aplicados (FE 162 / BE 146 / E2E 131); CORS do R2 alinhado; pedido de revisao final",
+  "58": "21:42 lote 55 (3 pacotes) em producao; fila vazia; deploy de internal-user-create bloqueado (pendencia); revisoes finais recebidas; inicio do fechamento",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -1617,60 +1618,60 @@
  "frentesR06": {
   "estrutura": {
    "branch": "work/etapa2-r06-estrutura",
-   "rev": 60,
+   "rev": 63,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
    "resposta": "20260912180000 (save_v2 com definition.handle; group_management_payload com @) APLICADO em producao no lote 51 (20:15), pgTAP 10/10 + 211100 20/20 no espelho. Seguir para a rota real do @ com qa-r06-estrutura. | 21:22: 180100 e 180200 APLICADOS em producao (lote 54; pgTAP 4/4, 4/4, regressao assessments 64/64). Launcher Mensagens: regravar goldens de Atividades so se a diferenca for regra transversal ja aprovada (rodape, Pesquisar, sem chat, composto); nao ha aprovacao nova do launcher: registrar."
   },
   "acessos-pessoas": {
    "branch": "work/etapa2-r06-acessos-pessoas",
-   "rev": 140,
+   "rev": 146,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
-   "resposta": "170500 (P46) e 170600 (P45) APLICADOS em producao no lote 50 (20:12), pgTAP 12/12 e 7/7 no espelho; usuarios qa-r06 semeados (lote 49): rota real liberada. T0 = 19:36; corte 21:36. | 21:22: 170700 (people.create) APLICADO em producao (lote 54; pgTAP 11/11); deltas-r06.json (18) aplicados; skills-deltas serao levados as skills no fechamento.",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
+   "resposta": "170500 (P46) e 170600 (P45) APLICADOS em producao no lote 50 (20:12), pgTAP 12/12 e 7/7 no espelho; usuarios qa-r06 semeados (lote 49): rota real liberada. T0 = 19:36; corte 21:36. | 21:22: 170700 (people.create) APLICADO em producao (lote 54; pgTAP 11/11); deltas-r06.json (18) aplicados; skills-deltas serao levados as skills no fechamento. | 21:40: 170800 APLICADO em producao (lote 55; pgTAP 10/10). Deploy da Edge Function internal-user-create BLOQUEADO nesta sessao pelo classificador (usa service_role/createUser): pendencia para o Owner ou para a R07 (roteiro na skill coelo-backend); internal-users.create fica BE local-green.",
    "cobranca": "20:58: JSON sem revisao nova desde 19:56 (rev 139) e branch sem commit desde 19:56 (62 min). RETOMAR AGORA: 170500/170600 estao em producao desde 20:12; rota real de Convites/Usuarios internos/Alunos com qa-r06-acessos; registrar feito/pendente/commits no JSON e publicar deltas em evidence/etapa-2/r06-acessos-pessoas/deltas-r06.json."
   },
   "formularios-cuidado-rotina": {
    "branch": "work/etapa2-r06-formularios-cuidado-rotina",
-   "rev": 52,
+   "rev": 55,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
    "resposta": "T0 = 19:36; corte 21:36. | 21:22: 20260912220000 (form_save_draft 42702) APLICADO em producao (lote 54; forms_behavioral_rpc_test 27/27 no espelho): forms.location-question/answer desbloqueadas; deltas (25) aplicados."
   },
   "principal-chat-sistema": {
    "branch": "work/etapa2-r06-principal-chat-sistema",
-   "rev": 33,
+   "rev": 39,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
-   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo. | 20:40: rev 31 lida; commits integrados em dev. O pacote 130400 (P48) FOI RETIDO: no espelho, aplicado por cima do lote 50+52, ele reescreve superadmin_internal_actor_institution_access_sync sem o escopo e derruba internal_actor_scope_root_v1_test (4 not ok: identidade escopada em A volta a ganhar membership em B; reconciliacao fora do escopo nao desativa). Reescrever o 130400 sobre o corpo do sync do 20260912210100 (usar app_private.superadmin_internal_actor_scope_targets() como fonte do escopo e manter a desativacao fora do escopo), rodar internal_actor_scope_root_v1_test + hotfix_test + o seu 16/16, e republicar; o coordenador aplica em seguida. O espelho foi restaurado reaplicando o hotfix (papel institution_reader do 130400 ficou criado no espelho, sem efeito). | 21:35: CORS do R2 alinhado nos tres buckets: localhost e 127.0.0.1 nas portas 3000, 3009, 3010, 3014, 3016, 3018, 3020 (sem custo; pacote CORS da Decisao 5). 130400 continua RETIDO (ver rev 55: reescrever sobre o 210100). Capturas 02-08 de Cardapios NAO estao na branch: certificacoes apontadas para 11-cardapio-publicado.png; commitar as capturas se ainda existirem. Deltas aplicados com dois ajustes do coordenador: acontece.create E2E volta a pending-verification (tela reconstruida, FE local-green); meal-plans.model-create/model-edit BE promovido a done pela prova de CRUD real.",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
+   "resposta": "T0 = 19:36 (nao 19:17): corte 21:36, revisao ate 21:46. qa-r06-principal.env existe desde 19:44 e a semente esta em producao (lote 49). P48 (item 6): nascer sobre o corpo do 20260912210000 do realm-interno (ja em producao) mantendo superadmin_internal_actor_scope_targets() como fonte do escopo. | 20:40: rev 31 lida; commits integrados em dev. O pacote 130400 (P48) FOI RETIDO: no espelho, aplicado por cima do lote 50+52, ele reescreve superadmin_internal_actor_institution_access_sync sem o escopo e derruba internal_actor_scope_root_v1_test (4 not ok: identidade escopada em A volta a ganhar membership em B; reconciliacao fora do escopo nao desativa). Reescrever o 130400 sobre o corpo do sync do 20260912210100 (usar app_private.superadmin_internal_actor_scope_targets() como fonte do escopo e manter a desativacao fora do escopo), rodar internal_actor_scope_root_v1_test + hotfix_test + o seu 16/16, e republicar; o coordenador aplica em seguida. O espelho foi restaurado reaplicando o hotfix (papel institution_reader do 130400 ficou criado no espelho, sem efeito). | 21:35: CORS do R2 alinhado nos tres buckets: localhost e 127.0.0.1 nas portas 3000, 3009, 3010, 3014, 3016, 3018, 3020 (sem custo; pacote CORS da Decisao 5). 130400 continua RETIDO (ver rev 55: reescrever sobre o 210100). Capturas 02-08 de Cardapios NAO estao na branch: certificacoes apontadas para 11-cardapio-publicado.png; commitar as capturas se ainda existirem. Deltas aplicados com dois ajustes do coordenador: acontece.create E2E volta a pending-verification (tela reconstruida, FE local-green); meal-plans.model-create/model-edit BE promovido a done pela prova de CRUD real. | 21:40: 130400 (reescrito) e 130500 APLICADOS em producao no lote 55; escopo 47/47 preservado; sync segunda chamada = 0; memberships de espelho ativas 33 -> 30 (operations/auditor revogadas, regra P48).",
    "cobranca": "resolvida 20:19 (rev 31)"
   },
   "realm-interno": {
    "branch": "work/etapa2-r06-realm-interno",
-   "rev": 47,
+   "rev": 48,
    "ack": true,
-   "recebidoEm": "2026-09-11T20:58:00-03:00",
-   "integradoEm": "f47128a42 + esta revisao",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
    "resposta": "20260912210000 (raiz da ponte com escopo) APLICADO em producao no lote 50 (20:12), pgTAP 45/45 no espelho. A sua semente 20260912230000 dos qa-r06 NAO foi aplicada: o coordenador ja tinha aplicado a propria (lote 49, 20260911230100) as 19:49; arquivo descartado no merge. Item (3) 180060: registrar como decisao de produto para o Owner (nao muda comportamento nesta rodada). T0 = 19:36; corte 21:36. | 20:19: rev 43 lida (entrega completa, handoff e skills-deltas integrados em dev); a correcao de seguranca sera anotada nos tres md no fechamento. Item (3) 180060 vai como pergunta ao Owner na R06-perguntas. Pode usar o tempo restante no item (4) code review 210500/211100. | 20:35: HOTFIX 20260912210100 APLICADO em producao (lote 52); conferido: 0 memberships de espelho inactive recentes, 33 ativas. Obrigado pelo achado."
   },
   "publicacoes-agenda": {
    "branch": "work/etapa2-r06-publicacoes-agenda",
-   "rev": 50,
+   "rev": 51,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
    "resposta": "qa-r06-publicacoes.env existe desde 19:44; semente em producao (lote 49). T0 = 19:36; corte 21:36."
   },
   "operacoes": {
    "branch": "work/etapa2-r06-operacoes",
-   "rev": 50,
+   "rev": 51,
    "ack": true,
-   "recebidoEm": "2026-09-11T21:36:00-03:00",
-   "integradoEm": "aa146fb2f + esta revisao",
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93 + esta revisao",
    "resposta": "200200 (sessoes da Conta) APLICADO em producao no lote 50 (20:12), pgTAP 16/16; desvio consciente aceito (logout scope=others em vez de Edge Function). T0 = 19:36 (nao 19:20); corte 21:36; revisao ate 21:46. | 20:55: 200300 (e-mail da pessoa de servico no perfil da Conta) APLICADO em producao no lote 53 (pgTAP 3/3 + 19/19). Deltas de deltas-r06-ops.json aplicados."
   }
  },
@@ -1856,6 +1857,55 @@
    "ack": true,
    "recebidoEm": "2026-09-11T21:36:00-03:00",
    "integradoEm": "aa146fb2f"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 63,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "acessos-pessoas",
+   "revisaoRecebida": 146,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "formularios-cuidado-rotina",
+   "revisaoRecebida": 55,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "principal-chat-sistema",
+   "revisaoRecebida": 39,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "realm-interno",
+   "revisaoRecebida": 48,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "publicacoes-agenda",
+   "revisaoRecebida": 51,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 51,
+   "ack": true,
+   "recebidoEm": "2026-09-11T21:42:00-03:00",
+   "integradoEm": "ed5d87f93"
   }
  ],
  "filaSqlR06": {
@@ -1866,14 +1916,16 @@
    "lote 51: 20260912180000 (estrutura)",
    "lote 52: 20260912210100 (realm-interno, hotfix)",
    "lote 53: 20260911200300 (operacoes)",
-   "lote 54: 180100, 180200 (estrutura), 170700 (acessos-pessoas), 2026091222 0000 (formularios)"
+   "lote 54: 180100, 180200 (estrutura), 170700 (acessos-pessoas), 2026091222 0000 (formularios)",
+   "lote 55: 130400, 130500 (principal-chat-sistema), 170800 (acessos-pessoas)"
   ],
   "proximos": [
    "candidatos verdes das frentes na ordem de chegada"
   ],
   "retidos": [
-   "principal-chat-sistema 20260911130400 (P48): quebra o escopo do lote 50/52; devolvido a G4 para reescrever sobre o 210100"
-  ]
+   "nenhum"
+  ],
+  "total": "7 lotes (49 a 55), 14 pacotes; candidatos restantes: nenhum"
  },
  "lote50": {
   "aplicadoEm": "2026-09-11T20:12:00-03:00",
@@ -1926,7 +1978,8 @@
  },
  "deltasAplicadosR06": {
   "2055": "deltas de estrutura, formularios-cuidado-rotina, operacoes e publicacoes-agenda aplicados; validate-trackers PASS: FE verified 151, BE done 144, E2E 121 (parcial, antes das entregas finais)",
-  "2135": "deltas das seis frentes + coordenacao aplicados; validate-trackers PASS: FE verified 162, BE done 146, E2E 131"
+  "2135": "deltas das seis frentes + coordenacao aplicados; validate-trackers PASS: FE verified 162, BE done 146, E2E 131",
+  "2142": "deltas finais reaplicados; validate-trackers PASS: FE verified 164, BE done 149, E2E 134"
  },
  "semRevisaoNovaHa20min2058": "acessos-pessoas (19:56); principal-chat-sistema (JSON 20:19, branch 20:39)",
  "lote54": {
@@ -1961,5 +2014,21 @@
    "realm-interno rev 47 (entrega completa)"
   ]
  },
- "semRevisaoNovaHa20min2136": "realm-interno (rev 47 as 20:38; entrega completa, sem pendencia: nao precisa retomar)"
+ "semRevisaoNovaHa20min2136": "realm-interno (rev 47 as 20:38; entrega completa, sem pendencia: nao precisa retomar)",
+ "notaDeRelogioR06": "os carimbos 20:17, 20:40, 20:58 e 21:36 das revs 53-57 sairam de 5 a 17 min adiantados; horas reais: 20:08, 20:34, 20:54 e 21:19. A partir da rev 58 os carimbos vem do relogio da maquina.",
+ "lote55": {
+  "aplicadoEm": "2026-09-11T21:40:00-03:00",
+  "dump": "schema-producao-20260911-lote55.sql",
+  "conteudo": [
+   "principal-chat-sistema 20260911130400_internal_actor_institution_access_by_role_v1 (P48, reescrito sobre o 210100)",
+   "principal-chat-sistema 20260911130500_meal_plan_scope_rules_object_v1",
+   "acessos-pessoas 20260911170800_internal_user_create_v1"
+  ],
+  "pgTAP": "16/16 + escopo 47/47 + hotfix 4/4; 11/11; 10/10 + 12/12 no espelho",
+  "verificadoEmProducao": "sync segunda chamada 0; memberships ativas de espelho 30",
+  "ledger": "3 versoes"
+ },
+ "edgeFunctionsR06": {
+  "internal-user-create": "codigo em supabase/functions/internal-user-create (deno check verde pela G2); DEPLOY NAO FEITO: comando bloqueado pelo classificador da sessao do coordenador (Auth Admin/createUser). Precisa de: [functions.internal-user-create] verify_jwt=false no config.toml (OPTIONS sem JWT; o POST reautoriza pelo RPC) + supabase functions deploy internal-user-create --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database. Sem segredo novo."
+ }
 }

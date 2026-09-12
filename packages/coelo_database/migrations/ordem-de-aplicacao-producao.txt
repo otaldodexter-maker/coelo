@@ -212,3 +212,7 @@
 20260912180200_activity_detail_v2_handle_v1.sql
 20260911170700_people_identity_lookup_v1.sql
 20260912220000_form_save_draft_version_number_fix_v1.sql
+# lote 55 (11/09 21:40) - R06: P48 sincronizador por papel interno sobre o escopo do 210100 e scopeRules objeto em Cardapios (principal-chat-sistema); criacao de usuario interno via Auth Admin (acessos-pessoas; Edge Function internal-user-create ainda sem deploy)
+20260911130400_internal_actor_institution_access_by_role_v1.sql
+20260911130500_meal_plan_scope_rules_object_v1.sql
+20260911170800_internal_user_create_v1.sql
