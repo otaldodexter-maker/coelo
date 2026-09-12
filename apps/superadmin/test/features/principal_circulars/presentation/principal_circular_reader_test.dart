@@ -35,6 +35,7 @@ void main() {
       await tester.pumpWidget(page(_detail, (_) => pending.future));
       await tester.tap(find.byKey(const Key('circular-option-question-1-yes')));
       await tester.tap(find.byKey(const Key('circular-option-question-2-uniform')));
+      await tester.ensureVisible(find.byKey(const Key('circular-submit-responses')));
       await tester.tap(find.byKey(const Key('circular-submit-responses')));
       await tester.pump();
       await tester.pumpWidget(
@@ -85,6 +86,7 @@ void main() {
       expect(find.text('Renovação de matrícula'), findsOneWidget);
       await tester.tap(find.byKey(const Key('circular-option-question-1-yes')));
       await tester.tap(find.byKey(const Key('circular-option-question-2-uniform')));
+      await tester.ensureVisible(find.byKey(const Key('circular-submit-responses')));
       await tester.tap(find.byKey(const Key('circular-submit-responses')));
       await tester.pumpAndSettle();
 

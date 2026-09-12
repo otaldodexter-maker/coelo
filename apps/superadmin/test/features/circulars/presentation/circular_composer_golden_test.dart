@@ -29,16 +29,23 @@ void main() {
   });
 
   testWidgets('composer covers the three approved A+ interleaving states', (tester) async {
-    for (final (width, height) in [(375.0, 1320.0), (1440.0, 1100.0)]) {
+    for (final (width, height, textScale) in [
+      (375.0, 1320.0, 1.0),
+      (375.0, 1320.0, 2.0),
+      (1440.0, 1100.0, 2.0),
+    ]) {
       await _pump(
         tester,
         Size(width, height),
         brightness: Brightness.light,
-        textScaler: const TextScaler.linear(2),
+        textScaler: TextScaler.linear(textScale),
       );
       await expectLater(
         find.byKey(const Key('circular-composer-golden-root')),
-        matchesGoldenFile('goldens/circular_composer_light_${width.toInt()}_text_200.png'),
+        matchesGoldenFile(
+          'goldens/circular_composer_light_${width.toInt()}'
+          '${textScale == 1 ? '' : '_text_200'}.png',
+        ),
       );
     }
   });

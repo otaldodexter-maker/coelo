@@ -126,7 +126,7 @@ void main() {
 
     // With the quota reached the composer stops offering a new selection.
     expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('circular-pick-files'))).onPressed,
+      tester.widget<TextButton>(find.byKey(const Key('circular-pick-files'))).onPressed,
       isNull,
     );
     expect(media.prepared, hasLength(CircularLimits.files));
