@@ -2064,6 +2064,15 @@
    "integradoEm": "82c70bb38a221cac4c861cfc2f2894bb36e591d8",
    "testes": "flutter test account/support/audit/imports/access_profile_file_actions/plans/catalog: 345 PASS, 1 skip esperado, warning de hit-test nao fatal",
    "deltas": "[]; nenhum estado promovido sem rota real"
+  },
+  {
+   "grupo": "estrutura",
+   "revisaoRecebida": 66,
+   "ack": true,
+   "integradoEm": "6b46330b21e2fc3e0e0ebb13d316f0d503e16a97",
+   "testes": "nenhuma alteracao de codigo publicada nesta revisao; delta ensaiado vazio",
+   "deltas": "deltas-r07-estrutura.json: estado inicial, []",
+   "proximoGate": "activities.assessment pela rota real; depois groups.members/location"
   }
  ],
  "dockerR07": {
