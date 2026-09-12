@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 69,
+  "revision": 70,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:12:28-03:00",
+  "updatedAt": "2026-09-12T13:17:49-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "558a556a1 publicado; P51 redirect produtivo falhou, checkpoint 68 pendente de commit",
+  "head": "a43b464c3 publicado; P51 API/link verde, answer fixture resume aprovado, checkpoint 70 pendente de commit",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0 diagnosticar redirect_to false sem nova geração/mudança Auth; G0 corrigir gates do roteiro answer-image antes da mutação",
+  "primeiroGate": "G0 executar uma única continuação answer fixture; C0 gerar/reconciliar uma occurrence/participation e devolver IDs server-side",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -67,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; lote 58 API aprovado; form-media v17 implantado; P51 criação/reload verde mas redirect_exact produtivo falso",
-  "proximoPasso": "revisar/corrigir roteiro G0 answer-image antes da mutação; aguardar diagnóstico C0 do redirect sem ampliar escopo",
+  "status": "recorte original entregue; lote 58 API aprovado; form-media v17; P51 criação/reload/link seguro verde sem SMTP; answer fixture em continuação controlada",
+  "proximoPasso": "receber manifest G0 application/schedule; revisar e liberar somente IDs exatos de occurrence/participation vindos do worker C0",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -1064,6 +1064,28 @@
         "pgTapExecutadoPorG5": "nenhum"
       },
       "primeiroGate": "correção e novo review do fixture runner G0"
+    },
+    "checkpoint13h17": {
+      "quando": "2026-09-12T13:17:49-03:00",
+      "feito": [
+        "C0 confirmou causa P51: allowlist Auth não continha o redirect canônico e o link caía no site_url localhost.",
+        "C0 aplicou delta mínimo somente em additional_redirect_urls, preservando a entrada local e adicionando superadmin.coelo.me/reset-password; outras 11 propriedades intactas, sem site_url/SMTP/senha.",
+        "Pós-prova no mesmo usuário às 13:15:35 passou 7 booleanos inclusive redirect_exact; nenhum link/query/token registrado ou aberto. P51 API/link seguro verde, entrega SMTP não certificada.",
+        "Primeira execução answer fixture criou/publicou um form e parou antes de application por oráculo de IDs inválido; backend materializa section/item server-side, não é defeito do produto.",
+        "Resume corrigido em 14783eae4: form fixo, application ausente, IDs server-side, receipts persistidos/reutilizados, schedule ID/start estáveis, logout local. G5 aprovou uma continuação."
+      ],
+      "pendente": [
+        "G0 executar --resume uma vez e parar após application/schedule; preservar manifest.",
+        "C0 acionar worker service_role e provar exatamente uma occurrence aberta e uma participation elegível, devolvendo IDs ao G0.",
+        "G0 executar smoke answer-image somente nesses IDs; G5 revisar qualquer falha antes de repetição."
+      ],
+      "testes": {
+        "p51FinalC0": "7/7 booleanos dinâmicos, redirect_exact true após allowlist focal",
+        "answerFixturePrimeiroRun": "draft/publish 200; parou antes de application; logout local 204",
+        "answerFixtureResume": "AST/default guard/diff-check informados verdes; execução aguardando",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "manifest application/schedule G0"
     }
   }
 }
