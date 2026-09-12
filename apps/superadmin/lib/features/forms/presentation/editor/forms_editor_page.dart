@@ -14,21 +14,24 @@ import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../data/development_forms_api.dart';
 import '../../data/forms_authoring_api.dart';
 import '../../data/forms_editor_context.dart';
+import '../response/forms_gallery_answer_field.dart';
 
 /// Production remains fail-closed until the composition root owns an
 /// authoritative mutation capability. The development constructor exercises
 /// the complete visual editor without claiming remote persistence.
 final class FormsEditorPage extends StatefulWidget {
-  const FormsEditorPage({this.api, this.formId, super.key})
+  const FormsEditorPage({this.api, this.formId, this.mediaSession, super.key})
     : development = false,
       authoringApi = null;
 
   const FormsEditorPage.authoring({required this.authoringApi, this.formId, super.key})
     : development = false,
+      mediaSession = null,
       api = null;
 
   const FormsEditorPage.development({this.formId, super.key})
     : development = true,
+      mediaSession = null,
       api = null,
       authoringApi = null;
 
@@ -36,6 +39,7 @@ final class FormsEditorPage extends StatefulWidget {
   final String? formId;
   final FormsApi? api;
   final FormsAuthoringApi? authoringApi;
+  final MediaSession? mediaSession;
 
   @override
   State<FormsEditorPage> createState() => _FormsEditorPageState();
@@ -61,6 +65,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
   var _institutionQueryGeneration = 0;
   var _newFormId = _newRequestId();
   FormDefinition? _definition;
+  FormEditorMediaContext? _mediaContext;
+  bool _mediaContextChecked = false;
+  bool _editingQuestionImages = false;
   String? _institutionId;
   var _loading = false;
   var _saving = false;
@@ -119,7 +126,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     final api = widget.api;
-    final formId = widget.formId;
+    final formId = widget.formId ?? _definition?.id;
     if (api == null || api is! FormsEditorContextApi) {
       setState(
         () => _feedback = 'A composição produtiva do editor não recebeu um contexto autorizado.',
@@ -155,6 +162,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         _editorContext = editorContext;
         _institutionId = initialInstitutionId;
         if (projection != null) _applyDefinition(projection.definition);
+        _mediaContext = projection?.mediaContext;
+        _mediaContextChecked = projection != null;
         _feedback = null;
       });
     } on FormApiException catch (error) {
@@ -323,6 +332,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     super.didUpdateWidget(oldWidget);
     if (identical(oldWidget.api, widget.api) &&
         identical(oldWidget.authoringApi, widget.authoringApi) &&
+        identical(oldWidget.mediaSession, widget.mediaSession) &&
         oldWidget.formId == widget.formId &&
         oldWidget.development == widget.development) {
       return;
@@ -344,6 +354,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _institutionSearch.clear();
     _newFormId = _newRequestId();
     _definition = null;
+    _mediaContext = null;
+    _mediaContextChecked = false;
+    _editingQuestionImages = false;
     _institutionId = null;
     _loading = false;
     _saving = false;
@@ -835,7 +848,11 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     );
   }
 
-  Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder, Color? barrierColor}) async {
+  Future<T?> _showOwnedDialog<T>({
+    required WidgetBuilder builder,
+    Color? barrierColor,
+    bool barrierDismissible = true,
+  }) async {
     final generation = _contextGeneration;
     final navigator = Navigator.of(context, rootNavigator: true);
     final route = DialogRoute<T>(
@@ -844,6 +861,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       builder: (context) =>
           _isCurrentContext(generation) ? builder(context) : const SizedBox.shrink(),
       barrierColor: barrierColor,
+      barrierDismissible: barrierDismissible,
     );
     final entry = (navigator, route as Route<dynamic>);
     _ownedOverlays.add(entry);
@@ -1075,6 +1093,140 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     });
   }
 
+  Widget _questionImageControls(_EditorQuestionDraft question) {
+    final clean =
+        _canEdit &&
+        !_saving &&
+        !_draftChanged &&
+        _pendingAuthoringSave == null &&
+        !_editingQuestionImages &&
+        widget.mediaSession?.isInvalidated == false;
+    final knownItem =
+        _definition?.sections
+            .expand((section) => section.items)
+            .any((item) => item.id == question.id) ==
+        true;
+    final ready = clean && knownItem && _mediaContext != null;
+    return Padding(
+      padding: const EdgeInsets.only(bottom: CoeloSpacing.space3),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          OutlinedButton.icon(
+            key: ValueKey('forms-question-images-${question.id}'),
+            onPressed: ready ? () => _openQuestionImages(question.id) : null,
+            icon: const Icon(Icons.image_outlined),
+            label: const Text('Imagens da pergunta'),
+          ),
+          if (!ready) ...[
+            Text(
+              _mediaContextChecked && _mediaContext == null
+                  ? 'Imagens da pergunta indisponíveis neste contexto autorizado.'
+                  : 'Salve o rascunho e atualize as perguntas para carregar o contexto de imagens.',
+            ),
+            if (!_mediaContextChecked)
+              TextButton(
+                onPressed: clean && _definition?.id.isNotEmpty == true ? _loadProduction : null,
+                child: const Text('Atualizar perguntas'),
+              ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<void> _openQuestionImages(String itemId) async {
+    final api = widget.api;
+    final session = widget.mediaSession;
+    final media = _mediaContext;
+    final definition = _definition;
+    if (api is! FormsQuestionImageApi ||
+        session == null ||
+        session.isInvalidated ||
+        media == null ||
+        definition == null ||
+        _draftChanged ||
+        _saving ||
+        _pendingAuthoringSave != null ||
+        _editingQuestionImages) {
+      return;
+    }
+    final item = definition.sections
+        .expand((section) => section.items)
+        .where((item) => item.id == itemId)
+        .firstOrNull;
+    if (item == null) return;
+    final generation = _contextGeneration;
+    var assets = media.questionImages
+        .where((binding) => binding.itemId == itemId)
+        .map((binding) => binding.assetId)
+        .toList();
+    final ready = media.questionImages
+        .where((binding) => binding.itemId == itemId && binding.isReady)
+        .map((binding) => binding.assetId)
+        .toSet();
+    _autosaveTimer?.cancel();
+    setState(() => _editingQuestionImages = true);
+    try {
+      await _showOwnedDialog<void>(
+        barrierDismissible: false,
+        builder: (dialogContext) => StatefulBuilder(
+          builder: (context, update) => PopScope(
+            canPop: true,
+            child: AlertDialog(
+              title: const Text('Imagens da pergunta'),
+              content: SizedBox(
+                width: 480,
+                child: SingleChildScrollView(
+                  child: FormsGalleryAnswerField.questionImage(
+                    api: api as FormsQuestionImageApi,
+                    target: FormQuestionImageTarget(
+                      formId: definition.id,
+                      formVersionId: media.formVersionId,
+                      itemId: itemId,
+                    ),
+                    session: session,
+                    item: FormItem(
+                      id: itemId,
+                      kind: item.kind,
+                      label: item.label,
+                      position: item.position,
+                    ),
+                    assetIds: assets,
+                    readyAssetIds: ready,
+                    onBusyChanged: (_) {},
+                    onChanged: (values) {
+                      if (!_isCurrentContext(generation)) return;
+                      update(() {
+                        ready.addAll(values.where((id) => !assets.contains(id)));
+                        ready.retainAll(values);
+                        assets = values;
+                      });
+                    },
+                  ),
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () => Navigator.of(dialogContext).pop(),
+                  child: const Text('Voltar ao formulário'),
+                ),
+              ],
+            ),
+          ),
+        ),
+      );
+    } finally {
+      if (_isCurrentContext(generation)) {
+        setState(() {
+          _editingQuestionImages = false;
+          _mediaContext = null;
+        });
+        await _loadProduction();
+      }
+    }
+  }
+
   Widget _questionTree(List<_EditorQuestionDraft> siblings, int index, {bool nested = false}) {
     final question = siblings[index];
     final generation = _contextGeneration;
@@ -1088,6 +1240,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       key: ValueKey('forms-question-card-${question.id}'),
       index: index,
       question: question,
+      imageControls: widget.api is FormsQuestionImageApi && widget.mediaSession != null
+          ? _questionImageControls(question)
+          : null,
       isCurrent: () => current() && _canEdit,
       expanded: (_canView && !_canEdit) || _expandedQuestionId == question.id,
       canMoveUp: index > 0,
@@ -1421,6 +1576,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
         !_canEdit ||
         _autosavePaused ||
         _confirmingDiscard ||
+        _editingQuestionImages ||
         !_draftChanged ||
         _saving ||
         _pendingAuthoringSave != null) {
@@ -1575,7 +1731,9 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     }
     final api = widget.api;
     final authoring = widget.authoringApi;
-    if ((api == null && authoring == null) || !_canEdit || _saving) return;
+    if ((api == null && authoring == null) || !_canEdit || _saving || _editingQuestionImages) {
+      return;
+    }
     if (automatic && _autosavePaused) return;
     if (!automatic) _autosavePaused = false;
     final definition = _pendingAuthoringSave?.payload ?? _localDefinition();
@@ -1599,6 +1757,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     setState(() => _saving = true);
+    _mediaContext = null;
+    _mediaContextChecked = false;
     try {
       final command =
           _pendingAuthoringSave ??
@@ -2535,6 +2695,7 @@ final class _QuestionCard extends StatefulWidget {
     required this.optionRemovalIssue,
     this.canDrag = true,
     this.branchPanel,
+    this.imageControls,
   });
 
   final int index;
@@ -2555,6 +2716,7 @@ final class _QuestionCard extends StatefulWidget {
   final VoidCallback onChanged;
   final bool canDrag;
   final Widget? branchPanel;
+  final Widget? imageControls;
 
   @override
   State<_QuestionCard> createState() => _QuestionCardState();
@@ -2690,6 +2852,7 @@ final class _QuestionCardState extends State<_QuestionCard> {
   Widget _configuration() => Column(
     crossAxisAlignment: CrossAxisAlignment.stretch,
     children: [
+      if (widget.imageControls != null) widget.imageControls!,
       CoeloFormTextField(
         controller: widget.question.label,
         labelText: widget.question.kind == FormItemKind.information

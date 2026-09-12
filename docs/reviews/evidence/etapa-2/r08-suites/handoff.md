@@ -73,6 +73,13 @@ timezone: "America/Sao_Paulo"
 
 Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de commit por `git log -1`; a data de leitura é o momento desta auditoria. Esta tabela é reconciliação documental, não novo censo nem execução desta frente.
 
+## Auditoria textual do ciclo 60 integrado
+
+- `238 PASS / 0 FAIL / 0 SKIP` é uma execução focal única de 11 arquivos na base testada `5c1cf503c`; não é censo global e não deve ser somada a reruns.
+- `Deno8PASS` de G2 é uma execução focal única do recibo P51; não é uma segunda contagem do censo R07 nem prova E2E.
+- O SHA integrado/publicado da base do ciclo é `2d97892d9`; ele não substitui a base explicitamente testada `5c1cf503c`. Deploys mencionados no recibo devem permanecer separados de resultados locais.
+- Limite operacional desta auditoria: Spark em 100% da janela; nenhum teste adicional foi prometido ou executado por G8.
+
 ## Auditoria de coerência com o censo R07
 
 - Os `23 PASS` de `person_form_page_test.dart` e `39 PASS` de `platform_user_pages_test.dart` documentados por G2 são suítes focais diferentes das falhas nominais do censo R07; não reduzem nem reclassificam os `33 FAIL` históricos.

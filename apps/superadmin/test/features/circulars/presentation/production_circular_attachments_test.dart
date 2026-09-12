@@ -117,18 +117,60 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(media.prepared, hasLength(CircularLimits.files));
+    expect(host.draft.blocks.whereType<CircularMediaBlock>(), hasLength(CircularLimits.files));
     expect(
-      host.draft.blocks.whereType<CircularMediaBlock>().single.assetIds,
+      host.draft.blocks.whereType<CircularMediaBlock>().expand((block) => block.assetIds),
       hasLength(CircularLimits.files),
     );
     expect(find.textContaining('acima do limite de ${CircularLimits.files}'), findsOneWidget);
 
     // With the quota reached the composer stops offering a new selection.
     expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('circular-pick-files'))).onPressed,
+      tester.widget<TextButton>(find.byKey(const Key('circular-pick-files'))).onPressed,
       isNull,
     );
     expect(media.prepared, hasLength(CircularLimits.files));
+  });
+
+  testWidgets('two uploads become separate blocks after the chosen question', (tester) async {
+    final host = await _pumpComposer(
+      tester,
+      media: _RecordingMedia(),
+      transfers: <Uri>[],
+      picked: [_file('antes.png', 'image/png', 256), _file('depois.png', 'image/png', 256)],
+      initialBlocks: const [
+        CircularTextBlock(id: 'text-before', text: 'Antes'),
+        CircularQuestionBlock(
+          id: 'question-middle',
+          prompt: 'Pergunta?',
+          kind: CircularQuestionKind.singleChoice,
+          required: true,
+          options: [
+            CircularQuestionOption(id: 'yes', label: 'Sim'),
+            CircularQuestionOption(id: 'no', label: 'Não'),
+          ],
+        ),
+        CircularTextBlock(id: 'text-after', text: 'Depois'),
+      ],
+    );
+
+    final addAfterQuestion = find.byKey(const Key('circular-pick-files-after-question-middle'));
+    await tester.ensureVisible(addAfterQuestion);
+    await tester.tap(addAfterQuestion);
+    await tester.pumpAndSettle();
+
+    expect(host.draft.blocks.map((block) => block.runtimeType), [
+      CircularTextBlock,
+      CircularQuestionBlock,
+      CircularMediaBlock,
+      CircularMediaBlock,
+      CircularTextBlock,
+    ]);
+    expect(host.draft.blocks.whereType<CircularMediaBlock>(), hasLength(2));
+    expect(
+      host.draft.blocks.whereType<CircularMediaBlock>().map((block) => block.assetIds.single),
+      ['asset-1', 'asset-2'],
+    );
   });
 
   testWidgets('composition without media capability stays honestly unavailable', (tester) async {
@@ -148,10 +190,11 @@ Future<_HostProbe> _pumpComposer(
   required _RecordingMedia? media,
   required List<Uri> transfers,
   required List<CircularSelectedFile> picked,
+  List<CircularBlock> initialBlocks = const [CircularTextBlock(id: 'text-1', text: 'Conteúdo')],
 }) async {
   await tester.binding.setSurfaceSize(const Size(1440, 1600));
   addTearDown(() => tester.binding.setSurfaceSize(null));
-  final repository = _DraftRepository();
+  final repository = _DraftRepository(initialBlocks);
   final client = MockClient((request) async {
     transfers.add(request.url);
     return http.Response('', 200);
@@ -193,6 +236,9 @@ CircularSelectedFile _file(String name, String mimeType, int bytes) => CircularS
 );
 
 final class _DraftRepository implements SuperadminCircularRepository {
+  _DraftRepository(this.initialBlocks);
+
+  final List<CircularBlock> initialBlocks;
   CircularDraft? lastSaved;
   var _version = 1;
 
@@ -203,7 +249,7 @@ final class _DraftRepository implements SuperadminCircularRepository {
         draft: CircularDraft(
           id: circularId,
           title: 'Circular privada',
-          blocks: const [CircularTextBlock(id: 'text-1', text: 'Conteúdo')],
+          blocks: initialBlocks,
           expectedVersion: 1,
         ),
       );

@@ -4,7 +4,7 @@ knowledge_id: superadmin-conversations-production
 source: specs/028-superadmin-conversations-production.md
 status: validated
 generated_at: 2026-08-11
-updated_at: 2026-09-07
+updated_at: 2026-09-12
 audience: team
 surfaces: [superadmin, conversations]
 visibility: internal
@@ -18,9 +18,10 @@ recibos de leitura e refresh passam por RPCs que recalculam pessoa, membership,
 capability e escopo efetivo. UUID, rota, cursor e filtro são sempre não
 confiáveis.
 
-A opção Chat de `Coelo (Principal)` dentro do Superadmin é somente uma segunda
-entrada para a mesma página e o mesmo `ChatRepository` de Comunicação >
-Conversas. Ela não cria domínio, cache ou backend paralelo e não depende dos
+A opção Chat de `Coelo (Principal)` dentro do Superadmin usa UI própria com
+retorno contextual, conforme a revisão aprovada na spec 050 e refletida na
+spec 028. Compartilha o `ChatRepository` de Comunicação > Conversas sem importar
+widgets `SuperadminChat*`. Não cria domínio, cache ou backend paralelo nem depende dos
 aplicativos `apps/principal`, `apps/admin` ou `apps/site`. No `/dev`, as duas
 entradas compartilham a mesma instância determinística da sessão; em produção,
 as duas usam o mesmo adapter RPC autorizado.

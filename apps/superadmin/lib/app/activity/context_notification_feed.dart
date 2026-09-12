@@ -59,8 +59,7 @@ final class SupabaseContextNotificationRepository implements ContextNotification
             eventCode: event['event_code'] as String? ?? '',
             objectType: event['object_type'] as String? ?? '',
             createdAt:
-                DateTime.tryParse(row['created_at'] as String? ?? '')?.toLocal() ??
-                DateTime.now(),
+                DateTime.tryParse(row['created_at'] as String? ?? '')?.toLocal() ?? DateTime.now(),
             payload: switch (event['payload_json']) {
               final Map<String, Object?> payload => payload,
               _ => const {},
@@ -97,6 +96,7 @@ final class ContextNotificationFeed {
   final _unreadOnServer = <String>{};
 
   Future<void> load() async {
+    controller.onCenterOpened = _syncRead;
     final List<ContextNotification> items;
     try {
       items = await repository.listMine();
@@ -117,7 +117,10 @@ final class ContextNotificationFeed {
           isRead: item.readAt != null,
         ),
     ]);
-    controller.onCenterOpened = _syncRead;
+    if (controller.isCenterOpen) {
+      controller.setCenterOpen(true);
+      await _syncRead();
+    }
   }
 
   Future<void> _syncRead() async {
