@@ -1,0 +1,31 @@
+{
+  "approved": true,
+  "assignment_id": "41e161da-ebaa-4fed-b0ba-132640e6a59f",
+  "approvedBy": "C0",
+  "approvedAt": "2026-09-12T14:29:55.020025-03:00",
+  "expiresAt": "2026-09-12T14:40:00-03:00",
+  "runnerSha": "d59e17f62c47d1df810fae50269395f5a21d2fda",
+  "reviews": [
+    "G4 e14ae8b4d offline2PASS",
+    "G5 code PASS d59e17f62"
+  ],
+  "scope": [
+    "save_configuration",
+    "activate_configuration",
+    "save_gradebook draft only",
+    "authoritative reads and idempotent replay"
+  ],
+  "target": {
+    "institution_id": "190dd028-3125-452d-8502-612bfa1029de",
+    "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+    "group_id": "4214106c-46a2-4bf4-84ba-9c6a619bd486",
+    "activity_id": "95b98978-19e2-43ba-aa0c-70ae81557e08"
+  },
+  "conditions": [
+    "fresh configuration_read null before first create",
+    "one persisted manifest; same request IDs on resume",
+    "retain all synthetic resources until formal Etapa2 end",
+    "no submit/review/return/publish or password change",
+    "API proof is not UI or cross-tenant certification"
+  ]
+}
