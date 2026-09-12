@@ -28,7 +28,7 @@ generated_at: 2026-09-12T14:23:00-03:00
 
 ## G4 — principal/chat/sistema
 
-"Retome contratos de Perfil, estados de erro/retry e revisão de câmera/Momentos. Preserve sujeito/contexto e autorização server-side; reporte qualquer diferença de contrato com prova antes de alterar consumidor compartilhado."
+"Após reconciliar R08, priorize UI pendente de PNG/Cardápios/Chat dependente do runtime; depois Perfil e erros. Preserve sujeito/contexto e autorização server-side. As provas fake de 401/resume/alvo do runner já estão verdes: reutilize-as sem repetir sem delta. A revisão de câmera G3 está concluída. O cron de expiração materializa estado e não executa delete R2; mantenha-o como proposta C0 até decisão."
 
 ## G5 — realm interno
 
