@@ -1,123 +1,182 @@
 {
-  "grupo": "fase0",
-  "revision": 9,
-  "round": "E2-R03-20260910",
-  "updatedAt": "2026-09-10T17:05:00-03:00",
+  "grupo": "suites",
+  "revision": 10,
+  "round": "E2-R07-20260911",
+  "updatedAt": "2026-09-11T23:36:00-03:00",
   "app": "Claude",
-  "modelo": "Fable 5.1",
-  "conversa": "R03-P0-fase0-composto",
-  "coordenador": "nenhum acima nesta fase; ordem de parar vem do Owner",
-  "worktree": "C:/Users/adrie/Documents/Coelo (checkout principal)",
-  "branch": "dev",
-  "head": "fa404db39",
+  "modelo": "Opus 5 (esforco medio)",
+  "conversa": "R07 · Suites pre-existentes (G8)",
+  "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-11T23:19:34-03:00 (coordenacao.json rev 61); corte T0+3h = 02:19 de 12/09, mini-revisao ate 02:29, nao retomar depois de 02:29",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-suites",
+  "branch": "work/etapa2-r07-suites",
+  "head": "7b229593c",
   "upstream": "origin/dev",
-  "divergencia": "0/0",
-  "base": "bb15db748 (dev no HEAD que contem R03-prompts.md)",
-  "papel": "escritor unico de dev ate publicar base.fase0Head",
-  "escopo": [
-    {
-      "tela": "composto de diretorio administrativo",
-      "subtela": "packages/coelo_ui_admin/src/directory + apps/superadmin/lib/shared",
-      "action_ids": [
-        "fase0.composto"
-      ]
-    },
-    {
-      "tela": "Estrutura > Instituicoes e Atividades",
-      "subtela": "diretorio como instancia do composto",
-      "action_ids": [
-        "institutions.list",
-        "activities.list"
-      ]
-    },
-    {
-      "tela": "demais diretorios",
-      "subtela": "units, groups, forms, support, agenda, meal_plans, plans, audit, health_care, chat, circulars, people, invites, access_profiles, notices",
-      "action_ids": [
-        "*.list"
-      ]
-    },
-    {
-      "tela": "teste de arquitetura",
-      "subtela": "apps/superadmin/test/architecture",
-      "action_ids": [
-        "fase0.arquitetura"
-      ]
-    },
-    {
-      "tela": "regressoes",
-      "subtela": "chat (Criar grupo/Fixar/bandeiras), saida de Instituicoes, chip Destaque",
-      "action_ids": [
-        "chat.inbox",
-        "institutions.form.cancel",
-        "principal_for_you.highlight"
-      ]
-    }
-  ],
-  "mudou": "Lote 7 publicado (fa404db39, rebase sobre 347d4cf8a): Pessoas, Convites e Perfis de acesso no composto; grade com linhas de altura igual via Table intrinsicHeight + card esticado sem altura maxima (IntrinsicHeight travava a suite em cards com LayoutBuilder); skill coelo-ui e conhecimento (33277a140). Goldens de todos os diretorios migrados regravados; goldens de formulario/detalhe preservados.",
-  "diagnostico": {
-    "menu": "Render atual difere da referencia em: item filho ativo em primaryContainer (referencia: primary preenchido, pai em tom mais escuro); Bug omitido quando onBugReportSubmitted e nulo; campo Buscar na navegacao presente no atual e deve permanecer (MENU).",
-    "criar": "Instituicoes ja tem Criar no vazio/falha; Atividades so tem quando onCreate != null. Composto passa a garantir Criar primeiro em todos os estados.",
-    "chat": "Criar grupo, Fixar e sinalizadores existiam em superadmin_chat_inbox.dart ate 54f2dfb69 (12/08), removidos junto com o chat local de fixtures. Reintroduzir sobre o inbox real.",
-    "saida-instituicoes": "PopScope canPop=!isDirty chama onCancel em toda tentativa de pop; testes cancel-changed e destination-changed falhavam em 0a9cb1e63.",
-    "destaque": "principal_for_you_preview_page.dart:385 usa onPrimary a 16%; trocar por orange950 a 16% (5,75:1)."
+  "base": "7b229593c (origin/dev com R07-prompts.md e frentes liberadas)",
+  "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
+  "recorte": {
+    "testes": [
+      "apps/superadmin/test/app (dev_menu, import_development_routes, prototype_navigation_routes: 18 falhas na R05)",
+      "apps/superadmin/test/core/config (4)",
+      "apps/superadmin/test/shared (underline_tabs, form_action_footer_adoption: 11)",
+      "golden institution_directory_pagination_disabled_light_1440 (0,21%)"
+    ],
+    "producaoPermitida": [
+      "apps/superadmin/lib/core/config/**",
+      "rotas /dev e arquivos de desenvolvimento cobertos por esses testes (lib/dev nao existe nesta base; localizar o equivalente em lib/app/dev_menu ou similar)"
+    ],
+    "proibido": [
+      "lib/features/**",
+      "lib/shared/presentation/**",
+      "packages/coelo_ui*/**",
+      "goldens de outras familias",
+      "pubspec",
+      "arquivos de outra frente"
+    ]
   },
-  "criteriosFechados": [
-    "fase0.composto: toolbar, abas, toggle, grade com Criar em vazio/falha, tabela com banner, paginacao, 375/768/1024/1440 (goldens no pacote)",
-    "institutions.list: instancia do composto, goldens regravados apos MENU/CRIAR/DADOS",
-    "MENU: Bug sempre visivel; MENU-M: cabecalho mobile com Bug (golden 375/768 de Instituicoes)",
-    "activities.list: instancia do composto (Atividades e Modelos), abas Todos/Ativos/Rascunhos/Inativos (TABS), Arquivos nos Modelos, balao de chat na referencia",
-    "groups.list: instancia do composto; card na altura da familia (observacao \"excesso de espacamento\" aplicada antes de regravar)",
-    "units.list, forms.list, health_care.profiles.list, health_care.medication.list: instancias do composto",
-    "fase0.arquitetura: teste em apps/superadmin/test/architecture com allowlist decrescente",
-    "fase0.sdk: .fvmrc/.flutter-version 3.44.2",
-    "chat: Arquivos escondido em Conversas (ARQUIVOS-CHAT)",
-    "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)",
-    "people.list, invites.list, access_profiles.list: instancias do composto",
-    "fase0.arquitetura: allowlist reduzida a agenda (3), assiduidade (1), seguranca (2), suporte (2)"
+  "ordem": [
+    "(1) rodar test/app, test/core/config, test/shared na base limpa e classificar cada falha",
+    "(2) corrigir teste desatualizado ou codigo /dev",
+    "(3) golden 0,21%: regravar so se ruido",
+    "(4) flutter test completo do Superadmin -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md",
+    "(5) mini-revisao em T0+3h"
   ],
+  "feito": [],
+  "pendente": [
+    "(1) censo inicial das tres suites do recorte"
+  ],
+  "commitsPublicados": [],
+  "foraDoRecorteRegistrado": [],
   "testes": {
-    "P": 6432,
-    "F": 30,
-    "B": 0,
-    "S": 15,
-    "U": 128,
-    "evidencia": "suite completa de apps/superadmin sobre 01849ec2c interrompida as 16:56 pelo corte (6432 P, 15 S; 158 [E] dos quais 128 'did not complete' = U). Das 30 falhas reais, 10 eram superadmin_underline_tabs_test (chave da faixa renomeada ao mover para coelo_ui_admin: corrigida nesta revisao, mas 7 casos seguem vermelhos por outras asserções do widget movido; fica aberto para a Fase 0 ao reativar) e as demais estao em areas de outros grupos (agenda, principal_*, account, daily_routine, attendance, forms editor, locations, platform_users, audit, support) ou em goldens preservados (activity_golden 4, institution_form_page_golden 3)."
+    "P": null,
+    "F": null,
+    "B": null,
+    "S": null,
+    "U": null,
+    "evidencia": "ainda nao executado nesta rodada"
   },
-  "arquivosReservados": [
-    "packages/coelo_ui_admin/**",
-    "apps/superadmin/lib/shared/presentation/widgets/**",
-    "apps/superadmin/lib/app/shell/**",
-    "apps/superadmin/lib/app/navigation/**",
-    "apps/superadmin/lib/features/*/presentation/*directory*",
-    "apps/superadmin/test/architecture/**",
-    ".fvmrc",
-    ".flutter-version"
-  ],
   "bloqueio": null,
-  "proximoPasso": "Ao reativar: fazer merge de wip/fase0-arquivo-chat em dev, ajustar os testes do launcher (Mens. -> Mensagens, forum_outlined -> forum_rounded, cor do circulo mobile), rodar plans/meal_plans/chat/shell e regravar apos observacao os goldens de shell com o launcher e os de Cardapios/Planos; depois Suporte/Auditoria com o grupo operacoes.",
-  "wip": [
-    "Branch publicada wip/fase0-arquivo-chat (91e011dc6, dono coelo-92/Fase 0): ARQUIVO nos cards de Cardapios/Planos (icone direto no cabecalho como no card de modelo de atividade) e launcher de chat pela referencia CHAT (pill 'Mensagens' com contagem e faixa de iniciais; circulo claro no mobile; shell/router passam chatRecentConversationsLoader). dart analyze limpo; suites e goldens NAO executados nem regravados. Nao esta em dev."
-  ],
-  "recursos": {
-    "processos": [],
-    "portas": []
-  },
-  "filhos": [],
-  "decisoesTomadasNaFase": [
-    "DADOS: goldens de Instituicoes usam as cinco instituicoes de desenvolvimento (take(5) de d9232a94d, 01/09), nao as doze da referencia de agosto; interpretacao de \"quantidades ja alinhadas com o Owner\" = dataset atual.",
-    "Banner Criar da tabela usa o \"+\" neutro da referencia; icone de dominio so no card da grade.",
-    "Bug sem canal de envio: dialogo abre e mostra \"O envio de relatos ainda nao esta conectado nesta tela\" em vez de omitir o botao; producao ainda nao passa supportController ao router (grupo operacoes).",
-    "Menu fora do shell hospedeiro (testes/previews) mostra o menu completo; visibilidade de menu nao e autorizacao.",
-    "ARQUIVO e CHAT nao eram decisoes pendentes: constam na lista do Owner de 10/09 (goldens-claro-decisoes-2026-09-10.md); a lista de 10/09 e mais recente que a aprovacao do circulo 'Mens.' de 01/09 e prevalece. Implementacao ficou na branch wip por causa do corte das 17:10."
-  ],
-  "pendenciasParaOutrosGrupos": [
-    "estrutura: activity_form_create_light_375 (RODAPE), activity_detail_*, activity_form_* continuam vermelhos por deriva anterior; nao regravados na Fase 0.",
-    "principal-chat-sistema: CHAT — a referencia de Atividades (agosto) mostra o balao antigo \"Mensagens 3 | T U A M I\"; o balao atual (aprovado em 01/09) e o circulo laranja \"Mens.\". Decisao visual pendente ao Owner com imagens lado a lado (ver handoff).",
-    "operacoes: router de producao nao passa supportController; o Bug abre e avisa que o envio nao esta conectado."
-  ],
-  "avisos": [
-    "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar.",
-    "Corte do Owner as 17:10 de 10/09 (via coordenacao coelo-af): Fase 0 nao retoma por conta propria; working tree de dev limpo nos caminhos da Fase 0, WIP dos outros grupos permanece identificado no checkout compartilhado."
-  ]
+  "proximoPasso": "flutter test apps/superadmin/test/app",
+  "historicoR03": {
+    "grupo": "fase0",
+    "revision": 9,
+    "round": "E2-R03-20260910",
+    "updatedAt": "2026-09-10T17:05:00-03:00",
+    "app": "Claude",
+    "modelo": "Fable 5.1",
+    "conversa": "R03-P0-fase0-composto",
+    "coordenador": "nenhum acima nesta fase; ordem de parar vem do Owner",
+    "worktree": "C:/Users/adrie/Documents/Coelo (checkout principal)",
+    "branch": "dev",
+    "head": "fa404db39",
+    "upstream": "origin/dev",
+    "divergencia": "0/0",
+    "base": "bb15db748 (dev no HEAD que contem R03-prompts.md)",
+    "papel": "escritor unico de dev ate publicar base.fase0Head",
+    "escopo": [
+      {
+        "tela": "composto de diretorio administrativo",
+        "subtela": "packages/coelo_ui_admin/src/directory + apps/superadmin/lib/shared",
+        "action_ids": [
+          "fase0.composto"
+        ]
+      },
+      {
+        "tela": "Estrutura > Instituicoes e Atividades",
+        "subtela": "diretorio como instancia do composto",
+        "action_ids": [
+          "institutions.list",
+          "activities.list"
+        ]
+      },
+      {
+        "tela": "demais diretorios",
+        "subtela": "units, groups, forms, support, agenda, meal_plans, plans, audit, health_care, chat, circulars, people, invites, access_profiles, notices",
+        "action_ids": [
+          "*.list"
+        ]
+      },
+      {
+        "tela": "teste de arquitetura",
+        "subtela": "apps/superadmin/test/architecture",
+        "action_ids": [
+          "fase0.arquitetura"
+        ]
+      },
+      {
+        "tela": "regressoes",
+        "subtela": "chat (Criar grupo/Fixar/bandeiras), saida de Instituicoes, chip Destaque",
+        "action_ids": [
+          "chat.inbox",
+          "institutions.form.cancel",
+          "principal_for_you.highlight"
+        ]
+      }
+    ],
+    "mudou": "Lote 7 publicado (fa404db39, rebase sobre 347d4cf8a): Pessoas, Convites e Perfis de acesso no composto; grade com linhas de altura igual via Table intrinsicHeight + card esticado sem altura maxima (IntrinsicHeight travava a suite em cards com LayoutBuilder); skill coelo-ui e conhecimento (33277a140). Goldens de todos os diretorios migrados regravados; goldens de formulario/detalhe preservados.",
+    "diagnostico": {
+      "menu": "Render atual difere da referencia em: item filho ativo em primaryContainer (referencia: primary preenchido, pai em tom mais escuro); Bug omitido quando onBugReportSubmitted e nulo; campo Buscar na navegacao presente no atual e deve permanecer (MENU).",
+      "criar": "Instituicoes ja tem Criar no vazio/falha; Atividades so tem quando onCreate != null. Composto passa a garantir Criar primeiro em todos os estados.",
+      "chat": "Criar grupo, Fixar e sinalizadores existiam em superadmin_chat_inbox.dart ate 54f2dfb69 (12/08), removidos junto com o chat local de fixtures. Reintroduzir sobre o inbox real.",
+      "saida-instituicoes": "PopScope canPop=!isDirty chama onCancel em toda tentativa de pop; testes cancel-changed e destination-changed falhavam em 0a9cb1e63.",
+      "destaque": "principal_for_you_preview_page.dart:385 usa onPrimary a 16%; trocar por orange950 a 16% (5,75:1)."
+    },
+    "criteriosFechados": [
+      "fase0.composto: toolbar, abas, toggle, grade com Criar em vazio/falha, tabela com banner, paginacao, 375/768/1024/1440 (goldens no pacote)",
+      "institutions.list: instancia do composto, goldens regravados apos MENU/CRIAR/DADOS",
+      "MENU: Bug sempre visivel; MENU-M: cabecalho mobile com Bug (golden 375/768 de Instituicoes)",
+      "activities.list: instancia do composto (Atividades e Modelos), abas Todos/Ativos/Rascunhos/Inativos (TABS), Arquivos nos Modelos, balao de chat na referencia",
+      "groups.list: instancia do composto; card na altura da familia (observacao \"excesso de espacamento\" aplicada antes de regravar)",
+      "units.list, forms.list, health_care.profiles.list, health_care.medication.list: instancias do composto",
+      "fase0.arquitetura: teste em apps/superadmin/test/architecture com allowlist decrescente",
+      "fase0.sdk: .fvmrc/.flutter-version 3.44.2",
+      "chat: Arquivos escondido em Conversas (ARQUIVOS-CHAT)",
+      "plans.list, meal_plans.list, circulars.list, notices.list: instancias do composto (goldens regravados; ARQUIVO pendente do Owner)",
+      "people.list, invites.list, access_profiles.list: instancias do composto",
+      "fase0.arquitetura: allowlist reduzida a agenda (3), assiduidade (1), seguranca (2), suporte (2)"
+    ],
+    "testes": {
+      "P": 6432,
+      "F": 30,
+      "B": 0,
+      "S": 15,
+      "U": 128,
+      "evidencia": "suite completa de apps/superadmin sobre 01849ec2c interrompida as 16:56 pelo corte (6432 P, 15 S; 158 [E] dos quais 128 'did not complete' = U). Das 30 falhas reais, 10 eram superadmin_underline_tabs_test (chave da faixa renomeada ao mover para coelo_ui_admin: corrigida nesta revisao, mas 7 casos seguem vermelhos por outras asserções do widget movido; fica aberto para a Fase 0 ao reativar) e as demais estao em areas de outros grupos (agenda, principal_*, account, daily_routine, attendance, forms editor, locations, platform_users, audit, support) ou em goldens preservados (activity_golden 4, institution_form_page_golden 3)."
+    },
+    "arquivosReservados": [
+      "packages/coelo_ui_admin/**",
+      "apps/superadmin/lib/shared/presentation/widgets/**",
+      "apps/superadmin/lib/app/shell/**",
+      "apps/superadmin/lib/app/navigation/**",
+      "apps/superadmin/lib/features/*/presentation/*directory*",
+      "apps/superadmin/test/architecture/**",
+      ".fvmrc",
+      ".flutter-version"
+    ],
+    "bloqueio": null,
+    "proximoPasso": "Ao reativar: fazer merge de wip/fase0-arquivo-chat em dev, ajustar os testes do launcher (Mens. -> Mensagens, forum_outlined -> forum_rounded, cor do circulo mobile), rodar plans/meal_plans/chat/shell e regravar apos observacao os goldens de shell com o launcher e os de Cardapios/Planos; depois Suporte/Auditoria com o grupo operacoes.",
+    "wip": [
+      "Branch publicada wip/fase0-arquivo-chat (91e011dc6, dono coelo-92/Fase 0): ARQUIVO nos cards de Cardapios/Planos (icone direto no cabecalho como no card de modelo de atividade) e launcher de chat pela referencia CHAT (pill 'Mensagens' com contagem e faixa de iniciais; circulo claro no mobile; shell/router passam chatRecentConversationsLoader). dart analyze limpo; suites e goldens NAO executados nem regravados. Nao esta em dev."
+    ],
+    "recursos": {
+      "processos": [],
+      "portas": []
+    },
+    "filhos": [],
+    "decisoesTomadasNaFase": [
+      "DADOS: goldens de Instituicoes usam as cinco instituicoes de desenvolvimento (take(5) de d9232a94d, 01/09), nao as doze da referencia de agosto; interpretacao de \"quantidades ja alinhadas com o Owner\" = dataset atual.",
+      "Banner Criar da tabela usa o \"+\" neutro da referencia; icone de dominio so no card da grade.",
+      "Bug sem canal de envio: dialogo abre e mostra \"O envio de relatos ainda nao esta conectado nesta tela\" em vez de omitir o botao; producao ainda nao passa supportController ao router (grupo operacoes).",
+      "Menu fora do shell hospedeiro (testes/previews) mostra o menu completo; visibilidade de menu nao e autorizacao.",
+      "ARQUIVO e CHAT nao eram decisoes pendentes: constam na lista do Owner de 10/09 (goldens-claro-decisoes-2026-09-10.md); a lista de 10/09 e mais recente que a aprovacao do circulo 'Mens.' de 01/09 e prevalece. Implementacao ficou na branch wip por causa do corte das 17:10."
+    ],
+    "pendenciasParaOutrosGrupos": [
+      "estrutura: activity_form_create_light_375 (RODAPE), activity_detail_*, activity_form_* continuam vermelhos por deriva anterior; nao regravados na Fase 0.",
+      "principal-chat-sistema: CHAT — a referencia de Atividades (agosto) mostra o balao antigo \"Mensagens 3 | T U A M I\"; o balao atual (aprovado em 01/09) e o circulo laranja \"Mens.\". Decisao visual pendente ao Owner com imagens lado a lado (ver handoff).",
+      "operacoes: router de producao nao passa supportController; o Bug abre e avisa que o envio nao esta conectado."
+    ],
+    "avisos": [
+      "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar.",
+      "Corte do Owner as 17:10 de 10/09 (via coordenacao coelo-af): Fase 0 nao retoma por conta propria; working tree de dev limpo nos caminhos da Fase 0, WIP dos outros grupos permanece identificado no checkout compartilhado."
+    ]
+  }
 }
