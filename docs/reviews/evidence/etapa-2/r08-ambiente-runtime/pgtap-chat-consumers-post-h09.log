@@ -1,0 +1,316 @@
+R08 G0 pgTAP chat consumers after H09
+AT=2026-09-12T11:29:49.8243163-03:00
+SOURCE_REF=origin/work/etapa2-r08-realm-interno
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+COMMAND_TEMPLATE=git show <ref>:packages/coelo_database/supabase/tests/<suite> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+=== SUITE superadmin_internal_chat_attachments_v1_test.sql PLAN=28 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..28
+(1 row)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+CREATE TABLE
+GRANT
+                                       ok
+--------------------------------------------------------------------------------
+ ok 1 - authenticated prepara/autoriza; service_role finaliza/expira; anon nada
+(1 row)
+
+                               ok
+----------------------------------------------------------------
+ ok 2 - tabela de tickets com RLS forcada e sem grant a cliente
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+SELECT 1
+GRANT
+         is
+---------------------
+ ok 3 - grupo criado
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                       is
+------------------------------------------------
+ ok 4 - prepare aceito pelo papel authenticated
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 5 - object_key opaco versionado, bucket privado e ticket
+(1 row)
+
+SELECT 1
+GRANT
+               is
+--------------------------------
+ ok 6 - mensagem nasce em draft
+(1 row)
+
+INSERT 0 1
+                      is
+----------------------------------------------
+ ok 7 - thread nao mostra a mensagem pendente
+(1 row)
+
+INSERT 0 1
+                      ok
+-----------------------------------------------
+ ok 8 - mesmo request_id devolve o mesmo anexo
+(1 row)
+
+INSERT 0 1
+                       is
+------------------------------------------------
+ ok 9 - request_id com outro arquivo e recusado
+(1 row)
+
+INSERT 0 4
+                                                   ok
+---------------------------------------------------------------------------------------------------------
+ ok 10 - imagem acima de 4 MiB, video, sha invalido e nome com travessia sao CHAT_ATTACHMENT_INVALID 422
+(1 row)
+
+INSERT 0 1
+                          is
+-------------------------------------------------------
+ ok 11 - anexo pendente nao e legivel (mensagem draft)
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000203"}
+(1 row)
+
+INSERT 0 3
+                                             ok
+---------------------------------------------------------------------------------------------
+ ok 12 - outro tenant: prepare, authorize_finalize e authorize_read respondem CHAT_NOT_FOUND
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+                          ok
+-------------------------------------------------------
+ ok 13 - dono do ticket recebe o ticket de finalizacao
+(1 row)
+
+SET
+                throws_like
+--------------------------------------------
+ ok 14 - authenticated nao executa finalize
+(1 row)
+
+RESET
+        set_config
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                              is
+---------------------------------------------------------------
+ ok 15 - sha diferente do anunciado e CHAT_ATTACHMENT_MISMATCH
+(1 row)
+
+                   is
+----------------------------------------
+ ok 16 - anexo com mismatch vira failed
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 17 - mensagem do anexo falho fica archived
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+SELECT 1
+GRANT
+        set_config
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+RESET
+                           is
+---------------------------------------------------------
+ ok 18 - finalize com medidas iguais deixa o anexo ready
+(1 row)
+
+                is
+-----------------------------------
+ ok 19 - ticket nao e reutilizavel
+(1 row)
+
+              is
+------------------------------
+ ok 20 - mensagem vira active
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+                                ok
+-------------------------------------------------------------------
+ ok 21 - thread lista a mensagem de anexo pronta com attachments[]
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                                 ok
+---------------------------------------------------------------------
+ ok 22 - authorize_read devolve a chave para o gateway assinar o GET
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000203"}
+(1 row)
+
+INSERT 0 1
+                     is
+--------------------------------------------
+ ok 23 - outro tenant nao le o anexo pronto
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+UPDATE 1
+        set_config
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                   is
+-----------------------------------------
+ ok 24 - expire marca o pendente vencido
+(1 row)
+
+                is
+-----------------------------------
+ ok 25 - anexo vencido vira failed
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+                       is
+-------------------------------------------------
+ ok 26 - ticket vencido nao autoriza finalizacao
+(1 row)
+
+                     ok
+--------------------------------------------
+ ok 27 - prepare, finalize e read auditados
+(1 row)
+
+                    ok
+------------------------------------------
+ ok 28 - negativas cross-tenant auditadas
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=superadmin_internal_chat_attachments_v1_test.sql native_exit=0 ok=28 not_ok=0 expected=28 rollback=1
+=== SUITE chat_attachment_worker_claims_v1_test.sql PLAN=3 ===
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+------
+ 1..3
+(1 row)
+
+ set_config
+------------
+
+(1 row)
+
+ set_config
+------------
+
+(1 row)
+
+                           is
+---------------------------------------------------------
+ ok 1 - expire sem claims responde SAI_PERMISSION_DENIED
+(1 row)
+
+                            is
+-----------------------------------------------------------
+ ok 2 - finalize sem claims responde SAI_PERMISSION_DENIED
+(1 row)
+
+        set_config
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+                                 is
+--------------------------------------------------------------------
+ ok 3 - service_role com ticket inexistente responde CHAT_NOT_FOUND
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+SUITE_RESULT name=chat_attachment_worker_claims_v1_test.sql native_exit=0 ok=3 not_ok=0 expected=3 rollback=1
+WRAPPER_EXIT=0

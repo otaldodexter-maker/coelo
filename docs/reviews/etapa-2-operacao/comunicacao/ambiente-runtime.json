@@ -1,12 +1,12 @@
 {
-  "revision": 4,
+  "revision": 5,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:25:00-03:00",
+  "updatedAt": "2026-09-12T11:30:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -48,7 +48,9 @@
       "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados",
       "mecanismos QA existentes classificados: release atual sem DTD/VM Service; qa_drive exige CDP; qa_login e Dart MCP exigem app debug conectado",
       "assessment focal G5 52/52 com rollback; preview cleanup corrigido c9662b0ff read-only com rollback e zero contagens",
-      "fixture de convite expirado: RED historico 34/35 classificado, corrigido pelo autor G5 e rerun 95b501322 em 35/35 com rollback"
+      "fixture de convite expirado: RED historico 34/35 classificado, corrigido pelo autor G5 e rerun 95b501322 em 35/35 com rollback",
+      "H09 20260912140545 aplicado somente no espelho por liberacao C0; job nominal ativo a cada 5 minutos e teste 6/6",
+      "consumidores Chat pos-H09: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -68,6 +70,10 @@
       ,"cleanup preview c9662b0ff: native/wrapper exit 0, rollback, nove contagens zero"
       ,"superadmin_internal_invites_v2_test.sql em 76aed97cb: 34 ok, 1 not ok, native 0, wrapper 1, rollback"
       ,"superadmin_internal_invites_v2_test.sql corrigido em 95b501322: 35/35, native/wrapper exit 0, rollback"
+      ,"H09 apply baseline: native exit 0; job unico */5 com sweep limitado a 500"
+      ,"now_publication_expiry_dispatch_v1_test.sql: 6/6, native/wrapper exit 0, rollback"
+      ,"superadmin_internal_chat_attachments_v1_test.sql: 28/28, native exit 0, rollback"
+      ,"chat_attachment_worker_claims_v1_test.sql: 3/3, native exit 0, rollback; wrapper agregado 0"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -83,7 +89,7 @@
     "server": "127.0.0.1:3014 PID 16248, ativo",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "espelho confirmado por 88 testes ACL e preflight 20/20; lote 56, backup, aplicacao e ledger permanecem com C0"
+    "sql": "slot devolvido ao C0; espelho inclui H09 local verde 6/6 e consumidores Chat 28/28+3/3; producao/backup/ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -112,6 +118,11 @@
       "revision": 4,
       "at": "2026-09-12T11:25:00-03:00",
       "summary": "Limite de driver documentado com reproducao; assessment 52/52 e preview cleanup read-only verdes; convites passou 35/35 apos G5 corrigir a unica expectativa MFA historica."
+    },
+    {
+      "revision": 5,
+      "at": "2026-09-12T11:30:00-03:00",
+      "summary": "H09 aplicado somente no espelho e provado 6/6; consumidores Chat 28/28+3/3 verdes; slot SQL devolvido ao C0 para lote 56 em producao."
     }
   ]
 }
