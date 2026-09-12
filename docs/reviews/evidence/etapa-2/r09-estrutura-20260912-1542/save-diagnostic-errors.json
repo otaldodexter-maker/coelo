@@ -1,0 +1,18 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:37:53.216654+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "directoryReadable": false
+  },
+  "loginHttp": 200,
+  "directoryHttp": 400,
+  "matches": [],
+  "directoryError": {
+    "code": "22025",
+    "message": "invalid escape string",
+    "hint": "Escape string must be empty or one character."
+  },
+  "logoutLocalHttp": 204
+}

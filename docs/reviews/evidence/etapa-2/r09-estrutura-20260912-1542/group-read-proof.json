@@ -1,0 +1,19 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:25:40.489955+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "retainedGroup": true,
+    "retainedInstitution": true,
+    "retainedUnit": true,
+    "accessIsList": true,
+    "flatRoleContract": false
+  },
+  "loginHttp": 200,
+  "readHttp": 200,
+  "accessCount": 0,
+  "localAccessCount": 0,
+  "profileCodes": [],
+  "logoutLocalHttp": 204
+}

@@ -117,3 +117,13 @@ descreve demonstracao local; nao foi usada como prova do backend atual.
 Na inspecao inicial nao havia codigo alterado; agora o consumidor acima foi
 corrigido/testado. Sem segredos ou recursos remotos criados. Sem polling ou
 timer; proxima prova UI depende de transferencia C0/G0.
+
+## Checkpoint C0 r101
+
+Transferencia nominal Chrome22592/tab829822462 e servidor51168/3014 recebida.
+Preparar uma base integrada propria com emulacoes false; nao repetir35PASS de C0.
+Leitura normal retida: Auth200, grupo200, logout local204; hierarquia confirmada.
+A turma possui zero membros: flatRoleContract=false e resultado logico do probe1.
+Isso significa contrato nao exercitado por fixture vazia; nao significa parser verde real.
+Prova original preservada em group-read-proof.json, sem rerun ou mutacao.
+

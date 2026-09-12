@@ -1,0 +1,21 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:37:15.235698+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "directoryReadable": false,
+    "lookupReadable": true
+  },
+  "loginHttp": 200,
+  "directoryHttp": 400,
+  "matches": [],
+  "lookupHttp": 200,
+  "candidateShape": [
+    {
+      "access": "edit_global",
+      "person_id": "ec2a15a2-76bc-4e71-8419-94413d0c5c98"
+    }
+  ],
+  "logoutLocalHttp": 204
+}

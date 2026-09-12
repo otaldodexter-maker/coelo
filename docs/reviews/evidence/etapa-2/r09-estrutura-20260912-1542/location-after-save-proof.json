@@ -1,0 +1,34 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:40:57.324926+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "groupReadable": true,
+    "locationReadable": true
+  },
+  "loginHttp": 200,
+  "groupHttp": 200,
+  "group": {
+    "id": "1043c165-7f24-44fe-a868-5bfc6fb0b50f",
+    "institution_id": "190dd028-3125-452d-8502-612bfa1029de",
+    "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+    "status": "active",
+    "management_version": 2
+  },
+  "memberCount": 0,
+  "locationHttp": 200,
+  "location": {
+    "group_id": "1043c165-7f24-44fe-a868-5bfc6fb0b50f",
+    "selection": {
+      "id": "d5461295-9273-4caa-9197-8f9d8c05c4f8",
+      "kind": "internal",
+      "name": "Sala R04 Estrutura",
+      "status": "active",
+      "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+      "scope_kind": "unit",
+      "institution_id": "190dd028-3125-452d-8502-612bfa1029de"
+    }
+  },
+  "logoutLocalHttp": 204
+}

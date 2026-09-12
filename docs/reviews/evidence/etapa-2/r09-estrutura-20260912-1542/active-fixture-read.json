@@ -1,0 +1,38 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:45:47.225958+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "readable": true
+  },
+  "loginHttp": 200,
+  "readHttp": 200,
+  "fixtures": [
+    {
+      "id": "d0c40000-0000-4000-8000-000000000003",
+      "display_name": "Crianca QA R04",
+      "status": "active",
+      "handle": null
+    },
+    {
+      "id": "9f040000-0000-4000-8000-000000000064",
+      "display_name": "QA R04 Crianca",
+      "status": "active",
+      "handle": null
+    },
+    {
+      "id": "9f040000-0000-4000-8000-000000000061",
+      "display_name": "QA R04 Profissional",
+      "status": "active",
+      "handle": null
+    },
+    {
+      "id": "9f040000-0000-4000-8000-000000000062",
+      "display_name": "QA R04 Responsavel",
+      "status": "active",
+      "handle": null
+    }
+  ],
+  "logoutLocalHttp": 204
+}
