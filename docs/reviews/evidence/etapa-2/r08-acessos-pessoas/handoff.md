@@ -30,5 +30,12 @@ desse caso pertence à revisão de segurança e não é alegada como resolvida a
 - `people.create`/`people.edit`: rota normal, @, disponibilidade/cooldown e
   reload aguardam Chrome.
 - `invites.resend`: fixture expirada segura solicitada à G5.
-- Os 15 goldens A e a correção P15 ainda exigem comparação visual antes de
-  regravação ou alteração de expectativa.
+- P15: `person_form_page_test.dart` agora espera 40 (em vez de 24), valor já
+  produzido pelo `SuperadminFormFrame`; `flutter test --concurrency=1
+  test/features/people/presentation/person_form_page_test.dart` terminou com
+  23 passed, 0 failed.
+- Foco de usuários internos: `flutter test --concurrency=1
+  test/features/platform_users/data/supabase_platform_user_repository_test.dart
+  test/features/platform_users/presentation/platform_user_pages_test.dart`
+  terminou com 39 passed, 0 failed.
+- Os 15 goldens A ainda exigem comparação visual antes de regravação.
