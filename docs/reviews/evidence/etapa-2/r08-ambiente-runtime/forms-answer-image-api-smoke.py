@@ -153,28 +153,41 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--execute", action="store_true")
     mode.add_argument("--discover", action="store_true")
+    mode.add_argument("--preflight", action="store_true")
     parser.add_argument("--occurrence-id")
+    parser.add_argument("--participation-id")
     parser.add_argument("--item-id")
+    parser.add_argument("--qa-env")
+    parser.add_argument("--expected-auth-uid")
     parser.add_argument(
         "--edit-secret-env",
         help="Nome da variável que contém o edit_secret anônimo; o valor nunca é impresso.",
     )
     args = parser.parse_args()
-    if not args.execute and not args.discover:
+    if not args.execute and not args.discover and not args.preflight:
         emit("guard", "READY_NO_MUTATION")
         return 0
     occurrence_id = ""
+    expected_participation_id = None
     requested_item_id = None
-    if args.execute:
+    expected_auth_uid = None
+    if args.execute or args.preflight:
         try:
             occurrence_id = str(uuid.UUID(args.occurrence_id or ""))
+            expected_participation_id = str(uuid.UUID(args.participation_id or ""))
             requested_item_id = str(uuid.UUID(args.item_id)) if args.item_id else None
+            expected_auth_uid = str(uuid.UUID(args.expected_auth_uid or ""))
         except ValueError:
             emit("guard", "INVALID_RUNTIME_FIXTURE")
             return 2
 
     app = read_env(APP_ENV)
-    qa = read_env(QA_ENV)
+    qa_path = Path(args.qa_env).resolve() if args.qa_env else QA_ENV.resolve()
+    qa_root = Path(r"C:\Users\adrie\Documents\Coelo-backups").resolve()
+    if qa_path.parent != qa_root or not qa_path.name.startswith("qa-") or qa_path.suffix != ".env":
+        emit("guard", "INVALID_QA_ENV_PATH")
+        return 2
+    qa = read_env(qa_path)
     base = app["COELO_SUPABASE_URL"].rstrip("/")
     key = app["COELO_SUPABASE_PUBLISHABLE_KEY"]
     auth_status, auth = request_json(
@@ -191,7 +204,22 @@ def main() -> int:
         "authorization": f"Bearer {token}",
         "content-type": "application/json",
     }
-    emit("auth", "PASS", http=auth_status)
+    try:
+        encoded_claims = token.split(".")[1]
+        encoded_claims += "=" * ((4 - len(encoded_claims) % 4) % 4)
+        auth_uid = require_uuid(
+            json.loads(base64.urlsafe_b64decode(encoded_claims)).get("sub"),
+            "auth_uid",
+        )
+    except (IndexError, ValueError, json.JSONDecodeError, UnicodeDecodeError, SmokeFailure):
+        emit("auth", "FAILED", http=auth_status, code="invalid_jwt_claims")
+        request_json(f"{base}/auth/v1/logout?scope=local", headers=api_headers)
+        return 1
+    if expected_auth_uid is not None and auth_uid != expected_auth_uid:
+        emit("auth", "FAILED", http=auth_status, code="auth_uid_mismatch")
+        request_json(f"{base}/auth/v1/logout?scope=local", headers=api_headers)
+        return 1
+    emit("auth", "PASS", http=auth_status, auth_uid=auth_uid)
 
     def rpc(name: str, body: dict[str, Any]) -> tuple[int, Any]:
         return request_json(f"{base}/rest/v1/rpc/{name}", body=body, headers=api_headers)
@@ -302,6 +330,8 @@ def main() -> int:
         if occurrence_data.get("id") != occurrence_id or occurrence.get("can_edit") is not True:
             raise SmokeFailure("occurrence:not_open_or_mismatched")
         participation_id = require_uuid(occurrence.get("participation_id"), "participation")
+        if expected_participation_id is not None and participation_id != expected_participation_id:
+            raise SmokeFailure("occurrence:participation_mismatch")
         identity_mode = definition.get("identity_mode")
         if identity_mode not in {"identified", "anonymous"}:
             raise SmokeFailure("occurrence:invalid_identity")
@@ -330,6 +360,9 @@ def main() -> int:
             item_kind=item_kind,
             identity_mode=identity_mode,
         )
+        if args.preflight:
+            emit("preflight", "PASS_READ_ONLY", mutations=0)
+            return 0
 
         open_payload: dict[str, Any] = {
             "occurrence_id": occurrence_id,
