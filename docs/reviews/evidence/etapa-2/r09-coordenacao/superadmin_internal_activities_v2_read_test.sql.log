@@ -1,0 +1,252 @@
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..28
+(1 row)
+
+        has_function
+----------------------------
+ ok 1 - directory v2 exists
+(1 row)
+
+      has_function
+-------------------------
+ ok 2 - detail v2 exists
+(1 row)
+
+         has_function
+-------------------------------
+ ok 3 - form options v2 exists
+(1 row)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+INSERT 0 3
+INSERT 0 6
+INSERT 0 7
+INSERT 0 5
+INSERT 0 5
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 5
+UPDATE 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 16
+DELETE 0
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a100000-0000-4000-8000-000000000201", "action_code": "manage", "auth_user_id": "8a100000-0000-4000-8000-000000000101", "correlation_id": "6aaccf3f-76e9-4414-9dd7-00c205e8e18a", "permission_code": "activities.manage", "internal_identity_id": "8a100000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a100000-0000-4000-8000-000000000401", "internal_membership_id": "8a100000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+                                                                                                                                                                                                                      set_config
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a100000-0000-4000-8000-000000000201", "action_code": "link_units", "auth_user_id": "8a100000-0000-4000-8000-000000000101", "correlation_id": "ef25367f-154b-4b5b-a775-a478c154d366", "permission_code": "activities.link_units", "internal_identity_id": "8a100000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a100000-0000-4000-8000-000000000401", "internal_membership_id": "8a100000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+                                                                                                                                                                                                                       set_config
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a100000-0000-4000-8000-000000000201", "action_code": "link_groups", "auth_user_id": "8a100000-0000-4000-8000-000000000101", "correlation_id": "af86eab7-622e-4e31-9d70-15e0ad402ced", "permission_code": "activities.link_groups", "internal_identity_id": "8a100000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a100000-0000-4000-8000-000000000401", "internal_membership_id": "8a100000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+CREATE TABLE
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000201"}
+(1 row)
+
+INSERT 0 7
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 3
+ set_config
+------------
+ {}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000209"}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "8a100000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000203"}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000104", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000204"}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000105", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000205"}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a100000-0000-4000-8000-000000000106", "role": "authenticated", "session_id": "8a100000-0000-4000-8000-000000000206"}
+(1 row)
+
+INSERT 0 1
+                        ok
+---------------------------------------------------
+ ok 4 - authorized directory returns tenant A only
+(1 row)
+
+                   ok
+-----------------------------------------
+ ok 5 - directory does not leak tenant B
+(1 row)
+
+                      ok
+-----------------------------------------------
+ ok 6 - detail returns the authorized activity
+(1 row)
+
+                      ok
+----------------------------------------------
+ ok 7 - default detail exposes exact sections
+(1 row)
+
+                      ok
+-----------------------------------------------
+ ok 8 - detail never exposes actor identifiers
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 9 - authorized minimized form options succeed
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 10 - sibling unit filter cannot widen access
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 11 - sibling group filter cannot widen access
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 12 - random activity UUID is non-enumerating
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 13 - duplicate sections are rejected
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 14 - institution-scoped actor reads tenant A
+(1 row)
+
+                           ok
+--------------------------------------------------------
+ ok 15 - tenant B and random UUID are indistinguishable
+(1 row)
+
+                             is
+-------------------------------------------------------------
+ ok 16 - sensitive sections require independent capabilities
+(1 row)
+
+                is
+-----------------------------------
+ ok 17 - missing Auth fails closed
+(1 row)
+
+                  is
+--------------------------------------
+ ok 18 - expired session fails closed
+(1 row)
+
+                 ok
+-------------------------------------
+ ok 19 - Owner AAL1 reads in the MVP
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 20 - revoked membership fails closed
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 21 - people-only cross-app identity is denied
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 22 - explicit capability deny fails closed
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 23 - every read uses the stable envelope
+(1 row)
+
+                   ok
+-----------------------------------------
+ ok 24 - every read error is allowlisted
+(1 row)
+
+                                      ok
+-------------------------------------------------------------------------------
+ ok 25 - tenant scope is non-enumerating while sensitive section denial is 403
+(1 row)
+
+                     ok
+--------------------------------------------
+ ok 26 - directory item count matches total
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 27 - directory echoes bounded pagination
+(1 row)
+
+                      ok
+----------------------------------------------
+ ok 28 - read envelopes contain no Auth email
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

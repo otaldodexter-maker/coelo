@@ -1,0 +1,501 @@
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ no_plan
+---------
+(0 rows)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+INSERT 0 6
+INSERT 0 6
+INSERT 0 7
+INSERT 0 5
+INSERT 0 5
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 5
+UPDATE 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 16
+DELETE 0
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8a200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "manage", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "0353e7e7-74e2-42a0-9f05-f6c86e0b1f39", "permission_code": "activities.manage", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+                                                                                                                                                                                                                      set_config
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "link_units", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "3f5d5622-5f75-4084-bef8-13fcf11e862e", "permission_code": "activities.link_units", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 3
+                                                                                                                                                                                                                       set_config
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "link_groups", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "91da4628-7e93-461b-989e-82d74f012346", "permission_code": "activities.link_groups", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 4
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "manage", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "a2f39f8f-e9b9-4f41-a783-1fe1d4d70043", "permission_code": "activities.manage", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 1
+                                                                                                                                                                                                                      set_config
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "link_units", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "25e400b3-90be-4745-8168-d119d9784060", "permission_code": "activities.link_units", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 1
+                                                                                                                                                                                                                       set_config
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8a200000-0000-4000-8000-000000000201", "action_code": "link_groups", "auth_user_id": "8a200000-0000-4000-8000-000000000101", "correlation_id": "ffe84ced-c545-4e3d-b3ea-a3103c67b9a2", "permission_code": "activities.link_groups", "internal_identity_id": "8a200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8a200000-0000-4000-8000-000000000401", "internal_membership_id": "8a200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 1
+DELETE 3
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8a200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                 has_function
+-----------------------------------------------
+ ok 1 - nominal read-only filter options exist
+(1 row)
+
+                  ok
+---------------------------------------
+ ok 2 - anon has no filter RPC execute
+(1 row)
+
+                           ok
+--------------------------------------------------------
+ ok 3 - service role has no implicit filter RPC execute
+(1 row)
+
+                        ok
+---------------------------------------------------
+ ok 4 - authenticated may enter authorized wrapper
+(1 row)
+
+                    ok
+------------------------------------------
+ ok 5 - anon has no directory RPC execute
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 6 - service role has no directory RPC execute
+(1 row)
+
+                        ok
+--------------------------------------------------
+ ok 7 - authenticated may enter directory wrapper
+(1 row)
+
+CREATE FUNCTION
+GRANT
+CREATE TABLE
+GRANT
+SET
+INSERT 0 1
+INSERT 0 20
+RESET
+                            is
+----------------------------------------------------------
+ ok 8 - scoped directory calls use authenticated SQL role
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 9 - scoped reader lists both activities in A
+(1 row)
+
+                                   is
+------------------------------------------------------------------------
+ ok 10 - exact initial client payload treats empty arrays as no filters
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 11 - read-only actor obtains options without mutation permissions
+(1 row)
+
+                                    ok
+--------------------------------------------------------------------------
+ ok 12 - filter options preserve all structures in authorized institution
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 13 - options include an authorized group without any activity link
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 14 - unit option carries institution parent
+(1 row)
+
+                    is
+------------------------------------------
+ ok 15 - group option carries unit parent
+(1 row)
+
+                             ok
+------------------------------------------------------------
+ ok 16 - filter IDs and labels come from the real hierarchy
+(1 row)
+
+                           ok
+---------------------------------------------------------
+ ok 17 - neither directory nor options disclose tenant B
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 18 - legacy scalar filter remains compatible
+(1 row)
+
+                      is
+----------------------------------------------
+ ok 19 - legacy pagination remains compatible
+(1 row)
+
+                 is
+------------------------------------
+ ok 20 - search matches description
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 21 - arrays OR within dimensions and preserve scoped tenant
+(1 row)
+
+                 is
+-------------------------------------
+ ok 22 - dimensions combine with AND
+(1 row)
+
+                    is
+------------------------------------------
+ ok 23 - cross-tenant filter only narrows
+(1 row)
+
+              is
+-------------------------------
+ ok 24 - origin filter is real
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 25 - status filter excludes draft activity
+(1 row)
+
+                 is
+------------------------------------
+ ok 26 - status filter is selective
+(1 row)
+
+                                       is
+--------------------------------------------------------------------------------
+ ok 27 - unit array returns both activities linked to A Sul without duplication
+(1 row)
+
+                               is
+-----------------------------------------------------------------
+ ok 28 - unit array alone excludes an activity from another unit
+(1 row)
+
+                                 is
+--------------------------------------------------------------------
+ ok 29 - selective unit filter returns the actually linked activity
+(1 row)
+
+                   is
+----------------------------------------
+ ok 30 - group array alone is selective
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 31 - group filter excludes the other activity
+(1 row)
+
+                           is
+---------------------------------------------------------
+ ok 32 - cross-tenant structural filter narrows: unit_b
+ ok 33 - cross-tenant structural filter narrows: group_b
+(2 rows)
+
+                is
+-----------------------------------
+ ok 34 - first tie is stable by id
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 35 - next offset does not repeat equal timestamps
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 36 - total is independent of limit/offset: beyond
+ ok 37 - total is independent of limit/offset: first
+ ok 38 - total is independent of limit/offset: second
+(3 rows)
+
+                      is
+----------------------------------------------
+ ok 39 - requested limit is preserved: beyond
+ ok 40 - requested limit is preserved: first
+ ok 41 - requested limit is preserved: second
+(3 rows)
+
+                    is
+-------------------------------------------
+ ok 42 - second page reports actual offset
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 43 - out-of-range page preserves requested offset
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 44 - limited page has exactly one distinct activity: first
+ ok 45 - limited page has exactly one distinct activity: second
+(2 rows)
+
+                       is
+-------------------------------------------------
+ ok 46 - offset beyond total returns empty items
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 47 - name ASC starts with Robótica A
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 48 - name DESC starts with Robótica Local A
+(1 row)
+
+                                ok
+-------------------------------------------------------------------
+ ok 49 - two-unit three-group fixture does not multiply aggregates
+(1 row)
+
+                     is
+--------------------------------------------
+ ok 50 - search wildcards are literal input
+(1 row)
+
+                                 ok
+--------------------------------------------------------------------
+ ok 51 - complete allowlisted client projection with legacy aliases
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 52 - origin distribution governance and version are not fabricated
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 53 - linked context arrays match counts and actual names
+(1 row)
+
+                                           ok
+-----------------------------------------------------------------------------------------
+ ok 54 - required identities strings numeric counts and aliases exactly match the source
+(1 row)
+
+                                ok
+-------------------------------------------------------------------
+ ok 55 - linked context IDs are canonical rather than link-row IDs
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 56 - institutional distribution is preserved
+(1 row)
+
+                                ok
+-------------------------------------------------------------------
+ ok 57 - no actor identifiers, contact data or unrelated locations
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 14
+RESET
+                           is
+--------------------------------------------------------
+ ok 58 - invalid-input calls use authenticated SQL role
+(1 row)
+
+                             is
+-------------------------------------------------------------
+ ok 59 - invalid filters rejected: invalid:ambiguous
+ ok 60 - invalid filters rejected: invalid:array-null
+ ok 61 - invalid filters rejected: invalid:duplicate
+ ok 62 - invalid filters rejected: invalid:invalid-uuid
+ ok 63 - invalid filters rejected: invalid:member-not-string
+ ok 64 - invalid filters rejected: invalid:non-object
+ ok 65 - invalid filters rejected: invalid:not-array
+ ok 66 - invalid filters rejected: invalid:oversized
+ ok 67 - invalid filters rejected: invalid:scalar-status
+ ok 68 - invalid filters rejected: invalid:search-too-long
+ ok 69 - invalid filters rejected: invalid:search-type
+ ok 70 - invalid filters rejected: invalid:unknown
+ ok 71 - invalid filters rejected: invalid:unknown-origin
+ ok 72 - invalid filters rejected: invalid:unknown-status
+(14 rows)
+
+SET
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "8a200000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "8a200000-0000-4000-8000-000000000203"}
+(1 row)
+
+INSERT 0 3
+RESET
+                           is
+--------------------------------------------------------
+ ok 73 - AAL1 positive calls use authenticated SQL role
+(1 row)
+
+                                is
+------------------------------------------------------------------
+ ok 74 - current MVP AAL1 policy is preserved under authenticated
+(1 row)
+
+                                  is
+----------------------------------------------------------------------
+ ok 75 - filters preserve current MVP AAL1 policy under authenticated
+(1 row)
+
+CREATE TABLE
+GRANT
+SET
+INSERT 0 1
+DO
+RESET
+                          is
+-------------------------------------------------------
+ ok 76 - all negative calls use authenticated SQL role
+(1 row)
+
+                  is
+--------------------------------------
+ ok 77 - directory denies capability
+ ok 78 - directory denies expired
+ ok 79 - directory denies invalid-aal
+ ok 80 - directory denies people-only
+ ok 81 - directory denies revoked
+(5 rows)
+
+                   is
+-----------------------------------------
+ ok 82 - filter options deny capability
+ ok 83 - filter options deny expired
+ ok 84 - filter options deny invalid-aal
+ ok 85 - filter options deny people-only
+ ok 86 - filter options deny revoked
+(5 rows)
+
+SET
+ set_config
+------------
+ {}
+(1 row)
+
+INSERT 0 2
+RESET
+                                   is
+------------------------------------------------------------------------
+ ok 87 - request without claims still uses authenticated transport role
+(1 row)
+
+                        is
+---------------------------------------------------
+ ok 88 - anonymous request cannot retrieve options
+(1 row)
+
+                         ok
+-----------------------------------------------------
+ ok 89 - identified denials preserve minimized audit
+(1 row)
+
+SET
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8a200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8a200000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 3
+RESET
+                           is
+--------------------------------------------------------
+ ok 90 - success audit calls use authenticated SQL role
+(1 row)
+
+                                   ok
+------------------------------------------------------------------------
+ ok 91 - successful read has correlated internal audit: audit_directory
+ ok 92 - successful read has correlated internal audit: audit_options
+(2 rows)
+
+                                      ok
+-------------------------------------------------------------------------------
+ ok 93 - successful read audit contains only minimized counts: audit_directory
+ ok 94 - successful read audit contains only minimized counts: audit_options
+(2 rows)
+
+CREATE FUNCTION
+CREATE TRIGGER
+SET
+INSERT 0 1
+DO
+RESET
+                           is
+---------------------------------------------------------
+ ok 95 - append-failure calls use authenticated SQL role
+(1 row)
+
+                                              is
+-----------------------------------------------------------------------------------------------
+ ok 96 - append failure propagates without a data or success envelope: audit_failure_directory
+ ok 97 - append failure propagates without a data or success envelope: audit_failure_options
+(2 rows)
+
+DROP TRIGGER
+ finish
+--------
+ 1..97
+(1 row)
+
+ROLLBACK

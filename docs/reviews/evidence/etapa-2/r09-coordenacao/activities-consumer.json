@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-12T21:47:06.259990+00:00",
+  "checks": [
+    {
+      "step": "anonymous_directory_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "ui_directory_records_persisted",
+      "pass": true,
+      "http": 200,
+      "activity_ids": [
+        "95b98978-19e2-43ba-aa0c-70ae81557e08",
+        "2e45c8bd-64ab-4591-a433-e5790c3706f0",
+        "085da87e-438f-4625-88d7-764d0d1bb4ad"
+      ]
+    },
+    {
+      "step": "foreign_institution_unit_combination_does_not_leak",
+      "pass": true,
+      "http": 200,
+      "error": null
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}

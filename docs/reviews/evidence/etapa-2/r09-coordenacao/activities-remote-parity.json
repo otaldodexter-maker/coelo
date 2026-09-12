@@ -1,0 +1,576 @@
+[
+  {
+    "functions": [
+      {
+        "md5": "4fb704ebf1f2c8ddec45497974e6176b",
+        "args": "p_permissions text[], p_expected app_private.superadmin_internal_context",
+        "name": "activity_location_authorize_v2",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6470a46f31d2013ca07176eab60e6a3e",
+        "args": "p_activity_id uuid",
+        "name": "activity_management_payload",
+        "schema": "app_private"
+      },
+      {
+        "md5": "93ecdb979847ec96fb5eaa7bd5c375b1",
+        "args": "p_namespace text, p_request_id uuid",
+        "name": "activity_request_uuid",
+        "schema": "app_private"
+      },
+      {
+        "md5": "52dc2956f2fa168ad16a409941f4ae82",
+        "args": "value text",
+        "name": "activity_slugify",
+        "schema": "app_private"
+      },
+      {
+        "md5": "ef3d1213310aae325f4c51cf7fcc7964",
+        "args": "p_ctx app_private.superadmin_internal_context, p_institution_id uuid, p_activity_id uuid, p_permission_code text, p_action_code text, p_counts jsonb",
+        "name": "activity_v2_append_audit",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6e4695488f99e9320ad5ff994bed2ca7",
+        "args": "p_command_kind text, p_institution_id uuid, p_activity_id uuid, p_expected_version bigint, p_normalized_payload jsonb",
+        "name": "activity_v2_command_request_hash",
+        "schema": "app_private"
+      },
+      {
+        "md5": "a372de7cdabc50d8912ad5fdb50affe4",
+        "args": "p_permission_code text, p_action_code text, p_error_code text, p_correlation_id uuid, p_institution_id uuid",
+        "name": "activity_v2_denied_envelope",
+        "schema": "app_private"
+      },
+      {
+        "md5": "f33efd12f626bc5580a0024a193e4056",
+        "args": "p_prohibited text, p_legacy_deny text, p_action text, p_legacy_allow text, p_policy text, p_setting text, p_default text, p_profile text",
+        "name": "activity_v2_effective_permission",
+        "schema": "app_private"
+      },
+      {
+        "md5": "cd5e9b750e479fb9528a8f2a6f3d363a",
+        "args": "p_code text, p_correlation_id uuid",
+        "name": "activity_v2_error_envelope",
+        "schema": "app_private"
+      },
+      {
+        "md5": "fd0846cbde32a7454216816f90f56274",
+        "args": "p_ctx app_private.superadmin_internal_context, p_request_id uuid, p_institution_id uuid, p_activity_id uuid, p_command_kind text, p_request_hash bytea, p_version bigint, p_status text, p_correlation_id uuid, p_counts jsonb",
+        "name": "activity_v2_finish_command",
+        "schema": "app_private"
+      },
+      {
+        "md5": "b4a738e221c2f8c745712d5ea9d2eb4f",
+        "args": "p_code text",
+        "name": "activity_v2_normalize_error",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c4074d6a9e37d57a3cf5d95f45e3fac8",
+        "args": "p_ctx app_private.superadmin_internal_context, p_request_id uuid, p_institution_id uuid, p_activity_id uuid, p_command_kind text, p_request_hash bytea, p_correlation_id uuid",
+        "name": "activity_v2_replay_or_error",
+        "schema": "app_private"
+      },
+      {
+        "md5": "71fa1ab8ef8985c18c541bdd6f7a8966",
+        "args": "p_permission_code text, p_institution_id uuid",
+        "name": "activity_v2_require_context",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6ea5f698b685da46dbe17422dc3c316e",
+        "args": "p_value text",
+        "name": "activity_v2_safe_uuid",
+        "schema": "app_private"
+      },
+      {
+        "md5": "e226b9e6df0abcbfc8fcc5f0cb2cb802",
+        "args": "p_ctx app_private.superadmin_internal_context, p_permission_code text, p_action_code text, p_correlation_id uuid",
+        "name": "activity_v2_set_marker",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7b910c844851d7fb9fbdd2b71e5206e3",
+        "args": "p_data jsonb",
+        "name": "activity_v2_success_envelope",
+        "schema": "app_private"
+      },
+      {
+        "md5": "2d16e71baa0f8ddca73a1507f8260629",
+        "args": "p_institution_id uuid, p_participants jsonb",
+        "name": "activity_v2_validate_participants",
+        "schema": "app_private"
+      },
+      {
+        "md5": "5240b27f9bacab2345d4557f2de835ca",
+        "args": "p_institution_id uuid, p_professionals jsonb",
+        "name": "activity_v2_validate_professionals",
+        "schema": "app_private"
+      },
+      {
+        "md5": "10bb4b2104f483c20b99856b9fdeaa15",
+        "args": "",
+        "name": "audit_activity_change",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7f777e204cb3342390f99606ce9da6da",
+        "args": "",
+        "name": "capture_activity_handle_alias",
+        "schema": "app_private"
+      },
+      {
+        "md5": "ca934af6330c87b1467aaa3e8e4bcc65",
+        "args": "target_institution_id uuid, initial_unit_id uuid, activity_name text, activity_description text, audit_reason text",
+        "name": "create_activity_for_institution",
+        "schema": "app_private"
+      },
+      {
+        "md5": "3ba564fa19f23f6d7887547a416ee9c5",
+        "args": "origin_unit_id uuid, activity_name text, activity_description text, audit_reason text",
+        "name": "create_activity_for_unit",
+        "schema": "app_private"
+      },
+      {
+        "md5": "f33391e2b3cbfe552a17f43704b51272",
+        "args": "",
+        "name": "enforce_activity_active_group_v1",
+        "schema": "app_private"
+      },
+      {
+        "md5": "e07026288d7e12fd402b729d6f3c3000",
+        "args": "",
+        "name": "enforce_activity_active_unit",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6d609b25cfe54d59907d5b40c738c246",
+        "args": "",
+        "name": "guard_activity_v2_actor_provenance",
+        "schema": "app_private"
+      },
+      {
+        "md5": "d1cf109e18c33f825dac983cbcb61a23",
+        "args": "target_activity_id uuid, target_group_id uuid, target_capability_code text",
+        "name": "has_activity_capability",
+        "schema": "app_private"
+      },
+      {
+        "md5": "1927ca6f2319d92a4ea89dd0fa1cd256",
+        "args": "target_activity_id uuid, target_unit_id uuid, target_group_id uuid",
+        "name": "has_activity_context_access",
+        "schema": "app_private"
+      },
+      {
+        "md5": "380cc1216520c5e5c2e64d8ad0af2c44",
+        "args": "object_name text",
+        "name": "has_activity_identity_upload_intent",
+        "schema": "app_private"
+      },
+      {
+        "md5": "57dd868738151b326b195a007d3fea7c",
+        "args": "permission_code text",
+        "name": "has_platform_permission",
+        "schema": "app_private"
+      },
+      {
+        "md5": "a4423e7b8f52025ed0f3d1d345707e3c",
+        "args": "permission_code text, institution_id uuid",
+        "name": "has_platform_permission",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6e62270e54367ba886aec50091e349b0",
+        "args": "",
+        "name": "prevent_activity_v2_group_activity_admin",
+        "schema": "app_private"
+      },
+      {
+        "md5": "39b9e93d9c0147515858baf90165001f",
+        "args": "target_activity_id uuid, target_governance_kind text, target_reason text",
+        "name": "promote_activity_to_institution_standard",
+        "schema": "app_private"
+      },
+      {
+        "md5": "06267767ce069ee05555fcb42b183467",
+        "args": "",
+        "name": "refresh_institution_activity_handles",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7b2e56717417cd88e7f32803e6355d2f",
+        "args": "",
+        "name": "refresh_unit_activity_handles",
+        "schema": "app_private"
+      },
+      {
+        "md5": "137d7bb912200d0f6eb15dc65959ffa3",
+        "args": "",
+        "name": "require_activity_v2_internal_marker",
+        "schema": "app_private"
+      },
+      {
+        "md5": "5cdb28081d40e15232ef50912edd8082",
+        "args": "p_permission_code text",
+        "name": "require_superadmin_internal_context",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c43e42a0c9227b33911178e5693e33bf",
+        "args": "",
+        "name": "set_activity_canonical_handle",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6379654b433e0cd2091a3d71a3ac6482",
+        "args": "",
+        "name": "set_activity_updated_at",
+        "schema": "app_private"
+      },
+      {
+        "md5": "d34b25cd5e0e8ad15b193aabd6ab4db1",
+        "args": "object_name text",
+        "name": "storage_activity_id",
+        "schema": "app_private"
+      },
+      {
+        "md5": "1c525c5c7b555c3bc0c9924b80ef3fe8",
+        "args": "p_activity_id uuid",
+        "name": "superadmin_activity_detail",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c0567f60ca082b6ca73218d56f276954",
+        "args": "p_search text, p_institution_ids uuid[], p_unit_ids uuid[], p_group_ids uuid[], p_statuses text[], p_origins text[], p_limit integer, p_offset integer, p_sort text, p_sort_ascending boolean",
+        "name": "superadmin_activity_directory",
+        "schema": "app_private"
+      },
+      {
+        "md5": "0a1b9c5533c8838d70f6e50aa2a74520",
+        "args": "p_import_job_id uuid, p_storage_path text, p_file_name text, p_mime_type text, p_size_bytes bigint, p_checksum_sha256 text, p_row_count integer",
+        "name": "superadmin_activity_export_complete",
+        "schema": "app_private"
+      },
+      {
+        "md5": "2e422552d626c3cbd1831f70b9c09a45",
+        "args": "p_import_job_id uuid",
+        "name": "superadmin_activity_export_prepare",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c11bd27d93a12f08df5ddb589500a191",
+        "args": "",
+        "name": "superadmin_activity_filter_options",
+        "schema": "app_private"
+      },
+      {
+        "md5": "0bfb9849402c783ad2811176ad61f22d",
+        "args": "p_request_id uuid, p_import_job_id uuid, p_file jsonb, p_rows jsonb",
+        "name": "superadmin_activity_import_apply",
+        "schema": "app_private"
+      },
+      {
+        "md5": "72ed70c84220fc14bab6a9800290a297",
+        "args": "p_institution_id uuid",
+        "name": "superadmin_activity_template_options",
+        "schema": "app_private"
+      },
+      {
+        "md5": "98dfcf08d239155b511dd53d71a19ce5",
+        "args": "p_import_job_id uuid, p_action text",
+        "name": "superadmin_authorize_activity_file_job",
+        "schema": "app_private"
+      },
+      {
+        "md5": "b262281b56a2f3adfcdea0862663386e",
+        "args": "p_template_id uuid, p_institution_id uuid, p_idempotency_key uuid",
+        "name": "superadmin_copy_activity_template",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c035e23fdb8ba2eef5afa6f873e49a38",
+        "args": "p_file_name text, p_mime_type text, p_source_format text, p_idempotency_key uuid",
+        "name": "superadmin_create_activity_import_job",
+        "schema": "app_private"
+      },
+      {
+        "md5": "d88beabbf0e36ada532ee0afbdbbced9",
+        "args": "p_institution_id uuid, p_unit_ids uuid[], p_name text, p_idempotency_key uuid",
+        "name": "superadmin_create_activity_locations",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7b401a5e35cc8999b8b6f5f1f3968e03",
+        "args": "p_institution_id uuid, p_unit_id uuid, p_name text, p_description text, p_taxonomy_id uuid, p_governance_kind text, p_idempotency_key uuid",
+        "name": "superadmin_create_scoped_activity_template",
+        "schema": "app_private"
+      },
+      {
+        "md5": "c60ff5775829619cd54fa614f8127a44",
+        "args": "p_template_id uuid, p_institution_id uuid, p_idempotency_key uuid",
+        "name": "superadmin_duplicate_activity_template",
+        "schema": "app_private"
+      },
+      {
+        "md5": "5d6d9472ab81afb214d1c7809ea21e2d",
+        "args": "p_activity_id uuid, p_storage_path text, p_mime_type text, p_size_bytes bigint, p_checksum_sha256 text, p_idempotency_key uuid",
+        "name": "superadmin_finalize_activity_identity_upload",
+        "schema": "app_private"
+      },
+      {
+        "md5": "d057b16630b406d1d0be1d617722f2c5",
+        "args": "p_institution_id uuid",
+        "name": "superadmin_get_activity_form_options",
+        "schema": "app_private"
+      },
+      {
+        "md5": "9eecf326c432853f3d80baa15c24a405",
+        "args": "p_activity_id uuid, p_file_name text, p_mime_type text, p_size_bytes bigint, p_idempotency_key uuid",
+        "name": "superadmin_prepare_activity_identity_upload",
+        "schema": "app_private"
+      },
+      {
+        "md5": "f2767db5f901e5c99bb8d3fbc6b62d3e",
+        "args": "p_format text, p_filters jsonb, p_idempotency_key uuid",
+        "name": "superadmin_request_activity_export",
+        "schema": "app_private"
+      },
+      {
+        "md5": "0cd90bb1d142766a783ebc268b4b4016",
+        "args": "p_payload jsonb, p_idempotency_key uuid",
+        "name": "superadmin_upsert_activity",
+        "schema": "app_private"
+      },
+      {
+        "md5": "596736c4fec055fef91e1293ac5adf8c",
+        "args": "",
+        "name": "validate_activity_governance_row",
+        "schema": "app_private"
+      },
+      {
+        "md5": "2311ee1575cf800f0c0a8a265bb07af6",
+        "args": "",
+        "name": "validate_activity_group_profile",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7a7c95aeb09ba862509433231ec67022",
+        "args": "target_institution_id uuid, initial_unit_id uuid, activity_name text, activity_description text, audit_reason text",
+        "name": "create_activity_for_institution",
+        "schema": "public"
+      },
+      {
+        "md5": "6a7891d1a4075f5891cb45a00b4f1c78",
+        "args": "origin_unit_id uuid, activity_name text, activity_description text, audit_reason text",
+        "name": "create_activity_for_unit",
+        "schema": "public"
+      },
+      {
+        "md5": "98c7dfffc2b095461e137a9354fd12d8",
+        "args": "activity_id uuid, governance_kind text, reason text",
+        "name": "promote_activity_to_institution_standard",
+        "schema": "public"
+      },
+      {
+        "md5": "dc019a12fdf3317e6bca172d8e9268d6",
+        "args": "p_request_id uuid, p_payload jsonb",
+        "name": "superadmin_activity_create_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "4e2bdab5e816f7ef0789eb1694a00516",
+        "args": "p_activity_id uuid",
+        "name": "superadmin_activity_detail",
+        "schema": "public"
+      },
+      {
+        "md5": "f5f793985ba775433365c4709ab266c8",
+        "args": "p_activity_id uuid, p_sections text[]",
+        "name": "superadmin_activity_detail_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "f34a0ded46937b2b53c505b2be6d03da",
+        "args": "p_search text, p_institution_ids uuid[], p_unit_ids uuid[], p_group_ids uuid[], p_statuses text[], p_origins text[], p_limit integer, p_offset integer, p_sort text, p_sort_ascending boolean",
+        "name": "superadmin_activity_directory",
+        "schema": "public"
+      },
+      {
+        "md5": "ef2ba071cae2b9647c6553519761ecec",
+        "args": "p_filters jsonb, p_limit integer, p_offset integer, p_sort text, p_sort_ascending boolean",
+        "name": "superadmin_activity_directory_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "eaa9ef7312ea1c53a5bdb9d82a37bf36",
+        "args": "p_import_job_id uuid, p_storage_path text, p_file_name text, p_mime_type text, p_size_bytes bigint, p_checksum_sha256 text, p_row_count integer",
+        "name": "superadmin_activity_export_complete",
+        "schema": "public"
+      },
+      {
+        "md5": "bf1e6007c12c3d2019560f766897e99e",
+        "args": "p_import_job_id uuid",
+        "name": "superadmin_activity_export_prepare",
+        "schema": "public"
+      },
+      {
+        "md5": "c40d7bd76620843049e4ba1f26646e96",
+        "args": "",
+        "name": "superadmin_activity_filter_options",
+        "schema": "public"
+      },
+      {
+        "md5": "474d9b17671d071e799c45333fa4b810",
+        "args": "",
+        "name": "superadmin_activity_filter_options_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "2702af665b6dea5e3d074713d3eb0155",
+        "args": "p_institution_id uuid, p_sections text[], p_search text, p_limit integer",
+        "name": "superadmin_activity_form_options_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "5b9fa1e02d2dc969e5b5affc0c928eb3",
+        "args": "p_request_id uuid, p_import_job_id uuid, p_file jsonb, p_rows jsonb",
+        "name": "superadmin_activity_import_apply",
+        "schema": "public"
+      },
+      {
+        "md5": "3ea837f457c0bebaa8318ac8168d2c95",
+        "args": "p_request_id uuid, p_location_id uuid, p_activity_payload jsonb, p_reservation jsonb",
+        "name": "superadmin_activity_location_create_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "75791c525960597e76b21e12c20ad6da",
+        "args": "p_activity_id uuid",
+        "name": "superadmin_activity_location_selection_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "777c82a32c924bbabd793a311604aadb",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint",
+        "name": "superadmin_activity_publish_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "2260d6310820a0f78e15376704605a25",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_publish boolean, p_payload jsonb",
+        "name": "superadmin_activity_save_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "25298ef0a9e893872de5e22939588b32",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_group_ids uuid[], p_group_participation jsonb",
+        "name": "superadmin_activity_set_groups_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "617cf30e117cf2e5b4d2fa660d73faed",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_participants jsonb",
+        "name": "superadmin_activity_set_participants_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "b20a90b62e01b39f3ef93f525b17d996",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_capability_policies jsonb, p_group_capability_settings jsonb, p_professional_capability_actions jsonb",
+        "name": "superadmin_activity_set_permissions_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "25dedf5262764c2a3b002c2e846b9223",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_professional_assignments jsonb",
+        "name": "superadmin_activity_set_professionals_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "72cdfe0cef1847b481f441b8a4ab2098",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_unit_ids uuid[]",
+        "name": "superadmin_activity_set_units_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "98998aab9cb2dd3b27ade9f26515c283",
+        "args": "p_institution_id uuid",
+        "name": "superadmin_activity_template_options",
+        "schema": "public"
+      },
+      {
+        "md5": "86dfe52d1d0afde67447c63a55f283a9",
+        "args": "p_request_id uuid, p_activity_id uuid, p_expected_version bigint, p_payload jsonb",
+        "name": "superadmin_activity_update_v2",
+        "schema": "public"
+      },
+      {
+        "md5": "c17117f56bd8bc1b52ba5a558257cfdf",
+        "args": "p_import_job_id uuid, p_action text",
+        "name": "superadmin_authorize_activity_file_job",
+        "schema": "public"
+      },
+      {
+        "md5": "cb7b2d70a4f587801e9fffad0d1ad6af",
+        "args": "p_template_id uuid, p_institution_id uuid, p_idempotency_key uuid",
+        "name": "superadmin_copy_activity_template",
+        "schema": "public"
+      },
+      {
+        "md5": "03d04cc2e193e4d2d4fded923f85dda5",
+        "args": "p_file_name text, p_mime_type text, p_source_format text, p_idempotency_key uuid",
+        "name": "superadmin_create_activity_import_job",
+        "schema": "public"
+      },
+      {
+        "md5": "4f8485b6275fb4ddab1be9a92942d5f6",
+        "args": "p_institution_id uuid, p_unit_ids uuid[], p_name text, p_idempotency_key uuid",
+        "name": "superadmin_create_activity_locations",
+        "schema": "public"
+      },
+      {
+        "md5": "87e4889fb4ba58b2b1d6686960eca04f",
+        "args": "p_institution_id uuid, p_unit_id uuid, p_name text, p_description text, p_taxonomy_id uuid, p_governance_kind text, p_idempotency_key uuid",
+        "name": "superadmin_create_scoped_activity_template",
+        "schema": "public"
+      },
+      {
+        "md5": "d165072de2926135c7bcffd5ebb431c8",
+        "args": "p_template_id uuid, p_institution_id uuid, p_idempotency_key uuid",
+        "name": "superadmin_duplicate_activity_template",
+        "schema": "public"
+      },
+      {
+        "md5": "489663df8bc81139173973a720412514",
+        "args": "p_activity_id uuid, p_storage_path text, p_mime_type text, p_size_bytes bigint, p_checksum_sha256 text, p_idempotency_key uuid",
+        "name": "superadmin_finalize_activity_identity_upload",
+        "schema": "public"
+      },
+      {
+        "md5": "99df08aedc5409c0734be308f757a27d",
+        "args": "p_institution_id uuid",
+        "name": "superadmin_get_activity_form_options",
+        "schema": "public"
+      },
+      {
+        "md5": "919f7e4cdcb59dbaeb6371b3925563e6",
+        "args": "p_activity_id uuid, p_file_name text, p_mime_type text, p_size_bytes bigint, p_idempotency_key uuid",
+        "name": "superadmin_prepare_activity_identity_upload",
+        "schema": "public"
+      },
+      {
+        "md5": "699dd104960e382fa09e4112019e379b",
+        "args": "p_format text, p_filters jsonb, p_idempotency_key uuid",
+        "name": "superadmin_request_activity_export",
+        "schema": "public"
+      },
+      {
+        "md5": "ae5434ed96d1b412db817d86df8f2087",
+        "args": "p_payload jsonb, p_idempotency_key uuid",
+        "name": "superadmin_upsert_activity",
+        "schema": "public"
+      }
+    ]
+  }
+]

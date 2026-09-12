@@ -2529,15 +2529,15 @@
       "family": "activities",
       "screen": "Atividades / Diretório",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Completar prova backend da leitura real/destinatário; P53A apenas visual.",
+      "done": "R09 C0: lista real de3atividades, filtro instituicao/unidade e reload;125pgTAP e5checksAPI,95corpos equivalentes. Leitura certificada; nenhum novo destinatario ou avaliacao.",
       "fe": "R04 continuacao: /activities em producao lista os modelos Coelo (2 paginas) com filtros e card Criar modelo; reload mantem.",
-      "be": "R04: cadeia de Atividades v2 inteira (180020..180120, 22 RPCs) estava AUSENTE em producao e entrou no lote 10; pgTAP 9 suites verdes (fixtures na forma de producao, AAL1 na regua do MVP).",
-      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "be": "R09 C0: lista real de3atividades, filtro instituicao/unidade e reload;125pgTAP e5checksAPI,95corpos equivalentes. Leitura certificada; nenhum novo destinatario ou avaliacao.",
+      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -2582,6 +2582,18 @@
           "revision": "estrutura.json rev 33",
           "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
           "recordedAt": "2026-09-11T09:41:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
+          "revision": "R09-C0-r116",
+          "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+          "recordedAt": "2026-09-12T21:48:26.086847+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
+          "revision": "R09-C0-r116",
+          "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+          "recordedAt": "2026-09-12T21:48:26.086847+00:00"
         }
       },
       "ownerVisualApprovalHistory": [
@@ -9078,7 +9090,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T21:41:58.748Z",
+  "updatedAt": "2026-09-12T21:48:26.199Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

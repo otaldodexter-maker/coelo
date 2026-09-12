@@ -1,12 +1,12 @@
 {
-  "revision": 115,
+  "revision": 116,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T21:41:58.623859+00:00",
+  "updatedAt": "2026-09-12T21:48:26.086847+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3875,8 +3875,8 @@
       "pid": 48684,
       "port": 3014,
       "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/build/web",
-      "buildSha": "4deb35a6e+creation-catalog",
-      "next": "Criacao/suspensao provadas; seguir leitura de Atividades",
+      "buildSha": "9713bbdeb",
+      "next": "Perfil no menu Coelo",
       "buildOwner": "C0"
     }
   },
@@ -4105,7 +4105,7 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T21:41:58.623859+00:00",
+    "at": "2026-09-12T21:48:26.086847+00:00",
     "novosAceites": [
       "groups.location FE/BE/E2E",
       "attendance.mark FE/E2E",
@@ -4117,11 +4117,12 @@
       "meal-plans.create/edit/publish FE/BE/E2E",
       "access-models.edit/duplicate FE/E2E",
       "internal-users.edit FE/E2E",
-      "internal-users.create/suspend FE/BE/E2E"
+      "internal-users.create/suspend FE/BE/E2E",
+      "activities.list BE/E2E"
     ],
-    "feito": "Criacao interna limitada e suspensao UI/reload;32casos54pgTAP6API PASS; novoAuth suspenso retido.",
+    "feito": "activities.list BE/E2E pela UI/filtros/reload;125SQL5API PASS,95corpos equivalentes.",
     "intervencao60min": "apos runtime e tentativa arquivo bloqueada pela extensao, Chrome transferidoG1 para Local sem picker; C0 completa negativa e corrige autorizacao de Formularios em paralelo",
-    "nextGate": "activities.list e principal.profile-view: fechar leitura produtiva/escopo com provas reutilizadas, sem nova fixture ampla.",
+    "nextGate": "principal.profile-view: contexto institucional e leitura real/retorno no shell.",
     "noveFrentes": "thread/read conferiu nove completed neste ciclo; nao afirmar instrucoes novas entregues, C0 executa pacotes independentes"
   },
   "tentativaAnteriorAviso": {
