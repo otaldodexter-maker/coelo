@@ -1,0 +1,12 @@
+command: rtk proxy python -X utf8 docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-smoke.py --execute --qa-env <private qa-r03 path> --expected-auth-uid <validated UUID> --occurrence-id 5762fe8f-2d58-48ef-b410-30bfd0fe6703 --participation-id 095d0236-334b-460b-aaa2-e1fce7914d8f --item-id 95cdf8cf-d993-4325-ac7c-941f041210cc
+environment: producao Supabase; form-media v17; credencial privada canonica da pessoa da participation
+result:
+{"auth_uid_match": true, "http": 200, "status": "PASS", "step": "auth"}
+{"http": 200, "identity_mode": "identified", "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc", "item_kind": "photo", "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703", "participation_id": "095d0236-334b-460b-aaa2-e1fce7914d8f", "status": "PASS", "step": "occurrence_preflight"}
+{"http": 200, "response_id": "bb1f3443-76a6-4049-b364-6215545625c8", "status": "PASS", "step": "open_or_reuse_draft"}
+{"asset_id": null, "code": "prepare:401:unauthorized", "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703", "preserved": true, "response_id": "bb1f3443-76a6-4049-b364-6215545625c8", "status": "FAILED", "step": "smoke"}
+{"http": 204, "status": "PASS", "step": "logout_local"}
+mutations: one identified response draft opened/reused; asset 0; PUT/finalize/save/download 0
+diagnosis: REST Auth, occurrence authorization and response command accepted the same session. The opaque 401 is emitted by form-media before answer prepare: missing runtime env/header, auth.getUser failure or active person_auth_links lookup failure. Bearer was present and C0 independently confirmed the active Auth-to-person link, leaving Edge runtime/env or internal getUser as the focused diagnosis.
+preservation: response retained; no cleanup or global logout
+secrets: no email, password, JWT, signed URL or private env contents recorded

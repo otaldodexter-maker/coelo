@@ -1,5 +1,5 @@
 {
-  "revision": 21,
+  "revision": 23,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
@@ -69,11 +69,14 @@
       "lote 58 RED comportamental e9a3dc18d executado uma vez no baseline: 4 ok/7 not ok de 11, rollback, native 0 e wrapper 1; sem apply",
       "lote 58 140550 aplicado somente no espelho após ACK: GREEN 4/4+11/11 e regressões 23/23+30/30, total único 68/68; slot devolvido",
       "smoke API answer-image preparado sem rede/mutação: reutiliza occurrence/photo existente, preserva respostas, exige edit_secret externo quando anônimo e não possui cleanup",
-      "descoberta API read-only: zero formulários identificados ativos com photo/gallery e zero occurrences candidatas; logout local 204"
+      "descoberta API read-only: zero formulários identificados ativos com photo/gallery e zero occurrences candidatas; logout local 204",
+      "fixture answer-image identificada criada uma unica vez com revisao G5/C0: form publicado, application e schedule ativos; IDs server-side e receipts preservados",
+      "primeira assertion rejeitou corretamente o oraculo de IDs de input; resume no mesmo recurso capturou IDs server-side sem recriar form/publicacao",
+      "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter",
-      "execução do smoke answer-image aguarda occurrence real reutilizável ou autorização C0 para uma única fixture mínima; fix G3 f0c7269fd já integrado/deployado"
+      "smoke answer-image bloqueado no prepare da Edge form-media v17: HTTP401 unauthorized depois de REST auth/occurrence/open draft verdes; aguarda diagnostico C0 de env/getUser/person_auth_links, sem novo retry"
     ],
     "tests": [
       "docker version: client/server 29.7.2",
@@ -111,6 +114,9 @@
       ,"moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1"
       ,"lote58 GREEN: estrutural 4/4, comportamental 11/11, regressões Moments 23/23 e 30/30; total 68/68, rollback e native/wrapper 0"
       ,"forms-answer-image-api-smoke.py: AST PASS, dry-run READY_NO_MUTATION, guard inválido para antes da auth; discovery HTTP 200 encontrou 0 candidatos e logout 204"
+      ,"forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200"
+      ,"form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0"
+      ,"answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -127,7 +133,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "aguardar C0 fornecer occurrence answer-image existente ou autorizar nominalmente uma única fixture mínima; só então executar uma vez, sem cleanup"
+    "nextGate": "aguardar C0 diagnosticar 401 pre-dispatch da Edge form-media v17 (env/getUser/person_auth_links) e autorizar novo prepare somente se houver causa corrigida; nenhum retry automatico"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
@@ -135,14 +141,14 @@
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
     "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
-    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image preparado, discovery read-only sem candidato, sem fixture duplicada/cleanup"
+    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image fixture unica preservada: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response draft bb1f3443; asset nulo por prepare Edge401"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "fe92d6c52b7c4a1b3a753e12d426fc2a2b7c7ddc",
+    "head": "4c30b61ac381adb2f96cbba7befbbb4cee784fb5",
     "buildSourceSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
-    "publishedSha": "fe92d6c52b7c4a1b3a753e12d426fc2a2b7c7ddc",
+    "publishedSha": "4c30b61ac381adb2f96cbba7befbbb4cee784fb5",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -250,6 +256,16 @@
       "revision": 21,
       "at": "2026-09-12T12:56:22-03:00",
       "summary": "Smoke answer-image preparado; fix G3 integrado/deployado; discovery QA read-only achou zero candidates, sem abrir rascunho ou gerar fixture."
+    },
+    {
+      "revision": 22,
+      "at": "2026-09-12T13:18:00-03:00",
+      "summary": "Fixture identificada unica criada e publicada; oraculo de IDs de input parou fail-closed, foi corrigido por review G5 e resume no mesmo recurso criou uma application e um schedule HTTP200; aguardando worker/lookup exclusivo C0."
+    },
+    {
+      "revision": 23,
+      "at": "2026-09-12T13:30:00-03:00",
+      "summary": "Occurrence/participation unicas confirmadas por C0. Tentativa principal falhou P0002 sem mutacao; credencial canonica passou REST e abriu draft, mas prepare Edge v17 retornou 401. Duas tentativas distintas encerradas e diagnostico preciso enviado ao C0/G5."
     }
   ]
 }

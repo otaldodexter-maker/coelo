@@ -291,3 +291,45 @@ O runner local passou parse AST, dry-run e guard de fixture inválida. Build,
 servidor, Chrome e baseline foram apenas conferidos: PID `44404` e PID raiz
 `22592` respondendo, `/login` 200, container `1abbc4f2cd13` healthy na porta
 57322. Não houve rebuild, novo Chrome ou nova execução do diagnóstico de texto.
+
+## Fixture identificada de answer-image
+
+Como a descoberta read-only não encontrou ocorrência reutilizável, C0 autorizou
+uma única fixture mínima identificada e delegou sua revisão focal ao G5. O
+executor fail-closed está em
+[forms-answer-image-fixture.py](./forms-answer-image-fixture.py), o estado
+retomável em
+[forms-answer-image-fixture-manifest.json](./forms-answer-image-fixture-manifest.json)
+e o recibo sanitizado em
+[forms-answer-image-fixture-execution-20260912.log](./forms-answer-image-fixture-execution-20260912.log).
+
+O preflight confirmou por RPC normal a pessoa QA elegível no tenant e zero
+formulário com o marcador exato. A única criação materializou o form
+`afa8f922-b27d-4258-9322-8b3f96ee7df9` e o publicou. A assertion seguinte
+parou porque comparava IDs enviados pelo cliente; a leitura normal mostrou que
+`form_replace_working_definition` gera IDs server-side. Não houve segunda
+fixture. Após dois reviews do G5, `--resume` fixou o mesmo form, exigiu
+`editor.application == null`, capturou section/item server-side e pré-persistiu
+os request IDs idempotentes.
+
+A continuação única terminou com HTTP 200 para application
+`c87a7e84-cbd4-43f8-9135-74efa0711edb` e schedule ativo
+`5af5a32f-5ab0-4cf5-94a7-f618793becba`. Projeção read-only confirmou form
+version 2, application version 1 e schedule version 1; o item `photo` efetivo é
+`95cdf8cf-d993-4325-ac7c-941f041210cc`. G0 parou antes do worker, como exigido.
+C0 confirmou a ocorrência aberta `5762fe8f-2d58-48ef-b410-30bfd0fe6703` e a
+participação elegível `095d0236-334b-460b-aaa2-e1fce7914d8f`, ambas únicas.
+
+O primeiro smoke answer-image parou antes de qualquer mutação: Auth 200, mas
+`form_get_occurrence_for_response` devolveu HTTP 500/P0002; response e asset
+permaneceram nulos e o logout local foi 204. A função exige que o ator atual
+seja a pessoa da participação ou responder autorizado. A participação é da
+pessoa `007a4ca5-31bd-4a77-956f-ce879695042e`, enquanto o runner usou a
+credencial privada `qa-r06-principal.env`, provavelmente vinculada a outra
+pessoa. Não houve retry. Recibo:
+[forms-answer-image-api-first-attempt-20260912.log](./forms-answer-image-api-first-attempt-20260912.log).
+
+Todos os sintéticos foram preservados; não houve cleanup, SQL direto, grants,
+usuário novo ou logout global. O próximo gate é C0 confirmar o ator efetivo e
+autorizar o uso da credencial QA correspondente à pessoa da participação, sem
+criar outra fixture.
