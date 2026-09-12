@@ -1,376 +1,22 @@
 {
-  "revision": 39,
+  "revision": 40,
   "round": "E2-R09-20260912-1542",
-  "r09": {
-    "updatedAt": "2026-09-12T15:25:10-03:00",
-    "t0": "2026-09-12T15:17:09-03:00",
-    "base": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
-    "status": "blocked-runtime; Chrome devolvido ao C0",
-    "done": "Duas tentativas CUA documentadas; RAM/PIDs/baseline/hash conferidos; causa provável no default enableTextEntryEmulation=true do entrypoint QA",
-    "pending": "C0 atribuir correção QA/build sem mock de teclado e medir login/leitura/reload",
-    "tests": "2 probes de entrada sem valor; nenhum teste Flutter ou SQL novo; nenhum login submetido",
-    "resources": "Chrome22592/aba829822454 liberado C0; servidor3014 PID7476; baseline57322 healthy; RAM2065644KiB; slotFlutter livre no JSON, zero processo test identificado",
-    "handoff": "docs/reviews/evidence/etapa-2/r09-ambiente-runtime/handoff.md",
-    "historyNote": "Campos R08 abaixo preservam histórico e não constituem medição R09"
-  },
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
-  "app": "Codex desktop",
+  "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
+  "host": "local",
+  "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
   "model": "gpt-6-astra",
+  "reasoningEffort": "medium",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:07:38.752248-03:00",
-  "t0": "2026-09-12T10:52:16.727826-03:00",
-  "cutoffs": {
-    "stopNewWork": "2026-09-12T14:40:00-03:00",
-    "handoffFinal": "2026-09-12T14:50:00-03:00",
-    "adjustmentsOnlyUntil": "2026-09-12T15:00:00-03:00",
-    "ownerOverrideAt": "2026-09-12T14:22:00-03:00",
-    "originalT0Preserved": true
-  },
-  "scope": {
-    "objective": "Recuperar o runtime local sem perda, conferir o espelho baseline e entregar um build QA compartilhavel com prova real de sessao.",
-    "included": [
-      "Docker Desktop e WSL por diagnostico e recuperacao preservadora",
-      "supabase_db_coelo_baseline na porta 57322 e ordem real de migrations",
-      "scripts QA existentes, build web, servidor 127.0.0.1:3014 e um Chrome"
-    ],
-    "excluded": [
-      "features, router e composicao",
-      "factory reset, reboot do Windows e perda de VHDX/volumes",
-      "reset ou teste destrutivo do banco linked",
-      "deltas de estado"
-    ],
-    "order": [
-      "diagnosticar Docker/WSL e preservar volumes/VHDX",
-      "recuperar daemon e conferir baseline/ordem real",
-      "produzir build/servidor/Chrome e provar login, leitura autorizada e reload"
-    ],
-    "firstGate": "causa do daemon Docker identificada por evidencia, antes de qualquer correcao",
-    "stopCriterion": "gates G0 comprovados ou bloqueio preciso depois de duas tentativas materialmente diferentes, com trabalho independente concluido",
-    "expectedEvidence": "comandos sanitizados, PIDs, portas, SHA, logs sem credenciais e captura da rota real"
-  },
-  "status": {
-    "done": [
-      "worktree limpa criada de origin/dev em b3b1bb34d",
-      "contrato comum, secao G0, T0 e slots lidos",
-      "causa do Docker identificada nos logs: inicializacao abortada por falso processo residual PID 6984; daemon recuperado na primeira inicializacao preservadora",
-      "VHDX e volume nomeado preservados; baseline 1abbc4f2cd13 healthy em 57322",
-      "paridade do espelho confirmada por marcadores dos lotes 52, 54 e 55; ledger isolado nao representa replay via psql",
-      "build web QA release concluido e servidor release restaurado em 127.0.0.1:3014 PID 14724",
-      "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais",
-      "gate SQL adicional do C0: suites ACL compartilhadas 22/22, 46/46, 4/4 e 16/16, todas com rollback e exit nativo 0",
-      "preflight lote 56 somente leitura 20/20: definicoes finais 50/52/55, ACL, pg_cron, sweep e ausencia do job nominal confirmados",
-      "mecanismos QA existentes classificados: release atual sem DTD/VM Service; qa_drive exige CDP; qa_login e Dart MCP exigem app debug conectado",
-      "assessment focal G5 52/52 com rollback; preview cleanup corrigido c9662b0ff read-only com rollback e zero contagens",
-      "fixture de convite expirado: RED historico 34/35 classificado, corrigido pelo autor G5 e rerun 95b501322 em 35/35 com rollback",
-      "H09 20260912140545 aplicado somente no espelho por liberacao C0; job nominal ativo a cada 5 minutos e teste 6/6",
-      "consumidores Chat pos-H09: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback",
-      "tentativa debug autorizada: DTD/VM Service conectados, mas qa_login falhou no DWDS e Dart MCP confirmou ausencia da extensao Dart Debug Chrome",
-      "probe CUA com getByRole/fill/press Tab e click/typeText/setValue reproduziu controller vazio; sem chamada Auth",
-      "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
-      "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas",
-      "alternativa CUA pressSequentially encerrada: dois inputs DOM detectados, mas locator sem actionability e nenhuma insercao; sem CDP, bypass ou segundo browser",
-      "forward fix Forms 140547 aplicado somente baseline: focal 33/33 e behavioral 17/17 verdes, rollback e exits 0/0",
-      "fixture internal drafts afcebccd0 isolou revogacoes e passou 159/159 com rollback e exits 0/0",
-      "inventario sanitizado das capacidades CUA, Dart MCP e extensoes presentes concluido sem instalar/reconfigurar",
-      "Forms 140548+140549 aplicados somente baseline; focais retry/delete 9/9 e terminal unbind 7/7 verdes com rollback",
-      "ciclo final 684eea023: regressões 33/33, 17/17 e 159/159 verdes, rollback e native/wrapper 0",
-      "smoke API identificado + question-image preparado sem mutação: runner fail-safe e manifesto enviados ao C0 antes de qualquer escrita",
-      "runner corrigido por ordem C0 para preservar formulário/asset sintéticos até fechamento e encerrar apenas a própria sessão Auth local",
-      "preflight remoto read-only: form-media v16 ativa e quatro arquivos de runtime implantados byte a byte iguais à fonte local inspecionada",
-      "smoke API autorizado executado uma vez: identified draft + question-image prepare/PUT/finalize/replay/resolve/reload PASS; fixture preservada e logout local 204",
-      "origin/dev 2441725d5 incorporado por merge; build QA integrado 615aaa6f verde e servidor 3014 restaurado no PID 44404",
-      "lote 58 RED comportamental e9a3dc18d executado uma vez no baseline: 4 ok/7 not ok de 11, rollback, native 0 e wrapper 1; sem apply",
-      "lote 58 140550 aplicado somente no espelho após ACK: GREEN 4/4+11/11 e regressões 23/23+30/30, total único 68/68; slot devolvido",
-      "smoke API answer-image preparado sem rede/mutação: reutiliza occurrence/photo existente, preserva respostas, exige edit_secret externo quando anônimo e não possui cleanup",
-      "descoberta API read-only: zero formulários identificados ativos com photo/gallery e zero occurrences candidatas; logout local 204",
-      "fixture answer-image identificada criada uma unica vez com revisao G5/C0: form publicado, application e schedule ativos; IDs server-side e receipts preservados",
-      "primeira assertion rejeitou corretamente o oraculo de IDs de input; resume no mesmo recurso capturou IDs server-side sem recriar form/publicacao",
-      "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft",
-      "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend",
-      "C0 integrou o fix e obteve Deno 56/56 com deno.json; form-media v18 ativa aceitou o ator interno e o prepare HTTP 200 materializou/reproduziu um asset no mesmo draft",
-      "C0 configurou somente COELO_FORMS_MEDIA_PROVIDER=r2; retomada idempotente reutilizou o mesmo asset e confirmou envelope R2, sem PUT por validade insegura",
-      "fix TTL 5927718f2 aprovado, integrado e implantado na form-media v20; mesmo asset passou prepare/PUT/finalize/replay/save com bytes e SHA medidos",
-      "form-media v21 corrigiu argumento nulo do download; modo download-only com reload_request_id pré-persistido passou GET exato e reopen da resposta version2, exit0",
-      "origin/dev ciclo180 incorporado; build QA release exit0 em 87.6s, servidor 3014 PID14072 e mesma aba Chrome recarregada",
-      "capacidade pós-build medida: 3.62GB livres, zero flutter test; recomendado único processo censo concurrency2 apenas com RAM imediata >=3GB",
-      "H28 candidato 45dee1097 aplicado somente baseline; estrutural11, funcional10 e regressões modernas23 totalizaram 44/44 com rollback",
-      "RAM remediada em 2.83GB as 14:21; recomendacao final ao C0 mudou para censo concurrency1 salvo preflight imediato >=3GB",
-      "Owner encurtou fechamento para15:00; checagem14:23 confirmou servidor PID14072/login200, baseline healthy e3.32GB livres; censo nao liberado/iniciado"
-    ],
-    "pending": [
-      "prova UI de login, leitura autorizada e persistencia apos reload segue bloqueada porque CUA nao atualiza os controllers Flutter; a prova API answer-image fechou, mas nao promove UI"
-    ],
-    "tests": [
-      "docker version: client/server 29.7.2",
-      "docker inspect baseline: running, healthy, restart unless-stopped, volume supabase_db_coelo_baseline",
-      "porta 57322 publicada para 5432",
-      "flutter build web release: exit 0 em 74.1 s",
-      "GET /login: HTTP 200; prova explicitamente nao promovida a E2E",
-      "principal_internal_actor_bridge_v1_test.sql: 22/22, exit 0",
-      "internal_actor_scope_root_v1_test.sql: 46/46, exit 0",
-      "internal_actor_scope_root_v1_hotfix_test.sql: 4/4, exit 0",
-      "internal_actor_institution_access_by_role_v1_test.sql: 16/16, exit 0",
-      "preflight-lote56.sql: 20/20, native exit 0, wrapper exit 0",
-      "superadmin_assessments_internal_v2_test.sql em 53b9c6d29: 52/52, native/wrapper exit 0",
-      "cleanup preview c9662b0ff: native/wrapper exit 0, rollback, nove contagens zero",
-      "superadmin_internal_invites_v2_test.sql em 76aed97cb: 34 ok, 1 not ok, native 0, wrapper 1, rollback",
-      "superadmin_internal_invites_v2_test.sql corrigido em 95b501322: 35/35, native/wrapper exit 0, rollback",
-      "H09 apply baseline: native exit 0; job unico */5 com sweep limitado a 500",
-      "now_publication_expiry_dispatch_v1_test.sql: 6/6, native/wrapper exit 0, rollback",
-      "superadmin_internal_chat_attachments_v1_test.sql: 28/28, native exit 0, rollback",
-      "chat_attachment_worker_claims_v1_test.sql: 3/3, native exit 0, rollback; wrapper agregado 0",
-      "forms_question_media_r2_v1_test.sql em 28625efaf: 33/33, native/wrapper exit 0, rollback",
-      "forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback",
-      "superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida",
-      "rerun unico internal drafts em 0d52d5dbf: 59 ok, revogacao com version passou, reativacao falhou revoked internal access is terminal, native/wrapper exit 3, transacao revertida",
-      "rerun final internal drafts em afcebccd0: 159/159, native/wrapper exit 0, rollback",
-      "RED retry/delete: 4 ok e 5 not ok de 9, native 0 wrapper 1 rollback; GREEN 9/9 native/wrapper 0 rollback",
-      "RED terminal unbind: 3 ok e 4 not ok de 7, native 0 wrapper 1 rollback; GREEN 7/7 native/wrapper 0 rollback",
-      "regressao forms_question_media_r2 pos-140548/49: 32 ok e 1 not ok de 33, native 0 wrapper 1 rollback; parada antes de 17/159",
-      "rerun final 684eea023: forms question media 33/33, behavioral 17/17 e internal drafts 159/159; native/wrapper 0 e rollback",
-      "forms-question-image-api-smoke.py: dry-run READY_NO_MUTATION, parse sintático PASS, PNG 68 bytes SHA-256 431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460",
-      "supabase functions list/download read-only: form-media ACTIVE v16 verify_jwt=true; index/media_contract/question_image/r2_s3 iguais por bytes",
-      "smoke API produção: auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload PASS, logout 204, exit 0, sem DELETE",
-      "flutter build web release integrado: exit 0 em 84.3 s; main.dart.js 8399330 bytes SHA-256 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285",
-      "GET /login 200/1020 bytes e flutter_bootstrap.js 200/9975 bytes após restart PID 44404",
-      "moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1",
-      "lote58 GREEN: estrutural 4/4, comportamental 11/11, regressões Moments 23/23 e 30/30; total 68/68, rollback e native/wrapper 0",
-      "forms-answer-image-api-smoke.py: AST PASS, dry-run READY_NO_MUTATION, guard inválido para antes da auth; discovery HTTP 200 encontrou 0 candidatos e logout 204",
-      "forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200",
-      "form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0",
-      "answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo",
-      "form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403",
-      "answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204",
-      "answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204",
-      "answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204",
-      "download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita",
-      "build QA ciclo180: exit0 em 87.6s; main.dart.js 8432045 bytes SHA256 1f4fa2ef; GET login200 e bootstrap200 no PID14072; aba829822454 recarregada",
-      "H28: apply inicial c83 falhou sintaxe e rollback; apply corrigido45dee exit0; estrutural final11/11, funcional final10/10, regressões modernas8/8+11/11+4/4, todos testes rollback",
-      "superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28",
-      "gate lote59: candidato final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente no baseline; estrutural11/11+funcional10/10, rollback e exit0; produção/ledger intocados",
-      "gate final lote59: regressões modernas no mesmo corpo df0a281cb passaram segmentos8/8+identidade11/11+handles4/4; total final44/44, rollback e exit0",
-      "build QA pós-lote59: origin/dev477e6c8df integrado em e2769f7b; build99.1s exit0, main.dart.js8432929B SHA256f3f2a3e8; servidor3014 PID7476 e mesma aba recarregada"
-    ],
-    "blocked": {
-      "gate": "login/leitura/reload",
-      "diagnosis": "hit-testing e foco funcionam: click fisico foca email e Tab move o foco para senha. O canal de texto da extensao nao gera valor no DOM/controller Flutter: typeText e pressKey individual mantem length 0. No web-server, qa_login falha no DWDS e Dart MCP nao encontra Flutter Driver porque o Chrome compartilhado nao tem Dart Debug",
-      "reportedToC0": true,
-      "toolBoundary": "exec_command ao iniciar Chrome CDP foi rejeitado automaticamente com blocked by policy; release estatico nao tem DTD/VM Service",
-      "safeContinuation": "reutilizar a aba somente com Chrome que ja tenha Dart Debug ou endpoint CDP nominalmente permitido; nao criar segundo navegador nem injetar sessao"
-    },
-    "sqlBlocked": {
-      "status": "resolved-local",
-      "candidate": "3f494eb51:140548+140549 aplicados sobre 140546+140547",
-      "result": "focais 9/9 e 7/7; regressões finais 33/33, 17/17 e 159/159, todas rollback e native/wrapper 0",
-      "diagnosis": "expectativa obsoleta do caso 17 foi corrigida em 684eea023 para o contrato de retry idempotente; falha 32/33 preservada apenas no historico",
-      "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
-      "reportedToC0": true
-    },
-    "nextGate": "entrega G0 completa; somente revisão e ajustes do C0, sem iniciar R09, censo ou cleanup"
-  },
-  "resources": {
-    "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
-    "server": "127.0.0.1:3014 PID 7476, ativo; /login 200/1020 e flutter_bootstrap 200/9974; build lote59 main.dart.js8432929B SHA-256 f3f2a3e8a0d563dfa9e1b640d458496d972e9ad7b4bbf2db236434ec70e278b3",
-    "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
-    "flutterTest": "slot build usado e devolvido; censo nao liberado/iniciado; RAM livre3.32GB as14:23, mas nova janela fecha15:00 e nao comporta promessa de conclusao",
-    "sql": "H28 corpo final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente baseline; focais21/21 e regressões modernas23/23, total final44/44 com rollback; produção e ledger intocados",
-    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image PASS API preservado: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response bb1f3443 version2, asset e47eb9e1; prepare/PUT/finalize/replay/save/download/reopen todos comprovados, sem cleanup"
-  },
-  "git": {
-    "branch": "work/etapa2-r08-ambiente-runtime",
-    "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "263d3c8e428401e439b93e8e261a27e8a467aed0",
-    "buildSourceSha": "e2769f7beff5215e9a3cc7988c15d1de6784b523",
-    "publishedSha": "263d3c8e428401e439b93e8e261a27e8a467aed0",
-    "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
-  },
-  "history": [
-    {
-      "revision": 1,
-      "at": "2026-09-12T10:52:16.727826-03:00",
-      "summary": "Abertura G0; sem tentativa de correcao ainda."
-    },
-    {
-      "revision": 2,
-      "at": "2026-09-12T11:08:00-03:00",
-      "summary": "Docker recuperado com preservacao; baseline e ordem materializada conferidos; build/servidor entregues; E2E bloqueado por entrada CUA que nao atinge controller Flutter apos tres metodos documentados."
-    },
-    {
-      "revision": 3,
-      "at": "2026-09-12T11:14:00-03:00",
-      "summary": "Gate adicional C0 concluido: quatro suites ACL em ordem somam 88/88 com rollback; preflight lote 56 20/20 prova definicoes finais, ACL, pg_cron e sweep no espelho; ledger de uma linha permanece nao autoritativo."
-    },
-    {
-      "revision": 4,
-      "at": "2026-09-12T11:25:00-03:00",
-      "summary": "Limite de driver documentado com reproducao; assessment 52/52 e preview cleanup read-only verdes; convites passou 35/35 apos G5 corrigir a unica expectativa MFA historica."
-    },
-    {
-      "revision": 5,
-      "at": "2026-09-12T11:30:00-03:00",
-      "summary": "H09 aplicado somente no espelho e provado 6/6; consumidores Chat 28/28+3/3 verdes; slot SQL devolvido ao C0 para lote 56 em producao."
-    },
-    {
-      "revision": 6,
-      "at": "2026-09-12T11:37:33-03:00",
-      "summary": "Web-server debug autorizado esgotou qa_login e Dart MCP sem a extensao Dart Debug Chrome; probe CUA semantico confirmou controller vazio e Tab inoperante; release restaurado no PID 33856."
-    },
-    {
-      "revision": 7,
-      "at": "2026-09-12T11:46:00-03:00",
-      "summary": "Instrumentacao QA temporaria provou hit-testing e foco funcionais, mas canal de texto CUA sem evento/valor no DOM ou controller; instrumentacao removida, build original recompilado e release restaurado no PID 14724."
-    },
-    {
-      "revision": 8,
-      "at": "2026-09-12T11:50:42-03:00",
-      "summary": "Forms 444ac024 ficou vermelho apos apply local: autorizacao nao passa institution_id; G3 bloqueou tambem RESTRICT DEFERRABLE/media_context nulo. Regressões paradas e producao intocada."
-    },
-    {
-      "revision": 9,
-      "at": "2026-09-12T11:54:34-03:00",
-      "summary": "pressSequentially da propria CUA falhou no actionability apesar de dois inputs DOM; metadados de branch, recurso local e ausencia de deploy reconciliados sem apagar historico."
-    },
-    {
-      "revision": 10,
-      "at": "2026-09-12T12:00:10-03:00",
-      "summary": "Forward fix Forms 140547 aplicado localmente; focal33 e behavioral17 verdes; internal drafts parou apos 59 ok por fixture sem version bump no auth link."
-    },
-    {
-      "revision": 11,
-      "at": "2026-09-12T12:03:29-03:00",
-      "summary": "Rerun unico da fixture com version bump passou a revogacao e expôs tentativa invalida de reativar acesso terminal; 59 ok, abort, rollback e slot liberado."
-    },
-    {
-      "revision": 12,
-      "at": "2026-09-12T12:06:35-03:00",
-      "summary": "Fixture afcebccd0 passou 159/159; slot SQL liberado. Base 2d97892d9 mergeada e inventario de runtime existente concluido sem reconfiguracao."
-    },
-    {
-      "revision": 13,
-      "at": "2026-09-12T12:15:16-03:00",
-      "summary": "140548+140549 aplicados localmente; focais9+7 verdes. Regressao33 parou em expectativa antiga de retry; 17/159 nao executadas e producao intocada."
-    },
-    {
-      "revision": 14,
-      "at": "2026-09-12T12:16:36-03:00",
-      "summary": "Expectativa autoral 684eea023 alinhada ao retry idempotente; reruns 33/33, 17/17 e 159/159 verdes. Horarios anteriores reconciliados com commits reais."
-    },
-    {
-      "revision": 15,
-      "at": "2026-09-12T12:25:51-03:00",
-      "summary": "Smoke API identificado + question-image preparado sem mutação; runner protegido e manifesto enviados ao C0 antes de qualquer escrita remota."
-    },
-    {
-      "revision": 16,
-      "at": "2026-09-12T12:30:10-03:00",
-      "summary": "Runner ajustado para preservar sintéticos; preflight remoto somente leitura confirmou form-media v16 e igualdade byte a byte dos quatro arquivos de runtime implantados."
-    },
-    {
-      "revision": 17,
-      "at": "2026-09-12T12:33:57-03:00",
-      "summary": "Smoke API autorizado executado uma vez com PASS integral e exit 0; formulário/asset preservados, nenhum DELETE e logout local 204."
-    },
-    {
-      "revision": 18,
-      "at": "2026-09-12T12:38:33-03:00",
-      "summary": "Base origin/dev 2441725d5 mergeada; build QA integrado verde, servidor 3014 no PID 44404 e mesma aba Chrome recarregada."
-    },
-    {
-      "revision": 19,
-      "at": "2026-09-12T12:42:54-03:00",
-      "summary": "RED comportamental lote58 executado uma vez: 4 ok/7 not ok de 11, rollback e sem apply; aguardando ACK C0."
-    },
-    {
-      "revision": 20,
-      "at": "2026-09-12T12:45:29-03:00",
-      "summary": "140550 aplicado somente no espelho após ACK; GREEN 4+11 e regressões 23+30 totalizaram 68/68, com rollback; slot devolvido."
-    },
-    {
-      "revision": 21,
-      "at": "2026-09-12T12:56:22-03:00",
-      "summary": "Smoke answer-image preparado; fix G3 integrado/deployado; discovery QA read-only achou zero candidates, sem abrir rascunho ou gerar fixture."
-    },
-    {
-      "revision": 22,
-      "at": "2026-09-12T13:18:00-03:00",
-      "summary": "Fixture identificada unica criada e publicada; oraculo de IDs de input parou fail-closed, foi corrigido por review G5 e resume no mesmo recurso criou uma application e um schedule HTTP200; aguardando worker/lookup exclusivo C0."
-    },
-    {
-      "revision": 23,
-      "at": "2026-09-12T13:30:00-03:00",
-      "summary": "Occurrence/participation unicas confirmadas por C0. Tentativa principal falhou P0002 sem mutacao; credencial canonica passou REST e abriu draft, mas prepare Edge v17 retornou 401. Duas tentativas distintas encerradas e diagnostico preciso enviado ao C0/G5."
-    },
-    {
-      "revision": 24,
-      "at": "2026-09-12T13:33:49-03:00",
-      "summary": "Causa 401 confirmada no lookup people-only da Edge. Resume com cinco request IDs publicado; review focal 49bd4c83d aprovado e deploy permanece exclusivo C0."
-    },
-    {
-      "revision": 25,
-      "at": "2026-09-12T13:42:34-03:00",
-      "summary": "C0 implantou form-media v18 apos 56/56. Retomada unica aceitou ator/draft e criou asset, mas parou antes do PUT por ticket R2 invalido; logout local e preservacao confirmados."
-    },
-    {
-      "revision": 26,
-      "at": "2026-09-12T13:45:49-03:00",
-      "summary": "Flag R2 configurada isoladamente; resume reutilizou o mesmo asset e recebeu envelope R2, mas rejeitou expires_at inseguro antes do PUT. Causa focal enviada ao C0/G5."
-    },
-    {
-      "revision": 27,
-      "at": "2026-09-12T13:51:08-03:00",
-      "summary": "Fix TTL implantado na v20; mesmo asset passou prepare, PUT, finalize/replay e save. Download authorize 400 interrompeu GET/reopen; prova API sanitizada preservada."
-    },
-    {
-      "revision": 28,
-      "at": "2026-09-12T14:03:20-03:00",
-      "summary": "v21 e reload ID pré-persistido fecharam o answer-image API: GET 68 bytes/SHA esperado e reopen da resposta version2 passaram, sem nova escrita ou cleanup."
-    },
-    {
-      "revision": 29,
-      "at": "2026-09-12T14:08:35-03:00",
-      "summary": "Ciclo180 incorporado e build QA release publicado no servidor PID14072/porta3014, mesma aba recarregada; capacidade do censo medida sem iniciar teste."
-    },
-    {
-      "revision": 30,
-      "at": "2026-09-12T14:21:14-03:00",
-      "summary": "H28 ficou local-green 44/44 no baseline apos correcoes fail-closed de candidato/fixtures; RAM caiu para2.83GB e censo concurrency1 foi recomendado."
-    },
-    {
-      "revision": 31,
-      "at": "2026-09-12T14:23:30-03:00",
-      "summary": "Marcos do Owner atualizados para fechamento15:00; handoff final iniciado com runtime saudável, censo não liberado e R09 não iniciada."
-    },
-    {
-      "revision": 32,
-      "at": "2026-09-12T14:28:00-03:00",
-      "summary": "Gate lote59 confirmou corpo final df0a281cb no baseline: apply commit, estrutural11/11 e funcional10/10 com rollback; produção e ledger intocados."
-    },
-    {
-      "revision": 33,
-      "at": "2026-09-12T14:30:06-03:00",
-      "summary": "Regressões modernas executadas no corpo final df0a281cb: 8/8+11/11+4/4; total final H28 44/44, rollback; suíte histórica não repetida."
-    },
-    {
-      "revision": 34,
-      "at": "2026-09-12T14:35:57-03:00",
-      "summary": "Build QA final sobre origin/dev477e6c8df passou em99.1s; servidor PID7476/porta3014 e mesma aba Chrome recarregada; UI/E2E não promovida."
-    },
-    {
-      "revision": 35,
-      "at": "2026-09-12T14:47:00-03:00",
-      "summary": "Revisão de entrega: corrigido o head publicado para 068021440; handoff, evidências e metadados conferidos na branch remota; recibo direto enviado ao C0, sem novo teste nem nova mutação."
-    },
-    {
-      "revision": 36,
-      "at": "2026-09-12T14:49:00-03:00",
-      "summary": "Verificação pós-push corrigiu a referência do canal para o SHA definitivo 263d3c8e; igualdade local/remoto será confirmada no recibo final ao C0."
-    }
-  ],
+  "updatedAt": "2026-09-12T16:10:47.125032-03:00",
+  "t0": "2026-09-12T15:42:18-03:00",
+  "status": "runtime-gate-PASS; Docker/WSL/espelho medidos; vaga e Chrome liberados ao C0",
+  "nextGate": "C0 integrar 0ba44ca12/provas, transferir Chrome ao consumidor; pgTAP seguinte por SHA/candidato e posse nominal C0",
   "novaR09": {
     "round": "E2-R09-20260912-1542",
-    "revision": 39,
-    "ackCoordinationRevision": 96,
+    "revision": 40,
+    "ackCoordinationRevision": 97,
     "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
     "host": "local",
     "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
@@ -382,7 +28,7 @@
     "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
     "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-ambiente-runtime-20260912-1542",
     "baseSha": "7907453f0362665ab87fe8faaa4854f286904148",
-    "nextGate": "Docker/WSL e paridade de objetos do espelho na ordem real; sem SQL novo sem posse C0",
+    "nextGate": "C0 integrar 0ba44ca12/provas, transferir Chrome ao consumidor; pgTAP seguinte por SHA/candidato e posse nominal C0",
     "ownerTransfer": "Owner transferiu build/probe a G0 nesta mensagem, apos fix C0 7907453f0",
     "scope": "apps/superadmin -> Auth -> login/entrada de texto -> auth.login; dependencia runtime; depois Docker/WSL/espelho",
     "limits": "sem feature/composicao/SQL remoto/deploy/rastreadores; sem sessao injetada; duas tentativas diferentes e devolver causa a C0",
@@ -407,7 +53,29 @@
         "state": "adotado para a nova vaga; browser existente, nao abrir outro",
         "browser": "2",
         "releasedAt": "2026-09-12T16:07:38.752248-03:00"
-      }
+      },
+      "sqlEspelho": {
+        "owner": "nenhum; conforme C0 rev97",
+        "state": "disponibilidade medida por leitura; nenhum pgTAP novo",
+        "container": "supabase_db_coelo_baseline",
+        "containerId": "1abbc4f2cd13",
+        "linuxPid": 641,
+        "port": 57322,
+        "health": "healthy",
+        "postgres": "17.6",
+        "pgtap": "1.3.3",
+        "docker": "29.7.2",
+        "wsl": "docker-desktop Running WSL2",
+        "canonicalOrderThroughLot": 59,
+        "finalFunctionBodiesMatched": 21,
+        "finalFunctionBodiesCompared": 21,
+        "lote56Cron": "ativo; schedule e comando nominais",
+        "ledgerRows": 1,
+        "limitation": "ledger nao reflete replay psql; comparacao focal nao certifica todo schema nem substitui pgTAP",
+        "evidence": "docs/reviews/evidence/etapa-2/r09-ambiente-runtime-20260912-1542/mirror-readiness.json"
+      },
+      "finalFreeMemoryKiB": 3291736,
+      "slotG0": "liberado C0"
     },
     "proof": {
       "text": "PASS primeira tentativa CUA typeText + screenshot",
@@ -417,8 +85,8 @@
       "pgtap": "nao executado nesta abertura",
       "evidence": "docs/reviews/evidence/etapa-2/r09-ambiente-runtime-20260912-1542/handoff.md"
     },
-    "updatedAt": "2026-09-12T16:07:38.752248-03:00",
-    "status": "runtime-gate-PASS; Chrome liberado ao C0; espelho em medicao",
+    "updatedAt": "2026-09-12T16:10:47.125032-03:00",
+    "status": "runtime-gate-PASS; Docker/WSL/espelho medidos; vaga e Chrome liberados ao C0",
     "build": {
       "sourceSha": "76e869f89530ab4335a4a62360d80dd4cd97432f",
       "qaFixSha": "7907453f0362665ab87fe8faaa4854f286904148",
@@ -427,7 +95,15 @@
       "seconds": 88.3,
       "textEntryEmulation": false,
       "servedAndLocalSha256": "bb2932c37305649d953bad160e0081ed153499790b28450831054b0cf43ae305"
-    }
+    },
+    "publishedRuntimeCommit": "0ba44ca12",
+    "memory": "no-op: nenhuma regra nova de produto; fix QA e fonte canonica pertencem ao C0"
   },
-  "reasoningEffort": "medium"
+  "historyReference": {
+    "sourceRef": "7907453f0362665ab87fe8faaa4854f286904148",
+    "path": "docs/reviews/etapa-2-operacao/comunicacao/ambiente-runtime.json",
+    "revision": 37,
+    "note": "Historico R08 e tentativa R09 encerrada preservados no Git; nao usar seus T0/slots como posse atual. Nova adocao rev38 em76e869f89, runtime rev39 em0ba44ca12."
+  },
+  "deltas": []
 }

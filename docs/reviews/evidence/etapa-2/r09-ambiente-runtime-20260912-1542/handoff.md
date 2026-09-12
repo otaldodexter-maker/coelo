@@ -1,6 +1,6 @@
 ---
 source: "Owner; coordenacao.json revisao 96; commit 7907453f0; build e CUA G0"
-status: "runtime-gate-passed; espelho-em-medicao"
+status: "runtime-gate-passed; espelho-medido; vaga-liberada-C0"
 generated_at: "2026-09-12"
 ---
 
@@ -64,5 +64,30 @@ Diagnostico anterior reutilizado; a mudanca nominal de emulacao do teclado
 resolveu o probe pela mesma familia de canal suportado. Sem nova regra de
 produto; memoria duravel no-op, fonte QA ja corrigida pelo C0.
 
-Proximo gate: medir Docker/WSL e forma do espelho conforme ordem real ate59;
-SQL/pgTAP novo somente sob posse nominal e candidato atribuido pelo C0.
+## Espelho medido 16:11 BRT
+
+Docker Server29.7.2; `wsl --list --verbose`: docker-desktop Running, WSL2.
+`docker ps` e `docker inspect` confirmam container1abbc4f2cd13
+`supabase_db_coelo_baseline`, running/healthy, PID Linux641, volume nomeado
+preservado, porta57322. Postgres17.6, pgTAP1.3.3. Nenhum restart/reset/volume
+apagado; somente diagnostico de leitura. RAM final3.14GiB; zero flutter test.
+
+`docker exec -i supabase_db_coelo_baseline psql -U postgres -d postgres -X
+-qAt -v ON_ERROR_STOP=1` recebeu `BEGIN READ ONLY`, leitura de `pg_proc`
+e `ROLLBACK`. Corpos finais extraidos dos arquivos na ordem canonica dos
+lotes50-59 e comparados exatamente com `prosrc`: **21/21 iguais**, nenhum
+divergente. Ordem, arquivos, nomes e hashes dos corpos constam em
+`mirror-readiness.json`. Lote56: cron nominal ativo, `*/5 * * * *`, comando
+do sweep identico ao arquivo. O ledger local contem somente uma linha:
+nao representa o replay manual e nao foi usado para declarar paridade.
+
+Esta comparacao focal nao certifica todo schema/grants/triggers/dados e nao
+equivale a pgTAP. Disponibilidade do espelho medida; proximo lote60 permanece
+do C0. Na revisao97 o slot SQL nao tinha dono: nenhuma suite/candidato novo
+executado e nenhum lote56-59 reaplicado. C0 deve atribuir SHA/candidato, ordem,
+regressoes e posse para o proximo pgTAP. Nao ha pacote SQL G0 pendente.
+
+G0 libera a vaga apos entrega. Runtime utilizavel publicado em0ba44ca12;
+servidor39504/3014 e aba829822462 preservados para consumidores. Proximo
+gate pertence ao C0: integrar provas, transferir Chrome a consumidor e
+reservar SQL quando houver candidato. Nenhum delta funcional solicitado.
