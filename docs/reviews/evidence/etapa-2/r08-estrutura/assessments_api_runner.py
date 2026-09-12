@@ -25,9 +25,14 @@ def call(base: str, headers: dict[str, str], path: str, payload: object) -> tupl
     )
     try:
         with urllib.request.urlopen(request, timeout=30) as response:
-            return response.status, json.loads(response.read() or b"null")
+            raw = response.read()
+            try: return response.status, json.loads(raw or b"null")
+            except json.JSONDecodeError: return response.status, None
     except urllib.error.HTTPError as error:
-        return error.code, json.loads(error.read() or b"null")
+        try: return error.code, json.loads(error.read() or b"null")
+        except json.JSONDecodeError: return error.code, None
+    except urllib.error.URLError:
+        return 0, None
 
 
 def data(body: object) -> object:
@@ -43,11 +48,12 @@ def main() -> int:
     parser.add_argument("--manifest", required=True)
     parser.add_argument("--execute", action="store_true")
     parser.add_argument("--ack-file")
+    parser.add_argument("--assignment-id")
     args = parser.parse_args()
     output = Path(args.manifest)
     if output.exists():
         raise SystemExit("manifest_exists_do_not_overwrite")
-    if args.execute and not args.ack_file:
+    if args.execute and (not args.ack_file or not args.assignment_id):
         raise SystemExit("execution_requires_G5_C0_ack_file")
     qa, app = env(Path(args.qa_env)), env(Path(args.app_env))
     base, key = app.get("COELO_SUPABASE_URL", "").rstrip("/"), app.get("COELO_SUPABASE_PUBLISHABLE_KEY", "")
@@ -86,7 +92,14 @@ def main() -> int:
             ):
                 raise RuntimeError("dry_run_projection_invalid")
             if args.execute:
-                assignment = data(call(base, headers, "/rest/v1/rpc/superadmin_assessment_context_options", {})[1])["assignments"][0]
+                assignments = data(call(base, headers, "/rest/v1/rpc/superadmin_assessment_context_options", {})[1])["assignments"]
+                matches = [item for item in assignments if isinstance(item, dict) and item.get("activity_group_link_id") == args.assignment_id]
+                if len(matches) != 1:
+                    raise RuntimeError("assignment_target_not_unique")
+                assignment = matches[0]
+                prior = data(_rpc(base, headers, "superadmin_assessment_configuration_read", {"target_activity": assignment["activity_id"], "target_unit": assignment["unit_id"]}))
+                if prior is not None:
+                    raise RuntimeError("configuration_already_exists")
                 plan = _execution_plan(assignment, manifest["request_ids"])
                 manifest["executor"] = {"enabled": True, "ack_file": args.ack_file, "plan": plan}
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
