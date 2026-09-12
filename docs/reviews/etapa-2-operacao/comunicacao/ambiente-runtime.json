@@ -1,12 +1,12 @@
 {
-  "revision": 24,
+  "revision": 25,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T13:33:49-03:00",
+  "updatedAt": "2026-09-12T13:42:34-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -73,11 +73,12 @@
       "fixture answer-image identificada criada uma unica vez com revisao G5/C0: form publicado, application e schedule ativos; IDs server-side e receipts preservados",
       "primeira assertion rejeitou corretamente o oraculo de IDs de input; resume no mesmo recurso capturou IDs server-side sem recriar form/publicacao",
       "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft",
-      "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend"
+      "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend",
+      "C0 integrou o fix e obteve Deno 56/56 com deno.json; form-media v18 ativa aceitou o ator interno e o prepare HTTP 200 materializou/reproduziu um asset no mesmo draft"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter",
-      "smoke answer-image bloqueado no prepare da Edge form-media v17: ramo answer exige public.person_auth_links, mas QA realm-interno mapeia por superadmin_internal_auth_links/actor_people; G5 assumiu correcao focal, sem novo retry"
+      "smoke answer-image parou fail-closed no prepare da Edge form-media v18: HTTP 200 retornou asset, mas ticket R2 ficou ausente ou com tipo invalido; sem PUT/finalize/save/download e sem retry"
     ],
     "tests": [
       "docker version: client/server 29.7.2",
@@ -118,6 +119,8 @@
       ,"forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200"
       ,"form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0"
       ,"answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo"
+      ,"form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403"
+      ,"answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -134,7 +137,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "aguardar fix/deploy G5 do ator canonico na Edge answer-image; depois retomar response bb1f3443 com manifest/request_ids estaveis, sem reabrir fixture ou criar outro draft"
+    "nextGate": "C0 confirmar configuracao COELO_FORMS_MEDIA_PROVIDER e contrato real do envelope answer-image v18; nenhuma repeticao sem nova decisao, preservando draft bb1f3443 e asset e47eb9e1"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
@@ -142,14 +145,14 @@
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
     "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
-    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image fixture unica preservada: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response draft bb1f3443; asset nulo por prepare Edge401"
+    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image fixture unica preservada: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response draft bb1f3443, asset e47eb9e1; prepare v18 HTTP200 mas ticket R2 invalido, etapas posteriores nao executadas"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "4c886e2f78e874b9f32e04f9248099ab550ef5f1",
+    "head": "8e39b434ff528ddbc6ce6b0be6c9b45e7b5d21ff",
     "buildSourceSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
-    "publishedSha": "4c886e2f78e874b9f32e04f9248099ab550ef5f1",
+    "publishedSha": "8e39b434ff528ddbc6ce6b0be6c9b45e7b5d21ff",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -272,6 +275,11 @@
       "revision": 24,
       "at": "2026-09-12T13:33:49-03:00",
       "summary": "Causa 401 confirmada no lookup people-only da Edge. Resume com cinco request IDs publicado; review focal 49bd4c83d aprovado e deploy permanece exclusivo C0."
+    },
+    {
+      "revision": 25,
+      "at": "2026-09-12T13:42:34-03:00",
+      "summary": "C0 implantou form-media v18 apos 56/56. Retomada unica aceitou ator/draft e criou asset, mas parou antes do PUT por ticket R2 invalido; logout local e preservacao confirmados."
     }
   ]
 }

@@ -355,3 +355,23 @@ quando ele não existe. Erro no lookup People, contexto vazio, UUID inválido ou
 pessoas divergentes continuam negados. Múltiplos contextos da mesma pessoa são
 deduplicados, e as RPCs de prepare/finalize mantêm a validação de ownership no
 backend. Integração, suíte Deno e deploy continuam sob posse do C0.
+
+O C0 integrou o fix, classificou o primeiro vermelho de type-check como uma
+invocação sem o `deno.json`, e obteve 56 PASS / 0 FAIL com a configuração
+correta. Depois implantou `form-media` v18, ativa com `verify_jwt=true`, e
+autorizou exatamente uma retomada do mesmo draft e request IDs.
+
+A retomada passou Auth, ocorrência/participação/item e reutilizou o draft
+`bb1f3443-76a6-4049-b364-6215545625c8`. O prepare HTTP 200 materializou ou
+reproduziu o asset `e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195`, mas o envelope não
+continha o ticket R2 completo nos tipos esperados (`upload_url`,
+`required_headers`, `expires_at`). O runner parou com
+`prepare:invalid_ticket` antes de PUT, finalize, save, download ou reopen;
+logout local foi 204 e draft/asset ficaram preservados. Recibo sanitizado:
+[forms-answer-image-api-resume-20260912.log](./forms-answer-image-api-resume-20260912.log).
+
+Pelo código implantado, a explicação mais forte é o runtime ter seguido o ramo
+legado de answer-image, cujo envelope usa `signed_upload_url`/`upload_token`,
+em vez do ramo R2 protegido por `COELO_FORMS_MEDIA_PROVIDER=r2`. Isto é uma
+inferência; a execução não registrou o corpo remoto e não será repetida sem nova
+decisão do C0. Não houve credencial em log, nova fixture ou cleanup.

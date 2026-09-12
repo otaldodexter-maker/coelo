@@ -1,0 +1,14 @@
+measured_at=2026-09-12T13:41:00-03:00
+mode=execute_once_authorized_by_C0
+edge=form-media_v18_ACTIVE_verify_jwt_true
+auth_uid_match=true auth_http=200
+occurrence_preflight=PASS http=200 occurrence_id=5762fe8f-2d58-48ef-b410-30bfd0fe6703 participation_id=095d0236-334b-460b-aaa2-e1fce7914d8f item_id=95cdf8cf-d993-4325-ac7c-941f041210cc item_kind=photo identity_mode=identified
+open_or_reuse_draft=PASS http=200 response_id=bb1f3443-76a6-4049-b364-6215545625c8 management_version=1
+prepare_http=200 asset_id=e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195
+result=FAILED code=prepare:invalid_ticket preserved=true
+mutations=prepare_created_or_replayed_asset_only
+not_executed=PUT,finalize,replay_finalize,save_response,download,reopen
+logout_scope=local logout_http=204
+cleanup=none
+credentials_logged=false
+
