@@ -2700,6 +2700,7 @@ GoRouter createSuperadminRouter({
               loadGroupOptions: groupRepository is UnavailableGroupDirectoryRepository
                   ? null
                   : (institutionId) => _studentGroupOptions(groupRepository, institutionId),
+              handleRepository: personHandleRepository,
             ),
           ),
           GoRoute(
@@ -3474,6 +3475,10 @@ GoRouter createSuperadminRouter({
                       ? PlatformUserCapability.auditor
                       : PlatformUserCapability.unauthorized,
                   logout: logout,
+                  // V-11: o card Criar aparece sempre para quem pode gerir.
+                  onCreate: canManage
+                      ? () => context.goNamed(SuperadminRoutes.internalUserCreateName)
+                      : null,
                   onView: (internalUserId) => context.goNamed(
                     SuperadminRoutes.internalUserDetailName,
                     pathParameters: {'internalUserId': internalUserId},
@@ -3487,7 +3492,34 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.internalUserCreate,
             name: SuperadminRoutes.internalUserCreateName,
-            builder: (context, state) => blockedProductionMutationPage(context),
+            builder: (context, state) {
+              // internal-users.create: o formulario chama a Edge Function
+              // internal-user-create (170800); a capacidade vem do contexto
+              // autorizado e o servidor reautoriza; sem a funcao implantada
+              // o repositorio devolve a indisponibilidade honesta.
+              final repository = platformUserRepository;
+              final codes = session.authContext?.permissionCodes ?? const <String>{};
+              final canManage =
+                  codes.contains('platform.member.read') &&
+                  codes.contains('platform.member.update') &&
+                  codes.contains('platform.member.suspend');
+              if (repository == null || repository.isDemo || !canManage) {
+                return blockedProductionMutationPage(context);
+              }
+              return PlatformUserFormPage(
+                key: ValueKey('internal-user-create-${session.authorizationInvalidationRevision}'),
+                repository: repository,
+                capability: PlatformUserCapability.owner,
+                logout: logout,
+                onCancel: () => context.goNamed(SuperadminRoutes.internalUsersName),
+                onCreated: (result) => context.goNamed(
+                  SuperadminRoutes.internalUserDetailName,
+                  pathParameters: {'internalUserId': result.record.id},
+                ),
+                onDestinationSelected: (destination) =>
+                    _navigateFromPersistentShell(context, destination),
+              );
+            },
           ),
           GoRoute(
             path: SuperadminRoutes.internalUserEdit,

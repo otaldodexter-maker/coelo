@@ -13,7 +13,7 @@ timezone: "America/Sao_Paulo"
 Recorte: people, access_profiles, access_models, invites, internal_users,
 students (32 acoes; 11 em E2E na abertura). Canal oficial:
 `docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json` (revisoes 138
-a 141). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
+a 144). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
 `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS FE 147 / BE 132 /
 E2E 114 e revertidas; o coordenador aplica). Capturas em `capturas/`.
 
@@ -40,8 +40,9 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 | 20260911170500 internal_user_handles_v1 (P46 = A: @ do usuario interno pela pessoa de servico; a ponte 220400 da o @; RPC superadmin_internal_user_service_person_v1) | internal_user_handles_v1_test 12/12; person_handles 22/22; institution_people_handles 4/4; principal_context_handles 14/14 |
 | 20260911170600 institution_system_model_delete_v1 (P45 = B: modelo de sistema de Admin excluido so pela hierarquia de plataforma) | institution_system_model_delete_v1_test 7/7; institution_profile_system_model_create 8/8 |
 | 20260911170700 people_identity_lookup_v1 (people.create: resolvedor de identidade por e-mail/telefone/CPF/@/nome, sem gravar o valor) | people_identity_lookup_v1_test 11/11 |
+| 20260911170800 internal_user_create_v1 (internal-users.create em dois tempos: authorize com o token do operador; for_worker so service_role) | internal_user_create_v1_test 9/9 |
 
-## Cliente (commits fb96e9374, ee35cce3a, 7f13ee42d, 316d1fd2c)
+## Cliente (commits 7f13ee42d, 316d1fd2c, 8b40c80cd, d58cc041a, 6c2a41ab8)
 
 - `SupabasePersonIdentityRepository` ligado no `createSuperadminAuthScope`
   atras de `enablePersonHandles`: `people.create` deixa de ser fail-closed
@@ -52,6 +53,9 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 - Usuarios internos (P46): detalhe mostra a secao Identificador (@) da pessoa
   de servico (`PlatformUserServicePersonResolver` + `PersonHandleSection`),
   oculta quando a RPC 170500 nao existe.
+- Usuarios internos (create): `create` chama a Edge Function
+  `internal-user-create`; rota `/internal-users/new` aberta para quem pode
+  gerir; card Criar no diretorio (V-11); sem a funcao, indisponibilidade honesta.
 
 ## O que fechou na rota real (sessao qa-r06-acessos)
 
@@ -67,11 +71,11 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 | --- | --- |
 | invites.resend pela UI | Reenviar so aparece para convite expirado (regra do v2); producao nao tem convite expirado: fixture sintetica com expires_at no passado (pacote) ou esperar 48 h |
 | internal-users.edit/suspend pela UI | edit: diretorio lento na segunda carga (Chrome com 1,5 GB livres); suspend: suspender qualquer qa-r06 derruba a sessao de outra frente; precisa de um interno sobressalente |
-| internal-users.create | Edge Function `internal-user-create` (createUser pelo Admin API do Auth + RPC service_role que cria identidade/perfil/vinculo/membership) - contrato esbocado no JSON rev 141, nao escrito |
+| internal-users.create | cadeia pronta sem deploy: RPCs 170800 (pgTAP 9/9), Edge Function `internal-user-create` (deno check), cliente e rota `/internal-users/new` ligados; gate = deploy pelo coordenador + P51 (SMTP para definir a senha) |
 | access-profiles.edit E2E, assign, delete; access-models.edit/duplicate pela UI | build com 0aeb9b729 existe (ee35cce3a); faltou tempo de Chrome; delete de modelo de sistema depende do 170600 em producao |
 | people.create/edit pela UI | 170700 em producao + build novo com 7f13ee42d |
-| @ na tela de Alunos | nao iniciado (o @ da crianca ja e editavel no detalhe de Pessoas; a tela de gerir aluno nao mostra o @) |
-| V-11 (card Criar sempre presente em Perfis e Usuarios internos, sem dados de demonstracao) | nao iniciado nesta rodada; Usuarios internos hoje nao mostra o card Criar |
+| @ na tela de Alunos | ligado no cliente (6c2a41ab8: secao do @ da crianca em /students/<id>/manage); prova pela tela depende de build novo |
+| V-11 (card Criar sempre presente, sem dados de demonstracao) | Usuarios internos: card Criar ligado na rota normal (d58cc041a), prova pela tela depende de build novo; Perfis ja mostrava; 'sem dados de demonstracao no app real' a conferir na R07 |
 
 ## Dados sinteticos desta rodada
 

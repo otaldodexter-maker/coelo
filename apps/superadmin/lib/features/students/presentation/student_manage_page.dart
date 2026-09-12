@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
+import '../../people/domain/person_handle.dart';
+import '../../people/presentation/person_handle_section.dart';
 import '../domain/student_link.dart';
 
 /// Gestão do vínculo de um aluno: onde ele está e as quatro ações que mudam
@@ -27,6 +29,7 @@ final class StudentManagePage extends StatefulWidget {
     required this.logout,
     this.onBack,
     this.loadGroupOptions,
+    this.handleRepository,
     super.key,
   });
 
@@ -34,6 +37,10 @@ final class StudentManagePage extends StatefulWidget {
   final String childContextId;
   final LogoutAction logout;
   final VoidCallback? onBack;
+
+  /// @ da crianca (ADR 0034 Decisao 16): visivel e editavel por quem responde
+  /// por ela; o servidor decide (superadmin_person_handle_*).
+  final PersonHandleRepository? handleRepository;
 
   /// Turmas da instituição para vincular/transferir (P36). Sem loader, só
   /// revogar e editar vigência ficam disponíveis.
@@ -274,6 +281,14 @@ class _StudentManagePageState extends State<StudentManagePage> {
       key: const Key('student-manage-scroll'),
       padding: const EdgeInsets.all(CoeloSpacing.space5),
       children: [
+        if (widget.handleRepository case final handles?) ...[
+          PersonHandleSection(
+            key: const Key('student-handle-section'),
+            repository: handles,
+            personId: links.childPersonId,
+          ),
+          const SizedBox(height: CoeloSpacing.space4),
+        ],
         if (canLink) ...[
           Align(
             alignment: Alignment.centerLeft,
