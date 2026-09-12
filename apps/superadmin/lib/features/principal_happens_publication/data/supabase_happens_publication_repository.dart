@@ -14,7 +14,11 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
   final http.Client _httpClient;
 
   Future<int> _put(Uri target, Uint8List bytes, Map<String, String> headers) async {
-    final response = await _httpClient.put(target, headers: headers, body: bytes);
+    final request = http.Request('PUT', target)
+      ..followRedirects = false
+      ..headers.addAll(headers)
+      ..bodyBytes = bytes;
+    final response = await http.Response.fromStream(await _httpClient.send(request));
     return response.statusCode;
   }
 
@@ -96,11 +100,13 @@ final class SupabaseHappensPublicationRepository implements HappensPublicationRe
       final target = intent.uploadUrl;
       if (target == null) throw Exception('media_prepare_failed');
       if (intent.expiredAt(DateTime.now())) throw Exception('media_upload_expired');
-      final sent = await _put(
-        target,
-        media.bytes,
-        {...intent.requiredHeaders, 'content-type': media.mimeType},
-      );
+      final headers = {
+        for (final entry in intent.requiredHeaders.entries) entry.key.toLowerCase(): entry.value,
+      };
+      if (headers['content-type'] != media.mimeType) {
+        throw Exception('media_upload_invalid_headers');
+      }
+      final sent = await _put(target, media.bytes, headers);
       if (sent < 200 || sent >= 300) throw Exception('media_upload_failed');
       return;
     }

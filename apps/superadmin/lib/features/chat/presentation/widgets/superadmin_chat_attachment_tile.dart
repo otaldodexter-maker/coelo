@@ -3,6 +3,7 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
 import '../../domain/chat_repository.dart';
+import '../../../../core/platform/open_download.dart';
 import 'superadmin_chat_image_dialog.dart';
 
 enum SuperadminChatAttachmentState { pending, ready, failed, deleted }
@@ -19,6 +20,7 @@ final class SuperadminChatAttachmentTile extends StatefulWidget {
     this.onRetry,
     this.mediaReader,
     this.mediaSession,
+    this.attachmentRepository,
     super.key,
   });
 
@@ -27,6 +29,7 @@ final class SuperadminChatAttachmentTile extends StatefulWidget {
   final VoidCallback? onRetry;
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
+  final ChatAttachmentRepository? attachmentRepository;
 
   @override
   State<SuperadminChatAttachmentTile> createState() => _SuperadminChatAttachmentTileState();
@@ -36,6 +39,7 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
   final _openFocus = FocusNode(debugLabel: 'chat-open-image');
   DialogRoute<void>? _imageRoute;
   int _openingGeneration = 0;
+  bool _openingDocument = false;
   void Function()? _unregister;
 
   ChatAttachment get attachment => widget.attachment;
@@ -64,6 +68,7 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
         oldWidget.attachment.assetId != attachment.assetId ||
         oldWidget.state != state ||
         oldWidget.mediaReader != widget.mediaReader ||
+        oldWidget.attachmentRepository != widget.attachmentRepository ||
         oldWidget.mediaSession != widget.mediaSession) {
       _dismissOwnedImage();
       _unregister?.call();
@@ -73,6 +78,7 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
 
   void _dismissOwnedImage() {
     _openingGeneration++;
+    _openingDocument = false;
     final route = _imageRoute;
     _imageRoute = null;
     if (route == null) return;
@@ -82,6 +88,13 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
   }
 
   bool get _canOpen {
+    if (widget.attachmentRepository != null &&
+        attachment.id.isNotEmpty &&
+        widget.mediaSession != null &&
+        !widget.mediaSession!.isInvalidated &&
+        state == SuperadminChatAttachmentState.ready) {
+      return true;
+    }
     final id = attachment.assetId;
     if (id == null ||
         widget.mediaReader == null ||
@@ -98,10 +111,36 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     }
   }
 
+  Future<void> _openDocument() async {
+    final repository = widget.attachmentRepository;
+    final session = widget.mediaSession;
+    if (repository == null || !_canOpen || _openingDocument || session == null) return;
+    final generation = _openingGeneration;
+    setState(() => _openingDocument = true);
+    try {
+      final ticket = await repository.readAttachment(attachment.id);
+      if (!mounted || generation != _openingGeneration || session.isInvalidated) return;
+      if (!ticket.expiresAt.isAfter(DateTime.now().toUtc()) ||
+          !await openDownloadUrl(ticket.url.toString())) {
+        throw const ChatFailureException();
+      }
+    } catch (_) {
+      if (mounted && generation == _openingGeneration && !session.isInvalidated) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Não foi possível abrir o PDF. Tente novamente.')),
+        );
+      }
+    } finally {
+      if (mounted && generation == _openingGeneration) setState(() => _openingDocument = false);
+    }
+  }
+
   Future<void> _openImage() async {
     if (!_canOpen || _imageRoute != null) return;
-    final assetId = attachment.assetId!;
-    final reader = widget.mediaReader!;
+    final assetId = attachment.assetId;
+    final bindingId = attachment.id;
+    final bindingRepository = widget.attachmentRepository;
+    final reader = widget.mediaReader;
     final session = widget.mediaSession!;
     final generation = ++_openingGeneration;
     final navigator = Navigator.of(context);
@@ -116,9 +155,16 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
       traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       builder: (_) => !mounted || generation != _openingGeneration
           ? const SizedBox.shrink()
+          : bindingRepository != null
+          ? SuperadminChatImageDialog.attachment(
+              attachmentId: bindingId,
+              attachmentRepository: bindingRepository,
+              session: session,
+              isContextCurrent: () => mounted && generation == _openingGeneration,
+            )
           : SuperadminChatImageDialog(
-              assetId: assetId,
-              reader: reader,
+              assetId: assetId!,
+              reader: reader!,
               session: session,
               isContextCurrent: () => mounted && generation == _openingGeneration,
             ),
@@ -194,6 +240,15 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                       status.label,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: status.color),
                     ),
+                    if (attachment.mediaType == 'application/pdf' &&
+                        state == SuperadminChatAttachmentState.ready)
+                      TextButton(
+                        onPressed:
+                            _canOpen && widget.attachmentRepository != null && !_openingDocument
+                            ? _openDocument
+                            : null,
+                        child: Text(_openingDocument ? 'Abrindo…' : 'Abrir PDF'),
+                      ),
                     if (const {
                           'image/jpeg',
                           'image/png',

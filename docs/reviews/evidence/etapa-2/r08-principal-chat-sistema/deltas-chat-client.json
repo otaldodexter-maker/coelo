@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R08 G4: consumidor chat-media prepare/PUT isolado/finalize/read por attachment_id real; dialogo confirma envio separado e preserva texto/retry; viewer imagem com expiracao/purge e abertura PDF reautorizada. 56 testes locais PASS,0FAIL,0SKIP (11novos+45regressoes),analyze limpo. Falta prova real UI/reload/negativa e conciliacao spec028 pelo C0; nenhum assetId inventado.",
+    "evidencia": "evidence/etapa-2/r08-principal-chat-sistema/handoff.md; evidence/etapa-2/r08-principal-chat-sistema/chat-client-flutter-test.log"
+  }
+]
