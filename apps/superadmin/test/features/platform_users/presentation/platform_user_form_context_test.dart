@@ -10,6 +10,72 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('normal creation loads real profile and institution IDs before submitting', (
+    tester,
+  ) async {
+    const institutionId = '11111111-1111-4111-8111-111111111111';
+    const profileId = '22222222-2222-4222-8222-222222222222';
+    final repository = _Repository(
+      'A',
+      profilesOverride: const [
+        PlatformAccessProfile(
+          id: profileId,
+          name: 'Operations real',
+          permissions: [],
+          baseRole: PlatformUserRole.operations,
+          allowsGlobal: true,
+        ),
+      ],
+    );
+    final institutions = Completer<Map<String, String>>();
+    await tester.pumpWidget(
+      _app(repository, creating: true, loadInstitutions: () => institutions.future),
+    );
+    await tester.pump();
+    expect(find.byKey(const Key('platform-user-first-name')), findsNothing);
+    institutions.complete({institutionId: 'Instituição autorizada'});
+    await tester.pumpAndSettle();
+    expect(repository.catalogReads, 1);
+    await tester.enterText(find.byKey(const Key('platform-user-first-name')), 'Sintetico');
+    await tester.enterText(find.byKey(const Key('platform-user-last-name')), 'Teste');
+    await tester.enterText(find.byKey(const Key('platform-user-cpf')), '52998224725');
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('platform-user-email')), 'synthetic@example.test');
+    await tester.enterText(find.byKey(const Key('platform-user-job-title')), 'Analista');
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    expect(find.text('Catálogo de instituições indisponível'), findsNothing);
+    await tester.tap(find.byKey(const Key('platform-user-scopes-select-all')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Continuar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Criar e preparar convite'));
+    await tester.pumpAndSettle();
+    expect(repository.creates, 1);
+    expect(repository.lastDraft?.profile.id, profileId);
+    expect(repository.lastDraft?.scopeIds, [institutionId]);
+  });
+  testWidgets('late creation catalog cannot restore revoked editor capability', (tester) async {
+    final repository = _Repository('A');
+    final institutions = Completer<Map<String, String>>();
+    Future<Map<String, String>> load() => institutions.future;
+    await tester.pumpWidget(_app(repository, creating: true, loadInstitutions: load));
+    await tester.pump();
+    await tester.pumpWidget(
+      _app(
+        repository,
+        creating: true,
+        loadInstitutions: load,
+        capability: PlatformUserCapability.unauthorized,
+      ),
+    );
+    institutions.complete({'11111111-1111-4111-8111-111111111111': 'Instituição autorizada'});
+    await tester.pumpAndSettle();
+    expect(find.text('Acesso não autorizado'), findsOneWidget);
+    expect(find.byKey(const Key('platform-user-first-name')), findsNothing);
+    expect(repository.creates, 0);
+  });
   testWidgets('create review handles catalog removal without crashing or submitting', (
     tester,
   ) async {
@@ -398,6 +464,7 @@ Widget _app(
   ValueChanged<PlatformUserCreateResult>? onCreated,
   bool creating = false,
   Map<String, String> institutions = const {},
+  Future<Map<String, String>> Function()? loadInstitutions,
   VoidCallback? onCancel,
 }) => MaterialApp(
   theme: CoeloTheme.light,
@@ -406,6 +473,7 @@ Widget _app(
     capability: capability,
     internalUserId: creating ? null : repository.record.id,
     institutions: institutions,
+    loadInstitutions: loadInstitutions,
     logout: unavailableSuperadminLogout,
     onUpdated: onUpdated,
     onCreated: onCreated,
@@ -414,7 +482,13 @@ Widget _app(
 );
 
 final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoader {
-  _Repository(String name, {this.catalog, this.saving, bool realScope = false}) {
+  _Repository(
+    String name, {
+    this.catalog,
+    this.saving,
+    this.profilesOverride,
+    bool realScope = false,
+  }) {
     final source = FakePlatformUserRepository().records.first;
     record = source.copyWith(
       identity: source.identity.copyWith(firstName: name, lastName: 'Sintético', displayName: ''),
@@ -431,6 +505,7 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   }
   late final PlatformUserRecord record;
   final Future<List<PlatformAccessProfile>>? catalog;
+  final List<PlatformAccessProfile>? profilesOverride;
   final Future<PlatformUserRecord>? saving;
   var catalogReads = 0;
   var updates = 0;
@@ -441,10 +516,8 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   @override
   bool get isDemo => false;
   @override
-  List<PlatformAccessProfile> get profiles => [
-    record.profile,
-    PlatformAccessProfiles.byId('operations'),
-  ];
+  List<PlatformAccessProfile> get profiles =>
+      profilesOverride ?? [record.profile, PlatformAccessProfiles.byId('operations')];
   @override
   List<PlatformUserRecord> get records => [record];
   @override
@@ -472,6 +545,7 @@ final class _Repository implements PlatformUserRepository, PlatformUserRemoteLoa
   @override
   Future<PlatformUserCreateResult> create(PlatformUserDraft draft) async {
     creates++;
+    lastDraft = draft;
     return PlatformUserCreateResult(record: record, message: 'Cadastro sintético salvo.');
   }
 

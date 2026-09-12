@@ -1,0 +1,80 @@
+[
+  {
+    "action_id": "internal-users.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.suspend",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.suspend",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.suspend",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+      "revision": "R09-C0-r115",
+      "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+    }
+  }
+]

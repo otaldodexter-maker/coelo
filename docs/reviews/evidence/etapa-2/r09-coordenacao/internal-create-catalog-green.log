@@ -1,0 +1,139 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: normal creation loads real profile and institution IDs before submitting
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _TextWidgetFinder:<Found 0 widgets with text "Carregando usuário interno": []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart:24:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart line 24
+The test description was:
+  normal creation loads real profile and institution IDs before submitting
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:00 +0 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: normal creation loads real profile and institution IDs before submitting [E]
+  Test failed. See exception logs above.
+  The test description was: normal creation loads real profile and institution IDs before submitting
+
+00:01 +1 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: creates an exclusive Superadmin access through four steps
+00:02 +2 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: catalog removal restores the same access in review and submitted draft
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:02 +3 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: compact form has simple surface and no horizontal overflow
+00:02 +4 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:03 +4 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: catalog replacement restores the same access in review and submitted draft
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:03 +5 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:03 +5 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_pages_test.dart: active credential keeps professional email read only during edit
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:03 +6 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:03 +7 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:03 +7 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: real form without institution catalog does not offer fictional scopes
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:03 +8 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:04 +8 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: real unknown membership scopes survive review and identity update
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:04 +9 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:04 +10 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed update retries completion without repeating persistence
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:04 +11 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=800.0
+00:05 +12 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed create cannot be edited or submitted again after completion failure
+00:05 +13 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed create cannot be edited or submitted again after completion failure
+00:05 +14 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: confirmed create cannot be edited or submitted again after completion failure
+00:05 +15 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: retry width=800.0
+00:05 +16 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: retry width=800.0
+00:05 +17 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles unexpected error safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:05 +18 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=1440.0
+00:06 +18 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: failed save handles revocation safely
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:06 +19 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=1440.0
+00:06 +20 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: discard confirmation leaves with its form: dispose=false
+00:06 +21 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:06 +22 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:07 +23 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:07 +24 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:07 +25 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:07 +26 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+00:07 +27 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: revoking editor capability discards a pending update callback
+  [1m[flutter_map][0m
+    We want to help keep OpenStreetMap available for everyone. Our examples
+    and demo app use the public tile servers, but they are NOT free to use by
+    everyone! Please review whether the OpenStreetMap tile servers are suitable
+    for your project.
+    See:
+      * https://operations.osmfoundation.org/policies/tiles (OSM Tile Usage Policy)
+      * https://docs.fleaflet.dev/osm-warn for more information about this warning
+00:07 +28 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: server-denied width=1440.0
+00:07 +29 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: retry width=1440.0
+00:08 +30 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: (tearDownAll)
+00:08 +30 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/features/platform_users/presentation/platform_user_form_context_test.dart: normal creation loads real profile and institution IDs before submitting

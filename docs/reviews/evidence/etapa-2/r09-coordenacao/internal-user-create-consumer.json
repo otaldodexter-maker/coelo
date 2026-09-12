@@ -1,0 +1,35 @@
+{
+  "at": "2026-09-12T21:39:56.363271+00:00",
+  "target": "3429b381-6e3e-414f-ab12-be3326144ac4",
+  "checks": [
+    {
+      "step": "anonymous_create_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "anonymous_detail_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_operator_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "ui_suspension_persisted",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "support_limited_scope_preserved",
+      "pass": true
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}

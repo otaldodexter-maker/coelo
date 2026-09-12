@@ -23,6 +23,7 @@ final class PlatformUserFormPage extends StatefulWidget {
     required this.logout,
     this.internalUserId,
     this.institutions = const {},
+    this.loadInstitutions,
     this.onCreated,
     this.onUpdated,
     this.onCancel,
@@ -35,6 +36,7 @@ final class PlatformUserFormPage extends StatefulWidget {
   final LogoutAction logout;
   final String? internalUserId;
   final Map<String, String> institutions;
+  final Future<Map<String, String>> Function()? loadInstitutions;
   final ValueChanged<PlatformUserCreateResult>? onCreated;
   final ValueChanged<PlatformUserRecord>? onUpdated;
   final VoidCallback? onCancel;
@@ -108,8 +110,11 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
   ];
 
   bool get _editing => widget.internalUserId != null;
+  Map<String, String>? _loadedInstitutions;
   Map<String, String> get _institutions => widget.institutions.isNotEmpty
       ? widget.institutions
+      : _loadedInstitutions != null
+      ? _loadedInstitutions!
       : widget.repository.isDemo
       ? const {
           'institution-1': 'Instituição 1',
@@ -155,6 +160,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
       }
       _country.text = 'Brasil';
       _loadedRecord = null;
+      _loadedInstitutions = null;
       _loadError = null;
       _avatarBytes = null;
       _birthDateValue = null;
@@ -180,12 +186,48 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     if (record != null) {
       _populate(record);
     }
+    if (!_editing && widget.loadInstitutions != null) {
+      _loading = true;
+      unawaited(_loadCreationCatalogs());
+      return;
+    }
     if (_editing) {
       final repository = widget.repository;
       if (repository is PlatformUserRemoteLoader) {
         _loading = true;
         _loadRemote(repository as PlatformUserRemoteLoader);
       }
+    }
+  }
+
+  Future<void> _loadCreationCatalogs() async {
+    final revision = _contextRevision;
+    final repository = widget.repository;
+    final loadInstitutions = widget.loadInstitutions!;
+    try {
+      final profiles = repository is PlatformUserRemoteLoader
+          ? await (repository as PlatformUserRemoteLoader).fetchProfiles()
+          : repository.profiles;
+      if (!_isCurrent(revision)) return;
+      if (profiles.isEmpty) {
+        throw const PlatformUserRuleException('catalog', 'Catálogo de perfis indisponível.');
+      }
+      final institutions = await loadInstitutions();
+      if (!_isCurrent(revision)) return;
+      setState(() {
+        _loadedInstitutions = Map.unmodifiable(institutions);
+        _profile = profiles.firstWhere(
+          (item) => item.baseRole == PlatformUserRole.operations,
+          orElse: () => profiles.first,
+        );
+        _loading = false;
+      });
+    } on Object catch (error) {
+      if (!_isCurrent(revision)) return;
+      setState(() {
+        _loadError = error;
+        _loading = false;
+      });
     }
   }
 
@@ -488,7 +530,11 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
                 _loading = true;
                 _loadError = null;
               });
-              unawaited(_loadRemote(repository as PlatformUserRemoteLoader));
+              if (!_editing && widget.loadInstitutions != null) {
+                unawaited(_loadCreationCatalogs());
+              } else {
+                unawaited(_loadRemote(repository as PlatformUserRemoteLoader));
+              }
             },
           ),
         ),
@@ -614,8 +660,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
               SizedBox(width: CoeloSpacing.space3),
               Expanded(
                 child: Text(
-                  'Você está criando um acesso interno exclusivo ao Superadmin. '
-                  'Este cadastro não cria Admin, Principal, @ ou Pessoa e não compartilha credenciais.',
+                  'Identidade e credenciais exclusivas do Superadmin. '
+                  'Este cadastro não concede acesso ao Admin ou ao Principal.',
                 ),
               ),
             ],

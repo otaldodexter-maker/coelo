@@ -146,6 +146,7 @@ import '../../features/health_care/presentation/health_medication_plan_directory
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
+import '../../features/institutions/domain/institution_directory_query.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
 import '../../features/locations/domain/location_capabilities.dart';
@@ -958,6 +959,21 @@ GoRouter createSuperadminRouter({
       return resolvedChildSafetyController.mutationsEnabled;
     }
     return false;
+  }
+
+  Future<Map<String, String>> loadInternalUserInstitutions() async {
+    final institutions = <String, String>{};
+    for (var index = 0; index < 100; index++) {
+      final page = await institutionDirectoryRepository.fetchPage(
+        InstitutionDirectoryQuery(page: index, pageSize: 100),
+      );
+      for (final item in page.items) {
+        institutions[item.id] = item.publicName;
+      }
+      if (!page.hasNext) return institutions;
+      if (page.items.isEmpty) break;
+    }
+    throw const InstitutionDirectoryUnavailableException();
   }
 
   bool hasAssessmentMutationCapability() => enableAssessmentMutations;
@@ -3551,6 +3567,7 @@ GoRouter createSuperadminRouter({
               return PlatformUserFormPage(
                 key: ValueKey('internal-user-create-${session.authorizationInvalidationRevision}'),
                 repository: repository,
+                loadInstitutions: loadInternalUserInstitutions,
                 capability: PlatformUserCapability.owner,
                 logout: logout,
                 onCancel: () => context.goNamed(SuperadminRoutes.internalUsersName),

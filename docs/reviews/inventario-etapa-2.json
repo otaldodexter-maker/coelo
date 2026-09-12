@@ -8121,15 +8121,15 @@
       "family": "internal_users",
       "screen": "Criar usuário interno",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Criar pela UI usando v3, reautorizar hierarquia e provar Auth/identidade/reload; implementar link seguro P51=B se faltar.",
-      "fe": "R06 local-green omitido reconciliado: fdb081b6d3, cadeia INTERNAL_USERS_CREATE_CADEIA_21h20. R07 função v3 e preflight validados; primeiro gate é criar pela rota normal e reler, incluindo entrega segura do link P51=B.",
-      "be": "RPC 20260911170800 em produção no lote55 (recibo 19d3914373); Edge Function internal-user-create v3 ACTIVE, OPTIONS204 sem corpo e POST anônimo401 medidos em12/09. Falta provar criação Auth/identidade, hierarquia e reload com sessão real; não done. R08 P51: redirect canônico HTTPS separado do CORS; internal-user-create v4 ACTIVE implantada C0 apos Deno8PASS. OPTIONS medido; allowlist Auth e criacao/reload na UI ainda pendentes. R08 ciclo150: criação normal API v4, Auth/identidade/perfil mínimo e detail/list reload passaram (G5 1548780e1). C0 mediu redirect errado por allowlist Auth sem URL canônica; alteração mínima preservou entrada existente e adicionou somente HTTPS Superadmin/reset-password. Pós-prova do mesmo usuário7/7true; nenhuma senha alterada, SMTP/link aberto não testados. UI/cross-tenant continuam pendentes, sem novo done/E2E.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; 0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r102; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/internal-user-create-preflight.md; docs/reviews/evidence/etapa-2/r08-coordenacao/p51-auth-allowlist.json",
+      "done": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "fe": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "be": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01-VISUAL-1835: REDSemanticsAction.tap emInstituição1, sharedmulti-select semonTap; reservaC01I012, semcorreção/certificação ainda.; R01/C00 2026-09-08T19:00:55-03:00 da86ea22+6749ed07: Seletor múltiplo acessível: ação semântica altera draft; indisponível bloqueia toggle/clear/apply. C00 shared8PASS e consumer no lote155PASS; analyzer2clean. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; 0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r102; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/internal-user-create-preflight.md; docs/reviews/evidence/etapa-2/r08-coordenacao/p51-auth-allowlist.json; docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
@@ -8149,6 +8149,26 @@
         "fonte": "docs/reviews/etapa-2-operacao/next-round/R07-decisoes-owner-20260912.md",
         "revision": "d4a62918c; artefato1789217640-8613",
         "scope": "IDs com algum estado A explícito mapeado; não aprovação integral da família"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        }
       }
     },
     {
@@ -8199,15 +8219,15 @@
       "family": "internal_users",
       "screen": "Usuários internos / Suspender",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Suspender usuário sintético elegível e negar uso da sessão conforme contrato.",
-      "fe": "Referencia visual nominal reconciliada conforme estado:diretorio/detalhe,formularios,flyoutOwnerprotegido;4P23renders com16causas integradas. Cardhover semonView provaestadoinformativo,nao hoveracionavel. Contratos/runtime permanecem pendentes;MFAintocado.",
-      "be": "R03 (10/09 16:45): usuarios internos em producao (lote 4). Gate para done: sessao (P17), CRUD real e reload.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; 0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "fe": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "be": "R09 C0: catalogos reais compostos; criar Support limitado e suspender pela UI/reload. Sintetico3429b381v2;32casos locais54pgTAP6checksAPI, escopo/auth-link negados no espelho equivalente. Link nao aberto, SMTP/senha/primeiro login nao certificados.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/identidade-acessos/; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00 lote pós-integração288PASS; fonteC01 r51; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; 0dae87652;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/internal-users-visual/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
@@ -8215,6 +8235,26 @@
         "note": "D04 tratamento de enums/recibos/refresh e catalogo real integrado636bd63e/7d63c550/f17e5b89. Retirada de instituicoes ficticias nao libera write/create; descoberta normal em consolidacao focal.",
         "productionApplied": false,
         "certificateChanged": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-create-acceptance.md",
+          "revision": "R09-C0-r115",
+          "environment": "Supabase evvbomzejfijozbtgvpt; internal-user-create v4; Chrome22592 QA release3014 sem emulacoes",
+          "recordedAt": "2026-09-12T21:41:58.623859+00:00"
+        }
       }
     },
     {
@@ -9038,7 +9078,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T21:27:28.576Z",
+  "updatedAt": "2026-09-12T21:41:58.748Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
