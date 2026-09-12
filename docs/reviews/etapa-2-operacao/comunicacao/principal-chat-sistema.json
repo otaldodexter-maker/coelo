@@ -1,16 +1,16 @@
 {
-  "revision": 41,
-  "updated_at": "2026-09-11T21:34-03:00",
-  "round": "E2-R06-20260911",
+  "revision": 42,
+  "updated_at": "2026-09-11T23:20:52-03:00",
+  "round": "E2-R07-20260911",
   "group": "principal-chat-sistema",
-  "tool": "Claude Code (VS Code)",
-  "model": "claude-opus-5 (esforco medio)",
-  "coordinator": "R06 · Coordenacao (Claude, Opus 5)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-principal-chat-sistema",
-  "branch": "work/etapa2-r06-principal-chat-sistema",
-  "base": "origin/dev ca60b096b",
+  "tool": "Codex",
+  "model": "Luna (esforco medio)",
+  "coordinator": "R07 · Coordenacao",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
+  "branch": "work/etapa2-r07-principal-chat-sistema",
+  "base": "origin/dev a50487878",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:34 (T0+2h = 21:36). Resposta ao pedidoDeRevisao2136 em revisao_final_T0_2h. Nao retomo depois de 21:46.",
+  "status": "EM_EXECUCAO R07; T0=2026-09-11T23:20:52-03:00; frentes ate T0+4h; revisao final ate T0+4h10.",
   "T0_assumido": "CORRIGIDO pelo coordenacao.json rev 56: T0 = 19:36; T0+2h = 21:36; T0+2h10 = 21:46",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -246,5 +246,20 @@
     "ambiente_encerrado": "Chrome, servidor 3009 e clone coelo_pcs6_db encerrados 21:32",
     "handoff": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/handoff.md"
   },
-  "dados_sinteticos_r06": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d (v3) na instituicao d0c40000-0000-4000-8000-000000000001; assets de Momentos 708456ae e 24868396 preparados sem upload e 8064d199 FINALIZADO no R2 (coelo-media-prod, institution/d0c4.../moments/2026/09/8064d199.../original) por sonda; limpeza no fim da Etapa 2"
+  "dados_sinteticos_r06": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d (v3) na instituicao d0c40000-0000-4000-8000-000000000001; assets de Momentos 708456ae e 24868396 preparados sem upload e 8064d199 FINALIZADO no R2 (coelo-media-prod, institution/d0c4.../moments/2026/09/8064d199.../original) por sonda; limpeza no fim da Etapa 2",
+  "rodada7": {
+    "t0": "2026-09-11T23:20:52-03:00",
+    "escopo": "apps/superadmin -> menu Coelo (Principal) -> Publicacao (Acontece, Agora, Momentos), Cardapios, paginas de erro, Perfil e Chat",
+    "objetivo": "Provar CRUD real com reload e R2 privado nos publicadores; fechar Cardapios; provar erros; avancar Perfil e Chat sem reabrir gates independentes.",
+    "incluido": ["acontece.create/publish", "momentos.create/publish/remove", "agora.create/publish/expire", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 somente se P54=A", "chat.create-group e chat.attach se houver tempo"],
+    "fora_de_escopo": ["apps/admin", "apps/principal", "site", "dev/inventario/rastreadores", "deploy Cloudflare pelo coordenador", "V-1 sem resposta P54", "SQL salvo se nao indispensavel"],
+    "ordem": ["publicadores com PNG e reload", "meal-plans", "errors", "principal.profile-edit", "V-3", "V-1 se autorizado", "chat"],
+    "primeiro_gate": "Publicadores: capturar e resolver a falha do navegador apos CORS alinhado; provar persistencia, R2 e reload por action_id.",
+    "feito": [],
+    "pendente": ["publicadores com midia", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 condicionado a P54=A", "chat.create-group/chat.attach"],
+    "commits_publicados": [],
+    "evidencias_esperadas": "capturas commitadas em docs/reviews/evidence/etapa-2/r07-principal-chat-sistema/rota-real e deltas-r07-pcs.json no formato do aplicador",
+    "cadencia": "checkpoint JSON a cada 30 minutos; proxima revisao 23:50:52; revisao final T0+4h",
+    "seguranca": "qa-r06-principal lido somente do arquivo local; nenhum segredo em Git, chat, log ou JSON; um Chrome e um flutter test por vez"
+  }
 }
