@@ -898,6 +898,32 @@ void main() {
         )
         .onChanged(locationA);
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('step-hierarquia')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<CoeloAdminSingleSelectField<GroupDirectoryFilterOption>>(
+          find.byKey(const Key('group-unit-field')),
+        )
+        .onChanged(context.units.last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    expect(
+      tester
+          .widget<CoeloAdminSingleSelectField<String>>(
+            find.byKey(const Key('location-selection-option')),
+          )
+          .value,
+      isNull,
+    );
+    tester
+        .widget<CoeloAdminSingleSelectField<String>>(
+          find.byKey(const Key('location-selection-option')),
+        )
+        .onChanged(locationB);
+    await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('step-convites')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-form-save')));
@@ -930,6 +956,24 @@ void main() {
         .onChanged(context.units.last);
     await tester.pumpAndSettle();
     expect(find.textContaining('já foi criada com este local'), findsOneWidget);
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    tester
+        .widget<LocationSelectionField>(find.byType(LocationSelectionField))
+        .onChanged(
+          const CataloguedLocationSelection(
+            LocationReferenceSnapshot(
+              id: locationA,
+              scope: scopeUnitA,
+              kind: LocationKind.internal,
+              label: 'Sala de leitura',
+            ),
+          ),
+        );
+    await tester.pumpAndSettle();
+    expect(find.textContaining('já foi criada com este local'), findsOneWidget);
     await tester.tap(find.byKey(const Key('step-convites')));
     await tester.pumpAndSettle();
     repository.pending = Completer<GroupDirectorySaveResult>();
@@ -953,14 +997,25 @@ void main() {
 }
 
 final class _FixedLocationCatalogReader implements LocationCatalogReader {
-  final _entry = locationFixture(scope: scopeUnitA);
+  static const _unitB = '30000000-0000-4000-8000-000000000002';
+  late final _entries = [
+    locationFixture(scope: scopeUnitA),
+    locationFixture(
+      id: locationB,
+      scope: const LocationScope.unit(institutionId: institutionA, unitId: _unitB),
+    ),
+  ];
 
   @override
   Future<LocationDirectoryResult> fetchDirectory(LocationDirectoryRequest request) async =>
-      LocationDirectoryResult(items: [_entry], totalCount: 1);
+      LocationDirectoryResult(
+        items: _entries.where((entry) => sameLocationScope(entry.scope, request.scope)).toList(),
+        totalCount: 1,
+      );
 
   @override
-  Future<LocationCatalogEntry> fetchDetail(String id) async => _entry;
+  Future<LocationCatalogEntry> fetchDetail(String id) async =>
+      _entries.firstWhere((entry) => entry.id == id);
 }
 
 final class _RecordingGroupLocationCreateRepository implements GroupLocationCreateRepository {

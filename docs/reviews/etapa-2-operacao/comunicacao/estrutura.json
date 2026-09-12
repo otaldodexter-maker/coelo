@@ -14,9 +14,9 @@
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location cobre create atômico, falha parcial, edição e retry sem nova criação; teste focal Flutter 28/28 PASS e analyze focal PASS.",
+  "feito": "groups.location tem create atômico, falha parcial, edição e retry sem nova criação; o teste focal anterior passou 28/28 e o ramo novo de troca de unidade antes da criação está em analyze verde.",
   "pendente": "Chrome/rota real para Avaliações e groups.location; comparação e regravação dos 45 PNGs A.",
-  "sha": "a30956968 + delta local de retry, aguardando commit"
+  "sha": "caebaf6f9 + ramo local de troca de escopo, aguardando Flutter"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
