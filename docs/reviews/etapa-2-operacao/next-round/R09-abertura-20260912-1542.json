@@ -1,0 +1,37 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "revision": 93,
+  "status": "bloqueada-antes-da-posse",
+  "T0": "2026-09-12T15:42:18-03:00",
+  "T0Source": "primeira medicao clock.curr_time desta abertura",
+  "execucaoAte": "2026-09-12T19:42:18-03:00",
+  "fechamentoAte": "2026-09-12T20:12:18-03:00",
+  "base": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+  "branch": "work/etapa2-r09-coordenacao-20260912-1542",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+  "taskIds": {"C0": "01a096ed-314b-7c13-a9e0-3e64649e66fc", "G0": null, "G1": null, "G2": null, "G3": null, "G4": null, "G5": null, "G6": null, "G7": null, "G8": null},
+  "taskIdSource": "CODEX_THREAD_ID; collaboration.list_agents mostra somente /root",
+  "consumoInicialPercent": null,
+  "consumoFinalPercent": null,
+  "bloqueios": [
+    "Catalogo de ferramentas disponiveis sem consulta de cota real.",
+    "Sem list_threads/read_thread e envio as novas tarefas externas do Owner.",
+    "Sem ferramenta de agendamento de heartbeat desta tarefa."
+  ],
+  "possePublicada": false,
+  "frentesLiberadas": [],
+  "heartbeat": "nao-criado; nenhum timer anterior reativado",
+  "preservado": ["tentativa antiga d262eef09", "checkpoint isolado d2ed31572 da abertura 1534", "todas as worktrees preexistentes"],
+  "principal": "fetch executado; sem edicao ou pull; status limpo observado",
+  "limites": {
+    "reconciliacao": "parcial; heads e checkpoint 1534 consultados; WIP e ignorados de todas as frentes ainda nao reconciliados nesta abertura",
+    "leituras": "nova abertura, consumo, contrato comum e C0 lidos; leitura conjunta de skills truncada, conclusao das leituras e inventario/tres rastreadores integrais pendente",
+    "testesProduto": "nao executados",
+    "metricas": "nao remedidas; nenhum novo aceite proposto",
+    "runtimeSQLDeploy": "nao executados",
+    "dadosSinteticosEChaves": "nenhum criado",
+    "memoria": "no-op; nenhuma nova regra duravel"
+  },
+  "primeiroGate": "Disponibilizar nesta sessao acesso as novas tarefas e a cota real; concluir leituras e reconciliacao, publicar posse antes de liberar G0/G5/produto.",
+  "corte": "tempo ou consumo, o primeiro; cota indisponivel levou a conter execucao no checkpoint; nao iniciar R10"
+}
