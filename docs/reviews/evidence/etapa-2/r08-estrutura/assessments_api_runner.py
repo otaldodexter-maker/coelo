@@ -130,8 +130,8 @@ def main() -> int:
                 periods = opened.get("periods", []) if isinstance(opened, dict) else []
                 active_read = data(_rpc(base, headers, "superadmin_assessment_configuration_read", {"target_activity": assignment["activity_id"], "target_unit": assignment["unit_id"]}))
                 active = active_read.get("configuration", {}) if isinstance(active_read, dict) else {}
-                period = next((item for item in periods if item.get("status") == "open" and item.get("unit_id") == assignment["unit_id"] and item.get("configuration_id") == configuration["id"]), None)
-                if active.get("id") != configuration["id"] or active.get("status") != "active":
+                period = next((item for item in active_read.get("periods", []) if item.get("status") == "open"), None)
+                if active.get("id") != configuration["id"] or active.get("status") != "active" or active.get("management_version") != activated.get("version"):
                     raise RuntimeError("activation_reload_invalid")
                 if not isinstance(period, dict):
                     raise RuntimeError("open_period_missing")
@@ -144,14 +144,17 @@ def main() -> int:
                 if (not isinstance(loaded, dict) or loaded.get("id") != book["id"]
                     or loaded.get("activity_group_link_id") != assignment["activity_group_link_id"]
                     or loaded.get("period_id") != period["id"] or loaded.get("configuration_id") != configuration["id"]
-                    or loaded.get("status") != "draft" or not isinstance(loaded.get("students"), list)
-                    or not isinstance(loaded.get("management_version"), int)):
+                    or loaded.get("status") != "draft" or not isinstance(reread.get("students"), list)
+                    or loaded.get("management_version") != book.get("version")):
                     raise RuntimeError("gradebook_reload_invalid")
         finally:
             manifest["logout_http_status"] = call(base, headers, "/auth/v1/logout?scope=local", {})[0]
-    manifest["executor"] = {"enabled": False, "ack_required": "G5_C0", "sequence": ["save_configuration", "activate_configuration", "save_gradebook"], "payload_keys": {"save_configuration": ["activity_id", "institution_id", "unit_id", "periods", "instruments"], "save_gradebook": ["activity_group_link_id", "period_id", "configuration_id", "students"]}}
+    if not args.execute:
+        manifest["executor"] = {"enabled": False, "ack_required": "G5_C0", "sequence": ["save_configuration", "activate_configuration", "save_gradebook"], "payload_keys": {"save_configuration": ["activity_id", "institution_id", "unit_id", "periods", "instruments"], "save_gradebook": ["activity_group_link_id", "period_id", "configuration_id", "students"]}}
+    elif isinstance(manifest.get("executor"), dict):
+        manifest["executor"]["state"] = "complete"
     output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
-    print(json.dumps({"mode": "dry-run", "mutations": False, "manifest": str(output)}))
+    print(json.dumps({"mode": manifest["mode"], "mutations": manifest["mutations"], "manifest": str(output)}))
     return 0 if status == 200 and manifest.get("context_options", {}).get("strict_projection") is True else 1
 
 
