@@ -373,12 +373,38 @@ void main() {
       expect(page.sections.single.state, ProfileAboutSectionState.published);
     });
 
+    for (final (label, type, id) in [
+      ('different subject id', 'institution', 'other-institution'),
+      ('different subject type', 'unit', _institution.subjectId),
+      ('missing subject id', 'institution', null),
+      ('missing subject type', null, _institution.subjectId),
+    ]) {
+      test('rejects $label in the canonical response', () {
+        expect(
+          () => parseProfileAboutReadResponse(
+            subject: _institution,
+            response: <String, Object?>{
+              'id': 'page-1',
+              'subject_type': type,
+              'subject_id': id,
+              'version': 8,
+              'fields': <Object?>[],
+              'sections': <Object?>[],
+            },
+          ),
+          throwsFormatException,
+        );
+      });
+    }
+
     test('objeto plano sem versao nao vira ausencia silenciosa de Sobre', () {
       expect(
         () => parseProfileAboutReadResponse(
           subject: _institution,
           response: <String, Object?>{
             'id': '22222222-2222-4222-8222-222222222222',
+            'subject_type': 'institution',
+            'subject_id': _institution.subjectId,
             'fields': <Object?>[],
             'sections': <Object?>[],
           },

@@ -1,6 +1,6 @@
 {
-  "revision": 65,
-  "updated_at": "2026-09-12T13:26:00.758328-03:00",
+  "revision": 66,
+  "updated_at": "2026-09-12T13:36:09.784367-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "9863512b9",
-  "status": "EXECUTANDO: Perfil parser/save-reload local-green37PASS; codigo9863512b9push; proximogateC0",
+  "head": "68a0464fb + pacote Perfil sujeito/papel desta revisão",
+  "status": "EXECUTANDO: Perfil sujeito/papel corrigidos43PASS; revisão câmera G3 concluída, P2 corrigido725155ec0",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -39,7 +39,8 @@
     "cardapios-api": "24checks/operacoesPASS exit0;draft1/edit2/review3/publish4/archive5;modeloexistentev2intacto;scopeRulesobjetopersistido;naoE2EUI.",
     "chat-api": "Inicial27PASS/1FAILoraculoR2400;continuacaomesmosIDs26PASS/0FAILexit0/logout204;hash/reload/replaysemPUT/TTL300403;naosomarreruns;naoE2EUI.",
     "perfil-save-reload": "RED5falhasesperadas/native1;GREEN37PASS0FAIL0SKIP/native0 em2arquivos;5novos32existentes2oráculoswrapperobsoletossubstituidos;analyze4arquivos0/native0. NaoE2E.",
-    "principal-integrado-C0": "79PASS/3arquivos baseb85fd00e0/analyze0 conforme ciclo120C0; naosomaraosrerunsG4."
+    "principal-integrado-C0": "79PASS/3arquivos baseb85fd00e0/analyze0 conforme ciclo120C0; naosomaraosrerunsG4.",
+    "perfil-subject-role": "RED6 esperados/native1; GREEN43PASS0FAIL0SKIP/native0 (6novos37existentes); analyze4arquivos0. Não somar reruns."
   },
   "lotes": [
     {
@@ -74,8 +75,8 @@
     "conciliar spec028 bindingattachment_id semassetId antescertificacao",
     "proximo gate independente aposAPI, semconflito demaisfrentes"
   ],
-  "next_step": "C0integrar9863512b9 e deltaperfil; proximo gate independente solicitado; UI/cross-tenant/H02/H05/H06/H13pendentes.",
-  "ack": "C0liberou slot13:21; G4devolveu13:24aposGREEN/analyze; codigo/logspublicados9863512b9; nenhumprocessoativo.",
+  "next_step": "Publicar correção para integração C0; próximo gate independente; UI/cross-tenant e contratos H02/H05/H06/H13 pendentes.",
+  "ack": "Slot Flutter devolvido13:37; nenhum processo G4 ativo; câmera G3 corrigida725155ec0, revisão estática G4 sem rerun.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "Sem processo/slotFlutter/Chrome G4 ativo. Slots globais coordenadosC0; semsegredos;worktreeprincipalintocado;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {

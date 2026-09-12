@@ -278,3 +278,12 @@ Slot devolvido13h24, nenhum processo G4 ativo. H02/H05/H06/H13 preservados.
 Retenção e disparador H09 detalhados em agora-expiry-handoff.md e
 retained-r08-resources.json. Nova publicação Agora só vence13/09 12h24 BRT.
 Próximo gate focal solicitado a C0, mantendo execução até corte14h52:16.
+
+
+## Complemento da revisão G6 e apoio à câmera G3
+
+Perfil: subject_type/id exatos e mudança isolada de roleCode/scopeKind agora
+validados. RED6→GREEN43PASS, analyze0; ver profile-subject-proof.md.
+Câmera: G4 encontrou purge durante finalizeTree; G3 reproduziu e corrigiu
+em725155ec0, GREEN9 atribuído a G3. Revisão fix concluída em camera-review.md.
+Slot devolvido13:37; nenhum processo G4 ativo, próximos gates coordenados C0.
