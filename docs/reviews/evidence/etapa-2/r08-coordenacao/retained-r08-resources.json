@@ -1,0 +1,105 @@
+{
+  "source": "R08 G4 retained manifest plus committed G6, G0 and G5 evidence",
+  "status": "C0 retained through formal Etapa2 end; R08 closure does not authorize cleanup",
+  "generated_at": "2026-09-12T14:37:41.141835-03:00",
+  "scope": "R08 synthetic resources only; identifiers and retention instructions only",
+  "items": [
+    {
+      "domain": "Acontece",
+      "ids": {
+        "post_id": "f143a25d-c5ff-41e0-ac99-92d41c11e2b8",
+        "asset_id": "10e88d97-ee48-4453-ac01-b7a62c639d46"
+      },
+      "retention": "Preserve synthetic records and private masters until formal Etapa 2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Agora",
+      "ids": {
+        "publication_id": "392ee49a-265b-42e3-9c5b-ed44a34028f8",
+        "asset_id": "0451e371-7f79-4501-b439-7da426ca4019"
+      },
+      "retention": "Preserve synthetic records and private masters through natural publication expiry and until formal Etapa 2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Momentos",
+      "ids": {
+        "publication_id": "bd9f2361-548f-44f8-a595-fddec3ff1396",
+        "asset_id": "6f8f9fc8-215a-4e07-8b7f-583d210215c7"
+      },
+      "retention": "Preserve synthetic records and private masters until formal Etapa 2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Chat",
+      "ids": {
+        "conversation_id": "39aa8f4a-33a0-4d4e-beb0-a9fd4c7fcf64",
+        "attachment_id": "9ed2bcc3-dfb9-4f56-a67d-0e582593ca3e",
+        "message_id": "fcd0c6d4-f917-4c56-94e1-10805c734b50"
+      },
+      "retention": "Preserve synthetic records and private masters until formal Etapa 2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Cardapios",
+      "ids": {
+        "meal_plan_id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+        "existing_template_id": "d132698c-605d-46b4-bb11-124f85563604"
+      },
+      "retention": "Preserve synthetic records until formal Etapa 2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Circulares",
+      "ids": {
+        "circular_id": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+        "asset_id": "429f1bc4-f579-4179-9193-0e6304aa3e0f"
+      },
+      "retention": "Preserve the logically archived circular and retained READY private asset for incident audit until formal Etapa 2 closure; cleanup was not attempted and is not authorized here."
+    },
+    {
+      "domain": "Formularios-question-image",
+      "ids": {
+        "form_id": "f88005ab-af5e-4aa2-8cf7-f35de4ded376",
+        "form_version_id": "4adae123-1aad-4e1f-a2f4-b59d661bc3d4",
+        "item_id": "b7ac860f-f23a-4b68-b320-d2098abc94e6",
+        "asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605"
+      },
+      "retention": "Preserve the synthetic form and READY private asset until formal Etapa 2 closure; no delete or cleanup authorized here."
+    },
+    {
+      "domain": "Formularios-answer-image",
+      "ids": {
+        "form_id": "afa8f922-b27d-4258-9322-8b3f96ee7df9",
+        "item_id": "95cdf8cf-d993-4325-ac7c-941f041210cc",
+        "application_id": "c87a7e84-cbd4-43f8-9135-74efa0711edb",
+        "schedule_id": "5af5a32f-5ab0-4cf5-94a7-f618793becba",
+        "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703",
+        "participation_id": "095d0236-334b-460b-aaa2-e1fce7914d8f",
+        "response_id": "bb1f3443-76a6-4049-b364-6215545625c8",
+        "asset_id": "e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195"
+      },
+      "retention": "Preserve the synthetic form chain, pending response draft and private asset until formal Etapa 2 closure; do not retry, delete or clean up without C0 authorization."
+    },
+    {
+      "domain": "Usuarios-internos-P51",
+      "ids": {
+        "internal_identity_id": "0ddeebc0-ee10-4565-96e0-ef11cacfc734",
+        "auth_user_id": "e7efaa3d-d965-457b-999e-9b62bb8e59d2"
+      },
+      "retention": "Preserve the synthetic internal identity and its existing Auth user until formal Etapa 2 closure; no password, link, SMTP or cleanup action authorized here."
+    },
+    {
+      "domain": "Avaliacoes",
+      "ids": {
+        "configuration_id": "833a89d8-466f-4ff4-8ab9-4ffb7f33a1cb",
+        "period_id": "c4e38ada-e062-4466-a22d-88dca177fa30",
+        "gradebook_id": "d2c945d8-3809-4d84-b836-2bc6da7c381d",
+        "assignment_id": "41e161da-ebaa-4fed-b0ba-132640e6a59f"
+      },
+      "retention": "active configuration v2/open period/draft gradebook v1; do not recreate or clean up before formal Etapa2 closure"
+    }
+  ],
+  "secrets": {
+    "newCredentialsOrSecretKeys": false,
+    "providerChange": "existing COELO_FORMS_MEDIA_PROVIDER set to r2 by C0",
+    "clientComposition": "contextFiltersAvailable true after SQL59",
+    "anonymousClientDesign": "32 Random.secure bytes per account/project/occurrence; no real anonymous secret emitted in evidence"
+  }
+}

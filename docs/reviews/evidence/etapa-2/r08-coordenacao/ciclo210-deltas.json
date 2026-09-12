@@ -1,0 +1,62 @@
+[
+  {
+    "action_id": "people.list",
+    "camada": "frontend",
+    "delta": "R05: rota real /people com a sessao qa-r03 lista pessoas reais de producao (Coelo, Crianca QA R04, operadores internos), busca, Tipo/Status/Instituicao/UF/Auth, abas, toggle, Arquivos e card Criar pessoa; reload mantem. Pendencia FE registrada: aba Criancas selecionada nao filtra os cards (people.list filtro por aba). R08 H28: filtros de atividade/UF/municipio/bairro aplicados no lote59 (20260912143000), mesma linha contextual, pgTAP final44/44, cliente integrado19PASS0FAIL. contextFiltersAvailable:true publicado477e6c8df. Certificacao historica preservada; novos filtros ainda sem prova UI/reload real, sem novo certificado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-people-result.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/people-list.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:45:00-03:00"
+    }
+  },
+  {
+    "action_id": "people.list",
+    "camada": "backend",
+    "delta": "R04: superadmin_people_list responde 200 para o usuario interno apos a ponte de ator (lote 10) e o P7 (171000, pgTAP 20/20 com negativa cross-tenant por instituicao). Antes: 42501 'people permission denied'. R08 H28: filtros de atividade/UF/municipio/bairro aplicados no lote59 (20260912143000), mesma linha contextual, pgTAP final44/44, cliente integrado19PASS0FAIL. contextFiltersAvailable:true publicado477e6c8df. Certificacao historica preservada; novos filtros ainda sem prova UI/reload real, sem novo certificado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-people-result.json",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "ce6f061cc",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T02:00:00-03:00"
+    }
+  },
+  {
+    "action_id": "people.list",
+    "camada": "integrated",
+    "delta": "R05: rota normal abre com superadmin_people_list em producao (BE done desde a R04), reload mantem; negativa por tenant em pgTAP (superadmin_people_directory_test, casos de RLS) e id inexistente no detalhe nao enumeravel. R08 H28: filtros de atividade/UF/municipio/bairro aplicados no lote59 (20260912143000), mesma linha contextual, pgTAP final44/44, cliente integrado19PASS0FAIL. contextFiltersAvailable:true publicado477e6c8df. Certificacao historica preservada; novos filtros ainda sem prova UI/reload real, sem novo certificado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-people-result.json",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/people-list.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:45:00-03:00"
+    }
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "delta": "R08: form-media v21 ACTIVE com provider R2, actor interno, TTL/replay e parametro edit_secret null corrigidos. Lote57 140546..140549 aplicado com225 testes unicos finais. G0 provou prepare/PUT68bytes/finalize/replay/save e download autorizado200 com checksum/reload da MESMA resposta e asset. Prova API autentica; UI/camera/anonimo e negativa cross-tenant real continuam pendentes. Sem BE done/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log"
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "integrated",
+    "delta": "R08: cadeia API de imagem de resposta concluida e recursos preservados. Primeiro gate restante: rota normal interativa de Formulario com upload/download/reload e negativa no outro tenant; camera/anonimo nao certificados por API.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "delta": "R08: form-media v21 ACTIVE com provider R2, actor interno, TTL/replay e parametro edit_secret null corrigidos. Lote57 140546..140549 aplicado com225 testes unicos finais. G0 provou prepare/PUT68bytes/finalize/replay/save e download autorizado200 com checksum/reload da MESMA resposta e asset. Prova API autentica; UI/camera/anonimo e negativa cross-tenant real continuam pendentes. Sem BE done/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "integrated",
+    "delta": "R08: cadeia API de imagem de resposta concluida e recursos preservados. Primeiro gate restante: rota normal interativa de Formulario com upload/download/reload e negativa no outro tenant; camera/anonimo nao certificados por API.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log"
+  }
+]

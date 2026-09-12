@@ -1,0 +1,38 @@
+[
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "backend",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "integrated",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "backend",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "integrated",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json"
+  }
+]
