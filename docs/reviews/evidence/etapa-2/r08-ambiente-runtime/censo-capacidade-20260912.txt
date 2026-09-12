@@ -9,3 +9,7 @@ test_started=false
 remeasured_at=2026-09-12T14:21:14-03:00
 ram_free_gb_remeasured=2.83
 final_recommendation=single_flutter_test_process_with_concurrency_1_unless_immediate_preflight_recovers_to_at_least_3.0_gb
+final_check_at=2026-09-12T14:23:30-03:00
+ram_free_gb_final_check=3.32
+census_released=false
+census_not_started_reason=owner_shortened_final_close_to_15_00_and_C0_did_not_release_full_run

@@ -473,3 +473,32 @@ espera permissões antigas e a assinatura removida de 12 argumentos; registrou
 quatro falhas e abortou ao resolver a função inexistente, com rollback. Isso foi
 preservado como dívida de teste, não contado como verde nem como regressão do
 candidato.
+
+## Fechamento G0
+
+Às 14:22, o Owner substituiu os marcos anteriores por: frentes até 14:40,
+revisão até 14:50 e fechamento C0 até 15:00 BRT. O T0 histórico permanece. G0
+encerrou novidade e publicou este handoff dentro da nova janela; R09 não foi
+iniciada.
+
+Na checagem final das 14:23, o servidor PID 14072 continuava ativo com
+`/login` HTTP 200 e o baseline estava `running/healthy`. A RAM livre oscilou
+para 3,32 GB, mas o censo completo não foi liberado pelo C0 e não cabe prometer
+conclusão antes das 15:00; nenhum teste foi iniciado. A recomendação permanece
+condicional a preflight imediato e posse do único processo Flutter.
+
+Entrega publicada até aqui: `1e7a318d01d713cf9bd60c50e2acd1304e7195a3`.
+Dados sintéticos preservados para o fechamento formal da Etapa 2: question-image
+form `f88005ab-af5e-4aa2-8cf7-f35de4ded376`/asset
+`d25b8baa-efb5-4702-b5e6-ac3084610605`; answer-image form
+`afa8f922-b27d-4258-9322-8b3f96ee7df9`, occurrence
+`5762fe8f-2d58-48ef-b410-30bfd0fe6703`, participation
+`095d0236-334b-460b-aaa2-e1fce7914d8f`, response
+`bb1f3443-76a6-4049-b364-6215545625c8` e asset
+`e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195`. Request IDs ficam apenas na manifest
+commitada; não há credenciais neste handoff.
+
+Pendência G0 única: a prova visual de login/leitura/reload não foi obtida porque
+o canal de texto CUA não atualiza os controllers Flutter. A prova API real de
+answer-image fechou, mas não é promovida a UI/E2E. C0 remove a worktree somente
+após integração e backup; G0 não fará cleanup dos sintéticos nem do runtime.
