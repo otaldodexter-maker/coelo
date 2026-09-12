@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -265,6 +267,9 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
             initialDraft: editable.draft,
           ),
         );
+        // Nome da instituicao para "Publico e contexto" e a previa da familia
+        // Publicacao; se a leitura falhar a tela segue com o rotulo generico.
+        unawaited(_resolveInstitutionLabel(editable.scope.institutionId, generation));
       } else {
         final page = await institutionRepository.fetchPage(
           InstitutionDirectoryQuery(
@@ -281,6 +286,19 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
       _error = error;
     } finally {
       if (mounted && generation == _prepareGeneration) setState(() => _loading = false);
+    }
+  }
+
+  Future<void> _resolveInstitutionLabel(String institutionId, int generation) async {
+    try {
+      final page = await widget.institutionRepository.fetchPage(
+        InstitutionDirectoryQuery(pageSize: 100),
+      );
+      if (!mounted || generation != _prepareGeneration) return;
+      final match = page.items.where((item) => item.id == institutionId).firstOrNull;
+      if (match != null) setState(() => _selectedInstitution = match);
+    } on Object {
+      // Rotulo generico permanece.
     }
   }
 
