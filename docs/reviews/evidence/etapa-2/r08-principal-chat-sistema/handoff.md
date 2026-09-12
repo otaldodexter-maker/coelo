@@ -287,3 +287,14 @@ validados. RED6→GREEN43PASS, analyze0; ver profile-subject-proof.md.
 Câmera: G4 encontrou purge durante finalizeTree; G3 reproduziu e corrigiu
 em725155ec0, GREEN9 atribuído a G3. Revisão fix concluída em camera-review.md.
 Slot devolvido13:37; nenhum processo G4 ativo, próximos gates coordenados C0.
+
+
+## Varredura Perfil e censo de contratos (13h55)
+
+View agora relê e limpa Sobre na mudança isolada de papel/tipoescopo;2REDs
+reproduzidos e16PASS finais incluindo resposta tardia descartada. Varredura
+canônica não achou outro envelope antigo, mas achou censo que ignorava quoting
+SQL e incluía pgTAP por normalização Windows errada. C0 cedeu posse:3REDs e
+7PASS finais após correção, só3exceções Sobre obsoletas removidas. Analyze3
+arquivos0;23IDs únicos/5novos18existentes, sem prova UI/E2E. Nenhum processo.
+H25 complementado por fix f0e148a70 sem rebaseline; parecer atualizado.
