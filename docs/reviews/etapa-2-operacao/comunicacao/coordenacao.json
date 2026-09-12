@@ -1,12 +1,12 @@
 {
- "revision": 64,
+ "revision": 65,
  "round": "E2-R08-20260912",
  "role": "C0 Coordenacao R08 ativa",
  "writer": "C0 Codex",
  "app": "Codex desktop",
  "model": "GPT-6 Astra medio",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-12T10:52:16.727826-03:00",
+ "updatedAt": "2026-09-12T10:53:51.863872-03:00",
  "relogio": "relogio da maquina",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2577,7 +2577,7 @@
   "G3": {
    "grupo": "formularios-cuidado-rotina",
    "threadId": "01a095e2-5dc2-7ad3-ae37-4742481ea99f",
-   "modelo": "Sol medio",
+   "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
    "branch": "work/etapa2-r08-formularios-cuidado-rotina",
    "json": "formularios-cuidado-rotina.json",
    "ultimoSHA": null,
@@ -2644,11 +2644,11 @@
    "estado": "reservado para diagnostico runtime; G0 registra PID antes do uso"
   },
   "flutterTest": {
-   "dono": null,
+   "dono": "G2",
    "pid": null,
-   "inicio": null,
-   "expira": null,
-   "estado": "livre; aguardar concessao nominal C0"
+   "inicio": "2026-09-12T10:53:51.863872-03:00",
+   "expira": "2026-09-12T11:13:51.863872-03:00",
+   "estado": "concedido teste focal Pessoas; G2 registra PID e libera ao terminar"
   },
   "e2eLiberado": false,
   "sqlLiberado": false
@@ -2658,5 +2658,22 @@
   "estado": "retida ate espelho/pgTAP e backup",
   "candidatos": []
  },
- "receiptsR08": []
+ "receiptsR08": [],
+ "ownershipR08": {
+  "test/app/router/structure_detail_golden_test.dart": "G1",
+  "test/app/router/person_detail_golden_test.dart": "G2",
+  "superadmin_form_frame.dart": "G3",
+  "internal-user-create": "G2 autor / C0 deploy",
+  "form-media": "G3 autor / C0 deploy",
+  "chat-media": "G5 autor / C0 deploy",
+  "circular-media": "G6 autor / C0 deploy",
+  "happens-media/now-media/moments-media": "G4 autor / C0 deploy"
+ },
+ "heartbeatR08": {
+  "id": "r08-coordena-o-10-minutos",
+  "status": "ACTIVE",
+  "intervaloMinutos": 10,
+  "corte": "2026-09-12T15:22:16-03:00",
+  "ultimoCheckpoint": "2026-09-12T10:53:51.863872-03:00"
+ }
 }
