@@ -2572,6 +2572,7 @@ GoRouter createSuperadminRouter({
               loadGroupOptions: groupRepository is UnavailableGroupDirectoryRepository
                   ? null
                   : (institutionId) => _studentGroupOptions(groupRepository, institutionId),
+              handleRepository: personHandleRepository,
             ),
           ),
           GoRoute(
