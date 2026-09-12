@@ -2,7 +2,7 @@
 title: "R08 G5 — P51 criação de usuário interno pela API"
 source: "gate nominal C0; internal-user-create v4 em produção; execução G5"
 status: "criacao-e-reload-verdes-redirect-runtime-falhou"
-generated_at: "2026-09-12T13:18:00-03:00"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # P51 — criação normal, link seguro e releitura

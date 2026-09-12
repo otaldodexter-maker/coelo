@@ -2,7 +2,7 @@
 title: "R08 G5 — retirada de Momentos e lote 58"
 source: "G4 smoke API produtivo; migrations 171600/130300/130400; candidato 140550; recibos G0/C0"
 status: "api-producao-aprovada-ui-e2e-pendente"
-generated_at: "2026-09-12T13:15:00-03:00"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # Retirada de Momentos — defeito medido e correção mínima

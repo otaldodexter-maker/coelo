@@ -1,8 +1,8 @@
 {
   "grupo": "realm-interno",
-  "revision": 68,
+  "revision": 69,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:18:00-03:00",
+  "updatedAt": "2026-09-12T13:12:28-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
@@ -1026,8 +1026,8 @@
       ],
       "primeiroGate": "completar redirect dinâmico sem nova identidade"
     },
-    "checkpoint13h15": {
-      "quando": "2026-09-12T13:15:00-03:00",
+    "checkpoint13h10": {
+      "quando": "2026-09-12T13:10:00-03:00",
       "feito": [
         "G4 publicou negativa final de Momentos em 3f664595a: outro consumidor qa-r06-realm recebeu read 403 no asset retirado e logout local 204; não é cross-tenant nem UI/E2E.",
         "C0 integrou ciclo120 em origin/dev 7cc6d4e7b; G5 incorporou por merge c1d80936b, sem rebase/force e sem tocar checkout principal.",
@@ -1045,12 +1045,13 @@
       },
       "primeiroGate": "review do roteiro answer-image G0"
     },
-    "checkpoint13h18": {
-      "quando": "2026-09-12T13:18:00-03:00",
+    "checkpoint13h12": {
+      "quando": "2026-09-12T13:12:28-03:00",
       "feito": [
         "C0 gerou recovery Auth Admin somente para o mesmo usuário P51: HTTP 200, HTTPS/host/path/type/same-user verdadeiros e redirect_exact falso; nenhum link/query/token foi registrado.",
         "Evidência G5 corrigida: o primeiro oráculo agregado não isolava causa; header casing era um defeito do harness, mas não explicava sozinho a negativa de redirect confirmada pelo C0.",
-        "Roteiro G0 ae32df1d2 inspecionado: audience e duplicata em leitura; quatro mutations normais; IDs persistidos; schedule apenas enfileira worker."
+        "Roteiro G0 ae32df1d2 inspecionado: audience e duplicata em leitura; quatro mutations normais; IDs persistidos; schedule apenas enfileira worker.",
+        "Carimbos locais inicialmente escritos como 13:15/13:18 foram corrigidos para o relógio real; nenhuma conclusão técnica mudou."
       ],
       "pendente": [
         "C0 concluir causa SDK/config Auth do redirect falso; sem nova geração, senha, SMTP ou mudança de configuração por G5.",

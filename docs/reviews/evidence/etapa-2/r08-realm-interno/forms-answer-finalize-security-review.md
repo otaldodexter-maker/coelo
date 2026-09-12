@@ -2,7 +2,7 @@
 title: "R08 G5 — revisão focal do finalize de imagem-resposta"
 source: "commits G3 dfe013cc5 e f0c7269fd; contrato form-media"
 status: "integrado-e-deployado-v17"
-generated_at: "2026-09-12T13:15:00-03:00"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # Finalize de imagem-resposta — revisão de segurança e contrato
