@@ -1,33 +1,33 @@
 {
   "grupo": "realm-interno",
-  "revision": 48,
-  "round": "E2-R06-20260911",
-  "updatedAt": "2026-09-11T21:24-03:00",
-  "app": "Claude",
-  "modelo": "Opus 5 (esforco medio)",
-  "conversa": "R06 · Realm interno e segurança",
-  "coordenador": "R06 · Coordenação (coordenacao.json rev 52+)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-realm-interno",
-  "branch": "work/etapa2-r06-realm-interno",
-  "head": "394f2b84e (+1 commit do SHA)",
-  "upstream": "origin/work/etapa2-r06-realm-interno (push no primeiro commit)",
-  "t0": "T0 = 19:36 (coordenacao rev 52); T0+2h = 21:36 (revisao de 10 min ate 21:46); minha abertura 19:37",
+  "revision": 49,
+  "round": "E2-R07-20260911",
+  "updatedAt": "2026-09-11T23:00-03:00",
+  "app": "Codex",
+  "modelo": "Luna (esforco medio)",
+  "conversa": "R07 · Realm interno e segurança",
+  "coordenador": "R07 · Coordenação (a confirmar em coordenacao.json)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-realm-interno",
+  "branch": "work/etapa2-r07-realm-interno",
+  "head": "a50487878 (base origin/dev; abertura R07)",
+  "upstream": "origin/work/etapa2-r07-realm-interno (push desta revisão)",
+  "t0": "T0 ainda não publicado no JSON da coordenação; abertura local 2026-09-11T23:00-03:00; prazo operacional T0+4h",
   "escopo": {
-    "camada": "backend transversal (Supabase/Postgres) da R06",
+    "camada": "backend transversal (Supabase/Postgres) da R07",
     "faixaDeCarimbo": "2026091221xxxx em packages/coelo_database/candidatos/realm-interno/",
     "ordem": [
-      "(1) raiz da ponte de ator: espelho sem escopo em 220400/130000; prova por familia (12 helpers) e pacote que corrige a raiz mantendo 211200 e suites verdes",
-      "(2) semente dos usuarios qa-r06-<grupo> (perfil interno + ponte + memberships owner nas qa-r04-*), idempotente por e-mail, se o coordenador ainda nao a tiver",
-      "(3) 180060: has_activity_capability exigindo instructor - decidir com o coordenador ou registrar como decisao de produto",
-      "(4) code review 210500 e 211100 so se sobrar tempo"
+      "(1) varredura pós-lotes 49–55: grants anon/authenticated sem policy, security definer sem revoke anon, tabelas novas sem RLS (institution_reader, sessões); pacote só se houver achado",
+      "(2) code review 210500 notificações/políticas de unidade e 211100 handles no payload, com pgTAP negativo cross-tenant onde faltar",
+      "(3) apoio às frentes por pedido no JSON: convite expirado sintético G2 e período avaliativo sintético G1",
+      "(4) esboço não aplicado de limpeza de dados sintéticos, arquivando referências de audit_logs"
     ],
     "actionIds": [
       "seguranca transversal (sem action_id): daily-routine.*, health-care.*, attendance.*, meal-plans.*, support.*, people.*, forms.*, child-safety.*, account.*, access-profiles.*, institutions.files"
     ],
-    "foraDoRecorte": "UI, aplicacao em producao (coordenador), Cloudflare com custo, MCP dart"
+    "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "coordenador aplicar candidatos/realm-interno/20260912210000 (preflight no espelho; sync reconcilia 0 linhas) e fechar 180060 sem pacote",
-  "provaLocal": "descartavel coelo_realm_r06 (portas 626xx): baseline + seed + as 141 migrations de ordem-de-aplicacao-producao.txt (ate o lote 48) por psql do container + candidatos; pgTAP por psql -qtA",
+  "primeiroGate": "T0/ambiente do coordenador ainda não publicado; para correções, preflight no descartável com a ordem real de produção incluindo lotes 49–55 e regressão comparada R06",
+  "provaLocal": "descartável Supabase por conversa a iniciar/parar: baseline + migrations em ordem-de-aplicacao-producao.txt até lotes 49–55; pgTAP por psql -qtA; sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
@@ -64,9 +64,9 @@
   "deltaPropostoBE": {
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
-  "loop": "cron cf28bf71 a cada 15 min; cancelado ao gravar esta revisao",
-  "status": "finalizado; revisao final gravada (rev 48); descartavel parado",
-  "proximoPasso": "em T0+2h responder a revisao de 10 minutos; parar o descartavel coelo_realm_r06 ao encerrar",
+  "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
+  "status": "em execução; primeira revisão R07 gravada",
+  "proximoPasso": "auditar pós-lotes 49–55 e só criar pacote candidato se houver achado reproduzível",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
