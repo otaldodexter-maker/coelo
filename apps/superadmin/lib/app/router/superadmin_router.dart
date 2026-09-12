@@ -1234,7 +1234,8 @@ GoRouter createSuperadminRouter({
                       ? developmentSupportController.submitReport
                       : productionSupportController?.submitReportToBackend,
                   canAccessCapability: (capability) => switch (capability) {
-                    'attendance.create' => developmentPreview,
+                    'attendance.create' =>
+                      developmentPreview || hasAuthoritativeMutationCapability('/attendance'),
                     'activities.create' => developmentPreview,
                     _ => developmentPreview,
                   },
@@ -2727,8 +2728,17 @@ GoRouter createSuperadminRouter({
                 repository: attendanceRepository,
                 permissions: attendancePermissions,
                 logout: logout,
-                onCreate: null,
-                onOpenCall: null,
+                // O painel usa can_create_call retornado pelo backend;
+                // as rotas e comandos continuam reautorizando cada contexto.
+                onCreate: hasAuthoritativeMutationCapability('/attendance')
+                    ? () => context.goNamed(SuperadminRoutes.attendanceCreateName)
+                    : null,
+                onOpenCall: hasAuthoritativeMutationCapability('/attendance')
+                    ? (id) => context.goNamed(
+                        SuperadminRoutes.attendanceCallName,
+                        pathParameters: {'callId': id},
+                      )
+                    : null,
                 activityController: attendanceActivities,
               ),
             ),

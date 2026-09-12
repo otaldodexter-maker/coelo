@@ -1,12 +1,12 @@
 {
-  "revision": 107,
+  "revision": 108,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T20:04:00Z",
+  "updatedAt": "2026-09-12T20:12:36.888696+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3855,7 +3855,7 @@
     },
     "flutterTest": {
       "dono": "nenhum",
-      "estado": "C0 Chat3PASS finalizado; analyze0; sem processo de teste ativo",
+      "estado": "attendance_routes7PASS unicos (6+1 apos expectativa antiga ajustada); novo RED1 reproduziu ausencia do botao.",
       "inicio": "2026-09-12T20:01:00Z"
     },
     "sqlEspelho": {
@@ -3876,7 +3876,8 @@
       "port": 3014,
       "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542/apps/superadmin/build/web",
       "buildSha": "9eb24fbf1",
-      "next": "G1 autorizado a compilar UMA base integrada na sua worktree apos merge origin/dev; substituir SOMENTE servidor transferido51168 apos medir comando. Nao editar build/arquivos de outra worktree. Mesma origem3014 preserva login. Sem mock picker/sessao injetada."
+      "next": "Compilar uma vez baseC0 com navegacao Chamada corrigida+Chat, substituir somente servidor15452 transferido; Chrome22592 permanece unico",
+      "buildOwner": "C0"
     }
   },
   "consumoR09": {
@@ -4104,13 +4105,14 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T20:01:00Z",
+    "at": "2026-09-12T20:12:36.888696+00:00",
     "novosAceites": [
       "groups.location FE/BE/E2E"
     ],
     "feito": "lote60 aplicado/ledger/consumidor confirmado;112PASS SQL; Local aceito",
     "intervencao60min": "apos runtime e tentativa arquivo bloqueada pela extensao, Chrome transferidoG1 para Local sem picker; C0 completa negativa e corrige autorizacao de Formularios em paralelo",
-    "nextGate": "C0 fecha correcoes focais G4 e prova UI Chamada G3; Membros permanece contrato aberto, nao insistir papel invalido"
+    "nextGate": "Ligar callbacks de Nova chamada/abrir chamada ao repository produtivo, preservando backendCanManage; depois build unico e UI/reload",
+    "noveFrentes": "thread/read conferiu nove completed neste ciclo; nao afirmar instrucoes novas entregues, C0 executa pacotes independentes"
   },
   "tentativaAnteriorAviso": {
     "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
@@ -4119,13 +4121,13 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 61,
+    "usedPercent": 62,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T19:58:40Z",
+    "measuredAt": "2026-09-12T20:12:36.888696+00:00",
     "source": "account/rateLimits/read; Codex app-server",
     "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
-    "nextCheckBy": "2026-09-12T20:08:40Z"
+    "nextCheckBy": "2026-09-12T20:22:36.888696+00:00"
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",

@@ -136,7 +136,7 @@ void main() {
     router.go(SuperadminRoutes.attendance);
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
-    expect(find.text('Nova chamada'), findsNothing);
+    expect(find.text('Nova chamada'), findsOneWidget);
 
     router.go('/dev/attendance/calls/call-progress');
     await tester.pumpAndSettle();
@@ -197,7 +197,7 @@ void main() {
 
   // ADR 0034 (R04): com o repositorio real composto, as rotas de mutacao de
   // Assiduidade abrem; o servidor revalida ator, capacidade e tenant.
-  testWidgets('production attendance reads data and opens mutation routes', (tester) async {
+  testWidgets('production attendance opens creation and calls from the dashboard', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final repository = _TrackingAttendanceRepository();
     final router = createSuperadminRouter(
@@ -219,9 +219,22 @@ void main() {
     router.go('/attendance');
     await tester.pumpAndSettle();
     expect(repository.calls, ['fetchAccess', 'fetchDashboard']);
-    expect(find.text('Nova chamada'), findsNothing);
-    expect(find.text('Ações'), findsNothing);
-    expect(find.byKey(const ValueKey('attendance-open-call-progress')), findsNothing);
+    final create = find.widgetWithText(FilledButton, 'Nova chamada');
+    expect(create, findsOneWidget);
+    await tester.ensureVisible(create);
+    await tester.tap(create);
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/attendance/new');
+    expect(repository.calls, contains('fetchContextOptions'));
+
+    router.go('/attendance');
+    await tester.pumpAndSettle();
+    final open = find.byKey(const ValueKey('attendance-open-call-progress'));
+    expect(open, findsOneWidget);
+    tester.widget<IconButton>(open).onPressed!();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/attendance/calls/call-progress');
+    expect(repository.calls, contains('fetchCall:call-progress'));
 
     for (final path in const ['/attendance/new', '/attendance/calls/call-progress']) {
       router.go(path);

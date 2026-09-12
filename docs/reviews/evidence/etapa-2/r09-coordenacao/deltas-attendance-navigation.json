@@ -1,0 +1,23 @@
+[
+  {
+    "action_id": "attendance.mark",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md"
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md"
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md"
+  }
+]
