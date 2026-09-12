@@ -37,6 +37,7 @@ import {
 } from "./question_image.ts";
 
 type Json = Record<string, unknown>;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i;
 
 /** Superficie do R2 usada pelo ramo question-image e pelo worker. */
 export type FormMediaTransport = Pick<
@@ -199,6 +200,35 @@ function answerEnvelope(value: unknown): Json {
   return envelope.data as Json;
 }
 
+async function resolveActorPersonId(
+  authUserId: string,
+  userClient: SupabaseClient,
+  serviceClient: SupabaseClient,
+): Promise<string | null> {
+  const peopleActor = await serviceClient.from("person_auth_links").select(
+    "person_id",
+  )
+    .eq("auth_user_id", authUserId).eq("status", "active")
+    .maybeSingle();
+  if (peopleActor.error) return null;
+  if (typeof peopleActor.data?.person_id === "string") {
+    return peopleActor.data.person_id;
+  }
+  const internalActor = await userClient.rpc("list_my_principal_contexts");
+  if (internalActor.error || !Array.isArray(internalActor.data) || internalActor.data.length === 0) {
+    return null;
+  }
+  const personIds = new Set<string>();
+  for (const context of internalActor.data) {
+    const personId = context && typeof context === "object"
+      ? (context as Json).person_id
+      : null;
+    if (typeof personId !== "string" || !UUID.test(personId)) return null;
+    personIds.add(personId);
+  }
+  return personIds.size === 1 ? [...personIds][0] : null;
+}
+
 async function handleAnswerR2(
   origin: string | null,
   action: "prepare" | "finalize" | "download",
@@ -221,7 +251,12 @@ async function handleAnswerR2(
       error || !data || !answerR2Key(data.object_key) ||
       data.bucket !== QUESTION_IMAGE_BUCKET
     ) throw new Error("prepare_failed");
-    const signed = await questionImageTransport(dependencies, data.bucket).presignPut(
+    const signingAt = (dependencies.now ?? (() => new Date()))().getTime();
+    const signed = await questionImageTransport(
+      dependencies,
+      data.bucket,
+      signingAt,
+    ).presignPut(
       data.object_key,
       input.mime_type,
       QUESTION_IMAGE_UPLOAD_TTL_SECONDS,
@@ -230,7 +265,9 @@ async function handleAnswerR2(
       asset_id: data.asset_id,
       upload_url: signed.url.toString(),
       required_headers: signed.requiredHeaders,
-      expires_at: data.expires_at,
+      expires_at: new Date(
+        Math.floor(signingAt / 1000) * 1000 + QUESTION_IMAGE_UPLOAD_TTL_SECONDS * 1000,
+      ).toISOString(),
       storage_provider: "r2",
     });
   }
@@ -305,7 +342,7 @@ async function handleAnswerR2(
   const authorized = await serviceClient.rpc("form_media_authorize_for_worker", {
     p_asset_id: access.asset_id,
     p_actor_person_id: actorPersonId,
-    p_edit_secret: access.edit_secret,
+    p_edit_secret: access.edit_secret ?? null,
   });
   if (authorized.error || !authorized.data || authorized.data.state !== "finalized") {
     throw new Error("asset_unavailable");
@@ -659,13 +696,12 @@ export async function handleFormMediaRequest(
     }
     // Daqui para baixo e o fluxo legado de answer-image (Supabase Storage,
     // bucket coelo-forms-private): respostas continuam nele por contrato.
-    const actorLookup = await serviceClient.from("person_auth_links").select(
-      "person_id",
-    )
-      .eq("auth_user_id", userData.user.id).eq("status", "active")
-      .maybeSingle();
-    const actorPersonId = actorLookup.data?.person_id;
-    if (actorLookup.error || typeof actorPersonId !== "string") {
+    const actorPersonId = await resolveActorPersonId(
+      userData.user.id,
+      userClient,
+      serviceClient,
+    );
+    if (!actorPersonId) {
       return response(origin, 401, { error: "unauthorized" });
     }
 
@@ -726,7 +762,7 @@ export async function handleFormMediaRequest(
           {
             p_asset_id: payload.asset_id,
             p_actor_person_id: actorPersonId,
-            p_edit_secret: payload.edit_secret,
+            p_edit_secret: payload.edit_secret ?? null,
           },
         );
         if (
@@ -773,7 +809,7 @@ export async function handleFormMediaRequest(
           {
             p_asset_id: payload.asset_id,
             p_actor_person_id: actorPersonId,
-            p_edit_secret: payload.edit_secret,
+            p_edit_secret: payload.edit_secret ?? null,
           },
         );
         if (

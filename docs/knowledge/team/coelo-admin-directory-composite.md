@@ -4,6 +4,7 @@ knowledge_id: coelo-admin-directory-composite
 source: docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md
 status: validated
 generated_at: 2026-09-10
+updated_at: 2026-09-12
 audience: team
 surfaces:
   - superadmin
@@ -46,6 +47,10 @@ e mantém uma allowlist que só diminui.
   esconder o botão (Conversas).
 - Estado com linha principal e linha secundária opcional (mensagem do serviço
   ou orientação), com Tentar novamente ou Limpar filtros.
+- Na tabela, alça e ordenação têm alvos separados; a pintura do cabeçalho
+  preserva a composição aprovada. Colunas fixas não oferecem alça sem efeito.
+  A faixa de 48 px da alça não certifica o alvo de ordenação em colunas estreitas.
+  Regra complementar: [Design System, seção 17.1](../../design/design-system.md#171-tabelas).
 
 ## Diretórios já migrados (10/09/2026)
 

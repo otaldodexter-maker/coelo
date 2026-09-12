@@ -1,0 +1,44 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+Got dependencies!
+8 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart
+00:00 +0: resize hit area preserves the approved full width header painting
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: <136>
+  Actual: <88.0>
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart:18:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart line 18
+The test description was:
+  resize hit area preserves the approved full width header painting
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:00 +0 -1: resize hit area preserves the approved full width header painting [E]
+  Test failed. See exception logs above.
+  The test description was: resize hit area preserves the approved full width header painting
+  
+00:00 +0 -1: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart: resize hit area preserves the approved full width header painting

@@ -15,6 +15,86 @@ final _now = DateTime.utc(2026, 9, 12, 14);
 Uint8List _png() => Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10, 1]);
 
 void main() {
+  testWidgets('Photo captures through the camera and accepts exactly one confirmed image', (
+    tester,
+  ) async {
+    final api = _Api(ticketNow: DateTime.now());
+    final session = MediaSession();
+    addTearDown(session.invalidate);
+    var captures = 0;
+    var assets = <String>[];
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: StatefulBuilder(
+            builder: (context, update) => FormsGalleryAnswerField(
+              api: api,
+              session: session,
+              occurrenceId: 'occurrence',
+              item: FormItem(id: 'item', kind: FormItemKind.photo, label: 'Foto', position: 0),
+              assetIds: assets,
+              onChanged: (value) => update(() => assets = value),
+              onBusyChanged: (_) {},
+              pickImage: () async => throw StateError('Photo must not open the gallery'),
+              capturePhoto: (context, captureSession) async {
+                expect(captureSession.isInvalidated, isFalse);
+                captures++;
+                return _png();
+              },
+              createUploadClient: () => MockClient((_) async => http.Response('', 200)),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Selecionar imagem'), findsNothing);
+    await tester.tap(find.text('Capturar foto'));
+    await tester.pumpAndSettle();
+    expect(assets, [_asset]);
+    expect(captures, 1);
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Capturar foto')).onPressed,
+      isNull,
+    );
+    await tester.tap(find.text('Remover imagem 1 da resposta'));
+    await tester.pumpAndSettle();
+    expect(assets, isEmpty);
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Capturar foto')).onPressed,
+      isNotNull,
+    );
+  });
+
+  testWidgets('Photo honors an explicitly disabled camera without falling back to gallery', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormsGalleryAnswerField(
+            api: _Api(),
+            session: MediaSession(),
+            occurrenceId: 'occurrence',
+            item: FormItem(
+              id: 'item',
+              kind: FormItemKind.photo,
+              label: 'Foto',
+              position: 0,
+              config: const FormItemConfig(allowCamera: false),
+            ),
+            assetIds: const [],
+            onChanged: (_) {},
+            onBusyChanged: (_) {},
+          ),
+        ),
+      ),
+    );
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Capturar foto')).onPressed,
+      isNull,
+    );
+    expect(find.text('A captura de foto está desativada nesta pergunta.'), findsOneWidget);
+  });
   testWidgets(
     'anonymous gallery forwards its secret to prepare finalize and pending discard only',
     (tester) async {

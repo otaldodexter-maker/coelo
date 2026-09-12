@@ -1,0 +1,67 @@
+{
+  "source": "R08 G4 production API manifests and moments withdrawal continuation",
+  "updated_at": "2026-09-12T16:13:38.843110+00:00",
+  "scope": "Only R08 resources; prior rounds not inventoried here",
+  "items": [
+    {
+      "domain": "Acontece",
+      "source": "happens-api-manifest.json",
+      "state": "withdrawn",
+      "resources": {
+        "post_id": "f143a25d-c5ff-41e0-ac99-92d41c11e2b8",
+        "asset_id": "10e88d97-ee48-4453-ac01-b7a62c639d46"
+      },
+      "physical_delete": false,
+      "retention": "Preserve synthetic records and private masters until formal Etapa2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Agora",
+      "source": "now-api-manifest.json",
+      "state": "published-awaiting-natural-expiry",
+      "resources": {
+        "publication_id": "392ee49a-265b-42e3-9c5b-ed44a34028f8",
+        "asset_id": "0451e371-7f79-4501-b439-7da426ca4019"
+      },
+      "physical_delete": false,
+      "retention": "Preserve synthetic records and private masters until formal Etapa2 closure; no cleanup authorized here.",
+      "expires_at": "2026-09-13T15:24:39.452258+00:00",
+      "publication_expiry_verified": false
+    },
+    {
+      "domain": "Momentos",
+      "source": "moments-api-manifest.json",
+      "state": "withdrawn-after-lote58",
+      "resources": {
+        "publication_id": "bd9f2361-548f-44f8-a595-fddec3ff1396",
+        "asset_id": "6f8f9fc8-215a-4e07-8b7f-583d210215c7"
+      },
+      "physical_delete": false,
+      "retention": "Preserve synthetic records and private masters until formal Etapa2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Chat",
+      "source": "chat-api-resume-manifest.json",
+      "state": "group-message-attachment-retained",
+      "resources": {
+        "conversation_id": "39aa8f4a-33a0-4d4e-beb0-a9fd4c7fcf64",
+        "attachment_id": "9ed2bcc3-dfb9-4f56-a67d-0e582593ca3e",
+        "message_id": "fcd0c6d4-f917-4c56-94e1-10805c734b50"
+      },
+      "physical_delete": false,
+      "retention": "Preserve synthetic records and private masters until formal Etapa2 closure; no cleanup authorized here."
+    },
+    {
+      "domain": "Cardapios",
+      "source": "meal-plan-api-manifest.json",
+      "state": "archived",
+      "resources": {
+        "meal_plan_id": "8f072222-a9c5-4902-a0d8-ded1d789fe4c",
+        "existing_template_id": "d132698c-605d-46b4-bb11-124f85563604"
+      },
+      "physical_delete": false,
+      "retention": "Preserve synthetic records and private masters until formal Etapa2 closure; no cleanup authorized here.",
+      "version": 5,
+      "existing_template_version": 2
+    }
+  ]
+}

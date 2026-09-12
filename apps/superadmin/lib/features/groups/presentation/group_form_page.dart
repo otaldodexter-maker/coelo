@@ -1239,6 +1239,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                       selected != null &&
                       value.snapshot.id == selected.snapshot.id &&
                       sameLocationScope(value.snapshot.scope, selected.snapshot.scope)) {
+                if (value is CataloguedLocationSelection &&
+                    selected != null &&
+                    (value.snapshot.label != selected.snapshot.label ||
+                        value.snapshot.kind != selected.snapshot.kind)) {
+                  setState(() => _cataloguedLocationSelection = value);
+                }
                 return;
               }
               if (!_canChangeLocationContext()) return;

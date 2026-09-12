@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 69,
+  "revision": 73,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:12:28-03:00",
+  "updatedAt": "2026-09-12T13:56:00-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "558a556a1 publicado; P51 redirect produtivo falhou, checkpoint 68 pendente de commit",
+  "head": "download answer-image corrigido localmente: p_edit_secret explícito null para resolução da RPC; H28 bloqueado em review",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0 diagnosticar redirect_to false sem nova geração/mudança Auth; G0 corrigir gates do roteiro answer-image antes da mutação",
+  "primeiroGate": "review/integracao/deploy exclusivo C0 do argumento nulo; G0 retoma o mesmo download sem nova fixture",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -67,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; lote 58 API aprovado; form-media v17 implantado; P51 criação/reload verde mas redirect_exact produtivo falso",
-  "proximoPasso": "revisar/corrigir roteiro G0 answer-image antes da mutação; aguardar diagnóstico C0 do redirect sem ampliar escopo",
+  "status": "recorte original entregue; answer-image chegou a save e o defeito determinístico do download foi corrigido localmente; H28 devolvido para ajustes",
+  "proximoPasso": "publicar SHA do argumento null; após review/deploy C0, G0 retoma exatamente o download do asset e47eb9e1",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -1064,6 +1064,94 @@
         "pgTapExecutadoPorG5": "nenhum"
       },
       "primeiroGate": "correção e novo review do fixture runner G0"
+    },
+    "checkpoint13h17": {
+      "quando": "2026-09-12T13:17:49-03:00",
+      "feito": [
+        "C0 confirmou causa P51: allowlist Auth não continha o redirect canônico e o link caía no site_url localhost.",
+        "C0 aplicou delta mínimo somente em additional_redirect_urls, preservando a entrada local e adicionando superadmin.coelo.me/reset-password; outras 11 propriedades intactas, sem site_url/SMTP/senha.",
+        "Pós-prova no mesmo usuário às 13:15:35 passou 7 booleanos inclusive redirect_exact; nenhum link/query/token registrado ou aberto. P51 API/link seguro verde, entrega SMTP não certificada.",
+        "Primeira execução answer fixture criou/publicou um form e parou antes de application por oráculo de IDs inválido; backend materializa section/item server-side, não é defeito do produto.",
+        "Resume corrigido em 14783eae4: form fixo, application ausente, IDs server-side, receipts persistidos/reutilizados, schedule ID/start estáveis, logout local. G5 aprovou uma continuação."
+      ],
+      "pendente": [
+        "G0 executar --resume uma vez e parar após application/schedule; preservar manifest.",
+        "C0 acionar worker service_role e provar exatamente uma occurrence aberta e uma participation elegível, devolvendo IDs ao G0.",
+        "G0 executar smoke answer-image somente nesses IDs; G5 revisar qualquer falha antes de repetição."
+      ],
+      "testes": {
+        "p51FinalC0": "7/7 booleanos dinâmicos, redirect_exact true após allowlist focal",
+        "answerFixturePrimeiroRun": "draft/publish 200; parou antes de application; logout local 204",
+        "answerFixtureResume": "AST/default guard/diff-check informados verdes; execução aguardando",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "manifest application/schedule G0"
+    },
+    "checkpoint13h31": {
+      "quando": "2026-09-12T13:31:41-03:00",
+      "feito": [
+        "G0 materializou exatamente uma aplicação/agenda; o scheduler já havia criado uma occurrence aberta e uma participation elegível para a pessoa 007a; C0 não duplicou worker.",
+        "Primeiro smoke usou credencial de outra pessoa e recebeu P0002 no primeiro RPC read-only, sem mutação. A negativa é deny-by-default correto do contrato.",
+        "Com a credencial canônica qa-r03, occurrence/open draft passaram e a Edge v17 devolveu 401 antes do prepare; response bb1f3443 preservada, asset ausente, logout local 204.",
+        "C0 confirmou getUser 200 e zero person_auth_links: o realm interno usa a ponte superadmin_internal_auth_links -> superadmin_internal_actor_people, enquanto a Edge só consultava person_auth_links.",
+        "Correção focal usa list_my_principal_contexts somente como fallback autenticado, exige UUID único coerente e preserva ownership/RPCs mutantes; nenhum SQL, env, grant ou segredo mudou.",
+        "Base ciclo150 origin/dev 7e889abac incorporada e branch publicada sem rebase/force."
+      ],
+      "pendente": [
+        "G0/C0 revisar o SHA da correção; C0 executar testes integrados e deploy exclusivo da nova versão form-media.",
+        "Após deploy, G0 retomar uma única vez o mesmo draft e request IDs; não criar outra fixture.",
+        "Revisar runner API de Avaliações do G1 em 1530e9329 sem ampliar seed, usuários ou tenant."
+      ],
+      "testes": {
+        "edgeRedG5": "2 focais falharam pela ausência do fallback: positive recebeu 401 e negativa não chamou RPC canônica",
+        "edgeGreenG5": "2/2 focais + regressão form-media 33/33; deno check e diff-check exit 0",
+        "smokeG0": "primeira credencial P0002 sem mutação; credencial canônica criou/reutilizou draft e parou no prepare 401, asset null",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "review e deploy exclusivo C0 da correção Edge"
+    },
+    "checkpoint13h47": {
+      "quando": "2026-09-12T13:47:23-03:00",
+      "feito": [
+        "C0 integrou 49bd4c83d, executou Deno 56/56 com deno.json, implantou form-media v18 e confirmou verify_jwt/CORS; G5 não fez deploy.",
+        "C0 habilitou COELO_FORMS_MEDIA_PROVIDER=r2 conforme o cutover autorizado; question-image permaneceu independente da flag.",
+        "G0 retomou os mesmos IDs: prepare reutilizou asset e47eb9e1 e devolveu envelope R2, mas parou antes do PUT porque expires_at ainda vinha do recibo legado.",
+        "Causa no código: URL R2 nova tinha TTL 300, enquanto handleAnswerR2 projetava data.expires_at histórica; o replay legítimo podia parecer vencido ou longo demais.",
+        "Correção focal calcula expires_at pelo instante da assinatura, truncado ao segundo, mais 300 s, igual ao ramo question-image; nenhum asset/request/ownership mudou."
+      ],
+      "pendente": [
+        "G0/C0 revisar o SHA de expiração; C0 integrar e implantar nova versão form-media.",
+        "G0 retomar uma única vez o mesmo asset/request IDs após recibo C0; não criar nova fixture.",
+        "Executor Avaliações 06363ff9a continua bloqueado por cinco achados de segurança/idempotência ainda não corrigidos."
+      ],
+      "testes": {
+        "expiryRedG5": "0/1: recebeu expiração do recibo legado em vez da janela do signer",
+        "expiryGreenG5": "1/1 focal + form-media 33/33; deno check e diff-check exit 0",
+        "smokeG0": "mesmo asset reutilizado; envelope R2 completo; parou unsafe_ticket antes do PUT; logout local",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "review/deploy exclusivo C0 da expiração do PUT"
+    },
+    "checkpoint13h56": {
+      "quando": "2026-09-12T13:56:00-03:00",
+      "feito": [
+        "G0 retomou o mesmo asset após form-media v20: prepare, PUT de 68 bytes, finalize, replay e save passaram; download devolveu 400 e a execução parou sem retry.",
+        "C0 provou por leitura que o legado estava finalized, o espelho ready e as duas RPCs tinham envelopes válidos quando p_edit_secret era enviado explicitamente como null.",
+        "Causa determinística: parseAssetAccess omitia edit_secret para ator identificado; o cliente Supabase omite undefined e a RPC de três argumentos não possui default, impedindo resolução PostgREST.",
+        "Correção focal normaliza undefined para null nas três chamadas existentes de form_media_authorize_for_worker; segredo anônimo string continua preservado.",
+        "Review H28 2eebea3f4 bloqueado: role_name é perdido para institution_roles globais (institution_id null) e o teste apenas comenta a fixture A/B sem executar as regressões funcionais."
+      ],
+      "pendente": [
+        "C0 revisar, integrar e implantar a correção do argumento nulo; G5 não faz deploy.",
+        "G0 retomar uma única vez somente o download preservado e conferir bytes/hash/reload.",
+        "G2 corrigir a projeção do papel H28 e implementar fixture funcional A/B antes de entregar o candidato ao espelho."
+      ],
+      "testes": {
+        "downloadNullRedG5": "0/1: RPC recebeu p_edit_secret undefined em vez de null",
+        "downloadNullGreenG5": "1/1 focal + form-media 33/33; deno check e diff-check exit 0",
+        "h28G5": "code review somente; nenhum pgTAP, SQL remoto ou aplicação"
+      },
+      "primeiroGate": "review/deploy exclusivo C0 do argumento nulo e retomada focal G0"
     }
   }
 }

@@ -16,4 +16,14 @@ void main() {
     expect(canEnableDevelopmentPreview(isReleaseMode: false, environment: 'local'), isTrue);
     expect(canEnableDevelopmentPreview(isReleaseMode: false, environment: 'staging'), isFalse);
   });
+
+  test('canonical project identity uses the Supabase ref and supports local origins', () {
+    expect(
+      canonicalSupabaseProjectId('https://Project-A.supabase.co/rest/v1?ignored=true'),
+      'project-a',
+    );
+    expect(canonicalSupabaseProjectId('http://127.0.0.1:54321/rest/v1'), 'http://127.0.0.1:54321');
+    expect(canonicalSupabaseProjectId('javascript:invalid'), isNull);
+    expect(canonicalSupabaseProjectId('https://user@example.supabase.co'), isNull);
+  });
 }
