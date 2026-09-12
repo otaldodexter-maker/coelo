@@ -80,6 +80,22 @@ Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de 
 - O SHA integrado/publicado da base do ciclo é `2d97892d9`; ele não substitui a base explicitamente testada `5c1cf503c`. Deploys mencionados no recibo devem permanecer separados de resultados locais.
 - Limite operacional desta auditoria: Spark em 100% da janela; nenhum teste adicional foi prometido ou executado por G8.
 
+## Auditoria textual G4 — recibo integrado `d01f92023`
+
+- O pacote Chat registra `56 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 45 regressões existentes; não é uma suíte independente única.
+- O pacote de controle do PUT registra `28 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 17 existentes; seis casos Chat já pertencem aos 56, portanto `56 + 28` é contagem sobreposta e não deve ser somada.
+- O smoke de Momentos `20 PASS / 1 FAIL` é uma checagem API real em produção: a falha é a retirada que retornou `403` pelo autor. Não comprova UI, reload, remoção bem-sucedida ou E2E; não deve ser promovido a aceite de produto.
+- Os `101` casos do autor Principal são a união de cinco arquivos (`58` do último pacote + `43` anteriores); devem ser relatados por arquivo, distinguindo casos novos, existentes e reruns. Não são uma suíte única agregada.
+- O C0 integrado reporta `79` em três arquivos na base `b85fd00e0`; essa contagem é independente da união autoral `101` e não deve ser somada a ela.
+- Para Agora, Momentos e Cardápios, deploy/preflight e testes API permanecem métricas distintas de UI/E2E. O recibo `d01f92023` mede também Acontece `23 checks PASS`, Agora `19 checks PASS` e Cardápios `24 checks PASS`; nenhuma dessas contagens certifica UI/E2E por si só.
+
+## Auditoria textual do ciclo 120
+
+- `Grupos + H19`: a primeira tentativa conjunta mediu `60 PASS / 1 FAIL`; o `H19` isolado registrou `32 PASS`, e o retry/correção de Grupos registrou `29 PASS / 0 FAIL`. São etapas sobrepostas do mesmo gate; não somar `60 + 32 + 29`.
+- `form-media`: a base conjunta registrou `54 PASS / 0 FAIL` em Deno, enquanto o recibo autoral anterior registrava `53`; são execuções/base distintas e não devem ser somadas como novos casos.
+- Principal: `79 PASS` permanece um pacote separado, em 3 arquivos e base `b85fd00e0`; Forms H12/H26 são `273 PASS` em 2 arquivos e base `f11eb76b8`. Não misturar nem somar os denominadores.
+- O diff-check com whitespace nativo preservado é uma observação de formatação/proveniência do artefato; não é falha de teste nem altera os resultados acima.
+
 ## Auditoria de coerência com o censo R07
 
 - Os `23 PASS` de `person_form_page_test.dart` e `39 PASS` de `platform_user_pages_test.dart` documentados por G2 são suítes focais diferentes das falhas nominais do censo R07; não reduzem nem reclassificam os `33 FAIL` históricos.

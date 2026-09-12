@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 60,
+  "revision": 69,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T12:04:58-03:00",
+  "updatedAt": "2026-09-12T13:12:28-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "c82fa53f5 publicado e mesclado com origin/dev; candidato 140549 nesta revisão a publicar",
+  "head": "558a556a1 publicado; P51 redirect produtivo falhou, checkpoint 68 pendente de commit",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,11 +26,13 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0/G7 revisar a composição 140548+140549 antes de RED/GREEN sequencial no espelho",
+  "primeiroGate": "C0 diagnosticar redirect_to false sem nova geração/mudança Auth; G0 corrigir gates do roteiro answer-image antes da mutação",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
-  "perguntasParaOOwner": [],
+  "perguntasParaOOwner": [
+    "H19: quem pode ser Responsável de um plano de medicação (guardiões autorizados, equipe no escopo, ambos) e qual a semântica dessa atribuição, sem conceder implicitamente medication.record_evidence?"
+  ],
   "pacotesProntos": [
     {
       "ordem": 0,
@@ -65,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "R08 em execução; H09 entregue; 140547 e regressões verdes; revisão 140548/140549 pendente",
-  "proximoPasso": "C0/G7 revisar a composição final e só então autorizar RED/aplicação local/GREEN; G5 continua sem aplicar SQL",
+  "status": "recorte original entregue; lote 58 API aprovado; form-media v17 implantado; P51 criação/reload verde mas redirect_exact produtivo falso",
+  "proximoPasso": "revisar/corrigir roteiro G0 answer-image antes da mutação; aguardar diagnóstico C0 do redirect sem ampliar escopo",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -889,6 +891,179 @@
         "terminalUnbind140549": "plano 7 preparado; não executado por G5"
       },
       "primeiroGate": "review final da composição 140548+140549 antes do espelho"
+    },
+    "checkpoint12h17": {
+      "quando": "2026-09-12T12:16:44-03:00",
+      "feito": [
+        "G0 executou RED/Green de 140548: RED 4 passam/5 falham; GREEN 9/9, rollback, native/wrapper 0.",
+        "G0 executou RED/Green de 140549: RED 3 passam/4 falham; GREEN 7/7, rollback, native/wrapper 0.",
+        "Primeira regressão question-image após os dois candidatos ficou 32/33 apenas pela expectativa histórica de ticket não reutilizável; SQL permaneceu imutável.",
+        "Expectativa autoral 684eea023 passou a exigir mesmo asset, ready, replayed, variante única e medidas persistidas; negativa de medida alterada permanece no plano 9.",
+        "Resultado final G0: question-image 33/33, behavioral 17/17 e internal drafts 159/159; todos rollback e native/wrapper 0. G5 não executou pgTAP."
+      ],
+      "pendente": [
+        "C0 decidir a unidade e ordem do lote 57, fazer backup, aplicar em produção e executar pós-provas; G5 não aplica SQL.",
+        "Receber recibo de produção ou ajustes do C0 antes do handoff final.",
+        "Após fechar o gate, pedir ao C0 outra pendência não conflitante conforme instrução do Owner."
+      ],
+      "testes": {
+        "focaisG0": "140548 9/9; 140549 7/7",
+        "regressoesG0": "question-image 33/33; behavioral 17/17; internal drafts 159/159",
+        "ambiente": "espelho baseline 140546..140549; resultados finais rollback/native/wrapper 0",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "decisão e aplicação exclusiva C0 do lote 57, com backup e pós-prova"
+    },
+    "checkpoint12h25": {
+      "quando": "2026-09-12T12:25:15-03:00",
+      "feito": [
+        "C0 concluiu backup, composição e aplicação do lote 57 em produção, exit 0, com ledger ordenado 20260912140546..20260912140549.",
+        "SHA-256 da composição: e41f1263c3c0b630c1b2563e51edd8a900212b8d1b7eaa484b3d30b7525214c7.",
+        "Backups privados: esquema 4.136.628 bytes SHA-256 cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2; dados 4.238.181 bytes SHA-256 e04058c96a4a4f48a4d2bf313d10d76bc37a0856c4a2864ed331f958ecdc8145.",
+        "Pós-prova C0: FK NO ACTION deferível; trigger form_media_unbind_deleted_question_v1 habilitado; authenticated autoriza e não finaliza; service_role finaliza; anon não deleta.",
+        "C0 informou 422 testes da base integrada com sucesso. G5 não executou SQL remoto, pgTAP ou essa suíte.",
+        "Recorte original G5 entregue; pedido de nova pendência não conflitante enviado ao C0 conforme instrução do Owner."
+      ],
+      "pendente": [
+        "Receber do C0 commit de integração/evidência central quando publicado.",
+        "Receber e executar próxima pendência autorizada não conflitante, sem abrir R09 e sem ultrapassar o recorte de ferramentas/autoridade."
+      ],
+      "testes": {
+        "espelhoG0": "focais 9/9 + 7/7; regressões 33/33 + 17/17 + 159/159; rollback/native/wrapper 0",
+        "producaoC0": "aplicação exit 0; ledger 4/4; FK/trigger/ACL pós-provados",
+        "integradoC0": "422 sucessos informados",
+        "executadoPorG5": "Deno chat-media 6/6 no início da rodada; nenhum pgTAP ou SQL remoto"
+      },
+      "primeiroGate": "nova pendência não conflitante a ser indicada pelo C0"
+    },
+    "checkpoint12h29": {
+      "quando": "2026-09-12T12:29:27-03:00",
+      "feito": [
+        "C0 atribuiu gate adicional independente: revisar composição API Forms do G0 e compatibilidade do worker finalize com replay, sem SQL novo até defeito medido.",
+        "Worker vigente confirmado compatível: em retry ready, ainda relê HEAD/bytes, recalcula SHA/dimensões e chama o finalizador; banco só aceita medidas e variante idênticas.",
+        "Harness form-media atualizado com status/replayed e caso explícito de resposta perdida após finalize.",
+        "Deno focal question-image finalize 4/4 e suíte form-media completa 29/29, sem rede real. Primeira invocação da raiz falhou apenas por não carregar deno.json e não é resultado de produto.",
+        "G0 está removendo exclusão automática do runner e preservará sintéticos; G5 solicitou caminho/DTO para revisão conjunta."
+      ],
+      "pendente": [
+        "Revisar runner/DTO/fixtures API Forms quando o G0 publicar o caminho ou SHA.",
+        "Não criar SQL novo, usuário ou fixture remota; não executar API real sem autorização nominal."
+      ],
+      "testes": {
+        "denoFormMediaFocal": "4/4, 25 filtrados",
+        "denoFormMediaCompleto": "29/29",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "review da composição API Forms planejada pelo G0"
+    },
+    "checkpoint12h47": {
+      "quando": "2026-09-12T12:47:00-03:00",
+      "feito": [
+        "Smoke API Forms do G0 passou em produção: save/editor/prepare/PUT/finalize/replay/resolve/hash/reload/logout; formulário e asset preservados, sem DELETE.",
+        "G4 mediu withdraw_moment 403 para o mesmo autor Owner e preservou publicação/asset. Causa fechada: remove entrou após o seed admin; can_withdraw usava só autoria.",
+        "C0 confirmou read-only em produção: 1 institution_admin ativo, 1 remove ativa, 0 grants admin/reader e ledger 140550 ausente.",
+        "Candidato forward-only 140550 publicado em b74e8c9f1; comportamento plan 11 em e9a3dc18d. Grant somente institution_admin; reader intacto; hint exige autoria + capacidade.",
+        "G0: RED plan11 4 ok/7 not ok; após apply somente no baseline, focal 4/4 + behavior 11/11 + regressões 23/23 + 30/30 = 68/68, rollback/native/wrapper 0.",
+        "H19 recebido do G3: responsável do plano existe na UI mas não em DTO/RPC/schema; análise preserva separação entre atribuição administrativa, destinatário de notificação e permissão medication.record_evidence."
+      ],
+      "pendente": [
+        "C0 fazer backup, aplicar lote 58 e pós-provar; G5 não aplica produção.",
+        "G4 repetir somente retirada/reconsulta/leitura privada da fixture preservada após o lote 58.",
+        "Preparar contrato/candidato H19 na fila seguinte, sem escolher papel clínico por inferência.",
+        "Receber do C0 os service person_ids de qa-r06-principal e qa-r06-realm para o grupo Chat autorizado; nenhuma criação por G5."
+      ],
+      "testes": {
+        "lote58G0": "RED 4/11; GREEN total único 68/68; aplicação apenas baseline; rollback/native/wrapper 0",
+        "formsApiG0": "produção PASS com finalize replay e reload; fixture preservada",
+        "executadoPorG5": "Deno já registrado; nenhum pgTAP, SQL remoto ou API produtiva"
+      },
+      "primeiroGate": "aplicação exclusiva C0 e pós-prova focal do lote 58"
+    },
+    "checkpoint12h55": {
+      "quando": "2026-09-12T12:55:00-03:00",
+      "feito": [
+        "C0 aplicou lote 58 em produção às 12:49 BRT, exit 0, ledger 140550; pós-prova confirmou grant único institution_admin, reader intacto, hint com capability, authenticated true e anon false; recibo 33dae9ab2.",
+        "G4 repetiu a fixture preservada: can_withdraw true, retirada 200 e publicação ausente do feed no reload. A leitura 200 pelo próprio autor é contrato preservado, não regressão; negativa com outro consumidor segue read-only.",
+        "Review focal G5 de form-media dfe013cc5 aprovou reautorização, escopo exato, replay sem R2 e envelope sem metadados sensíveis, mas bloqueou expected_byte_length.",
+        "Follow-up G3 f0c7269fd usa actual_byte_length, rejeita null/divergência e foi aprovado por G5 para integração; G3 informou Deno 53/53 e typecheck. Deploy permanece exclusivo C0.",
+        "H19 permaneceu sem candidato especulativo: fontes não definem categorias elegíveis; pergunta nominal ao Owner registrada."
+      ],
+      "pendente": [
+        "Receber do G4 a negativa de leitura por qa-r06-realm no asset retirado, sem classificar como cross-tenant.",
+        "Receber integração e eventual deploy C0 de dfe013cc5+f0c7269fd antes de qualquer prova produtiva adicional.",
+        "Receber do C0 os service person_ids para a fixture de grupo Chat; não criar identidade ou membership."
+      ],
+      "testes": {
+        "lote58ProducaoC0": "apply exit 0; pós-prova estrutural e ACL aprovada",
+        "lote58APIparcialG4": "withdraw 200 e reload sem publicação; leitura do próprio autor 200 por contrato",
+        "formMediaG3": "53/53 Deno + typecheck informados; G5 fez somente code review",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "negativa read-only G4 e integração/deploy form-media C0"
+    },
+    "checkpoint13h08": {
+      "quando": "2026-09-12T13:08:00-03:00",
+      "feito": [
+        "C0 atribuiu P51 API a G5 e suspendeu criação paralela G2; branch G2 inspecionada sem criação/runner existente.",
+        "Roteiro seguro passou dry-run e executou uma única criação normal: authorize platform.member.update verde, EF v4 HTTP 200, identidade 0ddeebc0-ee10-4565-96e0-ef11cacfc734, perfil mínimo support com 2 permissões.",
+        "Releitura read-only posterior passou: busca exata total 1, detail/list, credencial e membership ativos, escopo platform; logout local 204; sintético preservado.",
+        "A primeira checagem do link teve falso negativo por nomes de headers case-sensitive no harness. OPTIONS remoto confirmou no-store/CORS/headers; runner corrigido sem repetir criação.",
+        "A Edge produtiva validou HTTPS/host/path/authority e a fonte implantada passa redirect canônico, mas a query específica do action link foi descartada sem registro; limitação explicitada."
+      ],
+      "pendente": [
+        "C0 gerar/inspecionar em memória um link Auth Admin para a identidade existente, se autorizado no gate, para confirmar redirect_to exato sem criar segundo usuário; nunca registrar URL/query/token.",
+        "Receber negativa final G4 de leitura de Momentos por outro consumidor.",
+        "Receber integração e deploy C0 de form-media dfe013cc5+f0c7269fd."
+      ],
+      "testes": {
+        "p51": "create HTTP 200; authorize true; detail/list reload true; OPTIONS 204; logout local 204",
+        "falhaHarness": "password_setup_link_contract false por lookup case-sensitive de headers; corrigido após criação, sem repetir mutação",
+        "limite": "redirect_to na query específica não observado; fonte+Deno não equivalem prova dinâmica desse valor",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "dadosSinteticosCriados": [
+        "superadmin_internal_identity 0ddeebc0-ee10-4565-96e0-ef11cacfc734; auth/profile/membership/pessoa de serviço associados; preservar até fim formal da Etapa 2"
+      ],
+      "primeiroGate": "completar redirect dinâmico sem nova identidade"
+    },
+    "checkpoint13h10": {
+      "quando": "2026-09-12T13:10:00-03:00",
+      "feito": [
+        "G4 publicou negativa final de Momentos em 3f664595a: outro consumidor qa-r06-realm recebeu read 403 no asset retirado e logout local 204; não é cross-tenant nem UI/E2E.",
+        "C0 integrou ciclo120 em origin/dev 7cc6d4e7b; G5 incorporou por merge c1d80936b, sem rebase/force e sem tocar checkout principal.",
+        "form-media v17 ACTIVE, verify_jwt=true, bundle ea77bf6721130bb0717dae4bcd4dff7ee8350727c0842d26d3d1fc16e243a762; Deno conjunto 54/54 e OPTIONS produtivo registrados pelo C0.",
+        "C0 assumiu geração única Auth Admin para o usuário P51 existente, sem SMTP/link exposto; G5 não executará em paralelo."
+      ],
+      "pendente": [
+        "Receber validação C0 do redirect_to exato sem criar outra identidade.",
+        "Acompanhar G0 e revisar roteiro answer-image, sobretudo RPCs de publicação/aplicação/participação, escopo explícito e prevenção de duplicata."
+      ],
+      "testes": {
+        "momentsG4": "withdraw 200, reload ausente, outro consumidor read 403, logout 204",
+        "formMediaC0": "Deno 54/54 com typecheck; v17 deploy exit 0; OPTIONS 204/204 e externo 403",
+        "executadoPorG5": "somente P51 API e reviews; nenhum pgTAP, SQL remoto ou deploy"
+      },
+      "primeiroGate": "review do roteiro answer-image G0"
+    },
+    "checkpoint13h12": {
+      "quando": "2026-09-12T13:12:28-03:00",
+      "feito": [
+        "C0 gerou recovery Auth Admin somente para o mesmo usuário P51: HTTP 200, HTTPS/host/path/type/same-user verdadeiros e redirect_exact falso; nenhum link/query/token foi registrado.",
+        "Evidência G5 corrigida: o primeiro oráculo agregado não isolava causa; header casing era um defeito do harness, mas não explicava sozinho a negativa de redirect confirmada pelo C0.",
+        "Roteiro G0 ae32df1d2 inspecionado: audience e duplicata em leitura; quatro mutations normais; IDs persistidos; schedule apenas enfileira worker.",
+        "Carimbos locais inicialmente escritos como 13:15/13:18 foram corrigidos para o relógio real; nenhuma conclusão técnica mudou."
+      ],
+      "pendente": [
+        "C0 concluir causa SDK/config Auth do redirect falso; sem nova geração, senha, SMTP ou mudança de configuração por G5.",
+        "G0 trocar logout global por scope=local e reforçar assertions de form/application/rule/schedule antes do ACK de mutação.",
+        "C0 deve ser o único a acionar/observar worker e devolver occurrence/participation; G0 não usa service_role."
+      ],
+      "testes": {
+        "p51RecoveryC0": "HTTP 200; secure shape true; redirect_exact false",
+        "answerFixtureReviewG5": "code review somente; execução ainda não autorizada",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "correção e novo review do fixture runner G0"
     }
   }
 }

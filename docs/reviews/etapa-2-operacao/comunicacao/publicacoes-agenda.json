@@ -1,15 +1,15 @@
 {
-  "revision": 65,
+  "revision": 74,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "dd332b98c (A+ 375/200 recertificado; inclui shell.load 702e75873)",
-  "base": "origin/dev incorporado por merge b55141824",
+  "head": "4603ce35c (recibo do ciclo 120; revisão focal G3 adicionada nesta revisão)",
+  "base": "origin/dev 7cc6d4e7b incorporado por merge d263f8b93",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T12:20:00-03:00",
+  "updatedAt": "2026-09-12T13:08:58-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -63,7 +63,7 @@
     "closedAt": ""
   },
   "firstGate": "Quando C0 liberar e2e, provar circulars.attach pela UI no runtime 3014; ate la, seguir apenas gates locais independentes, comecando pelo sino/shell.load.",
-  "status": "local-green-a-plus-recertificado-browser-blocked",
+  "status": "api-green-com-incidente-fixture-browser-blocked",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T12:03:00-03:00",
-    "sha": "4c4aaae68",
+    "checkpoint": "2026-09-12T13:08:58-03:00",
+    "sha": "4603ce35c",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2544,9 +2544,9 @@
     "pending": [
       "circulars.attach no Chrome/runtime 3014 quando e2eLiberado",
       "provar P50 apenas se a base integrada alterar o caminho ja recertificado localmente",
-      "integrar 3def837bf e 4c4aaae68 por conteudo no consolidado do C0"
+      "aguardar decisao visual do Owner para atribuir os seis R ao path/componente e definir a geometria/corte do rodape"
     ],
-    "c0": "G6 recebido para integracao; H14 shell.load aceito; publication_surface.dart nao tocado",
+    "c0": "ciclo 120 em origin/dev 7cc6d4e7b incorporado sem conflitos por d263f8b93; H14 shell.load aceito; publication_surface.dart nao tocado",
     "additionalGate": {
       "actionId": "shell.load",
       "finding": "carga concluida com centro ja aberto nao sincronizava read_at; falha transitória de markRead nao era repetida na reabertura",
@@ -2559,6 +2559,63 @@
       "change": "BlockActions mede rotulo e acoes com TextScaler e separa as linhas somente quando o conjunto nao cabe",
       "verification": "teste de rotulo 1/1 PASS; golden afetado update+verify 2/2 PASS; analyze PASS; inspecao visual sem overflow; seis R com hashes identicos",
       "status": "local-green-inspected"
+    },
+    "apiSmoke": {
+      "scope": "circular-media v13 + ordem text/media/question/text + publish/read + P50 response/summary",
+      "verification": "16/16 PASS em producao; anon read 401; sem alegacao cross-tenant; API nao promove UI/E2E",
+      "fixture": {
+        "circularId": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+        "assetId": "429f1bc4-f579-4179-9193-0e6304aa3e0f",
+        "state": "close e delete executados antes do ACK especifico, em desvio da retencao obrigatoria; detail agora CIRCULAR_NOT_FOUND e asset read 403; SQL readonly do C0 mediu circular existente archived/deleted_at e asset existente READY com 70 bytes e cleanup_attempted=false"
+      },
+      "incident": "retencao ate o fim da Etapa 2 constava do contrato original; C0 avisado; nenhuma restauracao, recriacao ou nova mutacao. A inferencia inicial de asset orphaned nao se confirmou: a medicao autoritativa mostrou exclusao logica da circular, sem exclusao fisica e com o asset READY preservado; a indisponibilidade operacional da fixture permanece",
+      "status": "api-green-fixture-unavailable"
+    },
+    "principalChatMediaReview": {
+      "commits": ["9bee7eb26", "bb0da7578"],
+      "scope": "MediaSession didUpdateWidget; callbacks/dispose; bytes/preview; fronteira visual Principal",
+      "result": "nenhum defeito concreto; nenhum rerun generico; nenhum codigo alterado",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/principal-chat-media-review.md",
+      "status": "reviewed-no-concrete-defect"
+    },
+    "groupsLocationRetryReview": {
+      "commits": ["0fcd66dc4", "caebaf6f9", "34aa368c9", "988038de8"],
+      "scope": "create atomico confirmado; falha de saveComposition; edicao de nome; tentativa de trocar unidade/local; retry sem segunda criacao",
+      "result": "nenhum defeito concreto estatico remanescente; teste corrigido cobre troca B para A real, retencao de unidade/local B, create uma vez e mesmo groupId/version",
+      "verification": "analise read-only de codigo e teste; runner G1 percorreu 28 casos mas nao encerrou, portanto resultado dinamico inconclusivo conforme d90041fa9",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/groups-location-retry-review.md",
+      "status": "reviewed-no-concrete-defect-dynamic-inconclusive"
+    },
+    "sixRFinalReview": {
+      "files": [
+        "circular_composer_light_768.png",
+        "circular_composer_light_1024.png",
+        "circular_composer_light_1440.png",
+        "circular_composer_dark_768.png",
+        "circular_composer_dark_1024.png",
+        "circular_composer_dark_1440.png"
+      ],
+      "component": "768/1024 resolvem somente para PrincipalCircularComposerPage legado; os basenames 1440 existem tambem no SuperadminCircularComposerPage produtivo e a tabela Owner nao registra path",
+      "result": "PNGs preservados e inspecao final concluida; nenhuma regravacao; observacao funcional intercalada resolvida no host produtivo; origem nominal insuficiente para atribuir todos os R a um host",
+      "pending": "pergunta Owner necessaria: identificar path/componente e geometria/corte do rodape. O HTML compara light1440 produtivo, a referencia PNG contem rodape e a frase nominal diz que ele nao existe; design system/ADR0034 P15 exigem rodape ancorado",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/six-r-final-map.md",
+      "status": "reviewed-r-preserved-host-and-visual-decision-pending"
+    },
+    "groupsLocationSourceCacheReview": {
+      "scope": "WIP C0: identidade do LocationSelectionSource, rebuild, reader replacement, epoch, troca de escopo e retencao do receipt",
+      "result": "nenhum defeito concreto; source estavel entre rebuilds, substituido somente com reader novo; key instituicao/unidade e epoch preservam isolamento",
+      "verification": "analise read-only; valor vazio do select confirmado como string vazia; Flutter nao executado",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/groups-location-source-cache-review.md",
+      "status": "reviewed-no-concrete-defect-not-executed"
+    },
+    "g3AnonymousEditSecretReview": {
+      "commit": "72e6e6f22",
+      "scope": "identidade project/account/occurrence, callbacks obsoletos, persistência antes de openResponseDraft e erro/retry",
+      "result": "store e página sem defeito concreto nos focos; rota produtiva não passa anonymousEditSecrets e mantém a resposta anônima indisponível",
+      "requiredComposition": "C0 deve criar instância estável fora de build com projeto e usuário autenticado canônicos, trocar junto do contexto e passá-la à rota normal",
+      "verification": "revisão somente leitura; Flutter, Chrome, SQL, deploy e produção não tocados",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g3-anonymous-edit-secret-review.md",
+      "status": "reviewed-package-sound-production-composition-pending"
     }
   },
   "r07History": {

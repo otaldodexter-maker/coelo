@@ -6,6 +6,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../chat/domain/chat_repository.dart';
+import 'principal_chat_attachment_tile.dart';
 import '../../principal_shared/presentation/principal_global_navigation.dart';
 
 /// Chat contextual da família Coelo (Principal), hospedado em `apps/superadmin`.
@@ -119,9 +120,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     final search = _search.text;
     if (!silent) setState(() => _inboxState = const ChatInboxState.loading());
     try {
-      final page = await requested.fetchInbox(
-        ChatInboxQuery(search: search, pageSize: _pageSize),
-      );
+      final page = await requested.fetchInbox(ChatInboxQuery(search: search, pageSize: _pageSize));
       if (!_isCurrentInbox(generation, requested)) return;
       setState(() {
         // Mesmo criterio da thread: recarga silenciosa disparada pela acao do
@@ -156,7 +155,6 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       }
     }
   }
-
 
   /// Mesmo limite da thread: o CURSOR devolvido pelo servidor separa o que a
   /// pagina nova governa do que ela nao alcanca. Conversa que sumiu dentro do
@@ -243,11 +241,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     setState(() => _loadingOlder = true);
     try {
       final older = await requested.fetchThread(
-        ChatThreadQuery(
-          conversationId: conversation.id,
-          cursor: cursor,
-          pageSize: _pageSize,
-        ),
+        ChatThreadQuery(conversationId: conversation.id, cursor: cursor, pageSize: _pageSize),
       );
       if (!_isCurrentThread(generation, requested, conversation.id)) return;
       setState(
@@ -382,7 +376,6 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     }
   }
 
-
   /// Recarga disparada pela acao do PROPRIO operador nao descarta o que ele ja
   /// tinha carregado. A releitura devolve so a primeira pagina; sem mesclar, um
   /// envio jogaria fora todas as paginas antigas que o leitor abriu.
@@ -461,8 +454,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
     _searchDebounce = Timer(const Duration(milliseconds: 300), _loadInbox);
   }
 
-  void _prototype(String label) =>
-      _notify('$label ainda não está disponível.');
+  void _prototype(String label) => _notify('$label ainda não está disponível.');
 
   @override
   Widget build(BuildContext context) => LayoutBuilder(
@@ -471,24 +463,18 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
       // Hospedada no contêiner do shell, a superfície não desenha cabeçalho
       // próprio: duplicar chrome é justamente o defeito que PRINCIPAL.md veda.
       if (widget.embedded) {
-        return ColoredBox(
-          color: Theme.of(context).colorScheme.surface,
-          child: _body(compact),
-        );
+        return ColoredBox(color: Theme.of(context).colorScheme.surface, child: _body(compact));
       }
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
         appBar: PrincipalGlobalHeader(
           keyPrefix: 'principal-chat',
-          onOpenMenu: () => widget.onOpenMenu == null
-              ? _prototype('O menu')
-              : widget.onOpenMenu!(),
+          onOpenMenu: () => widget.onOpenMenu == null ? _prototype('O menu') : widget.onOpenMenu!(),
           onOpenNotifications: () => widget.onOpenNotifications == null
               ? _prototype('As notificações')
               : widget.onOpenNotifications!(),
-          onOpenProfile: () => widget.onOpenProfile == null
-              ? _prototype('O perfil')
-              : widget.onOpenProfile!(),
+          onOpenProfile: () =>
+              widget.onOpenProfile == null ? _prototype('O perfil') : widget.onOpenProfile!(),
         ),
         body: SafeArea(top: false, child: _body(compact)),
       );
@@ -541,9 +527,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
                   onPressed: widget.onBack,
                   icon: const Icon(Icons.arrow_back_rounded),
                 ),
-              Expanded(
-                child: Text('Mensagens', style: Theme.of(context).textTheme.titleLarge),
-              ),
+              Expanded(child: Text('Mensagens', style: Theme.of(context).textTheme.titleLarge)),
             ],
           ),
           const SizedBox(height: CoeloSpacing.space2),
@@ -662,7 +646,10 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [header, Expanded(child: content)],
+      children: [
+        header,
+        Expanded(child: content),
+      ],
     );
   }
 
@@ -778,6 +765,9 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
         return _PrincipalMessageBubble(
           key: ValueKey('principal-chat-message-${thread.items[index].id}'),
           message: thread.items[index],
+          attachmentRepository: _repository is ChatAttachmentRepository
+              ? _repository as ChatAttachmentRepository
+              : null,
         );
       },
     );
@@ -796,10 +786,7 @@ final class _PrincipalChatPageState extends State<PrincipalChatPage> {
             maxLines: 4,
             maxLength: 4000,
             textInputAction: TextInputAction.newline,
-            decoration: const InputDecoration(
-              hintText: 'Escreva uma mensagem',
-              counterText: '',
-            ),
+            decoration: const InputDecoration(hintText: 'Escreva uma mensagem', counterText: ''),
             onChanged: (_) => setState(() {}),
           ),
         ),
@@ -891,9 +878,10 @@ final class _ConversationTile extends StatelessWidget {
 }
 
 final class _PrincipalMessageBubble extends StatelessWidget {
-  const _PrincipalMessageBubble({required this.message, super.key});
+  const _PrincipalMessageBubble({required this.message, this.attachmentRepository, super.key});
 
   final ChatMessage message;
+  final ChatAttachmentRepository? attachmentRepository;
 
   @override
   Widget build(BuildContext context) {
@@ -921,7 +909,13 @@ final class _PrincipalMessageBubble extends StatelessWidget {
             children: [
               Text(message.authorName, style: Theme.of(context).textTheme.labelSmall),
               const SizedBox(height: CoeloSpacing.space1),
-              Text(message.body),
+              if (message.body.isNotEmpty) Text(message.body),
+              for (final attachment in message.attachments)
+                PrincipalChatAttachmentTile(
+                  key: ValueKey(attachment.id),
+                  attachment: attachment,
+                  repository: attachmentRepository,
+                ),
               const SizedBox(height: CoeloSpacing.space1),
               Row(
                 mainAxisAlignment: MainAxisAlignment.end,

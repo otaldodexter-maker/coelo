@@ -12,6 +12,7 @@ final class SupabaseFormsApi
         FormsEditorContextApi,
         FormsResponseContextReader,
         FormsFileJobsReader,
+        FormsAnonymousImageApi,
         FormsQuestionImageApi {
   const SupabaseFormsApi(this._backend, {FormCursorCodec cursorCodec = const FormCursorCodec()})
     : _cursorCodec = cursorCodec;
@@ -21,6 +22,10 @@ final class SupabaseFormsApi
 
   @override
   MediaReader get questionImageReader => FormsQuestionImageReader(gateway: _backend);
+
+  @override
+  MediaReader anonymousImageReader({required String editSecret}) =>
+      FormsAnonymousImageReader(gateway: _backend, editSecret: editSecret);
 
   @override
   Future<FormAssetUploadTicket> prepareQuestionImage(

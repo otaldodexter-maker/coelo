@@ -1,0 +1,206 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: received attachment metadata is visible even without a canonical asset
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: the Principal chat surface imports no administrative composition
+00:00 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: renders its own Principal chrome, not the administrative page
+00:00 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: offers contextual return to the surface that opened it
+00:01 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: opens a conversation and marks it read only after the server authorised it
+00:01 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: an unauthorised thread never reports a read receipt
+00:01 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: sends with an idempotency key and re-reads the normalised thread
+00:01 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: a read-only conversation offers no composer
+00:01 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: renders the six required inbox states
+00:01 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: never claims a receipt the server did not project
+00:01 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: renders the projected receipt of a sent message
+00:02 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: hosted in the shell container it draws no chrome of its own
+00:02 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: reaches older conversations without losing the ones already read
+00:02 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: carries the active search into the continuation
+00:02 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: a denied continuation purges the private snapshot
+00:02 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: reaches older messages in a long conversation
+00:02 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: swapping the repository leaves no trace of the previous actor
+00:02 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: an empty thread by absence never looks like an empty thread by permission
+00:02 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: reconciles the inbox after sending, without blanking it
+00:02 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: a silent reconciliation failure keeps the list the reader already has
+00:03 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_page_test.dart: lays out without overflow across canonical breakpoints
+00:03 +21: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_attachment_test.dart
+00:03 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_attachment_test.dart: private read is explicit and expired ticket retries at width 375.0
+00:04 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_attachment_test.dart: private read is explicit and expired ticket retries at width 1440.0
+00:04 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_attachment_test.dart: repository replacement closes owned preview and discards late private URL
+00:04 +24: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart
+00:04 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: stays usable at 200 percent text scale at 375px
+00:05 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: stays usable at 200 percent text scale at 768px
+00:05 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: stays usable at 200 percent text scale at 1024px
+00:05 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: stays usable at 200 percent text scale at 1440px
+00:05 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: the conversation and send targets meet the AA target size
+00:06 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/principal_chat/principal_chat_accessibility_test.dart: the send control carries an accessible name, not only an icon
+00:06 +30: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart
+00:06 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: binding read is explicit and discards its pending ticket after purge
+00:07 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image footer close cannot affect another route after covered
+00:07 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image footer close cannot affect another route after disposed
+00:07 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image header close cannot affect another route after covered
+00:07 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image header close cannot affect another route after disposed
+00:07 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image route honors reduced motion and keyboard open close focus
+00:07 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: image dialog captures local theme barrier and closed focus traversal
+00:07 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: canonical image reads only after explicit open and restores focus
+00:07 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: missing transport exposes disabled image action without fallback
+00:07 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: context replacement dismisses only the owned image route
+00:08 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: legacy image never treats metadata id or URL as canonical asset
+00:08 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: context change before dialog first build never starts old read
+00:08 +42: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: session invalidation disables opening with no widget replacement
+00:08 +43: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: disposing tile before dialog first build never starts a read
+00:08 +44: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: shows failed attachment metadata and retries only when requested
+00:08 +45: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart: ready attachment does not expose a retry action
+00:08 +46: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart
+00:08 +46: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: captured image retry rejects dispose
+00:09 +47: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: captured image retry rejects context
+00:09 +48: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: captured image retry rejects double-retry
+00:09 +49: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=375.0 dark=false text200
+00:09 +50: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=375.0 dark=false text200
+00:09 +51: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=375.0 dark=false text200
+00:09 +52: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=375.0 dark=false text200
+00:09 +53: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=375.0 dark=false text200
+00:09 +54: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=768.0 dark=false text200
+00:09 +55: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=768.0 dark=false text200
+00:09 +56: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=768.0 dark=false text200
+00:09 +57: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=768.0 dark=false text200
+00:09 +58: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=768.0 dark=false text200
+00:09 +59: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=1024.0 dark=false text200
+00:09 +60: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=1024.0 dark=false text200
+00:09 +61: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=1024.0 dark=false text200
+00:09 +62: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=1024.0 dark=false text200
+00:09 +63: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=1024.0 dark=false text200
+00:10 +64: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=1440.0 dark=false text200
+00:10 +65: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=1440.0 dark=false text200
+00:10 +66: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=1440.0 dark=false text200
+00:10 +67: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=1440.0 dark=false text200
+00:10 +68: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=1440.0 dark=false text200
+00:10 +69: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=375.0 dark=true text200
+00:10 +70: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=375.0 dark=true text200
+00:10 +71: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=375.0 dark=true text200
+00:10 +72: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=375.0 dark=true text200
+00:10 +73: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=375.0 dark=true text200
+00:10 +74: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=768.0 dark=true text200
+00:10 +75: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=768.0 dark=true text200
+00:10 +76: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=768.0 dark=true text200
+00:10 +77: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=768.0 dark=true text200
+00:10 +78: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=768.0 dark=true text200
+00:10 +79: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=1024.0 dark=true text200
+00:10 +80: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=1024.0 dark=true text200
+00:10 +81: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=1024.0 dark=true text200
+00:10 +82: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=1024.0 dark=true text200
+00:10 +83: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=1024.0 dark=true text200
+00:10 +84: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state loading width=1440.0 dark=true text200
+00:10 +85: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state processing width=1440.0 dark=true text200
+00:10 +86: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state expired width=1440.0 dark=true text200
+00:10 +87: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state unavailable width=1440.0 dark=true text200
+00:10 +88: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image state available width=1440.0 dark=true text200
+00:10 +89: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: decoded Flutter cache entry is evicted when its session is invalidated
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TypeWidgetFinder:<Found 1 widget with type "RawImage": [
+            RawImage(image: [4×4], fit: contain, alignment: Alignment.center, invertColors: false,
+filterQuality: medium, renderObject: RenderImage#fd3e4 relayoutBoundary=up21),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart:156:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart line 156
+The test description was:
+  decoded Flutter cache entry is evicted when its session is invalidated
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +89 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: decoded Flutter cache entry is evicted when its session is invalidated [E]
+  Test failed. See exception logs above.
+  The test description was: decoded Flutter cache entry is evicted when its session is invalidated
+
+00:10 +89 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: context replacement rejects old response and unregisters old purge
+00:10 +90 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: dispose rejects pending response and leaves no session cleanup error
+00:10 +91 -1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: active image is removed on invalidation without retry or new read
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: no matching candidates
+  Actual: _TypeWidgetFinder:<Found 1 widget with type "Image": [
+            Image-[<'chat-image-preview'>](image:
+NetworkImage("https://media.invalid/opaque-ticket", scale: 1.0, webHtmlElementStrategy: never,
+headers: {}), frameBuilder: null, loadingBuilder: null, fit: contain, alignment: Alignment.center,
+semanticLabel: "Imagem compartilhada na conversa", this.excludeFromSemantics: false, filterQuality:
+medium, dependencies: [Directionality, MediaQuery, _EffectiveTickerMode,
+_LocalizationsScope-[GlobalKey#70fb5], _ViewScope], state: _ImageState#1bfa9(stream:
+ImageStream#f313b(MultiFrameImageStreamCompleter#49121, unresolved, 1 listener, 0
+ephemeralErrorListeners), pixels: null, loadingProgress: null, frameNumber: null,
+wasSynchronouslyLoaded: false)),
+          ]>
+   Which: means one was found but none were expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart:205:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart line 205
+The test description was:
+  active image is removed on invalidation without retry or new read
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:10 +91 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: active image is removed on invalidation without retry or new read [E]
+  Test failed. See exception logs above.
+  The test description was: active image is removed on invalidation without retry or new read
+
+Warning: At least one test in this suite creates an HttpClient. When running a test suite that uses
+TestWidgetsFlutterBinding, all HTTP requests will return status code 400, and no network request
+will actually be made. Any test expecting a real network connection and status code will fail.
+To test code that needs an HttpClient, provide your own HttpClient implementation to the code under
+test, so that your test can consistently provide a testable response to the code under test.
+00:10 +91 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: image load error clears temporary provider and enables explicit retry
+00:11 +92 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: requests only canonical preview and shows loading without duplicate reads
+00:11 +93 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: processing has no image and retries only explicitly
+00:11 +94 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: expired has no image and retries only explicitly
+00:11 +95 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: unavailable has no image and retries only explicitly
+00:11 +96 -2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: invalidated session never requests or accepts pending media
+══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════
+The following TestFailure was thrown running a test:
+Expected: exactly one matching candidate
+  Actual: _KeyWidgetFinder:<Found 0 widgets with key [<'chat-image-unavailable'>]: []>
+   Which: means none were found but one was expected
+
+When the exception was thrown, this was the stack:
+#4      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart:283:5)
+<asynchronous suspension>
+#5      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)
+<asynchronous suspension>
+#6      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)
+<asynchronous suspension>
+<asynchronous suspension>
+(elided one frame from package:stack_trace)
+
+This was caught by the test expectation on the following line:
+  file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart line 283
+The test description was:
+  invalidated session never requests or accepts pending media
+════════════════════════════════════════════════════════════════════════════════════════════════════
+00:11 +96 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: invalidated session never requests or accepts pending media [E]
+  Test failed. See exception logs above.
+  The test description was: invalidated session never requests or accepts pending media
+
+00:11 +96 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: mismatched asset and private errors become safe unavailable state
+00:11 +97 -3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: available ticket is temporary and expires without another read
+00:11 +98 -3: Some tests failed.
+
+Failing tests:
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: active image is removed on invalidation without retry or new read
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: decoded Flutter cache entry is evicted when its session is invalidated
+  C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema/apps/superadmin/test/features/chat/presentation/superadmin_chat_image_dialog_test.dart: invalidated session never requests or accepts pending media

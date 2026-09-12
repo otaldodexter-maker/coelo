@@ -178,3 +178,90 @@ Esse WIP nao acompanha o commit do controlePUT e ainda nao foi testado.
 
 C0 informou schedulerH09 succeeded14:35/14:40UTC em producao. Resultado e
 publicacao final desse aceite pertencem aC0/G5; G4 nao executou cron nem UI.
+
+## Pacote 4 — anexos recebidos no Chat do Principal
+
+apps/superadmin → Coelo (Principal) → Conversas → mensagem recebida →
+chat.attach (subaceite de leitura). A mensagem com arquivo e texto vazio nao
+renderizava o anexo. PrincipalChatPage agora mostra metadados e abertura
+explicita de imagem/PDF pelo binding autorizado attachment_id.
+
+ChatImagePreview compartilha somente leitura, TTL e purge; Principal fornece
+sua moldura propria e o Superadmin preserva CoeloAdminDialogShell. Nao ha
+import administrativo no Principal nem novo gateway/repository paralelo.
+Troca de contexto fecha somente a rota propria e descarta resposta atrasada.
+PDF solicita leitura nova antes da abertura externa; navegador ainda nao provado.
+
+Verificacao local em slots nominais C0, sempre concurrency1, sem golden update:
+
+- Lote de cinco arquivos: 101 casos executados. Primeira tentativa encontrou
+  purge disparando setState durante build. Ajuste intermediario passou o novo
+  caso de troca de contexto, mas produziu 98 PASS / 3 FAIL / 0 SKIP por adiar
+  repaint mesmo fora de build (`principal-viewer-red.log`, exit1).
+- Correcao final apaga estado privado sincronamente e adia repaint somente
+  em SchedulerPhase.persistentCallbacks; fora dessa fase preserva repaint.
+- Rerun focal de Principal attachment e viewer: **58 PASS / 0 FAIL / 0 SKIP**,
+  exit0 (`principal-viewer-green.log`). Tres falhas resolvidas, nenhuma nova.
+- Os tres arquivos restantes tinham 43 PASS na execucao anterior. Cobertura
+  do plano: cinco arquivos/101 IDs, dos quais quatro novos; nao somar reruns
+  nem declarar os 101 como uma execucao unica sobre o ultimo SHA.
+- Analyze final do Principal, visualizador compartilhado, wrapper e testes:
+  **No issues found**, exit0.
+
+Nao ha promocao E2E nem nova acao no denominador. C0 deve incorporar as provas
+como complemento de chat.attach FE local-green e verificar a base integrada.
+H09 agora tem fonte commitada: r08-coordenacao/lote56-cron-execucoes.md em
+origin/dev2d97892d9 comprova duas execucoes do scheduler; sem aceite visual.
+
+## Provas API publicadas — sem promocao UI/E2E
+
+- Acontece: `happens-api-proof.md`,23operacoes/checksPASS, PNG privado,
+  read/hash/reload,TTLexpirado403,retirada200 e ausencia na reconsulta.
+- Agora: `now-api-proof.md`,19operacoes/checksPASS, PNG privado eTTLURL;
+  publicacao preservada com prazo13/09T15:24:39Z. Expiracao24h nao verificada.
+- Momentos: `moments-api-proof.md`,20operacoes/checksPASS e1FAIL na retirada
+ 403peloautor;preservadoeencaminhadoC0paraACL. Nenhumretry aposfalha.
+- Cardapios: `meal-plan-api-proof.md`,24operacoes/checksPASS sobrelote55,
+  modeloexistentev2preservado, plano novo draft1/edit2/review3/publish4/archive5.
+
+Essas contagens incluem consultas repetidas de proposito e nao sao testes ou
+IDs de acao distintos. Todos os manifests preservam somente dados sinteticos
+necessarios; nao incluem segredo ou URLassinada. Nao se inventou ator
+cross-tenant negado: as contasQA existentes sao Owner/platform.
+
+Memoria: nenhum contrato de produto foi mudado por essas provas. As fontes
+canonicas de autorizacao seguem vigentes; C0 concilia a hipotese403 e a spec028.
+Nao foi criada projecao de conhecimento para registrar mera atividade.
+
+
+## Continuacao API — Momentos e Chat (12/09, 13h BRT)
+
+Momentos: lote58/C0 resolveu o403 de retirada. Mesmo registro retirado200,
+reconsulta ausente; read do outro consumidor qa-r06-realm403, logout204.
+O read200 do autor e canonico; a tentativa historica com esse oraculo errado
+permanece8PASS/1FAIL, nao uma nova falha de produto. Ver moments-api-proof.md.
+
+Chat: grupo nominal e PNG privado criados uma unica vez. Primeiro roteiro
+27PASS/1FAIL por esperar403 em vez do400/InvalidArgument do R2 sem assinatura.
+Continuacao nos mesmos IDs26PASS/0FAIL, exit0/logout204: membros, hash, reload,
+replay sem novoPUT, negativas e expiracao real da URL300s. Ver chat-api-proof.md.
+
+Acontece/Agora/Cardapios mantem resultados publicados. Nenhuma nova promocao
+UI/E2E ou cross-tenant. Agora24h permanece futuro; agendador H09 tem prova C0.
+Sem processo, slot Flutter ou Chrome G4 ativo. Proximo gate solicitado ao C0
+para continuar sem conflitar com as outras frentes ate14:52:16 BRT.
+
+
+## Gate Perfil — confirmação depois de reload (abertura 13h08 BRT)
+
+Autorização C0: corrigir somente PrincipalProfileEditPage._save após RED focal.
+apps/superadmin → Coelo → Perfil → Editar → principal.profile-edit.
+Incluído: confirmação apenas após reload aceito no contexto que iniciou o save;
+falha/403 e troca de contexto não disparam sucesso. Fora: dados oficiais/H02,
+SQL, fixtures, router e mudanças visuais. Testes preparados: três regressões
+locais, mais suíte existente do editor; sem rerun API ou golden. Parada: RED
+reproduzido, correção mínima verde/analyze e publicação para integração C0.
+Estimativa do delta inspecionado: cerca de20min após slot disponível, calibrada
+pela pequena alteração de retorno de _load e pelos testes já existentes.
+Slot ainda não concedido: nenhum Flutter iniciado. Quadro H02/H05/H06/H13
+preserva ambiguidades reais, elimina apenas repetição de decisões adjacentes.

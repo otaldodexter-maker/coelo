@@ -73,6 +73,7 @@ import '../features/safety/domain/child_safety_contract.dart';
 import '../features/access_profiles/domain/access_profile.dart';
 import '../features/platform_users/domain/platform_user.dart';
 import '../features/groups/domain/group_directory.dart';
+import '../features/groups/domain/group_location_create.dart';
 import '../features/health_care/domain/health_care_repository.dart';
 import '../features/students/domain/student_link.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
@@ -126,6 +127,7 @@ class SuperadminApp extends StatefulWidget {
     this.resetPassword = unavailableResetPassword,
     this.institutionDirectoryRepository = const UnavailableInstitutionDirectoryRepository(),
     this.groupDirectoryRepository = const UnavailableGroupDirectoryRepository(),
+    this.groupLocationCreateRepository = const UnavailableGroupLocationCreateRepository(),
     this.groupDetailRepository = const UnavailableGroupDetailRepository(),
     this.unitDetailRepository = const UnavailableUnitDetailRepository(),
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
@@ -149,6 +151,7 @@ class SuperadminApp extends StatefulWidget {
     this.unitBackendCommands = const UnavailableUnitBackendCommandsGateway(),
     this.structureMutationsEnabled = false,
     this.activityLocationCreateEnabled = false,
+    this.groupLocationCreateEnabled = false,
     this.accessProfileRepository = const UnavailableAccessProfileRepository(),
     this.platformUserRepository,
     this.importRepository = const UnavailableImportRepository(),
@@ -204,6 +207,7 @@ class SuperadminApp extends StatefulWidget {
   final ResetPasswordAction resetPassword;
   final InstitutionDirectoryRepository institutionDirectoryRepository;
   final GroupDirectoryRepository groupDirectoryRepository;
+  final GroupLocationCreateRepository groupLocationCreateRepository;
   final GroupDetailRepository groupDetailRepository;
   final UnitDetailRepository unitDetailRepository;
   final LocationCatalogReader locationCatalogReader;
@@ -231,6 +235,7 @@ class SuperadminApp extends StatefulWidget {
   /// quando superadmin_activity_location_create_v2 (180150) esta no projeto
   /// ligado; ligar a chave nao autoriza o ator, o servidor continua decidindo.
   final bool activityLocationCreateEnabled;
+  final bool groupLocationCreateEnabled;
   final AccessProfileRepository accessProfileRepository;
   final PlatformUserRepository? platformUserRepository;
   final ImportRepository importRepository;
@@ -310,6 +315,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       resetPassword: widget.resetPassword,
       institutionDirectoryRepository: widget.institutionDirectoryRepository,
       groupDirectoryRepository: widget.groupDirectoryRepository,
+      groupLocationCreateRepository: widget.groupLocationCreateRepository,
       groupDetailRepository: widget.groupDetailRepository,
       unitDetailRepository: widget.unitDetailRepository,
       locationCatalogReader: widget.locationCatalogReader,
@@ -333,6 +339,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       unitBackendCommands: widget.unitBackendCommands,
       enableStructureMutations: widget.structureMutationsEnabled,
       enableActivityLocationCreate: widget.activityLocationCreateEnabled,
+      enableGroupLocationCreate: widget.groupLocationCreateEnabled,
       accessProfileRepository: widget.accessProfileRepository,
       platformUserRepository: widget.platformUserRepository,
       importRepository: widget.importRepository,

@@ -10,6 +10,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/development_forms_api.dart';
+import '../../data/forms_anonymous_edit_secret_store.dart';
 import 'forms_gallery_answer_field.dart';
 
 enum FormResponseAutosaveState { initial, changed, saving, saved, conflict, failure }
@@ -20,6 +21,7 @@ final class FormResponsePage extends StatefulWidget {
     this.occurrenceId,
     this.mediaSession,
     this.mediaReader,
+    this.anonymousEditSecrets,
     super.key,
   }) : development = false,
        anonymous = false,
@@ -39,12 +41,14 @@ final class FormResponsePage extends StatefulWidget {
        api = null,
        mediaSession = null,
        mediaReader = null,
+       anonymousEditSecrets = null,
        occurrenceId = null;
 
   final bool development;
   final FormsApi? api;
   final MediaSession? mediaSession;
   final MediaReader? mediaReader;
+  final FormsAnonymousEditSecretStore? anonymousEditSecrets;
   final String? occurrenceId;
   final bool anonymous;
   final bool secretLost;
@@ -103,6 +107,7 @@ final class _FormResponsePageState extends State<FormResponsePage> {
         occurrenceId: widget.occurrenceId,
         mediaSession: widget.mediaSession,
         mediaReader: widget.mediaReader,
+        anonymousEditSecrets: widget.anonymousEditSecrets,
       );
     }
     return Material(
@@ -254,11 +259,13 @@ final class _ProductionFormResponse extends StatefulWidget {
     required this.occurrenceId,
     required this.mediaSession,
     required this.mediaReader,
+    required this.anonymousEditSecrets,
   });
 
   final FormsApi? api;
   final MediaSession? mediaSession;
   final MediaReader? mediaReader;
+  final FormsAnonymousEditSecretStore? anonymousEditSecrets;
   final String? occurrenceId;
 
   @override
@@ -273,6 +280,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   _ProductionResponseState _state = _ProductionResponseState.loading;
   FormOccurrenceForResponse? _occurrence;
   FormResponseDraft? _draft;
+  String? _editSecret;
+  MediaReader? _anonymousImageReader;
   String? _message;
   bool _review = false;
   bool _saving = false;
@@ -299,7 +308,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     super.didUpdateWidget(oldWidget);
     if (!identical(oldWidget.api, widget.api) ||
         oldWidget.occurrenceId != widget.occurrenceId ||
-        !identical(oldWidget.mediaSession, widget.mediaSession)) {
+        !identical(oldWidget.mediaSession, widget.mediaSession) ||
+        !identical(oldWidget.anonymousEditSecrets, widget.anonymousEditSecrets)) {
       _load();
     }
   }
@@ -315,6 +325,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   @override
   void dispose() {
+    _editSecret = null;
+    _anonymousImageReader = null;
     _autosaveTimer?.cancel();
     for (final node in _sectionFocus.values) {
       node.dispose();
@@ -336,6 +348,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _state = _ProductionResponseState.loading;
       _occurrence = null;
       _draft = null;
+      _editSecret = null;
+      _anonymousImageReader = null;
       _answers.clear();
       _message = null;
       _review = false;
@@ -364,8 +378,15 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         }
         return;
       }
+      String? editSecret;
+      if (occurrence.identityMode == FormIdentityMode.anonymous) {
+        final store = widget.anonymousEditSecrets;
+        if (store == null) throw const FormsAnonymousEditSecretException();
+        editSecret = await store.loadOrCreate(occurrence.occurrence.id);
+        if (!_isCurrent(generation)) return;
+      }
       final draft =
-          occurrence.draft ??
+          (occurrence.identityMode == FormIdentityMode.identified ? occurrence.draft : null) ??
           await api.openResponseDraft(
             FormCommand(
               requestId: _newResponseRequestId(),
@@ -374,13 +395,19 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 occurrenceId: occurrence.occurrence.id,
                 participationId: occurrence.participationId,
                 identityMode: occurrence.identityMode,
+                editSecret: editSecret,
               ),
             ),
           );
       if (!_isCurrent(generation)) return;
+      final anonymousImageReader = editSecret != null && api is FormsAnonymousImageApi
+          ? (api as FormsAnonymousImageApi).anonymousImageReader(editSecret: editSecret)
+          : null;
       setState(() {
         _occurrence = occurrence;
         _draft = draft;
+        _editSecret = editSecret;
+        _anonymousImageReader = anonymousImageReader;
         _answers
           ..clear()
           ..addAll(draft.answers);
@@ -394,6 +421,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
           _message = 'A fonte autorizada não permite editar esta resposta.';
         }
       });
+    } on FormsAnonymousEditSecretException catch (error) {
+      if (_isCurrent(generation)) {
+        setState(() {
+          _message = error.message;
+          _state = _ProductionResponseState.error;
+        });
+      }
     } on FormApiException catch (error) {
       if (_isCurrent(generation)) {
         setState(() {
@@ -492,6 +526,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 ? 'Resposta anônima'
                 : 'Resposta identificada',
           ),
+          if (occurrence.identityMode == FormIdentityMode.anonymous) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            const Text(
+              'A edição desta resposta fica neste dispositivo. Se os dados locais forem apagados, '
+              'a edição não poderá ser recuperada.',
+            ),
+          ],
           const SizedBox(height: CoeloSpacing.space5),
           if (sections.isNotEmpty) ...[
             LinearProgressIndicator(
@@ -673,6 +714,24 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       '${item.label}${item.isRequired ? ' *' : ''}',
       style: Theme.of(context).textTheme.titleMedium,
     );
+    if (_unanswerableConfiguration(item) case final issue?) {
+      return Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          heading,
+          const SizedBox(height: CoeloSpacing.space2),
+          CoeloStatePanel(
+            icon: Icons.info_outline_rounded,
+            title: 'Pergunta indisponível',
+            message: item.isRequired
+                ? issue
+                : '$issue Você pode deixar esta pergunta sem resposta.',
+          ),
+          if (_hasAnswer(item))
+            TextButton(onPressed: () => update(null), child: const Text('Limpar resposta')),
+        ],
+      );
+    }
     // O limite autorado de selecoes e regra do formulario e precisa ser dito
     // ANTES da escolha, junto do texto de ajuda: descobrir a regra ao ser
     // recusado e o defeito que esta correcao fecha.
@@ -834,12 +893,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       FormItemKind.gallery
           when widget.mediaSession != null &&
               !widget.mediaSession!.isInvalidated &&
-              _occurrence?.identityMode == FormIdentityMode.identified =>
+              _galleryContextAvailable =>
         FormsGalleryAnswerField(
           key: ValueKey('gallery-${widget.occurrenceId}-${item.id}-$_loadGeneration'),
           api: widget.api!,
           session: widget.mediaSession!,
-          reader: widget.mediaReader,
+          reader: _editSecret == null ? widget.mediaReader : _anonymousImageReader,
+          editSecret: _editSecret,
           occurrenceId: widget.occurrenceId!,
           item: item,
           assetIds: (_answers[item.id]?.value as FormAssetValue?)?.assetIds ?? const [],
@@ -1194,6 +1254,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   String? _itemValidationMessage(FormItem item) {
+    if (_unanswerableConfiguration(item) case final issue?) {
+      if (item.isRequired || _hasAnswer(item)) return issue;
+    }
     if (_invalidAnswerReasons[item.id] case final reason?) return reason;
     if (item.kind == FormItemKind.location) {
       if (_locationBlockingMessage(item) case final blocking?) return blocking;
@@ -1229,13 +1292,29 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       if (value is FormAssetValue && value.assetIds.isNotEmpty) return null;
       return item.kind == FormItemKind.gallery &&
               widget.mediaSession?.isInvalidated == false &&
-              _occurrence?.identityMode == FormIdentityMode.identified
+              _galleryContextAvailable
           ? 'Adicione uma imagem antes de revisar a resposta.'
           : 'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.';
     }
     return _hasAnswer(item)
         ? null
         : 'Responda às perguntas obrigatórias visíveis antes de revisar.';
+  }
+
+  bool get _galleryContextAvailable =>
+      _occurrence?.identityMode == FormIdentityMode.identified ||
+      (_editSecret != null && _anonymousImageReader != null);
+
+  String? _unanswerableConfiguration(FormItem item) {
+    if ((item.kind == FormItemKind.singleChoice || item.kind == FormItemKind.multipleChoice) &&
+        item.options.isEmpty) {
+      return 'Esta pergunta não tem opções disponíveis e não pode ser respondida.';
+    }
+    if (item.kind == FormItemKind.scale &&
+        (item.config.scaleMin ?? 1) > (item.config.scaleMax ?? 10)) {
+      return 'Esta pergunta tem um intervalo de escala inválido e não pode ser respondida.';
+    }
+    return null;
   }
 
   Future<void> _saveDraft() => _draft?.status == FormResponseDraftStatus.draft
@@ -1306,6 +1385,16 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       setState(() => _message = 'Revise os valores numéricos antes de salvar.');
       return;
     }
+    if (_pendingCommand == null) {
+      for (final item in occurrence.version.sections.expand((section) => section.items)) {
+        if (_isVisible(item) && _hasAnswer(item)) {
+          if (_unanswerableConfiguration(item) case final issue?) {
+            setState(() => _message = issue);
+            return;
+          }
+        }
+      }
+    }
     if (automatic && _autosavePaused) return;
     if (!automatic) _autosavePaused = false;
     final submitted = kind == _ResponseCommandKind.submit || kind == _ResponseCommandKind.edit;
@@ -1324,6 +1413,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
               occurrenceId: occurrence.occurrence.id,
               responseId: draft.id,
               participationId: occurrence.participationId,
+              editSecret: _editSecret,
               answers: const FormAnswerNormalizer().normalize(
                 answers: _answers,
                 visibleItemIds: _visibleItemIds,

@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "internal-users.create",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "RPC 20260911170800 em produção no lote55 (recibo 19d3914373); Edge Function internal-user-create v3 ACTIVE, OPTIONS204 sem corpo e POST anônimo401 medidos em12/09. Falta provar criação Auth/identidade, hierarquia e reload com sessão real; não done. R08 P51: redirect canônico HTTPS separado do CORS; internal-user-create v4 ACTIVE implantada C0 apos Deno8PASS. OPTIONS medido; allowlist Auth e criacao/reload na UI ainda pendentes. R08 ciclo150: criação normal API v4, Auth/identidade/perfil mínimo e detail/list reload passaram (G5 1548780e1). C0 mediu redirect errado por allowlist Auth sem URL canônica; alteração mínima preservou entrada existente e adicionou somente HTTPS Superadmin/reset-password. Pós-prova do mesmo usuário7/7true; nenhuma senha alterada, SMTP/link aberto não testados. UI/cross-tenant continuam pendentes, sem novo done/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/p51-auth-allowlist.json"
+  }
+]
