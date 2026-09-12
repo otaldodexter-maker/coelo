@@ -73,3 +73,10 @@ Nao trocar papel/RPC nem alargar hierarquia por tentativa. Rascunho preservado
 na aba829822468, /groups/1043c165-7f24-44fe-a868-5bfc6fb0b50f/edit.
 C0/G5: diagnosticar role_code/constraint/grant e negativa de contexto. Local
 positivo continua valido. Nenhum novo teste/golden/build necessario ate causa.
+
+Leitura normal GET institution_roles com RLS/statusactive/global ou instituicao
+retida retornou institution_admin/coordinator/teacher/secretary/institution_reader
+e um papel QA secretaria. Guardian nao apareceu (member-role-read.json).
+Ausencia em resultado RLS nao prova ausencia global; reforca divergencia com
+formulario student/guardian/professional/admin. Nao traduzir guardian para
+teacher/admin nem criar papel para passar. Decisao/contrato pertencem C0/G5.

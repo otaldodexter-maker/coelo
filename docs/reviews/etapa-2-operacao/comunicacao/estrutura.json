@@ -1,6 +1,6 @@
 {
   "grupo": "estrutura",
-  "revision": 114,
+  "revision": 115,
   "round": "E2-R09-20260912-1542",
   "adocaoR09": {
     "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -14,7 +14,7 @@
     "fechamentoAte": "2026-09-12T20:12:18-03:00",
     "corte": "primeiro corte de tempo/consumo C0",
     "base": "7907453f0362665ab87fe8faaa4854f286904148",
-    "proximoGate": "C0/G5 anexar negativa de tenant/hierarquia groups.location e indicar fixture global ativa para groups.members. G1 preserva grupo1043c165 e prova sem duplicar; nenhuma Avaliacao antes de fechar fatia.",
+    "proximoGate": "C0/G5 resolver contrato de papel groups.members e anexar negativa real groups.location; entao G1 conclui add/remove/reload. Nenhuma outra fatia antes deste gate; sem polling.",
     "bloqueio": "groups.members: fixture ativa9f040000-0000-4000-8000-000000000062 resolvida na UI, role guardian, unica tentativa~19:46UTC recusada. API~19:47:47 confirma grupo1043c165 v2/zero membros. Causa exata group_save pendente C0/G5; nao repetir escrita. Rascunho preservado.",
     "contrato": {
       "objetivo": "fechar uma fatia CRUD real por vez",
@@ -44,7 +44,7 @@
   "entregaR09": {
     "codigo": "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
     "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-    "pedidoC0": "URGENTE gate members: diagnosticar group_save~19:46UTC pela sessao OC herdada, grupo1043c165-7f24-44fe-a868-5bfc6fb0b50f expected_version2, pessoa9f040000-0000-4000-8000-000000000062 ACTIVE, role_code guardian. Falha genericUI; nada persistido v2/zero membros. Fonte SQL exige role em institution_roles. G1 nao inventara codigo/permissao. Negativa real Local tambem pendente C0/G5. Provas active-member-rejected.png e member-after-save-proof.json. Chrome829822468 no rascunho edit, servidor15452.",
+    "pedidoC0": "Gate members concretizado: role catalog RLS200 mostra institution_admin/coordinator/teacher/secretary/institution_reader, sem guardian; formulario emite student/guardian/professional/admin. member-role-read.json, leitura normal G1 e logoutlocal204. Nao traduzir papeis diferentes nem ampliar schema para verde. C0/G5 reconciliar group_save/role_codes e negativa real Local; G1 esgotou independente da fatia, rascunho ativo preservado. Local UI/persistencia/reload pronto.",
     "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
     "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
     "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",

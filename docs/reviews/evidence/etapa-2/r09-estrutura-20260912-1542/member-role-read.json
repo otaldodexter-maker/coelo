@@ -1,0 +1,51 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:49:41.816882+00:00",
+  "businessMutations": false,
+  "actor": "qa-r06-estrutura",
+  "checks": {
+    "readable": true
+  },
+  "loginHttp": 200,
+  "readHttp": 200,
+  "visibleRoles": [
+    {
+      "id": "13d06367-aeb6-458e-8fe4-744e20cb1416",
+      "code": "institution_admin",
+      "institution_id": null,
+      "max_scope_kind": "institution"
+    },
+    {
+      "id": "38099173-c54e-4e7e-a6e0-1c392e6e9658",
+      "code": "coordinator",
+      "institution_id": null,
+      "max_scope_kind": "institution"
+    },
+    {
+      "id": "6e27e51c-0b72-44a4-99d1-54957be9f76f",
+      "code": "teacher",
+      "institution_id": null,
+      "max_scope_kind": "unit"
+    },
+    {
+      "id": "975bc4c0-873e-42c6-aae4-71a24a560dc3",
+      "code": "secretary",
+      "institution_id": null,
+      "max_scope_kind": "institution"
+    },
+    {
+      "id": "d6264c5d-fe8a-4208-b6eb-295cd991cefb",
+      "code": "secretaria-qa-r05-3ffc9683",
+      "institution_id": null,
+      "max_scope_kind": "institution"
+    },
+    {
+      "id": "4a50fc41-3c10-4a8e-8794-f8dbd3d50017",
+      "code": "institution_reader",
+      "institution_id": null,
+      "max_scope_kind": "institution"
+    }
+  ],
+  "limitation": "RLS filtered read; absence is not proof of global absence",
+  "logoutLocalHttp": 204
+}
