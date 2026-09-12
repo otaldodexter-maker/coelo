@@ -1,0 +1,70 @@
+{
+  "revision": 1,
+  "round": "E2-R08-20260912",
+  "role": "G0 - Ambiente e runtime",
+  "writer": "Codex G0",
+  "app": "Codex desktop",
+  "model": "GPT-5.6 Sol medio (papel atribuido)",
+  "timezone": "America/Sao_Paulo",
+  "updatedAt": "2026-09-12T10:53:35.1112448-03:00",
+  "t0": "2026-09-12T10:52:16.727826-03:00",
+  "cutoffs": {
+    "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
+    "handoffFinal": "2026-09-12T15:02:16.727826-03:00",
+    "adjustmentsOnlyUntil": "2026-09-12T15:22:16.727826-03:00"
+  },
+  "scope": {
+    "objective": "Recuperar o runtime local sem perda, conferir o espelho baseline e entregar um build QA compartilhavel com prova real de sessao.",
+    "included": [
+      "Docker Desktop e WSL por diagnostico e recuperacao preservadora",
+      "supabase_db_coelo_baseline na porta 57322 e ordem real de migrations",
+      "scripts QA existentes, build web, servidor 127.0.0.1:3014 e um Chrome"
+    ],
+    "excluded": [
+      "features, router e composicao",
+      "factory reset, reboot do Windows e perda de VHDX/volumes",
+      "reset ou teste destrutivo do banco linked",
+      "deltas de estado"
+    ],
+    "order": [
+      "diagnosticar Docker/WSL e preservar volumes/VHDX",
+      "recuperar daemon e conferir baseline/ordem real",
+      "produzir build/servidor/Chrome e provar login, leitura autorizada e reload"
+    ],
+    "firstGate": "causa do daemon Docker identificada por evidencia, antes de qualquer correcao",
+    "stopCriterion": "gates G0 comprovados ou bloqueio preciso depois de duas tentativas materialmente diferentes, com trabalho independente concluido",
+    "expectedEvidence": "comandos sanitizados, PIDs, portas, SHA, logs sem credenciais e captura da rota real"
+  },
+  "status": {
+    "done": [
+      "worktree limpa criada de origin/dev em b3b1bb34d",
+      "contrato comum, secao G0, T0 e slots lidos",
+      "diagnostico inicial: cliente Docker responde; daemon pipe ausente; docker-desktop parado; WslService ativo"
+    ],
+    "pending": [
+      "diagnostico Docker/WSL",
+      "baseline 57322 e ordem real",
+      "build QA, servidor 3014 e prova de login/leitura/reload"
+    ],
+    "tests": [],
+    "nextGate": "preservacao logica do VHDX/volumes e leitura dos logs antes da primeira tentativa de inicializacao"
+  },
+  "resources": {
+    "chrome": "reservado nominalmente a G0 ate 2026-09-12T11:22:16.727826-03:00; PID pendente",
+    "flutterTest": "nao reservado; nao usar",
+    "sql": "retido por C0 ate espelho/pgTAP"
+  },
+  "git": {
+    "branch": "work/etapa2-r08-ambiente-runtime",
+    "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+    "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+    "publishedSha": null
+  },
+  "history": [
+    {
+      "revision": 1,
+      "at": "2026-09-12T10:52:16.727826-03:00",
+      "summary": "Abertura G0; sem tentativa de correcao ainda."
+    }
+  ]
+}
