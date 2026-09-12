@@ -2,7 +2,7 @@
 -- expire, fila de limpeza, cross-tenant e grants.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(25);
+select plan(32);
 
 insert into public.institution_types(id,code,name,status) values
  ('9f060000-0000-4000-8000-000000000001','qa-r05-fmedia','QA R05 forms media','active');
@@ -26,16 +26,36 @@ from (values
  ('9f060000-0000-4000-8000-000000000502'::uuid,'9f060000-0000-4000-8000-000000000302'::uuid,'9f060000-0000-4000-8000-000000000010'::uuid),
  ('9f060000-0000-4000-8000-000000000503'::uuid,'9f060000-0000-4000-8000-000000000303'::uuid,'9f060000-0000-4000-8000-000000000020'::uuid)
 ) f(id,identity_id,institution_id) join public.platform_roles r on r.code='owner';
--- formulario interno (autor do realm interno) da instituicao A
+-- formulario interno preserva a regressao original do RPC v2.
 insert into public.forms(id,institution_id,kind,identity_mode,response_unit,title,created_by_internal_identity_id,updated_by_internal_identity_id)
 values ('9f060000-0000-4000-8000-000000000600','9f060000-0000-4000-8000-000000000010','form','identified','person','Form imagens',
   '9f060000-0000-4000-8000-000000000302','9f060000-0000-4000-8000-000000000302');
 insert into public.form_versions(id,form_id,version_number,created_by_internal_identity_id)
 values ('9f060000-0000-4000-8000-000000000601','9f060000-0000-4000-8000-000000000600',1,'9f060000-0000-4000-8000-000000000302');
+update public.forms set working_version_id='9f060000-0000-4000-8000-000000000601'
+where id='9f060000-0000-4000-8000-000000000600';
 insert into public.form_sections(id,form_version_id,title,position)
 values ('9f060000-0000-4000-8000-000000000602','9f060000-0000-4000-8000-000000000601','Secao',0);
 insert into public.form_items(id,form_version_id,section_id,kind,label,position)
 values ('9f060000-0000-4000-8000-000000000603','9f060000-0000-4000-8000-000000000601','9f060000-0000-4000-8000-000000000602','photo','Foto',0);
+
+-- formulario do host produtivo: autoria people-based do mesmo ator interno,
+-- resolvida pela ponte sem fabricar person_auth_link nem alternar realm.
+insert into public.forms(id,institution_id,kind,identity_mode,response_unit,title,created_by_person_id,updated_by_person_id)
+select '9f060000-0000-4000-8000-000000000610','9f060000-0000-4000-8000-000000000010','form','identified','person','Form produtivo',
+  actor.person_id,actor.person_id
+from app_private.superadmin_internal_actor_people actor
+where actor.internal_identity_id='9f060000-0000-4000-8000-000000000302';
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+select '9f060000-0000-4000-8000-000000000611','9f060000-0000-4000-8000-000000000610',1,actor.person_id
+from app_private.superadmin_internal_actor_people actor
+where actor.internal_identity_id='9f060000-0000-4000-8000-000000000302';
+update public.forms set working_version_id='9f060000-0000-4000-8000-000000000611'
+where id='9f060000-0000-4000-8000-000000000610';
+insert into public.form_sections(id,form_version_id,title,position)
+values ('9f060000-0000-4000-8000-000000000612','9f060000-0000-4000-8000-000000000611','Secao produtiva',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values ('9f060000-0000-4000-8000-000000000613','9f060000-0000-4000-8000-000000000611','9f060000-0000-4000-8000-000000000612','photo','Foto produtiva',0);
 
 create temporary table fm(label text primary key, body jsonb not null);
 grant select,insert on fm to authenticated, service_role;
@@ -121,12 +141,73 @@ select ok(exists (select 1 from public.media_variants v where v.media_asset_id=(
   and v.byte_size=2048 and v.pixel_width=640),'variante original registrada com as medidas');
 select set_config('request.jwt.claims',jsonb_build_object('sub','9f060000-0000-4000-8000-000000000102','session_id','9f060000-0000-4000-8000-000000000202','aal','aal1','role','authenticated')::text,true);
 set local role authenticated;
-insert into fm values('resolve',public.superadmin_form_media_resolve_v2((select asset_id from fm2)));
+insert into fm values('prepare_legacy',public.superadmin_form_media_prepare_v2('9f060000-0000-4000-8000-000000000907',
+  '9f060000-0000-4000-8000-000000000610','9f060000-0000-4000-8000-000000000611','9f060000-0000-4000-8000-000000000613','image/png',3072,repeat('1',64)));
+reset role;
+create temporary table fmlegacy as select (body#>>'{data,asset_id}')::uuid asset_id,(body#>>'{data,finalize_ticket}')::uuid ticket from fm where label='prepare_legacy';
+grant select on fmlegacy to authenticated, service_role;
+select is((select body->>'ok' from fm where label='prepare_legacy'),'true','prepare aceita autoria people-based do mesmo ator interno autorizado');
+select set_config('request.jwt.claims',jsonb_build_object('role','service_role')::text,true);
+set local role service_role;
+insert into fm values('fin_legacy',public.form_media_finalize_question_r2_v1((select asset_id from fmlegacy),(select ticket from fmlegacy),3072,repeat('1',64),800,600));
+reset role;
+select is((select body#>>'{data,status}' from fm where label='fin_legacy'),'ready','question-image produtiva finaliza no catalogo privado');
+select set_config('request.jwt.claims',jsonb_build_object('sub','9f060000-0000-4000-8000-000000000102','session_id','9f060000-0000-4000-8000-000000000202','aal','aal1','role','authenticated')::text,true);
+set local role authenticated;
+insert into fm values('editor_media',public.form_get_editor('9f060000-0000-4000-8000-000000000610'));
+insert into fm values('save_after_media',public.form_save_draft(
+  '9f060000-0000-4000-8000-000000000906',
+  1,
+  jsonb_build_object(
+    'id','9f060000-0000-4000-8000-000000000610',
+    'institution_id','9f060000-0000-4000-8000-000000000010',
+    'kind','form','identity_mode','identified','response_unit','person',
+    'title','Form imagens revisado','description',null,
+    'sections',jsonb_build_array(jsonb_build_object(
+      'id','9f060000-0000-4000-8000-000000000612','title','Secao revisada',
+      'description',null,'position',0,'items',jsonb_build_array(
+        jsonb_build_object(
+          'id','novo-texto','kind','short_text','label','Texto novo',
+          'help_text',null,'position',0,'is_required',false,
+          'config','{}'::jsonb,'options','[]'::jsonb,'conditions','[]'::jsonb
+        ),
+        jsonb_build_object(
+          'id','9f060000-0000-4000-8000-000000000613','kind','photo',
+          'label','Foto revisada','help_text',null,'position',1,'is_required',false,
+          'config','{}'::jsonb,'options','[]'::jsonb,'conditions','[]'::jsonb
+        )
+      )
+    ))
+  )
+));
+insert into fm values('editor_after_save',public.form_get_editor('9f060000-0000-4000-8000-000000000610'));
+insert into fm values('resolve',public.superadmin_form_media_resolve_v2((select asset_id from fmlegacy)));
+reset role;
+select ok((select body#>>'{media_context,form_version_id}'='9f060000-0000-4000-8000-000000000611'
+  and body#>>'{media_context,question_images,0,asset_id}'=(select asset_id::text from fmlegacy)
+  and body#>>'{media_context,question_images,0,item_id}'='9f060000-0000-4000-8000-000000000613'
+  from fm where label='editor_media'),'editor interno expoe somente ids/status da question-image autorizada');
+select is((select body->>'title' from fm where label='save_after_media'),'Form imagens revisado','salvar texto depois do upload preserva o rascunho');
+select ok((select body#>>'{media_context,question_images,0,asset_id}'=(select asset_id::text from fmlegacy)
+  and body#>>'{media_context,question_images,0,item_id}'='9f060000-0000-4000-8000-000000000613'
+  and body#>>'{definition,sections,0,items,1,id}'='9f060000-0000-4000-8000-000000000613'
+  from fm where label='editor_after_save'),'reorder preserva binding pelo item_id autoritativo, nunca pela posicao');
+select throws_like($$
+  select app_private.form_replace_working_definition(
+    '9f060000-0000-4000-8000-000000000611',
+    '[{"id":"secao-sem-foto","title":"Secao","description":null,"position":0,"items":[{"id":"texto-restante","kind":"short_text","label":"Texto","help_text":null,"position":0,"is_required":false,"config":{},"options":[],"conditions":[]}]}]'::jsonb
+  )
+$$,'%media_bindings_item_id_fkey%','remover pergunta com imagem falha fechado ate excluir a midia');
+select ok(exists(select 1 from public.media_bindings where media_asset_id=(select asset_id from fm2)
+  and item_id='9f060000-0000-4000-8000-000000000603')
+  and exists(select 1 from public.media_bindings where media_asset_id=(select asset_id from fmlegacy)
+  and item_id='9f060000-0000-4000-8000-000000000613'),'falha de remocao preserva item e binding sem associacao indevida');
+select ok((select body->>'ok'='true' and body#>>'{data,object_key}' like 'tenants/%' and (body#>>'{data,ttl_seconds}')::int=300 from fm where label='resolve'),
+  'resolve devolve chave e ttl para o gateway');
+set local role authenticated;
 insert into fm values('delete',public.superadmin_form_media_delete_v2('9f060000-0000-4000-8000-000000000903',(select asset_id from fm2)));
 insert into fm values('delete2',public.superadmin_form_media_delete_v2('9f060000-0000-4000-8000-000000000904',(select asset_id from fm2)));
 reset role;
-select ok((select body->>'ok'='true' and body#>>'{data,object_key}' like 'tenants/%' and (body#>>'{data,ttl_seconds}')::int=300 from fm where label='resolve'),
-  'resolve devolve chave e ttl para o gateway');
 select ok((select body->>'ok'='true' and (body#>>'{data,replayed}')::boolean=false from fm where label='delete')
   and (select (body#>>'{data,replayed}')::boolean from fm where label='delete2'),'delete exclui e a repeticao e idempotente');
 select is((select status::text from public.media_assets where id=(select asset_id from fm2)),'deleted','asset excluido');

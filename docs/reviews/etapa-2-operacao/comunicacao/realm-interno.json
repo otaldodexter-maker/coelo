@@ -1,6 +1,6 @@
 {
   "grupo": "realm-interno",
-  "revision": 55,
+  "revision": 57,
   "round": "E2-R08-20260912",
   "updatedAt": "2026-09-12T11:10:17.4386248-03:00",
   "app": "Codex",
@@ -769,8 +769,8 @@
       },
       "primeiroGate": "aguardar resultado ACL/RLS do G0 e revisar qualquer falha antes de propor novo SQL"
     },
-    "checkpoint11h35": {
-      "quando": "2026-09-12T11:35:00-03:00",
+    "checkpoint11h27": {
+      "quando": "2026-09-12T11:27:48-03:00",
       "feito": [
         "ACL/RLS pós-lotes 49–55 aprovada pelo G0: 22/22 + 46/46 + 4/4 + 16/16, native/wrapper 0 e rollback; preflight final 20/20; recibo b1ec76b120d62557e457749adc100940c0c039c1.",
         "Fixture G1 de avaliações aprovada no espelho em 52/52, native/wrapper 0 e rollback.",
@@ -790,8 +790,8 @@
       },
       "primeiroGate": "aguardar C0 concluir H09 e liberar o espelho para a prova focal de chat"
     },
-    "checkpoint11h45": {
-      "quando": "2026-09-12T11:45:00-03:00",
+    "checkpoint11h31": {
+      "quando": "2026-09-12T11:31:30-03:00",
       "feito": [
         "G0 aplicou o candidato H09 somente no baseline e aprovou now_publication_expiry_dispatch_v1_test.sql em 6/6; job único, ativo, */5 e sweep limitado a 500.",
         "G0 aprovou os consumidores compartilhados de chat: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback.",
@@ -808,6 +808,25 @@
         "executadosPorG5": "Deno chat-media 6/6; nenhum pgTAP"
       },
       "primeiroGate": "C0 aplicar e provar H09 em produção após backup, serialização e ledger"
+    },
+    "checkpoint11h46": {
+      "quando": "2026-09-12T11:45:59-03:00",
+      "feito": [
+        "C0 aplicou H09 em produção como lote 56: exit 0, ledger 20260912140545, cron único ativo */5 com sweep 500; recibo dev 67bdf9128 e ciclo30.md.",
+        "Backups privados informados pelo C0: esquema 4.136.628 bytes SHA-256 cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2; dados 4.231.711 bytes SHA-256 9f8c9ad6d3cc2c94f7efa088cf2fccf195ff49bcc89be4ac12d05c47e913b4ed.",
+        "Gate adicional G3 medido no caminho produtivo: form_get_editor/form_save_draft mantêm autoria people-based da ponte, mas question-image exigia form internal-only e o replace bloqueava bindings.",
+        "Teste plan 32 e candidato forward-only 20260912140546 preparados: realm/autoria preservados, media_context sem URL/chave, item_id estável somente na mesma working version e remoção fail-closed."
+      ],
+      "pendente": [
+        "G0/C0 executar RED sem candidato, aplicar 140546 somente no baseline e rodar GREEN/regressões; G5 não executa SQL.",
+        "Somente após prova verde C0 decide lote 57; nenhum deploy ou aplicação remota foi autorizado a G5.",
+        "Corrigir no handoff os horários futuros publicados nas revisões 54/55: os commits reais foram 11:27:48 e 11:31:30 BRT."
+      ],
+      "testes": {
+        "questionImage": "32 casos preparados; não executados por G5; RED/GREEN aguardam slot do espelho",
+        "h09ProducaoC0": "aplicação exit 0; ledger e cron pós-prova confirmados"
+      },
+      "primeiroGate": "receber RED/GREEN e regressões do candidato 140546 no baseline antes de qualquer lote 57"
     }
   }
 }

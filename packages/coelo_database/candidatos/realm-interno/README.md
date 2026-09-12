@@ -122,10 +122,13 @@ Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
 
 | Ordem | Arquivo | Assunto | pgTAP | Estado |
 | --- | --- | --- | --- | --- |
-| 1 | `20260912140545_now_publication_expiry_dispatch_v1.sql` | agenda a transição material de publicações Agora vencidas pelo sweep interno existente; não remove mídia | `now_publication_expiry_dispatch_v1_test.sql` 6 | candidato; não aplicado nem executado |
+| 1 | `20260912140545_now_publication_expiry_dispatch_v1.sql` | agenda a transição material de publicações Agora vencidas pelo sweep interno existente; não remove mídia | `now_publication_expiry_dispatch_v1_test.sql` 6 | produção (lote 56; aplicação exclusiva C0) |
+| 2 | `20260912140546_forms_question_media_draft_bridge_v1.sql` | permite `question-image` no editor produtivo people-based sem converter autoria; preserva binding por `item_id` estável da mesma working version e expõe `media_context` sem URL/chave | `forms_question_media_r2_v1_test.sql` 32 | candidato; não aplicado nem executado |
 
 O defeito foi medido apenas no repositório: a migration `20260910190500`
 declara que o scheduler ficou externo e não existe outro job versionado para o
 sweep. C0 deve consultar `cron.job` no espelho e em produção, executar o pgTAP
 no espelho após os lotes 49–55 e cumprir backup/preflight antes de decidir o
-lote 56. A ordem acima é explícita; este grupo não aplica SQL.
+lote 56. O item 1 foi aplicado pelo C0 após essas provas. O item 2 é posterior
+e deve ser tratado como próximo lote serializado somente após RED/pgTAP no
+espelho. A ordem acima é explícita; G5 não aplica SQL.
