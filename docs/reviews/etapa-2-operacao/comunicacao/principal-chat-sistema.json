@@ -1,6 +1,6 @@
 {
-  "revision": 72,
-  "updated_at": "2026-09-12T14:27:43.976068-03:00",
+  "revision": 73,
+  "updated_at": "2026-09-12T14:31:40.853985-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,7 +9,7 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 593c6a57e observado; código G4 integrado",
-  "head": "e14ae8b4d + commit deste handoff",
+  "head": "e043a4258 + commit proposta R09",
   "status": "HANDOFF G4 para revisão C0; código integrado, evidências publicadas; UI/E2E pendente",
   "T0_assumido": "2026-09-12T10:52:16-03:00 histórico; cortes substituídos nominalmente C0/Owner14:22: frente14:40, revisão14:50, fechamentoC015:00",
   "scope": [
@@ -75,7 +75,7 @@
   "perguntas_ao_coordenador": [
     "Integrar evidências finais e encaminhar próximo gate R09 somente após autorização de abertura; não há pedido de mutação remota G4."
   ],
-  "next_step": "C0 integrar evidências00def54c7/e14ae8b4d e este handoff; ajustes focais até14:50. R09 somente proposta em delivery-summary.md, não iniciada.",
+  "next_step": "C0 consolidar r09-g4-prompt-proposal.md após resultados finais Avaliações/H28; R09 não iniciada. Ajustes focais até14:50.",
   "ack": "Corte nominal antecipado recebido. Sem processo/slot G4 ativo; sem mutação remota adicional.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "Sem processo/slotFlutter/Chrome G4 ativo. Slots globais coordenadosC0; semsegredos;worktreeprincipalintocado;deploy/SQL/inventario/rastreadoresC0.",
@@ -479,6 +479,7 @@
     "resources": "retained-r08-resources.json; sem limpeza autorizada",
     "wip": "sem código WIP/stash; worktree preservada",
     "new_secrets": 0,
-    "r09_started": false
+    "r09_started": false,
+    "r09_prompt_proposal": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/r09-g4-prompt-proposal.md"
   }
 }
