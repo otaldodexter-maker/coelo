@@ -189,7 +189,10 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
   Future<void> setMunicipalities(Set<String> value) {
     final neighborhoods = _query.neighborhoodIds.where((id) {
       return _filterOptions.neighborhoods.any(
-        (item) => item.id == id && value.contains(item.municipalityId),
+        (item) =>
+            item.id == id &&
+            value.contains(item.municipalityId) &&
+            _query.stateCodes.contains(item.stateCode),
       );
     }).toSet();
     return _replace(_copy(municipalityIds: value, neighborhoodIds: neighborhoods));
