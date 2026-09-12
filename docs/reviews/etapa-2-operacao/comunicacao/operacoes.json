@@ -1,6 +1,6 @@
 {
-  "revision": 61,
-  "updated_at": "2026-09-12T11:51:00-03:00",
+  "revision": 62,
+  "updated_at": "2026-09-12T11:54:02.3933840-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -55,6 +55,14 @@
     "finding": "media_bindings_item_id_fkey foi recriada como ON DELETE RESTRICT DEFERRABLE. RESTRICT é verificado imediatamente pelo PostgreSQL; SET CONSTRAINTS ... DEFERRED não permite o delete em cascata da árvore. O save após imagem falha antes de reinserir o item_id estável.",
     "verified": "item_id só é reutilizado quando pertence à mesma working version; media_context não expõe object_key, URL, ticket ou segredo.",
     "reportedTo": "C0 às 11:51 BRT; nenhum SQL, Flutter, golden ou arquivo de outra frente foi alterado."
+  },
+  "checkpoint60minR08": {
+    "when": "2026-09-12T11:54:02.3933840-03:00",
+    "done": "C0 recebeu a revisão G7 rev61/SHA 5e9f39de0 e iniciou integração por conteúdo; Catálogo permanece integrado em dev. A revisão Forms encontrou antes de produção a FK RESTRICT não adiável e autorização sem institution_id.",
+    "resources": "Chrome permanece exclusivo de G0; slot Flutter pertence a G6; G7 não possui processo Flutter, Chrome, SQL ou deploy ativo.",
+    "deploy": "lote 56/H09 já está em produção pelo C0; o lote 57 de Forms permanece bloqueado até candidato corrigido e provas RED/GREEN no espelho.",
+    "next_gate": "revisar o SHA corrigido de Forms contra ownership e cross-tenant; E2E próprio de Sessões/Suporte continua dependente do runtime G0.",
+    "history": "os checkpoints anteriores preservam suas posses e resultados; este campo descreve somente o estado atual."
   },
   "scope": {
     "app": "apps/superadmin",
