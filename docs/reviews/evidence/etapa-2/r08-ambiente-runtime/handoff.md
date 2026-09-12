@@ -222,3 +222,37 @@ Com revisão G7 e posse C0, o baseline recebeu sequencialmente `140548` e `14054
 A primeira regressão de 33 testes ficou **32 ok / 1 not ok**: o caso 17 ainda espera ticket inválido no segundo finalize idêntico, enquanto 140548 passou a reconciliar resposta perdida com sucesso idempotente. Native `0`, wrapper `1`, rollback. O ciclo parou antes das regressões 17/159 e aguarda ajuste autoral da expectativa sem enfraquecer o mismatch fail-closed. Recibo: [pgtap-forms-question-media-3f494eb51.log](./pgtap-forms-question-media-3f494eb51.log).
 
 A expectativa foi alinhada no commit `684eea023`: replay idêntico exige sucesso, mesmo asset, status `ready`, `replayed=true`, uma única variante e medidas preservadas; mismatch alterado continua fail-closed no plano 9. O rerun final passou **33/33**, **17/17** e **159/159**, todos com `finish`, rollback e exits `0/0`. A falha 32/33 permanece apenas como histórico do ciclo anterior. Slot SQL liberado; produção continua exclusiva do C0 e intocada pelo G0.
+
+## Smoke API de Formulários preparado
+
+Por solicitação do C0, foi preparado — sem execução remota — um smoke autenticado do editor normal identificado com `question-image`. O roteiro completo está em [forms-question-image-api-smoke-manifest.md](./forms-question-image-api-smoke-manifest.md) e o runner fail-safe em [forms-question-image-api-smoke.py](./forms-question-image-api-smoke.py).
+
+O fluxo usa somente Auth, `form_save_draft`, `form_get_editor` e a Edge Function `form-media`: cria uma fixture institucional sem PII, prepara e envia um PNG válido de 1×1 pixel, finaliza, resolve e confere o SHA-256 baixado, e repete o editor para provar o binding `ready`. Por correção expressa do C0, formulário e asset sintéticos permanecem para inspeção até o fechamento formal da Etapa 2; o `finally` encerra somente a própria sessão Auth com `scope=local`. JWT, ticket, chave de objeto e URLs assinadas ficam somente em memória. Sem `--execute`, o runner encerra com `READY_NO_MUTATION`; dry-run, parse sintático e `git diff --check` passaram.
+
+O C0 recebeu antecipadamente a instituição medida, a fixture, a sequência e os critérios de parada. A execução aguarda liberação nominal após backup/lote 57 e confirmação de `140546..140549` e da Edge Function compatível em produção. Nenhuma chamada remota, migration, deploy ou mutação foi feita neste preparo.
+
+O preflight remoto somente leitura posterior confirmou `form-media` ativa na versão 16, `verify_jwt=true`, bundle `04f20933...`. A fonte implantada foi baixada temporariamente pela API de gestão e os quatro arquivos de runtime (`index.ts`, `media_contract.ts`, `question_image.ts`, `_shared/r2_s3.ts`) são byte a byte iguais à fonte local inspecionada. G5 confirmou que seu delta de replay é apenas de teste: a Edge v16 já executa authorize, HEAD, GET/medição e finalize também na reconciliação `ready/replayed`. A cópia temporária foi removida após a comparação.
+
+Após autorização nominal do C0, o smoke foi executado uma única vez e passou com exit `0`: Auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload ficaram verdes, o conteúdo baixado preservou os 68 bytes e o SHA-256 esperado, e a própria sessão terminou por logout local `204`. O formulário `f88005ab-af5e-4aa2-8cf7-f35de4ded376` e o asset `d25b8baa-efb5-4702-b5e6-ac3084610605` permanecem íntegros para o fechamento formal; não houve DELETE nem cleanup. Recibo: [forms-question-image-api-smoke-20260912.log](./forms-question-image-api-smoke-20260912.log).
+
+## Rebuild na base integrada
+
+Depois de incorporar `origin/dev` `2441725d5` por merge, o build QA foi refeito sobre `615aaa6f` para não manter no servidor o artefato anterior às mudanças integradas de Formulários. O comando `flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local` terminou com exit `0` em 84,3 s.
+
+```text
+apps/superadmin/build/web/main.dart.js
+bytes: 8399330
+sha256: 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285
+```
+
+O servidor foi restaurado em `127.0.0.1:3014`, PID `44404`; `/login` respondeu `200`/1020 bytes e `flutter_bootstrap.js`, `200`/9975 bytes. O baseline `1abbc4f2cd13` continuou healthy na porta 57322. A mesma aba Chrome `829822454` foi recarregada; nenhum segundo navegador foi aberto e o diagnóstico de inserção de texto não foi repetido. Após o reload, a ponte CUA voltou ao botão `Enable accessibility`, o que não promove o gate visual a concluído.
+
+## Lote 58 — RED comportamental de Moments
+
+O C0 concedeu posse exclusiva do baseline apenas para o RED, proibindo o apply até novo ACK. Após G5 publicar a prova ampliada em `e9a3dc18d`, foi executado um único `moments_withdraw_permission_behavior_v1_test.sql`: plano 11, **4 ok / 7 not ok**, `finish` com sete falhas, rollback, native exit `0` e wrapper lógico `1`.
+
+Passaram a ausência de grant no reader, o hint antigo `true` para admin autor e as duas negações de comando para reader/outro escopo. Falharam exatamente os comportamentos-alvo: grant admin ausente; withdraw/replay do autor negados; publicação ainda visível; auditoria success ausente; outro admin barrado pela falta de permissão antes da autoria; reader autor ainda recebe hint incorreto. Recibo: [pgtap-moments-withdraw-lote58.log](./pgtap-moments-withdraw-lote58.log). Nenhuma migration foi aplicada e produção permaneceu intocada.
+
+Após revisão G7 e ACK nominal do C0, `140550` (SHA-256 `9356F5E52C8D14B0C628540ECEEE35231C6BAF0044EFEE04AC71C6F23D69A996`) foi aplicado somente no espelho: COMMIT, native/wrapper `0/0`. O GREEN passou `4/4` estrutural e `11/11` comportamental; as regressões passaram `23/23` em `moments_feed_and_withdrawal_test.sql` e `30/30` em `moments_publication_mvp_test.sql`. Total único: **68/68**, todos com `finish`, rollback e exits `0/0`.
+
+Uma tentativa de iniciar a regressão 23 com redirecionamento `<` foi recusada pelo parser PowerShell antes de abrir o psql; nenhum SQL/teste executou. O comando foi corrigido para pipeline e a suíte rodou uma única vez. Produção e ledger ficaram intocados, fixtures comportamentais voltaram por rollback e o slot foi devolvido ao C0.
