@@ -21,5 +21,18 @@ Composicao conferida:
 4. Ao abrir o centro, `markAllRead()` persiste `read_at` pelas policies do
    destinatario.
 
-O teste historico `context_notification_feed_test.dart` continua valido; a R08
-nao tocou esse codigo e, por isso, nao repetiu nem promoveu certificacao.
+## Gate focal adicional
+
+A inspecao solicitada pelo C0 encontrou dois defeitos concretos no ciclo
+existente, sem criar novo `action_id`:
+
+- se `load()` terminava depois de o centro ja estar aberto, os itens remotos
+  entravam como nao lidos e `read_at` nao era sincronizado;
+- se a primeira gravacao de `read_at` falhava, reabrir o centro nao repetia a
+  tentativa porque o estado local ja estava lido.
+
+O feed agora registra o callback antes da leitura, sincroniza imediatamente
+quando a carga termina com o centro aberto e o controlador dispara o callback
+em toda transicao real de fechado para aberto. Foram preparados testes para a
+corrida de carga e para falha seguida de retry. Analyze focal: verde; Flutter:
+aguarda slot global, portanto este checkpoint ainda nao certifica a correcao.

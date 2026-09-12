@@ -144,8 +144,8 @@ class SuperadminActivityController extends ChangeNotifier {
   final List<Timer> _timers = [];
   Future<void> Function(String id, {required bool approved})? onEmailApprovalDecision;
 
-  /// Chamado quando o centro abre e havia itens nao lidos (o sino remoto usa
-  /// para gravar `read_at` no servidor).
+  /// Chamado em cada transicao de fechado para aberto (o sino remoto usa para
+  /// gravar ou repetir a gravacao de `read_at` no servidor).
   Future<void> Function()? onCenterOpened;
   var _nextId = 0;
   var _centerOpen = false;
@@ -155,6 +155,8 @@ class SuperadminActivityController extends ChangeNotifier {
 
   int get unreadCount =>
       _activities.where((activity) => activity.isComplete && !activity.isRead).length;
+
+  bool get isCenterOpen => _centerOpen;
 
   void addActivity(SuperadminActivity activity) {
     _activities.insert(0, activity.copyWith(isRead: _centerOpen));
@@ -297,6 +299,7 @@ class SuperadminActivityController extends ChangeNotifier {
   }
 
   void setCenterOpen(bool open) {
+    final wasOpen = _centerOpen;
     _centerOpen = open;
     if (!open) {
       return;
@@ -311,8 +314,8 @@ class SuperadminActivityController extends ChangeNotifier {
     }
     if (changed) {
       notifyListeners();
-      unawaited(onCenterOpened?.call());
     }
+    if (!wasOpen) unawaited(onCenterOpened?.call());
   }
 
   @override
