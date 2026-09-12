@@ -1,6 +1,6 @@
 {
-  "revision": 51,
-  "updated_at": "2026-09-11T21:22:00-03:00",
+  "revision": 52,
+  "updated_at": "2026-09-11T21:35:00-03:00",
   "round": "E2-R06-20260911",
   "group": "operacoes",
   "tool_model": "Claude, Opus 5 (1M), esforco medio — conversa R06 · Operacoes",
@@ -290,7 +290,7 @@
       "what": "/imports/new diz \"Este recurso fica disponivel depois do MVP.\" (503 da mesma familia) em vez de \"temporariamente indisponivel\"; A = manter, R = voltar ao texto anterior."
     }
   ],
-  "next_step": "nenhum: finalizado 21:10; nao retomar depois de 21:46",
+  "next_step": "nenhum: finalizado; nao retomar depois de 21:46",
   "commits": [],
   "r04_history": {
     "revision": 20,
@@ -1144,10 +1144,13 @@
   "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md",
   "merge_origin_dev": "b60ac0bea (lote 52 integrado; flutter analyze lib test limpo; support+account+errors+imports+sonda 284/284)",
   "finalizado": "2026-09-11T21:10:00-03:00 (antes do corte 21:36; nada retomado depois)",
-  "revisao_final_T0_2h": {
-    "respondido_em": "21:10 (antecipada; valida em 21:36 salvo revisao posterior)",
+  "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa.",
+  "loop_2105": "retomada pelo loop as 21:05: sem item executavel restante no recorte sem decisao do Owner (plans.assign P51, catalog.publish nominal, audit.export adiado, texto MFA no Perfil muda golden aprovado). 7 commits publicados na branch ainda nao integrados em dev (1e94633a5..a06d5cb78: rota /imports/new na shell, handoff, revs 46-49). Nada mais a fazer ate 21:36; revisao final ja gravada (rev 49).",
+  "loop_2119": "retomada 21:19: texto MFA corrigido sem golden; sem outro item executavel; finalizado.",
+  "revisao_final_2136": {
+    "respondido_em": "21:35 (confirmada ao pedido pedidoDeRevisao2136 da coordenacao rev 57)",
     "entregou_tudo": "sim — itens (0) a (5) da ordem fechados; (6) audit.export nao iniciado por decisao (ADR 0034 adia exportacoes gerais; Edge Function sem deploy)",
-    "sha_publicado": "work/etapa2-r06-operacoes = origin (commit desta rev); 9 commits desde 1e94633a5 aguardam integracao; git status limpo; sem stash; sem WIP",
+    "sha_publicado": "work/etapa2-r06-operacoes = origin (commit desta rev, sobre 8b8666685); 2 commits desde a ultima integracao (rev 51 e este); git status limpo; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": {
       "imports.list (teste)": "fail_closed_screens_with_data_probe_test 16/16 (2a28545d3)",
       "account.sessions": "FE verified / BE done / E2E verified-e2e propostos — pacote 200200 em producao (lote 50), pgTAP 14/14; rota real: lista, segunda sessao via API, Encerrar as outras (GoTrue scope=others), reload (capturas 01-04)",
@@ -1172,11 +1175,9 @@
     "duvidas_ao_owner": "P51 plans.assign; SUP-R06; DEF-R06; SES-R06 (pagina lado a lado acima)",
     "dados_sinteticos": "plano 5b0fc76b (arquivado e restaurado: +2 recibos em plan_change_receipts); sessoes do qa-r06-operacoes (uma revogada; a do Chrome fechada); eventos de auditoria das provas; limpeza no fim da Etapa 2",
     "chaves_criadas": "nenhuma (nenhum segredo, token ou chave criado)",
-    "ambiente": "Chrome CDP 9421 fechado; servidor 3021 parado; descartavel coelo_ops_r06 parado (volume mantido); build web em apps/superadmin/build/web-r06ops (nao versionado)",
+    "ambiente": "Chrome CDP 9421, servidor 3021 e descartavel coelo_ops_r06 encerrados as 21:06; nada aberto",
     "skills": "secao 5 de docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md; conhecimento: no-op nesta frente (regras propostas ao coordenador)",
-    "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md"
-  },
-  "nota_relogio": "os campos updated_at/when das revs 41-49 foram escritos a mao e correram ate ~6 min a frente do relogio da maquina (ex.: rev 49 gravada as 21:04 reais). Os commits do Git tem a hora certa.",
-  "loop_2105": "retomada pelo loop as 21:05: sem item executavel restante no recorte sem decisao do Owner (plans.assign P51, catalog.publish nominal, audit.export adiado, texto MFA no Perfil muda golden aprovado). 7 commits publicados na branch ainda nao integrados em dev (1e94633a5..a06d5cb78: rota /imports/new na shell, handoff, revs 46-49). Nada mais a fazer ate 21:36; revisao final ja gravada (rev 49).",
-  "loop_2119": "retomada 21:19: texto MFA corrigido sem golden; sem outro item executavel; finalizado."
+    "handoff": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md",
+    "deltas_de_skills": "docs/reviews/evidence/etapa-2/r06-operacoes/handoff.md, secao 5 (coelo-backend: sessoes por RPC + GoTrue scope=others; coelo-frontend/coelo-ui: abas proprias no slot tabs so na tabela, preferencia de visao local, rota adiada dentro da shell, SuperadminErrorKind.deferred, teste rola por ScrollPosition; coelo-frontend-backend: dart.exe + MSYS_NO_PATHCONV, campo de dialogo por CDP + enter_text)"
+  }
 }
