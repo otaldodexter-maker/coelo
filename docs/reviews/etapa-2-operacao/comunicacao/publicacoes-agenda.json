@@ -1,15 +1,15 @@
 {
-  "revision": 74,
+  "revision": 80,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "4603ce35c (recibo do ciclo 120; revisão focal G3 adicionada nesta revisão)",
-  "base": "origin/dev 7cc6d4e7b incorporado por merge d263f8b93",
+  "head": "4ce8a34f8 (manifesto retido e parecer G8; revisão visual H25 nesta revisão)",
+  "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:08:58-03:00",
+  "updatedAt": "2026-09-12T13:52:32.7839597-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "entrega final ao C0; integrar por conteúdo após conferir o SHA publicado; não remover esta worktree antes da integração.",
+  "next": "C0 integrar a proposta de manifesto retido e o corretivo H25 de G3; G8 corrigir classificação de loader, caminho repo-relative e semântica de chaves de exibição; não remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T13:08:58-03:00",
-    "sha": "4603ce35c",
+    "checkpoint": "2026-09-12T13:43:17-03:00",
+    "sha": "d94f60f1d",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2616,6 +2616,60 @@
       "verification": "revisão somente leitura; Flutter, Chrome, SQL, deploy e produção não tocados",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g3-anonymous-edit-secret-review.md",
       "status": "reviewed-package-sound-production-composition-pending"
+    },
+    "anonymousEditSecretProductionWiring": {
+      "implementation": "c17df4900",
+      "integratedBase": "origin/dev 7e889abac via e71bc1777d",
+      "scope": "AuthScope -> SuperadminApp -> router -> FormResponsePage, com project ref/origem canônica e client.auth.currentUser.id",
+      "result": "provider estável para a mesma conta, troca para outra conta e fail-closed sem usuário/sessão autorizada ou em recovery",
+      "verification": "3 arquivos focais, 17/17 PASS em concurrency 1; dart analyze nos 9 arquivos afetados sem apontamentos; E2E não executado",
+      "formsTestPage": "rota produtiva formTest é preview read-only e não abre resposta; store não aplicável",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/anonymous-edit-secret-production-wiring.md",
+      "status": "local-green-production-route-composed-e2e-not-executed"
+    },
+    "g4ProfileSaveReloadReview": {
+      "commit": "9863512b9",
+      "scope": "save/reload, parser plano, troca de contexto e fidelidade da baseline",
+      "correct": "key/type normalizados; null legítimo; confirmação somente após reload aceito; generation guard; retry não repete save",
+      "findings": [
+        "parser ignora subject_type/subject_id canônicos e relabela retorno divergente com o sujeito pedido",
+        "didUpdateWidget ignora roleCode/scopeKind e pode conservar draft quando só o papel muda na mesma membership"
+      ],
+      "actor": "baseline não devolve actor; nenhuma validação client-side inventada",
+      "fix": "b58cbaec9 valida subject_type/id e inclui roleCode/scopeKind na identidade; revisão estática final sem bloqueador",
+      "verification": "G4: RED 6 esperado, depois 43 PASS/0 FAIL/0 SKIP e analyze 0; G6 não repetiu Flutter",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g4-profile-save-reload-review.md",
+      "status": "reviewed-findings-fixed-no-blocker"
+    },
+    "g8EvidenceParserReview": {
+      "commit": "d106ee5a5",
+      "scope": "testStart/testDone por ID, suite/nome, log compacto anônimo e ausência de double count",
+      "jsonl": "vínculo por ID e filtros hidden/skipped corretos; ciclo90 422 eventos, 410 chaves, 12 duplicações",
+      "finding": "anon() remove dois testes reais chamados loading at 200 percent; marcadores de arquivo já não casam com o regex",
+      "correctCounts": "301 linhas físicas = RTK 1 + loaders 6 + casos 293 (+0..+292) + rodapé 1; 293 eventos, 281 chaves, 12 extras",
+      "duplicates": "quatro nomes com multiplicidades 6/5/2/3 geram 5+4+1+2=12; rodapé não é caso nem 13ª duplicação",
+      "verification": "parser e logs commitados somente; Flutter, Chrome e remoto não executados",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g8-test-evidence-parser-review.md",
+      "followUp": "cc7e68703/cfc710b13 restauram 293 eventos anônimos, mas jsonl mantém prefixo loading genérico, caminhos absolutos impedem interseção entre worktrees e 281 mede chaves de exibição, não identidade de casos",
+      "status": "reviewed-follow-up-required-before-final-matrix"
+    },
+    "retainedR08ResourcesReview": {
+      "sourceCommit": "57259e29c",
+      "scope": "manifesto G4 cruzado com incident circular G6, fixtures Forms G0 e P51 G5",
+      "finding": "manifesto vigente contém cinco domínios G4 e omite os recursos sintéticos confirmados por G6, G0 e G5",
+      "proposal": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/retained-r08-resources-proposal.json",
+      "privacy": "somente IDs e instruções de retenção; sem email, URL assinada, action link, token, credencial, headers ou sessão",
+      "mutation": "nenhum cleanup, retry, deploy ou acesso remoto executado",
+      "status": "proposal-ready-for-c0"
+    },
+    "h25ActivitiesInstitutionsVisualReview": {
+      "scope": "approved master versus integrated test and isolated diff at 768/1024/1440, light/dark",
+      "finding": "delta restricted to earlier ellipsis in table header labels after the 48px resize strip reduced the paint width by 36px",
+      "fixReview": "G3 full-width IgnorePointer/ExcludeSemantics paint layer plus disjoint sort and resize hitboxes preserves the approved visual and accessibility targets",
+      "verification": "G6 view_image read-only; G3 reports 16 golden PASS without rebaseline and focal geometry/interaction tests",
+      "residual": "32/42px sort targets in narrow columns remain separate and unresolved",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/h25-activities-institutions-visual-review.md",
+      "status": "reviewed-correction-sufficient-no-image-change"
     }
   },
   "r07History": {

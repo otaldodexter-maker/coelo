@@ -52,3 +52,22 @@ abstract final class SuperadminAppConfig {
 
 bool canEnableDevelopmentPreview({required bool isReleaseMode, required String environment}) =>
     !isReleaseMode && environment == 'local';
+
+/// Stable, client-safe identity for the configured Supabase project.
+/// Hosted projects use their project ref; local stacks use their normalized origin.
+String? canonicalSupabaseProjectId(String rawUrl) {
+  final uri = Uri.tryParse(rawUrl);
+  if (uri == null ||
+      (uri.scheme != 'https' && uri.scheme != 'http') ||
+      uri.host.isEmpty ||
+      uri.userInfo.isNotEmpty) {
+    return null;
+  }
+  final host = uri.host.toLowerCase();
+  const suffix = '.supabase.co';
+  if (host.endsWith(suffix)) {
+    final projectRef = host.substring(0, host.length - suffix.length);
+    if (projectRef.isNotEmpty && !projectRef.contains('.')) return projectRef;
+  }
+  return Uri(scheme: uri.scheme, host: host, port: uri.hasPort ? uri.port : null).origin;
+}

@@ -1,0 +1,26 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Check packages/coelo_database/supabase/functions/form-media/index_test.ts
+Check packages/coelo_database/supabase/functions/form-media/question_image_test.ts
+Check packages/coelo_database/supabase/functions/form-media/media_contract_test.ts
+TS2307 [ERROR]: Import "@std/assert" not a dependency
+  hint: If you want to use the JSR package, try running `deno add jsr:@std/assert`
+    at file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/packages/coelo_database/supabase/functions/form-media/index_test.ts:1:30
+
+TS2307 [ERROR]: Import "@supabase/supabase-js" not a dependency
+  hint: If you want to use a JSR or npm package, try running `deno add jsr:@supabase/supabase-js` or `deno add npm:@supabase/supabase-js`
+    at file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/packages/coelo_database/supabase/functions/form-media/index.ts:1:51
+
+TS2307 [ERROR]: Import "@std/assert" not a dependency
+  hint: If you want to use the JSR package, try running `deno add jsr:@std/assert`
+    at file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/packages/coelo_database/supabase/functions/form-media/question_image_test.ts:1:44
+
+TS2307 [ERROR]: Import "@std/assert" not a dependency
+  hint: If you want to use the JSR package, try running `deno add jsr:@std/assert`
+    at file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/packages/coelo_database/supabase/functions/form-media/media_contract_test.ts:1:59
+
+Found 4 errors.
+
+error: Type checking failed.
+
+  info: The program failed type-checking, but it still might work correctly.
+  hint: Re-run with --no-check to skip type-checking.

@@ -443,10 +443,15 @@ possui `person_id`, `participation_id` ou chave comum. Envio atualiza participa�
 e cria conteúdo desacoplado na mesma transação, sem colocar ambos no mesmo
 evento de auditoria.
 
-Edição anônima usa segredo opaco retornado ao dispositivo; somente hash fica
-na resposta. O segredo não usa identidade, não entra em logs e permite editar
-até o encerramento. Se for perdido, a edição não pode ser recuperada. A UI
-explica que a edição anônima permanece naquele dispositivo.
+O dispositivo gera 32 bytes aleatórios para o segredo de edição anônima e
+confirma sua persistência local antes de abrir a resposta. O servidor recebe o
+segredo no corpo do comando e persiste somente seu hash. O armazenamento local
+é separado por projeto, conta e ocorrência; essa organização não é enviada como
+vínculo entre identidade e resposta nem participa da geração do segredo.
+Falha de armazenamento impede abrir a resposta com um segredo temporário.
+O segredo não entra em logs e permite editar até o encerramento. Se for perdido,
+a edição não pode ser recuperada. A UI explica que a edição anônima permanece
+naquele dispositivo. A coordenação entre abas distintas não está certificada.
 
 O modo identificado/anônimo fica imutável após a primeira publicação.
 
@@ -462,6 +467,13 @@ JPEG/PNG/WebP. Não há URL pública nem segredo no cliente.
 Upload abandonado e artefato expirado recebem cleanup. Resposta e mídia
 original seguem retenção própria. A ADR 0032 é canônica e supersede qualquer
 menção histórica de Supabase Storage nesta spec.
+
+A captura Foto usa a câmera; Galeria seleciona arquivo existente. A captura
+segue o mesmo preparo, PUT com `upload_url`/`required_headers` e finalização
+pelo gateway privado. Troca de formulário, encerramento da sessão, cancelamento
+ou saída do aplicativo encerram a câmera; resultados tardios são descartados e
+seus bytes limpos. O repaint após purge respeita o descarte da árvore Flutter.
+Essa regra de lifecycle não constitui prova de captura física em navegador.
 
 ## Permissões e autorização
 

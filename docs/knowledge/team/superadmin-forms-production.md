@@ -4,7 +4,7 @@ knowledge_id: superadmin-forms-production
 source: docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md
 status: validated
 generated_at: 2026-08-13
-updated_at: 2026-09-03
+updated_at: 2026-09-12
 audience: team
 surfaces: [superadmin, forms, permissions, storage, exports]
 visibility: internal
@@ -64,6 +64,11 @@ participação anônima exige Owner, capability específica, justificativa
 auditável e nunca expõe um identificador ou horário que permita correlacionar a
 pessoa com uma resposta.
 
+A persistência local do segredo é confirmada antes de abrir o rascunho; falha
+de armazenamento bloqueia a abertura. As chaves locais são separadas por
+projeto, conta e ocorrência, sem enviar essa organização como vínculo entre
+identidade e resposta. Isso não certifica concorrência entre abas distintas.
+
 Photo captura pela câmera e Gallery escolhe imagens existentes. JPEG, PNG e
 WebP de até 10 MiB e 36 MP usam `coelo-media-prod` pelo Media Gateway; HEIC/HEIF
 de celular é convertido antes da finalização. O backend cria chave opaca na
@@ -71,6 +76,10 @@ finalidade `answer-image` e URL curta; o cliente envia sem credencial
 privilegiada e a finalização verifica MIME real, bytes, dimensões, pixels e
 checksum. Downloads passam pela rota protegida e reautorizam cada acesso.
 Documento/PDF continua fora dos tipos de pergunta do MVP de Formulários.
+
+Troca de formulário, encerramento da sessão, cancelamento e saída do aplicativo
+encerram a câmera. Capturas tardias são descartadas e seus bytes limpos; essa
+regra não equivale a uma prova de câmera física ou de fluxo completo no navegador.
 
 `forms.responses.export` é a única exportação funcional do MVP: um job privado,
 idempotente e auditado gera um XLSX com as respostas do formulário em

@@ -860,6 +860,15 @@ referência de composição é a tabela de Instituições. Não substituir por u
 | Responsividade | Priorizar colunas; no compact, usar cards quando necessário. Se a tabela continuar, manter scroll horizontal em vez de ocultar informação crítica. |
 
 A largura natural da tabela fica centralizada quando for menor que a viewport.
+
+A coluna redimensionável reserva uma faixa de interação de 48 px para a alça,
+separada do alvo de ordenação. A pintura do cabeçalho conserva a largura e a
+composição aprovadas, sem interceptar eventos nem duplicar a semântica. O
+indicador visual permanece estreito na borda; colunas com mínimo igual ao
+máximo não oferecem redimensionamento sem efeito. A faixa de 48 px não
+certifica todos os alvos: colunas de 80/90 px deixam 32/42 px para ordenar e
+exigem revisão específica, sem ampliar seus mínimos silenciosamente.
+
 Quando ocupar ou exceder o espaço disponível, a tabela continua preenchendo a
 área e rolando normalmente. A faixa `CoeloAdminCreateAction.banner` preserva a
 largura total do diretório e não acompanha essa centralização.
