@@ -59,12 +59,16 @@ timezone: "America/Sao_Paulo"
 
 ## Reconciliação documental R08 (refs remotas verificadas)
 
-| Frente | Evidência executada explícita | Planejado ou pendente |
-|---|---|---|
-| G0 | build Flutter exit 0; HTTP 200 em `/login` e bootstrap | login, leitura autorizada e reload não comprovados |
-| G2 | `deno test`: 7 passed / 0 failed | gates E2E pendentes |
-| G4 | teste local: 27 passed / 0 failed; baseline 0/1 | deploy, CRUD e reload não executados |
-| G6 | nenhum resultado medido explícito no handoff consultado | gates e comandos descritos como próximos passos |
-| G1, G3, G7 | handoff R08 não localizável nas refs remotas consultadas | ausência de artefato, sem inferir conclusão |
+| Frente | Ref e evidência commitada | SHA da evidência | Leitura | Resultado documental |
+|---|---|---|---|---|
+| G0 | `origin/work/etapa2-r08-ambiente-runtime` / `r08-ambiente-runtime/handoff.md` | `0a9811a86e94cdca4cc425c85bc1d73042f8dd41` | `2026-09-12T11:24:55-03:00` | build exit 0 e HTTP 200; login/leitura/reload não comprovados |
+| G1 | `origin/work/etapa2-r08-estrutura` / `r08-estrutura/rodape-modelo-teste.md` | `3d2125356c368d46129fd92436e7098126f33e32` | `2026-09-12T11:17:07-03:00` | prova específica do rodapé de Criar modelo |
+| G2 | `origin/work/etapa2-r08-acessos-pessoas` / `r08-acessos-pessoas/handoff.md` | `bd3f4f7cdfe090eaa25d1ab76b1fed880a22f144` | `2026-09-12T11:20:45-03:00` | `deno test`: 7 passed / 0 failed; E2E pendente |
+| G3 | `origin/work/etapa2-r08-formularios-cuidado-rotina` / `r08-formularios-cuidado-rotina/medication-after.log` | `7bc243cdb05204a307f38fe4b5286d9487176cec` | `2026-09-12T11:13:15-03:00` | evidência própria de correção do overflow/formulário |
+| G4 | `origin/work/etapa2-r08-principal-chat-sistema` / `r08-principal-chat-sistema/handoff.md` | `8d1003e3aabc435f3308922d0db3b4493feadcd6` | `2026-09-12T11:26:13-03:00` | pacote local medido; deploy/CRUD/reload separados |
+| G5 | `origin/work/etapa2-r08-realm-interno` / `r08-realm-interno/fixtures-g1-g3.md` | `cc74ebbd541b14950140f07f6f546812cfecb3e8` | `2026-09-12T11:27:48-03:00` | recibos do espelho e fixtures consolidados |
+| G6 | `origin/work/etapa2-r08-publicacoes-agenda` / `r08-publicacoes-agenda/handoff.md` | `da3e13711333018c10d93152721fefb613a2967c` | `2026-09-12T11:28:47-03:00` | checkpoint de preset/P50; gates posteriores pendentes |
+| G7 | `origin/work/etapa2-r08-operacoes` / `r08-operacoes/handoff.md` | `343ccfe403b4060165b3947d26dcbaf6569a9b8b` | `2026-09-12T11:12:38-03:00` | catálogo com destino real; demais gates conforme handoff |
+| G8 | `origin/work/etapa2-r08-suites` / `r08-suites/handoff.md` | `15cac2e79df835857daaf4d7c0efedf4b5c25465` | `2026-09-12T11:20:04-03:00` | revisão documental; testes R08 G8 não executados |
 
-Esta tabela é reconciliação documental verificada por `git show` nas refs remotas; não é novo censo nem execução desta frente.
+Os caminhos foram descobertos por `git ls-tree -r --name-only` e os SHAs/timestamps por `git log -1` nas refs remotas. Esta tabela é reconciliação documental, não novo censo nem execução desta frente.
