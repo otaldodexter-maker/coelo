@@ -100,7 +100,6 @@ void main() {
     SuperadminRoutes.profileModels,
     '/students/synthetic-context/manage',
     SuperadminRoutes.support,
-    SuperadminRoutes.profile,
   ]) {
     testWidgets('unavailable $path labels and performs home navigation', (tester) async {
       final session = SuperadminSession()..signInForTesting();

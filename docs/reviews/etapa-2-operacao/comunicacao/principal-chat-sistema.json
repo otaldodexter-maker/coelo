@@ -1,6 +1,6 @@
 {
-  "revision": 42,
-  "updated_at": "2026-09-11T23:20:52-03:00",
+  "revision": 43,
+  "updated_at": "2026-09-11T23:32:10-03:00",
   "round": "E2-R07-20260911",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -255,9 +255,13 @@
     "fora_de_escopo": ["apps/admin", "apps/principal", "site", "dev/inventario/rastreadores", "deploy Cloudflare pelo coordenador", "V-1 sem resposta P54", "SQL salvo se nao indispensavel"],
     "ordem": ["publicadores com PNG e reload", "meal-plans", "errors", "principal.profile-edit", "V-3", "V-1 se autorizado", "chat"],
     "primeiro_gate": "Publicadores: capturar e resolver a falha do navegador apos CORS alinhado; provar persistencia, R2 e reload por action_id.",
-    "feito": [],
+    "feito": [
+      "errors.403/404/500/503: suíte superadmin_error_routes_test 15/15 verde; expectativa obsoleta de /profile removida do loop de erro indisponível porque a rota produtiva tem estado próprio de carregamento/falha.",
+      "publicadores: suítes de repository de Acontece, Momentos e Agora + idempotência 16/16 verdes; contratos locais confirmam PUT assinado R2, finalize e ausência de credenciais no payload. Ainda não é prova E2E.",
+      "checkpoint inicial publicado em 5bb6b7e4f"
+    ],
     "pendente": ["publicadores com midia", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 condicionado a P54=A", "chat.create-group/chat.attach"],
-    "commits_publicados": [],
+    "commits_publicados": ["5bb6b7e4f: abertura R07 + deltas vazios; push concluído"],
     "evidencias_esperadas": "capturas commitadas em docs/reviews/evidence/etapa-2/r07-principal-chat-sistema/rota-real e deltas-r07-pcs.json no formato do aplicador",
     "cadencia": "checkpoint JSON a cada 30 minutos; proxima revisao 23:50:52; revisao final T0+4h",
     "seguranca": "qa-r06-principal lido somente do arquivo local; nenhum segredo em Git, chat, log ou JSON; um Chrome e um flutter test por vez"
