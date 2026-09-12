@@ -1,17 +1,37 @@
 {
-  "revision": 54,
-  "updated_at": "2026-09-12T09:29:49-03:00",
-  "round": "E2-R07-20260911",
+  "revision": 56,
+  "updated_at": "2026-09-12T11:11:00-03:00",
+  "round": "E2-R08-20260912",
   "group": "operacoes",
-  "tool_model": "Codex, Luna, esforco medio — conversa R07 · Operacoes",
-  "conversation": "R07 · Operações",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-operacoes",
-  "branch": "work/etapa2-r07-operacoes",
-  "head": "53ac6c30550db845c7bad9c8f12f6e6dc01c1133",
+  "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
+  "conversation": "R08 · Operações",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+  "branch": "work/etapa2-r08-operacoes",
+  "head": "pendente-commit-r08-catalog",
   "base": {
     "requested": "origin/dev",
-    "resolved": "a50487878",
-    "note": "origin/dev conferido com git fetch; HEAD contem R07-prompts.md e coordenacao rev 60"
+    "resolved": "855e374d5",
+    "note": "origin/dev incorporado apos a posse R08 rev65 do C0"
+  },
+  "r08": {
+    "t0": "2026-09-12T10:52:16.727826-03:00",
+    "cutoff": "2026-09-12T14:52:16.727826-03:00",
+    "objective": "fechar gates de Operações sem ampliar importações/exportações adiadas nem correção de senha",
+    "included": "account.sessions, support, catalog, plans.assign, help_center e estados informativos de audit/imports",
+    "excluded": "inventário, rastreadores, deploy, SQL, navegador sem slot, jobs/parsers/arquivos gerais e correção de senha",
+    "order": ["catalog real", "sessões próprias com slot E2E", "suporte", "help_center", "plans.assign formal"],
+    "first_gate": "Catálogo produtivo corrigido e testado; próximo gate é comparação/regravação dos dois A de Help Center na fila Flutter",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/handoff.md e deltas.json commitados",
+    "estimate": "uma correção focal mais teste de rota; os gates E2E aguardam Chrome de G0"
+  },
+  "checkpointR08": {
+    "when": "2026-09-12T11:11:00-03:00",
+    "action_ids": ["catalog.list", "catalog.publish", "plans.assign", "account.sessions", "support.table", "support.kanban"],
+    "done": "RED/green focal do Catálogo: a rota protegida usava preview local; agora consome o destino HTTPS configurado. Sessões e Suporte preservam prova R06; plans.assign continua bloqueado pela spec051.",
+    "tests": "catalog_routes_test: RED esperado (preview encontrado), depois 4/4 PASS; nenhuma outra suíte executada.",
+    "open": "hosting externo do Catálogo ainda não é prova de publicação; Help Center espera slot; E2E de sessões/suporte depende do runtime Chrome.",
+    "next_gate": "Help Center: comparar/regravar help_center_empty_light_1440 e help_center_empty_dark_375 quando C0 conceder Flutter.",
+    "slot": "Flutter liberado imediatamente ao C0 após o teste focal; Chrome/SQL não usados."
   },
   "scope": {
     "app": "apps/superadmin",
