@@ -11,7 +11,7 @@ generated_at: "2026-09-12"
 - App autorizado: `apps/superadmin`; família visual da Publicação hospedada no Superadmin.
 - Worktree: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina`.
 - Branch: `work/etapa2-r07-formularios-cuidado-rotina`.
-- HEAD publicado: `6bc005288` (`docs(r07): fechar checkpoint de formulario media`).
+- HEAD de código: `6bc005288`; HEAD final do handoff: `9e16e1361` (`docs(r07): reconciliar IDs canônicos de assiduidade`).
 - O remoto da branch coincide com o HEAD local; worktree limpa, sem arquivos modificados, untracked ou stash.
 - Comunicação: `docs/reviews/etapa-2-operacao/comunicacao/formularios-cuidado-rotina.json`, revisão 60.
 - Deltas: `docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json`.
