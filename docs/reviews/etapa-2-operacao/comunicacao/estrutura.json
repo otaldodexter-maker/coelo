@@ -1,16 +1,16 @@
 {
  "grupo": "estrutura",
- "revision": 81,
+ "revision": 82,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T12:15:00-03:00",
+ "updatedAt": "2026-09-12T12:13:36-03:00",
  "app": "Codex",
- "modelo": "Luna (esforco medio)",
+ "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
  "branch": "work/etapa2-r08-estrutura",
- "head": "e2ca6e3763282ac6befd854206bdb277b10a85f6; handoff final publicado",
- "upstream": "origin/work/etapa2-r07-estrutura (push apos revisao inicial)",
+ "head": "379d9cb37; groups.location com retry idempotente publicado",
+ "upstream": "origin/work/etapa2-r08-estrutura",
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
   "T0": "2026-09-12T10:52:16-03:00",
@@ -29,7 +29,7 @@
   "feito": "origin/dev integrado por C0; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados; groups.location ganhou consumidor de criação atômica + saveComposition com recibo/request_id por fingerprint para retry, analyze focal PASS e widget 27/27 PASS (PID 26092).",
   "pendente": "runtime/Chrome para usar a fixture transacional de Avaliacoes e provar groups.location; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
   "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22; teste focal sera publicado neste checkpoint.",
-  "testes": "PASS: activities activity_directory_page_test 22/22 (PID 35588, exit 0); groups group_form_page_test 27/27 (PID 26092, exit 0); dart analyze focal do codigo e teste groups.location sem issues. Slots Flutter liberados apos cada teste; rota real permanece pendente."
+  "testes": "PASS: activities activity_directory_page_test 22/22 (PID 35588, exit 0); groups group_form_page_test 27/27 (PID 26092, exit 0); dart analyze focal do codigo e teste groups.location sem issues. Slots Flutter liberados apos cada teste; rota real permanece pendente.",
   "proximoGate": "Fixture G5 53b9c6d29 preparada (turma, vinculos, aluno, periodo ativo e diario; rollback). Usar Chrome somente quando C0 conceder para salvar/ativar e abrir o diario; groups.location tem RPC/repo testado, mas ainda sem consumidor no formulario e fica apos Avaliacoes."
  },
  "usuarioSintetico": {
