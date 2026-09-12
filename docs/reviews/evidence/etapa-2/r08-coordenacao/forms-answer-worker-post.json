@@ -1,0 +1,15 @@
+{
+  "measured_at": "2026-09-12T13:22:10.744463-03:00",
+  "schedule_id": "5af5a32f-5ab0-4cf5-94a7-f618793becba",
+  "occurrences": 1,
+  "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703",
+  "status": "open",
+  "form_version_id": "74ece3e9-d4e8-46b9-ba79-1d65fadfe345",
+  "participations": 1,
+  "participation_id": "095d0236-334b-460b-aaa2-e1fce7914d8f",
+  "person_id": "007a4ca5-31bd-4a77-956f-ce879695042e",
+  "eligibility_state": "eligible",
+  "response_state": "pending",
+  "source": "C0 SQL read-only authoritative post-query",
+  "worker": "forms-answer-worker.json"
+}

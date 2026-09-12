@@ -13,10 +13,16 @@ enum FormsMediaState { content, notFound, unavailable }
 /// constructor resolves only deterministic local metadata and never exposes a
 /// storage identifier or persistent read address.
 final class FormsMediaPage extends StatefulWidget {
-  const FormsMediaPage({required this.assetId, this.reader, this.session, this.onBack, super.key})
-    : development = false,
-      state = FormsMediaState.unavailable,
-      onRequestTemporaryCopy = null;
+  const FormsMediaPage({
+    required this.assetId,
+    this.reader,
+    this.session,
+    this.onBack,
+    this.rendition = MediaReadRendition.preview,
+    super.key,
+  }) : development = false,
+       state = FormsMediaState.unavailable,
+       onRequestTemporaryCopy = null;
 
   const FormsMediaPage.development({
     required this.assetId,
@@ -26,12 +32,14 @@ final class FormsMediaPage extends StatefulWidget {
     this.reader,
     this.session,
     super.key,
-  }) : development = true;
+  }) : development = true,
+       rendition = MediaReadRendition.preview;
 
   static const developmentPreviewAssetId = 'asset-form-photo-01';
 
   final String assetId;
   final MediaReader? reader;
+  final MediaReadRendition rendition;
   final MediaSession? session;
   final bool development;
   final FormsMediaState state;
@@ -62,6 +70,7 @@ final class _FormsMediaPageState extends State<FormsMediaPage> with WidgetsBindi
   void didUpdateWidget(covariant FormsMediaPage oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (oldWidget.assetId != widget.assetId ||
+        oldWidget.rendition != widget.rendition ||
         !identical(oldWidget.reader, widget.reader) ||
         !identical(oldWidget.session, widget.session) ||
         oldWidget.development != widget.development) {
@@ -118,7 +127,7 @@ final class _FormsMediaPageState extends State<FormsMediaPage> with WidgetsBindi
       final result = await SessionMediaReader(
         delegate: reader,
         session: session,
-      ).read(MediaReadRequest(assetId: widget.assetId, rendition: MediaReadRendition.preview));
+      ).read(MediaReadRequest(assetId: widget.assetId, rendition: widget.rendition));
       if (!mounted || generation != _generation) return;
       final ticket = result.ticket;
       setState(() {

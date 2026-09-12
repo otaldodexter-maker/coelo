@@ -10,6 +10,66 @@ const _otherAsset = '22222222-2222-4222-8222-222222222222';
 final _now = DateTime.utc(2026, 9, 8, 12);
 
 void main() {
+  test('anonymous reader sends secret only in POST and requests an explicit original', () async {
+    final gateway = _Gateway();
+    const secret = 'synthetic-edit-capability';
+    final reader = FormsAnonymousImageReader(gateway: gateway, editSecret: secret, now: () => _now);
+    final pending = reader.read(
+      MediaReadRequest(assetId: _asset, rendition: MediaReadRendition.original),
+    );
+    final envelope = gateway.envelopes.single;
+    expect(envelope['action'], 'download');
+    expect(envelope['expected_version'], 0);
+    expect(envelope['request_id'], matches(RegExp(r'^[0-9a-f-]{36}$')));
+    expect(envelope['payload'], {'asset_id': _asset, 'edit_secret': secret});
+    gateway.pending.single.complete({
+      'signed_url': 'https://synthetic.r2.cloudflarestorage.com/answer',
+      'expires_in': 60,
+    });
+    final result = await pending;
+    expect(result.ticket!.expiresAt, _now.add(const Duration(seconds: 60)));
+    expect(result.ticket!.headers, isEmpty);
+    expect(result.ticket!.url.toString().contains(secret), isFalse);
+    await expectLater(reader.read(_request()), throwsA(isA<MediaProtocolException>()));
+    expect(gateway.envelopes, hasLength(1));
+  });
+
+  for (final seconds in [0, 61, '60']) {
+    test('anonymous reader rejects invalid TTL $seconds', () async {
+      final gateway = _Gateway();
+      final pending = FormsAnonymousImageReader(
+        gateway: gateway,
+        editSecret: 'synthetic',
+        now: () => _now,
+      ).read(MediaReadRequest(assetId: _asset, rendition: MediaReadRendition.original));
+      gateway.pending.single.complete({
+        'signed_url': 'https://synthetic.r2.cloudflarestorage.com/answer',
+        'expires_in': seconds,
+      });
+      await expectLater(pending, throwsA(isA<MediaProtocolException>()));
+    });
+  }
+
+  test('anonymous reader counts network time against TTL and hides gateway errors', () async {
+    final gateway = _Gateway();
+    var now = _now;
+    final reader = FormsAnonymousImageReader(
+      gateway: gateway,
+      editSecret: 'synthetic',
+      now: () => now,
+    );
+    final request = MediaReadRequest(assetId: _asset, rendition: MediaReadRendition.original);
+    final expired = reader.read(request);
+    now = now.add(const Duration(seconds: 61));
+    gateway.pending.last.complete({
+      'signed_url': 'https://synthetic.r2.cloudflarestorage.com/answer',
+      'expires_in': 60,
+    });
+    await expectLater(expired, throwsA(isA<MediaTicketExpiredException>()));
+    final failed = reader.read(request);
+    gateway.pending.last.completeError(StateError('private synthetic secret'));
+    await expectLater(failed, throwsA(isA<MediaProtocolException>()));
+  });
   test(
     'question images resolve through their separate purpose and expire within five minutes',
     () async {
