@@ -248,9 +248,30 @@ async function handleAnswerR2(
     });
     if (described.error) throw new Error("asset_unavailable");
     const descriptor = answerEnvelope(described.data);
-    if (!answerR2Key(descriptor.object_key)) throw new Error("asset_unavailable");
+    if (descriptor.asset_id !== access.asset_id || !answerR2Key(descriptor.object_key)) {
+      throw new Error("asset_unavailable");
+    }
+    // A autorização acima é refeita inclusive no replay. Só projetamos os
+    // campos mínimos que o consumidor Flutter precisa após a confirmação.
+    const finalizedResponse = async () => {
+      const source = await serviceClient.from("form_assets")
+        .select("id,item_id,mime_type,expected_byte_length,state")
+        .eq("id", access.asset_id).maybeSingle();
+      const asset = source.data;
+      if (source.error || !asset || asset.id !== access.asset_id ||
+          asset.state !== "finalized" || typeof asset.item_id !== "string" ||
+          asset.mime_type !== descriptor.mime_type ||
+          asset.expected_byte_length !== Number(descriptor.expected_byte_size)) {
+        throw new Error("asset_unavailable");
+      }
+      return response(origin, 200, {
+        asset_id: asset.id, state: "finalized", media_asset_id: descriptor.media_asset_id,
+        id: asset.id, item_id: asset.item_id, mime_type: asset.mime_type,
+        byte_length: asset.expected_byte_length,
+      });
+    };
     if (descriptor.state === "finalized" && descriptor.media_status === "ready") {
-      return response(origin, 200, { asset_id: access.asset_id, state: "finalized" });
+      return await finalizedResponse();
     }
     const expectedBytes = Number(descriptor.expected_byte_size);
     const expectedMime = String(descriptor.mime_type);
@@ -278,11 +299,7 @@ async function handleAnswerR2(
       await transport.delete(descriptor.object_key).catch(() => {});
       throw new Error("verification_failed");
     }
-    return response(origin, 200, {
-      asset_id: access.asset_id,
-      state: "finalized",
-      media_asset_id: (outcome.data as Json).media_asset_id,
-    });
+    return await finalizedResponse();
   }
   const authorized = await serviceClient.rpc("form_media_authorize_for_worker", {
     p_asset_id: access.asset_id,
