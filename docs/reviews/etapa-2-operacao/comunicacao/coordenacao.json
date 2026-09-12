@@ -1,12 +1,12 @@
 {
-  "revision": 82,
+  "revision": 83,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T13:00:11.963757-03:00",
+  "updatedAt": "2026-09-12T13:18:39.375785-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2550,10 +2550,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-ambiente-runtime",
       "json": "ambiente-runtime.json",
-      "ultimoSHA": "fe92d6c52b7c4a1b3a753e12d426fc2a2b7c7ddc",
-      "ackRevision": 20,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "bed0bd125ecad3bdb9e6ae1b16468c067558e600",
+      "ackRevision": 21,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G1": {
       "grupo": "estrutura",
@@ -2561,10 +2561,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-estrutura",
       "json": "estrutura.json",
-      "ultimoSHA": "7bb836ceedd67a78fd68b5ba1a557214451a5c5b",
-      "ackRevision": 83,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "5b79c1150ed58768646b2f424f5011abce7372c6",
+      "ackRevision": 86,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -2574,8 +2574,8 @@
       "json": "acessos-pessoas.json",
       "ultimoSHA": "48fd021a26b185196095810deccdd47a785a5afa",
       "ackRevision": 156,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -2583,10 +2583,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-formularios-cuidado-rotina",
       "json": "formularios-cuidado-rotina.json",
-      "ultimoSHA": "f0c7269fd9bbc4a55966706777c7a785a29740b5",
-      "ackRevision": 68,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "8b9e784e56e1840662ea40594842305a3e84be93",
+      "ackRevision": 70,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -2594,10 +2594,10 @@
       "modelo": "GPT-6 Astra medio informado pela frente por ordem Owner",
       "branch": "work/etapa2-r08-principal-chat-sistema",
       "json": "principal-chat-sistema.json",
-      "ultimoSHA": "d01f920233a6cd205da6ed3724d81d78fd799591",
-      "ackRevision": 61,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "dc357d71fa31701404ad3b8f4b5976a65d113d47",
+      "ackRevision": 63,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -2605,10 +2605,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-realm-interno",
       "json": "realm-interno.json",
-      "ultimoSHA": "59ff6175593175e85af5f14e6ef339bf26f0f117",
-      "ackRevision": 64,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "a43b464c39561e6b66ce056d527be2f5669ea8aa",
+      "ackRevision": 69,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -2616,10 +2616,10 @@
       "modelo": "Sol medio",
       "branch": "work/etapa2-r08-publicacoes-agenda",
       "json": "publicacoes-agenda.json",
-      "ultimoSHA": "aeb89adf9c17bc6b77fde1836ecfd5ad2c1c4488",
-      "ackRevision": 69,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "770bb79e3427fa3c385ef334bec7a06b381893b0",
+      "ackRevision": 74,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G7": {
       "grupo": "operacoes",
@@ -2627,10 +2627,10 @@
       "modelo": "Terra medio",
       "branch": "work/etapa2-r08-operacoes",
       "json": "operacoes.json",
-      "ultimoSHA": "63718901c3d927a23078f11c029d9d92c5a07704",
-      "ackRevision": 65,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "789a664ec26e9be824a3e72e39c3974c26ebfec6",
+      "ackRevision": 67,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     },
     "G8": {
       "grupo": "suites",
@@ -2638,10 +2638,10 @@
       "modelo": "Spark medio",
       "branch": "work/etapa2-r08-suites",
       "json": "fase0.json",
-      "ultimoSHA": "25201cdbee9f8d8ba6c0843ab89bc09bb75ec763",
-      "ackRevision": 21,
-      "status": "ACK120 recebido; gate focal em execução, sem certificação implícita",
-      "ackAt": "2026-09-12T13:00:11.963757-03:00"
+      "ultimoSHA": "a837bfed34df98bfeefbcf9dd587c3298d06d6b0",
+      "ackRevision": 22,
+      "status": "ACK140 lido; gates focais atribuídos, sem certificação implícita",
+      "ackAt": "2026-09-12T13:18:39.375785-03:00"
     }
   },
   "slotsR08": {
@@ -2654,16 +2654,18 @@
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G3",
-      "inicio": "2026-09-12T13:00:11.963757-03:00",
-      "expira": "2026-09-12T13:10:00-03:00",
-      "estado": "pacote edit_secret anônimo, concurrency1, autorizado C0"
+      "dono": "G1",
+      "inicio": "2026-09-12T13:04:00-03:00",
+      "expira": "2026-09-12T13:24:00-03:00",
+      "estado": "45A verificados informado; C0 exige liberação dos remanescentes PID34768/16100"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
     "filaFlutterTest": [
-      "G1 45A nominais",
-      "C0 pacote anônimo integrado"
+      "G4 Perfil save/reload e parser",
+      "G3 Foto/câmera focal",
+      "G6 composição anônima",
+      "C0 base integrada"
     ],
     "sqlEspelho": {
       "dono": "livre",
@@ -3047,6 +3049,68 @@
       ],
       "metodo": "git show das nove branches; JSON integral por subárvores exatas já lidas",
       "certificacao": "ACK não certifica produto"
+    },
+    {
+      "ciclo": "140min",
+      "at": "2026-09-12T13:18:39.375785-03:00",
+      "frentes": [
+        {
+          "g": "G0",
+          "r": 21,
+          "sha": "bed0bd125ecad3bdb9e6ae1b16468c067558e600",
+          "id": "01a095e0-ffff-7953-847d-6cc6a21433ed"
+        },
+        {
+          "g": "G1",
+          "r": 86,
+          "sha": "5b79c1150ed58768646b2f424f5011abce7372c6",
+          "id": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf"
+        },
+        {
+          "g": "G2",
+          "r": 156,
+          "sha": "48fd021a26b185196095810deccdd47a785a5afa",
+          "id": "01a095e1-a8af-7c00-8902-508a572ff643"
+        },
+        {
+          "g": "G3",
+          "r": 70,
+          "sha": "8b9e784e56e1840662ea40594842305a3e84be93",
+          "id": "01a095e2-5dc2-7ad3-ae37-4742481ea99f"
+        },
+        {
+          "g": "G4",
+          "r": 63,
+          "sha": "dc357d71fa31701404ad3b8f4b5976a65d113d47",
+          "id": "01a095e2-b6da-7043-9327-d5f0070c6041"
+        },
+        {
+          "g": "G5",
+          "r": 69,
+          "sha": "a43b464c39561e6b66ce056d527be2f5669ea8aa",
+          "id": "01a095e3-4532-75e3-a851-6873668a8814"
+        },
+        {
+          "g": "G6",
+          "r": 74,
+          "sha": "770bb79e3427fa3c385ef334bec7a06b381893b0",
+          "id": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce"
+        },
+        {
+          "g": "G7",
+          "r": 67,
+          "sha": "789a664ec26e9be824a3e72e39c3974c26ebfec6",
+          "id": "01a095e3-e5ef-7c63-9db0-49f8df71e081"
+        },
+        {
+          "g": "G8",
+          "r": 22,
+          "sha": "a837bfed34df98bfeefbcf9dd587c3298d06d6b0",
+          "id": "01a095e4-57b7-7213-b151-8020b26521f3"
+        }
+      ],
+      "metodo": "git show por SHA fixo das nove branches, leitura integral com subárvores exatas já lidas",
+      "certificacao": "recebimento não certifica"
     }
   ],
   "ownershipR08": {
@@ -3066,12 +3130,12 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T13:00:11.963757-03:00"
+    "ultimoCheckpoint": "2026-09-12T13:18:39.375785-03:00"
   },
   "recursosR08": {
-    "medidoEm": "2026-09-12T13:00:11.963757-03:00",
-    "ramLivreKB": 1734820,
-    "acao": "concurrency1, evitar análise/build paralelos; ChromeG0"
+    "medidoEm": "2026-09-12T13:18:39.375785-03:00",
+    "ramLivreKB": 3123192,
+    "acao": "Chrome G0 root22592; dois flutter_tester remanescentes G1 sob confirmação antes de ceder slot G4."
   },
   "continuidadeR08": {
     "medidoEm": "2026-09-12T13:00:11.963757-03:00",
@@ -3130,8 +3194,8 @@
     }
   ],
   "limitesR08": {
-    "medidoEm": "2026-09-12T13:00:11.963757-03:00",
-    "codexUsado": 27,
+    "medidoEm": "2026-09-12T13:18:39.375785-03:00",
+    "codexUsado": 33,
     "reservaUsada": 17,
     "sparkJanelaUsada": 100,
     "creditos": 0,
@@ -3215,5 +3279,14 @@
     "exit": 0,
     "ledgerConfirmado": true,
     "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote58.md"
+  },
+  "p51R08": {
+    "estado": "criação API e reload G5; redirect canônico corrigido C0 e pós-prova7/7",
+    "identity": "0ddeebc0-ee10-4565-96e0-ef11cacfc734",
+    "authUser": "e7efaa3d-d965-457b-999e-9b62bb8e59d2",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/p51-auth-allowlist.json",
+    "e2e": false,
+    "passwordChanged": false,
+    "smtp": false
   }
 }
