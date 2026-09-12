@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 57,
+ "revision": 60,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T20:58:00-03:00",
+ "updatedAt": "2026-09-11T21:12:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
  "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
  "branch": "work/etapa2-r06-estrutura",
- "head": "102a80b58 + este commit (handoff)",
+ "head": "(commit desta revisao); codigo ate 9a729c4f1",
  "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
   "abertura": "2026-09-11T19:36:45-03:00",
@@ -154,7 +154,7 @@
   {
    "n": 1,
    "item": "@ no cliente de Unidades, Turmas e Atividades: handle no payload dos RPCs v2 de criacao (211100) e acao Alterar @ na edicao com superadmin_structure_handle_set_v1 (trava de 30 dias com mensagem honesta); prova na rota real",
-   "estado": "FECHADO na rota real com qa-r06-estrutura (capturas em evidence/etapa-2/r06-estrutura/rota-real/): Unidades: Identificador mostra o @ atual, \"Alterar @\" trocou para @centro.r04estrutura por set_v1 em producao, segunda troca negada com a mensagem honesta \"O @ so pode ser alterado uma vez a cada 30 dias.\", reload mantem; Turmas: campo Identificador (@) novo na Identidade com disponibilidade enquanto digita, turma \"Turma R06 Arroba\" criada com @arroba.centro.r06 (handle no payload do group_save), \"Alterar @\" -> @arroba.r06.centro, reload mantem; Atividades: \"Alterar @\" -> @estrutura-r06 (set_v1 kind=activity). Pacote SQL 20260912180000_structure_handles_client_v1 em candidatos/estrutura (save_v2 aceita definition.handle na criacao; group_management_payload devolve handle): pgTAP 9/9 + regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33 no espelho coelo_estrutura_r06 (baseline + 197 lotes). LIMITES: criacao de atividade com @ escolhido pelo cliente so funciona depois de o coordenador aplicar o pacote (ate la o servidor recusa a chave e o formulario mostra a falha honesta); o campo \"@ da atividade\" abre vazio na edicao porque o detail_v2 do cliente nao expoe handle_stem (pendencia de code review da R05).",
+   "estado": "FECHADO na rota real com qa-r06-estrutura (capturas em evidence/etapa-2/r06-estrutura/rota-real/): Unidades: Identificador mostra o @ atual, \"Alterar @\" trocou para @centro.r04estrutura por set_v1 em producao, segunda troca negada com a mensagem honesta \"O @ so pode ser alterado uma vez a cada 30 dias.\", reload mantem; Turmas: campo Identificador (@) novo na Identidade com disponibilidade enquanto digita, turma \"Turma R06 Arroba\" criada com @arroba.centro.r06 (handle no payload do group_save), \"Alterar @\" -> @arroba.r06.centro, reload mantem; Atividades: \"Alterar @\" -> @estrutura-r06 (set_v1 kind=activity). Pacote SQL 20260912180000_structure_handles_client_v1 em candidatos/estrutura (save_v2 aceita definition.handle na criacao; group_management_payload devolve handle): pgTAP 9/9 + regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33 no espelho coelo_estrutura_r06 (baseline + 197 lotes). LIMITES: criacao de atividade com @ escolhido pelo cliente so funciona depois de o coordenador aplicar o pacote (ate la o servidor recusa a chave e o formulario mostra a falha honesta); o campo \"@ da atividade\" abre vazio na edicao porque o detail_v2 do cliente nao expoe handle_stem (pendencia de code review da R05). COMPLEMENTO 21:06: activities.create com @ escolhido provado na rota real depois do lote 51 (\"Atividade R06 Arroba\" -> handle_stem arroba-r06 no diretorio de producao; turma vinculada por P36). Deltas 17-19.",
    "action_ids": [
     "units.create",
     "units.edit",
@@ -172,7 +172,7 @@
   {
    "n": 3,
    "item": "Avaliacoes: pacote em candidatos/estrutura com vinculo profissional do qa-r06-estrutura numa turma sintetica; provar assessments.entry/gradebook/close/reopen/detail e activities.assessment/publish (P36)",
-   "estado": "GATE ENCONTRADO, sem pacote: nao e vinculo profissional (context_options lista os activity_group_links ativos; o Owner de plataforma ja ve a atribuicao Escola R04 Estrutura / Unidade Centro R04 / Turma R05 Estrutura / Atividade R05 Estrutura em /assessments/entry). O gate e \"Nenhum periodo avaliativo\": periodos nascem de superadmin_assessment_save_configuration + activate_configuration (activities.assessment). Pela tela: Salvar rascunho com avaliacao habilitada falha antes do HTTP (_supportsAggregateSave exige enabled=false; mensagem enganosa \"Confira a conexao\"); a rota /activities/:id/assessment-settings abre \"Nao foi possivel carregar\" (configuration_read a inspecionar). Primeiro gate: corrigir a tela de configuracao avaliativa e provar salvar+ativar; depois assessments.*"
+   "estado": "GATE CORRIGIDO NO SQL (candidato 20260912180100): superadmin_assessment_configuration_read respondia SAI_INTERNAL_ERROR em producao para qualquer atividade (envelope capturado na rota real, reproduzido no espelho: `c.institution_id = institution_id` ambiguo entre coluna e variavel plpgsql, 42702, mesma classe do defeito corrigido em save_configuration na R04); #variable_conflict use_variable resolve (pgTAP 4/4; superadmin_assessments_internal_v2_test 47/47). Nao e vinculo profissional: context_options ja lista a atribuicao para o Owner de plataforma; o gate seguinte e \"Nenhum periodo avaliativo\", que so a configuracao avaliativa (save + activate) cria. Depois do pacote aplicado: provar /activities/:id/assessment-settings (salvar + ativar), depois assessments.entry/gradebook/close/reopen/detail. activities.publish continua BE done / FE local-green (nao retomado)."
   },
   {
    "n": 4,
@@ -198,7 +198,7 @@
   "Pacote structure_handles_client_v1 verde (9/9) e regressao vizinha verde no espelho R06"
  ],
  "testes": {
-  "P": "flutter analyze lib limpo; test/features/units 179/179; groups e activities verdes exceto os 9 goldens pre-existentes; pgTAP: novo 9/9, save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33",
+  "P": "flutter analyze lib limpo; test/features/units 179/179; test/features/groups 26/26 (group_form_page, com o teste novo do @); test/features/activities 346 verdes + 9 goldens pre-existentes; pgTAP: 180000 9/9, 180100 4/4, 180200 3/3; regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33, assessments 47/47, activities read 28/28",
   "F": "9 activity_golden_test (pre-existentes; item 5 ainda nao analisado)",
   "B": 0,
   "S": 0,
@@ -211,14 +211,28 @@
    "origem": "candidatos/estrutura, sobre 180110 + 211100 + 180000",
    "mudanca": "superadmin_activity_save_v2 aceita definition.handle na criacao (repassa ao create_v2) e recusa troca na edicao com ACTIVITY_INVALID_INPUT; app_private.group_management_payload devolve handle e handle_last_changed_at",
    "pgTAP": "supabase/tests/structure_handles_client_v1_test.sql 9/9; regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33",
-   "estado": "verde no espelho coelo_estrutura_r06 (baseline + 197 lotes da ordem real); commit 9c14eddeb publicado; sem chave de composicao a ligar"
+   "estado": "APLICADO em producao pelo coordenador (lote 51, 20:15)"
+  },
+  {
+   "carimbo": "20260912180100_assessment_configuration_read_variable_conflict_v1",
+   "origem": "candidatos/estrutura, sobre 180350",
+   "mudanca": "superadmin_assessment_configuration_read com #variable_conflict use_variable; sem mudanca de assinatura, grants ou regra",
+   "pgTAP": "assessment_configuration_read_variable_conflict_v1_test 4/4; regressao superadmin_assessments_internal_v2_test 47/47",
+   "estado": "verde no espelho coelo_estrutura_r06; commit 5005d47c7 publicado; aplicar depois do 20260912180000 (independentes entre si)"
+  },
+  {
+   "carimbo": "20260912180200_activity_detail_v2_handle_v1",
+   "origem": "candidatos/estrutura, sobre 180060 + 20260911180000",
+   "mudanca": "superadmin_activity_detail_v2 devolve handle_stem, canonical_handle e handle_last_changed_at no objeto activity (chave aditiva; parser do cliente tolerante desde 01a8c3e27); cliente ja mapeia (9a729c4f1)",
+   "pgTAP": "activity_detail_v2_handle_v1_test 3/3; regressao superadmin_internal_activities_v2_read_test 28/28",
+   "estado": "verde no espelho coelo_estrutura_r06; commit 9a729c4f1 publicado; aplicar depois do 180100 (independentes)"
   }
  ],
- "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json: 16 entradas; ensaio apply + validate PASS (E2E 105 -> 107, BE done 132 -> 134), revertido",
+ "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json: 19 entradas (1-16 ja aplicadas pelo coordenador as 20:55; 17-19 novas: activities.create FE/BE/E2E); ensaio apply + validate PASS, revertido",
  "pedidosAoCoordenador": [
-  "Aplicar candidatos/estrutura/20260912180000_structure_handles_client_v1.sql (pgTAP verde; sem ALTER TYPE)",
-  "Aplicar os 16 deltas de deltas-r06-estrutura.json",
-  "Integrar work/etapa2-r06-estrutura (0434548b9 codigo, 9c14eddeb candidato, docs)"
+  "Aplicar candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (pgTAP verdes; sem ALTER TYPE; sem chave de composicao)",
+  "Integrar work/etapa2-r06-estrutura ate 9a729c4f1 (cliente 0434548b9 + 9a729c4f1; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1)",
+  "Confirmar se o launcher \"Mensagens\" inteiro e o aprovado para regravar os goldens de diretorio de Atividades (item 5)"
  ],
  "avisosParaOutrosGrupos": [],
  "perguntasParaOOwner": [],
@@ -226,30 +240,49 @@
   "Campo \"@ da atividade\" abre vazio na edicao: mapear handle_stem do detail_v2 no cliente (ActivityDetail item.handleStem vem nulo); Alterar @ funciona mesmo assim",
   "Taps do Flutter Driver web (tap por Key/texto) falham de forma intermitente em botoes logo apos digitar num campo; clique por coordenada via CDP resolve. Registrar na skill coelo-frontend",
   "Ao usar enter_text do driver, o texto vai para o campo focado no momento: em 20:10 a senha do qa-r06-estrutura foi digitada no campo de e-mail e apareceu numa captura temporaria (apagada, nao versionada). Tratar como credencial exposta: rotacionar a senha de qa-r06-estrutura@coelo.me no fim da rodada (roteiro na skill coelo-backend: painel Supabase -> Authentication -> Users -> reset password, ou Admin API; gravar so em Coelo-backups/qa-r06-estrutura.env)",
-  "save_v2: codigo de recusa da troca de @ na edicao e ACTIVITY_INVALID_INPUT porque activity_v2_normalize_error tem lista fechada; se quiser SAI_HANDLE_USE_SET como em Turmas, incluir na lista (funcao compartilhada, pos-MVP)"
+  "save_v2: codigo de recusa da troca de @ na edicao e ACTIVITY_INVALID_INPUT porque activity_v2_normalize_error tem lista fechada; se quiser SAI_HANDLE_USE_SET como em Turmas, incluir na lista (funcao compartilhada, pos-MVP)",
+  "Assistente de Atividades: \"Salvar rascunho\" com avaliacao habilitada falha antes do HTTP (_supportsAggregateSave exige pedagogical.enabled=false) e mostra \"Confira a conexao\": mensagem enganosa; a configuracao avaliativa vive na rota /activities/:id/assessment-settings (SupabaseAssessmentRepository.saveConfiguration/activateConfiguration) e o assistente deveria encaminhar para la ou chamar o mesmo repositorio"
  ],
  "bloqueio": null,
  "wip": {
   "estado": "nenhum"
  },
  "recursos": {
-  "processos": [
-   "Chrome CDP 9571 (user-data-dir coelo-chrome-estrutura)",
-   "node serve.js 3001 (tarefa em segundo plano)",
-   "espelho docker coelo_estrutura_r06 (61722)"
-  ],
-  "portas": [
-   9571,
-   3001,
-   61721,
-   61722
-  ],
-  "encerramento": "pendente (fecho no fim da rodada)"
+  "processos": [],
+  "portas": [],
+  "encerramento": "Chrome 9571, servidor 3001 e espelho coelo_estrutura_r06 fechados as 21:1x"
  },
- "ack": null,
- "proximoPasso": "ate 21:36: capturar o envelope de superadmin_assessment_configuration_read na rota real e, se for parser, corrigir; senao registrar; 21:36 responder a revisao de 10 min",
- "estado": "em andamento",
+ "ack": "coordenacao rev 56: lote 51 (20260912180000 structure_handles_client_v1) em producao as 20:15; 16 deltas aplicados as 20:55",
+ "proximoPasso": "nenhum nesta rodada; para a proxima: aplicar 180100 e 180200, provar activities.assessment (salvar + ativar configuracao) e assessments.*, groups.members/location, institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links, goldens de Atividades apos decisao do launcher",
+ "estado": "finalizado (revisao final gravada as 21:12; depois de 21:46 nao retomo por conta propria)",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26). R06: groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro, Escola R04 Estrutura / Unidade Centro R04); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 11/09 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42).",
  "chavesCriadas": "nenhuma",
- "handoff": "docs/reviews/evidence/etapa-2/r06-estrutura/handoff.md"
+ "handoff": "docs/reviews/evidence/etapa-2/r06-estrutura/handoff.md",
+ "cobranca30min": {
+  "2036": "rev 55/56: @ no cliente feito e provado na rota real; candidato 180000 verde",
+  "2106": "rev 57-59: handoff; candidatos 180100 (configuration_read) e 180200 (detail_v2 com @) verdes e publicados; teste de widget do @ em Turmas; goldens analisados. Commits publicados: 0434548b9, 9c14eddeb, 102a80b58, ee113cc08, 5005d47c7, 515a95363, 2b2b11413, 9a729c4f1"
+ },
+ "miniRevisao": {
+  "shaPublicado": "codigo: 9a729c4f1 (cliente 0434548b9 + 9a729c4f1; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1); docs: commit desta revisao; status limpo; nenhum WIP",
+  "fechouPorActionId": [
+   "E2E propostas (FE verified + BE done): units.edit (@), groups.create (@), groups.edit (@), units.list, groups.list, activities.create (@) - deltas 1-19; 1-16 ja aplicados pelo coordenador (rev 56)",
+   "FE verified + BE done sem E2E novo: activities.edit (Alterar @ por set_v1; reload do @ no campo depende do candidato 180200)",
+   "Pacote 20260912180000_structure_handles_client_v1 aplicado em producao (lote 51)",
+   "Candidatos verdes publicados: 20260912180100 (configuration_read sem SAI_INTERNAL_ERROR; 4/4 + 47/47) e 20260912180200 (detail_v2 devolve o @; 3/3 + 28/28)",
+   "Testes: unit_form_page_test reescrito para a regra do @ (179/179); group_form_page_test com o teste do @ (26/26); analyze limpo"
+  ],
+  "abertoComPrimeiroGate": [
+   "activities.assessment e assessments.entry/gradebook/close/reopen/detail: gate = tela /activities/:id/assessment-settings nao carrega ate o candidato 180100 ser aplicado; depois, salvar + ativar a configuracao cria o periodo e libera o lancamento (context_options ja lista a atribuicao para o Owner de plataforma)",
+   "activities.publish FE: nao retomado (BE done)",
+   "groups.members (cadastro/busca de pessoa da propria instituicao) e groups.location (secao de local no assistente + repositorio available:true): nao retomados",
+   "institutions.status/files/error/access-denied, units.error/access-denied, locations.list (BE) e locations.detail-links: nao exercidos",
+   "Goldens de Atividades (9 testes / 31 imagens): diretorio difere so pela pilula do chat (\"Mens.\" vs \"Mensagens\"); formularios/detalhe 375 por MENU-M, sem balao e etapas 4->6; nada regravado; decisao do launcher pedida ao coordenador",
+   "Assistente de Atividades: Salvar rascunho com avaliacao habilitada falha antes do HTTP com mensagem enganosa (pendencia de code review)"
+  ],
+  "deltas": "deltas-r06-estrutura.json: 19 entradas; 16 aplicadas; 17-19 pendentes",
+  "pacotesSqlRestantes": "candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (verdes; independentes; sem chave de composicao)",
+  "duvidasAoOwner": "nenhuma nova; ao coordenador: confirmar se o launcher \"Mensagens\" inteiro e o aprovado (goldens de diretorio de Atividades)",
+  "dadosSinteticosCriados": "groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro); activity_definitions \"Atividade R06 Arroba\" (@arroba-r06, rascunho, Escola R04 Estrutura / Unidade Centro R04 / Turma R06 Arroba); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42)",
+  "chavesCriadas": "nenhuma. Credencial exposta: a senha de qa-r06-estrutura apareceu numa captura temporaria (apagada, nao versionada) as 20:10 por enter_text no campo errado; rotacionar no fim da rodada (roteiro no handoff)"
+ }
 }

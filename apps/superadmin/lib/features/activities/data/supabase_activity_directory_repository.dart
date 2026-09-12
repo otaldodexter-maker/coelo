@@ -300,8 +300,8 @@ const _unknownInstitutionName = 'Instituição não identificada';
 /// `ActivityDetail`. O que a RPC nao expoe fica no default declarado aqui e
 /// nunca e inventado a partir de outro campo:
 /// - `item.institutionName`, `origin`, `distribution`, `governance`,
-///   `handleStem`, `canonicalHandle`, `locationNames` e
-///   `activeProfessionalCount` nao vem na resposta;
+///   `locationNames` e `activeProfessionalCount` nao vem na resposta
+///   (`handleStem` e `canonicalHandle` vem a partir do 20260912180200);
 /// - `subtypeId`, `templateId`, `taxonomyOtherDescription`,
 ///   `pedagogicalConfiguration`, `originUnitName` e `archivedAt` idem;
 /// - `identity.color` e `identity.storageRef` idem;
@@ -423,6 +423,10 @@ ActivityDetail _v2Detail(Map<String, dynamic> data, {required String requestedId
       name: _requiredText(activity['name']),
       description: _nullableText(activity['description']),
       status: _v2Status(activity['status']),
+      // Decisao 16: o @ chega no detail_v2 depois do candidato 20260912180200;
+      // antes dele fica nulo e o campo "@ da atividade" abre vazio.
+      handleStem: _nullableText(activity['handle_stem']),
+      canonicalHandle: _nullableText(activity['canonical_handle']),
       origin: ActivityOrigin.institution,
       distribution: ActivityDistribution.unitLocal,
       governance: ActivityGovernance.optional,

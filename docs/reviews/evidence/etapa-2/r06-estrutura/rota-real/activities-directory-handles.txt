@@ -1,0 +1,3 @@
+Diretorio de Atividades em producao (superadmin_activity_directory_v2, 21:06, sessao qa-r06-estrutura):
+"name": "Atividade R06 Arroba" -> "handle_stem": "arroba-r06" (criada pelo assistente com o @ escolhido; definition.handle via save_v2, lote 51)
+"name": "Atividade R05 Estrutura (editada)" -> "handle_stem": "estrutura-r06", "canonical_handle": "estrutura-r06.qa-r04-escola" (Alterar @ por set_v1)

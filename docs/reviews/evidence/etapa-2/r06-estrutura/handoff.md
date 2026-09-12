@@ -9,7 +9,7 @@ generated_at: "2026-09-11"
 
 Branch `work/etapa2-r06-estrutura` (base `origin/dev` ca60b096b, merge de
 fcdded416 / lote 49). Só o coordenador escreve em `dev`, inventário e
-rastreadores; os deltas estão em `deltas-r06-estrutura.json` (16 entradas,
+rastreadores; os deltas estão em `deltas-r06-estrutura.json` (19 entradas, 16 já aplicadas,
 ensaio `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS, revertido).
 Usuário sintético da rodada: `qa-r06-estrutura@coelo.me` (Chrome próprio,
 CDP 9571; login e taps pelo Flutter Driver web exposto por `qa_main`).
@@ -20,12 +20,18 @@ CDP 9571; login e taps pelo Flutter Driver web exposto por `qa_main`).
 | --- | --- | --- |
 | Unidades | Identificador = @ (regex do @, sem hífen; valor legado tolerado), `handle` no payload de `create_unit_for_superadmin`, "Alterar @" por `superadmin_structure_handle_set_v1` | `units-handle-*.jpg`: @ atual, troca para `@centro.r04estrutura`, segunda troca negada com "O @ só pode ser alterado uma vez a cada 30 dias.", reload mantém |
 | Turmas | campo Identificador (@) novo na etapa Identidade com disponibilidade enquanto digita, `handle` no payload de `superadmin_group_save` (criação), "Alterar @" | `groups-create-handle-*.jpg` (Turma R06 Arroba criada com `@arroba.centro.r06`), `groups-handle-alterado.jpg` (→ `@arroba.r06.centro`), `groups-handle-reload.jpg` |
-| Atividades | `definition.handle` só na criação (precisa do pacote abaixo), "Alterar @" no controller/seção | `activities-handle-alterado.jpg` (→ `@estrutura-r06`) |
+| Atividades | `definition.handle` só na criação (lote 51 em produção), "Alterar @" no controller/seção; `detail_v2` passa a devolver o @ com o candidato 180200 (cliente já mapeia) | `activities-handle-alterado.jpg` (→ `@estrutura-r06`); `activities-directory-handles.txt` ("Atividade R06 Arroba" criada com `@arroba-r06`) |
 
 Commits: `0434548b9` (cliente, 179/179 em `test/features/units`; analyze limpo),
 `9c14eddeb` (candidato SQL), `102a80b58` e seguintes (docs).
 
-## Pacote SQL pronto
+## Pacotes SQL
+
+`20260912180000_structure_handles_client_v1` — **aplicado em produção pelo coordenador (lote 51, 20:15)**.
+`20260912180100_assessment_configuration_read_variable_conflict_v1` — `configuration_read` respondia `SAI_INTERNAL_ERROR` para qualquer atividade (ambiguidade coluna × variável, 42702); `#variable_conflict use_variable`; pgTAP 4/4, regressão `superadmin_assessments_internal_v2_test` 47/47.
+`20260912180200_activity_detail_v2_handle_v1` — `detail_v2` devolve `handle_stem`, `canonical_handle`, `handle_last_changed_at`; pgTAP 3/3, regressão leitura v2 28/28.
+
+### Detalhe do primeiro pacote
 
 `candidatos/estrutura/20260912180000_structure_handles_client_v1.sql`:
 `superadmin_activity_save_v2` aceita `definition.handle` na criação
@@ -56,8 +62,10 @@ Estrutura · Atividade R05 Estrutura" em `/assessments/entry`. O gate é
 com avaliação habilitada falha antes do HTTP (`_supportsAggregateSave`
 exige `enabled=false`) com a mensagem enganosa "Confira a conexão"; (b) a
 rota própria `/activities/:id/assessment-settings?institutionId=…` abre
-"Não foi possível carregar" (envelope de `configuration_read` a inspecionar).
-Próximo passo concreto: corrigir (b) e provar salvar + ativar; só então
+"Não foi possível carregar": o envelope capturado na rota real é
+`SAI_INTERNAL_ERROR` de `configuration_read`, reproduzido no espelho e
+corrigido no candidato 180100. Próximo passo concreto: aplicar 180100,
+provar salvar + ativar a configuração (cria o período) e só então
 `assessments.entry/gradebook/close/reopen/detail`.
 
 ## Item 5 — goldens de `activity_golden_test` (analisados, não regravados)

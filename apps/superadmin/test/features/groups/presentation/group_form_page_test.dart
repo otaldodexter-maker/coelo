@@ -5,6 +5,7 @@ import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repos
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
+import 'package:coelo_superadmin/features/units/domain/unit_handle_availability.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_action_footer.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_step_navigation.dart';
@@ -355,6 +356,88 @@ void main() {
     expect(summary, findsOneWidget);
     expect(find.descendant(of: summary, matching: find.byType(ListTile)), findsNothing);
     expect(find.text('Responsável herdado'), findsOneWidget);
+  });
+
+  testWidgets('identificador (@) da turma: criacao envia handle e edicao troca por Alterar @', (
+    tester,
+  ) async {
+    // Regra do @ (ADR 0034 Decisao 16): o campo Identificador da Identidade e o
+    // @ publico; na criacao viaja no record (payload `handle`); na edicao o
+    // valor atual aparece e a troca passa por superadmin_structure_handle_set_v1.
+    await tester.binding.setSurfaceSize(const Size(1024, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final institutions = FakeInstitutionDirectoryRepository();
+    final institution = institutions.records.first;
+    final unit = institution.units.first;
+    final now = DateTime(2026, 9, 11);
+    final record = GroupRecord(
+      id: 'group-handle',
+      institutionId: institution.id,
+      institutionName: institution.publicName,
+      unitId: unit.id,
+      unitName: unit.name,
+      name: 'Turma com @',
+      groupType: 'class',
+      status: GroupStatus.active,
+      createdAt: now,
+      updatedAt: now,
+      managementVersion: 2,
+      handle: 'azul.centro',
+    );
+    final calls = <(String, String, int, String)>[];
+    final checks = <String>[];
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: FakeGroupDirectoryRepository(institutions, records: [record]),
+          groupId: record.id,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+          checkHandleAvailability: (kind, handle, {excludeId}) async {
+            checks.add('$kind:$handle:$excludeId');
+            return UnitHandleAvailability(
+              normalized: handle,
+              reason: UnitHandleAvailabilityReason.available,
+            );
+          },
+          setHandle: (kind, id, version, handle) async {
+            calls.add((kind, id, version, handle));
+            return StructureHandleChange(
+              outcome: StructureHandleChangeOutcome.changed,
+              handle: handle,
+              managementVersion: version + 1,
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(TextButton, 'Identidade'));
+    await tester.pumpAndSettle();
+
+    final field = find.byKey(const Key('group-handle-field'));
+    expect(tester.widget<TextFormField>(field).controller!.text, 'azul.centro');
+    expect(
+      tester.widget<Text>(find.byKey(const Key('group-handle-note'))).data,
+      contains('@azul.centro'),
+    );
+    final button = find.byKey(const Key('group-handle-change-button'));
+    expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
+
+    await tester.enterText(field, 'verde.centro');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(checks, ['group:verde.centro:group-handle']);
+    expect(find.text('@verde.centro está disponível.'), findsOneWidget);
+
+    await tester.tap(button);
+    await tester.pumpAndSettle();
+    expect(calls.single, ('group', 'group-handle', 2, 'verde.centro'));
+    expect(find.text('@ alterado para @verde.centro.'), findsOneWidget);
+    expect(tester.widget<OutlinedButton>(button).onPressed, isNull);
   });
 
   testWidgets('uses six external-free steps and the canonical continuation footer', (tester) async {
