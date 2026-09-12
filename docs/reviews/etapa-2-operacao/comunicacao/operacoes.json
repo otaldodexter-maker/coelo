@@ -1,6 +1,6 @@
 {
-  "revision": 80,
-  "updated_at": "2026-09-12T14:33:01-03:00",
+  "revision": 81,
+  "updated_at": "2026-09-12T14:34:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -70,7 +70,7 @@
     "at": "2026-09-12T14:32:00-03:00",
     "file": "docs/reviews/evidence/etapa-2/r08-operacoes/handoff-r08-final.md",
     "state": "branch publicada, worktree preservada, sem SQL remoto/deploy/segredos por G7",
-    "next": "C0 reconcilia base final e decide somente gates autorizados da R09"
+    "next": "C0 reconcilia base final e decide somente gates autorizados da R09; H28 lote 59 aplicado pelo C0, sem reaplicação"
   },
   "reviewH28PeopleR08": {
     "reviewed_sha": "2eebea3f4",

@@ -12,7 +12,7 @@ generated_at: 2026-09-12T14:32:00-03:00
 - Help Center: somente os dois A nominais comparados/regravados.
 - Sessões: prova limitada a identidades sintéticas próprias; nenhuma sessão alheia foi afetada.
 - Revisões independentes: Perfil About, runner de Avaliações, H28 Pessoas e encerramento de worktrees.
-- H28: fixture/contrato e 19 testes focais passaram na base integrada segundo C0; a certificação de fila/produção continua exclusiva do C0.
+- H28: fixture/contrato e 19 testes focais passaram na base integrada. C0 aplicou o lote 59 às 14:31, com espelho final 44/44, backup/ledger/ACL confirmados e `contextFiltersAvailable:true`.
 - R09: plano e prompts individuais G0--G8 revisados independentemente e publicados.
 
 ## Commits G7 relevantes
@@ -26,7 +26,7 @@ generated_at: 2026-09-12T14:32:00-03:00
 - `catalog.publish`: depende de autorização nominal de hospedagem externa.
 - `plans.assign`: permanece decisão específica da spec051, distinta de SMTP/ativar/restaurar.
 - imports/exportações gerais: continuam indisponíveis honestamente; não criar job, parser, arquivo ou RPC.
-- H28: C0 decide serialização/aplicação após espelho e provas; rollout Flutter permanece dependente da confirmação do lote.
+- H28: aplicado pelo C0; não reaplicar SQL. Qualquer regressão parte da base pós-lote e recebe prova focal.
 - Censo Flutter: R09, na primeira janela útil com SHA fixo e slot único.
 
 ## Estado de fechamento
