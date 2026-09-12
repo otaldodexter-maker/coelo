@@ -2,14 +2,14 @@
   "grupo": "suites",
   "revision": 20,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T10:58:19-03:00",
+  "updatedAt": "2026-09-12T11:01:15-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:10:16, ajustes de C0 até 15:30:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "7eb386241f56ef124d143770f37ac7c312e177a1",
+  "head": "78f7bbede933ef91e665c5a021b230157b95a80b",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -41,7 +41,7 @@
     "(5) mini-revisao em T0+3h"
   ],
   "feito": [
-    "Recorte G8: a expectativa textual para \"activity_directory_page.dart\" já encontra-se removida no arquivo test/shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart (prova está na estrutura do arquivo e no contrato do Owner). Não foi aplicado novo patch funcional nesta posse.",
+    "Sem alteração funcional nova nesta posse; revisão de mapeamento do texto e do censo base concluída. Não houve novo patch funcional além de manutenção documental de evidências.",
     "test/app: censo na base limpa 7b229593c = 637 P / 1 S / 16 F. Das 16, 4 estao nos arquivos do recorte e foram corrigidas: dev_menu_test (teste desatualizado: dependia de --dart-define=COELO_APP_ENV=local, que colide com superadmin_app_config_test; agora liga allowDevelopmentPreview no router), prototype_navigation_routes_test (teste desatualizado: sem allowDevelopmentPreview e secoes offstage apos a navegacao crescer), development_dataset_contract_test (teste desatualizado: dataset reduzido a 5 instituicoes em d9232a94d, 28 turmas em Mare Alta, 12 modelos), dev_menu_overlay_test golden 0,61% (golden defasado: ainda tinha 'Modelos de perfil', unificado em Perfis em 320a6f09f; regravado). import_development_routes_test ja passava.",
     "test/core/config: censo = 35 P / 5 F; as 5 eram teste desatualizado (afirmavam composicao fail-closed que a ADR 0034 ligou: structureMutationsEnabled, diretorios/adapters Supabase de Unidades e Turmas em 58bfe1fed, personIdentityRepository real em 7f13ee42d). Corrigidos; 40/40 verdes.",
     "test/shared: censo = 35 P / 11 F; todas teste desatualizado. underline_tabs (9): chave renomeada ao mover o widget para coelo_ui_admin (coelo-admin-underline-tab-*), 11/11 apos correcao. form_action_footer_adoption (2): Agenda e publicadores do Principal foram reconstruidos na familia Publicacao (0322e511d, 14abb3b0a) cujo rodape canonico e composto (PublicationSurface embute SuperadminFormActionFooter; Principal usa PrincipalPublicationActionFooter aprovado pelo Owner); 5 candidatos novos eram falsos positivos do regex (classe de dados, paginas de operacao de Formularios, edicao de perfil do Principal). 46/46 apos correcao.",
@@ -89,10 +89,10 @@
     "B": 0,
     "S": 11,
     "U": 0,
-    "evidencia": "Recorte textual G8 revisado sem nova execução de suite completa; base de R07 permanece 6727 PASS / 33 FAIL / 11 SKIP em 855e374d5."
+    "evidencia": "Sem nova execução de suíte nesta posse. Base de R07 permanece 6727 PASS / 33 FAIL / 11 SKIP em 855e374d5 e censo final publicado em docs/reviews/evidence/etapa-2/r07-coordenacao/censo-final.md."
   },
   "bloqueio": null,
-  "proximoPasso": "No recorte de suites pré-existentes não há pendências de código; manter atualização de comunicação e aguardar novo trabalho autorizado no mesmo round ou próximo.",
+  "proximoPasso": "Conferir 33 falhas de r07-coordenacao/censo-final.md, manter evidência documental atualizada e aguardar comando de fechamento do C0.",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
