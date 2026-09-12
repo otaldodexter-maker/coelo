@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 51,
-  "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T00:00-03:00",
+  "revision": 52,
+  "round": "E2-R08-20260912",
+  "updatedAt": "2026-09-12T10:58:28.8003684-03:00",
   "app": "Codex",
-  "modelo": "Luna (esforco medio)",
-  "conversa": "R07 · Realm interno e segurança",
-  "coordenador": "R07 · Coordenação (a confirmar em coordenacao.json)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-realm-interno",
-  "branch": "work/etapa2-r07-realm-interno",
-  "head": "f729ef739 (revisão 49 + checkpoint publicado)",
-  "upstream": "origin/work/etapa2-r07-realm-interno (push desta revisão)",
-  "t0": "T0 ainda não publicado no JSON da coordenação; abertura local 2026-09-11T23:00-03:00; prazo operacional T0+4h",
+  "modelo": "GPT-5.6 Sol (esforco medio)",
+  "conversa": "R08 · Realm interno e segurança",
+  "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+  "branch": "work/etapa2-r08-realm-interno",
+  "head": "855e374d5 (origin/dev incorporada na abertura)",
+  "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
+  "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
     "camada": "backend transversal (Supabase/Postgres) da R07",
     "faixaDeCarimbo": "2026091221xxxx em packages/coelo_database/candidatos/realm-interno/",
@@ -703,5 +703,45 @@
       "transmissaoCompleta": true,
       "podeRemoverWorktree": "sim, após o coordenador confirmar o SHA cf20f892a23e5f1440884539cdf44ff3f44520a5 e integrar/conferir a branch; não remover automaticamente nesta conversa"
     }
+  },
+  "r08": {
+    "contratoAbertura": {
+      "objetivo": "Provar ACL/RLS pós-lotes 49–55 na ordem real e preparar suporte SQL/fixtures seguro para G1/G2/G4.",
+      "incluido": "candidatos/realm-interno, testes SQL, scripts de prova e chat-media; internal_actor_scope_root_v1 e consumidores compartilhados; convite expirado, período avaliativo e expiração Agora.",
+      "fora": "Dart, Chrome, aplicação SQL, deploy, correção de senha, revisão histórica de credenciais, endurecimento amplo e limpeza efetiva de sintéticos.",
+      "ownership": "G5 propõe somente na própria branch; C0 é o único aplicador de SQL/deploy e escritor de dev, inventário e rastreadores.",
+      "ordem": "ACL/RLS e internal_actor_scope_root_v1; fixtures G1/G2; disparadores de expiração com G4/C0; candidatos forward-only apenas para defeito medido.",
+      "primeiroGate": "aguardar posse do espelho por G0/C0; enquanto isso concluir revisão estática e preparar testes/candidatos sem declarar pgTAP executado.",
+      "evidenciasEsperadas": "arquivos commitados em docs/reviews/evidence/etapa-2/r08-realm-interno, testes SQL separados por ambiente, SHA publicado e recibo C0 a cada 30 minutos.",
+      "estimativaDelta": "ACL/RLS dinâmica depende do espelho; revisão e candidato focal de H09 cabem no primeiro ciclo de 30 minutos; fixtures serão calibradas após pedidos G1/G2."
+    },
+    "checkpointAbertura": {
+      "quando": "2026-09-12T10:58:28.8003684-03:00",
+      "feito": [
+        "origin/dev atualizado e worktree isolada criada/fast-forward em 855e374d5; checkout principal não editado.",
+        "Contrato comum, G5, fechamento R07, decisões Owner, backlog/plano R08, skills e fontes canônicas lidos.",
+        "Revisão estática confirmou que chat-media possui cron de anexos a cada 5 minutos e guardas de worker; internal_actor_scope_root_v1/hotfix e consumidor 130400 foram localizados.",
+        "H09 reproduzido por inspeção: 190500 cria a varredura do Agora e declara o agendador ausente; nenhuma migration/função agenda sweep_expired_now_publications."
+      ],
+      "pendente": [
+        "Escrever teste RED e candidato forward-only mínimo para o cron do Agora; C0 revisa/aplica.",
+        "Executar ACL/RLS/pgTAP na ordem real somente após G0/C0 liberar o espelho.",
+        "Ler pedidos atuais de G1/G2 e preparar fixtures contratadas.",
+        "Preparar script único de limpeza de sintéticos sem executar."
+      ],
+      "testes": {
+        "pgTAP": "não executado: sqlLiberado=false e espelho sob diagnóstico G0; nenhuma alegação de verde",
+        "estatico": "contratos/migrations/testes lidos; validação JSON e git diff ainda pendentes do commit de abertura"
+      },
+      "recursos": "RAM livre 0,93 GB informada por C0; nenhum servidor/processo pesado iniciado por G5.",
+      "proximoGate": "teste declarativo do job Agora falhando pela ausência do candidato, seguido da migration mínima."
+    },
+    "coordenacao": {
+      "c0": "abertura informada na thread 01a095e0-3c9f-7601-b736-7935c11fffcb",
+      "g4": "pedido recebido e ACK enviado na thread 01a095e2-b6da-7043-9327-d5f0070c6041 para chat-media e H09",
+      "g1": "pedido de fixture ainda não lido",
+      "g2": "pedido de fixture ainda não lido"
+    },
+    "conhecimento": "consulta executada; fontes ADR 0019/0032 e projeções validadas lidas. Sem regra durável nova aprovada nesta abertura; gate provisório no-op."
   }
 }
