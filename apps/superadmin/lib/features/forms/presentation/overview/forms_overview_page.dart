@@ -165,6 +165,18 @@ final class _FormsOverviewPageState extends State<FormsOverviewPage> {
               children: [
                 Text(overview.definition.title, style: Theme.of(context).textTheme.headlineMedium),
                 Text('Versão de gestão ${overview.definition.managementVersion}'),
+                const SizedBox(height: CoeloSpacing.space2),
+                // R05: a visão geral mostrava só a versão; o status vem da
+                // mesma projeção autorizada (form_get_overview).
+                Text(
+                  switch (overview.definition.status) {
+                    FormStatus.draft => 'Rascunho',
+                    FormStatus.published => 'Publicado',
+                    FormStatus.archived => 'Arquivado',
+                  },
+                  key: const Key('forms-overview-status'),
+                  style: Theme.of(context).textTheme.labelLarge,
+                ),
               ],
             ),
             const SizedBox(height: CoeloSpacing.space3),
