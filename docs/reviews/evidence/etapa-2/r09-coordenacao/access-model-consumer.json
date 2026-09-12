@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-12T21:12:13.367176+00:00",
+  "source": "cc322488-bb7d-4490-9418-ac941db7e6ae",
+  "copy": "5e1b5e75-814a-43cf-8031-d38ee3d4f830",
+  "checks": [
+    {
+      "step": "anonymous_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "edited_description_persisted",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "inactive_independent_copy_persisted",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "copied_capabilities_match_source",
+      "pass": true
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}

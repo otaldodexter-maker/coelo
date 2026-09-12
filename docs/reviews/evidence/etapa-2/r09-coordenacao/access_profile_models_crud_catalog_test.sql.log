@@ -1,0 +1,198 @@
+BEGIN
+CREATE EXTENSION
+ plan  
+-------
+ 1..32
+(1 row)
+
+                    has_column                    
+--------------------------------------------------
+ ok 1 - models record the isolated internal actor
+(1 row)
+
+                    has_table                     
+--------------------------------------------------
+ ok 2 - model receipts live in the internal realm
+(1 row)
+
+                         results_eq                         
+------------------------------------------------------------
+ ok 3 - six model actions exist for each application domain
+(1 row)
+
+                        results_eq                         
+-----------------------------------------------------------
+ ok 4 - model actions are granted only to Owner by default
+(1 row)
+
+       has_function       
+--------------------------
+ ok 5 - detail RPC exists
+(1 row)
+
+       has_function       
+--------------------------
+ ok 6 - cursor RPC exists
+(1 row)
+
+       has_function       
+--------------------------
+ ok 7 - create RPC exists
+(1 row)
+
+       has_function       
+--------------------------
+ ok 8 - update RPC exists
+(1 row)
+
+       has_function       
+--------------------------
+ ok 9 - delete RPC exists
+(1 row)
+
+         has_function         
+------------------------------
+ ok 10 - duplicate RPC exists
+(1 row)
+
+       has_function        
+---------------------------
+ ok 11 - export RPC exists
+(1 row)
+
+        has_function        
+----------------------------
+ ok 12 - preview RPC exists
+(1 row)
+
+       has_function        
+---------------------------
+ ok 13 - import RPC exists
+(1 row)
+
+        has_function        
+----------------------------
+ ok 14 - catalog RPC exists
+(1 row)
+
+                                 ok                                  
+---------------------------------------------------------------------
+ ok 15 - authorization is rooted only in the isolated internal realm
+(1 row)
+
+                              ok                               
+---------------------------------------------------------------
+ ok 16 - delegation and audit never fall back to legacy people
+(1 row)
+
+                            is                            
+----------------------------------------------------------
+ ok 17 - all model persistence has enabled and forced RLS
+(1 row)
+
+                                    is                                    
+--------------------------------------------------------------------------
+ ok 18 - clients and service role have no direct model persistence bypass
+(1 row)
+
+                                is                                
+------------------------------------------------------------------
+ ok 19 - private model helpers deny every client and service role
+(1 row)
+
+                                                    is                                                    
+----------------------------------------------------------------------------------------------------------
+ ok 20 - MVP gateways (detail, cursor, create, update, delete, duplicate, catalog) are authenticated-only
+(1 row)
+
+                                           is                                            
+-----------------------------------------------------------------------------------------
+ ok 21 - export and import gateways stay unavailable to every client until after the MVP
+(1 row)
+
+SET
+                            is                             
+-----------------------------------------------------------
+ ok 22 - anonymous auth context receives a stable envelope
+(1 row)
+
+RESET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+CREATE TABLE
+GRANT
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "97000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "97100000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+                                               is                                                
+-------------------------------------------------------------------------------------------------
+ ok 23 - MVP: model mutations accept AAL1 (ADR 0034 Decisao 12; AAL2 gate returns with ADR 0019)
+(1 row)
+
+RESET
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "97000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "97100000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+INSERT 0 1
+                        is                        
+--------------------------------------------------
+ ok 24 - creation succeeds inside the v2 envelope
+(1 row)
+
+RESET
+                     is                      
+---------------------------------------------
+ ok 25 - creation records the internal actor
+(1 row)
+
+SET
+                    is                    
+------------------------------------------
+ ok 26 - idempotent replay is actor-bound
+(1 row)
+
+                        is                         
+---------------------------------------------------
+ ok 27 - stale writes return the conflict envelope
+(1 row)
+
+                     is                      
+---------------------------------------------
+ ok 28 - oversized search input fails closed
+(1 row)
+
+                    ok                     
+-------------------------------------------
+ ok 29 - catalog uses the success envelope
+(1 row)
+
+RESET
+                    is                    
+------------------------------------------
+ ok 30 - import rejects assignment fields
+(1 row)
+
+                        ok                         
+---------------------------------------------------
+ ok 31 - export returns the versioned CSV contract
+(1 row)
+
+                                  ok                                  
+----------------------------------------------------------------------
+ ok 32 - successful operations are audited against the internal actor
+(1 row)
+
+ finish 
+--------
+(0 rows)
+
+ROLLBACK

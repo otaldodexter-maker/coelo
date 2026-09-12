@@ -1,0 +1,54 @@
+[
+  {
+    "action_id": "access-models.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: edicao de descricao e copia inativa por UI normal, reload e RPC produtiva;43 pgTAP e26 corpos equivalentes. Sem novas permissoes ou vinculos. BE historico preservado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+      "revision": "R09-C0-r113",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacao; UI normal",
+      "recordedAt": "2026-09-12T21:14:02.084913+00:00"
+    }
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: edicao de descricao e copia inativa por UI normal, reload e RPC produtiva;43 pgTAP e26 corpos equivalentes. Sem novas permissoes ou vinculos. BE historico preservado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+      "revision": "R09-C0-r113",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacao; UI normal",
+      "recordedAt": "2026-09-12T21:14:02.084913+00:00"
+    }
+  },
+  {
+    "action_id": "access-models.duplicate",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: edicao de descricao e copia inativa por UI normal, reload e RPC produtiva;43 pgTAP e26 corpos equivalentes. Sem novas permissoes ou vinculos. BE historico preservado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+      "revision": "R09-C0-r113",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacao; UI normal",
+      "recordedAt": "2026-09-12T21:14:02.084913+00:00"
+    }
+  },
+  {
+    "action_id": "access-models.duplicate",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: edicao de descricao e copia inativa por UI normal, reload e RPC produtiva;43 pgTAP e26 corpos equivalentes. Sem novas permissoes ou vinculos. BE historico preservado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/access-models-acceptance.md",
+      "revision": "R09-C0-r113",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacao; UI normal",
+      "recordedAt": "2026-09-12T21:14:02.084913+00:00"
+    }
+  }
+]
