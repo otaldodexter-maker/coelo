@@ -1,6 +1,6 @@
 {
-  "revision": 60,
-  "updated_at": "2026-09-12T11:40:51.0741095-03:00",
+  "revision": 61,
+  "updated_at": "2026-09-12T11:51:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -48,6 +48,13 @@
     "retracted": "a observação anterior sobre prévia reduzida a primeiro texto/mídia foi retirada: no SHA atual _previewBlock é iterativo; _bodyText já não está presente.",
     "notFinding": "o teto de 10.000, a prévia iterativa e as perguntas ordenadas seguem o contrato; o único achado é a cardinalidade de CircularMediaBlock no host produtivo.",
     "reportedTo": "correção encaminhada ao C0 às 11:41 BRT para a G6; nenhum arquivo G6 foi editado e nenhum golden foi gerado."
+  },
+  "reviewFormsR08": {
+    "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",
+    "reviewedSha": "444ac0246d7eadd62527990492f9797285594bec",
+    "finding": "media_bindings_item_id_fkey foi recriada como ON DELETE RESTRICT DEFERRABLE. RESTRICT é verificado imediatamente pelo PostgreSQL; SET CONSTRAINTS ... DEFERRED não permite o delete em cascata da árvore. O save após imagem falha antes de reinserir o item_id estável.",
+    "verified": "item_id só é reutilizado quando pertence à mesma working version; media_context não expõe object_key, URL, ticket ou segredo.",
+    "reportedTo": "C0 às 11:51 BRT; nenhum SQL, Flutter, golden ou arquivo de outra frente foi alterado."
   },
   "scope": {
     "app": "apps/superadmin",

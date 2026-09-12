@@ -61,6 +61,18 @@ SHA e `_bodyText` não está presente. O limite agregado de 10.000 e os cards
 ordenados de perguntas permanecem alinhados. O único achado foi corrigido junto
 ao C0 para a G6; nenhum arquivo da frente foi editado.
 
+## Revisão independente — Forms G3/G5
+
+No candidato `444ac0246d7eadd62527990492f9797285594bec`, a FK
+`media_bindings_item_id_fkey` é recriada como `ON DELETE RESTRICT DEFERRABLE`.
+Em PostgreSQL, `RESTRICT` é verificado imediatamente; portanto o `SET
+CONSTRAINTS ... DEFERRED` não permite apagar a árvore de itens durante o
+replace. O `DELETE FROM form_sections` falha antes de reinserir o mesmo
+`item_id`, bloqueando o caso de salvar texto depois da imagem. O achado foi
+encaminhado ao C0. A revisão confirmou que o ID é limitado à mesma working
+version e que `media_context` não vaza `object_key`, URL, ticket ou segredo.
+Nenhum SQL foi executado ou editado.
+
 ## Gates externos
 
 Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
