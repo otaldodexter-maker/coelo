@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 42,
+  "revision": 43,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:25:00-03:00",
+  "updatedAt": "2026-09-12T14:27:00-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "0d710964a1cf22e14ab211e6f4f506549313c795",
+  "head": "4e493a3a2c8a97cbf925c38a8cf30b7dc120bfcf",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -88,7 +88,8 @@
     "Parser geral materializado e validado sem Flutter sobre JSONL ciclo90: exit 1, 422 passed, 11 hidden, 0 órfãos; preserva IDs e separa eventos. Correção final de processamento de eventos estruturais publicada.",
     "Parser geral corrigido: loader por pathRel do nome após loading comparado ao suite.path; classificação loading antes de hidden. Validação ciclo90 sem Flutter: 422 passed, 11 loading, 0 hidden, 0 órfãos, exit 1.",
     "Correção de evidência C0: ciclo90 reconhecido como exit 0, não exit 1. Parser geral agora trata done como metadado, registra inputSha256 e foi validado no ciclo180 integrado: 411 passed, 4 failed, 1 skipped, 4 errors, nativeExitCode=1, sem rerun.",
-    "Proveniência R07 corrigida: 426.010s foi medido com \flutter test --reporter json -j 6, não concurrency=1. Plano distingue a medição paralela do censo futuro serial --concurrency=1; janela de 30m preservada, sem extrapolação indevida."
+    "Proveniência R07 corrigida: 426.010s foi medido com \flutter test --reporter json -j 6, não concurrency=1. Plano distingue a medição paralela do censo futuro serial --concurrency=1; janela de 30m preservada, sem extrapolação indevida.",
+    "Proveniência anexada ao plano: R07 426.010s veio de -j6 paralelo; fechamento usa concurrency=1 e mede duração própria dentro de 30m, sem extrapolação."
   ],
   "pendente": "Aguardar próximo gate do C0; não promover equivalência semântica a partir de interseções sintáticas.",
   "commitsPublicados": [
@@ -124,7 +125,8 @@
     "e22e4c126 (rev 39)",
     "122293fc6 (rev 40)",
     "aeff370aa (rev 41)",
-    "0d710964a (rev 42)"
+    "0d710964a (rev 42)",
+    "4e493a3a2 (rev 43)"
   ],
   "foraDoRecorteRegistrado": [
     {

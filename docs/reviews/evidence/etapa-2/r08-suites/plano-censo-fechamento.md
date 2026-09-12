@@ -39,3 +39,7 @@ A execução R07 levou `426.010s` no reporter. Para o censo serial (`concurrency
 ## Recibo obrigatório
 
 Entregar ao C0 o JSONL bruto, relatório derivado, comando, SHA da base integrada, timestamp, exit code nativo, duração e listas de pass/fail/skip/timeout/órfãos. Sem esse pacote, não declarar o censo completo nem promover cobertura.
+
+## Proveniência da estimativa
+
+A medição R07 de `426.010s` (`7m06.010s`) veio de `flutter test --reporter json -j 6`; é uma referência paralela, não uma duração serial. O comando autorizado para o fechamento continua sendo `flutter test test --concurrency=1`, dentro da janela de 30 minutos (`1800s`), e deve medir sua própria duração sem extrapolar o tempo R07.
