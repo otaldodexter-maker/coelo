@@ -126,6 +126,7 @@ Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
 | 2 | `20260912140546_forms_question_media_draft_bridge_v1.sql` | primeira ponte de `question-image`; preservada sem mutação porque já foi consumida pelo espelho | `forms_question_media_r2_v1_test.sql` 32 no primeiro ciclo | aplicado somente no baseline G0; GREEN falhou; proibido em produção isoladamente |
 | 3 | `20260912140547_forms_question_media_draft_bridge_fix_v1.sql` | corrige consumidores para autorização institucional, troca FK por `NO ACTION DEFERRABLE` e devolve `media_context: null` sem working version | `forms_question_media_r2_v1_test.sql` 33 | espelho verde: 33/33 + behavioral 17/17 + internal drafts 159/159; produção pendente C0 |
 | 4 | `20260912140548_forms_question_media_retry_delete_v1.sql` | reconcilia retry idêntico após finalize confirmado, solta binding no delete nominal e uniformiza editor inexistente/cross-tenant | `forms_question_media_retry_delete_v1_test.sql` 9 | candidato posterior; revisão/RED/GREEN pendentes |
+| 5 | `20260912140549_forms_question_media_terminal_unbind_v1.sql` | garante que toda transição de `question-image` para `deleted` solte o binding, inclusive mismatch/expire, e cura resíduos já encerrados | `forms_question_media_terminal_unbind_v1_test.sql` 7 | candidato final posterior; revisão/RED/GREEN pendentes |
 
 O defeito foi medido apenas no repositório: a migration `20260910190500`
 declara que o scheduler ficou externo e não existe outro job versionado para o
@@ -137,5 +138,5 @@ forward-only e deve ser aplicado sobre ele somente no baseline antes do novo
 GREEN e das regressões. O item 4 fecha resíduos medidos depois desse primeiro
 GREEN: não deve ser agregado nem aplicado sem revisão e prova próprias. Em
 produção, qualquer promoção deve preservar a ordem 140546 -> 140547 -> 140548
-definida pelo C0; nenhum item intermediário deve ser usado como estado final.
-A ordem acima é explícita; G5 não aplica SQL.
+-> 140549 definida pelo C0; nenhum item intermediário deve ser usado como
+estado final. A ordem acima é explícita; G5 não aplica SQL.

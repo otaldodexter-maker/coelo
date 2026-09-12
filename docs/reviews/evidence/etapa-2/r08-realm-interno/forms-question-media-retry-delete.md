@@ -1,7 +1,7 @@
 ---
 title: "R08 G5/G3 — retry de finalize, delete nominal e não-enumeração"
 source: "R08-plano.md G3/G5; forms_question_media_r2_v1 e revisão C0/G3 de 2026-09-12"
-status: "candidato e casos preparados; RED/GREEN pendentes do espelho"
+status: "candidatos 140548/140549 e casos preparados; RED/GREEN pendentes do espelho"
 generated_at: "2026-09-12T12:04:58-03:00"
 ---
 
@@ -44,3 +44,19 @@ finalize, authorize de reconciliação, replay idêntico do finalize, rejeição
 medidas alteradas, remoção do binding no delete, remoção posterior da pergunta
 e equivalência entre erros cross-tenant e inexistente. Não há alegação de pgTAP
 executado; RED/aplicação local/GREEN pertencem ao espelho coordenado.
+
+## Fechamento terminal 140549
+
+A revisão G3 confirmou um resíduo depois de 140548: mismatch e expiração
+automática também mudam o asset para `deleted`, mas não passam pelo delete
+nominal. Como o editor oculta deleted, o usuário não teria como soltar esse
+binding e a pergunta permaneceria presa.
+
+Sem mutar 140548, o candidato seguinte
+`20260912140549_forms_question_media_terminal_unbind_v1.sql` centraliza a
+invariante em trigger restrito a `catalog_kind=form-image`,
+`media_purpose=question-image` e transição real para `deleted`. O backfill
+remove apenas bindings de assets já logicamente encerrados; catálogo, variante,
+ticket, limpeza e auditoria são preservados. A suíte focal de plano 7 cobre
+mismatch, expiração, remoção dos dois bindings e save posterior sem as
+perguntas. Também não foi aplicada nem executada por G5.
