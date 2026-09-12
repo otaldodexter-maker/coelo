@@ -1,5 +1,5 @@
 {
-  "revision": 155,
+  "revision": 156,
   "updated_at": "2026-09-12T11:42:58.6818446-03:00",
   "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
   "round": "E2-R08-20260912",
@@ -2278,9 +2278,9 @@
     ]
   },
   "R08_ABERTURA_G2": {
-    "revision": 155,
+    "revision": 156,
     "recorded_at": "2026-09-12T11:42:58.6818446-03:00",
-    "status": "ativa; P51 corrigido e publicado localmente, pendente de preflight remoto do redirect e deploy de C0; os 15 A foram regravados apos comparacao; Chrome reservado a G0 e E2E ainda nao liberado",
+    "status": "ativa; P51 deployado por C0 como internal-user-create v4, pendente de preflight remoto do redirect e fluxo real; os 15 A foram regravados apos comparacao; Chrome reservado a G0 e E2E ainda nao liberado",
     "contrato": {
       "objetivo": "Avancar gates de Pessoas, @, perfis/modelos, convites e usuarios internos no apps/superadmin com provas por action_id.",
       "incluido": ["auth", "people", "students", "access_profiles", "invites", "platform_users", "autoria de internal-user-create"],
