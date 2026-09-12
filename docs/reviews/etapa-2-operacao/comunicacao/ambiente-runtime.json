@@ -1,12 +1,12 @@
 {
-  "revision": 23,
+  "revision": 24,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:56:22-03:00",
+  "updatedAt": "2026-09-12T13:33:49-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -72,7 +72,8 @@
       "descoberta API read-only: zero formulários identificados ativos com photo/gallery e zero occurrences candidatas; logout local 204",
       "fixture answer-image identificada criada uma unica vez com revisao G5/C0: form publicado, application e schedule ativos; IDs server-side e receipts preservados",
       "primeira assertion rejeitou corretamente o oraculo de IDs de input; resume no mesmo recurso capturou IDs server-side sem recriar form/publicacao",
-      "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft"
+      "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft",
+      "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter",
@@ -146,9 +147,9 @@
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "4c30b61ac381adb2f96cbba7befbbb4cee784fb5",
+    "head": "4c886e2f78e874b9f32e04f9248099ab550ef5f1",
     "buildSourceSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
-    "publishedSha": "4c30b61ac381adb2f96cbba7befbbb4cee784fb5",
+    "publishedSha": "4c886e2f78e874b9f32e04f9248099ab550ef5f1",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -266,6 +267,11 @@
       "revision": 23,
       "at": "2026-09-12T13:30:00-03:00",
       "summary": "Occurrence/participation unicas confirmadas por C0. Tentativa principal falhou P0002 sem mutacao; credencial canonica passou REST e abriu draft, mas prepare Edge v17 retornou 401. Duas tentativas distintas encerradas e diagnostico preciso enviado ao C0/G5."
+    },
+    {
+      "revision": 24,
+      "at": "2026-09-12T13:33:49-03:00",
+      "summary": "Causa 401 confirmada no lookup people-only da Edge. Resume com cinco request IDs publicado; review focal 49bd4c83d aprovado e deploy permanece exclusivo C0."
     }
   ]
 }

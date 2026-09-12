@@ -347,3 +347,11 @@ finalize, save e download estão em
 [forms-answer-image-response-resume-manifest.json](./forms-answer-image-response-resume-manifest.json).
 O runner valida occurrence/participation/item e reutiliza esses IDs após o
 deploy; asset permanece nulo até um prepare efetivamente aceito.
+
+G0 revisou o fix G5 `49bd4c83d` sem achar bloqueio: o RPC
+`list_my_principal_contexts` retorna diretamente linhas com `person_id`; o
+resolver mantém precedência do vínculo People e só usa o fallback autenticado
+quando ele não existe. Erro no lookup People, contexto vazio, UUID inválido ou
+pessoas divergentes continuam negados. Múltiplos contextos da mesma pessoa são
+deduplicados, e as RPCs de prepare/finalize mantêm a validação de ownership no
+backend. Integração, suíte Deno e deploy continuam sob posse do C0.
