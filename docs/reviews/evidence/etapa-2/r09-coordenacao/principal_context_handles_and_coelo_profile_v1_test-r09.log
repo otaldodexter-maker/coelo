@@ -1,0 +1,104 @@
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..14
+(1 row)
+
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+                                    ok
+---------------------------------------------------------------------------
+ ok 1 - resolver expoe institution_handle e unit_handle no fim da projecao
+(1 row)
+
+                  ok
+---------------------------------------
+ ok 2 - grants do resolver preservados
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "d1000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "d2000000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+         set_config
+----------------------------
+ handles-x|unidade.handlesx
+(1 row)
+
+RESET
+                                    is
+--------------------------------------------------------------------------
+ ok 3 - o @ da instituicao (slug) e da unidade (handle) chegam ao cliente
+(1 row)
+
+                 has_table
+--------------------------------------------
+ ok 4 - tabela de arrobas reservados existe
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 5 - reserved_handles sem grant a cliente
+(1 row)
+
+                 is
+------------------------------------
+ ok 6 - coelo e coelo.me reservados
+(1 row)
+
+                 throws_ok
+-------------------------------------------
+ ok 7 - instituicao nao pode usar o @coelo
+(1 row)
+
+                throws_ok
+------------------------------------------
+ ok 8 - unidade nao pode usar o @coelo.me
+(1 row)
+
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+              lives_ok
+-------------------------------------
+ ok 9 - handle comum continua aceito
+(1 row)
+
+                   is
+----------------------------------------
+ ok 10 - pessoa de servico Coelo existe
+(1 row)
+
+                            ok
+-----------------------------------------------------------
+ ok 11 - pessoa nova acompanha a Coelo (gatilho de people)
+(1 row)
+
+                   ok
+-----------------------------------------
+ ok 12 - a Coelo acompanha a pessoa nova
+(1 row)
+
+                   is
+----------------------------------------
+ ok 13 - sincronizacao repetida e no-op
+(1 row)
+
+                  is
+--------------------------------------
+ ok 14 - a Coelo nao segue a si mesma
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

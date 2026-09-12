@@ -1,12 +1,12 @@
 {
-  "revision": 116,
+  "revision": 117,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T21:48:26.086847+00:00",
+  "updatedAt": "2026-09-12T22:00:48.866961+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3682,7 +3682,7 @@
     "execucaoAte": "2026-09-12T19:42:18-03:00",
     "fechamentoAte": "2026-09-12T20:12:18-03:00",
     "threadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
-    "status": "ativa-via-git",
+    "status": "fechamento-sem-novas-fatias",
     "escopo": "apps/superadmin -> menu -> tela/subtela/estado -> action_id; CRUD real, persistencia, reload, RLS e hierarquia",
     "fora": "outros apps, R10, senha, exportacoes gerais, endurecimento amplo",
     "regraDeEscrita": "C0 exclusivo dev, inventario, tres rastreadores, fila SQL, composicao e deploy; executoras somente dominio e handoff proprio",
@@ -3850,7 +3850,7 @@
       "dono": "C0",
       "pid": 22592,
       "inicio": "2026-09-12T20:01:00Z",
-      "estado": "G1 thread completed e r115 entregue; C0 assume mesma aba829822468/Chrome22592, preserva rascunho Membros antes de proxima rota. Sem nova instancia.",
+      "estado": "C0; Home apos gate Perfil, sem draft pendente; mesma instancia.",
       "tabId": 829822468
     },
     "flutterTest": {
@@ -3876,7 +3876,7 @@
       "port": 3014,
       "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/build/web",
       "buildSha": "9713bbdeb",
-      "next": "Perfil no menu Coelo",
+      "next": "Preservar runtime; fechamento sem nova fatia",
       "buildOwner": "C0"
     }
   },
@@ -4105,7 +4105,7 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T21:48:26.086847+00:00",
+    "at": "2026-09-12T22:00:48.866961+00:00",
     "novosAceites": [
       "groups.location FE/BE/E2E",
       "attendance.mark FE/E2E",
@@ -4118,11 +4118,12 @@
       "access-models.edit/duplicate FE/E2E",
       "internal-users.edit FE/E2E",
       "internal-users.create/suspend FE/BE/E2E",
-      "activities.list BE/E2E"
+      "activities.list BE/E2E",
+      "principal.profile-view BE/E2E"
     ],
-    "feito": "activities.list BE/E2E pela UI/filtros/reload;125SQL5API PASS,95corpos equivalentes.",
+    "feito": "principal.profile-view BE/E2E aceito: UI/2contextos/reload/retorno49SQL7API PASS. Meta minima FE/BE/E2E atingida; inicio de fechamento sem nova fatia.",
     "intervencao60min": "apos runtime e tentativa arquivo bloqueada pela extensao, Chrome transferidoG1 para Local sem picker; C0 completa negativa e corrige autorizacao de Formularios em paralelo",
-    "nextGate": "principal.profile-view: contexto institucional e leitura real/retorno no shell.",
+    "nextGate": "Fechamento: reconciliar nove branches/WIP, sete metricas, validadores e memoria; publicar R09-fechamento.",
     "noveFrentes": "thread/read conferiu nove completed neste ciclo; nao afirmar instrucoes novas entregues, C0 executa pacotes independentes"
   },
   "tentativaAnteriorAviso": {
@@ -4132,13 +4133,13 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 67,
+    "usedPercent": 68,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T21:36:00Z",
+    "measuredAt": "2026-09-12T21:56:00Z",
     "source": "account/rateLimits/read; Codex app-server",
     "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
-    "nextCheckBy": "2026-09-12T21:46:00Z"
+    "nextCheckBy": "2026-09-12T22:06:00Z"
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",

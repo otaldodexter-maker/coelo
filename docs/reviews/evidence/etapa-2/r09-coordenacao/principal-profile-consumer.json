@@ -1,0 +1,60 @@
+{
+  "at": "2026-09-12T21:58:19.672544+00:00",
+  "checks": [
+    {
+      "step": "anonymous_contexts_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "ui_contexts_resolved_by_server",
+      "pass": true,
+      "http": 200,
+      "contexts": [
+        {
+          "institution_id": "d0c40000-0000-4000-8000-000000000001",
+          "institution_handle": "qa-r04-cuidado-sintetico",
+          "scope_kind": "institution",
+          "role_code": "owner",
+          "unit_id": null,
+          "group_id": null
+        },
+        {
+          "institution_id": "9f040000-0000-4000-8000-000000000010",
+          "institution_handle": "qa-r04-chat",
+          "scope_kind": "institution",
+          "role_code": "owner",
+          "unit_id": null,
+          "group_id": null
+        }
+      ]
+    },
+    {
+      "step": "about_empty_matches_ui_qa-r04-cuidado-sintetico",
+      "pass": true,
+      "http": 200,
+      "subject_id": "d0c40000-0000-4000-8000-000000000001"
+    },
+    {
+      "step": "about_empty_matches_ui_qa-r04-chat",
+      "pass": true,
+      "http": 200,
+      "subject_id": "9f040000-0000-4000-8000-000000000010"
+    },
+    {
+      "step": "context_records_stable_on_reload",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}

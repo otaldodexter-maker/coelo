@@ -1,0 +1,28 @@
+[
+  {
+    "action_id": "principal.profile-view",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+      "revision": "R09-C0-r117",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T22:00:48.866961+00:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+      "revision": "R09-C0-r117",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T22:00:48.866961+00:00"
+    }
+  }
+]

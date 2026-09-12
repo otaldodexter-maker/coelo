@@ -1,0 +1,195 @@
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..22
+(1 row)
+
+INSERT 0 3
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 3
+INSERT 0 1
+            has_function
+------------------------------------
+ ok 1 - helper parametrizado existe
+(1 row)
+
+                   ok
+----------------------------------------
+ ok 2 - helper sem execute para cliente
+(1 row)
+
+                                 ok
+--------------------------------------------------------------------
+ ok 3 - list_my_principal_contexts: authenticated executa, anon nao
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 4 - sessao interna resolve para a pessoa de servico
+(1 row)
+
+                    is
+-------------------------------------------
+ ok 5 - realm people-based tem precedencia
+(1 row)
+
+                     is
+---------------------------------------------
+ ok 6 - auth user sem realm nao vira ninguem
+(1 row)
+
+                                                   is
+---------------------------------------------------------------------------------------------------------
+ ok 7 - o espelho interno ganhou membership owner nas duas instituicoes ativas (gatilho de institutions)
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 8 - instituicao inativa nao recebe membership
+(1 row)
+
+                                 is
+---------------------------------------------------------------------
+ ok 9 - cada membership recebeu o papel de sistema institution_admin
+(1 row)
+
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+                         is
+-----------------------------------------------------
+ ok 10 - segunda sincronizacao e no-op (idempotente)
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+ set_config
+------------
+ 2
+(1 row)
+
+ set_config
+------------
+ owner
+(1 row)
+
+RESET
+              set_config
+--------------------------------------
+ 0f19f05b-b6b9-417c-9154-eedafc4e1710
+(1 row)
+
+              set_config
+--------------------------------------
+ 0f19f05b-b6b9-417c-9154-eedafc4e1710
+(1 row)
+
+              set_config
+--------------------------------------
+ 0f19f05b-b6b9-417c-9154-eedafc4e1710
+(1 row)
+
+                                    is
+--------------------------------------------------------------------------
+ ok 11 - A enxerga as duas instituicoes ativas como contexto do Principal
+(1 row)
+
+              is
+-------------------------------
+ ok 12 - contexto de A e owner
+(1 row)
+
+                                    is
+---------------------------------------------------------------------------
+ ok 13 - happens_actor reconhece a sessao interna com happens.posts.create
+(1 row)
+
+                                    is
+--------------------------------------------------------------------------
+ ok 14 - now_actor reconhece a sessao interna com now.publications.create
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 15 - moments_actor_for_auth_user reconhece a sessao interna
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000002", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000002"}
+(1 row)
+
+SET
+                  set_config
+-----------------------------------------------
+ c7000000-0000-4000-8000-000000000002:guardian
+(1 row)
+
+RESET
+                               throws_ok
+------------------------------------------------------------------------
+ ok 16 - B nao entra no Acontece da instituicao X (cross-tenant negado)
+(1 row)
+
+                              throws_ok
+---------------------------------------------------------------------
+ ok 17 - B nao entra no Agora da instituicao X (cross-tenant negado)
+(1 row)
+
+                                throws_ok
+-------------------------------------------------------------------------
+ ok 18 - B nao entra nos Momentos da instituicao X (cross-tenant negado)
+(1 row)
+
+                              is
+--------------------------------------------------------------
+ ok 19 - B continua vendo so o proprio contexto guardian em Y
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "c1000000-0000-4000-8000-000000000003", "role": "authenticated", "session_id": "c2000000-0000-4000-8000-000000000003"}
+(1 row)
+
+SET
+ set_config
+------------
+ 0
+(1 row)
+
+RESET
+                      is
+----------------------------------------------
+ ok 20 - auth user sem realm nao tem contexto
+(1 row)
+
+SET
+              throws_ok
+-------------------------------------
+ ok 21 - anon nao executa o resolver
+(1 row)
+
+RESET
+                  throws_ok
+---------------------------------------------
+ ok 22 - resgate sem ticket continua negando
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

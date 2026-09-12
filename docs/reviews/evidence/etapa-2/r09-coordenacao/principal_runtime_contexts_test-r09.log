@@ -1,0 +1,119 @@
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..13
+(1 row)
+
+                                      has_function
+----------------------------------------------------------------------------------------
+ ok 1 - authenticated Principal context resolver exists without client scope parameters
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 2 - authenticated callers can resolve their own contexts
+(1 row)
+
+                              ok
+--------------------------------------------------------------
+ ok 3 - anonymous callers cannot execute the context resolver
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 4 - PUBLIC has no implicit execute grant
+(1 row)
+
+                                                             ok
+-----------------------------------------------------------------------------------------------------------------------------
+ ok 5 - resolver exposes only the minimum runtime-context projection (institution_handle e unit_handle desde 20260911130100)
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 6 - resolver derives identity from the authenticated JWT
+(1 row)
+
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 3
+SET
+ set_config
+------------
+
+(1 row)
+
+ set_config
+------------
+ {}
+(1 row)
+
+                            throws_ok
+-----------------------------------------------------------------
+ ok 7 - resolver rejects requests without an authenticated actor
+(1 row)
+
+              set_config
+--------------------------------------
+ a1000000-0000-4000-8000-000000000001
+(1 row)
+
+                              set_config
+-----------------------------------------------------------------------
+ {"sub":"a1000000-0000-4000-8000-000000000001","role":"authenticated"}
+(1 row)
+
+                            is
+----------------------------------------------------------
+ ok 8 - actor A receives only one active coherent context
+(1 row)
+
+                                is
+-------------------------------------------------------------------
+ ok 9 - actor A cannot discover tenant B by an inactive membership
+(1 row)
+
+                                 is
+--------------------------------------------------------------------
+ ok 10 - unit scope is derived from the active membership hierarchy
+(1 row)
+
+                                 is
+---------------------------------------------------------------------
+ ok 11 - group scope is derived from the active membership hierarchy
+(1 row)
+
+              set_config
+--------------------------------------
+ b1000000-0000-4000-8000-000000000001
+(1 row)
+
+                              set_config
+-----------------------------------------------------------------------
+ {"sub":"b1000000-0000-4000-8000-000000000001","role":"authenticated"}
+(1 row)
+
+                   is
+----------------------------------------
+ ok 12 - actor B receives only tenant B
+(1 row)
+
+                    is
+-------------------------------------------
+ ok 13 - actor B cannot enumerate tenant A
+(1 row)
+
+RESET
+ finish
+--------
+(0 rows)
+
+ROLLBACK

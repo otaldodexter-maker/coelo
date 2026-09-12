@@ -5806,15 +5806,15 @@
       "family": "principal_profile",
       "screen": "Principal / Perfil-circulares",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar leitura/escopo real do Perfil e retorno no shell.",
+      "done": "R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
       "fe": "rota real abre (18); V-1 parcial: botao Acompanhar de volta (acao honesta) e sombra do avatar igual a do menu flutuante; goldens principal_profile 137/137; avatar->Agora e contorno degrade ficam abertos",
-      "be": "R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
-      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09; coordenacao.json R04 rev 23 (lote12); coordenacao.json R04 rev 30 (lote22); capturas 13 (antes) / 17 / 18; captura 18; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "be": "R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
+      "evidence": "commits3e16dfec/5e762eb4; evidence/etapa-2/comunicacao/2026-09-08-principal-circular-context.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md; evidence/etapa-2/r02-d00-integration-20260909/L03highlights-result.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits b09da7c15 e 0399b186e; apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart; apps/superadmin/test/features/principal_profile/; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; ambiente local Windows sem rede e sem Supabase; 2026-09-09; commit 76e8ada8f; packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql; apps/superadmin/test/features/profile_about/data/supabase_profile_about_repository_test.dart; 2026-09-09; revisao 4 de docs/reviews/etapa-2-operacao/comunicacao/perfil-para-voce.json; 2026-09-09; commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09; coordenacao.json R04 rev 23 (lote12); coordenacao.json R04 rev 30 (lote22); capturas 13 (antes) / 17 / 18; captura 18; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "branchDelivery": {
@@ -5845,6 +5845,18 @@
           "revision": "principal-chat-sistema r32",
           "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
           "recordedAt": "2026-09-11T21:02-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+          "revision": "R09-C0-r117",
+          "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+          "recordedAt": "2026-09-12T22:00:48.866961+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+          "revision": "R09-C0-r117",
+          "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+          "recordedAt": "2026-09-12T22:00:48.866961+00:00"
         }
       }
     },
@@ -9090,7 +9102,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T21:48:26.199Z",
+  "updatedAt": "2026-09-12T22:00:48.993Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

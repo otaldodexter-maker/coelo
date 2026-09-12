@@ -1,0 +1,90 @@
+[
+  {
+    "functions": [
+      {
+        "md5": "74fe2ecd6974afc9ad8a30bb9200c893",
+        "args": "p_capability_id uuid",
+        "name": "access_profile_can_delegate_principal",
+        "schema": "app_private"
+      },
+      {
+        "md5": "91db370cee84fa35adc4b7f058141eca",
+        "args": "",
+        "name": "current_person_id",
+        "schema": "app_private"
+      },
+      {
+        "md5": "ff510749ef3461a0c3cf46530c467ff1",
+        "args": "",
+        "name": "guard_access_profile_principal_grant_delegation",
+        "schema": "app_private"
+      },
+      {
+        "md5": "6c435e76f776f2c486a178e2cd9837b0",
+        "args": "p_auth_user_id uuid",
+        "name": "person_id_for_auth_user",
+        "schema": "app_private"
+      },
+      {
+        "md5": "48f052e891d16de71f575ed77ae3c261",
+        "args": "p_subject_type text, p_key text",
+        "name": "profile_about_allowed_field",
+        "schema": "app_private"
+      },
+      {
+        "md5": "429c0dda59c933945590c22dfcc831cd",
+        "args": "p_institution_id uuid, p_capability text, p_unit_id uuid, p_group_id uuid, p_activity_id uuid",
+        "name": "profile_about_can",
+        "schema": "app_private"
+      },
+      {
+        "md5": "7e52eaf4c3d18a3af8485ca8cf66e844",
+        "args": "p_subject_type text, p_subject_id uuid",
+        "name": "profile_about_page_for",
+        "schema": "app_private"
+      },
+      {
+        "md5": "dfcc53871c2de017100a85e867fa9115",
+        "args": "p_institution_id uuid",
+        "name": "profile_about_publication_max_video_seconds",
+        "schema": "app_private"
+      },
+      {
+        "md5": "5cdb28081d40e15232ef50912edd8082",
+        "args": "p_permission_code text",
+        "name": "require_superadmin_internal_context",
+        "schema": "app_private"
+      },
+      {
+        "md5": "223ac58eb3bd1eef8e665c5c0dfb62f4",
+        "args": "p_subject_type text, p_subject_id uuid, p_preview_audience text",
+        "name": "get_profile_about",
+        "schema": "public"
+      },
+      {
+        "md5": "72693f18d02b406cddb746baccf8bac8",
+        "args": "",
+        "name": "list_my_principal_contexts",
+        "schema": "public"
+      },
+      {
+        "md5": "d57064654d2f652e5ae9d6e48ba15558",
+        "args": "p_subject_type text, p_subject_id uuid, p_expected_version bigint, p_request_id uuid",
+        "name": "publish_profile_about",
+        "schema": "public"
+      },
+      {
+        "md5": "7ecd88f263e76a884f4bab86fce55d52",
+        "args": "p_subject_type text, p_subject_id uuid, p_payload jsonb, p_expected_version bigint, p_request_id uuid, p_official_updates jsonb",
+        "name": "save_profile_about",
+        "schema": "public"
+      },
+      {
+        "md5": "cded7c02a58138b686d7d3291c5a11af",
+        "args": "",
+        "name": "superadmin_principal_capabilities_summary",
+        "schema": "public"
+      }
+    ]
+  }
+]
