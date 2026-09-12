@@ -144,8 +144,7 @@ final class PersonDirectoryViewModel extends ChangeNotifier {
 
   Future<void> setGroups(Set<String> value) {
     final activities = _query.activityIds.where((id) {
-      final option = _filterOptions.activities.where((item) => item.id == id).firstOrNull;
-      return option != null && value.contains(option.groupId);
+      return _filterOptions.activities.any((item) => item.id == id && value.contains(item.groupId));
     }).toSet();
     return _replace(_copy(groupIds: value, activityIds: activities));
   }
