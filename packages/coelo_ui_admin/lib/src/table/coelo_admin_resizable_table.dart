@@ -232,9 +232,14 @@ final class _CoeloAdminResizableTableState<T> extends State<CoeloAdminResizableT
                     backgroundKey: Key(
                       'coelo-admin-table-sort-background-${column.id}${pinned ? '-pinned' : ''}',
                     ),
-                    child: content,
+                    child: const SizedBox.expand(),
                   )
-                : content,
+                : const SizedBox.shrink(),
+          ),
+          Positioned.fill(
+            child: IgnorePointer(
+              child: column.sortable && interactive ? ExcludeSemantics(child: content) : content,
+            ),
           ),
           if (resizable)
             Positioned(
