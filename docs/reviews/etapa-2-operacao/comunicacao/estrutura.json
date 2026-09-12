@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 71,
+ "revision": 72,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T11:10:00-03:00",
+ "updatedAt": "2026-09-12T11:13:00-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -26,9 +26,9 @@
   "primeiroGate": "Executar RED focal de activity_directory_page_test.dart na fila Flutter, depois implementar a migracao minima do rodape.",
   "evidenciaEsperada": "teste focal RED/GREEN, validacao visual administrativa e handoff/deltas em docs/reviews/evidence/etapa-2/r08-estrutura/.",
   "recursos": "Chrome: G0. Flutter test: solicitado a C0 para o teste focal activities, sem inicio sem posse.",
-  "feito": "origin/dev 663a7987e incorporado; posse nominal do golden confirmada; teste RED adicionado; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; contrato de fixture sem IDs reais preparado para Avaliacoes.",
+  "feito": "origin/dev 663a7987e incorporado; posse nominal do golden confirmada; teste RED adicionado; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados.",
   "pendente": "slot Flutter; fixture transacional de Avaliacoes; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
-  "sha": "rodape: a7ebeccf8 (rebaseado sobre origin/dev 663a7987e); contrato de fixture sera publicado no proximo checkpoint.",
+  "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22.",
   "testes": "nao executados: aguardando slot global Flutter de G1 apos G3.",
   "proximoGate": "Entregar o contrato de fixture a G5/C0 pelo checkpoint; executar activity_directory_page_test.dart somente na posse de G1; depois iniciar activities.assessment sem Chrome."
  },
