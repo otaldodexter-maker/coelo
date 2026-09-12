@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 61,
+  "revision": 62,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T12:16:44-03:00",
+  "updatedAt": "2026-09-12T12:25:15-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "684eea023 publicado; branch inclui merge origin/dev a438a3428 e candidatos 140546..140549",
+  "head": "afd1e2f1b publicado; branch inclui merge origin/dev a438a3428 e candidatos 140546..140549",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0 decidir composição, backup, lote 57 e pós-prova em produção; aplicação exclusiva da coordenação",
+  "primeiroGate": "receber nova pendência não conflitante do C0; lote 57 já aplicado e pós-provado pela coordenação",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "R08 em execução; H09 entregue; composição 140546..140549 verde no espelho; produção 57 pendente C0",
-  "proximoPasso": "C0 decidir/aplicar lote 57 com backup e ordem explícita, ou devolver ajuste; G5 continua sem aplicar SQL",
+  "status": "recorte R08 G5 entregue; lotes 56 e 57 em produção; aguardando pendência adicional não conflitante do C0",
+  "proximoPasso": "C0 indicar próximo gate independente, mantendo fora Dart/Chrome, trackers e aplicação SQL",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -911,6 +911,28 @@
         "pgTapExecutadoPorG5": "nenhum"
       },
       "primeiroGate": "decisão e aplicação exclusiva C0 do lote 57, com backup e pós-prova"
+    },
+    "checkpoint12h25": {
+      "quando": "2026-09-12T12:25:15-03:00",
+      "feito": [
+        "C0 concluiu backup, composição e aplicação do lote 57 em produção, exit 0, com ledger ordenado 20260912140546..20260912140549.",
+        "SHA-256 da composição: e41f1263c3c0b630c1b2563e51edd8a900212b8d1b7eaa484b3d30b7525214c7.",
+        "Backups privados: esquema 4.136.628 bytes SHA-256 cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2; dados 4.238.181 bytes SHA-256 e04058c96a4a4f48a4d2bf313d10d76bc37a0856c4a2864ed331f958ecdc8145.",
+        "Pós-prova C0: FK NO ACTION deferível; trigger form_media_unbind_deleted_question_v1 habilitado; authenticated autoriza e não finaliza; service_role finaliza; anon não deleta.",
+        "C0 informou 422 testes da base integrada com sucesso. G5 não executou SQL remoto, pgTAP ou essa suíte.",
+        "Recorte original G5 entregue; pedido de nova pendência não conflitante enviado ao C0 conforme instrução do Owner."
+      ],
+      "pendente": [
+        "Receber do C0 commit de integração/evidência central quando publicado.",
+        "Receber e executar próxima pendência autorizada não conflitante, sem abrir R09 e sem ultrapassar o recorte de ferramentas/autoridade."
+      ],
+      "testes": {
+        "espelhoG0": "focais 9/9 + 7/7; regressões 33/33 + 17/17 + 159/159; rollback/native/wrapper 0",
+        "producaoC0": "aplicação exit 0; ledger 4/4; FK/trigger/ACL pós-provados",
+        "integradoC0": "422 sucessos informados",
+        "executadoPorG5": "Deno chat-media 6/6 no início da rodada; nenhum pgTAP ou SQL remoto"
+      },
+      "primeiroGate": "nova pendência não conflitante a ser indicada pelo C0"
     }
   }
 }

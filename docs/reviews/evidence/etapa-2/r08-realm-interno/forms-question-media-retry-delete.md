@@ -1,8 +1,8 @@
 ---
 title: "R08 G5/G3 — retry de finalize, delete nominal e não-enumeração"
 source: "R08-plano.md G3/G5; forms_question_media_r2_v1 e revisão C0/G3 de 2026-09-12"
-status: "candidatos 140548/140549 verdes no espelho; produção pendente C0"
-generated_at: "2026-09-12T12:16:44-03:00"
+status: "composição 140546..140549 aplicada em produção pelo C0 no lote 57"
+generated_at: "2026-09-12T12:25:15-03:00"
 ---
 
 # Resíduos do fluxo question-image
@@ -76,3 +76,23 @@ O G0 executou o ciclo serializado sobre o baseline com 140546..140549:
 Todos os resultados finais tiveram rollback e native/wrapper 0. G5 não os
 executou nem os soma como execução própria. Produção permaneceu intocada e a
 decisão/aplicação do lote 57 continua exclusiva do C0.
+
+## Recibo de produção do C0
+
+O C0 compôs os quatro arquivos em uma única transação, SHA-256 da composição
+`e41f1263c3c0b630c1b2563e51edd8a900212b8d1b7eaa484b3d30b7525214c7`, e
+aplicou o lote 57 com exit 0. O ledger contém, em ordem, 20260912140546,
+20260912140547, 20260912140548 e 20260912140549.
+
+Backups privados anteriores à aplicação, conferidos sem abrir seu conteúdo:
+
+- esquema: 4.136.628 bytes, SHA-256
+  `cbd51e737da96471307f1bddd75a89bba2d843d5e1088f66d2fdd89570b2cbc2`;
+- dados: 4.238.181 bytes, SHA-256
+  `e04058c96a4a4f48a4d2bf313d10d76bc37a0856c4a2864ed331f958ecdc8145`.
+
+Pós-prova às 12:25 BRT: FK com ação `a` (`NO ACTION`) e deferível, trigger
+`form_media_unbind_deleted_question_v1` habilitado (`O`), authenticated pode
+autorizar e não pode finalizar, service_role pode finalizar, anon não pode
+deletar. A suíte da base integrada informada pelo C0 teve 422 sucessos. G5 não
+executou SQL remoto, pgTAP nem esses testes integrados.
