@@ -29,7 +29,7 @@ Branch `work/etapa2-r06-principal-chat-sistema` (base `origin/dev ca60b096b`), p
 ## Dados sintéticos criados em produção (limpeza no fim da Etapa 2, P42)
 
 - Modelo de cardápio `d132698c-605d-46b4-bb11-124f85563604` ("Modelo sintetico R06 editado (qa-r06-principal, pode apagar)"), publicado, instituição `d0c40000-0000-4000-8000-000000000001`.
-- Rascunho de Momentos `b173843d-5ea4-46d4-a913-7d177443f591` (legenda "Momento sintetico R06 (qa-r06-principal, pode apagar)"), sem objeto no R2 (o PUT falhou); um asset `708456ae-…` preparado por sonda (prepare) sem upload.
+- Rascunho de Momentos `b173843d-5ea4-46d4-a913-7d177443f591` (v3, legenda "Momento sintetico R06 (qa-r06-principal, pode apagar)"); assets `708456ae` e `24868396` preparados sem upload e `8064d199` **finalizado no R2** por sonda (prepare → PUT → finalize 200 com Origin 127.0.0.1:3009, 21:32): backend e R2 corretos, só a chamada do navegador falha (captura 24).
 - Nenhum cardápio (não-modelo) criado; nenhuma chave ou segredo criado.
 
 ## Ferramentas e lições
