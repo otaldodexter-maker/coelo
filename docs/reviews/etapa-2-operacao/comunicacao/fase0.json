@@ -1,17 +1,17 @@
 {
   "grupo": "suites",
-  "revision": 19,
-  "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T10:05:00-03:00",
+  "revision": 20,
+  "round": "E2-R08-20260912",
+  "updatedAt": "2026-09-12T10:58:19-03:00",
   "app": "Claude",
-  "modelo": "Opus 5 (esforco medio)",
-  "conversa": "R07 · Suites pre-existentes (G8)",
-  "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-11T23:19:34-03:00 (coordenacao.json rev 61); corte T0+3h = 02:19 de 12/09, mini-revisao ate 02:29, nao retomar depois de 02:29",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-suites",
-  "branch": "work/etapa2-r07-suites",
-  "head": "62fb286e8",
+  "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
+  "conversa": "R08 · Suites pre-existentes (G8)",
+  "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:10:16, ajustes de C0 até 15:30:16",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+  "branch": "work/etapa2-r08-suites",
+  "head": "6d6cbef32cbf38e7e1972a169b6011a10e25f32e",
   "upstream": "origin/dev",
-  "base": "7b229593c (origin/dev com R07-prompts.md e frentes liberadas)",
+  "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
   "recorte": {
     "testes": [
@@ -41,6 +41,7 @@
     "(5) mini-revisao em T0+3h"
   ],
   "feito": [
+    "Recorte G8: a expectativa textual para \"activity_directory_page.dart\" já encontra-se removida no arquivo test/shared/presentation/widgets/superadmin_form_action_footer_adoption_test.dart (prova está na estrutura do arquivo e no contrato do Owner). Não foi aplicado novo patch funcional nesta posse.",
     "test/app: censo na base limpa 7b229593c = 637 P / 1 S / 16 F. Das 16, 4 estao nos arquivos do recorte e foram corrigidas: dev_menu_test (teste desatualizado: dependia de --dart-define=COELO_APP_ENV=local, que colide com superadmin_app_config_test; agora liga allowDevelopmentPreview no router), prototype_navigation_routes_test (teste desatualizado: sem allowDevelopmentPreview e secoes offstage apos a navegacao crescer), development_dataset_contract_test (teste desatualizado: dataset reduzido a 5 instituicoes em d9232a94d, 28 turmas em Mare Alta, 12 modelos), dev_menu_overlay_test golden 0,61% (golden defasado: ainda tinha 'Modelos de perfil', unificado em Perfis em 320a6f09f; regravado). import_development_routes_test ja passava.",
     "test/core/config: censo = 35 P / 5 F; as 5 eram teste desatualizado (afirmavam composicao fail-closed que a ADR 0034 ligou: structureMutationsEnabled, diretorios/adapters Supabase de Unidades e Turmas em 58bfe1fed, personIdentityRepository real em 7f13ee42d). Corrigidos; 40/40 verdes.",
     "test/shared: censo = 35 P / 11 F; todas teste desatualizado. underline_tabs (9): chave renomeada ao mover o widget para coelo_ui_admin (coelo-admin-underline-tab-*), 11/11 apos correcao. form_action_footer_adoption (2): Agenda e publicadores do Principal foram reconstruidos na familia Publicacao (0322e511d, 14abb3b0a) cujo rodape canonico e composto (PublicationSurface embute SuperadminFormActionFooter; Principal usa PrincipalPublicationActionFooter aprovado pelo Owner); 5 candidatos novos eram falsos positivos do regex (classe de dados, paginas de operacao de Formularios, edicao de perfil do Principal). 46/46 apos correcao.",
@@ -83,15 +84,15 @@
     }
   ],
   "testes": {
-    "P": 6713,
-    "F": 42,
+    "P": 6727,
+    "F": 33,
     "B": 0,
     "S": 11,
     "U": 0,
-    "evidencia": "execucao 1 da suite completa (json -j 6, 00:03-00:13); depois dela 6 falhas de test/app/router corrigidas e provadas isoladamente (persistent_shell 14/14, moments route, people/identity 5/5, error routes 14/14); execucao 2 pendente"
+    "evidencia": "Recorte textual G8 revisado sem nova execução de suite completa; base de R07 permanece 6727 PASS / 33 FAIL / 11 SKIP em 855e374d5."
   },
   "bloqueio": null,
-  "proximoPasso": "coordenador: aplicar as respostas (regravacoes A pelas frentes donas, A+ e R com as observacoes, P53 fechada = A, Criar modelo -> Estrutura, regra de produto da Circular -> conhecimento/coelo-ui) e registrar em R07-perguntas/decisoes; a frente G8 esta encerrada",
+  "proximoPasso": "No recorte de suites pré-existentes não há pendências de código; manter atualização de comunicação e aguardar novo trabalho autorizado no mesmo round ou próximo.",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
