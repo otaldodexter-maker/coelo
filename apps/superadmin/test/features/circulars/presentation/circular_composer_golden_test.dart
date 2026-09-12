@@ -28,12 +28,12 @@ void main() {
     }
   });
 
-  testWidgets('composer covers the three approved A+ interleaving states', (tester) async {
-    for (final (width, height, textScale) in [
-      (375.0, 1320.0, 1.0),
-      (375.0, 1320.0, 2.0),
-      (1440.0, 1100.0, 2.0),
-    ]) {
+  for (final (name, width, height, textScale) in [
+    ('375', 375.0, 1320.0, 1.0),
+    ('375 text 200', 375.0, 1320.0, 2.0),
+    ('1440 text 200', 1440.0, 1100.0, 2.0),
+  ]) {
+    testWidgets('composer A+ light $name preserves interleaving', (tester) async {
       await _pump(
         tester,
         Size(width, height),
@@ -47,8 +47,8 @@ void main() {
           '${textScale == 1 ? '' : '_text_200'}.png',
         ),
       );
-    }
-  });
+    });
+  }
 }
 
 Future<void> _pump(

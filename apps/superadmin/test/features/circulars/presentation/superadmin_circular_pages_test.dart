@@ -235,6 +235,45 @@ void main() {
     });
   }
 
+  testWidgets('block header keeps its label whole at 375px with text at 200%', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1320));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = CircularComposerController(
+      repository: _Repository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+      initialDraft: const CircularDraft(
+        id: 'circular-accessible',
+        title: 'Circular acessivel',
+        blocks: [CircularTextBlock(id: 'text-accessible', text: 'Conteudo')],
+        audiences: {CircularAudienceKind.families},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(375, 1320), textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: SuperadminCircularComposerPage(
+              controller: controller,
+              onCancel: () {},
+              onPickFiles: (_) async {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final label = find.byKey(const Key('circular-block-label-text-accessible'));
+    final actions = find.byKey(const Key('circular-block-actions-text-accessible'));
+    expect(label, findsOneWidget);
+    expect(tester.widget<Text>(label).data, 'Texto');
+    expect(actions, findsOneWidget);
+    expect(tester.getSize(label).height, lessThanOrEqualTo(40));
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('productive composer and preview preserve interleaved block order', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));

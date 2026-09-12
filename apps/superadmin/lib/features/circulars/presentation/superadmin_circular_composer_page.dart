@@ -241,17 +241,7 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
           ],
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        PublicationRow(
-          icon: Icons.calendar_today_outlined,
-          title: 'Agendamento',
-          trailing: TextButton.icon(
-            key: const Key('circular-choose-schedule'),
-            onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
-            iconAlignment: IconAlignment.end,
-            icon: const Icon(Icons.expand_more_rounded),
-            label: Text(_publishAt == null ? 'Publicar agora' : _scheduleLabel(_publishAt!)),
-          ),
-        ),
+        _scheduleRow(context),
         const PublicationLabel('Opções'),
         PublicationToggleRow(
           icon: Icons.description_outlined,
@@ -292,6 +282,30 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
       question: block,
     ),
   };
+
+  Widget _scheduleRow(BuildContext context) {
+    final label = _publishAt == null ? 'Publicar agora' : _scheduleLabel(_publishAt!);
+    if (MediaQuery.textScalerOf(context).scale(1) >= 1.5) {
+      return PublicationRow(
+        key: const Key('circular-choose-schedule'),
+        icon: Icons.calendar_today_outlined,
+        title: 'Agendamento',
+        lines: [label],
+        onTap: widget.onChooseSchedule == null ? null : _chooseSchedule,
+      );
+    }
+    return PublicationRow(
+      icon: Icons.calendar_today_outlined,
+      title: 'Agendamento',
+      trailing: TextButton.icon(
+        key: const Key('circular-choose-schedule'),
+        onPressed: widget.onChooseSchedule == null ? null : _chooseSchedule,
+        iconAlignment: IconAlignment.end,
+        icon: const Icon(Icons.expand_more_rounded),
+        label: Text(label),
+      ),
+    );
+  }
 
   _ResponsePreset? _responsePreset(List<CircularQuestionBlock> questions) {
     if (questions.isEmpty) return _ResponsePreset.readOnly;
@@ -510,35 +524,66 @@ final class _BlockActions extends StatelessWidget {
   final VoidCallback? onDelete;
 
   @override
-  Widget build(BuildContext context) => Row(
-    children: [
-      const Icon(Icons.drag_indicator_rounded),
-      const SizedBox(width: CoeloSpacing.space1),
-      Expanded(
-        child: Text(
-          label,
-          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
-        ),
-      ),
-      IconButton(
-        tooltip: 'Mover para cima',
-        onPressed: () => controller.moveBlock(blockId, -1),
-        icon: const Icon(Icons.arrow_upward_rounded),
-      ),
-      IconButton(
-        tooltip: 'Mover para baixo',
-        onPressed: () => controller.moveBlock(blockId, 1),
-        icon: const Icon(Icons.arrow_downward_rounded),
-      ),
-      if (onDelete != null)
+  Widget build(BuildContext context) {
+    final style = Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800);
+    final textPainter = TextPainter(
+      text: TextSpan(text: label, style: style),
+      textDirection: Directionality.of(context),
+      textScaler: MediaQuery.textScalerOf(context),
+      maxLines: 1,
+    )..layout();
+    final actionCount = onDelete == null ? 2 : 3;
+
+    Widget labelRow() => Row(
+      children: [
+        const Icon(Icons.drag_indicator_rounded),
+        const SizedBox(width: CoeloSpacing.space1),
+        Text(key: Key('circular-block-label-$blockId'), label, style: style),
+      ],
+    );
+
+    Widget actions() => Row(
+      key: Key('circular-block-actions-$blockId'),
+      mainAxisSize: MainAxisSize.min,
+      children: [
         IconButton(
-          tooltip: 'Excluir',
-          color: Theme.of(context).colorScheme.error,
-          onPressed: onDelete,
-          icon: const Icon(Icons.delete_outline_rounded),
+          tooltip: 'Mover para cima',
+          onPressed: () => controller.moveBlock(blockId, -1),
+          icon: const Icon(Icons.arrow_upward_rounded),
         ),
-    ],
-  );
+        IconButton(
+          tooltip: 'Mover para baixo',
+          onPressed: () => controller.moveBlock(blockId, 1),
+          icon: const Icon(Icons.arrow_downward_rounded),
+        ),
+        if (onDelete != null)
+          IconButton(
+            tooltip: 'Excluir',
+            color: Theme.of(context).colorScheme.error,
+            onPressed: onDelete,
+            icon: const Icon(Icons.delete_outline_rounded),
+          ),
+      ],
+    );
+
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        const dragAndGapWidth = 24.0 + CoeloSpacing.space1;
+        const actionWidth = 48.0;
+        final requiredWidth = dragAndGapWidth + textPainter.width + actionCount * actionWidth;
+        if (constraints.maxWidth <= requiredWidth + CoeloSpacing.space3) {
+          return Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
+            children: [
+              labelRow(),
+              Align(alignment: Alignment.centerRight, child: actions()),
+            ],
+          );
+        }
+        return Row(children: [labelRow(), const Spacer(), actions()]);
+      },
+    );
+  }
 }
 
 final class _QuestionCard extends StatefulWidget {
