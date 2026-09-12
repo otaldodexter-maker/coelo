@@ -10,7 +10,7 @@
     "action_id": "groups.members",
     "camada": "integrated",
     "estado_proposto": "pending-verification",
-    "delta": "R09: consumidor UUID e parser de papel corrigidos,35 testes unicos verdes. Busca UI resolve fixture ec2a15a2 draft; servidor recusou vinculo, inclusao nao persistida removida. Exige fixture ativa, add/remove/reload e negativa G5; nao E2E.",
+    "delta": "R09: consumidor UUID/parser corrigidos e35 testes unicos verdes. UI resolveu pessoa draft (recusada) e depois QA R04 Responsavel9f04...0062 ativo existente; segunda inclusao tambem recusada, grupo1043c165 permanecev2/zero membros. Causa group_save/role guardian pendente C0/G5, sem retry cego/SQL G1; nao E2E.",
     "evidencia": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md"
   }
 ]

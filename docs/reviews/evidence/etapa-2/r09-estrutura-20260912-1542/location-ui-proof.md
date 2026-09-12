@@ -56,3 +56,20 @@ A leitura inicial de membro vazio nao exercitou contrato plano; preservada.
 Nenhuma nota/Avaliacao alterada; cadeia R08 preservada. Sem SQL remoto,
 segredos, convites enviados ou novos recursos fora da turma autorizada.
 Sem E2E novo enquanto negativa real nao for anexada; deltas factuais propostos.
+
+## Segundo gate de Membros ? 16:47 BRT
+
+Leitor normal superadmin_people_list encontrou quatro fixtures QA ativas;
+active-fixture-read.json. G1 selecionou somente QA R04 Responsavel,
+9f040000-0000-4000-8000-000000000062, pela busca Nome da UI normal.
+Tentativa unica de Salvar no edit do grupo1043c165 tambem foi recusada
+(active-member-rejected.png). API apos tentativa: mesmo grupo ativo v2,
+zero effective_access (member-after-save-proof.json). Logo nao houve inclusao
+persistida; o problema nao se limita a primeira fixture draft.
+
+Causa exata ainda depende do diagnostico do erro de group_save por C0/G5;
+papel enviado pelo consumidor e guardian, fixture ativa confirmada.
+Nao trocar papel/RPC nem alargar hierarquia por tentativa. Rascunho preservado
+na aba829822468, /groups/1043c165-7f24-44fe-a868-5bfc6fb0b50f/edit.
+C0/G5: diagnosticar role_code/constraint/grant e negativa de contexto. Local
+positivo continua valido. Nenhum novo teste/golden/build necessario ate causa.
