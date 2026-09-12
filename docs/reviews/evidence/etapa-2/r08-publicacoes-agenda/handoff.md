@@ -81,3 +81,29 @@ Pendências legítimas: `circulars.attach` pela UI no runtime 3014 quando o slot
 for autorizado; decisão nominal do Owner para os seis R/rodapé; integração e
 registro central pelo C0. A branch foi publicada até
 `1eccbc591d47f962092dba2f083320b28fff768e` e a worktree deve ser preservada.
+
+## Selo final — 14h32 BRT
+
+- A ordem nominal do Owner substituiu os marcos antigos: entrega das frentes até
+  14h40, revisão até 14h50 e fechamento C0 até 15h00. O T0 histórico não muda.
+- C0 emitiu ACK220 para a revisão 89 por SHA fixo. A proposta G6 de backlog R09
+  foi integrada, e os drafts G7 corrigidos foram aprovados em
+  `4e5fd717709602ba30d62b5af094a529eb21d82a`. R09 está preparada, não iniciada.
+- A fixture circular criada na prova API usou circular
+  `aa9e26a6-2874-4e19-ac79-a41f56c44468` e asset
+  `429f1bc4-f579-4179-9193-0e6304aa3e0f`. A circular está logicamente excluída
+  e indisponível; o asset READY foi preservado conforme a medição somente
+  leitura. Não houve restauração, recriação ou cleanup.
+- O manifesto proposto agrega nove grupos de recursos retidos e não contém
+  dados pessoais, links assinados, tokens, credenciais, headers ou sessões.
+- O lote 59/H28, seus 44/44 no espelho e os testes integrados de Pessoas e
+  acessibilidade são posse/prova do C0; G6 não reaplicou SQL nem repetiu testes.
+- Último checkpoint publicado antes deste selo:
+  `35cc5c912f5181315ef475f9e5e75ae0185cbab8`. Não há WIP local além deste
+  fechamento documental; a worktree deve permanecer instalada.
+
+Feito: implementação e provas focais de blocos intercalados, P50 preservado,
+runtime/API de mídia, A+, sino, reconciliação 10.000/4.000, revisões delegadas,
+proposta e revisão R09. Pendente: somente os gates explicitamente bloqueados de
+UI `circulars.attach` e decisão Owner dos seis R, além da integração/fechamento
+central do C0.
