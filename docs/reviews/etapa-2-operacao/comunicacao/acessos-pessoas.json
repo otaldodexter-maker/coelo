@@ -2217,6 +2217,28 @@
     "pendente": "iniciar prova pela rota real com qa-r06-acessos; preservar gates independentes",
     "commits_publicados": [],
     "deltas": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/deltas-r07.json será criado somente com evidência publicada",
-    "segredos": "credencial será lida apenas do arquivo de backup e não será registrada"
+    "segredos": "credencial será lida apenas do arquivo de backup e não será registrada",
+    "checkpoint_23h52": {
+      "recorded_at": "2026-09-11T23:52:07-03:00",
+      "feito": [
+        "build web release de test_driver/qa_main.dart concluído em build/web",
+        "flutter analyze em people/access_profiles/platform_users/invites/students: sem issues",
+        "testes locais direcionados de PersonHandleSection, lookup, modelos/perfis, convites e students iniciados/passados sem falha reportada"
+      ],
+      "verificacao": {
+        "frontend": "local-green para a fatia local exercitada; sem promoção a verified",
+        "backend": "contratos 170500/170600/170700/170800 já constam aplicados no fechamento R06; sem novo pacote",
+        "integrated": "não executado: Chrome/driver real não respondeu após o build; nenhuma escrita produtiva foi contada"
+      },
+      "pendente_com_primeiro_gate": [
+        "people.create/people.edit e handles: abrir sessão qa-r06-acessos na rota real e provar persistência + reload",
+        "access-profiles.edit/assign/delete e access-models.edit/duplicate: mesma prova de rota real/reload",
+        "internal-users.edit/suspend: prova depende de renderer estável e interno sobressalente para suspend",
+        "internal-users.create: Edge Function ainda sem deploy em coordenacao.json.edgeFunctionsR06",
+        "invites.resend: sem fixture expirada segura; não criei migration sem contrato/pgTAP"
+      ],
+      "commits_publicados": ["inicia revisao R07 de acessos e pessoas"],
+      "bloqueio_de_ferramenta": "qa_drive conectado ao CDP, mas Runtime.evaluate/driver expirou após 60s; sessão Flutter Chrome encerrada sem login"
+    }
   }
 }

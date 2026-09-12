@@ -1,0 +1,50 @@
+[
+  {
+    "action_id": "people.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Build release e testes de lookup/rota local confirmam a composição do resolvedor 170700; E2E permanece pendente por renderer/driver sem resposta.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Build release e análise da família concluídos; persistência/reload na rota real ainda não provados.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  },
+  {
+    "action_id": "people.handle",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "PersonHandleSection passou a suíte local de disponibilidade/cooldown; prova real de disponibilidade enquanto digita e reload está pendente.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Testes locais de editor/modelo verdes; prova pela rota real e reload pendente.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Testes locais de modelo/envelope verdes; prova pela rota real e reload pendente.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  },
+  {
+    "action_id": "internal-users.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Análise/build locais concluídos; rota real retida pela falha de resposta do driver.",
+    "evidencia": ["docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md"],
+    "certificacao": {"evidence": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md", "revision": 147, "environment": "local worktree; produção não exercitada", "recordedAt": "2026-09-11T23:52:07-03:00"}
+  }
+]
