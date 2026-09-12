@@ -1,6 +1,6 @@
 {
-  "revision": 61,
-  "updated_at": "2026-09-12T12:39:08.239002-03:00",
+  "revision": 62,
+  "updated_at": "2026-09-12T12:59:58.552248-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "a6e07972c",
-  "status": "EXECUTANDO: CardapiosAPI24PASS/lote55; midiaAPIAconteceAgoraPASS;Momentosretirada403aguardaC0;preparoChatAPI",
+  "head": "d01f92023",
+  "status": "EXECUTANDO: PNG API Acontece/Agora/Momentos, Cardapios e Chat documentados; UI pendente; proximo gate solicitado C0",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -35,8 +35,9 @@
     "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E",
     "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados.",
     "agora-api": "19checks/operacoesPASS exit0;TTLURL403,logout204;publicacao24hNAOverificada.",
-    "momentos-api": "20checksPASS/1FAILwithdraw_moment403 exit1;preparePUTfinalizepublishreadhashreloadTTL passaram;semretirada/semnegativaaposretirada;logout204.",
-    "cardapios-api": "24checks/operacoesPASS exit0;draft1/edit2/review3/publish4/archive5;modeloexistentev2intacto;scopeRulesobjetopersistido;naoE2EUI."
+    "momentos-api": "Inicial20PASS/1FAIL403; aposlote58retirada200+reloadausente; retry8PASS/1FAILoraculoautorreaderrado;outroconsumidor403/logout204. APIretiradaaprovada;UI/cross-tenantnao.",
+    "cardapios-api": "24checks/operacoesPASS exit0;draft1/edit2/review3/publish4/archive5;modeloexistentev2intacto;scopeRulesobjetopersistido;naoE2EUI.",
+    "chat-api": "Inicial27PASS/1FAILoraculoR2400;continuacaomesmosIDs26PASS/0FAILexit0/logout204;hash/reload/replaysemPUT/TTL300403;naosomarreruns;naoE2EUI."
   },
   "lotes": [
     {
@@ -65,14 +66,14 @@
     "com a semantica ligada, cdp_sem type nao alcanca o controller Flutter: usar clickxy no centro + qa_drive enter_text",
     "V-1, V-2, V-3 (Perfil, Para voce, Acontece feed) pendentes; chat.create-group/attach pendentes"
   ],
-  "blocker": "Momentos:withdraw403autorQA,hipotesegrantinstitution_adminaindaamedirC0. UI:runtimeG0semacesso. Cross-tenantreal:sematorQAnegativo.",
+  "blocker": "UI:runtimeG0semacesso; cross-tenantreal:sematorQAnegativo. Momentos403ACLresolvidolote58.",
   "perguntas_ao_coordenador": [
-    "conceder slotPrincipal5arquivos aposG6/integrado",
     "runtimeUI paraPNG/Cardapios/create-group",
-    "conciliar spec028 bindingattachment_id semassetId antescertificacao"
+    "conciliar spec028 bindingattachment_id semassetId antescertificacao",
+    "proximo gate independente aposAPI, semconflito demaisfrentes"
   ],
-  "next_step": "PublicarCardapiosAPI; aguardarC0ACL403Momentos antesretry; preparar1grupoChatQA/anexoAPI conformepar/realm nominal; UI aguardaG0.",
-  "ack": "C0ciclo90dev2441725d5recebido; APIfixturesnominaisautorizadas; falhaMomentosencaminhadaeparada;semprocessoativo.",
+  "next_step": "C0 atribuiu revisao H02/H05/H06/H13 contra decisoes aprovadas: quadro fonte/decisao/acao remanescente; sem repetir smoke verde ou criar fixtures.",
+  "ack": "C0ciclo120rev61recebido; lote58permitiuretirada; outroconsumidornominalnegado403; ChatTTLconcluido; semprocessoativo. C0 confirmou proximo gate documental H02/H05/H06/H13.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1ChromeG0;1Fluttertest global mediante concessaoC0;nenhumprocessoG4ativo;semsegredos;semworktreeprincipal/pull;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {

@@ -1,0 +1,175 @@
+{
+  "source": "R08 G4 chat API group and attachment, normal RPC/gateway contracts",
+  "environment": "production",
+  "ui_e2e": false,
+  "started_at": "2026-09-12T15:50:07.003977+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "participant_person_ids": [
+    "c35684bb-d7f9-4c99-9af9-3018ba5da9ff",
+    "94051039-f045-4cb5-b053-1228204dd7ab"
+  ],
+  "group_title": "R08-G4 PNG privado QA",
+  "group_request_id": "3eda7c66-3c4f-41ab-b468-0c9b7fe954d7",
+  "upload_request_id": "0a93a634-0db3-41b8-aee9-0015182b2da3",
+  "fixture": {
+    "name": "R08-G4-synthetic.png",
+    "bytes": 82,
+    "width": 16,
+    "height": 16,
+    "sha256": "90353b260da72f023c895ee8dc7c392bc583565dcc930caa683cdde53d4dedff"
+  },
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_internal_user_detail_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "qa-r06-principal_identity_matches",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_internal_user_service_person_v1_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_internal_user_service_person_v1_envelope",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "qa-r06-principal_service_person_matches",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_internal_user_detail_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "qa-r06-realm_identity_matches",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_internal_user_service_person_v1_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_internal_user_service_person_v1_envelope",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "qa-r06-realm_service_person_matches",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_chat_create_group_v2_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_chat_create_group_v2_envelope",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "nominal_group_created_once",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_chat_group_members_v2_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_chat_group_members_v2_envelope",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "only_nominal_qa_members",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "superadmin_chat_thread_v2_http",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "superadmin_chat_thread_v2_envelope",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "new_group_thread_empty",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "prepare",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "signed_headers_exact_and_isolated",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_put_without_redirect",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "finalize_correlated_binding",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "authorized_binding_read",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "bounded_read_ttl",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_png_bytes_match",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "unsigned_object_denied",
+      "passed": false,
+      "http_status": 400
+    }
+  ],
+  "resources": {
+    "conversation_id": "39aa8f4a-33a0-4d4e-beb0-a9fd4c7fcf64",
+    "attachment_id": "9ed2bcc3-dfb9-4f56-a67d-0e582593ca3e",
+    "message_id": "fcd0c6d4-f917-4c56-94e1-10805c734b50"
+  },
+  "status": "failed",
+  "cross_tenant": "not executed; both QA actors are Owner/platform",
+  "read_ttl_seconds": 300,
+  "failure_type": "RuntimeError",
+  "logout_status": 204,
+  "retention": "nominal QA group, message, attachment and private master preserved; no DELETE or revoke",
+  "finished_at": "2026-09-12T15:50:21.948167+00:00"
+}

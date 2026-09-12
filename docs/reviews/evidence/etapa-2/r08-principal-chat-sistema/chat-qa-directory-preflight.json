@@ -1,0 +1,28 @@
+{
+  "source": "C0 auth-to-internal-identity receipt plus authenticated detail/service-person RPCs",
+  "measured_at": "2026-09-12T15:46:54.150316+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "actors": [
+    {
+      "alias": "qa-r06-principal",
+      "internal_identity_id": "8363d411-5ec6-432d-a319-9e02f29a2aa8",
+      "person_id": "c35684bb-d7f9-4c99-9af9-3018ba5da9ff",
+      "detail_http_status": 200,
+      "identity_match": true,
+      "service_person_http_status": 200,
+      "person_matches_c0": true,
+      "scope_receipt_c0": "active owner institution membership; no direct unit/group membership claim"
+    },
+    {
+      "alias": "qa-r06-realm",
+      "internal_identity_id": "bf2acb52-8c23-4d7a-8787-323fc162c96b",
+      "person_id": "94051039-f045-4cb5-b053-1228204dd7ab",
+      "detail_http_status": 200,
+      "identity_match": true,
+      "service_person_http_status": 200,
+      "person_matches_c0": true,
+      "scope_receipt_c0": "active owner institution membership; no direct unit/group membership claim"
+    }
+  ],
+  "own_session_logout_status": 204
+}

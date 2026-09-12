@@ -232,3 +232,21 @@ cross-tenant negado: as contasQA existentes sao Owner/platform.
 Memoria: nenhum contrato de produto foi mudado por essas provas. As fontes
 canonicas de autorizacao seguem vigentes; C0 concilia a hipotese403 e a spec028.
 Nao foi criada projecao de conhecimento para registrar mera atividade.
+
+
+## Continuacao API — Momentos e Chat (12/09, 13h BRT)
+
+Momentos: lote58/C0 resolveu o403 de retirada. Mesmo registro retirado200,
+reconsulta ausente; read do outro consumidor qa-r06-realm403, logout204.
+O read200 do autor e canonico; a tentativa historica com esse oraculo errado
+permanece8PASS/1FAIL, nao uma nova falha de produto. Ver moments-api-proof.md.
+
+Chat: grupo nominal e PNG privado criados uma unica vez. Primeiro roteiro
+27PASS/1FAIL por esperar403 em vez do400/InvalidArgument do R2 sem assinatura.
+Continuacao nos mesmos IDs26PASS/0FAIL, exit0/logout204: membros, hash, reload,
+replay sem novoPUT, negativas e expiracao real da URL300s. Ver chat-api-proof.md.
+
+Acontece/Agora/Cardapios mantem resultados publicados. Nenhuma nova promocao
+UI/E2E ou cross-tenant. Agora24h permanece futuro; agendador H09 tem prova C0.
+Sem processo, slot Flutter ou Chrome G4 ativo. Proximo gate solicitado ao C0
+para continuar sem conflitar com as outras frentes ate14:52:16 BRT.

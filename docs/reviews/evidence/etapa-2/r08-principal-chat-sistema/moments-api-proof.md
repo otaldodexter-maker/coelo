@@ -1,10 +1,10 @@
 ---
 fonte: moments_api_smoke.py; gateway v10 e RPCs produtivos; autorizacao nominal C0 R08
-status: leitura-aprovada-retirada-bloqueada
+status: api-retirada-aprovada-ui-e2e-pendente
 data: 2026-09-12
 ---
 
-# Momentos — PNG privado por API e retirada403
+# Momentos — PNG privado, retirada e negativa ao consumidor por API
 
 apps/superadmin → Coelo (Principal) → Momentos → publicar/ler/retirar →
 momentos.create/momentos.publish/momentos.view/momentos.remove.
@@ -32,8 +32,8 @@ o contrato em producao antes de autorizar a continuacao.
 - Audiencia: school_staff. Nenhuma pessoa, senha, estrutura, papel, recurso
   Cloudflare ou configuracao foi criada/alterada.
 
-O registro continua publicado no contexto sintetico; retirada e leitura
-negada apos retirada **nao passaram/nao foram executadas**, respectivamente.
+Na execucao inicial, o registro permaneceu publicado; retirada e leitura
+negada apos retirada nao passaram/nao foram executadas, respectivamente.
 Nenhum DELETE ou cleanup fisico foi usado para contornar403.
 
 ## Hipotese estatica para revisao C0
@@ -52,3 +52,34 @@ Nao ha segundo ator QA com escopo negado (qa-r06-* sao Owner/platform),
 portanto cross-tenant real permanece nao executado. Proximo gate: C0 medir
 causa do403, corrigir pelo fluxo serializado se cabivel e repetir somente a
 retirada/reconsulta deste mesmo registro, preservando as provas anteriores.
+
+
+## Continuacao autorizada apos lote 58
+
+C0 aplicou `20260912140550` pelo fluxo serializado (lote 58) e autorizou
+somente a retirada do mesmo registro. `moments-withdraw-retry-manifest.json`
+registra, em 12/09/2026 15:51 UTC, can_withdraw verdadeiro, retirada HTTP 200
+com withdrawn_at e nova consulta sem a publicacao. O defeito inicial de ACL
+foi resolvido; nao houve novo upload nem alteracao de versao pelo cliente.
+
+O roteiro dessa tentativa terminou com **8 checks aprovados e 1 falho**,
+exit1, porque esperava 403 para o proprio autor e recebeu 200. Esse oraculo
+estava errado: `authorize_moments_media_read` no contrato
+`20260911130300_moments_feed_and_withdrawal_baseline.sql` preserva o caminho
+do autor com capacidade de criacao; o caminho de consumidor exige publicacao
+publicada e nao retirada. O script historico e o resultado falho foram
+preservados para rastreabilidade; nao usar seu ultimo assert como criterio
+canonico nem repetir a retirada para corrigir uma contagem.
+
+C0 autorizou uma consulta somente leitura com o outro consumidor nominal
+`qa-r06-realm`, no mesmo asset. `moments-withdraw-consumer-manifest.json`
+registra login200, **read403**, denied=true e logout local204 em 15:54 UTC.
+A sonda foi executada por Python inline com a mesma configuracao privada,
+login normal e POST moments-media action=read/asset_id; somente esses campos
+sanitizados foram gravados. Nao houve PUT, finalize, DELETE ou alteracao de
+permissoes nessa consulta. O autor tambem encerrou sua sessao com logout204.
+
+Estado atual: publicacao retirada, ausente no feed; outro consumidor negado;
+master privado preservado. Essas etapas comprovam o contrato API de retirada,
+sem promover UI/E2E e **sem comprovar cross-tenant**: as duas contas QA sao
+Owner/platform. Nao somar os checks das tentativas como testes distintos.
