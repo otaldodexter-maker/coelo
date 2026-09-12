@@ -473,3 +473,69 @@ espera permissões antigas e a assinatura removida de 12 argumentos; registrou
 quatro falhas e abortou ao resolver a função inexistente, com rollback. Isso foi
 preservado como dívida de teste, não contado como verde nem como regressão do
 candidato.
+
+## Fechamento G0
+
+Às 14:22, o Owner substituiu os marcos anteriores por: frentes até 14:40,
+revisão até 14:50 e fechamento C0 até 15:00 BRT. O T0 histórico permanece. G0
+encerrou novidade e publicou este handoff dentro da nova janela; R09 não foi
+iniciada.
+
+Na checagem final das 14:23, o servidor PID 14072 continuava ativo com
+`/login` HTTP 200 e o baseline estava `running/healthy`. A RAM livre oscilou
+para 3,32 GB, mas o censo completo não foi liberado pelo C0 e não cabe prometer
+conclusão antes das 15:00; nenhum teste foi iniciado. A recomendação permanece
+condicional a preflight imediato e posse do único processo Flutter.
+
+Entrega publicada antes do gate focal: `0d42be27d8be6b889224182086a4269df89c5a78`.
+Dados sintéticos preservados para o fechamento formal da Etapa 2: question-image
+form `f88005ab-af5e-4aa2-8cf7-f35de4ded376`/asset
+`d25b8baa-efb5-4702-b5e6-ac3084610605`; answer-image form
+`afa8f922-b27d-4258-9322-8b3f96ee7df9`, occurrence
+`5762fe8f-2d58-48ef-b410-30bfd0fe6703`, participation
+`095d0236-334b-460b-aaa2-e1fce7914d8f`, response
+`bb1f3443-76a6-4049-b364-6215545625c8` e asset
+`e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195`. Request IDs ficam apenas na manifest
+commitada; não há credenciais neste handoff.
+
+Pendência G0 única: a prova visual de login/leitura/reload não foi obtida porque
+o canal de texto CUA não atualiza os controllers Flutter. A prova API real de
+answer-image fechou, mas não é promovida a UI/E2E. C0 remove a worktree somente
+após integração e backup; G0 não fará cleanup dos sintéticos nem do runtime.
+
+## Gate focal final do lote 59
+
+Por solicitação e confirmação explícitas do C0, o corpo final de G2 em
+`df0a281cb561b0440a1eb8ab5cd541b8b6196fdb` foi provado novamente no baseline
+descartável. O candidato atual tem blob Git
+`707cc8b4fe37d46dc8e40a993dbbd8fe33b2d513` e SHA-256 LF
+`8b6c66091b89e7a319b00f894f80869cb764ba66106baa18e9acbec943761b6e`;
+ele difere do corpo anteriormente aplicado porque a coleção de localidades
+passou a projetar também `state_code`.
+
+Para reproduzir uma base fresca sem alterar o candidato remoto, removi somente
+a assinatura experimental de 17 argumentos já presente no espelho e apliquei o
+candidato final. O apply terminou com `COMMIT`. O estrutural do mesmo SHA (blob
+`f428ac3aa624fef325ef738c7814a52ec3f802bb`, SHA-256 LF
+`d28091240fe733ccb88e503ac54fd3e66dd5e6536e6afd9c804fff4af5dc5aeb`)
+passou 11/11. O fixture funcional verde de G5 em
+`e1cad10e2` (blob `6509d411`, SHA-256 LF
+`dc1295bc55dcffca72ec88aafc154f15b88351781f40369168ed2712f953df8d`)
+passou 10/10. Ambos rodaram uma vez, terminaram com rollback e exit 0: 21/21
+asserts focais do corpo final.
+
+Por gate adicional do C0, as três regressões modernas foram então executadas
+uma vez sobre esse mesmo corpo final e o mesmo SHA fixo `df0a281cb`: segmentos
+8/8 (blob `5a452345`, SHA-256 LF `6aa4c82d`), identidade 11/11 (blob
+`bc2a0de7`, SHA-256 LF `bf57cd8a`) e handles 4/4 (blob `44016d9b`, SHA-256
+LF `cac1ec79`). Todas terminaram com rollback e exit 0. O total final passa a
+44/44 sobre o corpo que contém `state_code`; a suíte histórica obsoleta não foi
+repetida. Produção, fila e ledger permaneceram intocados.
+
+Recibos: [estrutural final](./h28-final-structural-df0a281cb.log) e
+[funcional final](./h28-final-functional-e1cad10e2.log). Uma consulta somente
+leitura posterior confirmou que a assinatura final está presente e que o corpo
+materializado contém `state_code`: [verificação do corpo](./h28-final-body-df0a281cb.log).
+Recibos das regressões finais: [segmentos](./h28-final-regression-people-list-segment.log),
+[identidade](./h28-final-regression-people-identity-lookup.log) e
+[handles](./h28-final-regression-institution-people-handles.log).

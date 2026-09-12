@@ -1,0 +1,6 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+ final_signature_present | final_body_has_state_code 
+-------------------------+---------------------------
+ t                       | t
+(1 row)
+
