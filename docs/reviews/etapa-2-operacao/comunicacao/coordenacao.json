@@ -1,12 +1,12 @@
 {
-  "revision": 101,
+  "revision": 102,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:26:50.903Z",
+  "updatedAt": "2026-09-12T19:31:15.648Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -260,6 +260,7 @@
     "99": "CLI resume G6 rejeitado por active writer; nenhuma instrucao entregue/turno iniciado. C0 recolhe o slot Chrome nao adotado G6 e executa gate UI enquanto frentes existentes entregam por Git.",
     "100": "G1 integrado; C0 executa testes focais na base conjunta antes de publicar codigo e transferir Chrome a G1. Upload Circular bloqueado por permissao da extensao; nenhum anexo enviado. Primeira tentativa de registrar reserva falhou por cwd; registro corrigido sem segunda suite.",
     "101": "35PASS base conjunta G1; C0 transfere Chrome/build/servidor a G1 para fechar Turmas. Seletor Circular normal validado ate abertura, upload bloqueado por permissao da extensao. G5 entregue; C0 assume dependencia backend.",
+    "102": "G1 adotou rev101 e compila; C0 fechou sua aba829822462 sem WIP para liberar ownership CUA. G1 abrir nova ABA no mesmo Chrome22592. C0 reserva espelho para negativa focal forms.resolve-file.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3716,8 +3717,8 @@
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
       "ackRevision": 105,
-      "primeiroGate": "ACAO AGORA: git fetch/merge origin/dev na propria worktree; codigo membros ja integrado e C0 testou35PASS. Compilar QA com COELO_QA_TEXT_ENTRY_EMULATION=false e COELO_QA_SYNTHETIC_CIRCULAR_FILE=false, env publico ignorado retido G0. Assumir Chrome22592/tab829822462 e servidor51168/3014. Provar groups.location e groups.members via busca normal, contexto sintetico retido, criar turma R09 autorizada e preservar. Backend reautoriza. Nao certificar formulario manual que exige UUID. Publicar provas/deltas e liberar slot; nenhuma outra fatia antes de fechar esta.",
-      "status": "vaga ativa; Chrome/build transferidos rev101; adocao seguinte pendente",
+      "primeiroGate": "ACAO AGORA: git fetch/merge origin/dev na propria worktree; codigo membros ja integrado e C0 testou35PASS. Compilar QA com COELO_QA_TEXT_ENTRY_EMULATION=false e COELO_QA_SYNTHETIC_CIRCULAR_FILE=false, env publico ignorado retido G0. Assumir Chrome22592/tab829822462 e servidor51168/3014. Provar groups.location e groups.members via busca normal, contexto sintetico retido, criar turma R09 autorizada e preservar. Backend reautoriza. Nao certificar formulario manual que exige UUID. Publicar provas/deltas e liberar slot; nenhuma outra fatia antes de fechar esta. C0 liberou ownership CUA fechando829822462: abrir nova aba no mesmo Chrome22592, nao esperar release adicional. Nao ha formulario/WIP da Circular aberto.",
+      "status": "ativa; adocao101 confirmada pela conversa; build em curso",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -3848,17 +3849,18 @@
     "chrome": {
       "dono": "G1",
       "pid": 22592,
-      "tab": "829822462",
-      "inicio": "2026-09-12T19:26:50.903Z",
-      "estado": "TRANSFERENCIA NOMINAL C0->G1. BrowserID varia por sessao: descobrir CUA; tab preservada em /circulars, sem draft aberto."
+      "inicio": "2026-09-12T19:31:15.648Z",
+      "estado": "C0 FECHOU sua aba829822462 por CUA; nao reutilizar ID fechado. G1 abrir UMA aba no Chrome existente via createBrowserTab chrome, URL http://127.0.0.1:3014; nenhuma segunda instancia Chrome. Pode login normal proprio se necessario, sem injecao."
     },
     "flutterTest": {
       "dono": "nenhum",
       "estado": "C035PASS terminado; nao repetir sem mudanca pertinente"
     },
     "sqlEspelho": {
-      "dono": "nenhum",
-      "estado": "disponibilidade pendente; nenhum SQL autorizado sem espelho"
+      "dono": "C0",
+      "inicio": "2026-09-12T19:31:15.648Z",
+      "container": "supabase_db_coelo_baseline",
+      "estado": "teste transacional focal forms_answer_media_r2_v1; sem migration ou escrita remota. Hashes authorizer e audit_actor iguais producao/espelho."
     },
     "ativas": [
       "C0",
