@@ -59,8 +59,9 @@ identidade para `people.create` (54); `form_save_draft` sem 42702 em
 formulário publicado (54); P48 por papel interno reescrito sobre o escopo,
 `scopeRules` como objeto em Cardápios e criação de usuário interno via Auth
 Admin (55). `candidatos/` vazio. Edge Function `internal-user-create`
-escrita e conferida (`deno check`) mas **sem deploy** (comando bloqueado na
-sessão do coordenador; roteiro em `coordenacao.json` → `edgeFunctionsR06`).
+escrita, conferida (`deno check`) e implantada pela coordenação R07 em
+produção em 2026-09-11; `[functions.internal-user-create] verify_jwt=false`
+está registrado no `config.toml`, e o POST reautoriza pelo RPC.
 CORS dos três buckets R2 alinhado a localhost/127.0.0.1 nas portas das
 frentes. Ordem real em
 `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`.
@@ -93,7 +94,8 @@ assign, Catálogo (P44), texto honesto "Disponível depois do MVP".
 real; certificações de Cardápios apontadas para a captura publicada.
 
 **Pendências registradas na R06 (detalhe por action_id nas matrizes e em
-`next-round/R06-fechamento.md`):** deploy de `internal-user-create` (+ P51
+`next-round/R06-fechamento.md`):** prova de `internal-users.create` pela tela
+após o deploy de `internal-user-create` (+ P51
 SMTP para o e-mail de definição de senha); prova de mídia nos publicadores
 do Principal; `chat.create-group` UI e `chat.attach` cliente; Lançar chamada
 na família Publicação (G3 não chegou ao item 7); Avaliações e

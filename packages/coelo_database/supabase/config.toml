@@ -405,6 +405,11 @@ verify_jwt = true
 [functions.circular-media]
 verify_jwt = false
 
+# Browser clients reach the function with a short-lived JWT; the handler
+# reauthorizes the internal-user operation through the scoped RPC.
+[functions.internal-user-create]
+verify_jwt = false
+
 # pg_cron dispatches this service-only worker with an opaque server secret.
 # Authorization is enforced again by the handler before any RPC is claimed.
 [functions.form-operations]

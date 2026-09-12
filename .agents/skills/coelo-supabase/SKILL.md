@@ -766,9 +766,9 @@ concluída, unidade Backend `done` e produto ainda pendente.
 - **Usuário interno novo** (170800, lote 55): `superadmin_internal_user_create_authorize_v1`
   (operador) + `superadmin_internal_user_create_for_worker_v1` (`service_role`)
   com a Edge Function `internal-user-create` fazendo `auth.admin.createUser`.
-  A função ainda **não tem deploy** (bloqueado na sessão do coordenador da
-  R06): `[functions.internal-user-create] verify_jwt = false` no
-  `config.toml` (OPTIONS sem JWT; o POST reautoriza pelo RPC) e
+  A função foi implantada pela coordenação da R07 em 11/09/2026 após registrar
+  `[functions.internal-user-create] verify_jwt = false` no `config.toml`
+  (OPTIONS sem JWT; o POST reautoriza pelo RPC), usando
   `supabase functions deploy internal-user-create --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database`.
   O e-mail de definição de senha depende de SMTP próprio (P51): o SMTP padrão
   do Supabase só entrega a membros do time.
