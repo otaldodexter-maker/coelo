@@ -1,4 +1,60 @@
 {
+  "R09_CHECKPOINT_G2": {
+    "revision": 162,
+    "recorded_at": "2026-09-12T16:06:43-03:00",
+    "round": "E2-R09-20260912-1542",
+    "threadId": "01a096ed-ea61-7cb1-8ba0-b7f65dec4bf9",
+    "conversationTitleRequested": "R09 ? G2 ? Acessos e Pessoas",
+    "conversationRename": "ferramenta indisponivel; titulo nao alterado",
+    "c0_threadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "c0_revision_observed": 96,
+    "status": "preparacao focal concluida; aguarda vaga e transferencia de Chrome por C0",
+    "owner_instruction": "continuar atividade principal e alinhar com coordenador; preservados slots e corte vigentes",
+    "solicitacao_C0": {
+      "pedido": "Confirmar ACK161/40e9b1632 e liberar primeira fatia G2 quando houver vaga, com runtime/base, Chrome/PID e expiracao. Informar contexto sintetico elegivel para UI H28; fixture G5 foi rollback no espelho.",
+      "action_ids": [
+        "people.create",
+        "people.edit",
+        "people.list"
+      ],
+      "h28": "regressao focal dos filtros, sem novo ID ou SQL",
+      "flutter_test": "somente se defeito/delta pertinente exigir; nao solicitado para rerun dos 19 verdes",
+      "sql": "nenhuma reaplicacao do lote59 solicitada"
+    },
+    "evidencias_cruzadas": [
+      {
+        "arquivo": "docs/reviews/evidence/etapa-2/r08-coordenacao/lote59-preflight.json",
+        "resultado": "applied-production; 17 argumentos; anon false; 44 pgTAP, 0 falhas; rollback fixtures"
+      },
+      {
+        "arquivo": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-people-result.json",
+        "resultado": "nativeExitCode0; 19 passed, 0 failed, 0 skipped; historico R08"
+      },
+      {
+        "arquivo": "docs/reviews/evidence/etapa-2/r08-realm-interno/h28-people-functional-fixture.md",
+        "resultado": "fixture funcional A/B revertida; nao presumir dados presentes em producao"
+      },
+      {
+        "arquivo": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart",
+        "resultado": "contextFiltersAvailable true; adapters produtivos people/identity presentes"
+      },
+      {
+        "arquivo": "docs/reviews/etapa-2-operacao/next-round/R09-backlog.md",
+        "resultado": "people.create/edit FE local-green, BE done, E2E pending-verification; cruzado com os tres rastreadores"
+      }
+    ],
+    "proximo_gate": "apps/superadmin -> Pessoas -> criar/editar pessoa sintetica e @ -> people.create/people.edit: rota normal, persistencia, reload e autorizacao; H28 na mesma visita",
+    "ordem_seguinte": [
+      "access-profiles.edit/assign/delete",
+      "access-models.edit/duplicate",
+      "convites executaveis"
+    ],
+    "testes_executados_agora": 0,
+    "novos_aceites": [],
+    "estimativa": "duracao E2E ainda nao calculavel: sem runtime medido/liberado a G2; calibrar na primeira interacao autorizada",
+    "memoria": "no-op; nenhuma regra duravel de produto alterada",
+    "handoff": "docs/reviews/evidence/etapa-2/r09-acessos-pessoas-20260912-1542/handoff.md"
+  },
   "R09_ADOCAO_G2": {
     "revision": 161,
     "recorded_at": "2026-09-12T16:00:22-03:00",
@@ -33,14 +89,14 @@
     "historico": "Demais blocos anteriores preservados como historico R03-R08; nao representam execucao, timers ou autorizacoes atuais. Este ACK rege a espera R09.",
     "memoria": "nenhuma regra duravel de produto alterada; ACK operacional somente"
   },
-  "revision": 161,
-  "updated_at": "2026-09-12T16:00:22-03:00",
-  "relogio_local": "2026-09-12T16:00:22-03:00",
+  "revision": 162,
+  "updated_at": "2026-09-12T16:06:43-03:00",
+  "relogio_local": "2026-09-12T16:06:43-03:00",
   "round": "E2-R09-20260912-1542",
   "group": "acessos-pessoas",
   "tool": "Codex",
   "model": "gpt-6-astra (medium; configuracao declarada por C0)",
-  "status": "fila; adocao confirmada via Git; aguarda vaga C0 sem polling",
+  "status": "preparacao focal concluida; aguarda vaga e transferencia de Chrome por C0",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
   "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
   "head": "ACK documental R09 sobre 7907453f0; SHA do ACK no Git",
@@ -91,7 +147,7 @@
   "loop": "nenhum; sem polling, T0 ou timers da tentativa encerrada",
   "testes_P_F_B_S_U": "pgTAP: internal_user_handles_v1_test 12/12 P (reprovado apos o lote 49); person_handles_v1_test 22/22 P; institution_people_handles_v1_test 4/4 P; principal_context_handles_and_coelo_profile_v1_test 14/14 P; institution_system_model_delete_v1_test 7/7 P; institution_profile_system_model_create_v1_test 8/8 P; people_identity_lookup_v1_test 11/11 P; superadmin_internal_users_directory_test 44/45 (teste 7 requires_mfa pre-existente). Rota real: 8 acoes provadas (abaixo).",
   "bloqueio": "parcial: rota real sem credencial propria; trabalho independente segue",
-  "proximo_passo": "aguardar follow-up de C0 com vaga e slots; depois leituras focais e cruzamento das provas existentes",
+  "proximo_passo": "Confirmar ACK161/40e9b1632 e liberar primeira fatia G2 quando houver vaga, com runtime/base, Chrome/PID e expiracao. Informar contexto sintetico elegivel para UI H28; fixture G5 foi rollback no espelho.",
   "ACK_ao_coordenador": "Adoto como unico C0 01a096ed-314b-7c13-a9e0-3e64649e66fc, host local; coordenacao revisao 96, round E2-R09-20260912-1542.",
   "PACOTE_170500_P46_20h20": {
     "id": "AP-INTERNAL-USER-HANDLES-170500",
