@@ -312,16 +312,25 @@
         "action_id": "support.*",
         "status": "local-green",
         "proof": "flutter test test/features/account test/features/support -> 195/195 PASS; prova de rota real R07 retida porque o build web nao concluiu main.dart.js"
+      },
+      {
+        "action_id": "audit.export / imports.* / profile_files.*",
+        "status": "local-green",
+        "proof": "flutter test test/features/audit test/features/imports test/features/access_profiles/presentation/access_profile_file_actions_test.dart -> 99 PASS + 1 skip esperado; export geral nao inicia job/download e imports exibem indisponibilidade honesta"
+      },
+      {
+        "action_id": "plans.* / catalog.validate / catalog.sync / catalog.publish",
+        "status": "local-green",
+        "proof": "flutter test test/features/plans test/features/catalog -> 51/51 PASS; plans.assign segue bloqueado por decisao da spec 051 e catalog.publish segue dependente de hosting nominal"
       }
     ],
     "pending": [
       {"action_id": "qa_login.strict_raw_type", "first_gate": "flutter analyze em apps/superadmin"},
-      {"action_id": "account.settings", "first_gate": "prova pela rota real"},
-      {"action_id": "account.theme", "first_gate": "prova pela rota real"},
-      {"action_id": "account.sessions", "first_gate": "prova pela rota real"},
-      {"action_id": "support.*", "first_gate": "listar acoes restantes no recorte"},
-      {"action_id": "plans.* / catalog.*", "first_gate": "prova pela rota real"},
-      {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "botao honesto e indisponibilidade conferidos"}
+      {"action_id": "account.settings / account.theme / account.sessions", "first_gate": "build web da propria branch + Chrome/CDP; local-green registrado"},
+      {"action_id": "support.*", "first_gate": "build web da propria branch + Chrome/CDP; local-green registrado"},
+      {"action_id": "plans.assign", "first_gate": "decisao da spec 051 / P51 Owner; nao criar comando por inferencia"},
+      {"action_id": "catalog.publish", "first_gate": "decisao nominal de hosting; nao publicar recurso"},
+      {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "build web da propria branch + Chrome/CDP para conferir o botao honesto; local-green registrado"}
     ],
     "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55", "15d3390bd"],
     "deltas": "docs/reviews/evidence/etapa-2/r07-operacoes/deltas-r07-ops.json (a criar)",
