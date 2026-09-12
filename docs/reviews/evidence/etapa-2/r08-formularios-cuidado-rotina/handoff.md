@@ -51,6 +51,8 @@ E2E UI executado por G3: **0**. Build, testes isolados, API smoke e tela aberta 
 
 Evidência externa reutilizável, efetivamente lida: manifesto G0 `../r08-ambiente-runtime/forms-question-image-api-smoke-manifest.md`. Question-image teve save/prepare/PUT/finalize/replay/resolve/GET e reload do binding PASS via API, fixture preservada. Não inclui a resposta Foto/Galeria, negação cross-tenant real, exclusão/expiração remota nem uso pela UI Flutter. C0 implantou lote57 e depois form-media v17; implantação não é prova da ação inteira.
 
+Atualização externa posterior efetivamente lida por SHA `893a3e2a3`: G0 `forms-answer-image-api-v20-20260912.log`, medido13:50BRT, form-media v20. Resposta identificada Foto: preflight/open, prepare, PUT68bytes, finalize/replay e save draft PASS via API. Autorizar download falhou400 `media_request_failed`; GET e reopen não executados. Logout local204; fixture preservada sem cleanup. Isso avança upload/persistência de resposta separadamente de question-image e não certifica download, reload, câmera física ou UI. Investigação é C0/G5/G0; G3 não repetiu o smoke.
+
 ## Pendências e próximo gate
 
 1. Captura Foto local-green: integrar/build e provar no navegador pelo runtime G0/C0. Mantém Foto1; não amplia cardinalidade por fonte antiga. Propostas focais em `deltas.json`, sem aplicação direta ao inventário.

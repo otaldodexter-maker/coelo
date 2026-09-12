@@ -1,18 +1,18 @@
 {
-  "revision": 77,
+  "revision": 78,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:54:07.003Z",
+  "updatedAt": "2026-09-12T16:59:03.268Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "7bcc33eef",
+  "head": "d2bd9471c + reativação guideline desta revisão",
   "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "H25 regressão golden integrada corrigida semrebaseline: pintura fullwidth separada dohitbox48.37PASS0FAIL/analyze0 (21tabela+16goldens),1novo. Flutterliberado; prontoC0reintegrar.",
+  "currentGate": "DiretórioFormulários guideline completo reativado após1PASS0FAIL primeira execução/analyze0; semmudançaproduto/token/PNG. C0H25integrado37PASS. MemóriaC0aplicando semduplicaçãoG3.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -149,6 +149,14 @@
           "passed": 0,
           "failed": 1
         }
+      },
+      {
+        "sha": "guideline desta revisão",
+        "passed": 1,
+        "failed": 0,
+        "novos": 0,
+        "reativados": 1,
+        "evidencia": "13-directory-accessibility.md"
       }
     ],
     "e2eExecutados": 0,
@@ -170,7 +178,7 @@
     "packages/coelo_ui_admin/lib/src/table/coelo_admin_resizable_table.dart (H25 posse nominal C0; pacote final publicado)"
   ],
   "resources": {
-    "flutterTest": "Liberado43313 exit0:16goldensPASS; tabela21PASS. Analyze6268 exit0. Nenhum processoG3.",
+    "flutterTest": "Liberado: guideline completo1PASSexit0, analyzeexit0. NenhumprocessoG3.",
     "chrome": "G0; sem posse G3; runtime E2E ainda não liberado",
     "sql": "H19 sem schema especulativo; pergunta Owner registrada C0, G5 aguarda.",
     "deploy": "C0 é integrador/deployer; status atual remoto deve seguir JSONC0/G0. Nenhum deploy G3."
@@ -314,7 +322,7 @@
       "o_que": "handoff/memória conciliados"
     }
   ],
-  "nextStep": "C0 reintegrar followup visualf0e148a70 + memória7bcc33eef; aguardar próximo gate independente até14:52:16, handoffaté15:02:16.",
+  "nextStep": "Publicar reativação e solicitar próximo gate independente ao C0 até corte; handoff segueparcial.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",
