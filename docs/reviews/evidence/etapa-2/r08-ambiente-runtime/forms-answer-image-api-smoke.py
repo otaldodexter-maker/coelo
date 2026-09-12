@@ -211,6 +211,7 @@ def main() -> int:
                     "finalize_request_id",
                     "save_request_id",
                     "download_request_id",
+                    "reload_request_id",
                 ):
                     require_uuid(run_manifest.get(key), key)
             else:
@@ -231,6 +232,7 @@ def main() -> int:
                     "finalize_request_id": str(uuid.uuid4()),
                     "save_request_id": str(uuid.uuid4()),
                     "download_request_id": str(uuid.uuid4()),
+                    "reload_request_id": str(uuid.uuid4()),
                 }
                 save_run_manifest(run_manifest)
 
@@ -429,8 +431,13 @@ def main() -> int:
             "edit_secret": edit_secret,
         }
         assert run_manifest is not None
+        active_open_request_id = (
+            run_manifest["reload_request_id"]
+            if args.resume_download
+            else run_manifest["open_request_id"]
+        )
         status, draft = rpc("form_open_response_draft", {
-            "p_request_id": run_manifest["open_request_id"],
+            "p_request_id": active_open_request_id,
             "p_expected_version": 0,
             "p_payload": open_payload,
         })
@@ -495,7 +502,7 @@ def main() -> int:
                 sha256=hashlib.sha256(received).hexdigest(),
             )
             status, reloaded = rpc("form_open_response_draft", {
-                "p_request_id": run_manifest["open_request_id"],
+                "p_request_id": run_manifest["reload_request_id"],
                 "p_expected_version": 0,
                 "p_payload": open_payload,
             })
