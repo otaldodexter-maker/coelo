@@ -1,6 +1,6 @@
 {
-  "revision": 158,
-  "updated_at": "2026-09-12T13:53:39-03:00",
+  "revision": 159,
+  "updated_at": "2026-09-12T13:57:54-03:00",
   "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
   "round": "E2-R08-20260912",
   "group": "acessos-pessoas",
@@ -9,7 +9,7 @@
   "status": "ativa; H28 em candidato local para revisao/serializacao C0/G5; E2E continua dependente do runtime de G0",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
   "branch": "work/etapa2-r08-acessos-pessoas",
-  "head": "H28 SQL candidato publicado em 2eebea3f4; payload Dart e desserializacao em WIP deste checkpoint",
+  "head": "H28 candidato/payload publicado em 1cbc1f6a0; rollout do cliente permanece desligado até serialização confirmada",
   "base_observed": "origin/dev materializado por merge antes do candidato H28; C0/G5 revisam e serializam lote 59",
   "T0": {
     "observacao": "coordenacao rev64 lida e incorporada; slots e cortes vigentes da R08.",
@@ -2304,7 +2304,7 @@
   },
   "H28_PEOPLE_CONTEXT_FILTERS": {
     "id": "H28",
-    "recorded_at": "2026-09-12T13:53:39-03:00",
+    "recorded_at": "2026-09-12T13:57:54-03:00",
     "status": "candidato local pronto para revisao; nao aplicado, nao e migration/fila/deploy",
     "artefatos": [
       "packages/coelo_database/candidatos/acessos-pessoas/20260912143000_people_directory_context_filters_v1.sql",
@@ -2313,7 +2313,7 @@
     "contrato": "superadmin_people_list ganha activity_ids UUID e state/municipality/neighborhood textuais com defaults; uma unica linha context_rows satisfaz todos os filtros. Atividade usa assignment/link/participant vigentes; localidade deriva de unit_addresses ou institution_addresses. total_count e calculado antes da pagina.",
     "seguranca": "mantem assert_people_permission, unica assinatura PostgREST, grants authenticated/service_role e rejeicoes unit/group cross-context; nao aceita ID de localidade nao verificavel do cliente.",
     "teste": "pgTAP candidato registra assinatura/ACL e invariantes de atividade, contexto unico, cadeia de localidade, segmentos e contagem; fixture funcional A/B e execucao local ficam para C0/G5 na serializacao.",
-    "cliente_wip": "adapter encaminha p_activity_ids/p_state_codes/p_municipality_ids/p_neighborhood_ids e desserializa activities/states/municipalities/neighborhoods; composicao o habilita somente para serializacao atomica com o candidato. dart analyze focal: 0 issues.",
+    "cliente_wip": "adapter encaminha p_activity_ids/p_state_codes/p_municipality_ids/p_neighborhood_ids e desserializa activities/states/municipalities/neighborhoods; composicao o mantém desligado até serialização confirmada para não chamar RPC sem assinatura. dart analyze focal: 0 issues.",
     "pendente": "revisao tecnica C0/G5, completar fixture A/B de positivo/negativo/cross-tenant e aplicar somente na fila autorizada; flutter test focal aguarda slot."
   },
   "R07_FECHAMENTO_C0": {
