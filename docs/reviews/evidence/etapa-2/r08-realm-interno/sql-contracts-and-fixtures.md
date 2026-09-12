@@ -1,7 +1,7 @@
 ---
 title: "R08 G5 — contratos SQL, fixture expirada e candidato H09"
 source: "R08-plano.md G5; migrations dos lotes 49–55; suites pgTAP"
-status: "revisão estática concluída; pgTAP e produção não executados"
+status: "ACL aprovada no espelho por G0; candidato H09 não aplicado"
 generated_at: "2026-09-12T11:06:41-03:00"
 ---
 
@@ -31,6 +31,14 @@ ordem do ledger; então as quatro suítes acima. Uma falha em qualquer suíte
 impede usar este documento como aceite. O papel relacionado ao caso 180060
 não foi reaberto.
 
+Recibo G0 `b1ec76b120d62557e457749adc100940c0c039c1`: no baseline local
+`supabase_db_coelo_baseline`, materializado até o lote 55, as quatro suítes
+passaram na ordem acima em **22/22 + 46/46 + 4/4 + 16/16**, todas com exit
+nativo 0, wrapper 0 e rollback. O preflight de definições finais passou 20/20.
+Os logs integrais pertencem a
+`docs/reviews/evidence/etapa-2/r08-ambiente-runtime/` naquele commit. Esta
+frente não reexecutou nem soma o resultado como execução própria.
+
 ## Consulta de diagnóstico H09
 
 O repositório contém `app_private.sweep_expired_now_publications(uuid,integer)`
@@ -49,6 +57,10 @@ primeiro item deste grupo no lote 56. Ele falha com `55000` sem `pg_cron` ou
 sem o sweep, substitui somente o job nominal e agenda chamada limitada a 500
 itens a cada cinco minutos. Leituras continuam fail-closed no intervalo; o
 sweep materializa estado e auditoria e não apaga publicação ou mídia R2.
+
+O mesmo preflight G0 confirmou `pg_cron`, `cron.job` e o sweep no espelho e
+retornou zero job por nome/comando. Isso fecha a reprodução local do H09; a
+consulta de produção, backup, aplicação e ledger continuam exclusivos de C0.
 
 O teste `now_publication_expiry_dispatch_v1_test.sql` tem seis casos
 declarativos. Ele foi preparado, mas não executado por ausência do espelho
