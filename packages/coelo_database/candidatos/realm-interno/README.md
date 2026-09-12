@@ -117,3 +117,15 @@ Edge Functions escritas sem deploy: `functions/chat-media` (nova),
 `functions/form-media` (ramos R2 atrás de `COELO_FORMS_MEDIA_PROVIDER=r2`,
 `question_*`, `expire`), `functions/_shared/image_dimensions.ts`.
 Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
+
+## Rodada 8 (E2-R08-20260912) — lote 56 pendente de C0
+
+| Ordem | Arquivo | Assunto | pgTAP | Estado |
+| --- | --- | --- | --- | --- |
+| 1 | `20260912140545_now_publication_expiry_dispatch_v1.sql` | agenda a transição material de publicações Agora vencidas pelo sweep interno existente; não remove mídia | `now_publication_expiry_dispatch_v1_test.sql` 6 | candidato; não aplicado nem executado |
+
+O defeito foi medido apenas no repositório: a migration `20260910190500`
+declara que o scheduler ficou externo e não existe outro job versionado para o
+sweep. C0 deve consultar `cron.job` no espelho e em produção, executar o pgTAP
+no espelho após os lotes 49–55 e cumprir backup/preflight antes de decidir o
+lote 56. A ordem acima é explícita; este grupo não aplica SQL.

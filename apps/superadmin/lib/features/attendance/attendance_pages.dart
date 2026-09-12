@@ -708,7 +708,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     for (final controller in _notes.values) {
       controller.dispose();
     }
-    _callNote.dispose();
+    _callNote.clear();
     _notes.clear();
     _call = null;
     _lastBulkReceipt = null;
@@ -761,6 +761,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     _loadGeneration++;
     _contextGeneration++;
     _commandGeneration++;
+    _callNote.dispose();
     for (final controller in _notes.values) {
       controller.dispose();
     }
@@ -782,6 +783,8 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
     return _publicationShell(
       child: PublicationSurface(
         subtitle: concluded ? 'Resumo da chamada' : 'Lançar chamada',
+        // A+ do Owner em 12/09/2026: reduzir o cabeçalho compacto em 20–30%.
+        compactHeaderScale: .75,
         scrollKey: const Key('attendance-call-scroll'),
         footerKey: const Key('attendance-call-footer'),
         form: _publicationForm(
@@ -800,10 +803,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                 actionLabel: 'Recarregar chamada',
                 onAction: _loadCall,
               ),
-        tertiaryAction: TextButton(
-          onPressed: widget.onBack,
-          child: const Text('Voltar para Assiduidade'),
-        ),
+        tertiaryAction: TextButton(onPressed: widget.onBack, child: const Text('Voltar')),
         continuationActions: [
           if (!concluded)
             OutlinedButton(

@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(35);
 
 select has_function('public','superadmin_invite_directory_v2',array[
   'text','text[]','text[]','uuid[]','uuid[]','uuid[]','uuid[]',
@@ -15,9 +15,9 @@ select has_function('public','superadmin_invite_revoke_v2',array['uuid','uuid','
 select ok((select requires_mfa is false and status='active'
  from public.platform_permissions where code='platform.invites.read'),
  'read capability is active without forcing aal2');
-select ok((select requires_mfa is true and status='active'
+select ok((select requires_mfa is false and status='active'
  from public.platform_permissions where code='platform.invites.manage'),
- 'manage capability is active and requires aal2');
+ 'manage capability is active without forcing aal2 while MFA is deferred');
 select is((select array_agg(role_record.code order by role_record.code)
  from public.platform_role_permissions grant_record
  join public.platform_permissions permission_record on permission_record.id=grant_record.permission_id
@@ -175,6 +175,16 @@ select is((select body#>>'{error,code}' from invite_results where label='legacy_
  'SAI_PERMISSION_DENIED','legacy invitation remains read-only');
 select ok((select body#>>'{ok}'='true' and body#>>'{data,invite,management_version}'='2'
  from invite_results where label='owner_resend'),'expired internal invitation can be resent');
+select ok((select body#>>'{data,replayed}'='false'
+ and body#>>'{data,link}'~'^https://app[.]coelo[.]me/convites/[0-9a-f]{64}$'
+ and body#>>'{data,invite,status}'='pending'
+ and (body#>>'{data,invite,expires_at}')::timestamptz>now()
+ from invite_results where label='owner_resend'),
+ 'expired invitation fixture returns one ephemeral link and becomes pending');
+select ok((select result_json->'link'='null'::jsonb
+ from app_private.superadmin_internal_invite_receipts
+ where request_id='9d100000-0000-4000-8000-000000000603'),
+ 'resend receipt never persists the clear invitation link');
 select is((select body#>>'{error,code}' from invite_results where label='stale_revoke'),
  'SAI_CONCURRENT_CHANGE','stale mutation is rejected');
 select ok((select body#>>'{ok}'='true' and body#>>'{data,invite,status}'='revoked'

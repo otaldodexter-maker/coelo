@@ -1,0 +1,104 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: (setUpAll)
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: compact marking scroll reference Brightness.dark
+00:00 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: compact marking scroll reference Brightness.light
+00:01 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: matches the new attendance call context reference
+00:01 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: matches the new attendance call marking reference
+00:01 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/attendance/attendance_pages_golden_test.dart: (tearDownAll)
+00:01 +4: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart
+00:02 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the routine editor holds 375.0 at 200 percent text
+00:03 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the routine editor holds 768.0 at 200 percent text
+00:03 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the routine editor holds 1024.0 at 200 percent text
+00:04 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the routine editor holds 1440.0 at 200 percent text
+00:04 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the launch summary holds 375.0 at 200 percent text
+00:04 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/daily_routine/daily_routine_editor_responsive_test.dart: the launch summary holds 1440.0 at 200 percent text
+00:04 +10: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart
+00:05 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: production preserves the editor hierarchy with neutral disabled controls
+00:06 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: development editor uses the selected form fixture
+00:06 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: keeps preview hidden until requested and owns the canonical footer
+00:06 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: question catalog offers Local and creates it without manual options
+00:07 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: question catalog is vertically categorized and owns its scroll
+00:08 +15: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: preserves section and question operations without hiding required controls
+00:08 +16: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: configures information details and numeric bounds
+00:09 +17: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: publishes now or schedules only inside the development fixture
+00:09 +18: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: recorrência incompleta bloqueia publicação e permanece explícita no rascunho
+00:10 +19: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: production exposes publication context without enabling its local flow
+00:10 +20: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 375.0 with 1.0x text
+00:10 +21: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 375.0 with 1.5x text
+00:10 +22: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 375.0 with 2.0x text
+00:10 +23: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 768.0 with 1.0x text
+00:10 +24: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 768.0 with 1.5x text
+00:11 +25: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 768.0 with 2.0x text
+00:11 +26: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1024.0 with 1.0x text
+00:11 +27: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1024.0 with 1.5x text
+00:11 +28: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1024.0 with 2.0x text
+00:11 +29: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1440.0 with 1.0x text
+00:11 +30: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1440.0 with 1.5x text
+00:11 +31: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/forms/presentation/editor/forms_editor_page_test.dart: editor preserves actions and scroll at 1440.0 with 2.0x text
+00:11 +32: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart
+00:12 +32: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: read-only composition disables edit transition and suspension
+00:13 +33: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: read-only composition blocks wizard deep link and command dispatch
+00:13 +34: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory status keeps 48 px target and isolates touch and keyboard from card
+00:13 +35: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: table renders authoritative count without loading authorization details
+00:14 +36: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail discards prior child when route child changes
+00:14 +37: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail removes cached private content after authorization is lost
+00:14 +38: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit rejects a nonpending authorization before enabling continuation
+00:14 +39: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: edit preserves the authorized child and person identity
+00:14 +40: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory uses exclusive counted tabs, canonical cards and table
+00:14 +41: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: unauthorized fails closed without create action
+00:14 +42: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: keeps unavailable export visible with honest feedback
+00:15 +43: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: paginated directory keeps controls in a sticky footer
+00:15 +44: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail uses table at 768 and cards at 375
+00:15 +45: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: detail hides create action without create capability
+00:15 +46: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: suspension confirms, can be cancelled and reloads after success
+00:15 +47: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: pending request does not present inactive lifecycle as revoked
+00:15 +48: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: wizard searches server-side and requires child selection
+00:16 +49: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: wizard preselects deep-linked child and loads edit version
+00:16 +50: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory stays responsive in light and dark at 200 percent text
+00:17 +51: C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina/apps/superadmin/test/features/safety/presentation/safety_pages_test.dart: directory golden matches approved institution-card anatomy
+00:17 +52: All tests passed!

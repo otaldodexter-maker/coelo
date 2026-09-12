@@ -10,6 +10,78 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('production author autosaves after debounce using the management version', (
+    tester,
+  ) async {
+    final api = _EditorApi();
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Título alterado');
+    await tester.pump(const Duration(milliseconds: 799));
+    expect(api.savedCommands, isEmpty);
+    await tester.pump(const Duration(milliseconds: 1));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands, hasLength(1));
+    expect(api.savedCommands.single.payload.title, 'Título alterado');
+    expect(api.savedCommands.single.expectedVersion, 1);
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
+  testWidgets('production autosave preserves edits made while saving and sends the next version', (
+    tester,
+  ) async {
+    final gate = Completer<void>();
+    final api = _EditorApi(saveGate: gate.future);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Primeiro título');
+    await tester.pump(const Duration(milliseconds: 800));
+    expect(api.savedCommands, hasLength(1));
+    await tester.enterText(find.byWidget(_title(tester)), 'Segundo título');
+    gate.complete();
+    await tester.pump();
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands, hasLength(2));
+    expect(api.savedCommands.last.payload.title, 'Segundo título');
+    expect(api.savedCommands.last.expectedVersion, 2);
+    expect(_title(tester).controller!.text, 'Segundo título');
+  });
+
+  testWidgets('production autosave is cancelled when the editor context changes', (tester) async {
+    final first = _EditorApi();
+    final second = _EditorApi(title: 'Outro formulário');
+    await tester.pumpWidget(_app(first, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Não enviar em outro contexto');
+    await tester.pumpWidget(_app(second, 'form-2'));
+    await tester.pumpAndSettle();
+    await tester.pump(const Duration(seconds: 1));
+    expect(first.savedCommands, isEmpty);
+    expect(second.savedCommands, isEmpty);
+    expect(_title(tester).controller!.text, 'Outro formulário');
+  });
+
+  testWidgets('production autosave retries an uncertain result with the same command', (
+    tester,
+  ) async {
+    final api = _EditorApi(failuresRemaining: 1);
+    await tester.pumpWidget(_app(api, 'form-1'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byWidget(_title(tester)), 'Título para confirmar');
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.savedCommands, hasLength(1));
+    await tester.pump(const Duration(seconds: 2));
+    expect(api.savedCommands, hasLength(1));
+    _save(tester).onPressed!();
+    await tester.pumpAndSettle();
+    expect(api.savedCommands, hasLength(2));
+    expect(api.savedCommands.last.requestId, api.savedCommands.first.requestId);
+    expect(api.savedCommands.last.expectedVersion, api.savedCommands.first.expectedVersion);
+    expect(find.text('Rascunho salvo.'), findsOneWidget);
+  });
+
   testWidgets('choice options add and remove preserve stable IDs through reload', (tester) async {
     final api = _EditorApi(firstItems: [_branchChoice(FormItemKind.singleChoice)]);
     await tester.pumpWidget(_app(api, 'form-1'));
@@ -439,7 +511,7 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(save);
       await tester.pumpAndSettle();
-      final definition = api.savedCommands.single.payload;
+      final definition = api.savedCommands.last.payload;
       final items = definition.sections.expand((section) => section.items).toList();
       final children = items.where((item) => item.conditions.isNotEmpty).toList();
       expect(
@@ -843,7 +915,7 @@ void main() {
       await tester.ensureVisible(save);
       await tester.tap(save);
       await tester.pumpAndSettle();
-      final definition = api.savedCommands.single.payload;
+      final definition = api.savedCommands.last.payload;
       final allItems = definition.sections.expand((section) => section.items).toList();
       final children = allItems.where((item) => item.label.startsWith('Pergunta do ramo')).toList();
       expect(children, hasLength(action.startsWith('duplicate') ? 2 : 1));
@@ -1492,7 +1564,7 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('discarding a new production form restores its neutral authorized draft', (
+  testWidgets('discarding a new form before autosave restores its neutral authorized draft', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1100));
@@ -1501,12 +1573,6 @@ void main() {
     await tester.pumpWidget(_app(api, null));
     await tester.pumpAndSettle();
     await tester.enterText(find.byWidget(_title(tester)), 'Unsaved new form');
-    await _openOverlay(tester, 'catalog');
-    await tester.pumpAndSettle();
-    await tester.ensureVisible(find.byKey(const Key('forms-editor-catalog-date')));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('forms-editor-catalog-date')));
-    await tester.pumpAndSettle();
     await _discard(tester);
     expect(_title(tester).controller!.text, isEmpty);
     expect(_save(tester).onPressed, isNotNull);
@@ -1888,12 +1954,12 @@ void main() {
   // _definition nulo, entao _openPublishDialog retornava em silencio depois da
   // confirmacao. O botao fica habilitado porque _canPublish nao depende de
   // _definition, entao a pessoa confirmava e nada acontecia, sem explicacao.
-  testWidgets('publishing a form that was never saved says why instead of doing nothing', (
+  testWidgets('publishing after failed initial autosave explains that a saved draft is required', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1200, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final api = _EditorApi();
+    final api = _EditorApi(failuresRemaining: 1);
     await tester.pumpWidget(_app(api, null));
     await tester.pumpAndSettle();
     // Um formulario novo e vazio ja e barrado antes pelo validador de titulo e
@@ -2072,6 +2138,7 @@ Future<void> _addChoiceBranch(WidgetTester tester, String optionId) async {
 
 final class _EditorApi implements FormsApi, FormsEditorContextApi {
   _EditorApi({
+    this.failuresRemaining = 0,
     this.title = 'Form title',
     this.savedTitle,
     this.publishedTitle,
@@ -2091,6 +2158,7 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
     this.status = FormStatus.draft,
   });
   final String title;
+  int failuresRemaining;
   final String? savedTitle;
   final String? publishedTitle;
   final Future<void>? contextGate;
@@ -2182,6 +2250,10 @@ final class _EditorApi implements FormsApi, FormsEditorContextApi {
   @override
   Future<FormDefinition> saveDraft(FormCommand<FormDefinition> command) async {
     savedCommands.add(command);
+    if (failuresRemaining > 0) {
+      failuresRemaining--;
+      throw TimeoutException('Synthetic uncertain result');
+    }
     if (saveGate != null) await saveGate;
     return definition(
       command.payload.id,

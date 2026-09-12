@@ -1,0 +1,1 @@
+select j.jobname, j.active, r.status, r.start_time, r.end_time, (r.return_message is not null) as has_return_message from cron.job j left join lateral (select status,start_time,end_time,return_message from cron.job_run_details d where d.jobid=j.jobid order by start_time desc limit 3) r on true where j.jobname='coelo-now-publications-expire';
