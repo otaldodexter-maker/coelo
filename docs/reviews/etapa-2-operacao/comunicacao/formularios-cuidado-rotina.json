@@ -1,18 +1,18 @@
 {
- "revision": 59,
+ "revision": 60,
  "round": "E2-R07-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Codex",
  "model": "Codex Luna, esforco medio",
  "coordinator": "coordenador da R07",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-12T00:16-03:00",
+ "updatedAt": "2026-09-12T00:24-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
  "branch": "work/etapa2-r07-formularios-cuidado-rotina",
- "head": "6e9f33201 (codigo e JSON publicados; status limpo)",
+ "head": "1a6ae0aef (codigo e JSON publicados; status limpo)",
  "base": "origin/dev a50487878",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -2038,6 +2038,22 @@
   "commitsPublicados": ["3c33810a1"],
   "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json",
   "proximoPasso": "inspecionar cliente form-media e, se houver configuração pública disponível pela coordenação, executar build/rota real com um Chrome"
+ },
+ "checkpointR07_0024": {
+  "quando": "2026-09-12T00:24-03:00",
+  "feito": [
+   "forms.upload: cliente de respostas agora lê upload_url e required_headers anunciados pelo servidor; o contrato tipado expõe uploadUrl e requiredHeaders",
+   "forms.upload: teste de preparação de asset atualizado e PASS (52 testes no arquivo supabase_forms_api_test.dart)"
+  ],
+  "pendente": [
+   "forms.upload/resolve-file/expire-file/delete-file: UI question-image, PUT, finalize, resolve, expire e delete pela tela",
+   "prova na rota real para attendance e demais ações; sem .env.local público na worktree",
+   "forms.location, daily-routine e child-safety: testes locais executados; rota real não exercitada nesta rodada"
+  ],
+  "bloqueio": "T0+4h10 alcançado; não retomar novas ações. COELO_FORMS_MEDIA_PROVIDER não foi habilitado e nenhum segredo foi gravado.",
+  "commitsPublicados": ["1a6ae0aef"],
+  "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json mantém attendance.entry/complete como local-green; sem novo delta E2E",
+  "proximoPasso": "coordenador revisar este checkpoint e executar as provas reais/integração conforme a fila"
  },
  "revisaoR07Inicial": {
   "quando": "2026-09-11T23:40-03:00",
