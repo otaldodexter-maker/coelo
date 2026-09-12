@@ -43,3 +43,7 @@ Entregar ao C0 o JSONL bruto, relatório derivado, comando, SHA da base integrad
 ## Proveniência da estimativa
 
 A medição R07 de `426.010s` (`7m06.010s`) veio de `flutter test --reporter json -j 6`; é uma referência paralela, não uma duração serial. O comando autorizado para o fechamento continua sendo `flutter test test --concurrency=1`, dentro da janela de 30 minutos (`1800s`), e deve medir sua própria duração sem extrapolar o tempo R07.
+
+## Ajuste operacional C0
+
+O censo será um único processo com `--concurrency=2`, não um rerun paralelo. A previsão operacional é de 35–45 minutos; este plano não autoriza execução nesta branch e não substitui a base integrada final.
