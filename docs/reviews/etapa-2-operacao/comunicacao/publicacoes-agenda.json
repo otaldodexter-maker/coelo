@@ -1,5 +1,5 @@
 {
-  "revision": 71,
+  "revision": 72,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -9,7 +9,7 @@
   "head": "3a00e88f2 (smoke API 16/16; inclui A+ dd332b98c e shell.load 702e75873)",
   "base": "origin/dev 2441725d5 incorporado por merge 21c357685",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T12:58:00-03:00",
+  "updatedAt": "2026-09-12T13:05:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2595,11 +2595,11 @@
         "circular_composer_dark_1024.png",
         "circular_composer_dark_1440.png"
       ],
-      "component": "PrincipalCircularComposerPage, compositor antigo mantido apenas em testes; nao confundir com SuperadminCircularComposerPage produtivo",
-      "result": "seis hashes preservados e inspecao final concluida; nenhuma regravacao; observacao funcional intercalada resolvida no host produtivo",
-      "pending": "decisao visual focal ainda necessaria para geometria/corte do rodape e destino do host legado; referencia 1440 inclui shell completo, golden isola superficie",
+      "component": "768/1024 resolvem somente para PrincipalCircularComposerPage legado; os basenames 1440 existem tambem no SuperadminCircularComposerPage produtivo e a tabela Owner nao registra path",
+      "result": "PNGs preservados e inspecao final concluida; nenhuma regravacao; observacao funcional intercalada resolvida no host produtivo; origem nominal insuficiente para atribuir todos os R a um host",
+      "pending": "pergunta Owner necessaria: identificar path/componente e geometria/corte do rodape. O HTML compara light1440 produtivo, a referencia PNG contem rodape e a frase nominal diz que ele nao existe; design system/ADR0034 P15 exigem rodape ancorado",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/six-r-final-map.md",
-      "status": "reviewed-r-preserved-visual-decision-pending"
+      "status": "reviewed-r-preserved-host-and-visual-decision-pending"
     },
     "groupsLocationSourceCacheReview": {
       "scope": "WIP C0: identidade do LocationSelectionSource, rebuild, reader replacement, epoch, troca de escopo e retencao do receipt",
