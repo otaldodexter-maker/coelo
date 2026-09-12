@@ -1,6 +1,6 @@
 {
-  "revision": 73,
-  "updated_at": "2026-09-12T13:55:00-03:00",
+  "revision": 74,
+  "updated_at": "2026-09-12T13:59:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -60,9 +60,7 @@
     "scope": "leitura do candidato SQL/pgTAP G2, sem edição G2, SQL remoto ou certificação",
     "accepted_structure": "um EXISTS em context_rows combina os filtros no mesmo vínculo e total_count ocorre antes da paginação",
     "blockers": [
-      "repositório Flutter não envia os quatro parâmetros novos nem lê suas options",
-      "parser de options não preserva state_code/municipality_id para a cascata",
-      "memberships não retorna activity_id/activity_name expostos pelo domínio",
+      "adapter/payload foram preparados em 71e45d3ad/1cbc1f6a0, porém a composição ainda fixa contextFiltersAvailable=true antes da assinatura ser serializada",
       "regressões A/B/cross-tenant são comentários, não asserts pgTAP executáveis"
     ],
     "verdict": "WIP de contrato; não serializar/aplicar até completar backend, fixture e cliente",

@@ -16,3 +16,9 @@ O pacote não é certificável nem deve entrar na fila ainda.
 4. O pgTAP executável valida assinatura/ACL e faz leitura com defaults, mas as regressões funcionais A/B estão apenas em comentário. Antes da serialização, a fixture deve provar: pessoa exclusivamente B invisível para A; violações `23514` de unidade/turma fora do contexto; pessoa A+B não satisfaz combinação de linhas distintas; atividade A inclui só profissional/criança participante vigentes e exclui B/revogado/removido; filtros compostos e `total_count` sem duplicação antes da página.
 
 Conclusão: preservar o candidato como WIP de contrato. Completar backend, testes A/B reais e o encaminhamento/desserialização Flutter antes de revisão para lote SQL. Nenhuma alteração remota ou certificação E2E decorre desta leitura.
+
+## Atualização do candidato
+
+Os commits G2 `71e45d3ad` e `1cbc1f6a0` acrescentaram o adapter, o mapeamento de opções e os campos de atividade no payload. Eles resolvem os itens 1--3 acima no código preparado, mas introduziram/retiveram um bloqueio de rollout: `createSuperadminAuthScope` instancia `contextFiltersAvailable: true`. Isso faz o cliente enviar os quatro argumentos novos enquanto a assinatura SQL produtiva antiga ainda vigora, contrariando o comentário de que o recurso ficaria desligado até a serialização e causando falha de assinatura PostgREST.
+
+O commit documental `a5e3184e8` diz que o rollout está desligado, mas não muda essa instanciação. A evidência de configuração deve ser corrigida para `false` até uma confirmação central pós-lote, ou substituída por uma capability/versionamento remoto verificável. O conjunto A/B de pgTAP continua pendente de asserts executáveis.
