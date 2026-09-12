@@ -1,12 +1,12 @@
 {
-  "revision": 91,
-  "round": "E2-R09-20260912",
+  "revision": 94,
+  "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T15:20:28.253637-03:00",
+  "updatedAt": "2026-09-12T18:49:16.537Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -250,9 +250,10 @@
     "58": "21:42 lote 55 (3 pacotes) em producao; fila vazia; deploy de internal-user-create bloqueado (pendencia); revisoes finais recebidas; inicio do fechamento",
     "59": "22:55 pausa segura a pedido do Owner; estado e pendencias do fechamento registrados",
     "60": "23:20 FECHAMENTO da R06: worktrees removidas, md/skills/ADR/conhecimento atualizados, R06-fechamento e perguntas, prompts da R07 (Codex)",
-    "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
     "64": "2026-09-12T10:52:16.727826-03:00 posse R08, nove frentes, slots e corte; sem novo aceite",
-    "91": "2026-09-12T15:20:28.253637-03:00 abertura nominal R09 C0; posse e fila G0-G8; consumo49; worktrees preservadas"
+    "91": "2026-09-12T15:20:28.253637-03:00 abertura nominal R09 C0; posse e fila G0-G8; consumo49; worktrees preservadas",
+    "94": "Retomada autorizada sem controles de tarefas/cota; posse central nova, IDs nao inventados, atribuicoes aguardam adocao; T0 1542 preservado.",
+    "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
     "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -3666,185 +3667,190 @@
   },
   "reasoningEffort": "medium",
   "posseR09": {
-    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
-    "branch": "work/etapa2-r09-coordenacao",
-    "baseAoAbrir": "f9f1bc0f13e8616e482f19e81a904a7d4b4ad099",
-    "T0": "2026-09-12T15:17:09-03:00",
-    "execucaoAte": "2026-09-12T19:17:09-03:00",
-    "fechamentoAte": "2026-09-12T19:47:09-03:00",
-    "threadId": "01a096d5-dfe4-7d42-aa97-62137c233882",
-    "status": "ativa",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+    "branch": "work/etapa2-r09-coordenacao-20260912-1542",
+    "baseAoAbrir": "35fd0d297",
+    "T0": "2026-09-12T15:42:18-03:00",
+    "execucaoAte": "2026-09-12T19:42:18-03:00",
+    "fechamentoAte": "2026-09-12T20:12:18-03:00",
+    "threadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "status": "ativa-via-git",
     "escopo": "apps/superadmin -> menu -> tela/subtela/estado -> action_id; CRUD real, persistencia, reload, RLS e hierarquia",
     "fora": "outros apps, R10, senha, exportacoes gerais, endurecimento amplo",
     "regraDeEscrita": "C0 exclusivo dev, inventario, tres rastreadores, fila SQL, composicao e deploy; executoras somente dominio e handoff proprio",
     "evidencia": "rota normal, CRUD real, reload e negativa de tenant/hierarquia; FE/BE/E2E separados",
     "estimativa": "janela maxima autorizada; delta inspecionado apos primeiro gate runtime; consumo pode antecipar",
-    "preservacao": "nove worktrees R08 limpas e zero commits fora de origin/dev; reutilizar por fast-forward, sem remover ignorados nem worktrees"
+    "preservacao": "15 worktrees limpas; sem stash; G0 2d4f5e5b7 e checkpoint1534 d2ed31572 fora de dev preservados"
   },
   "frentesR09": {
     "G0": {
       "grupo": "ambiente-runtime",
-      "threadId": "01a095e0-ffff-7953-847d-6cc6a21433ed",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-ambiente-runtime",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
       "json": "ambiente-runtime.json",
-      "ackRevision": 36,
-      "primeiroGate": "login/leitura/reload pelo canal permitido",
-      "status": "vaga inicial",
-      "modelConfigured": false
+      "ackRevision": null,
+      "primeiroGate": "C0 assume qa_main.dart e experimento de teclado; G0 medir recursos e informar PID/posse, sem novo build/browser/teste ate transferencia",
+      "status": "atribuicao pendente de adocao pela nova frente",
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G1": {
       "grupo": "estrutura",
-      "threadId": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-estrutura",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "branch": "work/etapa2-r09-estrutura-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
-      "ackRevision": 98,
+      "ackRevision": null,
       "primeiroGate": "groups.members/location ou institutions.status",
-      "status": "vaga inicial",
-      "modelConfigured": false
+      "status": "atribuicao pendente de adocao pela nova frente",
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G2": {
       "grupo": "acessos-pessoas",
-      "threadId": "01a095e1-a8af-7c00-8902-508a572ff643",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-acessos-pessoas",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
       "json": "acessos-pessoas.json",
-      "ackRevision": 160,
+      "ackRevision": null,
       "primeiroGate": "people.create/edit e H28 focal",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
-      "threadId": "01a095e2-5dc2-7ad3-ae37-4742481ea99f",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
       "json": "formularios-cuidado-rotina.json",
-      "ackRevision": 84,
+      "ackRevision": null,
       "primeiroGate": "attendance.mark/correct/finish",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G4": {
       "grupo": "principal-chat-sistema",
-      "threadId": "01a095e2-b6da-7043-9327-d5f0070c6041",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-principal-chat-sistema",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
       "json": "principal-chat-sistema.json",
-      "ackRevision": 73,
+      "ackRevision": null,
       "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G5": {
       "grupo": "realm-interno",
-      "threadId": "01a095e3-4532-75e3-a851-6873668a8814",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-realm-interno",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "branch": "work/etapa2-r09-realm-interno-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
       "json": "realm-interno.json",
-      "ackRevision": 77,
-      "primeiroGate": "negativas reais e hierarquia G1/G2/G3/G4/G6/G7; BE pelos gates proprios",
-      "status": "vaga inicial",
-      "modelConfigured": false
+      "ackRevision": null,
+      "primeiroGate": "revisar provas existentes de groups.members/location e Avaliacoes; propor gate BE sem repetir API/SQL verdes",
+      "status": "atribuicao pendente de adocao pela nova frente",
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G6": {
       "grupo": "publicacoes-agenda",
-      "threadId": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-publicacoes-agenda",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
       "json": "publicacoes-agenda.json",
-      "ackRevision": 90,
+      "ackRevision": null,
       "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G7": {
       "grupo": "operacoes",
-      "threadId": "01a095e3-e5ef-7c63-9db0-49f8df71e081",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-operacoes",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "branch": "work/etapa2-r09-operacoes-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
       "json": "operacoes.json",
-      "ackRevision": 81,
+      "ackRevision": null,
       "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     },
     "G8": {
       "grupo": "suites",
-      "threadId": "01a095e4-57b7-7213-b151-8020b26521f3",
+      "threadId": null,
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
-      "branch": "work/etapa2-r08-suites",
-      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "branch": "work/etapa2-r09-suites-20260912-1542",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
       "json": "fase0.json",
-      "ackRevision": 53,
+      "ackRevision": null,
       "primeiroGate": "testes focais na base integrada",
       "status": "fila sem polling",
-      "modelConfigured": false
+      "modelConfigured": false,
+      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+      "instructionReceived": false
     }
   },
   "slotsR09": {
     "chrome": {
-      "dono": "G0",
-      "pid": null,
-      "inicio": "2026-09-12T15:20:28.253637-03:00",
-      "expira": "2026-09-12T15:47:09-03:00",
-      "estado": "remedir runtime R08 antes de usar"
+      "dono": "nenhum confirmado",
+      "estado": "aba QA anterior ausente; nao iniciar segundo Chrome"
     },
     "flutterTest": {
       "dono": "nenhum",
-      "estado": "livre mediante medicao G0"
+      "estado": "nenhum flutter test identificado no processo; reservar antes de executar"
     },
     "sqlEspelho": {
-      "dono": "G0",
-      "estado": "remedir baseline; proximo lote60"
+      "dono": "nenhum",
+      "estado": "disponibilidade pendente; nenhum SQL autorizado sem espelho"
     },
-    "e2eLiberado": false,
-    "sqlLiberado": false,
     "ativas": [
+      "C0"
+    ],
+    "atribuicoesPendentes": [
       "G0",
       "G5",
       "G1"
     ],
-    "fila": [
-      "G2",
-      "G3",
-      "G4",
-      "G6",
-      "G7",
-      "G8"
-    ]
+    "e2eLiberado": false,
+    "sqlLiberado": false
   },
   "consumoR09": {
-    "inicialUsedPercent": 49,
-    "amostras": [
-      {
-        "at": "2026-09-12T15:17:09-03:00",
-        "usedPercent": 49
-      }
-    ],
-    "bucket": "codex semanal compartilhado",
+    "inicialUsedPercent": null,
+    "amostras": [],
+    "status": "consulta ausente no catalogo disponivel; Owner autoriza ciclos curtos via Git",
     "reduzirEm": 70,
     "fecharEm": 75,
     "metaEncerrarAte": 85,
-    "regra": "primeiro corte tempo/consumo; maior taxa das ultimas duas amostras; sem reset/reserva"
+    "heartbeat": "checkpoints na sessao ativa; sem automacao ou retomada prometida"
   },
   "ownershipR09": {
     "test/app/router/structure_detail_golden_test.dart": "G1",
@@ -3856,6 +3862,209 @@
     "circular-media": "G6 autor / C0 deploy",
     "happens-media/now-media/moments-media": "G4 autor / C0 deploy",
     "test/app/router/catalog_routes_test.dart": "G7",
-    "publication_surface.dart": "G3 parametro opcional cabecalho compacto default1; Chamada0.75"
+    "publication_surface.dart": "G3 parametro opcional cabecalho compacto default1; Chamada0.75",
+    "apps/superadmin/test_driver/qa_main.dart": "C0 ate transferencia explicita"
+  },
+  "tentativaR09Encerrada": {
+    "revision": 91,
+    "posse": {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+      "branch": "work/etapa2-r09-coordenacao",
+      "baseAoAbrir": "f9f1bc0f13e8616e482f19e81a904a7d4b4ad099",
+      "T0": "2026-09-12T15:17:09-03:00",
+      "execucaoAte": "2026-09-12T19:17:09-03:00",
+      "fechamentoAte": "2026-09-12T19:47:09-03:00",
+      "threadId": "01a096d5-dfe4-7d42-aa97-62137c233882",
+      "status": "ativa",
+      "escopo": "apps/superadmin -> menu -> tela/subtela/estado -> action_id; CRUD real, persistencia, reload, RLS e hierarquia",
+      "fora": "outros apps, R10, senha, exportacoes gerais, endurecimento amplo",
+      "regraDeEscrita": "C0 exclusivo dev, inventario, tres rastreadores, fila SQL, composicao e deploy; executoras somente dominio e handoff proprio",
+      "evidencia": "rota normal, CRUD real, reload e negativa de tenant/hierarquia; FE/BE/E2E separados",
+      "estimativa": "janela maxima autorizada; delta inspecionado apos primeiro gate runtime; consumo pode antecipar",
+      "preservacao": "nove worktrees R08 limpas e zero commits fora de origin/dev; reutilizar por fast-forward, sem remover ignorados nem worktrees"
+    },
+    "frentes": {
+      "G0": {
+        "grupo": "ambiente-runtime",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
+        "json": "ambiente-runtime.json",
+        "ackRevision": null,
+        "primeiroGate": "C0 assume qa_main.dart e experimento de teclado; G0 medir recursos e informar PID/posse, sem novo build/browser/teste ate transferencia",
+        "status": "atribuicao pendente de adocao pela nova frente",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G1": {
+        "grupo": "estrutura",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-estrutura-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
+        "json": "estrutura.json",
+        "ackRevision": null,
+        "primeiroGate": "groups.members/location ou institutions.status",
+        "status": "atribuicao pendente de adocao pela nova frente",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G2": {
+        "grupo": "acessos-pessoas",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+        "json": "acessos-pessoas.json",
+        "ackRevision": null,
+        "primeiroGate": "people.create/edit e H28 focal",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G3": {
+        "grupo": "formularios-cuidado-rotina",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+        "json": "formularios-cuidado-rotina.json",
+        "ackRevision": null,
+        "primeiroGate": "attendance.mark/correct/finish",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G4": {
+        "grupo": "principal-chat-sistema",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
+        "json": "principal-chat-sistema.json",
+        "ackRevision": null,
+        "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G5": {
+        "grupo": "realm-interno",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-realm-interno-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+        "json": "realm-interno.json",
+        "ackRevision": null,
+        "primeiroGate": "revisar provas existentes de groups.members/location e Avaliacoes; propor gate BE sem repetir API/SQL verdes",
+        "status": "atribuicao pendente de adocao pela nova frente",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G6": {
+        "grupo": "publicacoes-agenda",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
+        "json": "publicacoes-agenda.json",
+        "ackRevision": null,
+        "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G7": {
+        "grupo": "operacoes",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-operacoes-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
+        "json": "operacoes.json",
+        "ackRevision": null,
+        "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      },
+      "G8": {
+        "grupo": "suites",
+        "threadId": null,
+        "model": "gpt-6-astra",
+        "reasoningEffort": "medium",
+        "branch": "work/etapa2-r09-suites-20260912-1542",
+        "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
+        "json": "fase0.json",
+        "ackRevision": null,
+        "primeiroGate": "testes focais na base integrada",
+        "status": "fila sem polling",
+        "modelConfigured": false,
+        "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
+        "instructionReceived": false
+      }
+    },
+    "slots": {
+      "chrome": {
+        "dono": "G0",
+        "pid": null,
+        "inicio": "2026-09-12T15:20:28.253637-03:00",
+        "expira": "2026-09-12T15:47:09-03:00",
+        "estado": "remedir runtime R08 antes de usar"
+      },
+      "flutterTest": {
+        "dono": "nenhum",
+        "estado": "livre mediante medicao G0"
+      },
+      "sqlEspelho": {
+        "dono": "G0",
+        "estado": "remedir baseline; proximo lote60"
+      },
+      "e2eLiberado": false,
+      "sqlLiberado": false,
+      "ativas": [
+        "G0",
+        "G5",
+        "G1"
+      ],
+      "fila": [
+        "G2",
+        "G3",
+        "G4",
+        "G6",
+        "G7",
+        "G8"
+      ]
+    },
+    "consumo": {
+      "inicialUsedPercent": 49,
+      "amostras": [
+        {
+          "at": "2026-09-12T15:17:09-03:00",
+          "usedPercent": 49
+        }
+      ],
+      "bucket": "codex semanal compartilhado",
+      "reduzirEm": 70,
+      "fecharEm": 75,
+      "metaEncerrarAte": 85,
+      "regra": "primeiro corte tempo/consumo; maior taxa das ultimas duas amostras; sem reset/reserva"
+    }
   }
 }
