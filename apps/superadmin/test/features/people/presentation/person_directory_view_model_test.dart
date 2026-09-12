@@ -120,6 +120,113 @@ void main() {
     await viewModel.setStates({'SP', 'RJ'});
     expect(viewModel.query.neighborhoodIds, {'neighborhood-centro'});
   });
+
+  test('keeps an activity when its alternate hierarchy link remains selected', () async {
+    final viewModel = PersonDirectoryViewModel(_OptionsPersonRepository(_duplicateOptions()));
+    await viewModel.load();
+    await viewModel.setInstitutions({'institution-a'});
+    await viewModel.setUnits({'unit-b'});
+    await viewModel.setGroups({'group-b'});
+    await viewModel.setActivities({'activity-x'});
+
+    await viewModel.setInstitutions({'institution-a', 'institution-b'});
+
+    expect(viewModel.query.unitIds, {'unit-b'});
+    expect(viewModel.query.groupIds, {'group-b'});
+    expect(viewModel.query.activityIds, {'activity-x'});
+  });
+
+  test('exposes a duplicate activity only once and permits deselection', () async {
+    final viewModel = PersonDirectoryViewModel(_OptionsPersonRepository(_duplicateOptions()));
+    await viewModel.load();
+    await viewModel.setInstitutions({'institution-a'});
+    await viewModel.setUnits({'unit-a', 'unit-b'});
+    await viewModel.setGroups({'group-a', 'group-b'});
+
+    expect(viewModel.visibleActivities.map((item) => item.id), ['activity-x']);
+
+    await viewModel.setActivities({'activity-x'});
+    await viewModel.setActivities({});
+    expect(viewModel.query.activityIds, isEmpty);
+  });
+
+  test('does not retain a neighborhood through a municipality from another state', () async {
+    final viewModel = PersonDirectoryViewModel(_OptionsPersonRepository(_duplicateOptions()));
+    await viewModel.load();
+    await viewModel.setStates({'SP'});
+    await viewModel.setMunicipalities({'municipality-sp'});
+    await viewModel.setNeighborhoods({'neighborhood-centro'});
+
+    await viewModel.setMunicipalities({'municipality-rj'});
+
+    expect(viewModel.query.neighborhoodIds, isEmpty);
+  });
+}
+
+PersonDirectoryFilterOptions _duplicateOptions() => const PersonDirectoryFilterOptions(
+  institutions: [
+    PersonFilterOption('institution-a', 'Institui\u00e7\u00e3o A'),
+    PersonFilterOption('institution-b', 'Institui\u00e7\u00e3o B'),
+  ],
+  units: [
+    PersonFilterOption('unit-a', 'Unidade A', institutionId: 'institution-a'),
+    PersonFilterOption('unit-b', 'Unidade B', institutionId: 'institution-a'),
+  ],
+  groups: [
+    PersonFilterOption('group-a', 'Grupo A', institutionId: 'institution-a', unitId: 'unit-a'),
+    PersonFilterOption('group-b', 'Grupo B', institutionId: 'institution-a', unitId: 'unit-b'),
+  ],
+  activities: [
+    PersonFilterOption(
+      'activity-x',
+      'Atividade X',
+      institutionId: 'institution-a',
+      unitId: 'unit-a',
+      groupId: 'group-a',
+    ),
+    PersonFilterOption(
+      'activity-x',
+      'Atividade X',
+      institutionId: 'institution-a',
+      unitId: 'unit-b',
+      groupId: 'group-b',
+    ),
+  ],
+  states: [PersonFilterOption('SP', 'S\u00e3o Paulo'), PersonFilterOption('RJ', 'Rio de Janeiro')],
+  municipalities: [
+    PersonFilterOption('municipality-sp', 'Cidade A', stateCode: 'SP'),
+    PersonFilterOption('municipality-rj', 'Cidade B', stateCode: 'RJ'),
+  ],
+  neighborhoods: [
+    PersonFilterOption(
+      'neighborhood-centro',
+      'Centro',
+      stateCode: 'SP',
+      municipalityId: 'municipality-sp',
+    ),
+    PersonFilterOption(
+      'neighborhood-centro',
+      'Centro',
+      stateCode: 'RJ',
+      municipalityId: 'municipality-rj',
+    ),
+  ],
+);
+
+final class _OptionsPersonRepository implements PersonDirectoryRepository {
+  _OptionsPersonRepository(this._options);
+
+  final _delegate = FakePersonDirectoryRepository();
+  final PersonDirectoryFilterOptions _options;
+
+  @override
+  Future<PersonDirectoryPage> fetchPage(PersonDirectoryQuery query) => _delegate.fetchPage(query);
+
+  @override
+  Future<PersonDirectoryFilterOptions> fetchFilterOptions() async => _options;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _RevocablePersonRepository implements PersonDirectoryRepository {
