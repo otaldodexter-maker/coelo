@@ -60,3 +60,16 @@ quatro parâmetros H28 depois que C0 confirmar a assinatura remota. O SHA
 `df0a281cb` acrescenta as provas de ViewModel para atividade com vínculos de
 hierarquia alternativos, deduplicação/deseleção e localidade incompatível com a
 UF. A suíte focal repository + ViewModel terminou com 19 passed, 0 failed.
+
+## Fechamento G2
+
+SHAs publicados: `df0a281cb` (quatro cenários H28), `968b0173d` (evidência e
+canal), `b5cfb03cc` (reconciliação da composição) e `78bf198be` (fixture
+`canonical_handle` de G5). O resultado Flutter foi observado no terminal da
+sessão; não há arquivo de saída nativo separado e nenhum foi fabricado após a
+devolução do slot.
+
+Para R09, o primeiro gate é o resultado da reexecução focal de G0 sobre o blob
+SQL atual e a fixture `78bf198be`; só depois C0 pode decidir serialização,
+aplicação e a mudança explícita de `contextFiltersAvailable`. A worktree e a
+branch permanecem preservadas para ajustes de C0.
