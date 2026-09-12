@@ -219,7 +219,12 @@ def main() -> int:
         emit("auth", "FAILED", http=auth_status, code="auth_uid_mismatch")
         request_json(f"{base}/auth/v1/logout?scope=local", headers=api_headers)
         return 1
-    emit("auth", "PASS", http=auth_status, auth_uid=auth_uid)
+    emit(
+        "auth",
+        "PASS",
+        http=auth_status,
+        auth_uid_match=expected_auth_uid is None or auth_uid == expected_auth_uid,
+    )
 
     def rpc(name: str, body: dict[str, Any]) -> tuple[int, Any]:
         return request_json(f"{base}/rest/v1/rpc/{name}", body=body, headers=api_headers)
