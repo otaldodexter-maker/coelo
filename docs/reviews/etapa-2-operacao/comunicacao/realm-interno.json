@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 66,
+  "revision": 67,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:08:00-03:00",
+  "updatedAt": "2026-09-12T13:15:00-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "59ff61755 publicado; P51 usuário criado/reload verde, checkpoint 66 pendente de commit",
+  "head": "c1d80936b merge origin/dev ciclo120; checkpoint 67 pendente de commit",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "C0 completar validação dinâmica do redirect_to do link já criado sem novo usuário; em paralelo receber negativa G4 e deploy form-media",
+  "primeiroGate": "C0 completar validação dinâmica do redirect_to do link já criado sem novo usuário; G5 revisa roteiro answer-image do G0",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -67,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; lote 58 aplicado; P51 criou um usuário e reload passou, query redirect específica inconclusiva por defeito do harness; review form-media aprovado",
-  "proximoPasso": "pedir C0 para validar redirect_to do usuário existente sem nova identidade; receber negativa G4 e integração/deploy form-media",
+  "status": "recorte original entregue; lote 58 API produção aprovado; form-media v17 implantado; P51 criou um usuário/reload verde, query redirect específica em validação C0",
+  "proximoPasso": "revisar roteiro G0 de answer-image para publicação/aplicação/participação sem escopo implícito ou duplicata; aguardar redirect C0",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -1025,6 +1025,25 @@
         "superadmin_internal_identity 0ddeebc0-ee10-4565-96e0-ef11cacfc734; auth/profile/membership/pessoa de serviço associados; preservar até fim formal da Etapa 2"
       ],
       "primeiroGate": "completar redirect dinâmico sem nova identidade"
+    },
+    "checkpoint13h15": {
+      "quando": "2026-09-12T13:15:00-03:00",
+      "feito": [
+        "G4 publicou negativa final de Momentos em 3f664595a: outro consumidor qa-r06-realm recebeu read 403 no asset retirado e logout local 204; não é cross-tenant nem UI/E2E.",
+        "C0 integrou ciclo120 em origin/dev 7cc6d4e7b; G5 incorporou por merge c1d80936b, sem rebase/force e sem tocar checkout principal.",
+        "form-media v17 ACTIVE, verify_jwt=true, bundle ea77bf6721130bb0717dae4bcd4dff7ee8350727c0842d26d3d1fc16e243a762; Deno conjunto 54/54 e OPTIONS produtivo registrados pelo C0.",
+        "C0 assumiu geração única Auth Admin para o usuário P51 existente, sem SMTP/link exposto; G5 não executará em paralelo."
+      ],
+      "pendente": [
+        "Receber validação C0 do redirect_to exato sem criar outra identidade.",
+        "Acompanhar G0 e revisar roteiro answer-image, sobretudo RPCs de publicação/aplicação/participação, escopo explícito e prevenção de duplicata."
+      ],
+      "testes": {
+        "momentsG4": "withdraw 200, reload ausente, outro consumidor read 403, logout 204",
+        "formMediaC0": "Deno 54/54 com typecheck; v17 deploy exit 0; OPTIONS 204/204 e externo 403",
+        "executadoPorG5": "somente P51 API e reviews; nenhum pgTAP, SQL remoto ou deploy"
+      },
+      "primeiroGate": "review do roteiro answer-image G0"
     }
   }
 }
