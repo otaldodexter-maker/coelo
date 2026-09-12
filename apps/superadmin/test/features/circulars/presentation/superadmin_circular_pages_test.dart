@@ -284,6 +284,7 @@ void main() {
     expect(top('circular-preview-question-middle'), lessThan(top('circular-preview-media-middle')));
     expect(top('circular-preview-media-middle'), lessThan(top('circular-preview-text-after')));
 
+    await tester.ensureVisible(find.byKey(const Key('circular-response-acceptDecline')));
     await tester.tap(find.byKey(const Key('circular-response-acceptDecline')));
     await tester.pump();
 
