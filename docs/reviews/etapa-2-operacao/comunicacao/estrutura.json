@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 63,
+ "revision": 64,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T21:20:00-03:00",
+ "updatedAt": "2026-09-11T21:38:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
@@ -219,21 +219,22 @@
    "origem": "candidatos/estrutura, sobre 180350",
    "mudanca": "superadmin_assessment_configuration_read com #variable_conflict use_variable; sem mudanca de assinatura, grants ou regra",
    "pgTAP": "assessment_configuration_read_variable_conflict_v1_test 4/4; regressao superadmin_assessments_internal_v2_test 47/47",
-   "estado": "verde no espelho coelo_estrutura_r06; commit 5005d47c7 publicado; aplicar depois do 20260912180000 (independentes entre si)"
+   "estado": "APLICADO em producao pelo coordenador (lote 54, 21:22)"
   },
   {
    "carimbo": "20260912180200_activity_detail_v2_handle_v1",
    "origem": "candidatos/estrutura, sobre 180060 + 20260911180000",
    "mudanca": "superadmin_activity_detail_v2 devolve handle_stem, canonical_handle e handle_last_changed_at no objeto activity (chave aditiva; parser do cliente tolerante desde 01a8c3e27); cliente ja mapeia (9a729c4f1)",
    "pgTAP": "activity_detail_v2_handle_v1_test 3/3; regressao superadmin_internal_activities_v2_read_test 28/28",
-   "estado": "verde no espelho coelo_estrutura_r06; commit 9a729c4f1 publicado; aplicar depois do 180100 (independentes)"
+   "estado": "APLICADO em producao pelo coordenador (lote 54, 21:22)"
   }
  ],
  "deltasPropostos": "deltas-r06-estrutura.json: 24 entradas (1-16 aplicadas as 20:55; 17-24 novas: activities.create, locations.list, locations.detail-links); ensaio apply + validate PASS (FE 139, BE 136, E2E 109 sobre a base local), revertido",
  "pedidosAoCoordenador": [
-  "Aplicar candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (pgTAP verdes; sem ALTER TYPE; sem chave de composicao)",
-  "Integrar work/etapa2-r06-estrutura ate 2726bf0c0 (cliente 0434548b9, 9a729c4f1, 2726bf0c0; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1) e aplicar os deltas 17-24",
-  "Confirmar se o launcher \"Mensagens\" inteiro e o aprovado para regravar os goldens de diretorio de Atividades (item 5)"
+  "Aplicar os deltas 17-24 de deltas-r06-estrutura.json",
+  "Integrar work/etapa2-r06-estrutura ate este commit (codigo 0434548b9, 9a729c4f1, 2726bf0c0; teste 2b2b11413)",
+  "Confirmar se o launcher \"Mensagens\" inteiro e o aprovado para regravar os goldens de diretorio de Atividades",
+  "Registrar a rotacao da senha de qa-r06-estrutura no fim da rodada (roteiro em skills-deltas.md)"
  ],
  "avisosParaOutrosGrupos": [],
  "perguntasParaOOwner": [],
@@ -252,9 +253,9 @@
   "portas": [],
   "encerramento": "Chrome 9571 e servidor 3001 reabertos 21:10 para Locais e fechados 21:16; espelho parado 21:08"
  },
- "ack": "coordenacao rev 56: lote 51 (20260912180000 structure_handles_client_v1) em producao as 20:15; 16 deltas aplicados as 20:55",
+ "ack": "coordenacao rev 57: lote 51 (20:15) e lote 54 (21:22: 20260912180100 e 180200) em producao; deltas 1-16 aplicados",
  "proximoPasso": "nenhum nesta rodada; para a proxima: aplicar 180100 e 180200, provar activities.assessment (salvar + ativar configuracao) e assessments.*, groups.members/location, institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links, goldens de Atividades apos decisao do launcher",
- "estado": "finalizado (revisao final gravada as 21:12; depois de 21:46 nao retomo por conta propria)",
+ "estado": "finalizado (resposta a revisao final gravada as 21:38; depois de 21:46 nao retomo por conta propria)",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26). R06: groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro, Escola R04 Estrutura / Unidade Centro R04); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 11/09 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42).",
  "chavesCriadas": "nenhuma",
  "handoff": "docs/reviews/evidence/etapa-2/r06-estrutura/handoff.md",
@@ -290,5 +291,29 @@
  "propostasDeSkills": {
   "arquivo": "docs/reviews/evidence/etapa-2/r06-estrutura/skills-deltas.md",
   "resumo": "driver web via CDP (set_frame_sync, enter_text no campo focado, taps por coordenada), servidor estatico em tarefa de fundo, regra do @ implementada, ambiguidade variavel x coluna em 180350, lista fechada de codigos de Atividades, chave aditiva no detail_v2, rotacao da senha do qa-r06-estrutura"
+ },
+ "respostaARevisaoFinal": {
+  "quando": "21:36-21:46 (respondida 21:38)",
+  "entregouTudoMesmo": "Sim, no que cabia no recorte executavel em 2 h: todo o codigo esta publicado em work/etapa2-r06-estrutura (status limpo, nenhum WIP); os tres candidatos SQL estao em producao (lotes 51 e 54); deltas 1-16 aplicados e 17-24 em arquivo no formato do aplicador; handoff, evidencias e propostas de skills em evidence/etapa-2/r06-estrutura/; Chrome, servidor e espelho fechados; capturas temporarias apagadas.",
+  "shaPublicado": "codigo 2726bf0c0 (cliente 0434548b9 + 9a729c4f1 + 2726bf0c0; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1); docs: commit desta revisao; status limpo; sem WIP",
+  "fechadoPorActionId": [
+   "E2E (FE verified + BE done, rota real com qa-r06-estrutura): units.edit (@ + trava 30 dias + reload), groups.create (@ escolhido), groups.edit (Alterar @), activities.create (@ escolhido via save_v2, lote 51), units.list, groups.list, locations.list, locations.detail-links (8 acoes; deltas 1-24)",
+   "FE verified + BE done sem E2E novo: activities.edit (Alterar @; @ no campo passa a carregar com o lote 54)",
+   "Item 1 (regra do @ no cliente) completo; item 2 parcial (list de Unidades e Turmas); item 4 completo; item 3 destravado no servidor (configuration_read corrigido, lote 54) sem prova de tela; item 5 analisado sem regravar; item 6 nao iniciado"
+  ],
+  "abertoComPrimeiroGate": [
+   "activities.assessment + assessments.entry/gradebook/close/reopen/detail: gate = provar /activities/:id/assessment-settings (salvar + ativar cria o periodo) agora que o lote 54 esta aplicado; depois lancar notas na turma sintetica (precisa de aluno na turma para o gradebook ter linhas)",
+   "activities.publish FE (nao retomado; BE done)",
+   "groups.members (pessoa da propria instituicao) e groups.location (secao de local no assistente + repositorio available:true)",
+   "institutions.status/files/error/access-denied e units.error/access-denied (nao exercidos; error/access-denied exigem simular falha/negativa)",
+   "Goldens de Atividades (9 testes / 31 imagens): aguardam decisao sobre o launcher \"Mensagens\"; formularios/detalhe 375 retidos por MENU-M"
+  ],
+  "deltas": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json: 24 entradas no formato do aplicador; 1-16 aplicadas (20:55), 17-24 pendentes; ensaio apply + validate PASS na base local",
+  "pacotesSql": "todos aplicados: 20260912180000 (lote 51), 20260912180100 e 20260912180200 (lote 54); nenhum restante; nenhuma chave de composicao a ligar",
+  "duvidasAoOwner": "nenhuma nova. Ao coordenador: confirmar o launcher \"Mensagens\" para os goldens de diretorio de Atividades (diferenca unica nas 24 imagens do diretorio)",
+  "dadosSinteticosCriados": "groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro); activity_definitions \"Atividade R06 Arroba\" (@arroba-r06, rascunho, Escola R04 Estrutura / Unidade Centro R04 / Turma R06 Arroba); units f5284f2f handle -> centro.r04estrutura; activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42)",
+  "chavesCriadas": "nenhuma. Credencial exposta em captura temporaria (apagada) as 20:10: rotacionar a senha de qa-r06-estrutura@coelo.me ao fim da rodada; roteiro em skills-deltas.md",
+  "skillsDeltas": "docs/reviews/evidence/etapa-2/r06-estrutura/skills-deltas.md (coelo-frontend, coelo-backend, coelo-frontend-backend)",
+  "recursos": "Chrome 9571, servidor 3001 e espelho coelo_estrutura_r06 fechados; capturas temporarias apagadas"
  }
 }
