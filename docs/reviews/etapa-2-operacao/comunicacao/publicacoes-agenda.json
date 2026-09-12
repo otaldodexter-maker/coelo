@@ -1,15 +1,15 @@
 {
-  "revision": 49,
+  "revision": 50,
   "round": "E2-R06-20260911",
   "group": "publicacoes-agenda",
   "tool": "Claude Code",
   "model": "Opus 5 (1M), esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-publicacoes-agenda",
   "branch": "work/etapa2-r06-publicacoes-agenda",
-  "head": "6c74d6b04 (+ commit desta revisao)",
+  "head": "7e08cf834 (+ commit desta revisao)",
   "base": "origin/dev ca60b096b",
   "coordinator": "Claude (R06 · Coordenacao)",
-  "updatedAt": "2026-09-11T20:56:00-03:00",
+  "updatedAt": "2026-09-11T21:09:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -61,7 +61,7 @@
     "note": "Comeco pelo que nao depende de credencial: reconstrucao das telas de Circular e Evento na familia Publicacao e o toggle web da lista da Agenda (V-8).",
     "rotaReal": "build web-qa2 (profile, qa_main, b2e61a22e menos o fix de CORS) servido em 127.0.0.1:3000 (origem presente em *_MEDIA_ALLOWED_ORIGINS; 3006/3007 nao estao); Chrome CDP 9337 com --user-data-dir %TEMP%/coelo-chrome-publicacoes; sessao qa-r06-publicacoes aberta."
   },
-  "firstGate": "circulars.attach pela tela: espera o deploy da Edge Function circular-media (b2e61a22e) pelo coordenador; ate la o POST do navegador falha no preflight (x-client-info).",
+  "firstGate": "circulars.attach pela tela: deploy da circular-media (versao 12 em producao continua a anterior ao fix; conferido as 21:07)",
   "status": "em-andamento",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
@@ -77,9 +77,11 @@
     "evidence": [
       "flutter test test/features/circulars 66/66",
       "flutter test test/features/agenda 293/293",
-      "flutter analyze apps/superadmin: 0 erros (1 warning pre-existente em test_driver/qa_login.dart)",
       "test/app/activity/context_notification_feed_test 1/1",
-      "flutter test test/app: 633 ok / 20 falhos / 1 pulado; os 20 sao pre-existentes (Importacoes G7, principal_real_route G4, structure_detail G1, dev_menu, person_detail, persistent_shell, error_routes): persistent_shell_routes e superadmin_error_routes conferidos na base limpa ca60b096b (falham igual)"
+      "flutter test test/app: 633 ok / 20 falhos / 1 pulado; os 20 sao pre-existentes (Importacoes G7, principal_real_route G4, structure_detail G1, dev_menu, person_detail, persistent_shell, error_routes): persistent_shell_routes e superadmin_error_routes conferidos na base limpa ca60b096b (falham igual)",
+      "flutter analyze apps/superadmin: No issues found (21:00)",
+      "circulars 68/68 e agenda 291/291 apos 7e08cf834",
+      "circulars.edit pela tela nova: rascunho cb77ed7f reaberto, titulo editado, Salvar rascunho, recarga completa mantem (ui-17, ui-18)"
     ],
     "unknown": "suite completa nao repetida (um flutter test por vez)"
   },
@@ -140,6 +142,16 @@
       ],
       "what": "Item 5 (sino): ContextNotificationFeed le context_notification_recipients + events do ator (policies own_read/recipient_read) e grava read_at ao abrir o centro (own_update); entra no SuperadminActivityController existente (addActivities preserva lido/nao lido, onCenterOpened). Composto em SuperadminAuthScope.contextNotificationRepository -> main -> SuperadminApp -> router. Sem redesenho.",
       "tests": "test/app/activity/context_notification_feed_test 1/1; analyze limpo; rota real pendente (build web-qa3 em andamento)"
+    },
+    {
+      "sha": "7e08cf834",
+      "actionIds": [
+        "circulars.create",
+        "circulars.edit",
+        "agenda.view"
+      ],
+      "what": "Chip da familia com rotulo Flexible (overflow de 3 px a 375 na fonte de teste apos o respiro lateral); ao editar Circular o host resolve o nome da instituicao para Publico e contexto/previa; teste do toggle da Agenda alinhado ao V-8; goldens agenda_http_calendar_*_1440 (toggle do R) e circular_composer_* regravados.",
+      "tests": "circulars 68/68; agenda 291/291; analyze 0 avisos (qa_login corrigido em a5dbbe817)"
     }
   ],
   "pendingForCoordinator": [
