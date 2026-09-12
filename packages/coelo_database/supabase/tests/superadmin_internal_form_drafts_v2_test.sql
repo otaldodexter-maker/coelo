@@ -24,28 +24,29 @@ insert into public.institutions(id,institution_type_id,public_name,slug,status) 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data)
 select ('8f020000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
  'authenticated','authenticated','fauthor01-'||n||'@invalid.test',now(),now(),now(),'{}','{}'
-from generate_series(101,105) n;
+from generate_series(101,106) n;
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after)
 select ('8f020000-0000-4000-8000-'||lpad((n+100)::text,12,'0'))::uuid,
  ('8f020000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid,
- now(),now(),'aal2',now()+interval '1 hour' from generate_series(101,105) n;
+ now(),now(),'aal2',now()+interval '1 hour' from generate_series(101,106) n;
 insert into app_private.superadmin_internal_identities(id)
-select ('8f020000-0000-4000-8000-'||lpad((n+200)::text,12,'0'))::uuid from unnest(array[101,102,104,105]) n;
+select ('8f020000-0000-4000-8000-'||lpad((n+200)::text,12,'0'))::uuid from unnest(array[101,102,104,105,106]) n;
 insert into app_private.superadmin_internal_auth_links(id,internal_identity_id,auth_user_id)
 select ('8f020000-0000-4000-8000-'||lpad((n+300)::text,12,'0'))::uuid,
  ('8f020000-0000-4000-8000-'||lpad((n+200)::text,12,'0'))::uuid,
- ('8f020000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid from unnest(array[101,102,104,105]) n;
+ ('8f020000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid from unnest(array[101,102,104,105,106]) n;
 insert into app_private.superadmin_internal_memberships(id,internal_identity_id,platform_role_id,scope_kind,scope_institution_id)
 select fixture.id,fixture.identity_id,r.id,fixture.scope_kind::app_private.superadmin_internal_scope_kind,fixture.institution_id
 from (values
  ('8f020000-0000-4000-8000-000000000501'::uuid,'8f020000-0000-4000-8000-000000000301'::uuid,'owner','platform',null::uuid),
  ('8f020000-0000-4000-8000-000000000502'::uuid,'8f020000-0000-4000-8000-000000000302'::uuid,'operations','institution','8f020000-0000-4000-8000-000000000010'::uuid),
  ('8f020000-0000-4000-8000-000000000504'::uuid,'8f020000-0000-4000-8000-000000000304'::uuid,'content','platform',null::uuid),
- ('8f020000-0000-4000-8000-000000000505'::uuid,'8f020000-0000-4000-8000-000000000305'::uuid,'owner','platform',null::uuid)
+ ('8f020000-0000-4000-8000-000000000505'::uuid,'8f020000-0000-4000-8000-000000000305'::uuid,'owner','platform',null::uuid),
+ ('8f020000-0000-4000-8000-000000000506'::uuid,'8f020000-0000-4000-8000-000000000306'::uuid,'owner','platform',null::uuid)
 ) fixture(id,identity_id,role_code,scope_kind,institution_id)
 join public.platform_roles r on r.code=fixture.role_code;
--- 102 is manage-only, 104 read-only; 105 is the second real internal Owner so
--- revocation tests preserve last-owner protection instead of disabling it.
+-- 102 is manage-only, 104 read-only. 105 and 106 are independent Owners for
+-- terminal revocation tests; 101 remains active for the rest of the suite.
 insert into public.platform_role_permissions(role_id,permission_id,effect,status)
 select r.id,p.id,case
  when r.code='operations' and p.code='forms.read' then 'deny'::public.permission_effect
@@ -193,24 +194,22 @@ select is((select count(*) from public.forms where created_by_internal_identity_
 select ok(not exists(select 1 from app_private.superadmin_internal_form_draft_receipts r join fauthor_invalid i using(request_id)),'invalid payloads leave no receipt');
 
 -- AuthLink and membership revocation must reauthorize before receipt retrieval.
+-- Revocation is terminal: use independent identities and never reactivate a
+-- revoked row merely to recycle a fixture.
+select set_config('request.jwt.claims','{"sub":"8f020000-0000-4000-8000-000000000105","session_id":"8f020000-0000-4000-8000-000000000205","aal":"aal2","role":"authenticated"}',true);
 update app_private.superadmin_internal_auth_links
 set status='revoked',revoked_at=now(),version=version+1
-where id='8f020000-0000-4000-8000-000000000401';
+where id='8f020000-0000-4000-8000-000000000405';
 set local role authenticated;
 insert into fauthor_results select 'revoked_link_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
 reset role;
-update app_private.superadmin_internal_auth_links
-set status='active',revoked_at=null,version=version+1
-where id='8f020000-0000-4000-8000-000000000401';
+select set_config('request.jwt.claims','{"sub":"8f020000-0000-4000-8000-000000000106","session_id":"8f020000-0000-4000-8000-000000000206","aal":"aal2","role":"authenticated"}',true);
 update app_private.superadmin_internal_memberships
 set status='revoked',revoked_at=now(),version=version+1
-where id='8f020000-0000-4000-8000-000000000501';
+where id='8f020000-0000-4000-8000-000000000506';
 set local role authenticated;
 insert into fauthor_results select 'revoked_membership_replay',public.superadmin_forms_save_draft_v2(request_id,0,payload),null,current_user from fauthor_cases where label='incomplete_1';
 reset role;
-update app_private.superadmin_internal_memberships
-set status='active',revoked_at=null,version=version+1
-where id='8f020000-0000-4000-8000-000000000501';
 select is((select body#>>'{error,code}' from fauthor_results where label='revoked_link_replay'),'SAI_INTERNAL_CONTEXT_DENIED','revoked link cannot replay');
 select is((select body#>>'{error,code}' from fauthor_results where label='revoked_membership_replay'),'SAI_MEMBERSHIP_REVOKED','revoked membership cannot replay');
 
