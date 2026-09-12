@@ -11,4 +11,3 @@ not_executed=PUT,finalize,replay_finalize,save_response,download,reopen
 logout_scope=local logout_http=204
 cleanup=none
 credentials_logged=false
-
