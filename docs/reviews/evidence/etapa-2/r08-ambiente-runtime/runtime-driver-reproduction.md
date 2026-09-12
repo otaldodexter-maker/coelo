@@ -36,30 +36,32 @@ exec_command failed: CreateProcess { message: "Rejected(... rejected: blocked by
 
 Foi uma rejeição automática da política da ferramenta antes da criação do processo. Não foi pedido de aprovação, negativa do Owner, falha do Chrome ou porta ocupada. Depois dela, nenhum browser foi iniciado por shell e o fluxo seguiu apenas pela integração CUA autorizada.
 
-## Reprodução do limite atual
+## Reprodução do limite no build release
 
-1. Manter o servidor estático PID `16248` em `127.0.0.1:3014` e a aba Chrome `829822454` em `/login`.
+1. Manter o servidor estático em `127.0.0.1:3014` e a aba Chrome `829822454` em `/login`.
 2. Consultar `dtd.listDtdUris`: retorna que não existe processo debug/DTD.
 3. Observar que `qa_drive.dart` exige como primeiro argumento o WebSocket CDP da página; a aba CUA não o expõe.
 4. Focar `superadmin-login-email`, aplicar `setValue`, `paste` ou `typeText` e submeter.
 5. Resultado atual: validação `Informe seu e-mail.`, campo vazio e nenhuma requisição Auth.
 
-## Procedimento suportado para uma próxima sessão
+## Tentativa autorizada com app debug
 
-Este procedimento exige posse nominal do runtime e substitui temporariamente o servidor; não foi executado nesta investigação:
+O C0 liberou nominalmente a troca temporária do servidor. O procedimento foi executado sem abrir outro navegador:
 
 1. Reutilizar a mesma aba Chrome, sem abrir outra.
-2. Depois de o C0 liberar a troca, parar somente o servidor estático PID `16248`.
+2. Parar somente o servidor estático PID `16248`.
 3. Iniciar o app sem lançar navegador, no mesmo host/porta, com o entrypoint QA e ambiente já ignorado pelo Git:
 
    ```powershell
-   flutter run -d web-server -t test_driver/qa_main.dart --web-hostname=127.0.0.1 --web-port=3014 --dart-define-from-file=.env.local
+   flutter run -d web-server -t test_driver/qa_main.dart --web-hostname=127.0.0.1 --web-port=3014 --dart-define-from-file=.env.local --no-pub
    ```
 
 4. Recarregar a mesma aba CUA em `http://127.0.0.1:3014/login`.
-5. Consultar `dtd.listDtdUris`; somente se houver URI, executar `dtd.connect` e `dtd.listConnectedApps`.
-6. Somente se o app aparecer, usar `flutter_driver_command` com `ByValueKey`: `superadmin-login-email`, `enter_text`, `superadmin-login-password`, `enter_text`, manter sessão e `Entrar`.
-7. Provar URL fora de `/login`, leitura autorizada e reload na mesma aba.
-8. Se o app web-server não aparecer no DTD, parar. Não abrir Chrome por shell, não usar CDP alternativo e não injetar sessão/localStorage.
+5. O DTD foi encontrado no PID `33640`, e o app apareceu conectado em um VM Service local na porta `65121`; os tokens efêmeros das URIs não são registrados.
+6. Tentativa material 1: `qa_login.dart` conectou ao VM Service, mas `ext.flutter.driver waitFor` terminou com `Unexpected DWDS error ... Unexpected null value`, exit `255`. Nenhuma chamada Auth foi emitida.
+7. Tentativa material 2: o Dart MCP conectou ao mesmo app, mas `flutter_driver_command get_health` respondeu que a extensão Flutter Driver não estava habilitada. O próprio `flutter run -d web-server` avisou que esse dispositivo exige a extensão Dart Debug Chrome para depuração; ela não existe no Chrome compartilhado.
+8. O servidor debug foi encerrado de forma limpa. O build release foi restaurado no mesmo endereço, agora no PID `33856`, e a mesma aba foi recarregada.
 
-Esse é um candidato suportado pelas ferramentas existentes; não há alegação de que funcionou até uma sessão futura completar os passos 3–7.
+Também foi repetido um probe sanitizado pelo locator semântico nativo da integração CUA: `getByRole("textbox", {name: "E-mail"}).fill(...)`, seguido de `press("Tab")`. O foco permaneceu no campo de e-mail e o submit exibiu `Informe seu e-mail.` e `Informe sua senha.`. Os equivalentes `click(7)` + `pressKey("CTRL+A")` + `typeText(...)` + `pressKey("TAB")` e `setValue(7, ...)` tiveram o mesmo resultado: a camada semântica recebe a ação, mas o controller Flutter não recebe o valor. Foram usados apenas valores sentinela sem credenciais nesse probe.
+
+Conclusão: as duas rotas suportadas disponíveis foram esgotadas. Para concluir login/leitura/reload é necessário reutilizar a aba em um Chrome que já tenha a extensão Dart Debug, ou um endpoint CDP nominalmente permitido. Não abrir outro navegador, não injetar sessão/localStorage e não confundir HTTP 200 com prova E2E.

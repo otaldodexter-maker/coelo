@@ -14,7 +14,7 @@ Recorte exclusivo de ambiente local, espelho Supabase preservado e scripts QA ex
 - Docker Desktop/WSL: recuperado sem factory reset, reinício do Windows, remoção de volume ou recriação de VHDX.
 - Espelho `supabase_db_coelo_baseline`: saudável em `127.0.0.1:57322`, com volume nomeado preservado.
 - Build QA: concluído em modo release a partir de `af99409cf5bb266b4be96647690abde44ace8f23`.
-- Servidor: ativo em `127.0.0.1:3014`, PID `16248`.
+- Servidor: ativo em `127.0.0.1:3014`, PID `33856`.
 - Navegador compartilhado: aba Chrome mantida aberta, mas a automação CUA não atualizou o controller dos campos Flutter. Login, leitura autorizada e persistência após reload **não foram comprovados**.
 
 ## Docker Desktop e WSL
@@ -92,13 +92,13 @@ sha256: 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1
 Servidor SPA existente reutilizado:
 
 ```powershell
-python docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/serve.py --directory apps/superadmin/build/web --host 127.0.0.1 --port 3014
+python docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/serve.py apps/superadmin/build/web 3014 127.0.0.1
 ```
 
 Recursos entregues:
 
 ```text
-PID: 16248
+PID: 33856
 http://127.0.0.1:3014/login -> HTTP 200, 1020 bytes
 http://127.0.0.1:3014/flutter_bootstrap.js -> HTTP 200, 9975 bytes
 ```
@@ -170,7 +170,9 @@ Com isso, o espelho está comprovado para o preflight do lote 56. O ledger de um
 
 A investigação dos scripts existentes e do Dart MCP está em [runtime-driver-reproduction.md](./runtime-driver-reproduction.md). O build release estático não expõe DTD/VM Service; `dtd.listDtdUris` não encontrou app conectado. `qa_drive.dart` depende de CDP, enquanto `qa_login.dart` e `flutter_driver_command` dependem de app debug/VM Service. Também ficou registrado o bloqueio automático `blocked by policy` recebido antes de qualquer Chrome por shell, distinguindo-o de aprovação humana.
 
-Há um procedimento preciso para a próxima sessão tentar `flutter run -d web-server` na mesma porta e reutilizar a mesma aba, somente após o C0 liberar a troca do servidor. Não foi executado nem promovido a solução nesta sessão.
+O C0 liberou a tentativa com `flutter run -d web-server` na mesma porta e na mesma aba. DTD e VM Service foram encontrados, mas `qa_login.dart` falhou no DWDS (`Unexpected null value`) e o Dart MCP informou que Flutter Driver não estava habilitado; o próprio Flutter avisou que o dispositivo web-server exige a extensão Dart Debug Chrome. O servidor debug foi encerrado limpo e o release foi restaurado no PID `33856`.
+
+O probe CUA foi repetido com seletores e APIs exatos, usando apenas sentinelas: `getByRole("textbox", {name: "E-mail"}).fill(...)` + `press("Tab")`, além de `click(7)` + `pressKey("CTRL+A")` + `typeText(...)` + `pressKey("TAB")` e `setValue(7, ...)`. O Tab não transferiu o foco, o controller continuou vazio e o submit retornou as validações obrigatórias. Não houve chamada Auth. As duas rotas de driver suportadas foram, portanto, esgotadas sem CDP alternativo ou segundo navegador.
 
 ## Suítes focais adicionais de G5
 
