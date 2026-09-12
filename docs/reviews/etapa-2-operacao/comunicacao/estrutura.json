@@ -1,12 +1,12 @@
 {
  "grupo": "estrutura",
- "revision": 102,
+ "revision": 103,
  "round": "E2-R09-20260912-1542",
  "adocaoR09": {
   "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
   "hostId": "local",
   "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
-  "coordinatorRevision": 97,
+  "coordinatorRevision": 98,
   "instructionReceived": true,
   "status": "vaga inicial adotada; unico C0 reconhecido; sem posse ou timers anteriores",
   "T0": "2026-09-12T15:42:18-03:00",
@@ -15,7 +15,7 @@
   "corte": "primeiro corte de tempo/consumo C0",
   "base": "7907453f0362665ab87fe8faaa4854f286904148",
   "proximoGate": "apps/superadmin -> Estrutura -> Turmas -> Criar -> Vinculos e aparencia -> groups.location: UI criar com Local da unidade, detalhe/reload e negativa G5; consumidor existente preservado",
-  "bloqueio": "E2E nao liberado na revisao 96; Chrome G0; donos G0/C0. Trabalho independente: inspecao focal do consumidor e provas, sem repetir API ou goldens verdes.",
+  "bloqueio": "C0 r98 libera E2E, mas Chrome PID22592/browser2/tab829822462 pertence G6. G1 precisa integrar9773ef969 e transferencia de Chrome/build correto antes da UI. Donos C0/G6; consumidor local ja corrigido e testado.",
   "contrato": {
    "objetivo": "fechar uma fatia CRUD real por vez",
    "incluido": "Instituicoes, Unidades, Turmas, Atividades, Avaliacoes e Locais em apps/superadmin; familia administrativa",
@@ -26,7 +26,7 @@
    "estimativa": "calibrar apos inspecao focal; espera runtime nao calculavel"
   },
   "novosAceites": [],
-  "testesProduto": "nao executados nesta abertura; 29 PASS R08 sao historicos, nao rerodados",
+  "testesProduto": "RED1FAIL reproduziu identidade nao resolvida; GREEN focal2PASS incluidos na regressao30PASS/0FAIL, exit0; analyze focal sem issues. Sem somar reruns. UI/persistencia real ainda nao executadas.",
   "handoff": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/handoff.md",
   "pedidoG5": "groups.members: dialogos produzem person-pending-* mas superadmin_group_save exige UUID de identidade global ativa. Confirmar resolvedor contextual superadmin_people_identity_lookup_v1/capacidade e role_codes; G1 corrige consumidor apos primeira fatia. Evidencia e caminhos no handoff.",
   "pedidoC0": "Owner pediu continuidade sem parar: G1 prepara regressao do defeito de identidade na mesma fatia Turmas. Solicito slot flutterTest para RED/GREEN focal group_form_page_test e transferencia Chrome depois do gate G0. Arquivos G1: groups/presentation/group_form_page.dart, teste correspondente e somente injecao do parametro de identidade nas duas rotas normais de Turmas; sem alterar composition root. G5: lookup170700 exige people.create e nao filtra resultados por institution/unit (parametros apenas auditados no corpo inspecionado); confirmar contrato elegivel antes de ligar busca generica. Sem ampliar SQL/grants.",
@@ -36,19 +36,28 @@
    "condicao": "C0 atribuiu vaga G1; flutterTest sem dono e instrucao reservar antes de executar; medicao local sem flutter test concorrente",
    "memoriaLivreKiB": 2710096,
    "comando": "flutter test test/features/groups/presentation/group_form_page_test.dart --plain-name 'does not accept an unresolved group member' --concurrency=1",
-   "estado": "reserva publicada para RED focal; liberar imediatamente apos resultado",
+   "estado": "LIBERADO: RED/2GREEN/30PASS regressao finalizados, exit0 no GREEN; analyze final exit0; nenhum flutter test G1 ativo",
    "limite": "somente caso novo; nenhuma suite/golden duplicada; Chrome permanece G0"
   },
   "memoria": "no-op na adocao; nenhuma regra de produto alterada"
  },
- "updatedAt": "2026-09-12T16:01:38.6198770-03:00",
+ "entregaR09": {
+  "codigo": "9773ef969950be7f34a51e98e08a35e430b67411",
+  "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
+  "pedidoC0": "Integrar9773ef969, registrar liberacao flutterTest e colocar G1 na proxima vaga Chrome depois G6 para groups.members/location com build integrado. Pequenas injecoes nas duas rotas GroupFormPage; nenhuma alteracao de composition root.",
+  "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
+  "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
+  "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
+  "avaliacoes": "G5 r80 negativas recebidas e API nao repetida; diario sem alunos requer diagnostico G5/C0, sem recriar cadeia; segue depois Turmas"
+ },
+ "updatedAt": "2026-09-12T16:15:54.9326441-03:00",
  "app": "Codex",
  "modelo": "gpt-6-astra; medium (atribuicao C0)",
  "conversa": "R09 · Estrutura (G1)",
  "coordenador": "01a096ed-314b-7c13-a9e0-3e64649e66fc; host local; unico C0 R09",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
  "branch": "work/etapa2-r09-estrutura-20260912-1542",
-  "head": "0027fabe8 ACK publicado; inspecao focal neste checkpoint",
+  "head": "9773ef969 codigo e provas publicados; checkpoint r103 neste commit",
  "upstream": "origin/work/etapa2-r09-estrutura-20260912-1542",
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
@@ -336,8 +345,8 @@
   "encerramento": "Chrome 9571 e servidor 3001 reabertos 21:10 para Locais e fechados 21:16; espelho parado 21:08"
  },
  "ack": "R09 nova: adocao da revisao C0 96; unico C0 01a096ed-314b-7c13-a9e0-3e64649e66fc; ACK Git 0027fabe8",
- "proximoPasso": "groups.location UI apos runtime/Chrome G0-C0; pedido de contrato groups.members para G5 no handoff; Avaliacoes depois, sem recriar cadeia R08",
- "estado": "R09 vaga inicial adotada; inspecao focal; E2E aguarda G0/C0. Historico R08 preservado nos blocos datados.",
+ "proximoPasso": "Integracao C0 de9773ef969 e vaga Chrome apos G6 para groups.members/location UI; validar papeis/negativas com G5; nao repetir API Avaliacoes",
+ "estado": "R09 consumidor Turmas corrigido/testado/publicado; aguarda integracao e vaga UI C0/G6; nenhum novo aceite FE/BE/E2E",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26). R06: groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro, Escola R04 Estrutura / Unidade Centro R04); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 11/09 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42).",
  "chavesCriadas": "nenhuma",
  "handoff": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/handoff.md",
