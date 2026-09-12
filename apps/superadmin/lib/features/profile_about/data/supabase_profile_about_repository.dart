@@ -12,23 +12,12 @@ import '../domain/profile_about_repository.dart';
 /// `app_private.profile_about_command_receipts` and refuses the same
 /// `request_id` with a different payload.
 ///
-/// Reads prefer `public.get_profile_about(p_subject_type, p_subject_id)`, the
-/// authorized read proposed in
-/// `packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql`, where
-/// the actor, the subject scope and the published/visibility projection are all
-/// resolved on the server.
+/// Reads use `public.get_profile_about(p_subject_type, p_subject_id)`, whose
+/// flat page/key/type projection is versioned in the production baseline.
+/// The server resolves the actor, scope, state and visibility.
 ///
-/// That function is a candidate and has not been applied remotely, so when the
-/// database answers that it does not exist — `42883`, or `PGRST202` from the
-/// schema cache — `load` falls back to the direct table read that has always
-/// been here: `public.profile_about_pages`,
-/// `public.profile_about_structured_fields` and `public.profile_about_sections`
-/// through PostgREST, leaning entirely on RLS, with no tenant filter invented on
-/// the client beyond the requested subject. The fallback covers the absence of
-/// the function and nothing else: a denial stays a denial and is never retried
-/// as a table read, so a revoked grant cannot be laundered into a direct select.
-/// Once the RPC is applied nominally the fallback stops being reached, and the
-/// deny-by-default risk of those tables stops mattering to this screen.
+/// Only a missing RPC (42883/PGRST202) uses the historical table reader.
+/// Denial and other failures never fall back to direct selects.
 ///
 /// Database tokens follow the snake_case of the domain enum names, the
 /// convention the RPC's own defaults confirm (`profile_access`, `manual`,
@@ -306,31 +295,27 @@ bool isMissingProfileAboutReadFunction(String? code, String message) {
       (text.contains('get_profile_about') && text.contains('does not exist'));
 }
 
-/// Reads the jsonb of `public.get_profile_about`:
-/// `{page: null | {id, version, state}, fields: [...], sections: [...]}`.
-///
-/// The row keys are the same column names the table read already uses, so both
-/// sources land on [parseProfileAboutPage] and there is a single grammar for the
-/// About page. A null `page` means "no page for this subject", which the caller
-/// already distinguishes from denial and from failure.
+/// Reads the canonical flat page returned by `get_profile_about`.
+/// A null response is the only empty-page result. RPC fields use `key` and
+/// sections use `type`; the table parser below keeps its column names.
 ProfileAboutPage? parseProfileAboutReadResponse({
   required ProfileAboutSubjectRef subject,
   required Object? response,
 }) {
-  // get_profile_about devolve null (nao um envelope) quando o sujeito ainda
-  // nao tem pagina Sobre: medido na rota real do Perfil em 11/09 (R05). Sem
-  // pagina e um estado legitimo, nao uma resposta invalida.
   if (response == null) return null;
   if (response is! Map) throw const FormatException('invalid_read_response');
   final json = Map<String, Object?>.from(response);
-  final page = json['page'];
-  if (page == null) return null;
-  if (page is! Map) throw const FormatException('invalid_read_response');
   return parseProfileAboutPage(
     subject: subject,
-    pageRow: Map<String, Object?>.from(page),
-    fieldRows: _asRows(json['fields'] ?? const <Object?>[]),
-    sectionRows: _asRows(json['sections'] ?? const <Object?>[]),
+    pageRow: json,
+    fieldRows: [
+      for (final row in _asRows(json['fields'] ?? const <Object?>[]))
+        {...row, 'field_key': row['key']},
+    ],
+    sectionRows: [
+      for (final row in _asRows(json['sections'] ?? const <Object?>[]))
+        {...row, 'section_type': row['type']},
+    ],
   );
 }
 

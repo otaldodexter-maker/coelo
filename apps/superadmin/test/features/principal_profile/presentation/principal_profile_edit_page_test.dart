@@ -41,11 +41,20 @@ void main() {
     ],
   );
 
-  Future<void> pump(WidgetTester tester, ProfileAboutRepository repository) async {
+  Future<void> pump(
+    WidgetTester tester,
+    ProfileAboutRepository repository, {
+    VoidCallback? onSaved,
+    PrincipalRuntimeContext? runtimeContext,
+  }) async {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: PrincipalProfileEditPage(runtimeContext: context, repository: repository),
+        home: PrincipalProfileEditPage(
+          runtimeContext: runtimeContext ?? context,
+          repository: repository,
+          onSaved: onSaved,
+        ),
       ),
     );
     await tester.pumpAndSettle();
@@ -62,7 +71,8 @@ void main() {
 
   testWidgets('persists through the server and re-reads the saved page', (tester) async {
     final repository = _StubAboutRepository(page: pageWith('Antes'));
-    await pump(tester, repository);
+    var confirmations = 0;
+    await pump(tester, repository, onSaved: () => confirmations++);
     expect(repository.loaded, hasLength(1));
 
     repository.page = pageWith('Depois', version: 2);
@@ -75,6 +85,77 @@ void main() {
     // presented as persisted state.
     expect(repository.loaded, hasLength(2));
     expect(find.text('Sobre salvo.'), findsOneWidget);
+    expect(confirmations, 1);
+  });
+
+  for (final (label, failure, stateKey) in [
+    ('denied', ProfileAboutUnauthorizedException(), 'principal-profile-edit-unauthorized'),
+    ('unavailable', ProfileAboutUnavailableException(), 'principal-profile-edit-error'),
+  ]) {
+    testWidgets('does not confirm save when its reload is $label', (tester) async {
+      final repository = _StubAboutRepository(page: pageWith('Antes'));
+      var confirmations = 0;
+      await pump(tester, repository, onSaved: () => confirmations++);
+      repository.loadError = failure;
+
+      await tester.tap(find.byKey(const Key('principal-profile-edit-save')));
+      await tester.pumpAndSettle();
+
+      expect(repository.saved, hasLength(1));
+      expect(repository.loaded, hasLength(2));
+      expect(find.byKey(Key(stateKey)), findsOneWidget);
+      expect(find.text('Sobre salvo.'), findsNothing);
+      expect(confirmations, 0);
+
+      if (label == 'unavailable') {
+        repository
+          ..loadError = null
+          ..page = pageWith('Persistido', version: 2);
+        await tester.tap(find.text('Tentar novamente'));
+        await tester.pumpAndSettle();
+        expect(repository.saved, hasLength(1), reason: 'read retry must not repeat the save');
+        expect(repository.loaded, hasLength(3));
+        expect(find.byKey(const Key('principal-profile-edit-save')), findsOneWidget);
+      }
+    });
+  }
+
+  testWidgets('does not confirm an old save after context changes during reload', (tester) async {
+    final previous = _StubAboutRepository(page: pageWith('Contexto anterior'));
+    var previousConfirmations = 0;
+    var currentConfirmations = 0;
+    await pump(tester, previous, onSaved: () => previousConfirmations++);
+    final gate = Completer<void>();
+    previous.gate = gate;
+
+    await tester.tap(find.byKey(const Key('principal-profile-edit-save')));
+    await tester.pump();
+    expect(previous.saved, hasLength(1));
+    expect(previous.loaded, hasLength(2));
+
+    final current = _StubAboutRepository(page: pageWith('Contexto atual', version: 3));
+    await pump(
+      tester,
+      current,
+      runtimeContext: const PrincipalRuntimeContext(
+        membershipId: 'membership-atual',
+        personId: 'person-atual',
+        institutionId: 'institution-1',
+        institutionName: 'Instituição Autorizada',
+        roleCode: 'staff',
+        scopeKind: 'institution',
+      ),
+      onSaved: () => currentConfirmations++,
+    );
+    gate.complete();
+    await tester.pumpAndSettle();
+
+    expect(current.loaded, hasLength(1));
+    expect(current.saved, isEmpty);
+    expect(find.text('Sobre salvo.'), findsNothing);
+    expect(previousConfirmations, 0);
+    expect(currentConfirmations, 0, reason: 'the old save cannot notify the current context');
+    expect(tester.takeException(), isNull);
   });
 
   testWidgets('sends a fresh idempotency key per save command', (tester) async {
