@@ -124,7 +124,8 @@ Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
 | --- | --- | --- | --- | --- |
 | 1 | `20260912140545_now_publication_expiry_dispatch_v1.sql` | agenda a transição material de publicações Agora vencidas pelo sweep interno existente; não remove mídia | `now_publication_expiry_dispatch_v1_test.sql` 6 | produção (lote 56; aplicação exclusiva C0) |
 | 2 | `20260912140546_forms_question_media_draft_bridge_v1.sql` | primeira ponte de `question-image`; preservada sem mutação porque já foi consumida pelo espelho | `forms_question_media_r2_v1_test.sql` 32 no primeiro ciclo | aplicado somente no baseline G0; GREEN falhou; proibido em produção isoladamente |
-| 3 | `20260912140547_forms_question_media_draft_bridge_fix_v1.sql` | corrige consumidores para autorização institucional, troca FK por `NO ACTION DEFERRABLE` e devolve `media_context: null` sem working version | `forms_question_media_r2_v1_test.sql` 33 | candidato corretivo; pendente GREEN/regressões no mesmo baseline |
+| 3 | `20260912140547_forms_question_media_draft_bridge_fix_v1.sql` | corrige consumidores para autorização institucional, troca FK por `NO ACTION DEFERRABLE` e devolve `media_context: null` sem working version | `forms_question_media_r2_v1_test.sql` 33 | espelho verde: 33/33 + behavioral 17/17 + internal drafts 159/159; produção pendente C0 |
+| 4 | `20260912140548_forms_question_media_retry_delete_v1.sql` | reconcilia retry idêntico após finalize confirmado, solta binding no delete nominal e uniformiza editor inexistente/cross-tenant | `forms_question_media_retry_delete_v1_test.sql` 9 | candidato posterior; revisão/RED/GREEN pendentes |
 
 O defeito foi medido apenas no repositório: a migration `20260910190500`
 declara que o scheduler ficou externo e não existe outro job versionado para o
@@ -133,6 +134,8 @@ no espelho após os lotes 49–55 e cumprir backup/preflight antes de decidir o
 lote 56. O item 1 foi aplicado pelo C0 após essas provas. O item 2 falhou no
 primeiro GREEN do espelho e permanece imutável; o item 3 é sua correção
 forward-only e deve ser aplicado sobre ele somente no baseline antes do novo
-GREEN e das regressões. Em produção, 140546 e 140547 formam uma única unidade
-serializada, somente após prova verde. A ordem acima é explícita; G5 não aplica
-SQL.
+GREEN e das regressões. O item 4 fecha resíduos medidos depois desse primeiro
+GREEN: não deve ser agregado nem aplicado sem revisão e prova próprias. Em
+produção, qualquer promoção deve preservar a ordem 140546 -> 140547 -> 140548
+definida pelo C0; nenhum item intermediário deve ser usado como estado final.
+A ordem acima é explícita; G5 não aplica SQL.

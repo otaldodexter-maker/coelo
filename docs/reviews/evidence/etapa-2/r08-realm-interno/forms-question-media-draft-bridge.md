@@ -1,8 +1,8 @@
 ---
 title: "R08 G5/G3 — ponte de question-image no rascunho produtivo"
 source: "R08-plano.md G3/G5; contratos form_get_editor/form_save_draft e forms_question_media_r2_v1"
-status: "RED e primeiro GREEN falho preservados; correção forward-only pronta para o espelho"
-generated_at: "2026-09-12T11:55:12-03:00"
+status: "correção forward-only verde no espelho; produção pendente C0"
+generated_at: "2026-09-12T12:04:58-03:00"
 ---
 
 # Ponte de mídia do rascunho produtivo
@@ -76,5 +76,13 @@ o candidato usavam o overload platform-only de `has_platform_permission`.
 Também foi identificado em revisão que `RESTRICT` não serve ao adiamento do FK;
 a revisão 140547 usa `NO ACTION DEFERRABLE`, contexto nulo sem working e gates
 institucionais nos três consumidores produtivos. O teste agora tem plano 33.
-Ela ainda não foi aplicada nem executada; nenhum resultado descrito aqui é
-verde ou autoriza produção.
+O G0 aplicou 140547 somente sobre o baseline que já continha 140546 e obteve:
+
+- foco question-image: 33/33;
+- `forms_behavioral_rpc_test.sql`: 17/17;
+- `superadmin_internal_form_drafts_v2_test.sql`: 159/159 após corrigir a
+  fixture para respeitar `version` e revogação terminal;
+- todos os resultados finais com rollback e native/wrapper 0.
+
+G5 não executou pgTAP nem aplicou SQL. Esses verdes não autorizam produção: o
+C0 reteve o lote 57 até a revisão e prova do candidato posterior 140548.

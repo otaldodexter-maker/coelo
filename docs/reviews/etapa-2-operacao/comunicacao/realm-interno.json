@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 58,
+  "revision": 59,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T11:55:12-03:00",
+  "updatedAt": "2026-09-12T12:04:58-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "444ac0246 publicado; correção 140547 nesta revisão a publicar",
+  "head": "0d52d5dbf publicado; candidato 140548 nesta revisão a publicar",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "G0 aplicar 140547 no baseline que já contém 140546 e executar o plano 33; parar na primeira falha sem promover produção",
+  "primeiroGate": "G0 rerodar a regressão internal drafts com fixture versionada; C0/G7 revisar 140548 antes de seu RED/GREEN",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "R08 em execução; H09 entregue em produção; gate adicional question-image aguardando GREEN corretivo",
-  "proximoPasso": "G0 provar 140547 no espelho; C0 decide lote 57 somente após GREEN e regressões; G5 continua sem aplicar SQL",
+  "status": "R08 em execução; H09 entregue; 140547 focal verde; regressão de fixture e revisão 140548 pendentes",
+  "proximoPasso": "G0 confirmar regressão com fixture 0d52d5dbf; C0/G7 revisar 140548 e só então autorizar RED/GREEN; G5 continua sem aplicar SQL",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -847,6 +847,27 @@
         "pgTapExecutadoPorG5": "nenhum"
       },
       "primeiroGate": "GREEN focal de 140547 sobre o baseline já corrigido por 140546, antes de regressões ou produção"
+    },
+    "checkpoint12h05": {
+      "quando": "2026-09-12T12:04:58-03:00",
+      "feito": [
+        "G0 aplicou 140547 apenas no baseline: aplicação native/wrapper 0; focal question-image 33/33 e forms_behavioral_rpc 17/17, ambos rollback/native/wrapper 0.",
+        "Regressão internal form drafts passou casos 1–59 e abortou em internal auth link version mismatch; causa isolada à fixture que mudava status/revoked_at sem incrementar version, sem relação causal com 140547.",
+        "Fixture corrigida sem enfraquecer guard: após um rerun intermediário mostrar que revogação é terminal, os cenários passaram a usar identidades independentes 105/106; commit final afcebccd0 publicado.",
+        "Dois resíduos G3 confirmados por inspeção: authorize/finalize não reconciliam resposta perdida após ready; delete nominal não remove binding. C0 confirmou também enumeração por mensagem distinta no editor.",
+        "Candidato forward-only 140548 e suíte focal plano 9 preparados separadamente; G5 não aplicou SQL nem executou pgTAP."
+      ],
+      "pendente": [
+        "Regressão internal drafts concluída pelo G0 com a fixture afcebccd0: 159/159, finish 1..159, rollback, native/wrapper 0.",
+        "C0/G7 revisar 140548; somente depois executar RED, aplicar no baseline e GREEN da suíte retry/delete plano 9.",
+        "Nenhuma produção 57 antes de composição, regressões e ordem final do C0."
+      ],
+      "testes": {
+        "questionImage140547G0": "33/33 e behavioral 17/17; native/wrapper 0; rollback",
+        "internalDraftsG0": "primeiros reruns falharam na fixture (version e depois reativação terminal); resultado final afcebccd0 159/159, rollback, native/wrapper 0; reruns não somados",
+        "retryDelete140548": "plano 9 preparado; não executado por G5"
+      },
+      "primeiroGate": "revisão C0/G7 do 140548 e rerun isolado da fixture antes de qualquer nova aplicação local"
     }
   }
 }
