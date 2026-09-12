@@ -2275,5 +2275,31 @@
       "sem fixture expirada de invites.resend",
       "teste de contrato de bloqueio de people.create desalinhado com a capacidade produtiva 170700"
     ]
+  },
+  "R07_FECHAMENTO_C0": {
+    "revision": 149,
+    "round": "E2-R07-20260911",
+    "recorded_at": "2026-09-12T00:00:00-03:00",
+    "status": "finalizada para integracao; sem novas implementacoes",
+    "branch": "work/etapa2-r07-acessos-pessoas",
+    "sha_publicado": "6bf1b576c2ed10456c924ddbfe7de30fdbf170d7",
+    "feito": [
+      "primeira revisao R07, checkpoint e handoff publicados no remoto",
+      "build release concluido; analyze das cinco familias sem issues",
+      "suite ampliada executada: 749 testes, 744 aprovados e 5 falhas de contratos de teste desalinhados",
+      "deltas R07 registrados no formato do aplicador, todos local-green/pending-verification sem promover E2E"
+    ],
+    "pendencias_com_primeiro_gate": [
+      {"acoes": "people.create/people.edit e @ de Pessoas/Alunos/Usuarios internos", "primeiro_gate": "renderer Chrome estavel para abrir a rota real e provar persistencia/reload"},
+      {"acoes": "access-profiles.edit/assign/delete e access-models.edit/duplicate", "primeiro_gate": "mesma sessao real estavel; depois prova de reload e P45"},
+      {"acoes": "internal-users.edit/suspend", "primeiro_gate": "renderer estavel e interno sobressalente; nao usar usuarios QA"},
+      {"acoes": "internal-users.create", "primeiro_gate": "deploy registrado da Edge Function internal-user-create; permanece bloqueado em coordenacao.json"},
+      {"acoes": "invites.resend", "primeiro_gate": "fixture expirada simples em candidatos/acessos-pessoas com pgTAP verde; nenhuma existe nesta rodada"}
+    ],
+    "estimativa_delta_restante": "Sessao real apos renderer estavel: aproximadamente 1–2 horas para as provas de rota/reload; internal-users.create e invites.resend dependem adicionalmente dos gates externos/fixture e nao têm prazo comprometido.",
+    "arquivos_modificados_untracked_stash": "git status limpo; nenhum untracked rastreado como mudança; nenhum stash",
+    "sinteticos_e_chaves": "nenhum dado sintético, migration, chave ou segredo criado na R07; a credencial QA apenas foi lida do backup indicado e não foi registrada",
+    "handoff_r01_r07": "R03, R04, R05, R06 e R07 possuem handoffs nesta frente; R01/R02 estão representadas pelos relatórios/manifests históricos e não há item R01–R07 sem registro identificado nesta conferência",
+    "pode_remover_worktree": "sim, após o coordenador integrar/verificar o SHA publicado; a branch remota e os handoffs preservam a entrega. Não remover antes da integração se o coordenador ainda precisar inspecionar a worktree."
   }
 }
