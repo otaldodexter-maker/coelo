@@ -1,0 +1,33 @@
+1..25
+ok 1 - grants: prepare para authenticated; descritor e finalize para service_role
+ok 2 - sem gatilho: form_assets a mao nao cria espelho (suites legadas intactas)
+ok 3 - espelho criado pelo wrapper
+ok 4 - espelho pending com dono e chave na convencao
+ok 5 - binding answer-image criado
+ok 6 - espelhar de novo e idempotente
+{"role": "service_role"}
+ok 7 - descritor devolve chave e esperados
+{"role": "service_role"}
+ok 8 - sha diferente: mismatch
+ok 9 - legado descartado pelo worker
+ok 10 - espelho apagado pelo gatilho de discard
+ok 11 - chave na fila de limpeza
+{"role": "service_role"}
+ok 12 - finalize correto: legado finalized e espelho ready
+ok 13 - repetir o finalize e replay
+ok 14 - variante original gravada
+ok 15 - foreign actor is authorized in tenant B (positive control)
+ok 16 - tenant B reader has no capability in asset tenant A
+ok 17 - prepared owner can download the finalized attached answer image
+ok 18 - tenant B reader cannot download tenant A answer image
+ok 19 - authorized tenant A reader can download the attached answer image
+ok 20 - client cannot impersonate worker actor by calling authorizer directly
+ok 21 - anonymous client cannot call worker authorizer
+1146a29b-0f9d-4c24-9a17-b86acf717b11
+ok 22 - anonymous fixture is finalized through worker contract
+ok 23 - valid anonymous secret authorizes its own image
+ok 24 - wrong anonymous secret must not authorize another tenant image
+ok 25 - missing anonymous secret must not authorize another tenant image
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping

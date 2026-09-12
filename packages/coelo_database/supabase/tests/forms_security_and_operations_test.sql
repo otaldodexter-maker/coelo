@@ -1,6 +1,12 @@
 begin;
 
 create extension if not exists pgtap with schema extensions;
+-- Assercoes compostas precisam de booleanos. has_function/has_table do
+-- pgTAP retornam linhas TAP (text), nao predicados para AND.
+create function pg_temp.function_exists(schema_name text, function_name text, argument_types text[])
+returns boolean language sql stable as $$
+  select to_regprocedure(format('%I.%I(%s)',schema_name,function_name,array_to_string(argument_types,','))) is not null;
+$$;
 select plan(70);
 
 select has_table('public', 'form_applications', 'applications exist');
@@ -74,8 +80,8 @@ select has_table('public', 'form_file_jobs', 'file jobs exist');
 select has_table('app_private', 'form_command_receipts', 'command receipts are private');
 select has_table('app_private', 'form_worker_jobs', 'worker jobs are private');
 select ok(
-  has_table('app_private', 'form_multipart_uploads')
-  and has_table('app_private', 'form_multipart_parts'),
+  to_regclass('app_private.form_multipart_uploads') is not null
+  and to_regclass('app_private.form_multipart_parts') is not null,
   'multipart uploads and their parts are normalized in the private schema'
 );
 select ok(
@@ -352,14 +358,14 @@ select ok(
 );
 
 select ok(
-  has_function('public', 'form_worker_begin_export', array['uuid','text','uuid'])
-  and has_function(
+  pg_temp.function_exists('public', 'form_worker_begin_export', array['uuid','text','uuid'])
+  and pg_temp.function_exists(
     'public', 'form_worker_complete_export',
     array['uuid','text','uuid','text','bigint','jsonb']
   )
-  and has_function('public', 'form_worker_fail_export', array['uuid','text','uuid','text','integer'])
-  and has_function('public', 'form_worker_cleanup_snapshot', array['uuid','text','integer'])
-  and has_function('public', 'form_worker_complete_cleanup', array['uuid','text','uuid[]']),
+  and pg_temp.function_exists('public', 'form_worker_fail_export', array['uuid','text','uuid','text','integer'])
+  and pg_temp.function_exists('public', 'form_worker_cleanup_snapshot', array['uuid','text','integer'])
+  and pg_temp.function_exists('public', 'form_worker_complete_cleanup', array['uuid','text','uuid[]']),
   'export and cleanup workers expose only lease-bound server RPCs'
 );
 
@@ -376,13 +382,13 @@ select ok(
 );
 
 select ok(
-  has_function('app_private', 'form_worker_begin_multipart', array['uuid','text','uuid','text','text','text'])
-  and has_function(
+  pg_temp.function_exists('app_private', 'form_worker_begin_multipart', array['uuid','text','uuid','text','text','text'])
+  and pg_temp.function_exists(
     'app_private', 'form_worker_record_multipart_part',
     array['uuid','text','uuid','text','integer','text','bigint','text']
   )
-  and has_function('app_private', 'form_worker_complete_multipart', array['uuid','text','uuid','text'])
-  and has_function('app_private', 'form_worker_abort_multipart', array['uuid','text','uuid','text']),
+  and pg_temp.function_exists('app_private', 'form_worker_complete_multipart', array['uuid','text','uuid','text'])
+  and pg_temp.function_exists('app_private', 'form_worker_abort_multipart', array['uuid','text','uuid','text']),
   'multipart lifecycle exposes explicit private worker transitions'
 );
 
@@ -413,7 +419,7 @@ select ok(
 );
 
 select ok(
-  has_function('app_private', 'form_worker_multipart_snapshot', array['uuid','text','uuid'])
+  pg_temp.function_exists('app_private', 'form_worker_multipart_snapshot', array['uuid','text','uuid'])
   and pg_get_functiondef('app_private.form_worker_multipart_snapshot(uuid,text,uuid)'::regprocedure)
     like '%lease_owner = p_worker_id%'
   and pg_get_functiondef('app_private.form_worker_multipart_snapshot(uuid,text,uuid)'::regprocedure)
@@ -425,8 +431,8 @@ select ok(
 );
 
 select ok(
-  has_function('public', 'form_list_monitor_hierarchy', array['jsonb'])
-  and has_function('app_private', 'form_rebuild_occurrence_scope_metrics', array['uuid']),
+  pg_temp.function_exists('public', 'form_list_monitor_hierarchy', array['jsonb'])
+  and pg_temp.function_exists('app_private', 'form_rebuild_occurrence_scope_metrics', array['uuid']),
   'hierarchy RPC and materialized scope rebuild are installed'
 );
 

@@ -1,0 +1,29 @@
+1..17
+84000000-0000-4000-8000-000000000099
+{"sub":"84000000-0000-4000-8000-000000000099","aal":"aal1","role":"authenticated"}
+ok 1 - an authenticated subject without a person mapping cannot execute a Forms command
+84000000-0000-4000-8000-000000000002
+{"sub":"84000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+ok 2 - a mapped actor without forms.manage cannot execute a Forms command
+84000000-0000-4000-8000-000000000001
+{"sub":"84000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+ok 3 - form_save_draft executes and returns the persisted initial version
+ok 4 - an identical request_id replay returns the original result
+ok 5 - a request_id cannot be replayed with a divergent payload
+ok 6 - an existing form id cannot be rewritten into another tenant
+ok 7 - a stale expected_version cannot overwrite a form
+ok 8 - form_publish executes and advances the management version
+ok 9 - an identical publish replay returns the original result
+ok 10 - publication freezes the working version as the published version
+ok 11 - editing a published form creates a distinct working version
+ok 12 - the published version remains immutable while version two is working
+ok 13 - editing does not mutate the published relational definition
+84000000-0000-4000-8000-000000000001
+{"sub":"84000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+ok 14 - form_get_editor restores the persisted application, audience, schedules and reminders
+ok 15 - opening an anonymous response stores no actor identity or actor-linked command receipt
+ok 16 - submitting an anonymous response updates eligibility state without persisting the actor on content or revision
+ok 17 - anonymous response content has no persistent participation key or foreign-key link
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping

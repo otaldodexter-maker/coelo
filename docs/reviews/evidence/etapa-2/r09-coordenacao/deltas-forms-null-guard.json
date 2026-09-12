@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0 r103: authorizer de anexo anonimo aceita NULL indevidamente; duas negativas reproduzidas e corrigidas SOMENTE no espelho.25PASS focais+17PASS regressao; suite ampliada62PASS/8FAIL preexistentes. Lote60 retido sem aplicacao; producao permanece59. Backup/preflight e proximos gates no recibo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0 r103: authorizer de anexo anonimo aceita NULL indevidamente; duas negativas reproduzidas e corrigidas SOMENTE no espelho.25PASS focais+17PASS regressao; suite ampliada62PASS/8FAIL preexistentes. Lote60 retido sem aplicacao; producao permanece59. Backup/preflight e proximos gates no recibo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
+  }
+]

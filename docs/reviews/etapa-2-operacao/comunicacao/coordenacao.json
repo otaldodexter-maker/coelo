@@ -1,12 +1,12 @@
 {
-  "revision": 102,
+  "revision": 103,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:31:15.648Z",
+  "updatedAt": "2026-09-12T19:47:00Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3716,9 +3716,9 @@
       "branch": "work/etapa2-r09-estrutura-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
-      "ackRevision": 105,
-      "primeiroGate": "ACAO AGORA: git fetch/merge origin/dev na propria worktree; codigo membros ja integrado e C0 testou35PASS. Compilar QA com COELO_QA_TEXT_ENTRY_EMULATION=false e COELO_QA_SYNTHETIC_CIRCULAR_FILE=false, env publico ignorado retido G0. Assumir Chrome22592/tab829822462 e servidor51168/3014. Provar groups.location e groups.members via busca normal, contexto sintetico retido, criar turma R09 autorizada e preservar. Backend reautoriza. Nao certificar formulario manual que exige UUID. Publicar provas/deltas e liberar slot; nenhuma outra fatia antes de fechar esta. C0 liberou ownership CUA fechando829822462: abrir nova aba no mesmo Chrome22592, nao esperar release adicional. Nao ha formulario/WIP da Circular aberto.",
-      "status": "ativa; adocao101 confirmada pela conversa; build em curso",
+      "ackRevision": 112,
+      "primeiroGate": "r103: pessoa sintetica ATIVA confirmada por leitura remota: QA R04 Responsavel, id9f040000-0000-4000-8000-000000000062. Buscar por Nome exato na UI normal, resolver UUID pelo repository e vincular no MESMO grupo1043c165-7f24-44fe-a868-5bfc6fb0b50f; papel Responsavel; salvar e reload. QA R04 Profissional id9f040000-0000-4000-8000-000000000061 tambem ativo, caso contrato exija profissional. Backend continua autorizando hierarquia; nao editar pessoas G2. C0 assume negativa de Local. Chrome22592/aba829822468 e runtime15452 continuam G1. Publicar handoff e liberar aba ao terminar; nenhuma Avaliacao antes do aceite Turmas.",
+      "status": "Local positivo entregue; segue Membros na mesma fatia e mesmo grupo",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -3850,7 +3850,8 @@
       "dono": "G1",
       "pid": 22592,
       "inicio": "2026-09-12T19:31:15.648Z",
-      "estado": "C0 FECHOU sua aba829822462 por CUA; nao reutilizar ID fechado. G1 abrir UMA aba no Chrome existente via createBrowserTab chrome, URL http://127.0.0.1:3014; nenhuma segunda instancia Chrome. Pode login normal proprio se necessario, sem injecao."
+      "estado": "G1 possui aba829822468 no unico Chrome22592; C0 nao usa navegador.",
+      "tabId": 829822468
     },
     "flutterTest": {
       "dono": "nenhum",
@@ -3871,9 +3872,9 @@
     "sqlLiberado": false,
     "runtime": {
       "dono": "G1",
-      "pid": 51168,
+      "pid": 15452,
       "port": 3014,
-      "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/build/web",
+      "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542/apps/superadmin/build/web",
       "buildSha": "9eb24fbf1",
       "next": "G1 autorizado a compilar UMA base integrada na sua worktree apos merge origin/dev; substituir SOMENTE servidor transferido51168 apos medir comando. Nao editar build/arquivos de outra worktree. Mesma origem3014 preserva login. Sem mock picker/sessao injetada."
     }
@@ -3881,7 +3882,7 @@
   "consumoR09": {
     "inicialUsedPercent": null,
     "amostras": [],
-    "status": "consulta ausente no catalogo disponivel; Owner autoriza ciclos curtos via Git",
+    "status": "Consulta real recuperada pelo App Server; inicial da abertura nao medida; primeira leitura real16:13=57%, agora60%.",
     "reduzirEm": 70,
     "fecharEm": 75,
     "metaEncerrarAte": 85,
@@ -4103,13 +4104,10 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T19:04:12.740Z",
-    "recorte": "forms.resolve-file BE/API; runtime QA compartilhado",
-    "feito": "download retido68B/SHA; anon401; asset inexistente400; URL60s expirada403 apos65s; logout local204; merges G0/G5",
-    "testes": "probe final6PASS/0FAIL; tentativa1 abortou antes de confirmar Auth, causa indeterminada; sem somar401 repetido",
-    "aberto": "tenant/contrato ainda nao provado neste probe; UI dependeG0/G3; nenhuma promocao",
-    "novosAceites": [],
-    "nextGate": "G0 build/login/reload; G5 negativa de Avaliacoes pela API normal sem SQL novo; G1 consumidor Turmas"
+    "at": "2026-09-12T19:47:00Z",
+    "feito": "G1 UI salvou Local, ativo v2 e reload; C0 corrige duas negativas anonimas SQL local,42PASS;backup fora Git completo",
+    "aberto": "negativa Local C0; Membros G1 fixture ativa indicada, adocao103 ainda nao confirmada; lote60 sem aplicacao",
+    "nextGate": "negativa contextual groups.location e integracao G1; esclarecer regressao SQL"
   },
   "tentativaAnteriorAviso": {
     "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
@@ -4118,18 +4116,26 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 59,
+    "usedPercent": 60,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T19:25:17.299Z",
+    "measuredAt": "2026-09-12T19:44:50Z",
     "source": "account/rateLimits/read; Codex app-server",
     "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
-    "nextCheckBy": "2026-09-12T19:35:17.299Z"
+    "nextCheckBy": "2026-09-12T19:54:50Z"
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",
     "send": "exec resume G6 rejeitado: thread-store conflict already has an active writer; nao contornar lock nem criar duplicata. Leitura e cota disponiveis; envio ausente.",
     "proxy": "falhou socket padrao OS10050; daemon lifecycle indisponivel Windows",
     "heartbeat": "sem agendamento; checkpoints em sessao ativa"
+  },
+  "filaSqlR09": {
+    "ultimoAplicado": 59,
+    "proximo": 60,
+    "dono": "C0",
+    "candidato": "20260912193603_forms_answer_media_authorization_null_guard_v1.sql",
+    "status": "somente espelho;42PASS pertinentes;8FAIL preexistentes na suite ampliada; producao bloqueada ate esclarecer gate",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
   }
 }

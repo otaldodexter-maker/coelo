@@ -1,7 +1,7 @@
 -- answer-image no R2: prepare (legado + espelho), descritor, finalize, discard e leitura pela RPC de 230011.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(14);
+select plan(25);
 create function pg_temp.aid(n integer) returns uuid language sql immutable as $$
   select ('8c0a0000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid;
 $$;
@@ -74,5 +74,68 @@ select ok((select (body#>>'{data,replayed}')::boolean from am where label='fin_a
 select ok(exists (select 1 from public.media_variants v join public.media_assets a on a.id=v.media_asset_id
   where a.source_form_asset_id=pg_temp.aid(9211) and v.rendition='original' and v.pixel_width=640 and v.byte_size=2048),'variante original gravada');
 
+-- R09: o download answer-image usa ESTE autorizador, nao o emissor de
+-- ticket de leitura administrativa. Provar escopo com asset realmente
+-- vinculado, para exercitar tambem o ramo forms.responses.read.
+insert into public.institutions(id,institution_type_id,public_name,slug,status)
+values (pg_temp.aid(20),pg_temp.aid(1),'Answer media B','answer-media-b','active');
+insert into public.people(id,person_type,first_name,last_name,display_name,status)
+select pg_temp.aid(n),'adult','Synthetic','Reader','Synthetic reader '||n,'active'
+from unnest(array[1001,1002]) n;
+insert into public.platform_memberships(person_id,role_id,status,scope_kind,scope_institution_id)
+select pg_temp.aid(n),r.id,'active','institution',pg_temp.aid(case when n=1001 then 20 else 10 end)
+from unnest(array[1001,1002]) n cross join public.platform_roles r where r.code='owner';
+insert into public.form_responses(id,occurrence_id,institution_id,form_id,form_version_id,identity_mode,respondent_person_id)
+values(pg_temp.aid(7210),pg_temp.aid(6210),pg_temp.aid(10),pg_temp.aid(210),pg_temp.aid(1210),'identified',pg_temp.aid(1000));
+insert into public.form_answers(id,response_id,form_version_id,item_id,answer_kind)
+values(pg_temp.aid(8210),pg_temp.aid(7210),pg_temp.aid(1210),pg_temp.aid(3210),'photo');
+insert into public.form_answer_assets(answer_id,asset_id,position)
+values(pg_temp.aid(8210),pg_temp.aid(9211),0);
+select ok(app_private.audit_actor_has_permission(pg_temp.aid(1001),'forms.responses.read',pg_temp.aid(20),false),
+  'foreign actor is authorized in tenant B (positive control)');
+select ok(not app_private.audit_actor_has_permission(pg_temp.aid(1001),'forms.responses.read',pg_temp.aid(10),false),
+  'tenant B reader has no capability in asset tenant A');
+set local role service_role;
+select is(public.form_media_authorize_for_worker(pg_temp.aid(9211),pg_temp.aid(1000),null)->>'asset_id',pg_temp.aid(9211)::text,
+  'prepared owner can download the finalized attached answer image');
+select throws_ok($$select public.form_media_authorize_for_worker(pg_temp.aid(9211),pg_temp.aid(1001),null)$$,
+  'P0002','form asset unavailable','tenant B reader cannot download tenant A answer image');
+select is(public.form_media_authorize_for_worker(pg_temp.aid(9211),pg_temp.aid(1002),null)->>'asset_id',pg_temp.aid(9211)::text,
+  'authorized tenant A reader can download the attached answer image');
+reset role;
+select ok(not has_function_privilege('authenticated','public.form_media_authorize_for_worker(uuid,uuid,text)','execute'),
+  'client cannot impersonate worker actor by calling authorizer directly');
+select ok(not has_function_privilege('anon','public.form_media_authorize_for_worker(uuid,uuid,text)','execute'),
+  'anonymous client cannot call worker authorizer');
+
+-- Resposta anonima legitima: NULL nao pode virar autorizacao implicita.
+insert into public.forms(id,institution_id,kind,identity_mode,response_unit,title,created_by_person_id,updated_by_person_id)
+values(pg_temp.aid(220),pg_temp.aid(10),'form','anonymous','person','Anonymous answer',pg_temp.aid(1000),pg_temp.aid(1000));
+insert into public.form_versions(id,form_id,version_number,created_by_person_id)
+values(pg_temp.aid(1220),pg_temp.aid(220),1,pg_temp.aid(1000));
+insert into public.form_sections(id,form_version_id,title,position)
+values(pg_temp.aid(2220),pg_temp.aid(1220),'Section',0);
+insert into public.form_items(id,form_version_id,section_id,kind,label,position)
+values(pg_temp.aid(3220),pg_temp.aid(1220),pg_temp.aid(2220),'photo','Photo',0);
+insert into public.form_applications(id,form_id,institution_id,name,created_by_person_id)
+values(pg_temp.aid(4220),pg_temp.aid(220),pg_temp.aid(10),'Application',pg_temp.aid(1000));
+insert into public.form_schedules(id,application_id,time_zone,starts_at_local,recurrence_kind)
+values(pg_temp.aid(5220),pg_temp.aid(4220),'UTC','2026-09-12 00:00:00','once');
+insert into public.form_occurrences(id,application_id,schedule_id,institution_id,form_id,form_version_id,scheduled_local,time_zone,opens_at,closes_at)
+values(pg_temp.aid(6220),pg_temp.aid(4220),pg_temp.aid(5220),pg_temp.aid(10),pg_temp.aid(220),pg_temp.aid(1220),'2026-09-12 00:00:00','UTC',now()-interval '1 day',now()+interval '1 day');
+insert into public.form_assets(id,institution_id,occurrence_id,item_id,anonymous_upload_secret_hash,storage_path,mime_type,expected_byte_length,expected_checksum_sha256,state)
+values(pg_temp.aid(9220),pg_temp.aid(10),pg_temp.aid(6220),pg_temp.aid(3220),extensions.crypt('synthetic-r09-proof',extensions.gen_salt('bf',4)),'8c/'||pg_temp.aid(9220),'image/png',2048,repeat('d',64),'uploaded');
+select (app_private.form_assets_answer_media_mirror_v1(pg_temp.aid(9220))).id;
+set local role service_role;
+select is(public.form_media_finalize_answer_r2_v1(pg_temp.aid(9220),2048,repeat('d',64),640,480)#>>'{data,state}',
+  'finalized','anonymous fixture is finalized through worker contract');
+select is(public.form_media_authorize_for_worker(pg_temp.aid(9220),pg_temp.aid(1001),'synthetic-r09-proof')->>'asset_id',pg_temp.aid(9220)::text,
+  'valid anonymous secret authorizes its own image');
+select throws_ok($$select public.form_media_authorize_for_worker(pg_temp.aid(9220),pg_temp.aid(1001),'wrong-synthetic-secret')$$,
+  'P0002','form asset unavailable','wrong anonymous secret must not authorize another tenant image');
+select throws_ok($$select public.form_media_authorize_for_worker(pg_temp.aid(9220),pg_temp.aid(1001),null)$$,
+  'P0002','form asset unavailable','missing anonymous secret must not authorize another tenant image');
+reset role;
+set constraints all immediate;
 select * from finish();
 rollback;
