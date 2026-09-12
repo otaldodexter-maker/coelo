@@ -1,12 +1,12 @@
 {
-  "revision": 1,
+  "revision": 2,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T10:53:35.1112448-03:00",
+  "updatedAt": "2026-09-12T11:08:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -39,32 +39,54 @@
     "done": [
       "worktree limpa criada de origin/dev em b3b1bb34d",
       "contrato comum, secao G0, T0 e slots lidos",
-      "diagnostico inicial: cliente Docker responde; daemon pipe ausente; docker-desktop parado; WslService ativo"
+      "causa do Docker identificada nos logs: inicializacao abortada por falso processo residual PID 6984; daemon recuperado na primeira inicializacao preservadora",
+      "VHDX e volume nomeado preservados; baseline 1abbc4f2cd13 healthy em 57322",
+      "paridade do espelho confirmada por marcadores dos lotes 52, 54 e 55; ledger isolado nao representa replay via psql",
+      "build web QA release concluido e servidor ativo em 127.0.0.1:3014 PID 16248",
+      "Chrome compartilhado aberto na aba 829822454; tres metodos documentados de entrada CUA diagnosticados sem expor credenciais"
     ],
     "pending": [
-      "diagnostico Docker/WSL",
-      "baseline 57322 e ordem real",
-      "build QA, servidor 3014 e prova de login/leitura/reload"
+      "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
     ],
-    "tests": [],
-    "nextGate": "preservacao logica do VHDX/volumes e leitura dos logs antes da primeira tentativa de inicializacao"
+    "tests": [
+      "docker version: client/server 29.7.2",
+      "docker inspect baseline: running, healthy, restart unless-stopped, volume supabase_db_coelo_baseline",
+      "porta 57322 publicada para 5432",
+      "flutter build web release: exit 0 em 74.1 s",
+      "GET /login: HTTP 200; prova explicitamente nao promovida a E2E"
+    ],
+    "blocked": {
+      "gate": "login/leitura/reload",
+      "diagnosis": "setValue, paste e typeText nao alteram o controller dos campos Flutter; submit continua em Informe seu e-mail e nenhuma requisicao Auth foi emitida",
+      "reportedToC0": true,
+      "safeContinuation": "reutilizar servidor 3014 e aba entregue quando houver entrada Flutter funcional ou CDP nominalmente autorizado"
+    },
+    "nextGate": "C0 liberar executor capaz de preencher o formulario Flutter no Chrome entregue; sem criar segundo navegador"
   },
   "resources": {
-    "chrome": "reservado nominalmente a G0 ate 2026-09-12T11:22:16.727826-03:00; PID pendente",
+    "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
+    "server": "127.0.0.1:3014 PID 16248, ativo",
+    "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "retido por C0 ate espelho/pgTAP"
+    "sql": "espelho G0 confirmado ate marcadores do lote 55; pgTAP e liberacao do lote 56 permanecem com C0/G5"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "publishedSha": null
+    "head": "af99409cf5bb266b4be96647690abde44ace8f23",
+    "buildSourceSha": "af99409cf5bb266b4be96647690abde44ace8f23",
+    "publishedSha": "af99409cf5bb266b4be96647690abde44ace8f23"
   },
   "history": [
     {
       "revision": 1,
       "at": "2026-09-12T10:52:16.727826-03:00",
       "summary": "Abertura G0; sem tentativa de correcao ainda."
+    },
+    {
+      "revision": 2,
+      "at": "2026-09-12T11:08:00-03:00",
+      "summary": "Docker recuperado com preservacao; baseline e ordem materializada conferidos; build/servidor entregues; E2E bloqueado por entrada CUA que nao atinge controller Flutter apos tres metodos documentados."
     }
   ]
 }
