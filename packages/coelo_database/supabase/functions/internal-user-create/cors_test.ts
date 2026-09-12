@@ -1,5 +1,18 @@
 import { assertEquals, assertStringIncludes } from "@std/assert";
-import { handleInternalUserCreate } from "./index.ts";
+import { handleInternalUserCreate, securePasswordSetupLink } from "./index.ts";
+
+Deno.test("aceita somente link HTTPS de definicao de senha sem credenciais", () => {
+  assertEquals(
+    securePasswordSetupLink(
+      "https://project.supabase.co/auth/v1/verify?token_hash=opaque&type=recovery",
+      "https://project.supabase.co",
+    ),
+    "https://project.supabase.co/auth/v1/verify?token_hash=opaque&type=recovery",
+  );
+  assertEquals(securePasswordSetupLink("http://project.supabase.co/recovery", "https://project.supabase.co"), null);
+  assertEquals(securePasswordSetupLink("https://operator:secret@project.supabase.co/recovery", "https://project.supabase.co"), null);
+  assertEquals(securePasswordSetupLink("https://evil.example/auth/v1/verify", "https://project.supabase.co"), null);
+});
 
 Deno.test("OPTIONS permitido responde 204 vazio e aceita x-client-info", async () => {
   Deno.env.set("COELO_ALLOWED_ORIGINS", "https://superadmin.coelo.me");

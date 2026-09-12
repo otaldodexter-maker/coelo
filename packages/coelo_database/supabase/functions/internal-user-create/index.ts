@@ -3,9 +3,9 @@
 // Cria um usuario interno do Superadmin em tres tempos (pacote 20260911170800):
 //   1. com o token do operador: superadmin_internal_user_create_authorize_v1
 //      (platform.member.update em escopo de plataforma; valida o rascunho);
-//   2. com service_role: auth.admin.createUser (e-mail confirmado, senha
-//      aleatoria nunca devolvida; o usuario define a senha por
-//      "Esqueci minha senha" - depende do SMTP do projeto, P51);
+//   2. com service_role: auth.admin.createUser e generateLink(recovery).
+//      A senha aleatoria nunca sai do servidor; o link so volta na resposta
+//      no-store ao operador autorizado para entrega por canal seguro (P51=B).
 //   3. com service_role: superadmin_internal_user_create_for_worker_v1
 //      (identidade + perfil + vinculo auth + membership); se falhar, o auth
 //      user recem-criado e apagado.
@@ -55,6 +55,22 @@ function randomPassword(): string {
   const bytes = new Uint8Array(32);
   crypto.getRandomValues(bytes);
   return btoa(String.fromCharCode(...bytes)).replaceAll("=", "");
+}
+
+/// Link do Auth Admin pode apontar ao projeto Supabase, mas precisa ser HTTPS
+/// e nao pode carregar credenciais no authority. Nunca registrar este valor.
+export function securePasswordSetupLink(value: unknown, expectedOrigin: string): string | null {
+  if (typeof value !== "string") return null;
+  try {
+    const url = new URL(value);
+    const origin = new URL(expectedOrigin).origin;
+    return url.protocol === "https:" && url.origin === origin && !url.username && !url.password &&
+        url.pathname === "/auth/v1/verify"
+      ? url.toString()
+      : null;
+  } catch {
+    return null;
+  }
 }
 
 export async function handleInternalUserCreate(request: Request): Promise<Response> {
@@ -111,6 +127,13 @@ export async function handleInternalUserCreate(request: Request): Promise<Respon
   }
   const authUserId = created.data.user.id;
 
+  const generated = await admin.auth.admin.generateLink({ type: "recovery", email });
+  const passwordSetupLink = securePasswordSetupLink(generated.data?.properties?.action_link, url);
+  if (generated.error || passwordSetupLink === null) {
+    await admin.auth.admin.deleteUser(authUserId);
+    return reply(origin, 409, { error: "password_setup_link_unavailable" });
+  }
+
   // 3. identidade interna numa transacao; falha desfaz o auth user.
   const persisted = await admin.rpc("superadmin_internal_user_create_for_worker_v1", {
     p_request_id: requestId,
@@ -123,7 +146,7 @@ export async function handleInternalUserCreate(request: Request): Promise<Respon
     await admin.auth.admin.deleteUser(authUserId);
     return reply(origin, 409, { error: "internal_user_not_created" });
   }
-  return reply(origin, 200, { ok: true, data: result.data });
+  return reply(origin, 200, { ok: true, data: { ...result.data, password_setup_link: passwordSetupLink } });
 }
 
 if (import.meta.main) {

@@ -1,21 +1,22 @@
 {
-  "revision": 146,
-  "updated_at": "2026-09-12T00:28:20.308086Z",
-  "relogio_local": "Fri Sep 11 2026 21:28:20 GMT-0300 (Horario Padrao de Brasilia)",
-  "round": "E2-R06-20260911",
+  "revision": 150,
+  "updated_at": "2026-09-12T10:53:48.3759016-03:00",
+  "relogio_local": "2026-09-12T10:53:48.3759016-03:00",
+  "round": "E2-R08-20260912",
   "group": "acessos-pessoas",
-  "tool": "Claude Code (VS Code)",
-  "model": "Claude Opus 5 (esforco medio)",
-  "status": "finalizado; revisao de 10 minutos respondida (REVISAO_FINAL_21h36 + complementos); nao retomo depois de 21:46",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-acessos-pessoas",
-  "branch": "work/etapa2-r06-acessos-pessoas",
-  "head": "o commit desta rev 146 (publicado); status limpo; sem WIP",
-  "base_observed": "origin/dev ca60b096b (coordenacao rev 51, prompts da R06); candidatos/acessos-pessoas vazio; lotes 28-48 em producao",
+  "tool": "Codex",
+  "model": "GPT-5.6 Terra (esforco medio)",
+  "status": "ativa; trabalho local independente liberado por C0 rev64; E2E aguarda runtime de G0",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+  "branch": "work/etapa2-r08-acessos-pessoas",
+  "head": "6d6cbef32 (origin/dev incorporado por fast-forward; sem WIP proprio)",
+  "base_observed": "origin/dev 6d6cbef32; coordenacao rev64; lote 56 retido ate espelho/pgTAP",
   "T0": {
-    "observacao": "coordenacao rev 52 lida: T0 = 19:36; T0+2h = 21:36 (revisao de 10 min); paro em 21:46.",
-    "T0": "2026-09-11 19:36",
-    "corte": "21:36",
-    "revisao_ate": "21:46"
+    "observacao": "coordenacao rev64 lida e incorporada; slots e cortes vigentes da R08.",
+    "T0": "2026-09-12T10:52:16.727826-03:00",
+    "corte": "2026-09-12T14:52:16.727826-03:00",
+    "revisao_ate": "2026-09-12T15:02:16.727826-03:00",
+    "fechamento_ate": "2026-09-12T15:22:16.727826-03:00"
   },
   "recorte": {
     "familias": [
@@ -2275,6 +2276,30 @@
       "sem fixture expirada de invites.resend",
       "teste de contrato de bloqueio de people.create desalinhado com a capacidade produtiva 170700"
     ]
+  },
+  "R08_ABERTURA_G2": {
+    "revision": 150,
+    "recorded_at": "2026-09-12T10:53:48.3759016-03:00",
+    "status": "ativa; posse do golden de Pessoas confirmada por C0; Chrome reservado a G0 e E2E ainda nao liberado",
+    "contrato": {
+      "objetivo": "Avancar gates de Pessoas, @, perfis/modelos, convites e usuarios internos no apps/superadmin com provas por action_id.",
+      "incluido": ["auth", "people", "students", "access_profiles", "invites", "platform_users", "autoria de internal-user-create"],
+      "fora": ["deploy", "inventario", "rastreadores", "correcao de senha", "revisao historica de credenciais", "endurecimento amplo de seguranca"],
+      "ordem": ["people.create/edit/@", "internal-users.create v3", "access-profiles e access-models", "invites.resend com fixture expirada G5", "15 goldens A e respiro P15"],
+      "primeiro_gate": "people.create na rota real, com @ e reload, apos G0 liberar runtime/Chrome.",
+      "evidencia_esperada": "arquivo commitado em docs/reviews/evidence/etapa-2/r08-acessos-pessoas/, resultado de rota normal, persistencia, reload e negativa aplicavel; deltas somente no schema.",
+      "estimativa": "janela autorizada ate T0+4h; primeiro lote local e pedido de slot de flutter test antes da prova E2E."
+    },
+    "coordenacao": {
+      "c0_revision": 64,
+      "c0_thread": "01a095e0-3c9f-7601-b736-7935c11fffcb",
+      "golden_owner": "G2: test/app/router/person_detail_golden_test.dart; G8 nao edita simultaneamente.",
+      "slots": "Chrome G0; flutter test concedido a G2 por 20 minutos; E2E e SQL nao liberados."
+    },
+    "feito": ["git fetch origin e fast-forward para 6d6cbef32", "leitura do contrato R08, R07 fechamento/decisoes, plano, backlog, JSONs e linhas afetadas dos tres rastreadores", "pedido de slot Flutter e confirmacao de posse ao C0"],
+    "pendente": ["rota real people.create/edit/@", "fluxo v3 de internal-users.create com link seguro sem alegar SMTP", "convite expirado com G5", "comparacao/regravacao dos 15 A", "correcao da expectativa P15 24 para 40 onde aplicavel"],
+    "testes": "Flutter focal de Pessoas iniciou no slot e observou 18 casos sem falha, mas a ferramenta retornou sem resumo terminal; resultado inconclusivo, sem P/F alegado e sem processo proprio localizado. Deno P51: 4 passed, 0 failed.",
+    "proximo_gate": "aguardar novo slot Flutter para analisar/testar platform_users; Chrome segue G0."
   },
   "R07_FECHAMENTO_C0": {
     "revision": 149,
