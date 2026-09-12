@@ -333,18 +333,42 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     return null;
   }
 
-  void _onSelectInstitution(GroupDirectoryFilterOption institution) => setState(() {
-    _selectedInstitution = institution;
-    _selectedUnit = null;
-    final units = _unitsForInstitution(institution.id);
-    _selectedUnit = units.isEmpty ? null : units.first;
-    _markDirty();
-  });
+  bool _canChangeLocationContext() {
+    if (_createdWithLocation == null) return true;
+    setState(
+      () => _saveError = 'A turma já foi criada com este local. Reabra para alterar o contexto.',
+    );
+    return false;
+  }
 
-  void _onSelectUnit(GroupDirectoryFilterOption unit) => setState(() {
-    _selectedUnit = unit;
-    _markDirty();
-  });
+  void _clearLocationDraft({bool clearSelection = true}) {
+    if (clearSelection) _cataloguedLocationSelection = null;
+    _locationCreateRequestId = null;
+    _locationCreateFingerprint = null;
+    _pendingSave = null;
+    _pendingSaveFingerprint = null;
+  }
+
+  void _onSelectInstitution(GroupDirectoryFilterOption institution) {
+    if (!_canChangeLocationContext()) return;
+    setState(() {
+      _selectedInstitution = institution;
+      _selectedUnit = null;
+      final units = _unitsForInstitution(institution.id);
+      _selectedUnit = units.isEmpty ? null : units.first;
+      _clearLocationDraft();
+      _dirty = true;
+    });
+  }
+
+  void _onSelectUnit(GroupDirectoryFilterOption unit) {
+    if (!_canChangeLocationContext()) return;
+    setState(() {
+      _selectedUnit = unit;
+      _clearLocationDraft();
+      _dirty = true;
+    });
+  }
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
@@ -561,8 +585,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       final now = DateTime.now();
       final fingerprint = _saveFingerprint();
       if (_pendingSaveFingerprint != fingerprint) _pendingSave = null;
-      if (_locationCreateFingerprint != fingerprint) {
-        _createdWithLocation = null;
+      if (_createdWithLocation == null && _locationCreateFingerprint != fingerprint) {
         _locationCreateRequestId = null;
         _locationCreateFingerprint = fingerprint;
       }
@@ -1200,6 +1223,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           catalogOnly: true,
           initialSelection: _cataloguedLocationSelection,
           onChanged: (value) {
+            if (!_canChangeLocationContext()) return;
             if (value != null &&
                 (value is! CataloguedLocationSelection ||
                     !sameLocationScope(value.snapshot.scope, scope))) {
@@ -1207,11 +1231,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             }
             setState(() {
               _cataloguedLocationSelection = value as CataloguedLocationSelection?;
-              _createdWithLocation = null;
-              _locationCreateRequestId = null;
-              _locationCreateFingerprint = null;
-              _pendingSave = null;
-              _pendingSaveFingerprint = null;
+              _clearLocationDraft(clearSelection: false);
               _dirty = true;
             });
           },
