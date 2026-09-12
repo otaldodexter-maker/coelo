@@ -389,3 +389,17 @@ Recibo: [forms-answer-image-api-r2-resume-20260912.log](./forms-answer-image-api
 O segundo bloqueio foi enviado ao C0/G5 para RED de replay/relógio e correção
 focal. Novamente, PUT, finalize, save, download e reopen não rodaram; logout
 local foi 204, sem cleanup ou novo ID.
+
+G5 publicou o fix TTL `5927718f2`, aprovado no review focal G0; C0 integrou,
+obteve 56/56 e implantou a função ativa v20. A retomada seguinte reutilizou o
+mesmo asset e passou prepare R2, PUT de 68 bytes (SHA-256
+`431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460`),
+finalize, replay do finalize e save do draft. Isto é prova API/metadata, não
+prova visual ou UI.
+
+A autorização de download devolveu HTTP 400 `media_request_failed`. O runner
+parou antes do GET e do reopen, preservou a resposta já salva e o asset
+finalizado e encerrou somente a sessão local (204). Recibo sanitizado:
+[forms-answer-image-api-v20-20260912.log](./forms-answer-image-api-v20-20260912.log).
+O gate focal foi enviado a G5/C0 para distinguir autorização do worker, shape
+real da RPC, descritor e assinatura GET, sem repetir a chamada.

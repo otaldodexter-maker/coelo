@@ -1,12 +1,12 @@
 {
-  "revision": 26,
+  "revision": 27,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T13:45:49-03:00",
+  "updatedAt": "2026-09-12T13:51:08-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -75,11 +75,12 @@
       "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft",
       "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend",
       "C0 integrou o fix e obteve Deno 56/56 com deno.json; form-media v18 ativa aceitou o ator interno e o prepare HTTP 200 materializou/reproduziu um asset no mesmo draft",
-      "C0 configurou somente COELO_FORMS_MEDIA_PROVIDER=r2; retomada idempotente reutilizou o mesmo asset e confirmou envelope R2, sem PUT por validade insegura"
+      "C0 configurou somente COELO_FORMS_MEDIA_PROVIDER=r2; retomada idempotente reutilizou o mesmo asset e confirmou envelope R2, sem PUT por validade insegura",
+      "fix TTL 5927718f2 aprovado, integrado e implantado na form-media v20; mesmo asset passou prepare/PUT/finalize/replay/save com bytes e SHA medidos"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter",
-      "smoke answer-image parou fail-closed no prepare R2 da Edge v18: expires_at do prepare legado/replay nao representa a URL assinada por 300s; sem PUT/finalize/save/download e sem novo retry"
+      "smoke answer-image v20 parou fail-closed na autorizacao de download HTTP400 media_request_failed apos save; GET/reopen nao executados e diagnostico focal enviado a G5/C0"
     ],
     "tests": [
       "docker version: client/server 29.7.2",
@@ -123,6 +124,7 @@
       ,"form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403"
       ,"answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204"
       ,"answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204"
+      ,"answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -139,7 +141,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "G5 corrigir e testar expires_at do handleAnswerR2 para refletir a assinatura de 300s; C0 integrar/deployar e decidir eventual retomada do mesmo draft/asset, sem novo ID"
+    "nextGate": "G5/C0 fechar o 400 da autorizacao download answer-image sem retry; depois decidir retomada idempotente somente de download/reopen ou do runner, sempre no mesmo draft/asset"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
@@ -147,7 +149,7 @@
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
     "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
-    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image fixture unica preservada: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response draft bb1f3443, asset e47eb9e1; provider R2 efetivo, mas expires_at do replay inseguro impediu PUT e etapas posteriores"
+    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image fixture unica preservada: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response draft bb1f3443, asset e47eb9e1; v20 passou PUT/finalize/replay/save e bloqueou apenas download authorize 400"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
@@ -287,6 +289,11 @@
       "revision": 26,
       "at": "2026-09-12T13:45:49-03:00",
       "summary": "Flag R2 configurada isoladamente; resume reutilizou o mesmo asset e recebeu envelope R2, mas rejeitou expires_at inseguro antes do PUT. Causa focal enviada ao C0/G5."
+    },
+    {
+      "revision": 27,
+      "at": "2026-09-12T13:51:08-03:00",
+      "summary": "Fix TTL implantado na v20; mesmo asset passou prepare, PUT, finalize/replay e save. Download authorize 400 interrompeu GET/reopen; prova API sanitizada preservada."
     }
   ]
 }

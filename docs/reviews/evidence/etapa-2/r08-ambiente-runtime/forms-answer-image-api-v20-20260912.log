@@ -1,0 +1,16 @@
+measured_at=2026-09-12T13:50:00-03:00
+mode=idempotent_resume_after_ttl_fix
+edge=form-media_v20_ACTIVE_verify_jwt_true
+auth_uid_match=true auth_http=200
+occurrence_preflight=PASS http=200 occurrence_id=5762fe8f-2d58-48ef-b410-30bfd0fe6703 participation_id=095d0236-334b-460b-aaa2-e1fce7914d8f item_id=95cdf8cf-d993-4325-ac7c-941f041210cc item_kind=photo identity_mode=identified
+open_or_reuse_draft=PASS http=200 response_id=bb1f3443-76a6-4049-b364-6215545625c8
+prepare_answer_image=PASS http=200 asset_id=e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195 same_asset=true ttl_lte_seconds=300
+signed_put=PASS http=200 bytes=68 sha256=431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460
+finalize=PASS http=200 asset_id=e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195
+finalize_replay=PASS http=200 asset_id=e47eb9e1-ee0c-4a7c-bbcd-9c6dfb4e8195
+save_response_draft=PASS http=200 response_id=bb1f3443-76a6-4049-b364-6215545625c8
+result=FAILED code=download_authorize:400:media_request_failed preserved=true
+not_executed=download_GET,reopen
+logout_scope=local logout_http=204
+cleanup=none
+credentials_logged=false
