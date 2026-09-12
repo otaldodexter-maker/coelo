@@ -374,15 +374,15 @@
   }
  },
  "metricas": {
-  "base": "inventario validado em 2026-09-10T20:19-03:00 sobre a4af2b198 (validate-trackers PASS); ambiente: repositorio + producao medida nos lotes 1-7",
-  "frontendVerified": "11/230 (4,78%)",
-  "frontendLocalGreen": "23/230 (10,00%)",
-  "frontendAprovacaoVisualDoOwner": "52/230 (22,61%)",
-  "backendLocalGreen": "61/223 (27,35%)",
-  "backendSqlEmProducao": "31/223 (13,90%)",
-  "backendDone": "0/223 (0,00%)",
-  "e2eVerified": "0/198 (0,00%)",
-  "nota": "aprovacao visual nao e verified; SQL em producao nao e done (falta rota normal + CRUD + RLS + reload por action_id)"
+  "base": "inventario validado em 2026-09-11T23:10-03:00 sobre origin/dev; validate-trackers PASS; ambiente: repositorio + producao medida nos lotes 49 a 55",
+  "frontendVerified": "164/231 (71,00%)",
+  "frontendLocalGreen": "17/67 (25,37%)",
+  "frontendAprovacaoVisualDoOwner": "53/231 (22,94%)",
+  "backendLocalGreen": "31/75 (41,33%)",
+  "backendSqlEmProducao": "180/224 (80,36%)",
+  "backendDone": "149/224 (66,52%)",
+  "e2eVerified": "134/199 (67,34%)",
+  "nota": "aprovacao visual nao e verified; SQL em producao nao e done; local-green e E2E contam IDs unicos e nao sao somados"
  },
  "respostasDoOwner20260910": {
   "P1": "B: PITR dispensado ate cliente real; dump logico local antes de cada lote (ADR 0034 Decisao 8)",
@@ -2049,6 +2049,23 @@
   "headObservado": "d5da3dfaf",
   "recibo": "G8 reconhecida; escopo restrito confirmado; sem deltas de estado; coordenacao acompanhará fase0.json"
  },
+ "receiptsR07": [
+  {
+   "grupo": "suites",
+   "revisaoRecebida": 10,
+   "ack": true,
+   "integradoEm": "5d57969b4",
+   "observacao": "somente fase0.json; sem codigo/testes publicados"
+  },
+  {
+   "grupo": "operacoes",
+   "revisaoRecebida": 53,
+   "ack": true,
+   "integradoEm": "82c70bb38a221cac4c861cfc2f2894bb36e591d8",
+   "testes": "flutter test account/support/audit/imports/access_profile_file_actions/plans/catalog: 345 PASS, 1 skip esperado, warning de hit-test nao fatal",
+   "deltas": "[]; nenhum estado promovido sem rota real"
+  }
+ ],
  "dockerR07": {
   "estado": "bloqueio ambiental temporario apos falha do Docker Desktop",
   "causaMedida": "backend falhava ao renomear sockets AF_UNIX stale em Docker\\run\\sailor-ingest.sock e docker-secrets-engine\\engine.sock; apos mover as arvores runtime, restaram processos GPU Docker Desktop orfaos que o Windows nao consegue finalizar",
