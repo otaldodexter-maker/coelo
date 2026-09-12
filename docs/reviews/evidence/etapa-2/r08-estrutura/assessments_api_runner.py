@@ -105,6 +105,12 @@ def main() -> int:
                 output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
                 saved = _rpc(base, headers, "superadmin_assessment_save_configuration", plan["save_configuration"])
                 configuration = data(saved)
+                replay = data(_rpc(base, headers, "superadmin_assessment_save_configuration", plan["save_configuration"]))
+                if (not isinstance(configuration, dict) or not isinstance(replay, dict)
+                    or replay.get("id") != configuration.get("id")
+                    or replay.get("version") != configuration.get("version")
+                    or replay.get("status") != "draft" or replay.get("replayed") is not True):
+                    raise RuntimeError("configuration_replay_invalid")
                 read = data(_rpc(base, headers, "superadmin_assessment_configuration_read", {"target_activity": assignment["activity_id"], "target_unit": assignment["unit_id"]}))
                 if not isinstance(read, dict) or read.get("configuration", {}).get("id") != configuration.get("id"):
                     raise RuntimeError("configuration_reload_invalid")
