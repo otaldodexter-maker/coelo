@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 49,
+  "revision": 50,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-11T23:00-03:00",
+  "updatedAt": "2026-09-11T23:34-03:00",
   "app": "Codex",
   "modelo": "Luna (esforco medio)",
   "conversa": "R07 · Realm interno e segurança",
   "coordenador": "R07 · Coordenação (a confirmar em coordenacao.json)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-realm-interno",
   "branch": "work/etapa2-r07-realm-interno",
-  "head": "a50487878 (base origin/dev; abertura R07)",
+  "head": "f729ef739 (revisão 49 + checkpoint publicado)",
   "upstream": "origin/work/etapa2-r07-realm-interno (push desta revisão)",
   "t0": "T0 ainda não publicado no JSON da coordenação; abertura local 2026-09-11T23:00-03:00; prazo operacional T0+4h",
   "escopo": {
@@ -632,7 +632,7 @@
       "evidenciasEsperadas": "SQL/testes pgTAP em descartável com ordem real, delta candidato commitado somente se necessário, SHA publicado e primeiro gate explícito.",
       "tempoEstimado": "T0 ainda não publicado pela coordenação; janela operacional de quatro horas a partir do T0."
     },
-    "checkpoint23h00": {
+    "checkpoint23h34": {
       "feito": [
         "Worktree criada sobre origin/dev; revisão 49 publicada na branch.",
         "Varredura estática dos lotes 49–55: tabelas novas identificadas com RLS; institution_reader confirmado como catálogo; auth.sessions preexistente.",
@@ -645,12 +645,12 @@
         "Aguardar pedidos de convite expirado sintético G2 ou período avaliativo sintético G1.",
         "T0 da coordenação e revisão final."
       ],
-      "commitsPublicados": ["abertura R07: revisão 49 (push em work/etapa2-r07-realm-interno)"],
+      "commitsPublicados": ["5c65d9ff8 abertura R07: revisão 49 (push)", "f729ef739 checkpoint estático: revisão 49 (push explícito HEAD)"],
       "bloqueios": [
-        "Docker Desktop deixou de responder após a tentativa de iniciar o descartável; container coelo_baseline estava disponível antes, mas não é seguro reutilizá-lo para replay destrutivo. Retém apenas o replay dinâmico; a revisão estática continua.",
+        "Docker Desktop deixou de responder após a tentativa de iniciar o descartável; serviço com.docker.service está parado e não pode ser aberto nesta sessão. O container coelo_baseline estava disponível antes, mas não é seguro reutilizá-lo para replay destrutivo. Retém apenas o replay dinâmico; a revisão estática continua.",
         "Nenhum bloqueio de implementação ou dependência de G1/G2."
       ],
-      "estado": "varredura estática concluída; sem pacote corretivo nesta checkpoint"
+      "estado": "varredura estática concluída; sem pacote corretivo nesta checkpoint; T0 da coordenação pendente"
     }
   }
 }
