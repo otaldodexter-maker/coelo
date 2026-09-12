@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 17,
+  "revision": 18,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T09:25:00-03:00",
+  "updatedAt": "2026-09-12T09:50:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -248,5 +248,10 @@
     "dadosSinteticos": "nenhum (sem Chrome, sem rota real, sem usuario sintetico).",
     "chaves": "nenhuma."
   },
-  "finalizado": true
+  "finalizado": true,
+  "artefatoDeAprovacoesR07Suites": {
+    "url": "https://claude.ai/code/artifact/40dce214-7fe1-4571-b619-733da21f8a84",
+    "conteudo": "75 goldens vermelhos em 10 familias (Atividades 31, detalhe Unidade/Turma 12, detalhe Pessoa 12, Circulares composer 10, Assiduidade 3, Central de ajuda 2, paginacao de Instituicoes 2, Convites 1, Pessoas 1, Usuarios internos 1) com R (referencia guardada), A (render atual) e diferenca; decisao A/A+/R por card e observacao; perguntas gerais P53 (launcher Mensagens, aplica aos 17 goldens) e Criar modelo de atividade (migrar rodape canonico ou depois do MVP). Salvar publica versao nova; o estado fica em <script id=state> (answers por nome de golden, questions.p53 e questions.modelo).",
+    "estado": "publicado 09:50 de 12/09; aguardando o Owner; a frente G8 repassa as respostas aqui (campo respostasDoOwner) assim que forem salvas"
+  }
 }
