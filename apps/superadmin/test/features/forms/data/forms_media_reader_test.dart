@@ -10,6 +10,38 @@ const _otherAsset = '22222222-2222-4222-8222-222222222222';
 final _now = DateTime.utc(2026, 9, 8, 12);
 
 void main() {
+  test(
+    'question images resolve through their separate purpose and expire within five minutes',
+    () async {
+      final gateway = _Gateway();
+      final reader = FormsQuestionImageReader(gateway: gateway, now: () => _now);
+      final pending = reader.read(_request());
+      expect(gateway.envelopes.single, {
+        'action': 'resolve',
+        'payload': {'purpose': 'question-image', 'asset_id': _asset},
+      });
+      gateway.pending.single.complete({
+        'asset_id': _asset,
+        'signed_url': 'https://synthetic.r2.cloudflarestorage.com/question',
+        'expires_at': _now.add(const Duration(minutes: 5)).toIso8601String(),
+      });
+      final result = await pending;
+      expect(result.state, MediaReadState.available);
+      expect(result.ticket!.headers, isEmpty);
+    },
+  );
+
+  test('question resolve rejects an asset crossed with another question receipt', () async {
+    final gateway = _Gateway();
+    final pending = FormsQuestionImageReader(gateway: gateway, now: () => _now).read(_request());
+    gateway.pending.single.complete({
+      'asset_id': _otherAsset,
+      'signed_url': 'https://synthetic.r2.cloudflarestorage.com/question',
+      'expires_at': _now.add(const Duration(minutes: 5)).toIso8601String(),
+    });
+    await expectLater(pending, throwsA(isA<MediaProtocolException>()));
+  });
+
   for (final state in MediaReadState.values) {
     test('decodes $state using only the candidate read envelope', () async {
       final gateway = _Gateway();
