@@ -1202,7 +1202,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               _createdWithLocation = null;
               _pendingSave = null;
               _pendingSaveFingerprint = null;
-              _markDirty();
+              _dirty = true;
             });
           },
         ),
