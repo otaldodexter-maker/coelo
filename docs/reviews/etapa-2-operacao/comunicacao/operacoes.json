@@ -1,6 +1,6 @@
 {
-  "revision": 72,
-  "updated_at": "2026-09-12T13:51:55-03:00",
+  "revision": 73,
+  "updated_at": "2026-09-12T13:55:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -54,6 +54,19 @@
     "privacy": "env local, temp do Supabase e tmp/r08-p51-auth-config foram apenas identificados por caminho/tamanho e devem permanecer locais; nenhum conteúdo foi lido ou copiado",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/worktree-closing-inventory.md",
     "next_gate": "C0 revalida após integração final e resolve WIP rastreado antes de qualquer encerramento"
+  },
+  "reviewH28PeopleR08": {
+    "reviewed_sha": "2eebea3f4",
+    "scope": "leitura do candidato SQL/pgTAP G2, sem edição G2, SQL remoto ou certificação",
+    "accepted_structure": "um EXISTS em context_rows combina os filtros no mesmo vínculo e total_count ocorre antes da paginação",
+    "blockers": [
+      "repositório Flutter não envia os quatro parâmetros novos nem lê suas options",
+      "parser de options não preserva state_code/municipality_id para a cascata",
+      "memberships não retorna activity_id/activity_name expostos pelo domínio",
+      "regressões A/B/cross-tenant são comentários, não asserts pgTAP executáveis"
+    ],
+    "verdict": "WIP de contrato; não serializar/aplicar até completar backend, fixture e cliente",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/h28-people-candidate-review.md"
   },
   "reviewG6R08": {
     "scope": "somente leitura do pacote Circular da G6 contra spec037 e ADR0034 decisão20",
