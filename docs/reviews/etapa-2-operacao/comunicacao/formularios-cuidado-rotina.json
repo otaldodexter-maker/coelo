@@ -12,7 +12,7 @@
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
  "branch": "work/etapa2-r07-formularios-cuidado-rotina",
- "head": "9e16e1361 (handoff R07 reconciliado com IDs canônicos; status limpo)",
+ "head": "a0c1f5ff1 (handoff R07 final; status limpo)",
  "base": "origin/dev a50487878",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
