@@ -234,3 +234,15 @@ O C0 recebeu antecipadamente a instituição medida, a fixture, a sequência e o
 O preflight remoto somente leitura posterior confirmou `form-media` ativa na versão 16, `verify_jwt=true`, bundle `04f20933...`. A fonte implantada foi baixada temporariamente pela API de gestão e os quatro arquivos de runtime (`index.ts`, `media_contract.ts`, `question_image.ts`, `_shared/r2_s3.ts`) são byte a byte iguais à fonte local inspecionada. G5 confirmou que seu delta de replay é apenas de teste: a Edge v16 já executa authorize, HEAD, GET/medição e finalize também na reconciliação `ready/replayed`. A cópia temporária foi removida após a comparação.
 
 Após autorização nominal do C0, o smoke foi executado uma única vez e passou com exit `0`: Auth/save/editor/prepare/PUT/finalize/replay/resolve/GET/reload ficaram verdes, o conteúdo baixado preservou os 68 bytes e o SHA-256 esperado, e a própria sessão terminou por logout local `204`. O formulário `f88005ab-af5e-4aa2-8cf7-f35de4ded376` e o asset `d25b8baa-efb5-4702-b5e6-ac3084610605` permanecem íntegros para o fechamento formal; não houve DELETE nem cleanup. Recibo: [forms-question-image-api-smoke-20260912.log](./forms-question-image-api-smoke-20260912.log).
+
+## Rebuild na base integrada
+
+Depois de incorporar `origin/dev` `2441725d5` por merge, o build QA foi refeito sobre `615aaa6f` para não manter no servidor o artefato anterior às mudanças integradas de Formulários. O comando `flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local` terminou com exit `0` em 84,3 s.
+
+```text
+apps/superadmin/build/web/main.dart.js
+bytes: 8399330
+sha256: 8a1ac51d89d77b8ed04e157ede4838d25e0ec71c8797d6fe104baaa9df663285
+```
+
+O servidor foi restaurado em `127.0.0.1:3014`, PID `44404`; `/login` respondeu `200`/1020 bytes e `flutter_bootstrap.js`, `200`/9975 bytes. O baseline `1abbc4f2cd13` continuou healthy na porta 57322. A mesma aba Chrome `829822454` foi recarregada; nenhum segundo navegador foi aberto e o diagnóstico de inserção de texto não foi repetido. Após o reload, a ponte CUA voltou ao botão `Enable accessibility`, o que não promove o gate visual a concluído.
