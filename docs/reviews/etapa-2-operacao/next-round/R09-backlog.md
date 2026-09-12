@@ -11,6 +11,14 @@ A abertura R09 exige T0/janela do Owner. Reconciliar origin/dev e o fechamento
 R08 antes de qualquer ação; não repetir SQL59, provas API ou fixtures concluídas.
 Gate bloqueado é registrado; a frente segue no próximo trabalho independente autorizado.
 
+Execução revisada: seguir R09-prompts.md (CRUD real, todos em Astra médio,
+vagas em revezamento e fechamento antecipado por consumo). Primeiras fatias:
+G1 vínculos/Locais ou status institucional; G2 Pessoas criar/editar; G3 Chamada;
+G4 Cardápios ou Chat; G6 anexo Circular; G7 atribuição de plano se executável,
+senão sessões próprias. G0 runtime, G5 backend/negativas e G8 testes removem
+dependências dessas entregas. Os 68 IDs abaixo continuam abertos: esta mudança
+de prioridade não promove nenhum estado nem redefine critérios.
+
 ## Ações MVP E2E abertas
 
 | action_id | Dono | FE / BE / E2E | Primeiro gate |
@@ -87,7 +95,7 @@ Gate bloqueado é registrado; a frente segue no próximo trabalho independente a
 ## Gates transversais sem novos IDs
 
 - G0: runtime/login por ferramentas permitidas; mesma topologia e recursos retidos. Não contornar bloqueio CDP.
-- G8/C0: censo completo em SHA fixo na primeira janela com RAM/slot medidos; não confundir R07 com resultado R09.
+- G8/C0: testes focais primeiro; censo completo em SHA fixo somente com RAM/slot e consumo suficientes, sem atrasar CRUD/fechamento; não confundir R07 com resultado R09.
 - H28 people.list: SQL59 aplicado, flagtrue e19testesC0; novos filtros ainda precisam UI/reload. Certificado histórico do diretório não é certificado novo dos filtros.
 - Seis R Circular: decisão nominal de caminho/componente/recorte/rodapé antes do delta visual.64A/5A+/6R nominais não equivalem a75ações E2E.
 - H19/H02/H05/H06/H13: ver R08-perguntas-owner-20260912.md; manter decisões adjacentes já recebidas.
