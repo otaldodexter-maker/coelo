@@ -1,0 +1,111 @@
+[
+  {
+    "proof": {
+      "policies": null,
+      "functions": [
+        {
+          "md5": "57dd868738151b326b195a007d3fea7c",
+          "args": "permission_code text",
+          "name": "has_platform_permission",
+          "schema": "app_private"
+        },
+        {
+          "md5": "a4423e7b8f52025ed0f3d1d345707e3c",
+          "args": "permission_code text, institution_id uuid",
+          "name": "has_platform_permission",
+          "schema": "app_private"
+        },
+        {
+          "md5": "5cdb28081d40e15232ef50912edd8082",
+          "args": "p_permission_code text",
+          "name": "require_superadmin_internal_context",
+          "schema": "app_private"
+        },
+        {
+          "md5": "4f8bd19aee3d5f3b0096695fbbc6e571",
+          "args": "p_draft jsonb",
+          "name": "superadmin_internal_user_create_check",
+          "schema": "app_private"
+        },
+        {
+          "md5": "0d68ebde304cb2167701b40c39ded57d",
+          "args": "p_sqlstate text, p_detail text",
+          "name": "superadmin_internal_user_denial_code",
+          "schema": "app_private"
+        },
+        {
+          "md5": "56b2930537981a0fed1a18b881114ca1",
+          "args": "p_draft jsonb",
+          "name": "superadmin_internal_user_draft_valid",
+          "schema": "app_private"
+        },
+        {
+          "md5": "e3af266a0412b32b79d86aa6818cc4b7",
+          "args": "p_code text, p_correlation_id uuid",
+          "name": "superadmin_internal_user_error_envelope",
+          "schema": "app_private"
+        },
+        {
+          "md5": "2c3d4eee3be1991d09ab9c81e3563ac5",
+          "args": "p_identity_id uuid, p_include_sensitive boolean",
+          "name": "superadmin_internal_user_projection",
+          "schema": "app_private"
+        },
+        {
+          "md5": "e761d3d17d354665c15a7494d5390491",
+          "args": "p_ctx app_private.superadmin_internal_context, p_internal_identity_id uuid",
+          "name": "superadmin_internal_user_target_allowed",
+          "schema": "app_private"
+        },
+        {
+          "md5": "766cd46aa3f332b72a0e158164bb066b",
+          "args": "p_request_id uuid, p_internal_identity_id uuid, p_expected_version bigint, p_status text, p_reason text",
+          "name": "superadmin_internal_user_change_status",
+          "schema": "public"
+        },
+        {
+          "md5": "22addd2c716e121054579724250118d3",
+          "args": "p_draft jsonb",
+          "name": "superadmin_internal_user_create_authorize_v1",
+          "schema": "public"
+        },
+        {
+          "md5": "9e57ceacfe80b22263ee190ca95a7cd3",
+          "args": "p_request_id uuid, p_actor_internal_identity_id uuid, p_auth_user_id uuid, p_draft jsonb",
+          "name": "superadmin_internal_user_create_for_worker_v1",
+          "schema": "public"
+        },
+        {
+          "md5": "ad8b8d135c092ce9ff3b9553c5e60749",
+          "args": "p_internal_identity_id uuid",
+          "name": "superadmin_internal_user_detail",
+          "schema": "public"
+        },
+        {
+          "md5": "d94ff7cf7cd17f3986e71d8ae516f671",
+          "args": "",
+          "name": "superadmin_internal_user_profiles",
+          "schema": "public"
+        },
+        {
+          "md5": "7ce912be1117f1a16006e2d491daa151",
+          "args": "p_internal_identity_id uuid",
+          "name": "superadmin_internal_user_service_person_v1",
+          "schema": "public"
+        },
+        {
+          "md5": "78fedfd61827645a43711f8acd8439e3",
+          "args": "p_request_id uuid, p_internal_identity_id uuid, p_expected_version bigint, p_reason text, p_draft jsonb",
+          "name": "superadmin_internal_user_update",
+          "schema": "public"
+        },
+        {
+          "md5": "6cde575bd6ea2eea4bf5e885ed775a2d",
+          "args": "p_search text, p_profile_ids uuid[], p_statuses text[], p_scopes text[], p_page integer, p_page_size integer",
+          "name": "superadmin_internal_users_list",
+          "schema": "public"
+        }
+      ]
+    }
+  }
+]

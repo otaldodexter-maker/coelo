@@ -900,6 +900,15 @@ GoRouter createSuperadminRouter({
   }
 
   bool hasAuthoritativeMutationCapability([String location = '']) {
+    if (location.startsWith('/internal-users/')) {
+      final repository = platformUserRepository;
+      final codes = session.authContext?.permissionCodes ?? const <String>{};
+      return repository != null &&
+          !repository.isDemo &&
+          codes.contains('platform.member.read') &&
+          codes.contains('platform.member.update') &&
+          codes.contains('platform.member.suspend');
+    }
     if (location.startsWith('/invites')) {
       return inviteRepository is! UnavailableInviteRepository;
     }
@@ -3622,6 +3631,14 @@ GoRouter createSuperadminRouter({
                       : PlatformUserCapability.unauthorized,
                   logout: logout,
                   onBack: () => context.goNamed(SuperadminRoutes.internalUsersName),
+                  onEdit: canManage
+                      ? () => context.goNamed(
+                          SuperadminRoutes.internalUserEditName,
+                          pathParameters: {
+                            'internalUserId': state.pathParameters['internalUserId']!,
+                          },
+                        )
+                      : null,
                   onDestinationSelected: (destination) =>
                       _navigateFromPersistentShell(context, destination),
                 );

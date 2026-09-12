@@ -48,8 +48,8 @@ select ok(not has_function_privilege('anon',
   'edit RPC is executable only by authenticated clients');
 select is((select count(*) from public.platform_permissions
   where code in('platform.member.read','platform.member.update','platform.member.suspend')
-    and status='active' and requires_mfa),3::bigint,
-  'all internal-user capabilities are explicit, active and MFA guarded');
+    and status='active' and not requires_mfa),3::bigint,
+  'internal-user capabilities follow the approved MVP AAL1 policy (ADR0034)');
 select results_eq(
   $$select module_label,screen_label,action_label from public.platform_permissions
     where code in('platform.member.read','platform.member.suspend','platform.member.update')

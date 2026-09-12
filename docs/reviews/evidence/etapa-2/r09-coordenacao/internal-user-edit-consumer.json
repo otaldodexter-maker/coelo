@@ -1,0 +1,35 @@
+{
+  "at": "2026-09-12T21:25:30.392043+00:00",
+  "target": "0ddeebc0-ee10-4565-96e0-ef11cacfc734",
+  "checks": [
+    {
+      "step": "anonymous_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "ui_edit_persisted",
+      "pass": true,
+      "http": 200,
+      "version": 2
+    },
+    {
+      "step": "synthetic_cpf_corrected",
+      "pass": true
+    },
+    {
+      "step": "support_scope_and_credential_preserved",
+      "pass": true
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}

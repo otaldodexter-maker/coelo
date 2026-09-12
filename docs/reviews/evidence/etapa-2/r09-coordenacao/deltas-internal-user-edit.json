@@ -1,0 +1,28 @@
+[
+  {
+    "action_id": "internal-users.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: callback e redirect corrigidos; UI edita cargo/CPF sintetico R08, salva/reload version2;14 testes rota,45pgTAP e6checksAPI PASS. Perfil/escopo preservados; criacao aguarda catalogo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-edit-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-edit-acceptance.md",
+      "revision": "R09-C0-r114",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:27:28.465628+00:00"
+    }
+  },
+  {
+    "action_id": "internal-users.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: callback e redirect corrigidos; UI edita cargo/CPF sintetico R08, salva/reload version2;14 testes rota,45pgTAP e6checksAPI PASS. Perfil/escopo preservados; criacao aguarda catalogo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-edit-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/internal-user-edit-acceptance.md",
+      "revision": "R09-C0-r114",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 QA release3014 sem emulacoes",
+      "recordedAt": "2026-09-12T21:27:28.465628+00:00"
+    }
+  }
+]

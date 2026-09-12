@@ -1,0 +1,11 @@
+{
+  "at": "2026-09-12T21:22:10.701843+00:00",
+  "base": "3aa0be2cc plus internal-user routes patch",
+  "buildSeconds": 56.7,
+  "localHash": "e87e18a515040cc14388fb38f85066be815d90629fb3716cda39ec13788a888f",
+  "servedHash": "e87e18a515040cc14388fb38f85066be815d90629fb3716cda39ec13788a888f",
+  "same": true,
+  "emulations": false,
+  "chromePid": 22592,
+  "serverPid": 48684
+}

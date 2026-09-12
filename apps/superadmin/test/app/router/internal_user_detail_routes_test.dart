@@ -9,6 +9,7 @@ import 'package:coelo_superadmin/features/auth/domain/password_recovery.dart';
 import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.dart';
 import 'package:coelo_superadmin/features/platform_users/data/supabase_platform_user_repository.dart';
 import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_detail_page.dart';
+import 'package:coelo_superadmin/features/platform_users/presentation/platform_user_form_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -64,7 +65,7 @@ void main() {
   tearDownAll(client.dispose);
   for (final (width, scenario) in [
     for (final width in [800.0, 1440.0])
-      for (final scenario in ['allowed', 'capability-denied', 'server-denied', 'retry'])
+      for (final scenario in ['allowed', 'owner', 'capability-denied', 'server-denied', 'retry'])
         (width, scenario),
   ]) {
     testWidgets('detail route: $scenario width=$width', (tester) async {
@@ -76,7 +77,10 @@ void main() {
       addTearDown(tester.view.resetDevicePixelRatio);
       addTearDown(tester.view.resetPhysicalSize);
       final session = SuperadminSession()
-        ..authorize(_context(scenario != 'capability-denied'), sessionId: 'session-a');
+        ..authorize(
+          _context(scenario != 'capability-denied', canManage: scenario == 'owner'),
+          sessionId: 'session-a',
+        );
       final repository = SupabasePlatformUserRepository(client);
       final router = createSuperadminRouter(
         session: session,
@@ -108,7 +112,25 @@ void main() {
           await tester.pumpAndSettle();
         }
         expect(find.text(name), findsWidgets);
-        expect(find.text('Editar'), findsNothing);
+        if (scenario == 'owner') {
+          final edit = find.widgetWithText(OutlinedButton, 'Editar');
+          expect(tester.widget<OutlinedButton>(edit).onPressed, isNotNull);
+          await tester.tap(edit);
+          await tester.pumpAndSettle();
+          expect(find.byType(PlatformUserFormPage), findsOneWidget);
+          expect(router.routeInformationProvider.value.uri.path, '/internal-users/$_id/edit');
+          router.go('/internal-users/$_id');
+          await tester.pumpAndSettle();
+        } else {
+          expect(find.text('Editar'), findsNothing);
+          final readsBeforeDeniedEdit = requests.length;
+          router.go('/internal-users/$_id/edit');
+          await tester.pumpAndSettle();
+          expect(find.byType(PlatformUserFormPage), findsNothing);
+          expect(requests.length, readsBeforeDeniedEdit);
+          router.go('/internal-users/$_id');
+          await tester.pumpAndSettle();
+        }
         final details = requests.where(
           (r) => r.url.path.endsWith('superadmin_internal_user_detail'),
         );
@@ -143,10 +165,14 @@ void main() {
   }
 }
 
-SuperadminAuthContext _context(bool canRead) => SuperadminAuthContext(
-  platformRoleCode: 'auditor',
+SuperadminAuthContext _context(bool canRead, {bool canManage = false}) => SuperadminAuthContext(
+  platformRoleCode: canManage ? 'owner' : 'auditor',
   scopeKind: SuperadminAuthScopeKind.platform,
-  permissionCodes: {'platform.read', if (canRead) 'platform.member.read'},
+  permissionCodes: {
+    'platform.read',
+    if (canRead) 'platform.member.read',
+    if (canManage) ...{'platform.member.update', 'platform.member.suspend'},
+  },
   aal: 'aal1',
 );
 

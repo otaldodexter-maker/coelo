@@ -1,0 +1,17 @@
+00:00 +0: loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=800.0
+00:01 +1: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_routes_test.dart: normal directory enforces member.read=true before loading
+00:01 +2: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=800.0
+00:02 +3: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=800.0
+00:02 +4: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=800.0
+00:02 +5: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=800.0
+00:02 +6: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: capability-denied width=800.0
+00:02 +7: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: server-denied width=800.0
+00:02 +8: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: retry width=800.0
+00:03 +9: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: allowed width=1440.0
+00:03 +10: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: owner width=1440.0
+00:04 +11: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: capability-denied width=1440.0
+00:04 +12: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: server-denied width=1440.0
+00:04 +13: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: detail route: retry width=1440.0
+00:05 +14: C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/test/app/router/internal_user_detail_routes_test.dart: (tearDownAll)
+00:05 +14: All tests passed!

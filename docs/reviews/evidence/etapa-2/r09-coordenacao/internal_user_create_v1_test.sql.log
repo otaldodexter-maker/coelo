@@ -1,0 +1,87 @@
+BEGIN
+CREATE EXTENSION
+ plan
+------
+ 1..9
+(1 row)
+
+CREATE FUNCTION
+CREATE FUNCTION
+INSERT 0 3
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+ iuc_session
+-------------
+
+(1 row)
+
+                   is
+----------------------------------------
+ ok 1 - anonimo recebe envelope de erro
+(1 row)
+
+ iuc_session
+-------------
+
+(1 row)
+
+                                is
+-------------------------------------------------------------------
+ ok 2 - Owner de plataforma autoriza e recebe o proprio id de ator
+(1 row)
+
+                 is
+-------------------------------------
+ ok 3 - CPF ja registrado e recusado
+(1 row)
+
+                   is
+----------------------------------------
+ ok 4 - e-mail ja registrado e recusado
+(1 row)
+
+ iuc_session
+-------------
+
+(1 row)
+
+                                 is
+--------------------------------------------------------------------
+ ok 5 - identidade escopada em instituicao nao cria usuario interno
+(1 row)
+
+                      ok
+----------------------------------------------
+ ok 6 - funcao do worker so para service_role
+(1 row)
+
+ iuc_session
+-------------
+
+(1 row)
+
+SELECT 1
+                            is
+-----------------------------------------------------------
+ ok 7 - worker cria o usuario interno e devolve a projecao
+(1 row)
+
+                                   is
+------------------------------------------------------------------------
+ ok 8 - ponte de ator criou a pessoa de servico com o @ do perfil (P46)
+(1 row)
+
+                               is
+----------------------------------------------------------------
+ ok 9 - replay com o mesmo auth user devolve a mesma identidade
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

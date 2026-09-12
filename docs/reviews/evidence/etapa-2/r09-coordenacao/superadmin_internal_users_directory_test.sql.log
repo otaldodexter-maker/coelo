@@ -1,0 +1,360 @@
+BEGIN
+CREATE EXTENSION
+ plan
+-------
+ 1..45
+(1 row)
+
+              set_config
+--------------------------------------
+ 0da9b079-60db-406a-9721-d829a074b9cd
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 1 - private internal-user profile, scope and receipt tables exist
+(1 row)
+
+                         ok
+----------------------------------------------------
+ ok 2 - list, detail, edit and lifecycle RPCs exist
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 3 - all new private tables force RLS
+(1 row)
+
+                               ok
+-----------------------------------------------------------------
+ ok 4 - private tables expose no direct client or service grants
+(1 row)
+
+                                ok
+------------------------------------------------------------------
+ ok 5 - directory RPC is executable only by authenticated clients
+(1 row)
+
+                             ok
+-------------------------------------------------------------
+ ok 6 - edit RPC is executable only by authenticated clients
+(1 row)
+
+                                           is
+----------------------------------------------------------------------------------------
+ not ok 7 - all internal-user capabilities are explicit, active and MFA guarded        +
+ # Failed test 7: "all internal-user capabilities are explicit, active and MFA guarded"+
+ #         have: 0                                                                     +
+ #         want: 3
+(1 row)
+
+                                         results_eq
+--------------------------------------------------------------------------------------------
+ not ok 8 - directory capabilities expose coherent module, screen and action labels        +
+ # Failed test 8: "directory capabilities expose coherent module, screen and action labels"+
+ #     Results differ beginning at row 1:                                                  +
+ #         have: (Superadmin,"Usuários internos",Ver)                                      +
+ #         want: (Superadmin,"Usu??rios internos",Ver)
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+                                            is
+------------------------------------------------------------------------------------------
+ ok 9 - CPF hash uses the immutable text digest overload required by the generated column
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "91000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+                            is
+-----------------------------------------------------------
+ ok 10 - authorized Owner lists the two private identities
+(1 row)
+
+                                  is
+----------------------------------------------------------------------
+ ok 11 - detail returns sensitive fields only through its guarded RPC
+(1 row)
+
+                          is
+-------------------------------------------------------
+ ok 12 - directory projection omits professional notes
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 13 - edit persists the guarded professional draft
+(1 row)
+
+                                         is
+-------------------------------------------------------------------------------------
+ ok 14 - replayed request returns its receipt without applying the stale draft twice
+(1 row)
+
+                             is
+------------------------------------------------------------
+ ok 15 - suspend updates membership and credential together
+(1 row)
+
+                is
+----------------------------------
+ ok 16 - suspension is reversible
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 17 - last global Owner cannot be suspended
+(1 row)
+
+RESET
+                                 is
+---------------------------------------------------------------------
+ ok 18 - successful reads and mutations append internal audit events
+(1 row)
+
+RESET
+INSERT 0 2
+INSERT 0 3
+INSERT 0 1
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+INSERT 0 3
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "91000000-0000-4000-8000-000000000003", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000003"}
+(1 row)
+
+SET
+                                         is
+------------------------------------------------------------------------------------
+ ok 19 - institution-scoped actor lists only itself and the target in institution A
+(1 row)
+
+                                     is
+----------------------------------------------------------------------------
+ ok 20 - institution-scoped actor can read a target in the same institution
+(1 row)
+
+                            is
+-----------------------------------------------------------
+ ok 21 - detail denies an existing UUID from institution B
+(1 row)
+
+                             is
+------------------------------------------------------------
+ ok 22 - detail returns the same denial for an unknown UUID
+(1 row)
+
+                                      is
+------------------------------------------------------------------------------
+ ok 23 - limited actor cannot escalate a same-tenant target to platform scope
+(1 row)
+
+                                  is
+-----------------------------------------------------------------------
+ ok 24 - edit denies a target from institution B before row disclosure
+(1 row)
+
+                            is
+-----------------------------------------------------------
+ ok 25 - status command denies a target from institution B
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 26 - status command succeeds inside institution A
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 27 - directory rejects oversized search input
+(1 row)
+
+                             is
+------------------------------------------------------------
+ ok 28 - directory rejects page sizes outside the allowlist
+(1 row)
+
+RESET
+                                             ok
+--------------------------------------------------------------------------------------------
+ ok 29 - cross-scope, IDOR and malformed-input denials are audited for the identified actor
+(1 row)
+
+RESET
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "91000000-0000-4000-8000-000000000003", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000003"}
+(1 row)
+
+UPDATE 1
+SET
+                              is
+---------------------------------------------------------------
+ ok 30 - users read accepts AAL1 under the explicit MVP policy
+(1 row)
+
+RESET
+UPDATE 1
+SET
+                                     results_eq
+-------------------------------------------------------------------------------------
+ ok 31 - list, detail and profiles reject capability removed after a successful read
+(1 row)
+
+RESET
+UPDATE 1
+UPDATE 1
+SET
+                                  results_eq
+-------------------------------------------------------------------------------
+ ok 32 - users reads reject a suspended membership despite an active auth-link
+(1 row)
+
+RESET
+UPDATE 1
+UPDATE 1
+SET
+                                     results_eq
+------------------------------------------------------------------------------------
+ ok 33 - users reads reject a revoked membership despite a still valid Auth session
+(1 row)
+
+RESET
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "91000000-0000-4000-8000-000000000005", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000005"}
+(1 row)
+
+SET
+                                      is
+-------------------------------------------------------------------------------
+ ok 34 - auth-link test actor reads its own institution before link suspension
+(1 row)
+
+RESET
+UPDATE 1
+SET
+                                    results_eq
+----------------------------------------------------------------------------------
+ ok 35 - users reads reject a suspended auth-link while membership remains active
+(1 row)
+
+RESET
+UPDATE 1
+SET
+                   results_eq
+------------------------------------------------
+ ok 36 - users reads reject a revoked auth-link
+(1 row)
+
+RESET
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "91000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000007"}
+(1 row)
+
+SET
+                             is
+------------------------------------------------------------
+ ok 37 - Owner session is valid immediately before deletion
+(1 row)
+
+RESET
+DELETE 1
+SET
+                                     results_eq
+------------------------------------------------------------------------------------
+ ok 38 - users RPCs reject stale JWT claims after the referenced session is deleted
+(1 row)
+
+RESET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "91000000-0000-4000-8000-000000000006", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000006"}
+(1 row)
+
+SET
+                                        results_eq
+-------------------------------------------------------------------------------------------
+ ok 39 - global people/Auth realm with valid session cannot enter the internal users realm
+(1 row)
+
+RESET
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "91000000-0000-4000-8000-000000000001", "role": "authenticated", "session_id": "92000000-0000-4000-8000-000000000001"}
+(1 row)
+
+SET
+ set_config
+------------
+ 4
+(1 row)
+
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                          set_config
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"id": "93000000-0000-4000-8000-000000000002", "history": [{"at": "2026-09-12T21:19:28.492334+00:00", "title": "Alteração de acesso", "detail": "Operação auditada."}, {"at": "2026-09-12T21:19:28.492334+00:00", "title": "Cadastro atualizado", "detail": "Operação auditada."}, {"at": "2026-09-12T21:19:28.492334+00:00", "title": "Acesso suspenso", "detail": "Operação auditada."}, {"at": "2026-09-12T21:19:28.492334+00:00", "title": "Acesso reativado", "detail": "Operação auditada."}, {"at": "2026-09-12T21:19:28.492334+00:00", "title": "Alteração de acesso", "detail": "Operação auditada."}, {"at": "2026-09-12T21:19:28.492334+00:00", "title": "Alteração de acesso", "detail": "Operação auditada."}], "version": 5, "identity": {"id": "93000000-0000-4000-8000-000000000002", "cpf": "11144477735", "city": "", "state": "", "mobile": "11999999999", "number": "", "street": "", "country": "Brasil", "job_title": "L??der de opera????es", "last_name": "Lima", "birth_date": "1990-05-12", "complement": "", "department": "Opera????es", "first_name": "Ana", "postal_code": "", "display_name": "Ana Lima", "neighborhood": "", "additional_phone": "", "internal_function": "Atendimento", "professional_email": "operator-internal@invalid.test", "professional_notes": ""}, "credential": {"status": "noAccess"}, "invitation": {"id": "94000000-0000-4000-8000-000000000002", "email": "operator-internal@invalid.test", "status": "accepted", "attempts": 1, "updated_at": "2026-09-12T21:19:28.492334+00:00"}, "memberships": [{"id": "95000000-0000-4000-8000-000000000002", "scope": "platform", "status": "revoked", "profile": {"id": "0da9b079-60db-406a-9721-d829a074b9cd", "code": "operations", "name": "Operations", "active": true, "permissions": ["activities.read", "activities.taxonomy.manage", "agenda.read", "analytics.read", "chat.internal.read", "circulars.read", "groups.manage", "groups.read", "imports.manage", "imports.read", "institution.activate", "institution.status.change", "institution.update", "institutions.export", "institutions.import", "meal_plans.read", "notices.read", "plan.change", "platform.member.read", "platform.member.suspend", "platform.member.update", "platform.read", "unit_types.request", "units.create", "units.export", "units.import", "units.read", "units.transfer", "units.update"], "allows_global": true}, "ended_at": "2026-09-12T21:19:28.492334+00:00", "scope_ids": [], "started_at": "2026-09-12T21:19:28.492334+00:00", "scope_names": []}]}
+(1 row)
+
+                                     is
+----------------------------------------------------------------------------
+ ok 40 - Owner can revoke the internal target through the authenticated RPC
+(1 row)
+
+                              is
+---------------------------------------------------------------
+ ok 41 - identical revoke request replays the original receipt
+(1 row)
+
+RESET
+                                                                                                                                                                                                                                                                                                                                                                                                                                                     set_config
+--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"link": {"id": "94000000-0000-4000-8000-000000000002", "status": "revoked", "version": 4, "created_at": "2026-09-12T21:19:28.492334+00:00", "revoked_at": "2026-09-12T21:19:28.492334+00:00", "auth_user_id": "91000000-0000-4000-8000-000000000002", "suspended_at": null, "internal_identity_id": "93000000-0000-4000-8000-000000000002", "changed_by_internal_identity_id": "93000000-0000-4000-8000-000000000001"}, "membership": {"id": "95000000-0000-4000-8000-000000000002", "status": "revoked", "version": 5, "created_at": "2026-09-12T21:19:28.492334+00:00", "revoked_at": "2026-09-12T21:19:28.492334+00:00", "scope_kind": "platform", "suspended_at": null, "platform_role_id": "0da9b079-60db-406a-9721-d829a074b9cd", "internal_identity_id": "93000000-0000-4000-8000-000000000002", "scope_institution_id": null, "changed_by_internal_identity_id": "93000000-0000-4000-8000-000000000001"}}
+(1 row)
+
+                                       ok
+---------------------------------------------------------------------------------
+ ok 42 - revoke persists both membership and credential with coherent timestamps
+(1 row)
+
+SET
+                                       is
+--------------------------------------------------------------------------------
+ ok 43 - terminal revoke rejects reactivation (current SQLSTATE 55000 envelope)
+(1 row)
+
+RESET
+                                         is
+------------------------------------------------------------------------------------
+ ok 44 - rejected terminal transition preserves all membership and auth-link fields
+(1 row)
+
+                                          ok
+--------------------------------------------------------------------------------------
+ ok 45 - revoke replay appends neither a second receipt nor a duplicate success audit
+(1 row)
+
+                finish
+---------------------------------------
+ # Looks like you failed 2 tests of 45
+(1 row)
+
+ROLLBACK
