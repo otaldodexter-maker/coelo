@@ -6,6 +6,25 @@ generated_at: 2026-09-12
 
 # R09 — prompts preparados: CRUD real, Astra médio e consumo limitado
 
+## Ajuste operacional vigente — abertura 1542
+
+Owner confirmou em12/09/2026 a continuidade de `E2-R09-20260912-1542`,
+T0 15:42:18 BRT, execução até19:42:18 e fechamento até20:12:18.
+Ausência de ferramentas de tarefas, cota ou heartbeat não bloqueia trabalho
+técnico autorizado: usar Git, commits, JSONs e handoffs em ciclos curtos.
+Não criar agentes/tarefas, presumir consumo ou simular timers externos.
+Se a cota real voltar, aplicar70/75/85%; o primeiro corte continua válido.
+Checkpoints ocorrem somente na sessão ativa, sem retomada automática prometida.
+
+C0 atual: `01a096ed-314b-7c13-a9e0-3e64649e66fc`, host `local`.
+Os nove IDs novos e os caminhos isolados ficam em
+`../comunicacao/coordenacao.json`, campos `frentesR09` e `posseR09`.
+Receber instrução e adotar atribuição são coisas diferentes: o ACK da nova
+frente deve citar seu ID/round/revisão no JSON commitado em sua própria branch.
+Os IDs antigos permanecem históricos; mensagens antigas não reativam tarefas.
+Sem ferramenta de envio, o Owner encaminha a liberação; C0 continua trabalho
+independente. Este ajuste prevalece sobre os trechos antigos abaixo.
+
 ## Nova abertura após encerramento da tentativa anterior
 
 Decisão mais recente do Owner em 12/09/2026: a tentativa R09 anterior foi

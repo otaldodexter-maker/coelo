@@ -1,35 +1,41 @@
 {
   "grupo": "realm-interno",
-  "revision": 77,
-  "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T14:40:00-03:00",
+  "revision": 81,
+  "round": "E2-R09-20260912-1542",
+  "updatedAt": "2026-09-12T19:14:02.177906+00:00",
   "app": "Codex",
-  "modelo": "GPT-5.6 Sol (esforco medio)",
-  "conversa": "R08 · Realm interno e segurança",
-  "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
-  "branch": "work/etapa2-r08-realm-interno",
-  "head": "answer-image produtivo concluído; H28 local-green 44/44 com fixture funcional rollback",
-  "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
-  "t0": "2026-09-12T10:52:16.727826-03:00; Owner antecipou: frentes ate 14:40, revisao ate 14:50, fechamento C0 ate 15:00",
+  "modelo": "gpt-6-astra / medium (configuracao declarada por C0)",
+  "conversa": "R09 ? Realm interno e Back-end ? G5",
+  "coordenador": "C0 unico 01a096ed-314b-7c13-a9e0-3e64649e66fc / host local",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+  "branch": "work/etapa2-r09-realm-interno-20260912-1542",
+  "head": "7907453f0362665ab87fe8faaa4854f286904148",
+  "upstream": "origin/work/etapa2-r09-realm-interno-20260912-1542",
+  "t0": "2026-09-12T15:42:18-03:00",
   "escopo": {
-    "camada": "backend transversal (Supabase/Postgres) da R07",
-    "faixaDeCarimbo": "2026091221xxxx em packages/coelo_database/candidatos/realm-interno/",
-    "ordem": [
-      "(1) varredura pós-lotes 49–55: grants anon/authenticated sem policy, security definer sem revoke anon, tabelas novas sem RLS (institution_reader, sessões); pacote só se houver achado",
-      "(2) code review 210500 notificações/políticas de unidade e 211100 handles no payload, com pgTAP negativo cross-tenant onde faltar",
-      "(3) apoio às frentes por pedido no JSON: convite expirado sintético G2 e período avaliativo sintético G1",
-      "(4) esboço não aplicado de limpeza de dados sintéticos, arquivando referências de audit_logs"
-    ],
+    "camada": "Etapa 2 / apps/superadmin / Estrutura / Turmas e Avaliacoes / backend",
     "actionIds": [
-      "seguranca transversal (sem action_id): daily-routine.*, health-care.*, attendance.*, meal-plans.*, support.*, people.*, forms.*, child-safety.*, account.*, access-profiles.*, institutions.files"
+      "groups.members",
+      "groups.location",
+      "activities.assessment",
+      "assessments.entry",
+      "assessments.gradebook",
+      "assessments.detail"
     ],
-    "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
+    "ordem": [
+      "revisar gates de Turmas G1",
+      "reutilizar cadeia Avaliacoes R08",
+      "seguir proxima fatia confirmada C0"
+    ],
+    "foraDoRecorte": "UI, auditoria ampla, Etapa 3, SQL sem espelho/posse, remoto/deploy, inventario e rastreadores C0"
   },
-  "primeiroGate": "integração e promoção exclusivas C0 do candidato H28; G5 segue somente em revisão/ajustes pedidos",
-  "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
+  "primeiroGate": "C0 atribuir fixture sintetica elegivel: atividade retida sem participantes e formulario sem opcoes de alunos; depois G1 atualizar diario existente por comando normal. G5 atual somente leitura, sem dados/SQL novos.",
+  "provaLocal": "R09: nenhum teste de produto executado; ACK documental. Provas R08 permanecem historicas.",
   "bloqueio": null,
-  "pedidosAoCoordenador": [],
+  "pedidosAoCoordenador": [
+    "Integrar proposta BE activities.assessment e prova de leitura/negativas do commit3eee68451; FE/E2E nao promovidos.",
+    "Diagnostico read-only concluiu: participantes0 e opcoes elegiveis0 no contexto retido. Confirmar proximo pacote de fixture, autoria G5/G1/G3 e posse G0 se SQL necessario. Nao recriar configuracao/periodo/diario; atualizar students do diario pela versao atual apos vinculos."
+  ],
   "perguntasParaOOwner": [
     "H19: quem pode ser Responsável de um plano de medicação (guardiões autorizados, equipe no escopo, ambos) e qual a semântica dessa atribuição, sem conceder implicitamente medication.record_evidence?"
   ],
@@ -66,7 +72,7 @@
   "deltaPropostoBE": {
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
-  "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
+  "loop": "Sem polling, timers antigos ou automacao; ciclos curtos via Git conforme C0.",
   "status": "handoff final publicado; answer-image produtivo completo e lote59 aplicado/verificado pelo C0",
   "proximoPasso": "somente ajuste focal solicitado pelo C0 até 14:50; não iniciar R09 nem remover worktree",
   "contratoInstitutionContacts": {
@@ -647,7 +653,10 @@
         "Aguardar pedidos de convite expirado sintético G2 ou período avaliativo sintético G1.",
         "T0 da coordenação e revisão final."
       ],
-      "commitsPublicados": ["5c65d9ff8 abertura R07: revisão 49 (push)", "f729ef739 checkpoint estático: revisão 49 (push explícito HEAD)"],
+      "commitsPublicados": [
+        "5c65d9ff8 abertura R07: revisão 49 (push)",
+        "f729ef739 checkpoint estático: revisão 49 (push explícito HEAD)"
+      ],
       "bloqueios": [
         "Docker Desktop deixou de responder após a tentativa de iniciar o descartável; serviço com.docker.service está parado e não pode ser aberto nesta sessão. O container coelo_baseline estava disponível antes, mas não é seguro reutilizá-lo para replay destrutivo. Retém apenas o replay dinâmico; a revisão estática continua.",
         "Nenhum bloqueio de implementação ou dependência de G1/G2."
@@ -1215,5 +1224,62 @@
       },
       "primeiroGate": "encerrado; aguardar somente correção pedida pelo C0"
     }
+  },
+  "threadId": "01a096ee-9b56-7a12-942a-932b1903458e",
+  "hostId": "local",
+  "adocaoR09": {
+    "ack": true,
+    "coordenacaoRevision": 96,
+    "coordenacaoHead": "7907453f0362665ab87fe8faaa4854f286904148",
+    "coordenadorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "threadId": "01a096ee-9b56-7a12-942a-932b1903458e",
+    "hostId": "local",
+    "round": "E2-R09-20260912-1542",
+    "revision": 78,
+    "at": "2026-09-12T15:59:05.912016-03:00",
+    "vaga": "G5 inicial adotada; sem posse Chrome/flutterTest/SQL",
+    "execucaoAte": "2026-09-12T19:42:18-03:00",
+    "fechamentoAte": "2026-09-12T20:12:18-03:00",
+    "corte": "primeiro corte de tempo/consumo; cota indisponivel, ciclos curtos",
+    "proximoGate": "G1: revisar provas existentes groups.members/location e Avaliacoes; publicar contratos e lacunas BE sem repetir API/SQL verdes",
+    "historico": "demais pacotes/pendencias/checkpoints anteriores sao historicos; nao constituem fila ativa, posse ou T0 R09",
+    "novosAceites": [],
+    "pacotesNovos": [],
+    "memoria": "no-op: nenhuma regra duravel nova"
+  },
+  "checkpointR09": {
+    "revision": 81,
+    "round": "E2-R09-20260912-1542",
+    "coordenacaoRevision": 97,
+    "feito": "Negativas reais publicadas; diagnostico complementar concluiu participantes0 e opcoes elegiveis0. Falha do runner limite200 corrigida para100.",
+    "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+    "actionIds": [
+      "activities.assessment",
+      "assessments.detail"
+    ],
+    "consumidora": "G1 estrutura",
+    "testes": {
+      "apiAtual": {
+        "pass": 9,
+        "fail": 0
+      },
+      "oracleOffline": "PASS",
+      "pgTAP": "52/52 historicos R08 G0 reutilizados, nenhum rerun",
+      "diagnosticoAtual": {
+        "pass": 5,
+        "fail": 0,
+        "tentativaAnterior": "4PASS/1FAIL de runner, preservada; nao somar reruns"
+      }
+    },
+    "deltaArquivo": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/deltas-assessment-be.json",
+    "aceitesBEPropostos": [
+      "activities.assessment"
+    ],
+    "novosAceitesIntegrados": [],
+    "proximoGate": "C0 atribuir fixture sintetica elegivel: atividade retida sem participantes e formulario sem opcoes de alunos; depois G1 atualizar diario existente por comando normal. G5 atual somente leitura, sem dados/SQL novos.",
+    "tituloInterface": "ferramenta de renomeacao indisponivel; conversa normalizada neste JSON",
+    "memoria": "no-op",
+    "status": "Gate de leitura C0r97 executado; proxima escrita depende pacote nominal, sem polling",
+    "fixtureProof": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-fixture-proof-final.json"
   }
 }

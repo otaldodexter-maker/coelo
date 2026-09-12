@@ -1,0 +1,42 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "measuredAt": "2026-09-12T19:13:06.576157+00:00",
+  "businessMutations": false,
+  "checks": [
+    {
+      "step": "auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "superadmin_assessment_context_options",
+      "pass": true,
+      "http": 200,
+      "errorCode": null
+    },
+    {
+      "step": "superadmin_activity_detail_v2",
+      "pass": true,
+      "http": 200,
+      "errorCode": null
+    },
+    {
+      "step": "superadmin_activity_form_options_v2",
+      "pass": true,
+      "http": 200,
+      "errorCode": null
+    },
+    {
+      "step": "logout_local",
+      "pass": true,
+      "http": 204
+    }
+  ],
+  "retainedActivityParticipantCount": 0,
+  "retainedGroupParticipantCount": 0,
+  "eligibleOptionCount": 0,
+  "eligibleRetainedGroupOptionCount": 0,
+  "limit": 100,
+  "mayBeTruncated": false,
+  "pass": true
+}

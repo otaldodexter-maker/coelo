@@ -2769,15 +2769,23 @@
       "scope": "mvp",
       "done": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
       "fe": "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente.",
-      "be": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
-      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; ef751c33b activity-composition-r16-manifest.json; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json",
+      "be": "R09 G5: save/activate/releituras reais R08 + pgTAP52/52 mesma familia (cross-tenant caso48) reutilizados; anon401 e nao enumeracao de atividade/unidade por API normal R09, controle autorizado200. Regua MVP combinada; sem segunda sessao real escopada e sem promover FE/E2E.",
+      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; ef751c33b activity-composition-r16-manifest.json; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+          "revision": "G5-R09-r80",
+          "environment": "Supabase producao; pgTAP R08 G0 reutilizado",
+          "recordedAt": "2026-09-12T19:11:01.449001+00:00"
+        }
+      }
     },
     {
       "id": "activities.location",
@@ -5109,10 +5117,10 @@
       "family": "forms_files",
       "screen": "Arquivos de Formulários / Resolver",
       "scope": "mvp",
-      "done": "R08: cadeia API de imagem de resposta concluida e recursos preservados. Primeiro gate restante: rota normal interativa de Formulario com upload/download/reload e negativa no outro tenant; camera/anonimo nao certificados por API.",
+      "done": "R09 C0: reautorizacao e TTL de download por API provados parcialmente; G3 ainda precisa download/reabertura pela rota normal com runtime G0 e negativa real de tenant/contrato. API e expiracao do link nao certificam UI nem expiracao do ativo.",
       "fe": "R08 ciclo180: pergunta e Galeria identificada/anonima, Foto camera cardinalidade1, persistencia local confirmada de edit_secret e composicao por conta/projeto integradas. Suites C0 na basec729 passaram os casos Forms; pacote geral411PASS4FAIL1SKIP teve somente goldensH25 falhos, corrigidos separadamente semPNG com37PASS. Autorizacao/download real e UI continuam gates separados; sem verified/E2E.",
-      "be": "R08: form-media v21 ACTIVE com provider R2, actor interno, TTL/replay e parametro edit_secret null corrigidos. Lote57 140546..140549 aplicado com225 testes unicos finais. G0 provou prepare/PUT68bytes/finalize/replay/save e download autorizado200 com checksum/reload da MESMA resposta e asset. Prova API autentica; UI/camera/anonimo e negativa cross-tenant real continuam pendentes. Sem BE done/E2E.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3; etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo180-flutter.jsonl; docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log",
+      "be": "R09 C0: download do asset R08 por API normal retornou68bytes/SHA esperado; sem Auth401, ID inexistente400 sem URL, mesmo link apos65s403 e logout local204. Persistencia/reabertura R08 reutilizada; negativa real de tenant/contrato ainda pendente antes de done. Nenhum novo asset/SQL/deploy.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-viewer,r39-media; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); I01382 log514fcc06…fc2de94a/TEMPcoelo-c02-media82-vuoxhew3; etapa-2-operacao/reports/R01-delta-2005.md; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo180-flutter.jsonl; docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-api-download-pass-20260912.log; docs/reviews/evidence/etapa-2/r09-coordenacao/forms-download-access.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "local-green",
@@ -8799,10 +8807,10 @@
       "family": "circulars",
       "screen": "Circular / Anexos",
       "scope": "mvp",
-      "done": "R08 G6 — primeiro gate: Origem3014 + circular-mediav13:prepare/PUT/finalize/save/read/reload com negativo; nenhum novo deploy genérico.",
-      "fe": "R06: gancho SuperadminQaHooks.circularFilePicker chega ao prepare (rascunho salvo + OPTIONS 200 em circular-media) mas o POST falha no preflight por x-client-info; funcao corrigida (b2e61a22e) e o router passa a entregar o repositorio de midia ao compositor. Gate: deploy da circular-media pelo coordenador; depois repetir a prova pela tela.",
+      "done": "R09 C0: primeiro gate e permissao Allow access to file URLs da extensao para o seletor real; depois prepare/PUT/finalize/save/read/reload. Mock QA foi tornado opt-in, nenhum novo E2E, BE historico preservado.",
+      "fe": "R09 C0: seletor normal agora e padrao no QA9eb24fbf1; analyze e build71s PASS. Rota normal/contexto/compositor e filechooser reais abrem; setFiles recusado pela extensao por permissao de arquivos. Sem upload/persistencia/reload, nao verified.",
       "be": "R05: 190000 + 190200 (R2 para Circulares: prepare presign em coelo-media-prod com chave tenants/.../circulars/circular/.../attachment/.../original) + 190300 (gateway v2 aceita bloco de midia com asset ready da propria circular) em producao: prepare -> PUT no R2 -> finalize ready -> rascunho com bloco de midia -> detail devolve asset_id -> publish com midia -> read signed_url -> bytes conferem; anon 401; delete de anexo publicado recusado (imutavel). pgTAP 18/18 + v2 34/34 + r2 45/46.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/circular-native-picker.md",
       "frontendStatus": "local-green",
       "backendStatus": "done",
       "integratedStatus": "pending-verification",
@@ -8826,7 +8834,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T17:44:58.364Z",
+  "updatedAt": "2026-09-12T19:26:50.804Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
