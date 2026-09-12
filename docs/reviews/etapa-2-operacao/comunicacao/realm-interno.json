@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 62,
+  "revision": 63,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T12:25:15-03:00",
+  "updatedAt": "2026-09-12T12:29:27-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "afd1e2f1b publicado; branch inclui merge origin/dev a438a3428 e candidatos 140546..140549",
+  "head": "761a1d3e6 publicado; teste de contrato do worker nesta revisão a publicar",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "receber nova pendência não conflitante do C0; lote 57 já aplicado e pós-provado pela coordenação",
+  "primeiroGate": "alinhar com o runner API Forms do G0 e revisar DTOs/fixtures reais, sem SQL novo",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte R08 G5 entregue; lotes 56 e 57 em produção; aguardando pendência adicional não conflitante do C0",
-  "proximoPasso": "C0 indicar próximo gate independente, mantendo fora Dart/Chrome, trackers e aplicação SQL",
+  "status": "recorte R08 G5 entregue; gate adicional worker replay local verde; composição API G0 em revisão",
+  "proximoPasso": "receber caminho/contrato do runner G0, revisar fixtures e preservar sintéticos; nenhum SQL novo sem defeito medido",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -933,6 +933,26 @@
         "executadoPorG5": "Deno chat-media 6/6 no início da rodada; nenhum pgTAP ou SQL remoto"
       },
       "primeiroGate": "nova pendência não conflitante a ser indicada pelo C0"
+    },
+    "checkpoint12h29": {
+      "quando": "2026-09-12T12:29:27-03:00",
+      "feito": [
+        "C0 atribuiu gate adicional independente: revisar composição API Forms do G0 e compatibilidade do worker finalize com replay, sem SQL novo até defeito medido.",
+        "Worker vigente confirmado compatível: em retry ready, ainda relê HEAD/bytes, recalcula SHA/dimensões e chama o finalizador; banco só aceita medidas e variante idênticas.",
+        "Harness form-media atualizado com status/replayed e caso explícito de resposta perdida após finalize.",
+        "Deno focal question-image finalize 4/4 e suíte form-media completa 29/29, sem rede real. Primeira invocação da raiz falhou apenas por não carregar deno.json e não é resultado de produto.",
+        "G0 está removendo exclusão automática do runner e preservará sintéticos; G5 solicitou caminho/DTO para revisão conjunta."
+      ],
+      "pendente": [
+        "Revisar runner/DTO/fixtures API Forms quando o G0 publicar o caminho ou SHA.",
+        "Não criar SQL novo, usuário ou fixture remota; não executar API real sem autorização nominal."
+      ],
+      "testes": {
+        "denoFormMediaFocal": "4/4, 25 filtrados",
+        "denoFormMediaCompleto": "29/29",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "review da composição API Forms planejada pelo G0"
     }
   }
 }
