@@ -1,0 +1,80 @@
+[
+  {
+    "action_id": "attendance.mark",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  }
+]

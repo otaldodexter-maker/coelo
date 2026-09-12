@@ -1617,6 +1617,7 @@ void main() {
     expect(call.revisions.single.reason, 'Saída conferida');
     expect(call.participants[0].state, AttendancePresenceState.present);
     expect(call.participants[1].state, AttendancePresenceState.earlyDeparture);
+    expect(find.text('Alteração de presença não salva.'), findsNothing);
   });
 
   testWidgets('correction fields stay locked while the command is in flight', (tester) async {

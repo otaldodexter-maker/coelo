@@ -1975,6 +1975,16 @@ class _ParticipantCardState extends State<_ParticipantCard> {
 
   bool get _hasPendingState => _pendingState != widget.participant.state;
 
+  @override
+  void didUpdateWidget(covariant _ParticipantCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.participant.id != widget.participant.id ||
+        !widget.writable ||
+        _pendingState == oldWidget.participant.state) {
+      _pendingState = widget.participant.state;
+    }
+  }
+
   Future<void> _save() async {
     if (_saving || !_hasPendingState) return;
     setState(() => _saving = true);
@@ -2012,10 +2022,20 @@ class _ParticipantCardState extends State<_ParticipantCard> {
                   );
                 }
                 return Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Expanded(flex: 3, child: identity),
+                    Expanded(
+                      flex: 3,
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                        child: Center(heightFactor: 1, child: identity),
+                      ),
+                    ),
                     const SizedBox(width: CoeloSpacing.space3),
-                    status,
+                    ConstrainedBox(
+                      constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                      child: Center(heightFactor: 1, widthFactor: 1, child: status),
+                    ),
                     const SizedBox(width: CoeloSpacing.space3),
                     Flexible(flex: 5, child: actions),
                   ],

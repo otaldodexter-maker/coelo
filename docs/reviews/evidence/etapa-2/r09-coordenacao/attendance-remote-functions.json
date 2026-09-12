@@ -1,0 +1,308 @@
+[
+  {
+    "schema": "app_private",
+    "proname": "attendance_audit",
+    "args": "p_actor uuid, p_action_code text, p_session attendance_sessions, p_object_type text, p_object_id uuid, p_reason text, p_after jsonb",
+    "md5": "3a09280545981dec04b68c710353f71e"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_bump_version",
+    "args": "p_session_id uuid, p_status text",
+    "md5": "7bb6e4ec25c07484875b041f6a9333e3"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_call_payload",
+    "args": "p_session_id uuid",
+    "md5": "a2df9b2c6efcd52aef6130622e130d4e"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_dashboard_access",
+    "args": "",
+    "md5": "ff8e2eb845d66bf28c5e53c885b148f5"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_dashboard_ranking_page",
+    "args": "p_start date, p_end date, p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_child_id uuid, p_kind text, p_direction text, p_page integer, p_page_size integer",
+    "md5": "37678ff31b7deb696a5c844c2952e86d"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_dashboard_read",
+    "args": "p_start date, p_end date, p_granularity text, p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_child_id uuid, p_search text, p_statuses text[], p_responsible_id uuid, p_sort text, p_desc boolean, p_page integer, p_page_size integer, p_ranking_direction text",
+    "md5": "5b24daf0a6326f40fef4de430f0064ca"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_dashboard_request_export",
+    "args": "p_request_id uuid, p_kind text, p_format text, p_filters jsonb",
+    "md5": "7076467bd8b1d71fa5f051b35994af31"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_intent_digest",
+    "args": "p_command text, p_aggregate_id uuid, p_expected_version bigint, p_scope jsonb",
+    "md5": "6ea25a5cfb10541b1834f123a3e606dd"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_notice_payload",
+    "args": "p_notice attendance_notices",
+    "md5": "12b72392baf5974ca9d42ef892bb73d1"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_replay_receipt",
+    "args": "p_actor uuid, p_command text, p_idempotency_key uuid",
+    "md5": "d8bcf17810ee4e171f0c28e014b7920d"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_require_call",
+    "args": "p_call_id uuid, p_expected_version bigint, p_require_manage boolean",
+    "md5": "67c8db1b955c17633e956f93e6fd6f47"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_reserve_idempotency_key",
+    "args": "p_command text, p_aggregate_id uuid, p_expected_version bigint, p_scope jsonb",
+    "md5": "5cd8076dfee381637ce7aa75e8ee310b"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_session_in_scope",
+    "args": "p_access jsonb, p_session attendance_sessions",
+    "md5": "b819db28328e7f32134e8e1d020f5d04"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_store_receipt",
+    "args": "p_actor uuid, p_command text, p_idempotency_key uuid, p_aggregate_id uuid, p_response jsonb",
+    "md5": "b3c2e0479340f8f43bb73ef0f59c73ff"
+  },
+  {
+    "schema": "app_private",
+    "proname": "attendance_write_state",
+    "args": "p_actor uuid, p_session attendance_sessions, p_child_context_id uuid, p_state text, p_reason text, p_note text, p_source_notice_id uuid",
+    "md5": "3e3f14f74beab56c79b81ff7610db67d"
+  },
+  {
+    "schema": "app_private",
+    "proname": "can_access_attendance_child",
+    "args": "target_institution_id uuid, target_unit_id uuid, target_group_id uuid, target_activity_id uuid, target_child_context_id uuid, require_manage boolean",
+    "md5": "df88ff4cc422db2f33bcc938e3a2fa05"
+  },
+  {
+    "schema": "app_private",
+    "proname": "confirm_attendance_record",
+    "args": "target_session_id uuid, target_child_context_id uuid, target_outcome text, target_notice_id uuid, target_note text",
+    "md5": "7d6006ffb354bbc369083ef7389ccd3a"
+  },
+  {
+    "schema": "app_private",
+    "proname": "revert_attendance_record",
+    "args": "target_record_id uuid, target_reason text",
+    "md5": "6db4cf5d37609bdf239846d0113464b7"
+  },
+  {
+    "schema": "app_private",
+    "proname": "submit_attendance_notice",
+    "args": "target_child_group_link_id uuid, target_notice_type text, target_starts_at timestamp with time zone, target_ends_at timestamp with time zone, target_reason_id uuid, target_reason_detail text, target_note text, target_attachment_media_id uuid",
+    "md5": "186051657dc5716ce02eca12b676dbbe"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_bulk",
+    "args": "p_command text, p_call_id uuid, p_expected_version bigint, p_idempotency_key uuid",
+    "md5": "96ceac3c6a88469736b1b6f77ad4f680"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_call_detail",
+    "args": "p_call_id uuid",
+    "md5": "b6024df77d554432077efdc9ef3ff40d"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_complete_call",
+    "args": "p_call_id uuid, p_expected_version bigint, p_idempotency_key uuid",
+    "md5": "c3d1a18a86e105047c59daeb7f08ad5f"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_confirm_notice",
+    "args": "p_notice_id uuid, p_expected_version bigint",
+    "md5": "74d666cfe6c6849ee95f121f3c659615"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_context_options",
+    "args": "p_date date",
+    "md5": "53893c668e93b25580d5bc973413f35d"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_correct_participant",
+    "args": "p_call_id uuid, p_participant_id uuid, p_state text, p_reason text, p_expected_version bigint",
+    "md5": "14a62baecee4a2812256a742c724c32f"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_create_call",
+    "args": "p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_session_date date, p_idempotency_key uuid",
+    "md5": "2d656f1ef432e1f1abea87ebf3846e28"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_directory",
+    "args": "p_date date",
+    "md5": "a1228b51c30b3918558f6f568699bac8"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_reopen_call",
+    "args": "p_call_id uuid, p_expected_version bigint, p_reason text",
+    "md5": "1573cb676e67792d60692274cc340ea7"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_set_participant",
+    "args": "p_idempotency_key uuid, p_call_id uuid, p_participant_id uuid, p_state text, p_expected_version bigint",
+    "md5": "6e95ed5bae959af4edd04896709e05c5"
+  },
+  {
+    "schema": "app_private",
+    "proname": "superadmin_attendance_undo_bulk",
+    "args": "p_operation_id uuid, p_call_id uuid, p_expected_version bigint",
+    "md5": "564cd287fbc5976047f22ab530958f02"
+  },
+  {
+    "schema": "app_private",
+    "proname": "validate_attendance_context_row",
+    "args": "",
+    "md5": "cd995a6028ab3a1a0351de8129c284aa"
+  },
+  {
+    "schema": "public",
+    "proname": "attendance_dashboard_access",
+    "args": "",
+    "md5": "d1b9ed6256017f63a5f5e1e31e75a1fe"
+  },
+  {
+    "schema": "public",
+    "proname": "attendance_dashboard_ranking_page",
+    "args": "p_start date, p_end date, p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_child_id uuid, p_kind text, p_direction text, p_page integer, p_page_size integer",
+    "md5": "86106c5c78027b2fb647d86bee0cb4be"
+  },
+  {
+    "schema": "public",
+    "proname": "attendance_dashboard_read",
+    "args": "p_start date, p_end date, p_granularity text, p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_child_id uuid, p_search text, p_statuses text[], p_responsible_id uuid, p_sort text, p_desc boolean, p_page integer, p_page_size integer, p_ranking_direction text",
+    "md5": "658ecd21a498cd3e8e2070c4d845b499"
+  },
+  {
+    "schema": "public",
+    "proname": "attendance_dashboard_request_export",
+    "args": "p_request_id uuid, p_kind text, p_format text, p_filters jsonb",
+    "md5": "15cf3f92ca798f66e4e202573579880d"
+  },
+  {
+    "schema": "public",
+    "proname": "attendance_reserve_idempotency_key",
+    "args": "command text, aggregate_id uuid, expected_version bigint, scope jsonb",
+    "md5": "354026edb875ede56b6d1e002a19d94a"
+  },
+  {
+    "schema": "public",
+    "proname": "confirm_attendance_record",
+    "args": "session_id uuid, child_context_id uuid, outcome text, notice_id uuid, note text",
+    "md5": "02b127d70bb87e7a91f302fdfb83637f"
+  },
+  {
+    "schema": "public",
+    "proname": "revert_attendance_record",
+    "args": "record_id uuid, reason text",
+    "md5": "59b562466d942df5313b05f2017eb065"
+  },
+  {
+    "schema": "public",
+    "proname": "submit_attendance_notice",
+    "args": "child_group_link_id uuid, notice_type text, starts_at timestamp with time zone, ends_at timestamp with time zone, reason_id uuid, reason_detail text, note text, attachment_media_id uuid",
+    "md5": "3954415fb268c7efebf28cb069a40a6a"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_call_detail",
+    "args": "p_call_id uuid",
+    "md5": "432971050503afb7a1aeee7ad32be414"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_clear_presence_marks",
+    "args": "p_call_id uuid, p_expected_version bigint, p_idempotency_key uuid",
+    "md5": "6ab28ebb7bb1cd1658a3218f2327b916"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_complete_call",
+    "args": "p_call_id uuid, p_expected_version bigint, p_idempotency_key uuid",
+    "md5": "4af35e041b7850a416117971d2ef49fa"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_confirm_notice",
+    "args": "p_notice_id uuid, p_expected_version bigint",
+    "md5": "a171318117aacf2ec7b7cdb8f540f70f"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_context_options",
+    "args": "p_date date",
+    "md5": "54bc5b4f3186796d8aecb0081a6f3e61"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_correct_participant",
+    "args": "p_call_id uuid, p_participant_id uuid, p_state text, p_reason text, p_expected_version bigint",
+    "md5": "312476d3c78fcc3b4cae6dfb42b7854d"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_create_call",
+    "args": "p_institution_id uuid, p_unit_id uuid, p_group_id uuid, p_activity_id uuid, p_session_date date, p_idempotency_key uuid",
+    "md5": "fc47b992f945a3bfb7e2fa3f8491084e"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_directory",
+    "args": "p_date date",
+    "md5": "b5dbd4d4987c0a1f351271aea0aafc52"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_mark_remaining_present",
+    "args": "p_call_id uuid, p_expected_version bigint, p_idempotency_key uuid",
+    "md5": "25d090f4fa2a0d038065f74edf4fc606"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_reopen_call",
+    "args": "p_call_id uuid, p_expected_version bigint, p_reason text",
+    "md5": "95948d93343ac614430324f4e3cbb114"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_set_participant",
+    "args": "p_idempotency_key uuid, p_call_id uuid, p_participant_id uuid, p_state text, p_expected_version bigint",
+    "md5": "182320410bcfe63a230bf8218ed53158"
+  },
+  {
+    "schema": "public",
+    "proname": "superadmin_attendance_undo_bulk",
+    "args": "p_operation_id uuid, p_call_id uuid, p_expected_version bigint",
+    "md5": "3c8767e8dd579cb7e91b0bf785568564"
+  }
+]

@@ -3297,15 +3297,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Marcar",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
-      "fe": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+      "done": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+      "fe": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
       "be": "superadmin_attendance_set_participant 200 (versao 2) com chave reservada no servidor (D11).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; f8990b3c6; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; f8990b3c6; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "certifications": {
@@ -3314,6 +3314,18 @@
           "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
           "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
           "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
         }
       },
       "ownerVisualApprovalHistory": [],
@@ -3349,15 +3361,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Corrigir",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
-      "fe": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+      "done": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+      "fe": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
       "be": "superadmin_attendance_correct_participant 200 (status corrected, versao 4; motivo em attendance_record_revisions).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23 b592dc4b corrige perda de draft de6504610a;65testes relatados. Par ainda RETIDO: C00 encontrou lookup ScaffoldMessenger usando context da página descartada no ramo em que mounted=false. Correção e cenário dialog sobrevivendo dispose pedidos nominalmente C03. Sem afirmar reprodução runtime desse achado estático.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/67-attendance-correct-dialog.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -3374,6 +3386,18 @@
           "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
           "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
           "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
         }
       },
       "historicalCertificationsR07": {
@@ -3397,15 +3421,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Concluir",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
-      "fe": "R09 C0: callbacks produtivos Nova chamada/abrir chamada estavam null e menu exclusivo preview. Corrigido sem alterar permissao do servidor;7 testes de rota verdes, analyze0. Build/UI/persistencia/reload pendentes.",
+      "done": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+      "fe": "R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
       "be": "superadmin_attendance_complete_call 200 (status closed, versao 3).",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 dcd34924 valida call.id/receipt.callId;68testes não-golden relatados/sobrepostos. Revisão estática sem defeito novo; integração depende parAttendance retido. attendance.detail no handoff é alias de superfície, não action_idnovo.; Recibo18:23: retenção de código resolvida por69324bc4, conjunto integrado4de7b59f/a141b430/c33e4160/a2388ec8;45PASS C00, sem promoção.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -3422,6 +3446,18 @@
           "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
           "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
           "recordedAt": "2026-09-11T15:05:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+          "revision": "R09-C0-r109",
+          "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+          "recordedAt": "2026-09-12T20:26:37.649035+00:00"
         }
       },
       "historicalCertificationsR07": {
@@ -8870,7 +8906,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T20:12:36.962Z",
+  "updatedAt": "2026-09-12T20:26:37.728Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

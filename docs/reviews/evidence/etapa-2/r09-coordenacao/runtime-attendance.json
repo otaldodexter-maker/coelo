@@ -1,0 +1,23 @@
+{
+  "at": "2026-09-12T20:13:19.622531+00:00",
+  "serverPid": 48684,
+  "chromePid": 22592,
+  "tabId": 829822468,
+  "buildCommit": "71daca6bf",
+  "buildExit": 0,
+  "buildSeconds": 83.6,
+  "sha256": "e8eca26e03c4888b66d057fbc8aedd1a1ecced3946a69449aa4d5f26a98891f9",
+  "servedMatch": true,
+  "textEmulation": false,
+  "syntheticCircularFile": false,
+  "correctionBuild": {
+    "at": "2026-09-12T20:27:26.089929+00:00",
+    "source": "71daca6bf + attendance_pages.dart correction in R09-C0-r109",
+    "buildExit": 0,
+    "buildSeconds": 60.5,
+    "sha256": "7a88d8835bfa35d799d255bc9be453d19e65f701a273487cb901d00956f9c91c",
+    "servedMatch": true,
+    "textEmulation": false,
+    "syntheticCircularFile": false
+  }
+}
