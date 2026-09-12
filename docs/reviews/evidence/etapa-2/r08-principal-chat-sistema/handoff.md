@@ -63,7 +63,7 @@ Memoria: regras de produto preservadas; nenhum conhecimento novo de produto
 aprovado neste pacote. Projecao final pertence a C0; no-op por enquanto.
 
 
-## Pacote 2 em preparo — consumidor de anexos do Chat
+## Pacote 2 — consumidor de anexos do Chat local-green
 
 apps/superadmin → Conversas → conversa → anexar/abrir arquivo → `chat.attach`.
 Sem mudar o comando de texto v2, o repositorio implementa o contrato opcional
@@ -123,3 +123,27 @@ conclui que as quatro abas estao certificadas sem prova da rota normal.
 
 Checkpoint documental11:27: codigo do pacote2 permanece WIP local; somente
 JSON e este handoff estao no commit de checkpoint. Nao integrar como feature.
+
+
+### Verificacao do pacote 2 (apos checkpoint documental)
+
+Em12/09, slotG4 concedido pelo C0 as11:28 e devolvido imediatamente apos terminar:
+
+- `flutter test --no-pub --concurrency=1` nos quatro arquivos listados no
+  log `chat-client-flutter-test.log`: **56 PASS / 0 FAIL / 0 SKIP**, exit0.
+  Sao11casos novos e45regressoes existentes, sem somar reruns.
+- Inclui prepare/PUT/finalize, falhaPUT, replaypronto/naopronto, limiteimagem,
+  leitura binding, purge pendente, dialogoretry, contexto substituido,
+ 375px/texto200% e fluxo pagina que envia uma vez/rele/preserva rascunho.
+- Analise final: `dart analyze lib/features/chat` e os mesmos quatro testes:
+  **No issues found**, exit0. O warning do callback FilePicker foi resolvido.
+- `git diff --check`: exit0. Nenhuma dependencia/lock alterada.
+- Testes sao locais com gateways/repositorios simulados; nao houve envio de
+  dados reais por estes testes. PDF tem abertura explicita implementada,
+  mas nao foi exercitado no navegador. Sem aceite visual ou E2E novo.
+
+O codigo antes WIP agora acompanha este pacote publicavel. Proposta de delta
+somente FE `chat.attach`: blocked-environment → local-green; backend e E2E
+mantidos. Aplicacao pelo escritor central C0, apos sua revisao. Primeiro gate
+atual: integrar e provar arquivo real na rota normal, reautorizacao/reload e
+negativa de escopo, com a divergencia spec028 conciliada pelo C0.

@@ -1,6 +1,6 @@
 {
-  "revision": 51,
-  "updated_at": "2026-09-12T11:25:58.735798-03:00",
+  "revision": 52,
+  "updated_at": "2026-09-12T11:30:53.153034-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "aeac6bd60426102327337f631e3f195427b1b8fc",
-  "status": "EXECUTANDO: Momentos v10 e Chat v4 implantados por C0; cliente chat.attach WIP local aguardando Flutter; E2E aberto",
+  "head": "8d1003e3aabc435f3308922d0db3b4493feadcd6",
+  "status": "EXECUTANDO: cliente chat.attach local-green56PASS/analyze limpo; PNG/UI e demais gates dependem runtime; pacote preparado para C0",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -359,7 +359,8 @@
       "moments-media: teste HTTP reproduziu falta de x-client-info; uma linha corrigida; 27 Deno PASS / 0 FAIL",
       "1d09cb3c8 commit/push; C0 integrou e implantou moments-media v10 ACTIVE",
       "C0 integrou G5 e implantou chat-media v4 ACTIVE",
-      "pub get sem upgrade; consumidor Chat implementado localmente, testes ainda nao executados"
+      "pub get sem upgrade; consumidor Chat implementado localmente, testes ainda nao executados",
+      "Consumidor Chat com56PASS/0FAIL/0SKIP (11novos+45regressoes) e analise final zero issues; slot devolvidoC0"
     ],
     "pendente": [
       "provas reais de midia",
@@ -374,17 +375,19 @@
     "testes": {
       "moments-media": "27 PASS / 0 FAIL; antes 0 PASS / 1 FAIL em cors_test por x-client-info",
       "e2e": "nao executado",
-      "chat": "Flutter nao executado:11 novos casos escritos, mais regressoes existentes. Analyze anterior zero issues; ultimo encontrou1warning no fakeFilePicker, corrigido, ainda sem rerun. CodigoWIP local nao integra este checkpoint documental."
+      "chat": "56PASS/0FAIL/0SKIP em4arquivos; log commitado neste pacote; analyze final zero issues/exit0. Sem RED preimplementacao por slot. NenhumE2E."
     },
     "recursos": {
       "chrome": "aguarda C0/G0",
-      "flutter_test": "solicitado; fila C0 G2/G1/G4/G6; nenhum flutter test iniciado G4",
+      "flutter_test": "LIBERADO apos56PASS; nenhum processoG4 ativo",
       "deno": "local disponivel; nao consome slot Flutter"
     },
     "commits_publicados": [
-      "1d09cb3c8"
+      "1d09cb3c8",
+      "8d1003e3a"
     ],
     "h09": "G5 candidato76aed97cb cron5min/sweep500 sem apagar midia; pgTAP/aplicacao e medicao cron.job por C0 pendentes",
-    "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido."
+    "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
+    "delta_proposto": "deltas-chat-client.json: FEchat.attach local-green; aplicacaoC0; BE/E2E preservados"
   }
 }
