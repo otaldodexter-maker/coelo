@@ -61,10 +61,6 @@ void main() {
           ..sort();
 
     expect(candidates, <String>[
-      // Pendencia registrada na R07 (frente Estrutura): Criar modelo de
-      // atividade (_ActivityTemplateCreatePage) usa Wrap de botoes em vez do
-      // rodape canonico; ao migrar, remover esta linha.
-      'lib/features/activities/presentation/activity_directory_page.dart',
       'lib/features/daily_routine/daily_routine_pages.dart',
       // Classe de dados (FormsAuthoringInstitutionPage), nao e tela.
       'lib/features/forms/data/forms_authoring_api.dart',

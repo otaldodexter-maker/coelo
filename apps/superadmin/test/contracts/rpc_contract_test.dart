@@ -103,15 +103,10 @@ void main() {
 
 /// Nomes chamados pelo cliente que nenhuma migration do pacote cria.
 ///
-/// Medido em 2026-09-10 sobre fa4b968a3. Relatorio:
+/// Ausências de 2026-09-10 reconciliadas em 2026-09-12: as cinco RPCs
+/// de Unidades já pertencem ao pacote versionado. Relatório histórico:
 /// docs/reviews/etapa-2-operacao/reports/E2-noturna-contrato-rpc-20260910.md
-const _rpcsAusentesConhecidas = <String, String>{
-  'create_unit_for_superadmin': 'Unidades: criacao. Nenhuma migration cria a funcao.',
-  'update_unit_for_superadmin': 'Unidades: atualizacao. Nenhuma migration cria a funcao.',
-  'get_unit_form_for_superadmin': 'Unidades: formulario. Nenhuma migration cria a funcao.',
-  'list_units_for_superadmin': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
-  'unit_directory_filter_options': 'Unidades e filtros de Turmas. Nenhuma migration cria a funcao.',
-};
+const _rpcsAusentesConhecidas = <String, String>{};
 
 /// Relacoes lidas direto pelo cliente que nenhuma migration do pacote cria.
 ///
