@@ -417,10 +417,11 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         TextButton(
           onPressed: () async {
             await Clipboard.setData(ClipboardData(text: link.toString()));
-            if (context.mounted)
+            if (context.mounted) {
               ScaffoldMessenger.of(
                 context,
               ).showSnackBar(const SnackBar(content: Text('Link seguro copiado.')));
+            }
           },
           child: const Text('Copiar link'),
         ),
