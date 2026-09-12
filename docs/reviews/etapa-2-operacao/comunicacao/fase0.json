@@ -1,15 +1,15 @@
 {
   "grupo": "suites",
-  "revision": 23,
+  "revision": 24,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:17:14-03:00",
+  "updatedAt": "2026-09-12T13:18:21-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "a837bfed34df98bfeefbcf9dd587c3298d06d6b0",
+  "head": "2b0fbfc79cbce551e2f56b45942acf8814ae7dcb",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -70,7 +70,8 @@
     "R08 G8: mantido o único JSON autorizado, grupo suites, revisão monotônica e recorte exclusivo Superadmin.",
     "R08 G8: nenhuma expectativa textual foi alterada sem fonte; não houve alteração funcional, golden, imagem ou configuração global.",
     "R08 G8: auditoria G4 corrigiu a proveniência do smoke de Momentos como API real em produção (20 PASS/1 FAIL, retirada 403) e separou a união autoral Principal de 101 casos em cinco arquivos da integração C0 de 79 casos em três arquivos, sem promover a UI/E2E.",
-    "R08 G8: G1 mantém 45 PNGs A somente em manifest, sem comparação/regravação; 22/22 PASS é teste FE focal, não E2E. P51 mantém 8/0 local como prova focal, enquanto o gate real após configuração/correção segue não executado no ciclo 120."
+    "R08 G8: fonte nova G1, handoff commit 5b79c1150 às 13:10:59, registra os 45 PNGs A comparados/regravados/verificados por três testes proprietários: 20/20 PASS; o commit nominal dos 45 PNGs é 41d3c518a. Isso é prova visual focal, não E2E.",
+    "R08 G8: P51 pós-allowlist do C0 é WIP ainda não integrado em origin/dev: p51-link-pos-allowlist.json às 13:15:35 registra 7 booleanos true e p51-auth-allowlist.json às 13:17:25; preservar como evidência temporal posterior, sem reclassificar o ciclo 120 nem promover E2E."
   ],
   "pendente": [],
   "commitsPublicados": [
@@ -87,7 +88,8 @@
     "1aff0ad0b",
     "(rev 15)",
     "3fdf20531 (rev 22)",
-    "a837bfed3 (rev 23)"
+    "a837bfed3 (rev 23)",
+    "2b0fbfc79 (rev 24)"
   ],
   "foraDoRecorteRegistrado": [
     {
