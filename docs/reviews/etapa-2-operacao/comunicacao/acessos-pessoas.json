@@ -2164,5 +2164,59 @@
         "backend_por_escrever": "Nenhum."
       }
     }
+  },
+  "R07_PRIMEIRA_REVISAO": {
+    "revision": 147,
+    "round": "E2-R07-20260911",
+    "recorded_at": "2026-09-11T23:20:10-03:00",
+    "group": "acessos-pessoas",
+    "model": "Codex Luna medio",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-acessos-pessoas",
+    "branch": "work/etapa2-r07-acessos-pessoas",
+    "base": "origin/dev após git fetch; worktree criada",
+    "T0": "2026-09-11T23:20:10-03:00",
+    "corte_execucao": "2026-09-12T03:20:10-03:00",
+    "revisao_10_minutos": "2026-09-12T03:20:10-03:00 a 03:30:10-03:00",
+    "status": "aberta; ciclo R07 iniciado",
+    "recorte": {
+      "app": "apps/superadmin",
+      "menu": "Coelo (Principal)",
+      "familias": ["people", "access_profiles", "access_models", "internal_users", "invites"],
+      "ordem": [
+        "people.create",
+        "people.edit",
+        "people.handle",
+        "students.handle",
+        "internal-users.handle",
+        "access-profiles.edit/assign/delete",
+        "access-models.edit/duplicate",
+        "internal-users.edit/suspend",
+        "internal-users.create se houver deploy",
+        "invites.resend se houver fixture expirada simples"
+      ],
+      "fora_do_escopo": ["dev", "inventario", "rastreadores", "deploy sem autorização nominal do coordenador"]
+    },
+    "pendencias_abertura": [
+      {
+        "action_ids": ["internal-users.create"],
+        "estado": "FE/BE local-green; E2E retido",
+        "primeiro_gate": "coordenacao.json.edgeFunctionsR06 registra que internal-user-create ainda não foi deployada; somente o coordenador executa o deploy"
+      },
+      {
+        "action_ids": ["invites.resend"],
+        "estado": "backend pronto; prova de rota pendente",
+        "primeiro_gate": "não há convite expirado sintético disponível; criar pacote simples só se for seguro e houver pgTAP verde"
+      },
+      {
+        "action_ids": ["internal-users.suspend"],
+        "estado": "prova pendente",
+        "primeiro_gate": "usar interno sobressalente; não suspender os usuários qa das frentes"
+      }
+    ],
+    "feito": [],
+    "pendente": "iniciar prova pela rota real com qa-r06-acessos; preservar gates independentes",
+    "commits_publicados": [],
+    "deltas": "docs/reviews/evidence/etapa-2/r07-acessos-pessoas/deltas-r07.json será criado somente com evidência publicada",
+    "segredos": "credencial será lida apenas do arquivo de backup e não será registrada"
   }
 }
