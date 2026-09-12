@@ -313,7 +313,7 @@
       {"action_id": "plans.* / catalog.*", "first_gate": "prova pela rota real"},
       {"action_id": "audit.export / imports.* / profile_files.*", "first_gate": "botao honesto e indisponibilidade conferidos"}
     ],
-    "published_commits": [],
+    "published_commits": ["e2d10ce3978d92c572a52f9e1117f2f55e1dbc55"] ,
     "deltas": "docs/reviews/evidence/etapa-2/r07-operacoes/deltas-r07-ops.json (a criar)",
     "packages": [],
     "synthetic_data": "nenhum novo",
