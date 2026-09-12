@@ -1,12 +1,12 @@
 {
-  "revision": 90,
-  "round": "E2-R08-20260912",
-  "role": "C0 Coordenacao R08 encerrada",
+  "revision": 91,
+  "round": "E2-R09-20260912",
+  "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
-  "model": "GPT-6 Astra medio",
+  "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:53:40.679770-03:00",
+  "updatedAt": "2026-09-12T15:20:28.253637-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -251,7 +251,8 @@
     "59": "22:55 pausa segura a pedido do Owner; estado e pendencias do fechamento registrados",
     "60": "23:20 FECHAMENTO da R06: worktrees removidas, md/skills/ADR/conhecimento atualizados, R06-fechamento e perguntas, prompts da R07 (Codex)",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina.",
-    "64": "2026-09-12T10:52:16.727826-03:00 posse R08, nove frentes, slots e corte; sem novo aceite"
+    "64": "2026-09-12T10:52:16.727826-03:00 posse R08, nove frentes, slots e corte; sem novo aceite",
+    "91": "2026-09-12T15:20:28.253637-03:00 abertura nominal R09 C0; posse e fila G0-G8; consumo49; worktrees preservadas"
   },
   "fechamentoR03": {
     "quando": "2026-09-10T20:30-03:00 (relogio da maquina)",
@@ -3662,5 +3663,199 @@
       "exit": 0
     },
     "fullCensus": "nao executado; proxima janela autorizada R09"
+  },
+  "reasoningEffort": "medium",
+  "posseR09": {
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+    "branch": "work/etapa2-r09-coordenacao",
+    "baseAoAbrir": "f9f1bc0f13e8616e482f19e81a904a7d4b4ad099",
+    "T0": "2026-09-12T15:17:09-03:00",
+    "execucaoAte": "2026-09-12T19:17:09-03:00",
+    "fechamentoAte": "2026-09-12T19:47:09-03:00",
+    "threadId": "01a096d5-dfe4-7d42-aa97-62137c233882",
+    "status": "ativa",
+    "escopo": "apps/superadmin -> menu -> tela/subtela/estado -> action_id; CRUD real, persistencia, reload, RLS e hierarquia",
+    "fora": "outros apps, R10, senha, exportacoes gerais, endurecimento amplo",
+    "regraDeEscrita": "C0 exclusivo dev, inventario, tres rastreadores, fila SQL, composicao e deploy; executoras somente dominio e handoff proprio",
+    "evidencia": "rota normal, CRUD real, reload e negativa de tenant/hierarquia; FE/BE/E2E separados",
+    "estimativa": "janela maxima autorizada; delta inspecionado apos primeiro gate runtime; consumo pode antecipar",
+    "preservacao": "nove worktrees R08 limpas e zero commits fora de origin/dev; reutilizar por fast-forward, sem remover ignorados nem worktrees"
+  },
+  "frentesR09": {
+    "G0": {
+      "grupo": "ambiente-runtime",
+      "threadId": "01a095e0-ffff-7953-847d-6cc6a21433ed",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-ambiente-runtime",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "json": "ambiente-runtime.json",
+      "ackRevision": 36,
+      "primeiroGate": "login/leitura/reload pelo canal permitido",
+      "status": "vaga inicial",
+      "modelConfigured": false
+    },
+    "G1": {
+      "grupo": "estrutura",
+      "threadId": "01a095e1-62d3-7941-9b04-3e3a7ca7ebcf",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-estrutura",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "json": "estrutura.json",
+      "ackRevision": 98,
+      "primeiroGate": "groups.members/location ou institutions.status",
+      "status": "vaga inicial",
+      "modelConfigured": false
+    },
+    "G2": {
+      "grupo": "acessos-pessoas",
+      "threadId": "01a095e1-a8af-7c00-8902-508a572ff643",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-acessos-pessoas",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "json": "acessos-pessoas.json",
+      "ackRevision": 160,
+      "primeiroGate": "people.create/edit e H28 focal",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    },
+    "G3": {
+      "grupo": "formularios-cuidado-rotina",
+      "threadId": "01a095e2-5dc2-7ad3-ae37-4742481ea99f",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-formularios-cuidado-rotina",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "json": "formularios-cuidado-rotina.json",
+      "ackRevision": 84,
+      "primeiroGate": "attendance.mark/correct/finish",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    },
+    "G4": {
+      "grupo": "principal-chat-sistema",
+      "threadId": "01a095e2-b6da-7043-9327-d5f0070c6041",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-principal-chat-sistema",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "json": "principal-chat-sistema.json",
+      "ackRevision": 73,
+      "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    },
+    "G5": {
+      "grupo": "realm-interno",
+      "threadId": "01a095e3-4532-75e3-a851-6873668a8814",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-realm-interno",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "json": "realm-interno.json",
+      "ackRevision": 77,
+      "primeiroGate": "negativas reais e hierarquia G1/G2/G3/G4/G6/G7; BE pelos gates proprios",
+      "status": "vaga inicial",
+      "modelConfigured": false
+    },
+    "G6": {
+      "grupo": "publicacoes-agenda",
+      "threadId": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-publicacoes-agenda",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "json": "publicacoes-agenda.json",
+      "ackRevision": 90,
+      "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    },
+    "G7": {
+      "grupo": "operacoes",
+      "threadId": "01a095e3-e5ef-7c63-9db0-49f8df71e081",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-operacoes",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "json": "operacoes.json",
+      "ackRevision": 81,
+      "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    },
+    "G8": {
+      "grupo": "suites",
+      "threadId": "01a095e4-57b7-7213-b151-8020b26521f3",
+      "model": "gpt-6-astra",
+      "reasoningEffort": "medium",
+      "branch": "work/etapa2-r08-suites",
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "json": "fase0.json",
+      "ackRevision": 53,
+      "primeiroGate": "testes focais na base integrada",
+      "status": "fila sem polling",
+      "modelConfigured": false
+    }
+  },
+  "slotsR09": {
+    "chrome": {
+      "dono": "G0",
+      "pid": null,
+      "inicio": "2026-09-12T15:20:28.253637-03:00",
+      "expira": "2026-09-12T15:47:09-03:00",
+      "estado": "remedir runtime R08 antes de usar"
+    },
+    "flutterTest": {
+      "dono": "nenhum",
+      "estado": "livre mediante medicao G0"
+    },
+    "sqlEspelho": {
+      "dono": "G0",
+      "estado": "remedir baseline; proximo lote60"
+    },
+    "e2eLiberado": false,
+    "sqlLiberado": false,
+    "ativas": [
+      "G0",
+      "G5",
+      "G1"
+    ],
+    "fila": [
+      "G2",
+      "G3",
+      "G4",
+      "G6",
+      "G7",
+      "G8"
+    ]
+  },
+  "consumoR09": {
+    "inicialUsedPercent": 49,
+    "amostras": [
+      {
+        "at": "2026-09-12T15:17:09-03:00",
+        "usedPercent": 49
+      }
+    ],
+    "bucket": "codex semanal compartilhado",
+    "reduzirEm": 70,
+    "fecharEm": 75,
+    "metaEncerrarAte": 85,
+    "regra": "primeiro corte tempo/consumo; maior taxa das ultimas duas amostras; sem reset/reserva"
+  },
+  "ownershipR09": {
+    "test/app/router/structure_detail_golden_test.dart": "G1",
+    "test/app/router/person_detail_golden_test.dart": "G2",
+    "superadmin_form_frame.dart": "G3",
+    "internal-user-create": "G2 autor / C0 deploy",
+    "form-media": "G3 autor / C0 deploy",
+    "chat-media": "G5 autor / C0 deploy",
+    "circular-media": "G6 autor / C0 deploy",
+    "happens-media/now-media/moments-media": "G4 autor / C0 deploy",
+    "test/app/router/catalog_routes_test.dart": "G7",
+    "publication_surface.dart": "G3 parametro opcional cabecalho compacto default1; Chamada0.75"
   }
 }
