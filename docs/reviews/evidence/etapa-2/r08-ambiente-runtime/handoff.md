@@ -556,3 +556,15 @@ PID 7476 no mesmo bind `127.0.0.1:3014`. `/login` retornou 200/1020 bytes e
 recarregada; nenhum segundo navegador foi criado. Isso prova a disponibilidade
 do artefato final, mas não promove login/leitura/reload a UI/E2E. Metadados:
 [build QA lote 59](./build-qa-lote59-metadata.txt).
+
+## Recibo de entrega revisado ao Coordenador
+
+Em 12/09/2026 às 14:47 BRT, a entrega foi revisada no remoto da branch
+`work/etapa2-r08-ambiente-runtime`. O commit publicado é
+`068021440243dc4e2eb7ab98debe5fe119a4d7ac`; ele contém este handoff, o canal
+`ambiente-runtime.json` na revisão 35 e o metadado do build final. O canal agora
+aponta explicitamente para esse mesmo SHA em `git.head` e `publishedSha`.
+
+O recibo foi enviado diretamente ao task C0 `01a095e0-3c9f-7601-b736-7935c11fffcb`
+com o SHA, o caminho do handoff, o estado dos gates e a pendência UI/E2E. A
+confirmação final usa apenas arquivos commitados e não contém credenciais.
