@@ -319,3 +319,43 @@ tela em `coelo-ui/references/approved-superadmin-visual-baselines.md`, seção
 - Regra geral reafirmada: cancelar/excluir fica à esquerda e salvar/continuar
   à direita em todo rodapé de formulário; nenhum fundo cinza fora dos tokens
   do Design System.
+
+## Regras da Rodada 6 (11/09/2026, noite)
+
+- **Rota real pelo Flutter Driver web + CDP:** o build de
+  `test_driver/qa_main.dart` expõe `window.$flutterDriver(json)`; mandar
+  `set_frame_sync` com `enabled` falso logo após abrir a página; `enter_text`
+  vai para o campo focado (dar `tap` no campo e esperar ~1 s); botões
+  preenchidos e o Aplicar do `CoeloDateRangePicker` só respondem a clique CDP
+  com `mouseMoved` ~300 ms antes e press de ~250 ms (a "falha do seletor de
+  data" da R05 era do harness); `tap` por `ByText` em rótulo trava o driver:
+  clicar por coordenada. Um Chrome por conversa com `--user-data-dir`
+  próprio; servidor estático como tarefa em segundo plano (processo com `&`
+  morre com a chamada).
+- **Família Publicação vive uma vez** em
+  `apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart`
+  (`PublicationSurface`, `PublicationLabel`, `PublicationTextField`,
+  `PublicationCard`, `PublicationRow`, `PublicationChip`,
+  `PublicationToggle`) e nos `Principal*Publication*` de `principal_shared`;
+  Circular, Evento, Acontece, Agora e Momentos já usam; Lançar chamada ainda
+  não (pendência da G3). Golden novo compara com
+  `evidence/etapa-2/referencias/publicacao/aprovadas-20260911/`.
+- **Regra do @ no cliente (Decisão 16):** Unidades, Turmas e Atividades usam
+  `StructureHandleSetter` sobre `superadmin_structure_handle_set_v1`;
+  mensagens de `SAI_HANDLE_COOLDOWN`/`TAKEN`/`INVALID_ARGUMENT`/
+  `CONCURRENT_CHANGE` em `StructureHandleChange.message`; Pessoas, Alunos e
+  Usuários internos reutilizam `PersonHandleSection` (usuário interno pela
+  pessoa de serviço, RPC `superadmin_internal_user_service_person_v1`).
+- **Sentinela novo × edição nunca é `expectedVersion == 0`:** produção
+  devolve `management_version 0` para agregados recém-criados; o id vazio
+  decide criação (Rotina duplicava com 23505).
+- **Capacidade composta que não chega ao host é gate silencioso:** conferir
+  que o router passa o repositório ao host (caso `SupabaseCircularMediaRepository`).
+- **Decisão 7 por rota:** shells de módulo ganham `showChatLauncher`; criar e
+  editar passam falso.
+- **Estado vazio e V-15:** card Criar em todas as abas de diretório com abas
+  por tipo, em cards e tabela, mesmo com dados; tipo derivado abre seletor de
+  origem; tabela repete as ações do card como ícones com tooltip.
+- **Cardápios (P47):** o cliente não injeta tenant; o servidor valida
+  (`scopeRules` como objeto, lote 55).
+- Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`.

@@ -720,3 +720,68 @@ preflight local e produção; não autoriza editar migrations já aplicadas.
 Supabase verde sem R2/Stream aplicável não é `done`; R2 verde sem RLS,
 autorização e metadados também não é. No encerramento, diferenciar atividade
 concluída, unidade Backend `done` e produto ainda pendente.
+
+## Regras da Rodada 6 (11/09/2026, noite)
+
+- **Usuários sintéticos por grupo (ADR 0034 Decisão 17/19):** além de
+  `qa-r03`, existem `qa-r06-estrutura`, `qa-r06-acessos`,
+  `qa-r06-formularios`, `qa-r06-principal`, `qa-r06-realm`,
+  `qa-r06-publicacoes` e `qa-r06-operacoes` (`@coelo.me`), criados pela API de
+  administração do Auth e semeados pelo lote 49
+  (`20260911230100_qa_r06_group_users_seed_v1`: identidade interna, Owner de
+  plataforma, perfil, ponte de ator, membership owner nas `qa-r04-*`).
+  Credencial só em `C:/Users/adrie/Documents/Coelo-backups/qa-r06-<grupo>.env`
+  (`QA_EMAIL`/`QA_PASSWORD`); cada frente, Claude ou Codex, usa só o seu, e
+  "Sair" de uma não derruba as outras. Roteiro de criação: script local que
+  lê a chave `service_role` pelo CLI (`supabase projects api-keys`), chama
+  `POST /auth/v1/admin/users` com `email_confirm`, gera senha aleatória e
+  grava só o `.env`; nunca `insert` em `auth.users`. A semente SQL é
+  idempotente por e-mail e, no espelho sem auth users, é no-op.
+- **Identidade interna escopada nunca herda capacidade de plataforma** (lotes
+  50 e 52, `20260912210000` + `210100`): `has_platform_permission(text)` com
+  um argumento devolve `false` para membership espelhada com escopo de
+  instituição; só `has_platform_permission(text, uuid)` com a instituição
+  certa concede. O sincronizador "Superadmin vê tudo" (130000) é escopado
+  pela fonte única `app_private.superadmin_internal_actor_scope_targets()`
+  (plataforma → todas as instituições, inclusive em rascunho; instituição →
+  só a própria). Pacote que mude o papel concedido pelo sync (P48, lote 55)
+  altera só o papel, nunca a fonte do escopo. Lição do lote 50: o filtro
+  "só instituições ativas" desativou as memberships de `qa-r04-escola`
+  (rascunho) e exigiu hotfix; escopo não filtra por status.
+- **Pacote marcado "pronto" não muda de conteúdo:** se a frente corrigir o
+  arquivo depois de marcá-lo pronto, nasce um pacote novo (hotfix) com
+  carimbo próprio; o coordenador aplica o que leu na revisão do ACK.
+- **Pacote que toca função de outra frente nasce sobre o corpo mais novo em
+  produção** e roda a suíte da outra frente no preflight (o 130400 da G4 foi
+  retido por derrubar `internal_actor_scope_root_v1_test` e reescrito).
+- **Ambiguidade variável × coluna em plpgsql:** `superadmin_assessment_configuration_read`
+  (180350) e `form_save_draft` (230004) respondiam 42702 em produção. Regra:
+  função com `search_path=''` nunca declara variável homônima de coluna usada
+  em `select … into` ou em predicados; usar `#variable_conflict use_variable`
+  ou prefixar (`next_…`) e aliasar a tabela.
+- **Conta:** `superadmin_account_sessions_list_v1` lista só as sessões do
+  próprio `auth.uid()`; revogar as outras é `signOut(scope: others)` do GoTrue
+  (auditado em `auth.audit_log_entries`), sem Edge Function nem
+  `service_role` (P43, lote 50).
+- **Usuário interno novo** (170800, lote 55): `superadmin_internal_user_create_authorize_v1`
+  (operador) + `superadmin_internal_user_create_for_worker_v1` (`service_role`)
+  com a Edge Function `internal-user-create` fazendo `auth.admin.createUser`.
+  A função ainda **não tem deploy** (bloqueado na sessão do coordenador da
+  R06): `[functions.internal-user-create] verify_jwt = false` no
+  `config.toml` (OPTIONS sem JWT; o POST reautoriza pelo RPC) e
+  `supabase functions deploy internal-user-create --project-ref evvbomzejfijozbtgvpt --workdir packages/coelo_database`.
+  O e-mail de definição de senha depende de SMTP próprio (P51): o SMTP padrão
+  do Supabase só entrega a membros do time.
+- **CORS do R2:** os três buckets aceitam `https://{superadmin,admin,app}.coelo.me`
+  e `localhost`/`127.0.0.1` nas portas 3000, 3009, 3010, 3014, 3016, 3018 e
+  3020 (regra `coelo-apps-signed-put-get`, reescrita pelo MCP da Cloudflare
+  em 11/09 21:35). Frente que precisar de outra porta usa uma da lista.
+- **Regressão comparada:** para pacote transversal, rodar todas as suítes,
+  reverter as funções tocadas no mesmo descartável, reexecutar só as
+  vermelhas e exigir resultado idêntico (padrão de
+  `evidence/etapa-2/r06-realm-interno/regressao-pgtap-2026-09-11.md`).
+- **180060 fechado sem decisão de produto:** `has_activity_capability` exigir
+  `instructor` não muda comportamento (a tabela de turma só recebe
+  `instructor`; admins vivem em `activity_admin_assignments`).
+- Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`
+  e em `acessos-pessoas.json` → `PROPOSTA_DE_ATUALIZACAO_DAS_SKILLS_R06`.

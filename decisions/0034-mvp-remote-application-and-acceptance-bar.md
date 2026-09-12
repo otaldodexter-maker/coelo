@@ -499,3 +499,37 @@ para a Rodada 6, não executadas pela coordenação da R05. Texto integral em
   cortado; o Git é o recibo.
 - As três skills de revisão e os três rastreadores permanecem como direção e
   registro do que falta.
+
+
+## Decisão 19 — Rodada 6: usuários sintéticos por grupo, cota curta e escopo da ponte de ator (11/09/2026, noite)
+
+- **Usuários sintéticos por grupo, em vigor:** `qa-r06-<grupo>@coelo.me` (7)
+  criados pela API de administração do Auth e semeados pelo lote 49 com
+  identidade interna, Owner de plataforma, perfil, ponte de ator e membership
+  owner nas instituições sintéticas `qa-r04-*`; credencial só em
+  `Coelo-backups/qa-r06-<grupo>.env`. Valem para Claude e Codex (P37) e ficam
+  até o fim da Etapa 2 (P42). Cada frente usa só o seu.
+- **Regra de rodada com cota curta (ordem do Owner, 19:40):** corte rígido
+  (2 h de frentes + 30 min de fechamento); a cada 30 minutos as frentes
+  registram feito/pendente/commits e o coordenador integra, aplica deltas e
+  atualiza md e percentual no mesmo ciclo; demandas ajustadas ao que cabe,
+  sem perder nada feito ou pendente; Owner ausente não bloqueia (segue sem
+  aprovação; dúvidas vão para a lista de perguntas).
+- **Escopo da ponte de ator (segurança, lotes 50, 52 e 55):** identidade
+  interna escopada em instituição nunca herda capacidade de plataforma; o
+  sincronizador do Principal concede por papel interno (owner →
+  `institution_admin`, operations → `institution_reader`, demais sem vínculo;
+  P48 = A) sobre a fonte única de escopo, sem filtrar por status da
+  instituição.
+- **Respostas executadas nesta rodada:** P43 (sessões da Conta por RPC +
+  GoTrue), P44 (Catálogo), P45 (modelo de sistema excluível conforme
+  hierarquia), P46 (@ do usuário interno pela pessoa de serviço), P47
+  (Cardápios sem fail-closed de tenant), P48, P49 (abas no Suporte), V-2, V-8,
+  V-11, V-15, V-16, IMP-R05-2; parciais: V-1, V-3, publicadores da família
+  Publicação (telas prontas, prova de mídia pendente), Lançar chamada (não
+  iniciado), P50 (tela de resposta à circular: pendente).
+- **Aberto ao Owner (R06-perguntas):** P51 SMTP próprio para e-mail de
+  definição de senha do usuário interno; deploy de `internal-user-create`
+  (bloqueado na sessão do coordenador); decisão do launcher "Mensagens" para
+  regravar os 9 goldens de Atividades; lista de arrobas reservados (fim do
+  MVP).

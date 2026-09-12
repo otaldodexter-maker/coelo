@@ -294,3 +294,22 @@ correção local verificada. Não confundir isso com integração ou publicaçã
   regra alvo com notificações à hierarquia e políticas por unidade (P32).
 - Grupos do chat com qualquer perfil e responsáveis (P24). Usuário de teste
   compartilhado com o Codex (P37).
+
+## Regras da Rodada 6 (11/09/2026, noite)
+
+- **Usuário sintético por frente:** a prova E2E cita qual `qa-r06-<grupo>`
+  abriu a sessão; Codex e Claude usam os mesmos arquivos `.env`.
+- **Tela reconstruída zera o E2E:** quando a frente rebaixa o FE para
+  `local-green` por reconstrução (família Publicação), o `verified-e2e`
+  anterior volta a `pending-verification` até a prova nova na rota real
+  (caso `acontece.create`). `verified-e2e` continua exigindo FE `verified` e
+  BE `done`; BE `local-green` com CRUD real provado pela tela sobe a `done`
+  no mesmo delta (caso `meal-plans.model-create/edit`).
+- **Certificação aponta para arquivo publicado na branch:** o validador
+  falha em caminho ausente; captura citada e não commitada invalida o delta.
+- Tela que servir usuário interno escopado em instituição nas famílias
+  people-based recebe 42501 até o backend decidir por contexto; registrar
+  como `fail-closed`, não como defeito da tela.
+- Sino do shell: `context_notification_recipients` + `context_notification_events`
+  bastam para leitura e marcação sem RPC nova (pendência de UI).
+- Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`.

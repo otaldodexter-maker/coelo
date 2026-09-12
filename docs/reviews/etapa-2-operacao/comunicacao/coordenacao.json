@@ -1,12 +1,12 @@
 {
- "revision": 59,
+ "revision": 60,
  "round": "E2-R06-20260911",
  "role": "Coordenacao R06 - Claude Opus 5 esforco medio (C0)",
  "writer": "coordenador-claude",
  "app": "Claude Code (VS Code)",
  "model": "claude-opus-5",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T22:55:00-03:00",
+ "updatedAt": "2026-09-11T23:20:00-03:00",
  "relogio": "relogio da maquina; posse as 19:36 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -249,6 +249,7 @@
   "57": "21:36 lote 54 (4 pacotes) em producao; deltas de todas as frentes aplicados (FE 162 / BE 146 / E2E 131); CORS do R2 alinhado; pedido de revisao final",
   "58": "21:42 lote 55 (3 pacotes) em producao; fila vazia; deploy de internal-user-create bloqueado (pendencia); revisoes finais recebidas; inicio do fechamento",
   "59": "22:55 pausa segura a pedido do Owner; estado e pendencias do fechamento registrados",
+  "60": "23:20 FECHAMENTO da R06: worktrees removidas, md/skills/ADR/conhecimento atualizados, R06-fechamento e perguntas, prompts da R07 (Codex)",
   "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
  },
  "fechamentoR03": {
@@ -2041,5 +2042,43 @@
    "remocao das worktrees e2-r06-* das frentes depois de conferir status limpo (branches preservadas)",
    "percentual final ao Owner no formato fixo"
   ]
+ },
+ "fechamentoR06": {
+  "quando": "2026-09-11T23:20:00-03:00",
+  "janela": "T0 19:36; usuarios prontos 19:56; frentes ate 21:36; revisao final ate 21:46; pausa segura 22:53; consolidacao ate 23:20",
+  "frentes": {
+   "estrutura": "rev 63; worktree removida",
+   "acessos-pessoas": "rev 146; worktree removida",
+   "formularios-cuidado-rotina": "rev 55; worktree removida",
+   "principal-chat-sistema": "rev 39; worktree removida",
+   "realm-interno": "rev 48; worktree removida",
+   "publicacoes-agenda": "rev 51; worktree removida",
+   "operacoes": "rev 51; worktree removida"
+  },
+  "producao": "7 lotes (49-55), 14 pacotes; candidatos vazio; internal-user-create sem deploy (P52); CORS R2 alinhado",
+  "integracao": "sete branches integradas ate as revisoes finais; 0 commits fora de dev; status limpo; sem WIP; e2-r05-coordenacao e e2-r06-coordenacao ficam",
+  "rastreadores": "validate-trackers PASS; bloco Estado vigente — Rodada 6 nos tres md",
+  "skills": "coelo-backend, coelo-frontend e coelo-frontend-backend com a secao \"Regras da Rodada 6\"",
+  "adr": "ADR 0034 Decisao 19",
+  "conhecimento": "supabase-production-environment.md atualizado; validate PASS (64)",
+  "percentuais": {
+   "feVerified": "164/231 (71,00%)",
+   "feLocalGreen": "17/67 (25,37%)",
+   "feAprovacaoVisualDoOwner": "53/231 (22,94%)",
+   "beLocalGreen": "31/75 (41,33%)",
+   "beSqlEmProducao": "180/224 (80,36%)",
+   "beDone": "149/224 (66,52%)",
+   "e2eVerified": "134/199 (67,34%)",
+   "base": "inventario validado 23:10 de 11/09 sobre a base integrada"
+  },
+  "perguntasAoOwner": "R06-perguntas-ao-owner-20260911.md (P51-P54, arrobas reservados)",
+  "proximaRodada": "R07 no Codex (Luna medio), 4 h + 30 min, prompts em next-round/R07-prompts.md"
+ },
+ "rodada7": {
+  "id": "E2-R07-<AAAAMMDD>",
+  "prompts": "docs/reviews/etapa-2-operacao/next-round/R07-prompts.md",
+  "modelo": "Codex Luna medio em todas as conversas",
+  "janela": "T0 = prompt C0; frentes T0+10 a T0+4h; revisao ate T0+4h10; fechamento ate T0+4h30; cobranca e integracao a cada 30 min",
+  "usuarios": "qa-r06-<grupo>.env (os mesmos da R06)"
  }
 }

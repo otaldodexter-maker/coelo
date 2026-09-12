@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-11T16:00:00-03:00"
+updated_at: "2026-09-11T23:10:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,13 +13,97 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-11T16:00:00-03:00"
-tracker_sync_revisions: "R05 fechada: estrutura r49; acessos-pessoas r128; formularios-cuidado-rotina r41; principal-chat-sistema r27; realm-interno r34; publicacoes-agenda r41; operacoes r33; coordenacao r48"
+tracker_sync_at: "2026-09-11T23:10:00-03:00"
+tracker_sync_revisions: "R06 fechada: estrutura r63; acessos-pessoas r146; formularios-cuidado-rotina r55; principal-chat-sistema r39; realm-interno r48; publicacoes-agenda r51; operacoes r51; coordenacao r60"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
-## Estado vigente — Rodada 5 (E2-R05-20260911) consolidada às 16:00 de 11/09
+## Estado vigente — Rodada 6 (E2-R06-20260911) consolidada às 23:10 de 11/09
+
+Coordenação (Claude Opus 5, esforço médio) abriu a R06 às 19:36 (T0) sobre
+`origin/dev` `ca60b096b`, liberou as frentes às 19:56 com os sete usuários
+sintéticos `qa-r06-<grupo>@coelo.me` (lote 49) e fechou em `dev` (SHA do
+push final em `coordenacao.json` rev 60). Frentes trabalharam até 21:36 e
+responderam à revisão de 10 minutos até 21:46. Estado por camada,
+denominadores homogêneos (inventário de 231 ações; 224 com backend aplicável;
+199 com E2E ativo no MVP), base: inventário validado (`validate-trackers.cjs`
+PASS) sobre a base conjunta; ambiente: repositório + produção medida nos lotes
+49 a 55. SQL aplicado em produção = `done` + `local-green` com pacote aplicado
+(na R06 todos os `local-green` têm o SQL em produção). Aprovação visual não é
+`verified`; SQL em produção não é `done`; nada se soma entre camadas.
+
+| Camada | R05 (16:00) | R06 (fechamento) |
+| --- | --- | --- |
+| Front-end `verified` | 138/231 (59,74%) | 164/231 (71,00%) |
+| Front-end `local-green` (das ações ainda não `verified`) | 23/93 (24,73%) | 17/67 (25,37%) |
+| Front-end aprovação visual do Owner | 53/231 (22,94%) | 53/231 (22,94%) |
+| Back-end `local-green` (das ações ainda não `done`) | 46/92 (50,00%) | 31/75 (41,33%) |
+| Back-end SQL aplicado em produção | 178/224 (79,46%) | 180/224 (80,36%) |
+| Back-end `done` | 132/224 (58,93%) | 149/224 (66,52%) |
+| E2E `verified-e2e` | 105/199 (52,76%) | 134/199 (67,34%) |
+
+**Produção em 11/09 (noite):** 7 lotes (49 a 55) e 14 pacotes aplicados pelo
+coordenador com dump prévio, preflight no espelho `coelo_baseline` e ledger:
+usuários sintéticos por grupo (49); raiz da ponte de ator com escopo — o
+sincronizador do Principal dava owner/institution_admin em todas as
+instituições a qualquer espelho interno e `has_platform_permission` passa a
+exigir instituição coincidente para identidade escopada (50) e seu hotfix
+(52: o lote 50 desativou 7 memberships em `qa-r04-escola`, em rascunho, e
+foram reativadas); @ de usuários internos pela pessoa de serviço (P46) e
+exclusão de modelo de sistema conforme hierarquia (P45); sessões da Conta por
+RPC própria com revogação pelo GoTrue (P43); `@` no `save_v2` e no payload de
+turmas, `configuration_read` sem conflito de variável e `detail_v2` com @
+(51, 54); e-mail da pessoa de serviço no perfil da Conta (53); resolvedor de
+identidade para `people.create` (54); `form_save_draft` sem 42702 em
+formulário publicado (54); P48 por papel interno reescrito sobre o escopo,
+`scopeRules` como objeto em Cardápios e criação de usuário interno via Auth
+Admin (55). `candidatos/` vazio. Edge Function `internal-user-create`
+escrita e conferida (`deno check`) mas **sem deploy** (comando bloqueado na
+sessão do coordenador; roteiro em `coordenacao.json` → `edgeFunctionsR06`).
+CORS dos três buckets R2 alinhado a localhost/127.0.0.1 nas portas das
+frentes. Ordem real em
+`packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt`.
+
+**O que fechou por frente (E2E = rota real + CRUD em produção + RLS + reload,
+com o usuário da frente):** Estrutura — @ em Unidades/Turmas/Atividades na
+rota real (Alterar @, trava de 30 dias honesta, disponibilidade enquanto
+digita), `units.list`, `groups.list`, `groups.create/edit`, `activities.create`.
+Acessos e Pessoas — Convites create/detail/revoke, Alunos list/link/transfer/
+edit/revoke, `internal-users.list`, `people.create` destravado (170700),
+`internal-users.create` FE+BE local-green (aguarda a Edge Function).
+Formulários, Cuidado e Rotina — Medicação create/detail/edit/evidence,
+`health-care.list`, Rotina (V-15: card Criar em toda aba, ações na tabela,
+Lançar hoje), golden de tabs de Cuidado corrigido, `forms.location-question/
+answer` desbloqueadas pelo lote 54. Principal, Chat e Sistema —
+`principal_real_route_test` corrigido, Cardápios P47 (model-create/model-edit
+E2E; create/edit/publish desbloqueados pelo 130500), publicadores de
+Acontece/Agora/Momentos reconstruídos na família Publicação (goldens novos;
+FE local-green até a prova de create/publish com mídia), V-1/V-2/V-3 parciais,
+`errors.404`. Realm interno — raiz da ponte de ator (lotes 50 e 52), 180060
+registrado como decisão de produto. Publicações e Agenda — Circular e Evento
+reconstruídos na família Publicação, toggle web da lista da Agenda (V-8),
+`circulars.attach` local-green. Operações — Importações no composto (teste),
+Sessões da Conta (P43), Suporte com abas de estado (P49), Planos activate/
+assign, Catálogo (P44), texto honesto "Disponível depois do MVP".
+
+**Ajustes do coordenador nos deltas:** `acontece.create` E2E voltou a
+`pending-verification` (tela reconstruída ainda sem prova de publicação);
+`meal-plans.model-create/model-edit` BE promovidos a `done` pela prova de CRUD
+real; certificações de Cardápios apontadas para a captura publicada.
+
+**Pendências registradas na R06 (detalhe por action_id nas matrizes e em
+`next-round/R06-fechamento.md`):** deploy de `internal-user-create` (+ P51
+SMTP para o e-mail de definição de senha); prova de mídia nos publicadores
+do Principal; `chat.create-group` UI e `chat.attach` cliente; Lançar chamada
+na família Publicação (G3 não chegou ao item 7); Avaliações e
+`activities.assessment` (gate removido pelo lote 54, prova pendente);
+`groups.members/location`; `invites.resend` (precisa de convite expirado);
+V-1 completo (avatar abre o Agora; contorno degradê); 9 goldens de
+Atividades pré-existentes (decisão do launcher Mensagens); 180060 como
+decisão de produto; suítes pré-existentes de `test/app` e `test/core/config`.
+
+## Estado anterior — Rodada 5 (E2-R05-20260911) consolidada às 16:00 de 11/09
 
 Coordenação (Claude Opus, `coelo-b5`/`coelo-25`) abriu a R05 às 12:03 sobre
 `origin/dev` `9bf60463b` e fechou em `dev` `a5b107150 (base integrada; SHA do push final em coordenacao.json rev 48)`. Estado por camada,

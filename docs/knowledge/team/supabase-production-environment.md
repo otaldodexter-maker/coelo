@@ -88,4 +88,22 @@ revisão profunda (corrigida na Agenda pelo lote 44); `DELETE`/`UPDATE` dentro
 de função sempre com `WHERE`, porque o `pg_safeupdate` do PostgREST bloqueia o
 que o pgTAP via psql deixa passar; uma única frente é dona de cada Edge
 Function; a sessão do `qa-r03` é única para todas as frentes e um Sair global
-derruba as demais, por isso a Rodada 6 terá um usuário sintético por grupo.
+derruba as demais, por isso a Rodada 6 passou a ter um usuário sintético por grupo.
+
+Fechamento da Rodada 6 (11/09/2026 à noite, ADR 0034 Decisão 19): mais 7
+lotes (49 a 55) e 14 pacotes. Existe agora um usuário sintético por frente
+(`qa-r06-estrutura`, `qa-r06-acessos`, `qa-r06-formularios`,
+`qa-r06-principal`, `qa-r06-realm`, `qa-r06-publicacoes`,
+`qa-r06-operacoes`, todos `@coelo.me`), criados pela API de administração
+do Auth e semeados por migration idempotente com identidade interna, Owner de
+plataforma, perfil, ponte de ator e membership owner nas instituições
+sintéticas; a credencial de cada um vive só em `Coelo-backups/qa-r06-<grupo>.env`
+e vale para Claude e Codex. Regra de segurança medida e corrigida: a
+identidade interna escopada em instituição nunca herda capacidade de
+plataforma, e o sincronizador que dá ao Superadmin visão no Principal
+concede por papel interno sobre uma fonte única de escopo, sem filtrar por
+status da instituição (o filtro por status desativou memberships de uma
+instituição em rascunho e exigiu hotfix no mesmo dia). Pacote marcado pronto
+não muda de conteúdo: correção posterior nasce como pacote novo. Sessões da
+Conta são listadas por RPC própria e revogadas pelo GoTrue (`scope=others`),
+sem função de borda nem chave de serviço.
