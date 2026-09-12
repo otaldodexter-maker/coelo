@@ -236,6 +236,8 @@ def main() -> int:
             definition = editor.get("definition") if isinstance(editor, dict) else None
             if editor_status != 200 or not isinstance(definition, dict):
                 raise FixtureFailure(f"resume_editor:{editor_status}:{error_code(editor)}")
+            if editor.get("application") is not None:
+                raise FixtureFailure("resume:editor_application_exists")
             section_id, item_id = require_definition_projection(definition, form_id, "published")
             manifest.update({
                 "input_section_id": manifest.get("section_id"),
@@ -361,7 +363,11 @@ def main() -> int:
             save_manifest(manifest)
             emit("publish", "PASS", http=publish_status)
 
-        application_request_id = str(uuid.uuid4())
+        application_request_id = (
+            require_uuid(manifest.get("application_request_id"), "application_request")
+            if manifest.get("application_request_id") is not None
+            else str(uuid.uuid4())
+        )
         manifest["application_request_id"] = application_request_id
         save_manifest(manifest)
         application_status, application = rpc("form_save_application", {
@@ -391,11 +397,23 @@ def main() -> int:
         save_manifest(manifest)
         emit("save_application", "PASS", http=application_status, application_id=application_id)
 
-        starts_at = (dt.datetime.now().astimezone() - dt.timedelta(minutes=1)).replace(
-            second=0, microsecond=0, tzinfo=None
-        ).isoformat()
-        schedule_request_id = str(uuid.uuid4())
-        requested_schedule_id = str(uuid.uuid4())
+        starts_at = manifest.get("starts_at_local")
+        if starts_at is None:
+            starts_at = (dt.datetime.now().astimezone() - dt.timedelta(minutes=1)).replace(
+                second=0, microsecond=0, tzinfo=None
+            ).isoformat()
+        if not isinstance(starts_at, str):
+            raise FixtureFailure("schedule:invalid_persisted_start")
+        schedule_request_id = (
+            require_uuid(manifest.get("schedule_request_id"), "schedule_request")
+            if manifest.get("schedule_request_id") is not None
+            else str(uuid.uuid4())
+        )
+        requested_schedule_id = (
+            require_uuid(manifest.get("requested_schedule_id"), "requested_schedule")
+            if manifest.get("requested_schedule_id") is not None
+            else str(uuid.uuid4())
+        )
         manifest.update({
             "schedule_request_id": schedule_request_id,
             "requested_schedule_id": requested_schedule_id,
