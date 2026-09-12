@@ -298,3 +298,11 @@ SQL e incluía pgTAP por normalização Windows errada. C0 cedeu posse:3REDs e
 7PASS finais após correção, só3exceções Sobre obsoletas removidas. Analyze3
 arquivos0;23IDs únicos/5novos18existentes, sem prova UI/E2E. Nenhum processo.
 H25 complementado por fix f0e148a70 sem rebaseline; parecer atualizado.
+
+
+## Entrega consolidada e corte antecipado nominal
+
+Ver delivery-summary.md, que consolida resultados atuais, integração, recursos
+e próximo gate R09 proposto. C0/Owner antecipou: frente14h40, revisão14h50,
+fechamento15h00. Os prazos14h52/15h22 acima são históricos e foram substituídos.
+R09 não iniciada; UI/E2E não promovida.
