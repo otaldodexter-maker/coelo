@@ -136,7 +136,17 @@ insert into fm values('fin_ok',public.form_media_finalize_question_r2_v1((select
 insert into fm values('fin_again',public.form_media_finalize_question_r2_v1((select asset_id from fm2),(select ticket from fm2),2048,repeat('d',64),640,480));
 reset role;
 select is((select body#>>'{data,status}' from fm where label='fin_ok'),'ready','finalize correto deixa ready');
-select is((select body#>>'{error,code}' from fm where label='fin_again'),'FORM_MEDIA_TICKET_INVALID','ticket nao reutilizavel');
+select ok((select body->>'ok'='true'
+    and (body#>>'{data,asset_id}')::uuid=(select asset_id from fm2)
+    and body#>>'{data,status}'='ready'
+    and (body#>>'{data,replayed}')::boolean from fm where label='fin_again')
+  and (select count(*)=1 from public.media_variants
+    where media_asset_id=(select asset_id from fm2) and rendition='original')
+  and exists(select 1 from public.media_assets
+    where id=(select asset_id from fm2) and status='ready'
+      and byte_size=2048 and checksum_sha256=repeat('d',64)
+      and pixel_width=640 and pixel_height=480),
+  'finalize identico reconcilia resposta perdida sem duplicar variante');
 select ok(exists (select 1 from public.media_variants v where v.media_asset_id=(select asset_id from fm2) and v.rendition='original'
   and v.byte_size=2048 and v.pixel_width=640),'variante original registrada com as medidas');
 select set_config('request.jwt.claims',jsonb_build_object('sub','9f060000-0000-4000-8000-000000000102','session_id','9f060000-0000-4000-8000-000000000202','aal','aal1','role','authenticated')::text,true);
