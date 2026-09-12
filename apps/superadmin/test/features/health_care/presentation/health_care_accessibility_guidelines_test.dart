@@ -35,22 +35,9 @@ void main() {
     handle.dispose();
   }
 
-  // MARCADO COM MOTIVO, nao vermelho permanente. As duas telas reprovam no
-  // MESMO no, que nao pertence a Saude e Cuidado: o botao de menu do usuario
-  // do shell, rotulado "Abrir menu do usuario", expoe 242x44 px. A largura
-  // esta folgada; o que falha e a ALTURA, 44 contra o minimo de 48.
-  //
-  // Vive em apps/superadmin/lib/app/shell/superadmin_shell.dart, que e
-  // reserva do coordenador, e subir de 44 para 48 move pixel, o que colide
-  // com o congelamento de golden desta rodada. Nao e correcao do recorte
-  // formularios-cuidado.
-  //
-  // Vale registrar POR QUE nunca foi pego: superadmin_shell_accessibility_test
-  // verifica labeledTapTargetGuideline mas NAO androidTapTargetGuideline, ou
-  // seja o shell nunca teve o tamanho de alvo conferido. O defeito aparece em
-  // qualquer tela que use o shell, nao so nestas duas.
-  //
-  // Rotulo e contraste continuam verificados abaixo; so o tamanho fica de fora.
+  // R08: alvo do menu do usuario corrigido de 44 para 48 sob posse C0.
+  // Os dois casos foram reativados depois de RED atual e GREEN, com
+  // goldens preservados. Evidencia: 14-care-accessibility.md.
   testWidgets('the care profile directory meets tap size', (tester) async {
     await check(
       tester,
@@ -60,7 +47,7 @@ void main() {
         onCreate: () {},
       ),
     );
-  }, skip: true);
+  });
 
   testWidgets('the medication plan directory meets tap size', (tester) async {
     await check(
@@ -71,7 +58,7 @@ void main() {
         onCreate: () {},
       ),
     );
-  }, skip: true);
+  });
 
   testWidgets('the care profile directory meets labelling and contrast', (tester) async {
     await check(
@@ -85,10 +72,8 @@ void main() {
     );
   });
 
-  // Eu supus que o formulario de perfil de cuidado nao montasse o shell e que
-  // por isso desse para verificar as TRES diretrizes nele. Supus errado: ele
-  // monta, e reprova no MESMO no de 242x44 do botao de menu do usuario. Fica
-  // com rotulo e contraste, como as outras, pelo mesmo motivo.
+  // Este caso preserva o recorte de rotulo/contraste do formulario.
+  // Tamanho de toque dos diretorios e verificado nos casos acima.
   testWidgets('the care profile form meets labelling and contrast', (tester) async {
     tester.view.devicePixelRatio = 1;
     tester.view.physicalSize = const Size(1440, 1600);

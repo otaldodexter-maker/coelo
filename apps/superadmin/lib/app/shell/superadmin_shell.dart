@@ -1773,29 +1773,32 @@ class _ProfileSummary extends StatelessWidget {
               onTap: () => controller.isOpen ? controller.close() : controller.open(),
               borderRadius: BorderRadius.circular(CoeloRadius.full),
               overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-              child: Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoeloSpacing.space2,
-                  vertical: CoeloSpacing.space1,
-                ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const CircleAvatar(radius: 18, child: Text('OC')),
-                    if (!compact) ...[
-                      const SizedBox(width: CoeloSpacing.space2),
-                      Column(
-                        mainAxisSize: MainAxisSize.min,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text('Owner Coelo', style: theme.textTheme.labelLarge),
-                          Text('Superadmin', style: theme.textTheme.bodySmall),
-                        ],
-                      ),
-                      const SizedBox(width: CoeloSpacing.space1),
-                      const Icon(Icons.arrow_drop_down_rounded),
+              child: ConstrainedBox(
+                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                child: Padding(
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: CoeloSpacing.space2,
+                    vertical: CoeloSpacing.space1,
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const CircleAvatar(radius: 18, child: Text('OC')),
+                      if (!compact) ...[
+                        const SizedBox(width: CoeloSpacing.space2),
+                        Column(
+                          mainAxisSize: MainAxisSize.min,
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text('Owner Coelo', style: theme.textTheme.labelLarge),
+                            Text('Superadmin', style: theme.textTheme.bodySmall),
+                          ],
+                        ),
+                        const SizedBox(width: CoeloSpacing.space1),
+                        const Icon(Icons.arrow_drop_down_rounded),
+                      ],
                     ],
-                  ],
+                  ),
                 ),
               ),
             ),

@@ -1,18 +1,18 @@
 {
-  "revision": 78,
+  "revision": 79,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:59:03.268Z",
+  "updatedAt": "2026-09-12T17:04:43.003Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "d2bd9471c + reativação guideline desta revisão",
+  "head": "17d4f2233 + ProfileSummary48 desta revisão",
   "base": "origin/dev 7e889abac materializado no merge a7b081674",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "DiretórioFormulários guideline completo reativado após1PASS0FAIL primeira execução/analyze0; semmudançaproduto/token/PNG. C0H25integrado37PASS. MemóriaC0aplicando semduplicaçãoG3.",
+  "currentGate": "Cuidado RED0PASS2FAIL menu242x44 -> fixnominal_ProfileSummary48; GREEN8PASS0FAIL/analyze0,2reativados0novos, goldenssemPNG. Publicar/mergecycle180.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -157,6 +157,18 @@
         "novos": 0,
         "reativados": 1,
         "evidencia": "13-directory-accessibility.md"
+      },
+      {
+        "sha": "ProfileSummary48 desta revisão",
+        "passed": 8,
+        "failed": 0,
+        "novos": 0,
+        "reativados": 2,
+        "evidencia": "14-care-accessibility.md",
+        "red": {
+          "passed": 0,
+          "failed": 2
+        }
       }
     ],
     "e2eExecutados": 0,
@@ -175,10 +187,11 @@
   "reservedFiles": [
     "apps/superadmin/lib/shared/presentation/widgets/superadmin_form_frame.dart (posse G3 C0)",
     "apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart (delta focal G3 C0)",
-    "packages/coelo_ui_admin/lib/src/table/coelo_admin_resizable_table.dart (H25 posse nominal C0; pacote final publicado)"
+    "packages/coelo_ui_admin/lib/src/table/coelo_admin_resizable_table.dart (H25 posse nominal C0; pacote final publicado)",
+    "apps/superadmin/lib/app/shell/superadmin_shell.dart somente_ProfileSummary (posse nominal C0)"
   ],
   "resources": {
-    "flutterTest": "Liberado: guideline completo1PASSexit0, analyzeexit0. NenhumprocessoG3.",
+    "flutterTest": "Liberado:2guidelines+4goldens+2menuPASS; analyzeexit0. NenhumprocessoG3.",
     "chrome": "G0; sem posse G3; runtime E2E ainda não liberado",
     "sql": "H19 sem schema especulativo; pergunta Owner registrada C0, G5 aguarda.",
     "deploy": "C0 é integrador/deployer; status atual remoto deve seguir JSONC0/G0. Nenhum deploy G3."
