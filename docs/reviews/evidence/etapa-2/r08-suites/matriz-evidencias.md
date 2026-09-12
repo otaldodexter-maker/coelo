@@ -19,6 +19,7 @@ tentativas interrompidas e conjuntos sobrepostos não são somados.
 | 120 Forms | `r08-coordenacao/flutter-forms-h12-h26-integrado.jsonl` e `ciclo120.md` | `7cc6d4e7b2d3f4f1145c4c7dd8ab8f28249e0bb4` | `273 PASS`, 2 arquivos, base `f11eb76b8` | não somar ao Principal 79 |
 | 120 Grupos/H19 | `flutter-grupos-h19-integrado.jsonl`, `flutter-grupos-h19-final.jsonl`, `ciclo120.md` | `7cc6d4e7b2d3f4f1145c4c7dd8ab8f28249e0bb4` | tentativa `60/1`; H19 `32`; retry Grupos `29/0` | sobreposição explícita; não somar `60+32+29` |
 | 120 form-media | `r08-coordenacao/deno-form-media-integrado.log` | `7cc6d4e7b2d3f4f1145c4c7dd8ab8f28249e0bb4` | `54/0` Deno | distinto do autoral `53`; não somar |
+| 150 P51/anônimo | `r08-coordenacao/ciclo150.md`, `p51-auth-allowlist.json`, `p51-link-*.json` | `7e889abac336875e975f52184d8b361de8c3ec1b`, pacote anônimo `8b9e784e5` | P51 sete invariantes pós-allowlist; anônimo `293 PASS` autorais em 6 arquivos | snapshot posterior; não reclassifica ciclos 120 nem promove E2E |
 | G1 45 A | `r08-estrutura/handoff.md`, `rodape-modelo-teste.md` | `5b79c1150ed58768646b2f424f5011abce7372c6`, prova nominal `41d3c518a` | 45 PNGs comparados/regravados; 3 testes proprietários `20/20 PASS` | visual focal; não E2E; sem interseção de casos Flutter fornecida |
 | Anônimo | `r08-formularios-cuidado-rotina/07-anonymous-tests-final.log` e `07-anonymous-edit.md` | fonte final `72e6e6f22`; reconciliação `8344cb98a`/`e9c30f765` | `293 casos únicos / 0 falhos`; decomposição `7+40+17+154+21+54` | 18 novos; demais sobrepostos a pacotes anteriores; caminhos identificados abaixo |
 
@@ -37,7 +38,7 @@ entre nomes de casos de ciclos diferentes quando não existe um identificador de
 
 ## Lacunas de contagem
 
-- A base local desta branch anterior não continha os arquivos `07-anonymous-*`, mas a fonte final publicada em `72e6e6f22` foi lida diretamente; não é mais uma lacuna de existência.
+- A base integrada atual contém os arquivos `07-anonymous-*`; a fonte final `72e6e6f22` e o recibo corrigido `8b9e784e5` confirmam os 293 casos. Não é lacuna de existência.
 - A interseção semântica entre casos dos ciclos 30/60/90 e o pacote anônimo continua não demonstrável sem um identificador estável comum; nomes parecidos não serão tratados como o mesmo caso.
 - O pacote G1 informa o conjunto nominal de 45 PNGs e 20/20 nos três testes, mas não fornece uma tabela de IDs de teste compartilhados com os ciclos integrados; não há interseção visual inventada.
 - O `diff-check` com whitespace nativo preservado é observação de formatação/proveniência, não falha de teste.
