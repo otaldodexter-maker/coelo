@@ -178,3 +178,37 @@ Esse WIP nao acompanha o commit do controlePUT e ainda nao foi testado.
 
 C0 informou schedulerH09 succeeded14:35/14:40UTC em producao. Resultado e
 publicacao final desse aceite pertencem aC0/G5; G4 nao executou cron nem UI.
+
+## Pacote 4 — anexos recebidos no Chat do Principal
+
+apps/superadmin → Coelo (Principal) → Conversas → mensagem recebida →
+chat.attach (subaceite de leitura). A mensagem com arquivo e texto vazio nao
+renderizava o anexo. PrincipalChatPage agora mostra metadados e abertura
+explicita de imagem/PDF pelo binding autorizado attachment_id.
+
+ChatImagePreview compartilha somente leitura, TTL e purge; Principal fornece
+sua moldura propria e o Superadmin preserva CoeloAdminDialogShell. Nao ha
+import administrativo no Principal nem novo gateway/repository paralelo.
+Troca de contexto fecha somente a rota propria e descarta resposta atrasada.
+PDF solicita leitura nova antes da abertura externa; navegador ainda nao provado.
+
+Verificacao local em slots nominais C0, sempre concurrency1, sem golden update:
+
+- Lote de cinco arquivos: 101 casos executados. Primeira tentativa encontrou
+  purge disparando setState durante build. Ajuste intermediario passou o novo
+  caso de troca de contexto, mas produziu 98 PASS / 3 FAIL / 0 SKIP por adiar
+  repaint mesmo fora de build (`principal-viewer-red.log`, exit1).
+- Correcao final apaga estado privado sincronamente e adia repaint somente
+  em SchedulerPhase.persistentCallbacks; fora dessa fase preserva repaint.
+- Rerun focal de Principal attachment e viewer: **58 PASS / 0 FAIL / 0 SKIP**,
+  exit0 (`principal-viewer-green.log`). Tres falhas resolvidas, nenhuma nova.
+- Os tres arquivos restantes tinham 43 PASS na execucao anterior. Cobertura
+  do plano: cinco arquivos/101 IDs, dos quais quatro novos; nao somar reruns
+  nem declarar os 101 como uma execucao unica sobre o ultimo SHA.
+- Analyze final do Principal, visualizador compartilhado, wrapper e testes:
+  **No issues found**, exit0.
+
+Nao ha promocao E2E nem nova acao no denominador. C0 deve incorporar as provas
+como complemento de chat.attach FE local-green e verificar a base integrada.
+H09 agora tem fonte commitada: r08-coordenacao/lote56-cron-execucoes.md em
+origin/dev2d97892d9 comprova duas execucoes do scheduler; sem aceite visual.

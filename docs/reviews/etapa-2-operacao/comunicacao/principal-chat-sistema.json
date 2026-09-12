@@ -1,6 +1,6 @@
 {
-  "revision": 55,
-  "updated_at": "2026-09-12T11:52:34.457385-03:00",
+  "revision": 59,
+  "updated_at": "2026-09-12T12:22:03.812164-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "547bbd92a",
-  "status": "EXECUTANDO: controlePUT Chat+3publicadores28PASS/analyze limpo; PrincipalChat recebimento WIP; UIbloqueadaG0",
+  "head": "9bee7eb26",
+  "status": "EXECUTANDO: Principal anexos publicado9bee7eb26; Acontece API23checksPASS; proximoPNG em preparo; UIreal pendente",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -21,114 +21,57 @@
   ],
   "action_ids_status": "Recorte G4 R08: estados oficiais preservados ate evidencia E2E e delta C0; historico R07 nao conta como teste atual",
   "ordem_de_trabalho": [
-    "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
-    "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
-    "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
-    "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
-    "4. principal.for-you/profile-view abrem na rota real (18, 19); V-2 APLICADO; V-3 PARCIAL (foto sem esticar); V-1 PARCIAL: botao Acompanhar de volta (acao honesta, sem porta de follow) e sombra do avatar igual a do menu flutuante (goldens principal_profile 137/137); avatar clicavel abrindo o Agora do perfil e contorno degrade quando ha Agora nao visto: nao feitos; profile-edit nao provado",
-    "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
-    "6. P48=A: candidato 130400 REESCRITO sobre o 210100 (escopo por scope_targets, reconciliacao preservada) e republicado: scope_root 46/46, hotfix 4/4, by_role 16/16, bridge 22/22"
+    "PNG privado em Acontece/Agora/Momentos: publicar, ler, reload, remover",
+    "Cardapios lote55",
+    "chat.create-group e cliente chat.attach",
+    "Perfil/Para Voce e erros por gate do backlog",
+    "H09 com G5/C0 em paralelo ao trabalho independente"
   ],
   "tests": {
-    "principal_real_route_test": "4/4 (08c46b1b7)",
-    "meal_plan_production_routes_test + meal_plan_production_composition_test": "5/5",
-    "principal_happens_publication (page, focus, error_recovery, golden)": "67/67 goldens regravados",
-    "principal_now_publication": "95/95 goldens regravados",
-    "principal_moments_publication": "88/88 goldens regravados (legenda 0/220 conforme referencia)",
-    "principal_shared/principal_publication_frame_test": "verde (rodape em card sem blur)",
-    "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)",
-    "analyze_final": "flutter analyze lib test: No issues found (21:22, 41463a08d)",
-    "regressao_final": "composition_root_sanitization + superadmin_auth_scope + meal_plans: 157/157; principal_happens_composition_gaps + principal_real_route + principal_shared: 27/27; principal_for_you 97/97; principal_happens 91/91; principal_profile 137/137"
+    "moments-media": "27PASS/0FAIL; Deno local pacote1",
+    "chat-client": "56PASS/0FAIL/0SKIP;11novos+45regressoes; pacote2",
+    "signed-put": "28PASS/0FAIL/0SKIP;11novos+17existentes;6casosChat sobrepoem pacote2;naosomar",
+    "principal-anexos": "101IDs/5arquivos:43PASS previos+58PASS focais finais/0FAIL/0SKIP;4novos;3falhasintermediariasresolvidas. Nao somar reruns nem afirmar execucao unica101sobreultimoSHA. Analyze0.",
+    "e2eR08": "naoexecutadoG4;nenhumnovoaceiteE2E",
+    "acontece-api": "23checks/operacoesPASS;naosao23testesdistintos;processo0;UI/crosstenantnaoexecutados."
   },
   "lotes": [
     {
-      "commit": "08c46b1b7",
-      "titulo": "principal_real_route_test 4/4",
-      "action_ids": [
-        "principal.for-you",
-        "acontece.feed"
-      ]
+      "commit": "1d09cb3c8",
+      "titulo": "CORS Momentos,deployC0v10"
     },
     {
-      "commit": "e689033ff + dcd2e3a84",
-      "titulo": "P47 A: assistente de cardapio abre sem tenant injetado",
-      "action_ids": [
-        "meal-plans.create",
-        "meal-plans.edit",
-        "meal-plans.model-create",
-        "meal-plans.model-edit",
-        "meal-plans.publish"
-      ]
+      "commit": "e5e0797c7",
+      "titulo": "clientechat56PASS"
     },
     {
-      "commit": "14abb3b0a, c7a614737, e9c67d9f9",
-      "titulo": "publicadores na familia Publicacao (V-4/V-5/V-6 reprovados -> reconstruidos)",
-      "action_ids": [
-        "acontece.create",
-        "acontece.publish",
-        "agora.create",
-        "agora.publish",
-        "momentos.create",
-        "momentos.publish"
-      ],
-      "prova": "goldens novos em test/features/principal_*_publication/presentation/goldens (comparados a olho com aprovadas-20260911: estrutura, ordem dos blocos, rodape e previa batem; sem shell do Superadmin no golden porque a pagina e testada isolada)"
-    },
-    {
-      "commit": "060d21e53",
-      "titulo": "P48 A: 130400 sincronizador por papel interno",
-      "action_ids": [
-        "principal.*",
-        "acontece.*",
-        "agora.*",
-        "momentos.*"
-      ],
-      "prova": "pgTAP 16/16"
+      "commit": "fee190810",
+      "titulo": "controlePUT28PASS,integradoC0"
     }
   ],
-  "pacotesProntos": [
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "commit desta rev",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
-      "assunto": "P48=A: institution_reader (so *.read) + sincronizador owner->institution_admin, operations->institution_reader, demais sem vinculo; revoga o que o 130000 deu a operations/auditor (inactive+revoked_at)",
-      "pgTAP": "reescrito sobre o 210100: internal_actor_scope_root_v1_test 46/46, internal_actor_scope_root_v1_hotfix_test 4/4, internal_actor_institution_access_by_role_v1_test 16/16, principal_internal_actor_bridge_v1_test 22/22 (clone do espelho com lotes 50+52)",
-      "chave_de_composicao": "nenhuma",
-      "depois_de_aplicar": "select app_private.superadmin_internal_actor_institution_access_sync() = 0 na segunda chamada; qa-r06-* (owner) mantem 3 contextos",
-      "risco": "baixo: so afeta espelhos internos; usuario interno operations perde escrita nas instituicoes (regra P48)"
-    },
-    {
-      "grupo": "principal-chat-sistema",
-      "commit": "commit desta rev",
-      "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130500_meal_plan_scope_rules_object_v1.sql",
-      "assunto": "Cardapios: meal_plan_create_or_update_draft_unreceipted aceita scopeRules como objeto (formato do assistente) ou lista; helpers app_private.meal_plan_scope_rules_object/array; grava objeto (check) e deriva meal_plan_scopes",
-      "pgTAP": "meal_plan_scope_rules_object_v1_test 9/9; regressoes 6/6, 6/6; receipts 28/30 e security_lifecycle 21/22 falham so em grants de service_role/anon de funcoes nao tocadas (artefato do clone)",
-      "chave_de_composicao": "nenhuma",
-      "depois_de_aplicar": "esta frente prova meal-plans.create/edit/publish pela tela (payload do assistente, captura 23 deve virar lista com Status)",
-      "risco": "baixo: so os tres pontos de scopeRules mudam no corpo da baseline; wrapper com recibo (190000) intacto",
-      "action_ids": [
-        "meal-plans.create",
-        "meal-plans.edit",
-        "meal-plans.publish"
-      ]
-    }
+  "pacotesProntos": [],
+  "perguntas_ao_owner_via_coordenador": [
+    "H02 propagacaoSobreparaoficial",
+    "H05 denominadorhistorico recibos",
+    "H06 revogacaoreadonly",
+    "H13 destinoCTAcomunicacao"
   ],
-  "perguntas_ao_owner_via_coordenador": [],
   "pendencias_registradas_sem_bloquear": [
     "meal_plan_template_save grava tenant_id/institution_id nulos no modelo (a lista devolve null) mesmo com instituicao escolhida; nao bloqueia a tela; conferir contrato",
     "goldens da familia Publicacao sao da pagina isolada (sem shell do Superadmin); a comparacao com aprovadas-20260911 foi visual; golden com shell fica para a revisao de UI",
     "com a semantica ligada, cdp_sem type nao alcanca o controller Flutter: usar clickxy no centro + qa_drive enter_text",
     "V-1, V-2, V-3 (Perfil, Para voce, Acontece feed) pendentes; chat.create-group/attach pendentes"
   ],
-  "blocker": null,
+  "blocker": "Somente E2EUI: runtimeG0 semlogin utilizavel. Flutterliberado apos58PASS; nenhumprocessoG4. Cross-tenant real sematorQAnegativo (todosOwner), nao inventar.",
   "perguntas_ao_coordenador": [
-    "130400 reescrito sobre o 210100 conforme a retencao (rev 55/57): aplicar na fila; segunda chamada do sync deve devolver 0",
-    "CORS alinhado (21:35): obrigado; a prova de midia dos publicadores fica para a proxima rodada (janela encerrada)",
-    "130500 (scopeRules de Cardapios) aguarda aplicacao; depois disso esta frente reprova create/edit/publish pela tela"
+    "conceder slotPrincipal5arquivos aposG6/integrado",
+    "runtimeUI paraPNG/Cardapios/create-group",
+    "conciliar spec028 bindingattachment_id semassetId antescertificacao"
   ],
-  "next_step": null,
-  "ack": "C0 ACK rev50/1d09cb3c8 no ciclo20min; pub get autorizado; slot Flutter aguardado",
+  "next_step": "Publicar Principal e smokeAPI Acontece; mergeorigin/dev; preparar proximo PNG autorizado. UI PNG/Cardapios/create-group dependeG0.",
+  "ack": "C0 informado58PASS eFlutterliberado; smokeAPI autorizado no trio medido d0c4/d0c4/368a; aguardaintegracao.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
-  "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
+  "regras_operacionais": "1ChromeG0;1Fluttertest global mediante concessaoC0;nenhumprocessoG4ativo;semsegredos;semworktreeprincipal/pull;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
     "revision": 29,
     "revisao_final_1550": {
@@ -381,18 +324,125 @@
     },
     "recursos": {
       "chrome": "G0 restaurourelease3014,semUIlogin;usoG4naoliberado",
-      "flutter_test": "LIBERADO apos28PASS; nenhumFlutterG4ativo; proximoPrincipal depende nova concessao",
+      "flutter_test": "LIBERADO apos58PASSfocais exit0; nenhumprocessoG4ativo.",
       "deno": "local disponivel; nao consome slot Flutter"
     },
     "commits_publicados": [
       "1d09cb3c8",
       "8d1003e3a",
-      "e5e0797c7"
+      "e5e0797c7",
+      "547bbd92a",
+      "fee190810",
+      "9bee7eb26"
     ],
-    "h09": "C0 informou execucaosucceeded14:35/14:40UTC; medicao/publicacaoautorC0/G5,semUIpropriaG4",
+    "h09": "C0 mediu cron.job_run_details:14:35/14:40UTC succeeded. Artefato publicado origin/dev2d97892d9 docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md. Nao prova expiracao visual/E2E.",
     "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
     "delta_proposto": "deltas-chat-client.json: FEchat.attach local-green; aplicacaoC0; BE/E2E preservados",
     "revisao_c0": "RequestPUT followRedirects=false e cabecalhosassinados exatos/MIMEcoerente noChat+Happens+Now+Moments. 11casosnovos preparados;nenhumtesterunatual.",
-    "principal_chat_recebimento": "WIPseparado: extracao do ciclo existente de leitura/purge para widgetneutro semadmin; Principalrenderiza anexo e abre imagem/PDF. Ainda semteste; nao incluido no pacotePUT."
+    "principal_chat_recebimento": "Local-green4casosnovos+regressoes; detalhes nohandoffPacote4;58focaisfinais e43previos,naosomarreruns;semE2E.",
+    "smoke_api_acontece": "PASS23checks/exit0; happens-api-proof.md e happens-api-manifest.json;16x16PNGprivateR2/readhash/reload/TTL403/withdrawausente/logout204. SemE2EUI ou cross-tenant. Hierarquiad0c4/d0c4/368amedida/autorizadaC0."
+  },
+  "historico_pre_r08_operacional": {
+    "tests": {
+      "principal_real_route_test": "4/4 (08c46b1b7)",
+      "meal_plan_production_routes_test + meal_plan_production_composition_test": "5/5",
+      "principal_happens_publication (page, focus, error_recovery, golden)": "67/67 goldens regravados",
+      "principal_now_publication": "95/95 goldens regravados",
+      "principal_moments_publication": "88/88 goldens regravados (legenda 0/220 conforme referencia)",
+      "principal_shared/principal_publication_frame_test": "verde (rodape em card sem blur)",
+      "pgTAP_20260911130400": "16/16 + regressoes no descartavel coelo_pcs6_db (clone pg_dumpall do espelho coelo_baseline; grants de anon/app_private e auth.uid realinhados a mao, artefato do clone)",
+      "analyze_final": "flutter analyze lib test: No issues found (21:22, 41463a08d)",
+      "regressao_final": "composition_root_sanitization + superadmin_auth_scope + meal_plans: 157/157; principal_happens_composition_gaps + principal_real_route + principal_shared: 27/27; principal_for_you 97/97; principal_happens 91/91; principal_profile 137/137"
+    },
+    "lotes": [
+      {
+        "commit": "08c46b1b7",
+        "titulo": "principal_real_route_test 4/4",
+        "action_ids": [
+          "principal.for-you",
+          "acontece.feed"
+        ]
+      },
+      {
+        "commit": "e689033ff + dcd2e3a84",
+        "titulo": "P47 A: assistente de cardapio abre sem tenant injetado",
+        "action_ids": [
+          "meal-plans.create",
+          "meal-plans.edit",
+          "meal-plans.model-create",
+          "meal-plans.model-edit",
+          "meal-plans.publish"
+        ]
+      },
+      {
+        "commit": "14abb3b0a, c7a614737, e9c67d9f9",
+        "titulo": "publicadores na familia Publicacao (V-4/V-5/V-6 reprovados -> reconstruidos)",
+        "action_ids": [
+          "acontece.create",
+          "acontece.publish",
+          "agora.create",
+          "agora.publish",
+          "momentos.create",
+          "momentos.publish"
+        ],
+        "prova": "goldens novos em test/features/principal_*_publication/presentation/goldens (comparados a olho com aprovadas-20260911: estrutura, ordem dos blocos, rodape e previa batem; sem shell do Superadmin no golden porque a pagina e testada isolada)"
+      },
+      {
+        "commit": "060d21e53",
+        "titulo": "P48 A: 130400 sincronizador por papel interno",
+        "action_ids": [
+          "principal.*",
+          "acontece.*",
+          "agora.*",
+          "momentos.*"
+        ],
+        "prova": "pgTAP 16/16"
+      }
+    ],
+    "pacotesProntos": [
+      {
+        "grupo": "principal-chat-sistema",
+        "commit": "commit desta rev",
+        "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130400_internal_actor_institution_access_by_role_v1.sql",
+        "assunto": "P48=A: institution_reader (so *.read) + sincronizador owner->institution_admin, operations->institution_reader, demais sem vinculo; revoga o que o 130000 deu a operations/auditor (inactive+revoked_at)",
+        "pgTAP": "reescrito sobre o 210100: internal_actor_scope_root_v1_test 46/46, internal_actor_scope_root_v1_hotfix_test 4/4, internal_actor_institution_access_by_role_v1_test 16/16, principal_internal_actor_bridge_v1_test 22/22 (clone do espelho com lotes 50+52)",
+        "chave_de_composicao": "nenhuma",
+        "depois_de_aplicar": "select app_private.superadmin_internal_actor_institution_access_sync() = 0 na segunda chamada; qa-r06-* (owner) mantem 3 contextos",
+        "risco": "baixo: so afeta espelhos internos; usuario interno operations perde escrita nas instituicoes (regra P48)"
+      },
+      {
+        "grupo": "principal-chat-sistema",
+        "commit": "commit desta rev",
+        "arquivo": "packages/coelo_database/candidatos/principal-chat-sistema/20260911130500_meal_plan_scope_rules_object_v1.sql",
+        "assunto": "Cardapios: meal_plan_create_or_update_draft_unreceipted aceita scopeRules como objeto (formato do assistente) ou lista; helpers app_private.meal_plan_scope_rules_object/array; grava objeto (check) e deriva meal_plan_scopes",
+        "pgTAP": "meal_plan_scope_rules_object_v1_test 9/9; regressoes 6/6, 6/6; receipts 28/30 e security_lifecycle 21/22 falham so em grants de service_role/anon de funcoes nao tocadas (artefato do clone)",
+        "chave_de_composicao": "nenhuma",
+        "depois_de_aplicar": "esta frente prova meal-plans.create/edit/publish pela tela (payload do assistente, captura 23 deve virar lista com Status)",
+        "risco": "baixo: so os tres pontos de scopeRules mudam no corpo da baseline; wrapper com recibo (190000) intacto",
+        "action_ids": [
+          "meal-plans.create",
+          "meal-plans.edit",
+          "meal-plans.publish"
+        ]
+      }
+    ],
+    "perguntas_ao_owner_via_coordenador": [],
+    "perguntas_ao_coordenador": [
+      "130400 reescrito sobre o 210100 conforme a retencao (rev 55/57): aplicar na fila; segunda chamada do sync deve devolver 0",
+      "CORS alinhado (21:35): obrigado; a prova de midia dos publicadores fica para a proxima rodada (janela encerrada)",
+      "130500 (scopeRules de Cardapios) aguarda aplicacao; depois disso esta frente reprova create/edit/publish pela tela"
+    ],
+    "ordem_de_trabalho": [
+      "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
+      "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
+      "2. Familia Publicacao FEITA (14abb3b0a, c7a614737, e9c67d9f9) e aberta na rota real (12, 16, 17); midia: gate CORS do R2 (so localhost:3000; 127.0.0.1:3009 negado) - pedido ao coordenador",
+      "3. chat.create-group/chat.attach: NAO INICIADO (tempo)",
+      "4. principal.for-you/profile-view abrem na rota real (18, 19); V-2 APLICADO; V-3 PARCIAL (foto sem esticar); V-1 PARCIAL: botao Acompanhar de volta (acao honesta, sem porta de follow) e sombra do avatar igual a do menu flutuante (goldens principal_profile 137/137); avatar clicavel abrindo o Agora do perfil e contorno degrade quando ha Agora nao visto: nao feitos; profile-edit nao provado",
+      "5. errors.404 verified na rota real (21); 403/409/500/503/retry nao provados",
+      "6. P48=A: candidato 130400 REESCRITO sobre o 210100 (escopo por scope_targets, reconciliacao preservada) e republicado: scope_root 46/46, hotfix 4/4, by_role 16/16, bridge 22/22"
+    ],
+    "blocker": null,
+    "next_step": null,
+    "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7)."
   }
 }
