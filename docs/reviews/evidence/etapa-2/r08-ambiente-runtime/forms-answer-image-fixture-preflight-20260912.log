@@ -1,0 +1,10 @@
+command: rtk proxy python -X utf8 docs/reviews/evidence/etapa-2/r08-ambiente-runtime/forms-answer-image-fixture.py --preflight
+environment: producao Supabase; authenticated QA; somente leitura
+result:
+{"http": 200, "status": "PASS", "step": "auth"}
+{"http": 200, "status": "PASS", "step": "audience", "target_present": true}
+{"exact_matches": 0, "http": 200, "status": "PASS", "step": "duplicate_preflight"}
+{"planned_rpc_mutations": 4, "status": "PASS_READ_ONLY", "step": "preflight"}
+{"http": 204, "status": "PASS", "step": "logout"}
+secrets: nao registrados
+mutations: 0
