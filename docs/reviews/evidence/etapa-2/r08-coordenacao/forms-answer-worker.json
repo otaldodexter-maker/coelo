@@ -1,0 +1,12 @@
+{
+  "measured_at": "2026-09-12T13:20:12.730325-03:00",
+  "operation": "service_role RPC form_worker_reconcile_audience",
+  "occurrence_id": "5762fe8f-2d58-48ef-b410-30bfd0fe6703",
+  "http_status": 200,
+  "changed_count": 0,
+  "generate_invoked": false,
+  "reason": "existing scheduler already generated exactly one open occurrence",
+  "new_users": 0,
+  "new_api_keys": 0,
+  "cleanup": false
+}

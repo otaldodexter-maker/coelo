@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
+import 'package:coelo_superadmin/features/forms/data/forms_anonymous_edit_secret_store.dart';
 import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -9,7 +10,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   for (final mode in FormIdentityMode.values) {
-    testWidgets('gallery capability requires identified response context $mode', (tester) async {
+    testWidgets('gallery capability uses the authorized response context $mode', (tester) async {
       final session = MediaSession();
       addTearDown(session.invalidate);
       await tester.pumpWidget(
@@ -19,21 +20,121 @@ void main() {
               api: _ResponseApi(kind: FormItemKind.gallery, identityMode: mode),
               occurrenceId: 'occurrence-1',
               mediaSession: session,
+              anonymousEditSecrets: _SecretStore(),
             ),
           ),
         ),
       );
       await tester.pumpAndSettle();
-      expect(
-        find.text('Selecionar imagem'),
-        mode == FormIdentityMode.identified ? findsOneWidget : findsNothing,
-      );
-      expect(
-        find.text('Anexo indisponível'),
-        mode == FormIdentityMode.anonymous ? findsOneWidget : findsNothing,
-      );
+      expect(find.text('Selecionar imagem'), findsOneWidget);
+      expect(find.text('Anexo indisponível'), findsNothing);
     });
   }
+  Future<void> openAnonymous(
+    WidgetTester tester,
+    _ResponseApi api,
+    FormsAnonymousEditSecretStore? store,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: FormResponsePage(
+            api: api,
+            occurrenceId: 'occurrence-1',
+            anonymousEditSecrets: store,
+          ),
+        ),
+      ),
+    );
+    await tester.pump();
+    if (store is _SecretStore && store.gate?.isCompleted == false) return;
+    await tester.pumpAndSettle();
+  }
+
+  Future<void> tapResponseKey(WidgetTester tester, String key) async {
+    final target = find.byKey(Key(key));
+    await tester.ensureVisible(target);
+    await tester.pumpAndSettle();
+    await tester.tap(target);
+    await tester.pumpAndSettle();
+  }
+
+  testWidgets('anonymous draft waits for device persistence before opening', (tester) async {
+    final api = _ResponseApi(identityMode: FormIdentityMode.anonymous);
+    final store = _SecretStore()..gate = Completer<void>();
+    await openAnonymous(tester, api, store);
+    expect(api.openCommands, isEmpty);
+    store.gate!.complete();
+    await tester.pumpAndSettle();
+    expect(api.openCommands.single.payload.editSecret, _SecretStore.secret);
+    expect(find.textContaining('neste dispositivo'), findsOneWidget);
+    expect(find.textContaining(_SecretStore.secret), findsNothing);
+  });
+
+  testWidgets('anonymous missing or failed storage cannot open and exposes honest retry', (
+    tester,
+  ) async {
+    final api = _ResponseApi(identityMode: FormIdentityMode.anonymous);
+    await openAnonymous(tester, api, null);
+    expect(api.openCommands, isEmpty);
+    expect(find.textContaining('Não foi possível guardar'), findsOneWidget);
+    final store = _SecretStore()..fail = true;
+    await openAnonymous(tester, api, store);
+    expect(api.openCommands, isEmpty);
+    store.fail = false;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    expect(api.openCommands.single.payload.editSecret, _SecretStore.secret);
+  });
+
+  testWidgets('anonymous open retry and remount reuse the device secret', (tester) async {
+    final api = _ResponseApi(
+      identityMode: FormIdentityMode.anonymous,
+    )..openFailure = const FormApiException(FormApiFailureKind.unavailable, 'Synthetic lost reply');
+    final store = _SecretStore();
+    await openAnonymous(tester, api, store);
+    api.openFailure = null;
+    await tester.tap(find.text('Tentar novamente'));
+    await tester.pumpAndSettle();
+    await tester.pumpWidget(const SizedBox.shrink());
+    await openAnonymous(tester, api, store);
+    expect(api.openCommands.length, 3);
+    expect(api.openCommands.map((command) => command.payload.editSecret).toSet(), {
+      _SecretStore.secret,
+    });
+  });
+
+  testWidgets('anonymous autosave submit and edit carry the same secret', (tester) async {
+    final api = _ResponseApi(identityMode: FormIdentityMode.anonymous);
+    await openAnonymous(tester, api, _SecretStore());
+    await tester.enterText(find.byType(TextFormField).first, 'Resposta sintética');
+    await tester.pump(const Duration(seconds: 1));
+    await tester.pumpAndSettle();
+    expect(api.saveCommand?.payload.editSecret, _SecretStore.secret);
+    await tapResponseKey(tester, 'form-response-review');
+    await tapResponseKey(tester, 'form-response-submit');
+    expect(api.submitCommand?.payload.editSecret, _SecretStore.secret);
+    await tester.tap(find.text('Editar resposta'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, 'Resposta sintética alterada');
+    await tapResponseKey(tester, 'form-response-review');
+    await tapResponseKey(tester, 'form-response-submit');
+    expect(api.editCommand?.payload.editSecret, _SecretStore.secret);
+    expect(find.textContaining(_SecretStore.secret), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('late device secret cannot open the previous account context', (tester) async {
+    final oldApi = _ResponseApi(identityMode: FormIdentityMode.anonymous);
+    final store = _SecretStore()..gate = Completer<void>();
+    await openAnonymous(tester, oldApi, store);
+    final nextApi = _ResponseApi();
+    await openAnonymous(tester, nextApi, null);
+    store.gate!.complete();
+    await tester.pumpAndSettle();
+    expect(oldApi.openCommands, isEmpty);
+    expect(nextApi.openCommands.single.payload.editSecret, isNull);
+  });
   List<FormSection> sections({bool branch = false}) => [
     FormSection(
       id: 'section-a',
@@ -2530,7 +2631,7 @@ void main() {
   });
 }
 
-final class _ResponseApi implements FormsApi {
+final class _ResponseApi implements FormsApi, FormsAnonymousImageApi {
   _ResponseApi({
     this.identityMode = FormIdentityMode.identified,
     this.loadGate,
@@ -2596,6 +2697,11 @@ final class _ResponseApi implements FormsApi {
 
   final List<String> requestedOccurrences = [];
   int openCalls = 0;
+  final openCommands = <FormCommand<FormOpenResponseDraftPayload>>[];
+  FormApiException? openFailure;
+
+  @override
+  MediaReader anonymousImageReader({required String editSecret}) => _AnonymousReader();
   FormCommand<FormResponseDraftPayload>? saveCommand;
   final saveCalls = <FormCommand<FormResponseDraftPayload>>[];
   FormCommand<FormResponseDraftPayload>? submitCommand;
@@ -2663,6 +2769,8 @@ final class _ResponseApi implements FormsApi {
     FormCommand<FormOpenResponseDraftPayload> command,
   ) async {
     openCalls++;
+    openCommands.add(command);
+    if (openFailure case final error?) throw error;
     return _draft(1, command.payload.occurrenceId);
   }
 
@@ -2720,4 +2828,22 @@ final class _ResponseApi implements FormsApi {
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
+}
+
+final class _SecretStore implements FormsAnonymousEditSecretStore {
+  static const secret = 'AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA';
+  Completer<void>? gate;
+  bool fail = false;
+  @override
+  Future<String> loadOrCreate(String occurrenceId) async {
+    await gate?.future;
+    if (fail) throw const FormsAnonymousEditSecretException();
+    return secret;
+  }
+}
+
+final class _AnonymousReader implements MediaReader {
+  @override
+  Future<MediaReadResult> read(MediaReadRequest request) async =>
+      throw const MediaProtocolException();
 }

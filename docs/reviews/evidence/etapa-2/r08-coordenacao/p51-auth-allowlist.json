@@ -1,0 +1,26 @@
+{
+  "measured_at": "2026-09-12T13:17:25.583162-03:00",
+  "project_ref": "evvbomzejfijozbtgvpt",
+  "scope": "internal-users.create / P51 recovery destination",
+  "before": [
+    "http://127.0.0.1:8765/reset-password"
+  ],
+  "after": [
+    "http://127.0.0.1:8765/reset-password",
+    "https://superadmin.coelo.me/reset-password"
+  ],
+  "declared_property": [
+    "auth",
+    "additional_redirect_urls"
+  ],
+  "push_exit": 0,
+  "pushed_properties": 1,
+  "post_diff_exit": 0,
+  "remaining_declared_differences": [],
+  "undeclared_remote_properties_unchanged": 11,
+  "site_url_changed": false,
+  "smtp_changed": false,
+  "password_changed": false,
+  "secrets_sent": [],
+  "proof": "p51-link-pos-allowlist.json"
+}

@@ -127,6 +127,7 @@ Handoff e evidências: `docs/reviews/evidence/etapa-2/r05-realm-interno/`.
 | 3 | `20260912140547_forms_question_media_draft_bridge_fix_v1.sql` | corrige consumidores para autorização institucional, troca FK por `NO ACTION DEFERRABLE` e devolve `media_context: null` sem working version | `forms_question_media_r2_v1_test.sql` 33 | produção lote 57; espelho 33/33 + behavioral 17/17 + internal drafts 159/159 |
 | 4 | `20260912140548_forms_question_media_retry_delete_v1.sql` | reconcilia retry idêntico após finalize confirmado, solta binding no delete nominal e uniformiza editor inexistente/cross-tenant | `forms_question_media_retry_delete_v1_test.sql` 9 | produção lote 57; espelho 9/9 |
 | 5 | `20260912140549_forms_question_media_terminal_unbind_v1.sql` | garante que toda transição de `question-image` para `deleted` solte o binding, inclusive mismatch/expire, e cura resíduos já encerrados | `forms_question_media_terminal_unbind_v1_test.sql` 7 | produção lote 57; espelho 7/7 |
+| 6 | `20260912140550_moments_withdraw_permission_v1.sql` | concede `moments.publications.remove` somente ao template `institution_admin` e alinha `can_withdraw` a autoria + capacidade | focal 4/4 + behavior 11/11 + regressões 23/23 e 30/30 | local-green; produção pendente e exclusiva C0 (lote 58) |
 
 O defeito foi medido apenas no repositório: a migration `20260910190500`
 declara que o scheduler ficou externo e não existe outro job versionado para o
@@ -145,3 +146,8 @@ estado final. A ordem acima é explícita; G5 não aplica SQL.
 ### Recibo vigente C0 — 12/09, 12:25 BRT
 
 O historico acima foi superado: os itens 2–5 foram aplicados juntos no lote57, em ordem, com ledger na mesma transacao. Os quatro arquivos estao em migrations/. Focais9+7 e regressoes33+17+159 verdes no espelho; backups privados e pos-provas em docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md. Nenhuma promocao E2E por este recibo.
+
+O item 6 é independente do lote 57 e nasceu de falha 403 medida pelo G4 em
+produção. O RED comportamental foi 4 ok/7 not ok; após o candidato, o G0
+aprovou 68/68 no espelho. A fixture usa os templates reais e não injeta o grant
+testado. Ver `docs/reviews/evidence/etapa-2/r08-realm-interno/moments-withdrawal-lote58.md`.
