@@ -1,6 +1,6 @@
 {
-  "revision": 67,
-  "updated_at": "2026-09-12T13:43:01.786915-03:00",
+  "revision": 68,
+  "updated_at": "2026-09-12T13:46:06.501264-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -9,8 +9,8 @@
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
   "base": "origin/dev 6d6cbef32",
-  "head": "b58cbaec9",
-  "status": "EXECUTANDO: mapa errors concluído sem promoção; review H25 G3 apontou overflow sorted estreito, confirmação G3 em curso",
+  "head": "57259e29c",
+  "status": "EXECUTANDO: revisão H25 concluída SHA54c892ebc, overflow corrigido por G3; mapa errors57259e29c publicado",
   "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -75,8 +75,8 @@
     "conciliar spec028 bindingattachment_id semassetId antescertificacao",
     "proximo gate independente aposAPI, semconflito demaisfrentes"
   ],
-  "next_step": "C0 integrar Perfil b58cbaec9; revisar fix H25 quando publicado; mapa errors-route-map.md e proposta deltas-errors-gates.json ao escritor central",
-  "ack": "C0 atribuiu mapa errors e revisão H25; nenhum slot Flutter/Chrome G4 ativo.",
+  "next_step": "C0 integrar Perfil/revisões; próximo gate independente solicitado; nenhuma promoção UI/E2E ou AA global",
+  "ack": "H25 fix publicado54c892ebc revisado sem runner; G3reporta21IDs únicosPASS/analyze0. Nenhum slot G4ativo.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "Sem processo/slotFlutter/Chrome G4 ativo. Slots globais coordenadosC0; semsegredos;worktreeprincipalintocado;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
