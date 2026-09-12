@@ -1,7 +1,7 @@
 ---
 title: "R08 G5 — preflight CORS do chat-media"
 source: "R08-plano.md G5; ADR 0032; teste Deno local"
-status: "local-green; deploy pertence ao C0"
+status: "integrado e implantado pelo C0; preflight remoto aprovado"
 generated_at: "2026-09-12T11:06:41-03:00"
 ---
 
@@ -28,8 +28,14 @@ Resultado após a correção: **6 passaram / 0 falharam** — um teste CORS, tr�
 testes do handler e dois testes de bytes persistidos. Houve apenas o aviso de
 depreciação `punycode` vindo de dependência Node, antes da suíte.
 
-Esta prova é local e não certifica deploy, R2, fluxo pela tela ou isolamento
-cross-tenant. O deploy e o teste remoto permanecem com C0/G4.
+Esta prova local não certifica R2, fluxo pela tela ou isolamento cross-tenant.
+
+Recibo posterior do C0: o commit `ebb227212` foi integrado; a mesma suíte
+passou **6/6** na base conjunta; `chat-media` v4 ficou `ACTIVE`. O preflight
+remoto retornou 200 para a origem 3014/Superadmin e 403 sem
+`Access-Control-Allow-Origin` para origem externa. A implantação e a medição
+remota são evidência do C0, não execução desta frente. O fluxo completo
+prepare/PUT/finalize/read continua com G4.
 
 ## Contrato de identificador
 
