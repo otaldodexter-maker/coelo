@@ -1,0 +1,21 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..10
+(1 row)
+
+INSERT 0 1
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+ERROR:  null value in column "handle" of relation "groups" violates not-null constraint
+DETAIL:  Failing row contains (a2800000-0000-4000-8000-000000000121, a2800000-0000-4000-8000-000000000101, a2800000-0000-4000-8000-000000000111, H28 Turma A1, class, active, 2026-09-12 17:13:55.237606+00, 2026-09-12 17:13:55.237606+00, null, t, t, t, 1, null, null).

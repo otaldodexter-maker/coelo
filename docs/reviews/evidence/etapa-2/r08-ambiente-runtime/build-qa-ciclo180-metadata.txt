@@ -1,0 +1,21 @@
+measured_at=2026-09-12T14:08:35-03:00
+source_sha=b82fed9c4b997995ee723ed6fff1dd62f4b746b7
+origin_dev_cycle=7d2b66a3e
+build_command=flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local
+build_exit=0
+build_elapsed_seconds=87.6
+main_dart_js_bytes=8432045
+main_dart_js_sha256=1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8
+server_bind=127.0.0.1
+server_port=3014
+server_pid=14072
+login_http=200
+login_bytes=1020
+flutter_bootstrap_http=200
+flutter_bootstrap_bytes=9975
+chrome_root_pid=22592
+chrome_tab_id=829822454
+chrome_url=http://127.0.0.1:3014/login
+chrome_reloaded=true
+ui_login_read_reload_proof=false
+credentials_logged=false

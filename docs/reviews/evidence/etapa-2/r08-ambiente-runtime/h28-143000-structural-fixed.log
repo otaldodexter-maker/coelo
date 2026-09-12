@@ -1,0 +1,70 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..11
+(1 row)
+
+                              has_function
+------------------------------------------------------------------------
+ ok 1 - listagem de Pessoas expõe atividade e localidade sem sobrecarga
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 2 - PostgREST vê uma única assinatura de listagem
+(1 row)
+
+           function_privs_are
+----------------------------------------
+ ok 3 - authenticated conserva execução
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 4 - anon não recebe diretório de Pessoas
+(1 row)
+
+CREATE FUNCTION
+                                 ok
+--------------------------------------------------------------------
+ ok 5 - atividade aceita somente profissional/participante vigentes
+(1 row)
+
+                                  ok
+----------------------------------------------------------------------
+ ok 6 - instituição, unidade e grupo são resolvidos no mesmo contexto
+(1 row)
+
+                                              ok
+----------------------------------------------------------------------------------------------
+ ok 7 - nome do perfil vem da linha original, inclusive perfil global com institution_id nulo
+(1 row)
+
+                                           ok
+-----------------------------------------------------------------------------------------
+ ok 8 - localidade percorre unidade/instituição canônicas, não ID de endereço do cliente
+(1 row)
+
+                                ok
+-------------------------------------------------------------------
+ ok 9 - membership emite a atividade que o domínio Dart já declara
+(1 row)
+
+                             ok
+------------------------------------------------------------
+ ok 10 - contagem é de pessoas distintas antes da paginação
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 11 - segmentos legados continuam compostos antes dos filtros novos
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

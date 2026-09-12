@@ -1,0 +1,6 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+DROP FUNCTION
+ERROR:  unexpected end of function definition at end of input
+LINE 132: end $$;
+              ^

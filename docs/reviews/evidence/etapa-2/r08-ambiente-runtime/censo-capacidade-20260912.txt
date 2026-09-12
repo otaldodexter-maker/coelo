@@ -1,0 +1,11 @@
+measured_at=2026-09-12T14:08:35-03:00
+ram_total_gb=15.63
+ram_free_gb=3.62
+flutter_test_processes=0
+flutter_tools_processes=0
+dart_mcp_processes=10
+recommendation=single_flutter_test_process_with_concurrency_2_if_immediate_free_ram_gte_3.0_gb_else_concurrency_1
+test_started=false
+remeasured_at=2026-09-12T14:21:14-03:00
+ram_free_gb_remeasured=2.83
+final_recommendation=single_flutter_test_process_with_concurrency_1_unless_immediate_preflight_recovers_to_at_least_3.0_gb

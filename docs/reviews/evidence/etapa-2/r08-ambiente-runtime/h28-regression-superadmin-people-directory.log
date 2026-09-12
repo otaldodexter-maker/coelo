@@ -1,0 +1,88 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..52
+(1 row)
+
+                            results_eq
+------------------------------------------------------------------
+ not ok 1 - people permissions are granular and cataloged        +
+ # Failed test 1: "people permissions are granular and cataloged"+
+ #     Results differ beginning at row 1:                        +
+ #         have: (people.assign_children)                        +
+ #         want: (people.child_contexts.manage)
+(1 row)
+
+                       results_eq
+---------------------------------------------------------
+ ok 2 - only Owner receives people permissions initially
+(1 row)
+
+                          ok
+-------------------------------------------------------
+ not ok 3 - all people permissions require MFA        +
+ # Failed test 3: "all people permissions require MFA"
+(1 row)
+
+                             has_function
+----------------------------------------------------------------------
+ not ok 4 - directory list RPC matches the Flutter repository        +
+ # Failed test 4: "directory list RPC matches the Flutter repository"
+(1 row)
+
+                       has_function
+----------------------------------------------------------
+ ok 5 - filter options RPC matches the Flutter repository
+(1 row)
+
+                      has_function
+---------------------------------------------------------
+ ok 6 - person detail RPC matches the Flutter repository
+(1 row)
+
+                      has_function
+--------------------------------------------------------
+ ok 7 - draft create RPC matches the Flutter repository
+(1 row)
+
+                        has_function
+-------------------------------------------------------------
+ ok 8 - concurrent update RPC matches the Flutter repository
+(1 row)
+
+                                 ok
+---------------------------------------------------------------------
+ ok 9 - legacy helpers are private rather than redundant public RPCs
+(1 row)
+
+                                                                             function_privs_are
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ not ok 10 - authenticated can execute list RPC                                                                                                                            +
+ # Failed test 10: "authenticated can execute list RPC"                                                                                                                    +
+ #     Function public.superadmin_people_list(text, person_type[], record_status[], uuid[], uuid[], uuid[], text[], text[], text, boolean, integer, integer) does not exist
+(1 row)
+
+                  function_privs_are
+------------------------------------------------------
+ ok 11 - authenticated can execute filter options RPC
+(1 row)
+
+              function_privs_are
+----------------------------------------------
+ ok 12 - authenticated can execute detail RPC
+(1 row)
+
+              function_privs_are
+----------------------------------------------
+ ok 13 - authenticated can execute create RPC
+(1 row)
+
+              function_privs_are
+----------------------------------------------
+ ok 14 - authenticated can execute update RPC
+(1 row)
+
+ERROR:  function "public.superadmin_people_list(text,public.person_type[],public.record_status[],uuid[],uuid[],uuid[],text[],text[],text,boolean,integer,integer)" does not exist
