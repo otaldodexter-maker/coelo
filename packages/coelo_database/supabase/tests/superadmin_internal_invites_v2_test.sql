@@ -15,9 +15,9 @@ select has_function('public','superadmin_invite_revoke_v2',array['uuid','uuid','
 select ok((select requires_mfa is false and status='active'
  from public.platform_permissions where code='platform.invites.read'),
  'read capability is active without forcing aal2');
-select ok((select requires_mfa is true and status='active'
+select ok((select requires_mfa is false and status='active'
  from public.platform_permissions where code='platform.invites.manage'),
- 'manage capability is active and requires aal2');
+ 'manage capability is active without forcing aal2 while MFA is deferred');
 select is((select array_agg(role_record.code order by role_record.code)
  from public.platform_role_permissions grant_record
  join public.platform_permissions permission_record on permission_record.id=grant_record.permission_id

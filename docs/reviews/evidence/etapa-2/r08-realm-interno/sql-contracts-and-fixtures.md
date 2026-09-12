@@ -82,6 +82,11 @@ Foram acrescentados casos para exigir:
   claro.
 
 O token não é impresso pela suíte e todo o arranjo é revertido. O plano passou
-de 33 para 35. A suíte não foi executada nesta frente enquanto o slot SQL está
-retido; G2 pode usar os IDs acima apenas no espelho transacional, nunca como
-dado permanente ou credencial.
+de 33 para 35. G2 pode usar os IDs acima apenas no espelho transacional, nunca
+como dado permanente ou credencial.
+
+Primeiro replay G0: 34/35, native 0, wrapper 1 e rollback. Os três casos novos
+do convite expirado passaram; a única falha era a asserção histórica de
+`platform.invites.manage.requires_mfa = true`, incompatível com a migration
+vigente que adiou MFA no MVP e com o caso AAL1 já presente na própria suíte.
+A expectativa foi corrigida para `false`; rerun focal permanece pendente.
