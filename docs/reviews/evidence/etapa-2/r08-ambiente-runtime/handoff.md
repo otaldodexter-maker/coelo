@@ -176,6 +176,8 @@ O probe CUA foi repetido com seletores e APIs exatos, usando apenas sentinelas: 
 
 O último gate solicitado pelo C0 usou clique físico `[960, 434]` e instrumentação QA temporária, sanitizada, nos controllers/focus nodes. O clique atingiu e focou o e-mail; `Tab` moveu o foco para senha, mas `typeText` e uma tecla individual mantiveram DOM e controllers em comprimento zero. Isso isola o bloqueio no canal de inserção de texto da extensão, não no hit-testing. A instrumentação foi removida integralmente, o build original foi recompilado com exit 0 e recuperou o SHA-256 original `4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1`; release ativo no PID `14724`.
 
+A última alternativa permitida pela própria CUA, `pressSequentially`, também não ficou acionável: o locator por role expirou/destacou e o locator DOM contou dois inputs, mas expirou no actionability antes de inserir a sentinela. O diagnóstico de ferramenta está encerrado sem CDP por shell, bypass Auth ou segundo navegador.
+
 ## Suítes focais adicionais de G5
 
 - `superadmin_assessments_internal_v2_test.sql` do commit `53b9c6d29`: **52/52**, native/wrapper 0 e rollback. Terminal: [pgtap-assessments-53b9c6d29.log](./pgtap-assessments-53b9c6d29.log).

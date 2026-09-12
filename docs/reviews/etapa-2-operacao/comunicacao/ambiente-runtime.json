@@ -1,12 +1,12 @@
 {
-  "revision": 8,
+  "revision": 9,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T11:50:42-03:00",
+  "updatedAt": "2026-09-12T11:55:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -54,7 +54,8 @@
       "tentativa debug autorizada: DTD/VM Service conectados, mas qa_login falhou no DWDS e Dart MCP confirmou ausencia da extensao Dart Debug Chrome",
       "probe CUA com getByRole/fill/press Tab e click/typeText/setValue reproduziu controller vazio; sem chamada Auth",
       "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
-      "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas"
+      "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas",
+      "alternativa CUA pressSequentially encerrada: dois inputs DOM detectados, mas locator sem actionability e nenhuma insercao; sem CDP, bypass ou segundo browser"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -105,9 +106,10 @@
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "af99409cf5bb266b4be96647690abde44ace8f23",
+    "head": "19b54a33e79c130a8107f2e42cecc350521399d2",
     "buildSourceSha": "af99409cf5bb266b4be96647690abde44ace8f23",
-    "publishedSha": "af99409cf5bb266b4be96647690abde44ace8f23"
+    "publishedSha": "19b54a33e79c130a8107f2e42cecc350521399d2",
+    "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
     {
@@ -149,6 +151,11 @@
       "revision": 8,
       "at": "2026-09-12T11:50:42-03:00",
       "summary": "Forms 444ac024 ficou vermelho apos apply local: autorizacao nao passa institution_id; G3 bloqueou tambem RESTRICT DEFERRABLE/media_context nulo. Regressões paradas e producao intocada."
+    },
+    {
+      "revision": 9,
+      "at": "2026-09-12T11:55:28-03:00",
+      "summary": "pressSequentially da propria CUA falhou no actionability apesar de dois inputs DOM; metadados de branch, recurso local e ausencia de deploy reconciliados sem apagar historico."
     }
   ]
 }
