@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-12T16:54:47.742Z",
+  "generatedAt": "2026-09-12T16:57:25.262Z",
   "key": "canonical app-relative test path + display name, linked by testStart.test.id to testDone.testID",
   "counts": {
     "ciclo30": {
@@ -28,19 +28,22 @@
       "testStartEvents": 131,
       "testDoneEvents": 131,
       "executedTestDoneEvents": 121,
-      "hiddenOrLoadingDoneEvents": 10
+      "hiddenOrLoadingDoneEvents": 10,
+      "loaderMatched": 10
     },
     "ciclo60": {
       "testStartEvents": 249,
       "testDoneEvents": 249,
       "executedTestDoneEvents": 238,
-      "hiddenOrLoadingDoneEvents": 11
+      "hiddenOrLoadingDoneEvents": 11,
+      "loaderMatched": 11
     },
     "ciclo90": {
       "testStartEvents": 433,
       "testDoneEvents": 433,
       "executedTestDoneEvents": 422,
-      "hiddenOrLoadingDoneEvents": 11
+      "hiddenOrLoadingDoneEvents": 11,
+      "loaderMatched": 11
     },
     "anonimo293": {}
   },
