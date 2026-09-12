@@ -1,0 +1,41 @@
+[
+ {
+  "action_id": "forms.location-question",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "editor de 4555ba07 (publicado): Adicionar pergunta -> busca Local -> tipo Local (grupo Escolhas) -> \"Em qual local?\" obrigatoria -> Salvar rascunho: form_save_draft 200 com item kind location e options com snapshot do catalogo (84a536f7 ...); reload do editor mostra o item Local. Primeira tentativa 42702 (candidato 20260912220000 aplicado no lote 54).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/58-forms-local-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/58-forms-local-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 55",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt (lote 54 aplicado), build web release da branch work/etapa2-r06-formularios-cuidado-rotina (fd8e675af) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 sob SwiftShader",
+   "recordedAt": "2026-09-11T21:26:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.location-question",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "form_save_draft (230004 + 20260912220000) persiste o item location com snapshot de opcoes (220800) em formulario publicado (nova versao de trabalho); forms_behavioral_rpc_test 27/27 no espelho do coordenador; negativas da familia no pgTAP de Formularios.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/57-forms-local-salvo.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/57-forms-local-salvo.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 55",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt (lote 54 aplicado), build web release da branch work/etapa2-r06-formularios-cuidado-rotina (fd8e675af) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 sob SwiftShader",
+   "recordedAt": "2026-09-11T21:26:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.location-question",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "pergunta Local criada pela rota normal, persistida em producao e mantida no reload do editor.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/58-forms-local-reload.png",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/58-forms-local-reload.png",
+   "revision": "comunicacao/formularios-cuidado-rotina.json rev 55",
+   "environment": "producao Supabase evvbomzejfijozbtgvpt (lote 54 aplicado), build web release da branch work/etapa2-r06-formularios-cuidado-rotina (fd8e675af) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 sob SwiftShader",
+   "recordedAt": "2026-09-11T21:26:00-03:00"
+  }
+ }
+]

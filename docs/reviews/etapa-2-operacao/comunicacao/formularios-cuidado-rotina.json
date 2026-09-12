@@ -1,18 +1,18 @@
 {
- "revision": 54,
+ "revision": 55,
  "round": "E2-R06-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Claude Code (VS Code)",
  "model": "claude-opus-5 (Claude, Opus 5, esforco medio)",
  "coordinator": "Claude",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T21:24-03:00",
+ "updatedAt": "2026-09-11T21:28-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-formularios-cuidado-rotina",
  "branch": "work/etapa2-r06-formularios-cuidado-rotina",
- "head": "09dd1792e + este commit",
+ "head": "09dd1792e (codigo) + este commit",
  "base": "origin/dev ca60b096b",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -70,20 +70,15 @@
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
  "tests": {},
  "reservedFiles": [],
- "blocking": [
-  {
-   "action_id": "forms.location-question / forms.edit (publicado)",
-   "bloqueio": "form_save_draft 42702 em producao para formulario publicado",
-   "desbloqueio": "coordenador aplica candidatos/formularios-cuidado-rotina/20260912220000 (pgTAP 17/17)"
-  }
- ],
+ "blocking": [],
  "deltaProposals": [
-  "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (25 deltas; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido): health-care.list BE done + E2E; medication.create/detail/edit/evidence FE verified + BE done + E2E; daily-routine.list FE/BE/E2E; daily-routine.edit E2E; daily-routine.publish FE/BE/E2E; child-safety.list E2E; child-safety.child FE/BE/E2E"
+  "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (25 deltas; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido): health-care.list BE done + E2E; medication.create/detail/edit/evidence FE verified + BE done + E2E; daily-routine.list FE/BE/E2E; daily-routine.edit E2E; daily-routine.publish FE/BE/E2E; child-safety.list E2E; child-safety.child FE/BE/E2E",
+  "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr-2.json (3: forms.location-question FE verified + BE done + E2E)"
  ],
  "packages": [
   {
    "arquivo": "candidatos/formularios-cuidado-rotina/20260912220000_form_save_draft_version_number_fix_v1.sql",
-   "estado": "PRONTO para o coordenador aplicar. Motivo: app_private.form_save_draft (230004, unica definicao em producao) responde 42702 \"column reference version_number is ambiguous\" ao salvar rascunho de formulario JA PUBLICADO (working_version_id nulo): a variavel version_number colide com a coluna de form_versions no select ... into. Medido na rota real (forms.location-question sobre 4555ba07). Mesmo corpo com a variavel renomeada (next_version_number) e alias fv; sem mudanca de assinatura, grants ou contrato. Prova: supabase/tests/forms_behavioral_rpc_test.sql no espelho supabase_db_coelo_baseline: SEM o candidato aborta na linha 279 (edicao apos publicar) com o 42702; COM o candidato, em transacao com rollback (espelho nao mutado), 17/17. Efeito: forms.edit de formulario publicado volta a funcionar; forms.location-question pode ser provada em seguida.",
+   "estado": "APLICADO em producao pelo coordenador (lote 54, 21:22); reprovado na rota real: form_save_draft 200 em formulario publicado",
    "contrato": "sem mudanca: form_save_draft(request_id uuid, expected_version bigint, payload jsonb) -> jsonb"
   }
  ],
@@ -171,7 +166,7 @@
   }
  ],
  "duvidasParaOOwner": [],
- "nextStep": "responder a revisao de 10 minutos do coordenador ate 21:47; depois de 21:47 nao retomo",
+ "nextStep": "encerrado; depois de 21:46 nao retomo",
  "finalizado": true,
  "dadosSinteticosCriados": [
   {
@@ -198,6 +193,11 @@
    "tabela": "public.routine_models",
    "id": "8d219282-af46-44ac-b22f-1b9f5f728137",
    "nota": "copia do modelo 176882c5, arquivada (prova de Arquivar)"
+  },
+  {
+   "tabela": "public.form_versions",
+   "id": "(nova versao de trabalho do formulario 4555ba07)",
+   "nota": "rascunho com item Local \"Em qual local?\" sobre o formulario publicado"
   }
  ],
  "chavesCriadas": "nenhuma",
@@ -1899,15 +1899,12 @@
   },
   "negativas": "superadmin_medication_plan_detail e record_evidence com plano inexistente/alheio -> P0002 medication plan unavailable (rpc6.py, sessao qa-r06)",
   "forms.location-question": {
-   "resultado": "F (backend)",
-   "prova": "editor de 4555ba07: Adicionar pergunta -> busca Local -> tipo Local (grupo Escolhas) -> \"Em qual local?\" obrigatoria; Salvar rascunho -> form_save_draft 42702 ambiguous version_number (formulario publicado sem working version). Candidato 20260912220000 escrito e provado; reprovar apos aplicacao",
+   "resultado": "P (apos o lote 54)",
+   "prova": "form_save_draft 200 com item location + snapshot de opcoes; reload do editor mantem o item",
    "capturas": [
-    "50",
-    "51",
-    "52",
-    "53",
-    "54",
-    "55"
+    "56",
+    "57",
+    "58"
    ]
   },
   "daily-routine.list (Arquivar)": {
@@ -1961,5 +1958,40 @@
   "dados_sinteticos": "lista em dadosSinteticosCriados (limpeza no fim da Etapa 2)",
   "chaves_criadas": "nenhuma",
   "conhecimento": "comportamento novo para o coelo-knowledge (coordenador): Registros de dose no plano de medicacao (desfecho + motivo obrigatorio fora de Administrada); Rotina com Criar em toda aba, Lancar hoje e Arquivar (status archived, historico preservado)"
+ },
+ "revisaoFinal": {
+  "quando": "2026-09-11T21:28-03:00 (resposta ao pedidoDeRevisao2136)",
+  "entreguei_tudo": "sim. Codigo ate 09dd1792e, JSON rev 55, handoff, deltas (25 + 3) e skills-deltas publicados em work/etapa2-r06-formularios-cuidado-rotina; status limpo; sem WIP; sem stash. Chrome 9418 e servidor 3018 fechados ao fim desta revisao.",
+  "sha_publicado": "09dd1792e (codigo) / este commit (rev 55)",
+  "fechou_com_prova": [
+   "item 0: health_care_golden_test 4/4 (golden da tabela regravado apos conferir que a diferenca era o composto)",
+   "health-care.list: BE done + verified-e2e (directory 200, reload)",
+   "medication.create/detail/edit: verified-e2e (plano 12f816e8 v1->v2, reload, P0002 para id alheio)",
+   "medication.evidence: cliente novo + verified-e2e (record_evidence 200 -> 42e77772)",
+   "daily-routine.list: V-15 A+ completo (Criar em toda aba, acoes na tabela, Lancar hoje, Arquivar) + verified-e2e (Arquivar provado: copia 8d219282 archived)",
+   "daily-routine.edit: verified-e2e apos corrigir 23505 (id sempre enviado)",
+   "daily-routine.publish: verified-e2e (880b12a8 draft -> published v2)",
+   "child-safety.list / child-safety.child: verified-e2e (directory/get 200 no reload)",
+   "Decisao 7 em Assiduidade provada na rota real (sem balao em /attendance/new e /attendance/calls/:id)",
+   "pacote 20260912220000 form_save_draft (42702) pronto: pgTAP 17/17 com o candidato, erro sem ele",
+   "forms.location-question: verified-e2e apos o lote 54 (deltas-r06-fcr-2.json)",
+   "forms.overview: status Rascunho/Publicado/Arquivado na visao geral (09dd1792e)"
+  ],
+  "ficou_aberto_primeiro_gate": [
+   "forms.location-answer: exige ocorrencia nova (cron) com o item Local publicado; nao exercitada",
+   "forms.upload/resolve-file/expire-file/delete-file (item 4): editor sem UI de imagem da pergunta (FE do grupo)",
+   "item 6 (politicas macro) e item 7 (Lancar chamada na familia Publicacao): nao couberam",
+   "medication.create: Responsavel sem contrato; medication.evidence: imagem sem gateway; medication.edit: teste pre-existente 375/200%",
+   "child-safety.child: Relacao em enum cru"
+  ],
+  "deltas": "deltas-r06-fcr.json (25, ja aplicados pelo coordenador) + deltas-r06-fcr-2.json (3, a aplicar)",
+  "pacotes": "20260912220000 aplicado (lote 54); nenhum candidato pendente",
+  "duvidas_ao_owner": [
+   "Medicacao: o campo Responsavel deve sair do formulario ate existir contrato, ou ficar como esta (honesto, sem opcoes)?",
+   "Detalhe do plano de medicacao e do perfil de cuidado: manter o redirecionamento ao editor ou criar tela somente leitura (herdada da R05)?"
+  ],
+  "dados_sinteticos": "lista em dadosSinteticosCriados + nova versao de trabalho do formulario 4555ba07 com item Local (rascunho sobre o publicado)",
+  "chaves_criadas": "nenhuma",
+  "skills_deltas": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/skills-deltas.md"
  }
 }
