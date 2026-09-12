@@ -110,6 +110,16 @@ void main() {
     expect(viewModel.visibleGroups, isEmpty);
     expect(viewModel.visibleActivities, isEmpty);
   });
+
+  test('adding a second state preserves a compatible selected neighborhood', () async {
+    final viewModel = PersonDirectoryViewModel(FakePersonDirectoryRepository());
+    await viewModel.load();
+    await viewModel.setStates({'SP'});
+    await viewModel.setMunicipalities({'municipality-sp'});
+    await viewModel.setNeighborhoods({'neighborhood-centro'});
+    await viewModel.setStates({'SP', 'RJ'});
+    expect(viewModel.query.neighborhoodIds, {'neighborhood-centro'});
+  });
 }
 
 final class _RevocablePersonRepository implements PersonDirectoryRepository {
