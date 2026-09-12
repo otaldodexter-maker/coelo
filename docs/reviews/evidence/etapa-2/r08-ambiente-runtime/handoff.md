@@ -487,7 +487,7 @@ para 3,32 GB, mas o censo completo não foi liberado pelo C0 e não cabe promete
 conclusão antes das 15:00; nenhum teste foi iniciado. A recomendação permanece
 condicional a preflight imediato e posse do único processo Flutter.
 
-Entrega publicada até aqui: `1e7a318d01d713cf9bd60c50e2acd1304e7195a3`.
+Entrega publicada antes do gate focal: `0d42be27d8be6b889224182086a4269df89c5a78`.
 Dados sintéticos preservados para o fechamento formal da Etapa 2: question-image
 form `f88005ab-af5e-4aa2-8cf7-f35de4ded376`/asset
 `d25b8baa-efb5-4702-b5e6-ac3084610605`; answer-image form
@@ -522,11 +522,20 @@ passou 11/11. O fixture funcional verde de G5 em
 `e1cad10e2` (blob `6509d411`, SHA-256 LF
 `dc1295bc55dcffca72ec88aafc154f15b88351781f40369168ed2712f953df8d`)
 passou 10/10. Ambos rodaram uma vez, terminaram com rollback e exit 0: 21/21
-asserts do corpo final. As 23 regressões modernas pertencem à versão anterior
-do corpo e não foram indevidamente atribuídas a esta prova focal. Produção,
-fila e ledger permaneceram intocados.
+asserts focais do corpo final.
+
+Por gate adicional do C0, as três regressões modernas foram então executadas
+uma vez sobre esse mesmo corpo final e o mesmo SHA fixo `df0a281cb`: segmentos
+8/8 (blob `5a452345`, SHA-256 LF `6aa4c82d`), identidade 11/11 (blob
+`bc2a0de7`, SHA-256 LF `bf57cd8a`) e handles 4/4 (blob `44016d9b`, SHA-256
+LF `cac1ec79`). Todas terminaram com rollback e exit 0. O total final passa a
+44/44 sobre o corpo que contém `state_code`; a suíte histórica obsoleta não foi
+repetida. Produção, fila e ledger permaneceram intocados.
 
 Recibos: [estrutural final](./h28-final-structural-df0a281cb.log) e
 [funcional final](./h28-final-functional-e1cad10e2.log). Uma consulta somente
 leitura posterior confirmou que a assinatura final está presente e que o corpo
 materializado contém `state_code`: [verificação do corpo](./h28-final-body-df0a281cb.log).
+Recibos das regressões finais: [segmentos](./h28-final-regression-people-list-segment.log),
+[identidade](./h28-final-regression-people-identity-lookup.log) e
+[handles](./h28-final-regression-institution-people-handles.log).

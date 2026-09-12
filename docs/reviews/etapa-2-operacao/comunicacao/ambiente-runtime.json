@@ -1,12 +1,12 @@
 {
-  "revision": 32,
+  "revision": 33,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:28:00-03:00",
+  "updatedAt": "2026-09-12T14:30:06-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:40:00-03:00",
@@ -137,6 +137,7 @@
       ,"H28: apply inicial c83 falhou sintaxe e rollback; apply corrigido45dee exit0; estrutural final11/11, funcional final10/10, regressões modernas8/8+11/11+4/4, todos testes rollback"
       ,"superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28"
       ,"gate lote59: candidato final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente no baseline; estrutural11/11+funcional10/10, rollback e exit0; produção/ledger intocados"
+      ,"gate final lote59: regressões modernas no mesmo corpo df0a281cb passaram segmentos8/8+identidade11/11+handles4/4; total final44/44, rollback e exit0"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -160,15 +161,15 @@
     "server": "127.0.0.1:3014 PID 14072, ativo; /login e flutter_bootstrap HTTP200; build ciclo180 SHA-256 1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "slot build usado e devolvido; censo nao liberado/iniciado; RAM livre3.32GB as14:23, mas nova janela fecha15:00 e nao comporta promessa de conclusao",
-    "sql": "H28 corpo final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente baseline; prova focal final 21/21 com rollback; 23 regressões pertencem ao corpo anterior; produção e ledger intocados",
+    "sql": "H28 corpo final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente baseline; focais21/21 e regressões modernas23/23, total final44/44 com rollback; produção e ledger intocados",
     "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image PASS API preservado: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response bb1f3443 version2, asset e47eb9e1; prepare/PUT/finalize/replay/save/download/reopen todos comprovados, sem cleanup"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "1e7a318d01d713cf9bd60c50e2acd1304e7195a3",
+    "head": "0d42be27d8be6b889224182086a4269df89c5a78",
     "buildSourceSha": "b82fed9c4b997995ee723ed6fff1dd62f4b746b7",
-    "publishedSha": "1e7a318d01d713cf9bd60c50e2acd1304e7195a3",
+    "publishedSha": "0d42be27d8be6b889224182086a4269df89c5a78",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -331,6 +332,11 @@
       "revision": 32,
       "at": "2026-09-12T14:28:00-03:00",
       "summary": "Gate lote59 confirmou corpo final df0a281cb no baseline: apply commit, estrutural11/11 e funcional10/10 com rollback; produção e ledger intocados."
+    },
+    {
+      "revision": 33,
+      "at": "2026-09-12T14:30:06-03:00",
+      "summary": "Regressões modernas executadas no corpo final df0a281cb: 8/8+11/11+4/4; total final H28 44/44, rollback; suíte histórica não repetida."
     }
   ]
 }

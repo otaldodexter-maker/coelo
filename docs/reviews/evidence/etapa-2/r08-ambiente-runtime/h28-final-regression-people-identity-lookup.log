@@ -1,0 +1,99 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan  
+-------
+ 1..11
+(1 row)
+
+CREATE FUNCTION
+INSERT 0 3
+INSERT 0 5
+INSERT 0 3
+INSERT 0 2
+INSERT 0 3
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+ pil_session 
+-------------
+ 
+(1 row)
+
+               throws_ok               
+---------------------------------------
+ ok 1 - anonimo nao resolve identidade
+(1 row)
+
+ pil_session 
+-------------
+ 
+(1 row)
+
+                    throws_ok                    
+-------------------------------------------------
+ ok 2 - sem people.create nao resolve identidade
+(1 row)
+
+ pil_session 
+-------------
+ 
+(1 row)
+
+                     is                      
+---------------------------------------------
+ ok 3 - e-mail normalizado encontra a pessoa
+(1 row)
+
+                                   is                                    
+-------------------------------------------------------------------------
+ ok 4 - telefone so com digitos encontra e devolve a mascara do catalogo
+(1 row)
+
+                                      is                                      
+------------------------------------------------------------------------------
+ ok 5 - CPF formatado encontra; operador com people.update recebe edit_global
+(1 row)
+
+                   is                   
+----------------------------------------
+ ok 6 - @ normalizado encontra a pessoa
+(1 row)
+
+                      is                      
+----------------------------------------------
+ ok 7 - nome parcial devolve adulto e crianca
+(1 row)
+
+                       is                       
+------------------------------------------------
+ ok 8 - sem correspondencia devolve lista vazia
+(1 row)
+
+                throws_ok                 
+------------------------------------------
+ ok 9 - kind fora da allowlist e recusado
+(1 row)
+
+ pil_session 
+-------------
+ 
+(1 row)
+
+                         is                          
+-----------------------------------------------------
+ ok 10 - operador sem people.update recebe link_only
+(1 row)
+
+                        is                        
+--------------------------------------------------
+ ok 11 - consultas auditadas sem o valor em claro
+(1 row)
+
+ finish 
+--------
+(0 rows)
+
+ROLLBACK

@@ -1,0 +1,71 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan 
+------
+ 1..8
+(1 row)
+
+INSERT 0 1
+INSERT 0 5
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+                                       set_config                                        
+-----------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "a0700000-0000-4000-8000-000000000001", "role": "authenticated"}
+(1 row)
+
+CREATE FUNCTION
+                is                 
+-----------------------------------
+ ok 1 - all lista as 5 pessoas SEG
+(1 row)
+
+               is               
+--------------------------------
+ ok 2 - children = tipo crianca
+(1 row)
+
+                       is                        
+-------------------------------------------------
+ ok 3 - guardians = vinculo de responsavel ativo
+(1 row)
+
+                             is                             
+------------------------------------------------------------
+ ok 4 - institutional_team = membership institucional ativa
+(1 row)
+
+                     is                     
+--------------------------------------------
+ ok 5 - dual_profile = responsavel e equipe
+(1 row)
+
+                                  is                                   
+-----------------------------------------------------------------------
+ ok 6 - sem p_segment (default all) o contrato antigo continua valendo
+(1 row)
+
+                  throws_ok                   
+----------------------------------------------
+ ok 7 - segmento fora da allowlist e recusado
+(1 row)
+
+                          is                           
+-------------------------------------------------------
+ ok 8 - uma unica sobrecarga de superadmin_people_list
+(1 row)
+
+ finish 
+--------
+(0 rows)
+
+ROLLBACK
