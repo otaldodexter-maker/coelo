@@ -916,7 +916,7 @@ void main() {
             find.byKey(const Key('location-selection-option')),
           )
           .value,
-      isNull,
+      isEmpty,
     );
     tester
         .widget<CoeloAdminSingleSelectField<String>>(
@@ -968,6 +968,8 @@ void main() {
     );
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
     expect(
       tester
           .widget<CoeloAdminSingleSelectField<String>>(
@@ -976,8 +978,6 @@ void main() {
           .value,
       locationB,
     );
-    await tester.tap(find.byKey(const Key('group-form-continue')));
-    await tester.pumpAndSettle();
     tester
         .widget<LocationSelectionField>(find.byType(LocationSelectionField))
         .onChanged(

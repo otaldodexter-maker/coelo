@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/scheduler.dart';
 import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -195,6 +196,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
   CataloguedLocationSelection? _cataloguedLocationSelection;
+  late LocationSelectionSource _locationSelectionSource;
   GroupLocationCreateResult? _createdWithLocation;
   String? _locationCreateRequestId;
   String? _locationCreateFingerprint;
@@ -208,6 +210,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   void initState() {
     super.initState();
+    _locationSelectionSource = CatalogLocationSelectionSource(widget.locationCatalogReader);
     _status = GroupStatus.active;
     _nameController = TextEditingController();
     _handleController = TextEditingController();
@@ -223,6 +226,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   void didUpdateWidget(covariant GroupFormPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.locationCatalogReader, widget.locationCatalogReader)) {
+      _locationSelectionSource = CatalogLocationSelectionSource(widget.locationCatalogReader);
+    }
     if (!identical(oldWidget.repository, widget.repository) ||
         oldWidget.groupId != widget.groupId ||
         oldWidget.initialInstitutionId != widget.initialInstitutionId ||
@@ -1215,23 +1221,43 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         LocationSelectionField(
           key: ValueKey('group-catalogued-location-${institution.id}-${unit.id}'),
           scope: scope,
-          source: CatalogLocationSelectionSource(widget.locationCatalogReader),
+          source: _locationSelectionSource,
           sessionAvailable: true,
           contextRevision: 0,
           catalogOnly: true,
           initialSelection: _cataloguedLocationSelection,
           onChanged: (value) {
-            if (!_canChangeLocationContext()) return;
-            if (value != null &&
-                (value is! CataloguedLocationSelection ||
-                    !sameLocationScope(value.snapshot.scope, scope))) {
-              return;
+            void acceptSelection() {
+              if (!mounted ||
+                  _selectedInstitution?.id != institution.id ||
+                  _selectedUnit?.id != unit.id) {
+                return;
+              }
+              final selected = _cataloguedLocationSelection;
+              if (identical(value, selected) ||
+                  value is CataloguedLocationSelection &&
+                      selected != null &&
+                      value.snapshot.id == selected.snapshot.id &&
+                      sameLocationScope(value.snapshot.scope, selected.snapshot.scope)) {
+                return;
+              }
+              if (!_canChangeLocationContext()) return;
+              if (value != null &&
+                  (value is! CataloguedLocationSelection ||
+                      !sameLocationScope(value.snapshot.scope, scope))) {
+                return;
+              }
+              setState(() {
+                _cataloguedLocationSelection = value as CataloguedLocationSelection?;
+                _clearLocationDraft(clearSelection: false);
+                _dirty = true;
+              });
             }
-            setState(() {
-              _cataloguedLocationSelection = value as CataloguedLocationSelection?;
-              _clearLocationDraft(clearSelection: false);
-              _dirty = true;
-            });
+            if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+              WidgetsBinding.instance.addPostFrameCallback((_) => acceptSelection());
+            } else {
+              acceptSelection();
+            }
           },
         ),
       ],
