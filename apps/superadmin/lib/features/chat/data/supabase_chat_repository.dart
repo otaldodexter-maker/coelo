@@ -43,7 +43,7 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
       final expiresAt = _date(prepared, 'expires_at');
       if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
       final url = _signedUrl(prepared, 'upload_url');
-      final headers = <String, String>{'content-type': command.contentType};
+      final headers = <String, String>{};
       final requiredHeaders = prepared['required_headers'];
       if (requiredHeaders is! Map) throw const ChatFailureException();
       for (final entry in requiredHeaders.entries) {
@@ -54,10 +54,15 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
         }
         headers[key] = entry.value as String;
       }
+      if (headers['content-type'] != command.contentType) throw const ChatFailureException();
       // This client never receives the authenticated Supabase client's headers.
       final upload = _uploadClient ?? http.Client();
       try {
-        final response = await upload.put(url, headers: headers, body: command.bytes);
+        final request = http.Request('PUT', url)
+          ..followRedirects = false
+          ..headers.addAll(headers)
+          ..bodyBytes = command.bytes;
+        final response = await http.Response.fromStream(await upload.send(request));
         if (response.statusCode < 200 || response.statusCode >= 300) {
           throw const ChatFailureException();
         }

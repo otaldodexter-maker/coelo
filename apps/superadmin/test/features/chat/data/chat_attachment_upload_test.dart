@@ -42,7 +42,7 @@ void main() {
             'message_id': 'message-1',
             'attachment_id': 'attachment-1',
             'upload_url': 'https://private.example/signed',
-            'required_headers': {'x-amz-meta-upload': 'required'},
+            'required_headers': {'content-type': 'image/png', 'x-amz-meta-upload': 'required'},
             'expires_at': DateTime.now().toUtc().add(const Duration(minutes: 5)).toIso8601String(),
             'replayed': false,
           });
@@ -55,6 +55,7 @@ void main() {
     final upload = MockClient((request) async {
       actions.add('PUT');
       expect(request.method, 'PUT');
+      expect(request.followRedirects, isFalse);
       expect(request.url.toString(), 'https://private.example/signed');
       expect(request.bodyBytes, bytes);
       expect(request.headers['content-type'], 'image/png');
@@ -82,7 +83,7 @@ void main() {
           'message_id': 'message-1',
           'attachment_id': 'attachment-1',
           'upload_url': 'https://private.example/signed',
-          'required_headers': <String, String>{},
+          'required_headers': {'content-type': 'image/png'},
           'expires_at': DateTime.now().toUtc().add(const Duration(minutes: 5)).toIso8601String(),
           'replayed': false,
         });
@@ -166,6 +167,71 @@ void main() {
         );
       }
       expect(actions, ['prepare', 'read']);
+    });
+  }
+
+  for (final scenario in ['redirect', 'wrong-mime']) {
+    test('signed upload refuses $scenario without finalize', () async {
+      final actions = <String>[];
+      var puts = 0;
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          actions.add((jsonDecode(request.body) as Map<String, dynamic>)['action'] as String);
+          return _json({
+            'message_id': 'message-1',
+            'attachment_id': 'attachment-1',
+            'upload_url': 'https://private.example/signed',
+            'required_headers': {
+              'content-type': scenario == 'wrong-mime' ? 'application/pdf' : 'image/png',
+            },
+            'expires_at': DateTime.now().toUtc().add(const Duration(minutes: 5)).toIso8601String(),
+            'replayed': false,
+          });
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseChatRepository(
+        client,
+        uploadClient: MockClient((request) async {
+          puts++;
+          expect(request.followRedirects, isFalse);
+          expect(request.headers, {'content-type': 'image/png'});
+          return Response('', 307, headers: {'location': 'https://other.invalid/file'});
+        }),
+      );
+      await expectLater(
+        repository.uploadAttachment(command()),
+        throwsA(isA<ChatFailureException>()),
+      );
+      expect(actions, ['prepare']);
+      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
+    });
+  }
+
+  for (final code in ['chat_read_only', 'sai_permission_denied']) {
+    test('maps lowercase gateway refusal $code from status422', () async {
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient(
+          (_) async => Response(
+            jsonEncode({'error': code}),
+            422,
+            headers: {'content-type': 'application/json'},
+          ),
+        ),
+      );
+      addTearDown(client.dispose);
+      await expectLater(
+        SupabaseChatRepository(client).uploadAttachment(command()),
+        throwsA(
+          code == 'chat_read_only'
+              ? isA<ChatConflictException>()
+              : isA<ChatUnauthorizedException>(),
+        ),
+      );
     });
   }
 

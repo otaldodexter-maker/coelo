@@ -147,3 +147,34 @@ somente FE `chat.attach`: blocked-environment → local-green; backend e E2E
 mantidos. Aplicacao pelo escritor central C0, apos sua revisao. Primeiro gate
 atual: integrar e provar arquivo real na rota normal, reautorizacao/reload e
 negativa de escopo, com a divergencia spec028 conciliada pelo C0.
+
+
+## Pacote 3 — controle do PUT assinado solicitado pelo C0
+
+apps/superadmin → Conversas/anexar; Coelo(Principal) → publicar Acontece,
+Agora e Momentos → transferencia de arquivo. Revisao C0 localizou redirect
+implicito no cliente. O assinador R2 atual retorna content-type em required_headers.
+
+Os quatro adaptadores agora usam Request PUT com followRedirects=false,
+headers assinados sem sobrescrever MIME e Response.fromStream. MIME diferente
+da assinatura recusa a transferencia antes do PUT; redirect307 nao chega a
+finalize/publicar. A correlacao de IDs nos envelopes e o retry foram preservados.
+O mapeamento lowercase de chat-media foi confirmado com recusas422 readonly e
+permission_denied. Nenhum gateway, bucket, policy ou dependencia criado.
+
+SlotC0 11:50, devolvido imediatamente apos terminar:
+
+- Quatro arquivos repository: **28 PASS / 0 FAIL / 0 SKIP**, exit0.
+- Sao11casos novos e17existentes;6dos existentesChat ja pertencem aos56 do
+  pacote2. Nao somar56+28 como testes distintos.
+- Log commitado: `signed-put-flutter-test.log`.
+- Analyze final dos quatro adaptadores e quatro testes: **No issues found**,
+  exit0. Sem reexecucao visual ou novoE2E.
+
+Proximo gate independente em WIP separado: PrincipalChatPage nao renderizava
+attachments recebidos. Preparado compartilhamento do ciclo de leitura/purge
+com molduras visuais separadas; nenhumwidgetadministrativo noPrincipal.
+Esse WIP nao acompanha o commit do controlePUT e ainda nao foi testado.
+
+C0 informou schedulerH09 succeeded14:35/14:40UTC em producao. Resultado e
+publicacao final desse aceite pertencem aC0/G5; G4 nao executou cron nem UI.

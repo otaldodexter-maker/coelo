@@ -10,6 +10,74 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  for (final scenario in ['ready', 'redirect', 'wrong-mime']) {
+    test('R2 signed upload $scenario preserves intent and refuses unsafe transfer', () async {
+      final actions = <String>[];
+      var puts = 0;
+      final client = SupabaseClient(
+        'https://coelo.test',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          final body = jsonDecode(request.body) as Map<String, dynamic>;
+          actions.add(body['action'] as String);
+          expect(body['asset_id'], 'asset-1');
+          expect(body['post_id'], 'post-1');
+          expect(body['institution_id'], 'institution-1');
+          expect(body['request_id'], 'request-1');
+          return http.Response(
+            jsonEncode({'asset_id': 'asset-1', 'object_key': 'opaque'}),
+            200,
+            headers: {'content-type': 'application/json'},
+          );
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseHappensPublicationRepository(
+        client,
+        httpClient: MockClient((request) async {
+          puts++;
+          expect(request.followRedirects, isFalse);
+          expect(request.headers, {'content-type': 'image/png', 'x-amz-meta-purpose': 'test'});
+          return http.Response(
+            '',
+            scenario == 'redirect' ? 307 : 200,
+            headers: {'location': 'https://other.invalid/file'},
+          );
+        }),
+      );
+      final result = repository.finalizeMedia(
+        HappensUploadIntent(
+          assetId: 'asset-1',
+          institutionId: 'institution-1',
+          postId: 'post-1',
+          requestId: 'request-1',
+          displayOrder: 0,
+          storageProvider: 'r2',
+          uploadUrl: Uri.parse('https://private.test/signed'),
+          requiredHeaders: {
+            'content-type': scenario == 'wrong-mime' ? 'image/jpeg' : 'image/png',
+            'x-amz-meta-purpose': 'test',
+          },
+          expiresAt: DateTime.now().add(const Duration(minutes: 5)),
+        ),
+        HappensMediaDraft(
+          localId: 'local-1',
+          name: 'image.png',
+          mimeType: 'image/png',
+          bytes: Uint8List(8),
+        ),
+      );
+      if (scenario == 'ready') {
+        expect((await result).assetId, 'asset-1');
+        expect(actions, ['finalize']);
+      } else {
+        await expectLater(result, throwsException);
+        expect(actions, isEmpty);
+      }
+      expect(puts, scenario == 'wrong-mime' ? 0 : 1);
+    });
+  }
+
   test('ambiguous 422 preserves the draft and permits explicit removal retry', () async {
     var requests = 0;
     final client = SupabaseClient(

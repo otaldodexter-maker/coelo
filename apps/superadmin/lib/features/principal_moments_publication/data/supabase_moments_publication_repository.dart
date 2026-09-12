@@ -170,14 +170,16 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
     _requireSuccess(preparedResponse, 'moments_media_prepare_failed');
     final prepared = Map<String, dynamic>.from(preparedResponse.data as Map);
     final requiredHeaders = (prepared['required_headers'] as Map? ?? const {}).map(
-      (key, value) => MapEntry(key.toString(), value.toString()),
+      (key, value) => MapEntry(key.toString().toLowerCase(), value.toString()),
     );
-    requiredHeaders['content-type'] = media.mimeType;
-    final uploadResponse = await _httpClient.put(
-      Uri.parse(prepared['upload_url'] as String),
-      headers: requiredHeaders,
-      body: media.bytes,
-    );
+    if (requiredHeaders['content-type'] != media.mimeType) {
+      throw Exception('moments_media_upload_invalid_headers');
+    }
+    final request = http.Request('PUT', Uri.parse(prepared['upload_url'] as String))
+      ..followRedirects = false
+      ..headers.addAll(requiredHeaders)
+      ..bodyBytes = media.bytes;
+    final uploadResponse = await http.Response.fromStream(await _httpClient.send(request));
     if (uploadResponse.statusCode < 200 || uploadResponse.statusCode >= 300) {
       throw http.ClientException('moments_media_put_failed', uploadResponse.request?.url);
     }
