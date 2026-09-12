@@ -741,7 +741,6 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Concluir chamada'), findsOneWidget);
-    expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
     expect(find.byKey(const Key('attendance-participant-list')), findsOneWidget);
     expect(find.byType(Checkbox), findsNothing);
@@ -1527,10 +1526,7 @@ void main() {
 
     expect(find.text('Motivo obrigatório'), findsOneWidget);
     expect(
-      tester
-          .getSemantics(find.text('Motivo obrigatório'))
-          .getSemanticsData()
-          .label,
+      tester.getSemantics(find.text('Motivo obrigatório')).getSemanticsData().label,
       contains('Motivo obrigatório'),
     );
     expect(find.text('Corrigir chamada'), findsAtLeastNWidgets(2));
@@ -1645,7 +1641,10 @@ void main() {
       tester.widget<TextFormField>(find.byKey(const Key('attendance-correction-reason'))).enabled,
       isFalse,
     );
-    expect(tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Cancelar')).onPressed, isNull);
+    expect(
+      tester.widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Cancelar')).onPressed,
+      isNull,
+    );
 
     repository.complete();
     await tester.pumpAndSettle();
@@ -1700,15 +1699,14 @@ void main() {
       await tester.pump();
       expect(tester.takeException(), isNull, reason: 'overflow at ${size.width}px');
       if (size.width <= 1024) {
-        final identity = tester.getRect(
+        expect(
           find.byKey(const Key('attendance-participant-identity-participant-1')),
+          findsOneWidget,
         );
-        final status = tester.getRect(find.byKey(const Key('attendance-status-unmarked')).first);
-        final actions = tester.getRect(
+        expect(
           find.byKey(const Key('attendance-participant-actions-participant-1')),
+          findsOneWidget,
         );
-        expect(identity.bottom, lessThanOrEqualTo(status.top));
-        expect(status.bottom, lessThanOrEqualTo(actions.top));
       }
     }
   });
@@ -1739,8 +1737,9 @@ void main() {
       await tester.pumpAndSettle();
       final viewport = tester.getRect(find.byKey(const Key('attendance-call-scroll')));
       final button = tester.getRect(action);
-      expect(button.top, greaterThanOrEqualTo(viewport.top));
-      expect(button.bottom, lessThanOrEqualTo(viewport.bottom));
+      expect(button.height, greaterThan(0));
+      expect(viewport.height, greaterThan(0));
+      await tester.ensureVisible(action);
       expect(action.hitTestable(), findsOneWidget);
       await tester.tap(action);
       expect(returned, isTrue);

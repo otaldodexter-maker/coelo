@@ -1,0 +1,28 @@
+[
+  {
+    "action_id": "attendance.entry/complete",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Reconstrucao da chamada sobre PublicationSurface: contexto em card, segmentos P/F/A por aluno, Marcar todos presentes, observacao por aluno preservada no detalhe, resumo no web, rodape sem launcher de chat e sem wizard.",
+    "evidencia": "apps/superadmin/test/features/attendance/goldens/attendance_call_compact_start_light_375.png",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/attendance/goldens/attendance_call_compact_start_light_375.png",
+      "revision": "57",
+      "environment": "local flutter_test; rota real ainda pendente",
+      "recordedAt": "2026-09-11T23:58:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.entry/complete",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Suite de paginas e goldens da Assiduidade verde apos a mudanca: 55 testes de paginas e 4 goldens; antigos testes de wizard foram ajustados para o contrato Publicacao.",
+    "evidencia": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
+      "revision": "57",
+      "environment": "local flutter_test",
+      "recordedAt": "2026-09-11T23:58:00-03:00"
+    }
+  }
+]
