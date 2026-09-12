@@ -1,6 +1,6 @@
 ﻿{
     "grupo":  "estrutura",
-    "revision":  106,
+    "revision":  107,
     "round":  "E2-R09-20260912-1542",
     "adocaoR09":  {
                       "threadId":  "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -15,7 +15,7 @@
                       "corte":  "primeiro corte de tempo/consumo C0",
                       "base":  "7907453f0362665ab87fe8faaa4854f286904148",
                       "proximoGate":  "UI real groups.members/location: compilar uma base integrada com emulacoes false; usar busca normal e criar turma sintetica R09 autorizada, persistencia/reload e negativas.",
-                      "bloqueio":  "Transferencia C0 r101 recebida. G1 assume Chrome22592/tab829822462 e servidor51168/3014; preparando build na propria worktree apos merge origin/dev.",
+                      "bloqueio":  "Transferencia nominal r101 recebida, mas cua.getTab(829822462,browser2) recusou: Tab 829822462 is already part of browser session 01a096ed-314b-7c13-a9e0-3e64649e66fc. C0 precisa liberar pelo canal CUA (markHandoff da aba, se aplicavel). Nao abrir outro Chrome/aba para contornar posse.",
                       "contrato":  {
                                        "objetivo":  "fechar uma fatia CRUD real por vez",
                                        "incluido":  "Instituicoes, Unidades, Turmas, Atividades, Avaliacoes e Locais em apps/superadmin; familia administrativa",
@@ -46,7 +46,7 @@
     "entregaR09":  {
                        "codigo":  "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
                        "status":  "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-                       "pedidoC0":  "Integrar9773ef969 e1a5f4fa4c, registrar liberacao flutterTest e transferir proxima vaga Chrome para groups.members/location com build integrado. C0 r99 possui Chrome browser1/tab829822462. Pequenas injecoes nas duas rotas GroupFormPage; nenhuma alteracao de composition root. Segundo fix corrige papel perdido no reload (payload plano vs parser aninhado).",
+                       "pedidoC0":  "Bloqueio concreto CUA: liberar aba829822462 associada a sessao C0 para G1; transferencia no Git ainda nao efetiva na ferramenta. Build integrado G1 em andamento; servidor51168 medido e preservado ate build pronto.",
                        "pedidoG5":  "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
                        "provas":  "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
                        "delta":  "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
