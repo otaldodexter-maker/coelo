@@ -374,9 +374,9 @@
   }
  },
  "metricas": {
-  "base": "inventario validado em 2026-09-11T23:10-03:00 sobre origin/dev; validate-trackers PASS; ambiente: repositorio + producao medida nos lotes 49 a 55",
+  "base": "inventario validado em 2026-09-12T00:18-03:00 sobre origin/dev; validate-trackers PASS; ambiente: repositorio + producao medida nos lotes 49 a 55",
   "frontendVerified": "164/231 (71,00%)",
-  "frontendLocalGreen": "17/67 (25,37%)",
+  "frontendLocalGreen": "18/67 (26,87%)",
   "frontendAprovacaoVisualDoOwner": "53/231 (22,94%)",
   "backendLocalGreen": "31/75 (41,33%)",
   "backendSqlEmProducao": "180/224 (80,36%)",
