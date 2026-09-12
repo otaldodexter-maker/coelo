@@ -1,0 +1,184 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "at": "2026-09-12T16:09:13.367865-03:00",
+  "container": "supabase_db_coelo_baseline",
+  "port": 57322,
+  "mode": "BEGIN READ ONLY; pg_proc.prosrc exact comparison; ROLLBACK",
+  "sourceSha": "0ba44ca12a0608ef269381b32fd7bd4d2e4a0fe0",
+  "orderSha256": "49cfa07b7decaf9895f01395873bf9ea4e55017b49e6bb1afa73c2c0f8b93ffa",
+  "orderedFilesInspected": [
+    "20260912210000_internal_actor_scope_root_v1.sql",
+    "20260911170500_internal_user_handles_v1.sql",
+    "20260911170600_institution_system_model_delete_v1.sql",
+    "20260911200200_superadmin_account_sessions_v1.sql",
+    "20260912180000_structure_handles_client_v1.sql",
+    "20260912210100_internal_actor_scope_root_v1_hotfix.sql",
+    "20260911200300_account_profile_service_person_email_v1.sql",
+    "20260912180100_assessment_configuration_read_variable_conflict_v1.sql",
+    "20260912180200_activity_detail_v2_handle_v1.sql",
+    "20260911170700_people_identity_lookup_v1.sql",
+    "20260912220000_form_save_draft_version_number_fix_v1.sql",
+    "20260911130400_internal_actor_institution_access_by_role_v1.sql",
+    "20260911130500_meal_plan_scope_rules_object_v1.sql",
+    "20260911170800_internal_user_create_v1.sql",
+    "20260912140545_now_publication_expiry_dispatch_v1.sql",
+    "20260912140546_forms_question_media_draft_bridge_v1.sql",
+    "20260912140547_forms_question_media_draft_bridge_fix_v1.sql",
+    "20260912140548_forms_question_media_retry_delete_v1.sql",
+    "20260912140549_forms_question_media_terminal_unbind_v1.sql",
+    "20260912140550_moments_withdraw_permission_v1.sql",
+    "20260912143000_people_directory_context_filters_v1.sql"
+  ],
+  "checks": [
+    {
+      "function": "app_private.has_platform_permission",
+      "expectedLastFileInProductionOrder": "20260912210000_internal_actor_scope_root_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 2,
+      "expectedBodySha256": "46ef262ffce917dd8633e4fa1b9e188c562a07f99df1e2019cdd79ff03a2a2c9"
+    },
+    {
+      "function": "app_private.superadmin_internal_actor_scope_targets",
+      "expectedLastFileInProductionOrder": "20260912210100_internal_actor_scope_root_v1_hotfix.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "8f1f0390a05039238af4bc28e0ad5731b091ebe8d81771b2ec08848cf0d5e0b3"
+    },
+    {
+      "function": "app_private.superadmin_internal_actor_institution_access_sync",
+      "expectedLastFileInProductionOrder": "20260911130400_internal_actor_institution_access_by_role_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "227f4123bd41d19fcc5841567ba2a8ef0da7162538491145593ff14e839bb01c"
+    },
+    {
+      "function": "app_private.enforce_person_handle_rules",
+      "expectedLastFileInProductionOrder": "20260911170500_internal_user_handles_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "1a89c012275b2ea6dcd25a4859cd3b36a547c49b451741249453f52404eea012"
+    },
+    {
+      "function": "app_private.ensure_person_handle",
+      "expectedLastFileInProductionOrder": "20260911170500_internal_user_handles_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "29b8a56c8d9c0627412439743025b96f3c23a2c8839c1c04dcc4e6e133a18cc1"
+    },
+    {
+      "function": "app_private.people_assign_initial_handle",
+      "expectedLastFileInProductionOrder": "20260911170500_internal_user_handles_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "e0a2b225198bdb1618a8ecc61c85eb8ad5414376041a919662f37e340a5dfd4c"
+    },
+    {
+      "function": "app_private.superadmin_internal_actor_sync",
+      "expectedLastFileInProductionOrder": "20260911170500_internal_user_handles_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "cb3cbe59a8a57503a633015ee90d04d6464425fca25f856e54067cd1cf7587d6"
+    },
+    {
+      "function": "app_private.person_handle_actor_can",
+      "expectedLastFileInProductionOrder": "20260911170500_internal_user_handles_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "fbd4b00522fffe28c3a0d0e54af4c25bfc15fd3c6ba8bbbc5cf4adb2e3b19b3d"
+    },
+    {
+      "function": "app_private.superadmin_access_profile_delete_and_reassign",
+      "expectedLastFileInProductionOrder": "20260911170600_institution_system_model_delete_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "922db39aa1cebab00ed5e617ab8395b579c45934cb86abc540ffe0e86f4b2de7"
+    },
+    {
+      "function": "app_private.account_profile_projection",
+      "expectedLastFileInProductionOrder": "20260911200300_account_profile_service_person_email_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "c832821dbdbe508ce7e2de41ed6ad2cf6d34988cc307240c8928852ff4868514"
+    },
+    {
+      "function": "public.superadmin_assessment_configuration_read",
+      "expectedLastFileInProductionOrder": "20260912180100_assessment_configuration_read_variable_conflict_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "b4ca73d77395d662f3a01a2321830795d73d0fb5bb784d6ddb6d17ddb35affeb"
+    },
+    {
+      "function": "app_private.form_save_draft",
+      "expectedLastFileInProductionOrder": "20260912140547_forms_question_media_draft_bridge_fix_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "0c6555b3af8b8dd36f6fc8b34d12c7fdc86b944ab38a5b9cdd24f42185286ccf"
+    },
+    {
+      "function": "app_private.meal_plan_scope_rules_object",
+      "expectedLastFileInProductionOrder": "20260911130500_meal_plan_scope_rules_object_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "47dfa1313d84c755e824d3daa1d49ff0fcd6367035acd1dfdbf82288ce678ee1"
+    },
+    {
+      "function": "app_private.meal_plan_scope_rules_array",
+      "expectedLastFileInProductionOrder": "20260911130500_meal_plan_scope_rules_object_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "6e576dad7d9779620b022c5dd0f54093fd093a8bfb4c26ec25b49cb8857b1e95"
+    },
+    {
+      "function": "app_private.superadmin_internal_user_draft_valid",
+      "expectedLastFileInProductionOrder": "20260911170800_internal_user_create_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "60b03431e2ba10fc5b43cedf6111cbe5c56d2359ea8d4db958c4f1126426da74"
+    },
+    {
+      "function": "app_private.superadmin_internal_user_create_check",
+      "expectedLastFileInProductionOrder": "20260911170800_internal_user_create_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "b344495b9b31b5a594b6bc69b15d094358917ae6b0040b31940cc70833ce1840"
+    },
+    {
+      "function": "app_private.form_replace_working_definition",
+      "expectedLastFileInProductionOrder": "20260912140546_forms_question_media_draft_bridge_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "c8f0a2fb83dec5a3cbb1bf27033151139d6f99ea2ea8d452e6e721d3fe40412e"
+    },
+    {
+      "function": "app_private.form_get_editor",
+      "expectedLastFileInProductionOrder": "20260912140548_forms_question_media_retry_delete_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "12b392f7d87c5754fbb4c95c4f517e7357f2ab6ce619f41736085627e3b700ee"
+    },
+    {
+      "function": "public.list_visible_moments",
+      "expectedLastFileInProductionOrder": "20260912140550_moments_withdraw_permission_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "504498f0f4d2095d65b3354ead730bdfb7851883b8850d1f64667392796ea680"
+    },
+    {
+      "function": "public.superadmin_people_list",
+      "expectedLastFileInProductionOrder": "20260912143000_people_directory_context_filters_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "0a0eedc34b9e4e11ca25cea3422ddda5a23d666447a36d54ccda1b14f78af2a0"
+    },
+    {
+      "function": "public.superadmin_people_filter_options",
+      "expectedLastFileInProductionOrder": "20260912143000_people_directory_context_filters_v1.sql",
+      "bodyExactMatch": true,
+      "overloadsObserved": 1,
+      "expectedBodySha256": "20b4fe24e873024aa29602c2e9ef0514417ce152d2748779c485c3b110a9fee7"
+    }
+  ],
+  "passed": 21,
+  "total": 21,
+  "limits": "Comparacao focal dos corpos finais dos lotes50-59 pela ordem canonica; nao prova todos grants/triggers/dados nem reconstrucao integral. Nenhum pgTAP/candidato executado ou aplicado."
+}
