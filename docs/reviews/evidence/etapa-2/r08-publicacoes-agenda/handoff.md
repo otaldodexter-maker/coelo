@@ -37,6 +37,8 @@ generated_at: 2026-09-12
 - O compositor produtivo renderiza os blocos na ordem do dominio e expoe texto, midia e pergunta simples com movimento; a previa percorre a mesma lista.
 - Os presets de resposta atualizam a pergunta existente e preservam sua posicao relativa; o teste focal confere os quatro IDs antes/depois do preset.
 - O leitor do Principal ja percorria a lista em ordem; foi acrescentada uma chave semantica por bloco para a prova focal, sem alterar a composicao.
-- Testes focais preparados; execucao aguarda a posse serializada do slot Flutter.
+- Testes focais: 67 verdes, zero falhas abertas. A primeira execucao encontrou uma expectativa invertida no teste novo; apos a correcao, os dois arquivos afetados passaram 43/43 e os outros tres ja estavam verdes.
 - Analise focal dos seis arquivos Dart tocados: No issues found (11:27 BRT).
-- P50 foi reconciliado em `p50-hierarchy.md`; as provas R06 permanecem vigentes e a regressao local do leitor segue na fila Flutter.
+- P50 foi reconciliado em `p50-hierarchy.md`; as provas R06 permanecem vigentes e a regressao local do leitor passou.
+- Prova detalhada em `flutter-verification.md`. O slot global foi liberado imediatamente ao C0.
+- Gate de memoria: 64 artigos validados; nenhuma regra duravel nova, pois ordem intercalada e limite de 10.000 ja constam nas fontes canonicas/projecoes. No-op documental.
