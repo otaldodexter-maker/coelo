@@ -841,10 +841,22 @@ GoRouter createSuperadminRouter({
   );
   // Importar/exportar reais ficam para depois do MVP por decisao (ADR 0034):
   // a rota diz isso, em vez de "temporariamente indisponivel" (IMP-R05-2).
-  Widget deferredFeaturePage(BuildContext context) => SuperadminErrorScreen(
-    key: const Key('production-mutation-capability-unavailable'),
-    kind: SuperadminErrorKind.deferred,
-    onAction: () => context.goNamed(SuperadminRoutes.homeName),
+  Widget deferredFeaturePage(
+    BuildContext context, {
+    required String title,
+    required String subtitle,
+    required String destination,
+  }) => SuperadminShell(
+    logout: logout,
+    title: title,
+    subtitle: subtitle,
+    currentDestination: destination,
+    onDestinationSelected: (target) => _navigateFromPersistentShell(context, target),
+    child: SuperadminErrorScreen(
+      key: const Key('production-mutation-capability-unavailable'),
+      kind: SuperadminErrorKind.deferred,
+      onAction: () => context.goNamed(SuperadminRoutes.homeName),
+    ),
   );
   Widget productionMealPlanWizardPage(
     BuildContext context, {
@@ -1076,6 +1088,9 @@ GoRouter createSuperadminRouter({
       }
       if (_isProductionMutationLocation(location) &&
           !_isMealPlanMutationLocation(location) &&
+          // Importacao e adiada por decisao (ADR 0034): a propria rota mostra a
+          // pagina honesta dentro da shell (golden aprovado em IMP-R05-2).
+          location != SuperadminRoutes.importCreate &&
           !(_isAssessmentMutationLocation(location)
               ? hasAssessmentMutationCapability()
               : _isStructureMutationLocation(location)
@@ -5474,7 +5489,12 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.importCreateName,
             builder: (context, state) {
               if (!hasAuthoritativeMutationCapability()) {
-                return deferredFeaturePage(context);
+                return deferredFeaturePage(
+                  context,
+                  title: 'Nova importação',
+                  subtitle: 'Importação adiada para depois do MVP.',
+                  destination: 'imports',
+                );
               }
               final preset = state.extra is ImportCreationPreset
                   ? state.extra as ImportCreationPreset
