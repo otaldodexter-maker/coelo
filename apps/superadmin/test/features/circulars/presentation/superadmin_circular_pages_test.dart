@@ -26,7 +26,7 @@ void main() {
           body: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
           ),
         ),
       ),
@@ -59,7 +59,7 @@ void main() {
             body: SuperadminCircularComposerPage(
               controller: controller,
               onCancel: () {},
-              onPickFiles: () async {},
+              onPickFiles: (_) async {},
               onPublished: finished,
             ),
           ),
@@ -96,7 +96,7 @@ void main() {
         body: SuperadminCircularComposerPage(
           controller: controller,
           onCancel: () {},
-          onPickFiles: () async {},
+          onPickFiles: (_) async {},
           onChooseSchedule: () => picker.future,
         ),
       ),
@@ -127,7 +127,7 @@ void main() {
         body: SuperadminCircularComposerPage(
           controller: controller,
           onCancel: () {},
-          onPickFiles: () async {},
+          onPickFiles: (_) async {},
         ),
       ),
     );
@@ -219,7 +219,7 @@ void main() {
             body: SuperadminCircularComposerPage(
               controller: controller,
               onCancel: () {},
-              onPickFiles: () async {},
+              onPickFiles: (_) async {},
             ),
           ),
         ),
@@ -234,6 +234,140 @@ void main() {
       expect(tester.takeException(), isNull);
     });
   }
+
+  testWidgets('block header keeps its label whole at 375px with text at 200%', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 1320));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = CircularComposerController(
+      repository: _Repository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+      initialDraft: const CircularDraft(
+        id: 'circular-accessible',
+        title: 'Circular acessivel',
+        blocks: [CircularTextBlock(id: 'text-accessible', text: 'Conteudo')],
+        audiences: {CircularAudienceKind.families},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: MediaQuery(
+          data: const MediaQueryData(size: Size(375, 1320), textScaler: TextScaler.linear(2)),
+          child: Scaffold(
+            body: SuperadminCircularComposerPage(
+              controller: controller,
+              onCancel: () {},
+              onPickFiles: (_) async {},
+            ),
+          ),
+        ),
+      ),
+    );
+
+    final label = find.byKey(const Key('circular-block-label-text-accessible'));
+    final actions = find.byKey(const Key('circular-block-actions-text-accessible'));
+    expect(label, findsOneWidget);
+    expect(tester.widget<Text>(label).data, 'Texto');
+    expect(actions, findsOneWidget);
+    expect(tester.getSize(label).height, lessThanOrEqualTo(40));
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('productive composer and preview preserve interleaved block order', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = CircularComposerController(
+      repository: _ComposerRepository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+      initialDraft: const CircularDraft(
+        id: 'circular-ordered',
+        title: 'Circular intercalada',
+        blocks: [
+          CircularTextBlock(id: 'text-before', text: 'Texto antes'),
+          CircularMediaBlock(id: 'media-before-question', assetIds: ['antes.pdf']),
+          CircularQuestionBlock(
+            id: 'question-middle',
+            prompt: 'Pergunta no meio?',
+            kind: CircularQuestionKind.singleChoice,
+            required: true,
+            options: [
+              CircularQuestionOption(id: 'yes', label: 'Sim'),
+              CircularQuestionOption(id: 'no', label: 'Nao'),
+            ],
+          ),
+          CircularMediaBlock(id: 'media-after-question', assetIds: ['depois.pdf']),
+          CircularTextBlock(id: 'text-after', text: 'Texto depois'),
+        ],
+        audiences: {CircularAudienceKind.families},
+      ),
+    );
+    addTearDown(controller.dispose);
+    String? insertionAnchor;
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularComposerPage(
+            controller: controller,
+            onCancel: () {},
+            onPickFiles: (afterBlockId) async => insertionAnchor = afterBlockId,
+          ),
+        ),
+      ),
+    );
+
+    double top(String key) => tester.getTopLeft(find.byKey(Key(key))).dy;
+    expect(
+      top('circular-editor-text-before'),
+      lessThan(top('circular-editor-media-before-question')),
+    );
+    expect(
+      top('circular-editor-media-before-question'),
+      lessThan(top('circular-editor-question-middle')),
+    );
+    expect(
+      top('circular-editor-question-middle'),
+      lessThan(top('circular-editor-media-after-question')),
+    );
+    expect(
+      top('circular-editor-media-after-question'),
+      lessThan(top('circular-editor-text-after')),
+    );
+    expect(
+      top('circular-preview-text-before'),
+      lessThan(top('circular-preview-media-before-question')),
+    );
+    expect(
+      top('circular-preview-media-before-question'),
+      lessThan(top('circular-preview-question-middle')),
+    );
+    expect(
+      top('circular-preview-question-middle'),
+      lessThan(top('circular-preview-media-after-question')),
+    );
+    expect(
+      top('circular-preview-media-after-question'),
+      lessThan(top('circular-preview-text-after')),
+    );
+
+    final addAfterQuestion = find.byKey(const Key('circular-pick-files-after-question-middle'));
+    await tester.ensureVisible(addAfterQuestion);
+    await tester.tap(addAfterQuestion);
+    expect(insertionAnchor, 'question-middle');
+
+    await tester.ensureVisible(find.byKey(const Key('circular-response-acceptDecline')));
+    await tester.tap(find.byKey(const Key('circular-response-acceptDecline')));
+    await tester.pump();
+
+    expect(controller.draft.blocks.map((block) => block.id).toList(), [
+      'text-before',
+      'media-before-question',
+      'question-middle',
+      'media-after-question',
+      'text-after',
+    ]);
+  });
 
   testWidgets('admin composer saves and publishes through the existing domain controller', (
     tester,
@@ -250,7 +384,7 @@ void main() {
           body: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
           ),
         ),
       ),

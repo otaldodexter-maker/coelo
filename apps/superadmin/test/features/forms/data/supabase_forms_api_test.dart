@@ -5,6 +5,89 @@ import 'package:coelo_superadmin/features/forms/data/forms_backend_gateway.dart'
 import 'package:coelo_superadmin/features/forms/data/supabase_forms_api.dart';
 
 void main() {
+  const imageTarget = FormQuestionImageTarget(
+    formId: 'form-1',
+    formVersionId: 'version-1',
+    itemId: 'item-1',
+  );
+  test('question image prepare uses the purpose payload and exact upload capability', () async {
+    final backend = _Backend({
+      'asset_id': 'asset-1',
+      'upload_url': 'https://synthetic.r2.cloudflarestorage.com/image',
+      'required_headers': {'content-type': 'image/png'},
+      'expires_at': '2026-09-12T15:00:00Z',
+    });
+    final ticket = await SupabaseFormsApi(backend).prepareQuestionImage(
+      imageTarget,
+      requestId: 'request-1',
+      sourceMetadata: MediaUploadMetadata(
+        mimeType: 'image/png',
+        byteLength: 9,
+        checksumSha256: 'a' * 64,
+      ),
+    );
+    expect(ticket.requiredHeaders, {'content-type': 'image/png'});
+    expect(ticket.uploadUrl.scheme, 'https');
+    expect(backend.mediaEnvelope, {
+      'action': 'prepare',
+      'request_id': 'request-1',
+      'payload': {
+        'purpose': 'question-image',
+        'form_id': 'form-1',
+        'form_version_id': 'version-1',
+        'item_id': 'item-1',
+        'mime_type': 'image/png',
+        'byte_size': 9,
+        'sha256': 'a' * 64,
+      },
+    });
+  });
+
+  test('question image finalize requires ready status and the prepared asset', () async {
+    for (final state in ['ready', 'pending']) {
+      final backend = _Backend({
+        'asset_id': 'asset-1',
+        'status': state,
+        'mime_type': 'image/png',
+        'byte_size': 9,
+      });
+      final result = SupabaseFormsApi(backend).finalizeQuestionImage(
+        imageTarget,
+        const FormCommand(
+          requestId: 'finalize-1',
+          expectedVersion: 0,
+          payload: FormAssetIdPayload('asset-1'),
+        ),
+      );
+      if (state == 'ready') {
+        expect((await result).itemId, 'item-1');
+      } else {
+        await expectLater(result, throwsA(isA<FormApiException>()));
+      }
+      expect(backend.mediaEnvelope, {
+        'action': 'finalize',
+        'request_id': 'finalize-1',
+        'payload': {'purpose': 'question-image', 'asset_id': 'asset-1'},
+      });
+    }
+  });
+
+  test('question image delete never calls the answer discard operation', () async {
+    final backend = _Backend({'asset_id': 'asset-1', 'status': 'deleted'});
+    await SupabaseFormsApi(backend).deleteQuestionImage(
+      const FormCommand(
+        requestId: 'delete-1',
+        expectedVersion: 0,
+        payload: FormAssetIdPayload('asset-1'),
+      ),
+    );
+    expect(backend.mediaEnvelope, {
+      'action': 'delete',
+      'request_id': 'delete-1',
+      'payload': {'purpose': 'question-image', 'asset_id': 'asset-1'},
+    });
+  });
+
   test('queues the whole-form XLSX through the internal concurrency envelope', () async {
     final backend = _Backend.internal({
       'id': 'job-1',
@@ -155,7 +238,11 @@ void main() {
       // Falha de transporte: a requisicao nao chegou ao backend, entao nao ha
       // codigo do Postgres nem corpo. Cair em desconhecido diria a pessoa que
       // a acao falhou, quando o certo e dizer que o servico esta indisponivel.
-      ('transport', FormApiFailureKind.unavailable, 'O serviço está indisponível. Tente novamente.'),
+      (
+        'transport',
+        FormApiFailureKind.unavailable,
+        'O serviço está indisponível. Tente novamente.',
+      ),
       (
         'unexpected',
         FormApiFailureKind.unknown,
@@ -438,48 +525,51 @@ void main() {
     );
   });
 
-  test('distribuicao nova vai a form_save_application com id nulo; existente mantem o id', () async {
-    final backend = _Backend(_applicationProjection());
-    final api = SupabaseFormsApi(backend);
-    FormApplication application(String id) => FormApplication(
-      id: id,
-      formId: 'form-1',
-      institutionId: 'institution-1',
-      name: 'Distribuicao',
-      audienceRules: const [
-        FormAudienceRule(
-          id: 'rule-1',
-          kind: FormAudienceRuleKind.institution,
-          mode: FormAudienceRuleMode.include,
-          targetId: 'institution-1',
+  test(
+    'distribuicao nova vai a form_save_application com id nulo; existente mantem o id',
+    () async {
+      final backend = _Backend(_applicationProjection());
+      final api = SupabaseFormsApi(backend);
+      FormApplication application(String id) => FormApplication(
+        id: id,
+        formId: 'form-1',
+        institutionId: 'institution-1',
+        name: 'Distribuicao',
+        audienceRules: const [
+          FormAudienceRule(
+            id: 'rule-1',
+            kind: FormAudienceRuleKind.institution,
+            mode: FormAudienceRuleMode.include,
+            targetId: 'institution-1',
+          ),
+        ],
+        managementVersion: 0,
+      );
+
+      await api.saveApplication(
+        FormCommand(
+          requestId: 'request-app-new',
+          expectedVersion: 0,
+          payload: FormSaveApplicationPayload(application('')),
         ),
-      ],
-      managementVersion: 0,
-    );
+      );
+      var payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
+      expect(backend.functionName, 'form_save_application');
+      // O wrapper publico trata id presente como distribuicao existente (P0002).
+      expect(payload.containsKey('id'), isTrue);
+      expect(payload['id'], isNull);
 
-    await api.saveApplication(
-      FormCommand(
-        requestId: 'request-app-new',
-        expectedVersion: 0,
-        payload: FormSaveApplicationPayload(application('')),
-      ),
-    );
-    var payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
-    expect(backend.functionName, 'form_save_application');
-    // O wrapper publico trata id presente como distribuicao existente (P0002).
-    expect(payload.containsKey('id'), isTrue);
-    expect(payload['id'], isNull);
-
-    await api.saveApplication(
-      FormCommand(
-        requestId: 'request-app-edit',
-        expectedVersion: 0,
-        payload: FormSaveApplicationPayload(application('application-1')),
-      ),
-    );
-    payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
-    expect(payload['id'], 'application-1');
-  });
+      await api.saveApplication(
+        FormCommand(
+          requestId: 'request-app-edit',
+          expectedVersion: 0,
+          payload: FormSaveApplicationPayload(application('application-1')),
+        ),
+      );
+      payload = Map<String, Object?>.from(backend.parameters!['p_payload']! as Map);
+      expect(payload['id'], 'application-1');
+    },
+  );
 
   test('schedule commands preserve schedule id and schedule management version', () async {
     final backend = _Backend(_applicationProjection());

@@ -67,7 +67,7 @@ final class CircularMediaUploadCoordinator {
   final CircularMediaRepository repository;
   final http.Client _httpClient;
 
-  Future<void> upload(CircularSelectedFile file) async {
+  Future<String> upload(CircularSelectedFile file, {String? afterBlockId}) async {
     _validate(file);
     final saved = await controller.save();
     final requestId = file.uploadRequestId;
@@ -111,8 +111,10 @@ final class CircularMediaUploadCoordinator {
           .expand((block) => block.assetIds)
           .length,
     );
-    controller.addMediaAsset(intent.assetId);
+    final blockId = controller.addMediaAsset(intent.assetId, afterBlockId: afterBlockId);
+    if (blockId == null) throw const CircularInvalid('media_limit');
     await controller.save();
+    return blockId;
   }
 
   static void _validate(CircularSelectedFile file) {
