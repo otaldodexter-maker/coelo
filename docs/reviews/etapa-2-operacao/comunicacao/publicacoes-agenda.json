@@ -1,15 +1,15 @@
 {
-  "revision": 54,
-  "round": "E2-R07-20260911",
+  "revision": 55,
+  "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
-  "model": "Luna, esforco medio",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-publicacoes-agenda",
-  "branch": "work/etapa2-r07-publicacoes-agenda",
-  "head": "4340462a5 (ultimo checkpoint R07 publicado; commit final de handoff segue)",
-  "base": "origin/dev 91d6aa287",
-  "coordinator": "Codex (R07 · Coordenacao)",
-  "updatedAt": "2026-09-12T09:31:00-03:00",
+  "model": "GPT-5.6 Sol, esforco medio",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+  "branch": "work/etapa2-r08-publicacoes-agenda",
+  "head": "0e7042bab (base R08; primeiro checkpoint segue)",
+  "base": "origin/dev 0e7042bab",
+  "coordinator": "Codex (R08 · C0)",
+  "updatedAt": "2026-09-12T11:01:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -43,14 +43,15 @@
       "circulars.respond",
       "circulars.attach"
     ],
-    "included": "24 acoes. R07: circulars.create/edit e agenda.create/edit nas telas novas da familia Publicacao com criar, salvar, reload e publicar; circulars.attach pela tela com PNG sintetico, upload em coelo-media-prod e leitura por signed_url; P50=B com tela de resposta no Superadmin e resumo das respostas; notices.* e agenda.* ainda fora de E2E no recorte; sino do shell somente se sobrar tempo.",
-    "excluded": "Admin, Principal e Site; deploy da Edge Function circular-media (coordenador); aplicacao em producao; inventario e rastreadores.",
+    "included": "R08 G6: circulars, agenda, principal_circulars, circular-media e notificacoes do shell sob posse confirmada; blocos ordenados intercalados na autoria, previa e leitura; P50 no Superadmin; attach no runtime 3014; seis comparacoes web R e correcoes A+; mapeamento do sino e reconciliacao 4.000 x 10.000.",
+    "excluded": "Admin, Site e demais dominios; deploy da Edge Function circular-media (C0); inventario, rastreadores, ADRs e projecoes de conhecimento; publication_surface.dart reservado a G3.",
     "order": [
-      "(1) circulars.create/edit e agenda.create/edit — rota real, reload, publicar, goldens aprovados",
-      "(2) circulars.attach pela tela — PNG sintetico, R2 privado, signed_url",
-      "(3) circulars.respond — P50=B, owner responde e resumo persiste",
-      "(4) notices.* e agenda.* ainda nao E2E no recorte",
-      "(5) sino do shell, apenas se sobrar tempo"
+      "(1) identificar compositor produtivo e legado somente de testes",
+      "(2) provar e corrigir ordem intercalada de texto, midia e perguntas no autor, previa e leitor",
+      "(3) preservar e recertificar P50 no Superadmin apenas onde o codigo for afetado",
+      "(4) provar circulars.attach pela UI no runtime autorizado 3014 com circular-media v13",
+      "(5) comparar os seis R web, preservar imagens reprovadas e corrigir somente os A+",
+      "(6) mapear sino com C0 e registrar 10.000 como limite canonico contra a referencia visual de 4.000"
     ],
     "stop": "T0+4h; em T0+4h responder revisao de 10 minutos; nao retomar apos T0+4h10; ou ordem do Owner/coordenador.",
     "evidence": "commits da branch, flutter test por familia, goldens comparados as referencias aprovadas, rota real com qa-r06-publicacoes quando a credencial existir."
@@ -61,8 +62,8 @@
     "rotaReal": "build web-qa com qa_main servido numa porta da lista CORS (3000, 3009, 3010, 3014, 3016, 3018 ou 3020); Chrome CDP proprio com --user-data-dir %TEMP%/coelo-chrome-publicacoes; um Chrome por vez.",
     "closedAt": ""
   },
-  "firstGate": "circulars.attach pela tela: deploy da circular-media (versao em producao continua anterior ao fix x-client-info); rota real R07 tambem esta retida pelo adaptador CDP que nao concluiu Page.getFrameTree na aba do build web-qa.",
-  "status": "finalizado",
+  "firstGate": "H04/H21: o host produtivo SuperadminCircularComposerPage agrupa conteudo na autoria e previa, enquanto PrincipalCircularReader ja respeita draft.blocks; criar prova vermelha e corrigir o host produtivo sem tocar publication_surface.dart.",
+  "status": "em-andamento",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
