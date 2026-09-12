@@ -1,12 +1,12 @@
 {
-  "revision": 62,
+ "revision": 63,
  "round": "E2-R07-20260911",
- "role": "Coordenacao R07 - Codex Luna esforco medio (C0)",
+ "role": "Coordenacao R07 encerrada; consolidacao final e preparacao R08",
  "writer": "coordenador-codex",
  "app": "Codex desktop",
  "model": "Codex Luna medio",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T23:31:40-03:00",
+ "updatedAt": "2026-09-12T13:26:40.987Z",
  "relogio": "relogio da maquina; posse as 23:19:34 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -374,15 +374,15 @@
   }
  },
  "metricas": {
-  "base": "inventario validado em 2026-09-12T00:18-03:00 sobre origin/dev; validate-trackers PASS; ambiente: repositorio + producao medida nos lotes 49 a 55",
-  "frontendVerified": "164/231 (71,00%)",
-  "frontendLocalGreen": "18/67 (26,87%)",
-  "frontendAprovacaoVisualDoOwner": "53/231 (22,94%)",
-  "backendLocalGreen": "31/75 (41,33%)",
-  "backendSqlEmProducao": "180/224 (80,36%)",
-  "backendDone": "149/224 (66,52%)",
-  "e2eVerified": "134/199 (67,34%)",
-  "nota": "aprovacao visual nao e verified; SQL em producao nao e done; local-green e E2E contam IDs unicos e nao sao somados"
+   "base": "R07 reconciliada em 2026-09-12T13:26:40.987Z; inventario/3matrizes validados; evidência C0 e recibos R06; sem percentual composto",
+   "frontendVerified": "161/231 (69,70%)",
+   "frontendLocalGreen": "23/70 (32,86%)",
+   "frontendAprovacaoVisualDoOwner": "54/231 (23,38%)",
+   "backendLocalGreen": "32/75 (42,67%)",
+   "backendSqlEmProducao": "181/224 (80,80%)",
+   "backendDone": "149/224 (66,52%)",
+   "e2eVerified": "131/199 (65,83%)",
+   "nota": "FE/E2E -3 por UI de Chamada reconstruida; BE local+1/SQL+1 por omissao R06. Visual53 antigo incluia7somenteR:46A+8novos=54. SQL e cobertura registrada, nao CRUD nem contagem de migrations."
  },
  "respostasDoOwner20260910": {
   "P1": "B: PITR dispensado ate cliente real; dump logico local antes de cada lote (ADR 0034 Decisao 8)",
@@ -2031,7 +2031,7 @@
   "ledger": "3 versoes"
  },
  "edgeFunctionsR06": {
-  "internal-user-create": "deploy realizado pela coordenacao R07 em 2026-09-11T23:21:18-03:00; [functions.internal-user-create] verify_jwt=false em config.toml; deno check verde; POST reautoriza pelo RPC; sem segredo novo"
+   "internal-user-create": "R06: escrita/deno check, deploy bloqueado. R07 implantou v2 e corrigiu OPTIONS; v3 confirmada. Prova funcional aberta."
  },
  "frenteG8R07": {
   "grupo": "suites",
@@ -2138,29 +2138,30 @@
   "tentativasR07": "docker desktop restart e wsl --shutdown executados sem restaurar dockerDesktopLinuxEngine; nenhum reset de fabrica",
   "impactoR07": "nao bloqueia integracao Git, leitura dos JSONs, testes Flutter/Node nem trabalho das frentes; bloqueia somente preflight SQL local ate o daemon voltar"
  },
-  "recebimentoComplementarG8R07": {
-    "ackRevision": 19,
-    "sha": "d4a62918c",
-    "recebidoEm": "2026-09-12T10:00:00-03:00",
-    "estado": "ACK: complemento de aprovacoes recebido e integrado; consolidacao R07/R08 em andamento",
-    "canal": "fase0.json da branch work/etapa2-r07-suites; G8 roda no Claude, nao aparece na lista de tarefas Codex",
-    "conteudo": "P53=A; rodape Criar modelo sim; 64 A, 5 A+ (inclui um inferido), 6 R por golden. Sem transformar imagem aprovada em FE/BE/E2E.",
-    "reserva": "worktree da G8 preservada ate verificar que este e o ultimo complemento; avisar pelo fase0.json se houver novo SHA/WIP",
-    "acaoC0": "registrar decisoes, vincular goldens a IDs unicos e adaptar R08; nenhuma regravacao geral em R07"
-  },
-  "posseR07": {
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
-  "branch": "work/etapa2-r07-coordenacao",
-  "upstream": "origin/dev",
-  "baseAoAbrir": "origin/dev apos git fetch em 2026-09-11T23:19:34-03:00",
-  "T0": "2026-09-11T23:19:34-03:00",
-  "T0+10": "2026-09-11T23:29:34-03:00 (frentes liberadas a gravar no proximo ciclo)",
-  "T0+4h": "2026-09-12T03:19:34-03:00",
-  "T0+4h10": "2026-09-12T03:29:34-03:00",
-  "T0+4h30": "2026-09-12T03:49:34-03:00",
-  "loop": "ler sete JSONs a cada 20 min; integrar, aplicar deltas, atualizar rastreadores e percentual a cada 30 min",
-  "regraDeEscrita": "unica escritora de dev, inventario e tres rastreadores; JSON de cada frente lido da branch work/etapa2-r07-<grupo>",
-  "status": "posse registrada; frentes liberadas; varredura R01-R06 e gates iniciais em andamento"
+ "recebimentoComplementarG8R07": {
+   "ackRevision": 19,
+   "sha": "d4a62918c",
+   "recebidoEm": "2026-09-12T09:58:09-03:00",
+   "estado": "ACKFINALrev19/d4a62918c integrado; Owner confirmou encerramento; semWIP",
+   "canal": "fase0.json da branch work/etapa2-r07-suites; G8 roda no Claude, nao aparece na lista de tarefas Codex",
+   "conteudo": "P53=A; rodape Criar modelo sim; 64 A, 5 A+ (inclui um inferido), 6 R por golden. Sem transformar imagem aprovada em FE/BE/E2E.",
+   "reserva": "worktree removida apos merge/backup; branch preservada; G8 nao retoma",
+   "acaoC0": "Decisao20/skills/memória/lista/backlog/prompts atualizados; visual54A, sem ganhoFE/BE/E2E"
+ },
+ "posseR07": {
+   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
+   "branch": "work/etapa2-r07-coordenacao",
+   "upstream": "origin/dev",
+   "baseAoAbrir": "origin/dev apos git fetch em 2026-09-11T23:19:34-03:00",
+   "T0": "2026-09-11T23:19:34-03:00",
+   "T0+10": "2026-09-11T23:29:34-03:00; liberação publicada7b229593c",
+   "T0+4h": "2026-09-12T03:19:34-03:00",
+   "T0+4h10": "2026-09-12T03:29:34-03:00",
+   "T0+4h30": "2026-09-12T03:49:34-03:00",
+   "loop": "interrupcoes aproximadamente00:30; protocolo20/30min nao cumprido continuamente; fechamento pela manha porordemOwner",
+   "regraDeEscrita": "unica escritora de dev, inventario e tres rastreadores; JSON de cada frente lido da branch work/etapa2-r07-<grupo>",
+   "status": "encerrada; R08 preparada, nao iniciada",
+   "closedAt": "2026-09-12T13:26:40.987Z"
  },
  "pausaSegura2255": {
   "ordem": "Owner: \"pause brevemente de forma segura\" (22:53)",
@@ -2173,35 +2174,334 @@
   ]
  },
  "fechamentoR06": {
-  "quando": "2026-09-11T23:20:00-03:00",
-  "janela": "T0 19:36; usuarios prontos 19:56; frentes ate 21:36; revisao final ate 21:46; pausa segura 22:53; consolidacao ate 23:20",
-  "frentes": {
-   "estrutura": "rev 63; worktree removida",
-   "acessos-pessoas": "rev 146; worktree removida",
-   "formularios-cuidado-rotina": "rev 55; worktree removida",
-   "principal-chat-sistema": "rev 39; worktree removida",
-   "realm-interno": "rev 48; worktree removida",
-   "publicacoes-agenda": "rev 51; worktree removida",
-   "operacoes": "rev 51; worktree removida"
-  },
-  "producao": "7 lotes (49-55), 14 pacotes; candidatos vazio; internal-user-create deployado e deno check verde; P52 fechado como deploy, prova funcional ainda atribuida a acessos-pessoas; CORS R2 alinhado",
-  "integracao": "sete branches integradas ate as revisoes finais; 0 commits fora de dev; status limpo; sem WIP; e2-r05-coordenacao e e2-r06-coordenacao ficam",
-  "rastreadores": "validate-trackers PASS; bloco Estado vigente — Rodada 6 nos tres md",
-  "skills": "coelo-backend, coelo-frontend e coelo-frontend-backend com a secao \"Regras da Rodada 6\"",
-  "adr": "ADR 0034 Decisao 19",
-  "conhecimento": "supabase-production-environment.md atualizado; validate PASS (64)",
-  "percentuais": {
-   "feVerified": "164/231 (71,00%)",
-   "feLocalGreen": "17/67 (25,37%)",
-   "feAprovacaoVisualDoOwner": "53/231 (22,94%)",
-   "beLocalGreen": "31/75 (41,33%)",
-   "beSqlEmProducao": "180/224 (80,36%)",
-   "beDone": "149/224 (66,52%)",
-   "e2eVerified": "134/199 (67,34%)",
-   "base": "inventario validado 23:10 de 11/09 sobre a base integrada"
-  },
-  "perguntasAoOwner": "R06-perguntas-ao-owner-20260911.md (P51-P54, arrobas reservados)",
-  "proximaRodada": "R07 no Codex (Luna medio), 4 h + 30 min, prompts em next-round/R07-prompts.md"
+   "quando": "2026-09-11T23:20:00-03:00",
+   "janela": "T0 19:36; usuarios prontos 19:56; frentes ate 21:36; revisao final ate 21:46; pausa segura 22:53; consolidacao ate 23:20",
+   "frentes": {
+     "estrutura": "rev 63; worktree removida",
+     "acessos-pessoas": "rev 146; worktree removida",
+     "formularios-cuidado-rotina": "rev 55; worktree removida",
+     "principal-chat-sistema": "rev 39; worktree removida",
+     "realm-interno": "rev 48; worktree removida",
+     "publicacoes-agenda": "rev 51; worktree removida",
+     "operacoes": "rev 51; worktree removida"
+   },
+   "producao": "R06:7lotes49–55,14pacotes,candidatosvazio; internal-user-create escrita/denocheck, deploynaofechado; CORSR2alinhado. Implantacao/hotfix/preflight pertencemR07.",
+   "integracao": "sete branches integradas ate as revisoes finais; 0 commits fora de dev; status limpo; sem WIP; e2-r05-coordenacao e e2-r06-coordenacao ficam",
+   "rastreadores": "validate-trackers PASS; bloco Estado vigente — Rodada 6 nos tres md",
+   "skills": "coelo-backend, coelo-frontend e coelo-frontend-backend com a secao \"Regras da Rodada 6\"",
+   "adr": "ADR 0034 Decisao 19",
+   "conhecimento": "supabase-production-environment.md atualizado; validate PASS (64)",
+   "percentuais": {
+     "feVerified": "164/231 (71,00%)",
+     "feLocalGreen": "17/67 (25,37%)",
+     "feAprovacaoVisualDoOwner": "53/231 (22,94%)",
+     "beLocalGreen": "31/75 (41,33%)",
+     "beSqlEmProducao": "180/224 (80,36%)",
+     "beDone": "149/224 (66,52%)",
+     "e2eVerified": "134/199 (67,34%)",
+     "base": "inventario validado 23:10 de 11/09 sobre a base integrada"
+   },
+   "perguntasAoOwner": "R06-perguntas-ao-owner-20260911.md (P51-P54, arrobas reservados)",
+   "proximaRodada": "R07 no Codex (Luna medio), 4 h + 30 min, prompts em next-round/R07-prompts.md"
+ },
+ "fechamentoR07": {
+   "status": "encerrada",
+   "closedAt": "2026-09-12T13:26:40.987Z",
+   "baseIntegradaAntesDoCommit": "2f0a1cfb7",
+   "reciboGit": "commit de fechamento publicado emorigin/dev; conferir gitlog/remoto",
+   "receipts": [
+     {
+       "frente": "G1",
+       "grupo": "Estrutura",
+       "revisionDeclarada": 69,
+       "shaRecebido": "84a84e2a1",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "Build QA e revisão local de Estrutura/Avaliações; testes de famílias existentes.",
+       "pendente": "Avaliações/activities.assessment, vínculos/Locais, rodapé de modelo e45A; sem E2Enovo."
+     },
+     {
+       "frente": "G2",
+       "grupo": "Acessos e Pessoas",
+       "revisionDeclarada": "146 + checkpoint149",
+       "shaRecebido": "72980497b",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "people.create local; preparação @/perfis; hotfix real OPTIONS204/x-client-info de internal-user-create (fcecf66bf).",
+       "pendente": "CRUD UI e linkP51; convites expirados;15A/respiroPessoas; sem novo done/E2E."
+     },
+     {
+       "frente": "G3",
+       "grupo": "Formulários, Cuidado e Rotina",
+       "revisionDeclarada": 62,
+       "shaRecebido": "c105bff1d",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "CallPage em PublicationSurface, ações P/F/A/notas/resumo; contrato upload_url/required_headers; Local local-green.",
+       "pendente": "Recertificar mark/finish/correct; question-image; mídiaFormulários; overflowMedicação e375A+."
+     },
+     {
+       "frente": "G4",
+       "grupo": "Principal, Chat e Sistema",
+       "revisionDeclarada": 48,
+       "shaRecebido": "30ba45a80",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "PUT de Momentos preserva MIME; rotas/erros obsoletos corrigidos; conjunto local integrado.",
+       "pendente": "Mídia/publicação real, Cardápios, Chatcliente, Perfil; sem novo E2E."
+     },
+     {
+       "frente": "G5",
+       "grupo": "Realm interno e segurança",
+       "revisionDeclarada": 51,
+       "shaRecebido": "d25d1ddcb",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "Revisão estática de grants/210500/211100 e handoff preservados.",
+       "pendente": "pgTAP dinâmico não executado por Docker; residualsegurança separado por ordemOwner."
+     },
+     {
+       "frente": "G6",
+       "grupo": "Publicações e Agenda",
+       "revisionDeclarada": 54,
+       "shaRecebido": "7bdb38a09",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "Provas locais/build de Agenda/Circular; C0reconciliou provasR06 posteriores à reconstrução e deploycircularv13.",
+       "pendente": "Anexo real, P50, intercalados, hostantigo versusprodutivo e6R; sinomapeamento."
+     },
+     {
+       "frente": "G7",
+       "grupo": "Operações",
+       "revisionDeclarada": 54,
+       "shaRecebido": "ff0e2338d",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "Harness QA corrigido (strict_raw_type); testesConta/Suporte/Planos/Catálogo.",
+       "pendente": "Sessões reais, hostingCatálogo, plans.assign/spec051 e2AHelpCenter."
+     },
+     {
+       "frente": "G8",
+       "grupo": "Suítes pré-existentes",
+       "revisionDeclarada": 19,
+       "shaRecebido": "d4a62918c",
+       "ack": "integrado por merge; semWIP",
+       "receivedAt": "2026-09-12T13:26:40.987Z",
+       "feito": "26testes pré-existentes ajustados só em teste; censo6713/42/11; artefatoOwner75imagens; complemento final integrado.",
+       "pendente": "64A/5A+/6R distribuídos; semdeltaação. C0censoatual substitui previsão6719/36/11."
+     }
+   ],
+   "metricas": {
+     "base": "R07 reconciliada em 2026-09-12T13:26:40.987Z; inventario/3matrizes validados; evidência C0 e recibos R06; sem percentual composto",
+     "frontendVerified": "161/231 (69,70%)",
+     "frontendLocalGreen": "23/70 (32,86%)",
+     "frontendAprovacaoVisualDoOwner": "54/231 (23,38%)",
+     "backendLocalGreen": "32/75 (42,67%)",
+     "backendSqlEmProducao": "181/224 (80,80%)",
+     "backendDone": "149/224 (66,52%)",
+     "e2eVerified": "131/199 (65,83%)",
+     "nota": "FE/E2E -3 por UI de Chamada reconstruida; BE local+1/SQL+1 por omissao R06. Visual53 antigo incluia7somenteR:46A+8novos=54. SQL e cobertura registrada, nao CRUD nem contagem de migrations."
+   },
+   "testes": {
+     "superadmin": {
+       "passed": 6727,
+       "failed": 33,
+       "skipped": 11
+     },
+     "analyzer": "semissues completo/focal",
+     "coeloApiForms": 134,
+     "denoCircular": 25,
+     "denoInternal": 3,
+     "knowledge": {
+       "artigos": 64,
+       "testsPassed": 12,
+       "testsSkipped": 1
+     }
+   },
+   "producao": {
+     "sqlNovo": 0,
+     "proximoLote": 56,
+     "circularMedia": "v13ACTIVE;09:38:21BRT",
+     "internalUserCreate": "v3ACTIVE;09:41:36BRT",
+     "docker": "bloqueado; semreplay/pgTAPnovo"
+   },
+   "seguranca": {
+     "rotacaoQA": "qa-r06-estrutura:QA_PASSWORD rotacionado em2026-09-12T13:06:51.430Z; loginverificado/logout204; arquivo privado atualizado",
+     "ordemPosteriorOwner": "revisao/correcao restante de credenciais e seguranca fora destaentrega; nenhumarotacao adicional",
+     "novosAuthUsers": 0,
+     "novasApiKeys": 0,
+     "sinteticos": "reutilizadosR04–R06; manteratefimformalEtapa2"
+   },
+   "preservacao": {
+     "backup": "C:/Users/adrie/Documents/Coelo-backups/r07-worktrees-20260912",
+     "arquivos": 827,
+     "bytes": 53829920,
+     "hash": "SHA256conferido",
+     "worktreesRemovidas": [
+       {
+         "worktree": "e2-r05-coordenacao",
+         "sha": "ca60b096bb5cbeb34e8e6be11d0165406a0c9433",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 347,
+         "bytes": 22641040,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r06-coordenacao",
+         "sha": "8589c46031e340ee9ba26a4bcc1eb8a1286ab4cb",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 12,
+         "bytes": 19793,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-estrutura",
+         "sha": "84a84e2a17b02fbd2683353aec02bb1620bd9f11",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 133,
+         "bytes": 10814829,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-acessos-pessoas",
+         "sha": "72980497bca9e6659a7b54ae290b22904c1c648b",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 14,
+         "bytes": 405641,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-formularios-cuidado-rotina",
+         "sha": "c105bff1d818a0978f4cfaab3879074ed100c6a6",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 13,
+         "bytes": 890978,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-principal-chat-sistema",
+         "sha": "30ba45a803c3aac6dc8b86351c7e82d4c057bf92",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 2,
+         "bytes": 9510,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-realm-interno",
+         "sha": "d25d1ddcbd270759ab9bea0ee9cf0b75fb473dd9",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 1,
+         "bytes": 8,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-publicacoes-agenda",
+         "sha": "7bdb38a098fc1afd555c6925b1002a110e320328",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 2,
+         "bytes": 9510,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-operacoes",
+         "sha": "ff0e2338d04a37ac0c19957ecbc9484844f5058b",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 2,
+         "bytes": 9510,
+         "hashesVerified": true
+       },
+       {
+         "worktree": "e2-r07-suites",
+         "sha": "d4a62918ca2c4a2fc7698afec3cface29f09c3ff",
+         "clean": true,
+         "integrated": true,
+         "preservedFiles": 301,
+         "bytes": 19029101,
+         "hashesVerified": true
+       }
+     ],
+     "worktreesMantidas": [
+       "C:/Users/adrie/Documents/Coelo",
+       "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao"
+     ],
+     "branches": "preservadas;14naoancestrais emarquivo porreferência/conteúdo, semapagamento"
+   },
+   "documentos": {
+     "fechamento": "docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md",
+     "varredura": "docs/reviews/etapa-2-operacao/next-round/R07-varredura-r01-r07.md",
+     "perguntas": "docs/reviews/etapa-2-operacao/next-round/R07-perguntas-ao-owner-20260912.md",
+     "decisoes": "docs/reviews/etapa-2-operacao/next-round/R07-decisoes-owner-20260912.md"
+   },
+   "r08": {
+     "status": "preparada-nao-iniciada",
+     "prompts": "docs/reviews/etapa-2-operacao/next-round/R08-prompts.md",
+     "plano": "docs/reviews/etapa-2-operacao/next-round/R08-plano.md",
+     "backlog": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+     "duracao": "4hexecucao+30minfechamento; heartbeatC0a10min/leitura20min/integracao30min",
+     "modelos": [
+       {
+         "frente": "C0",
+         "modelo": "GPT-6 Astra",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G0",
+         "modelo": "GPT-5.6 Sol",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G1",
+         "modelo": "GPT-5.6 Terra",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G2",
+         "modelo": "GPT-5.6 Terra",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G3",
+         "modelo": "GPT-5.6 Sol",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G4",
+         "modelo": "GPT-5.6 Sol",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G5",
+         "modelo": "GPT-5.6 Sol",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G6",
+         "modelo": "GPT-5.6 Sol",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G7",
+         "modelo": "GPT-5.6 Terra",
+         "esforco": "medio"
+       },
+       {
+         "frente": "G8",
+         "modelo": "GPT-5.3-Codex-Spark",
+         "esforco": "medio"
+       }
+     ],
+     "tarefasCriadas": 0,
+     "automacoesCriadas": 0
+   }
  },
  "rodada7": {
   "id": "E2-R07-20260911",

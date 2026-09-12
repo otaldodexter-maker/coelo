@@ -1,0 +1,176 @@
+[
+  {
+    "action_id": "attendance.mark",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R07: CallPage reconstruída em PublicationSurface (6bc005288); 140 testes locais do recorte no C0. Certificação FE R05 é histórica para a UI anterior. Primeiro gate: rota normal na nova tela, operação persistida e reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R07: recertificar a nova tela com CRUD real + negativa de escopo/RLS + reload. Backend done preservado; prova antiga de FE/E2E não certifica a reconstrução.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R07: CallPage reconstruída em PublicationSurface (6bc005288); 140 testes locais do recorte no C0. Certificação FE R05 é histórica para a UI anterior. Primeiro gate: rota normal na nova tela, operação persistida e reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R07: recertificar a nova tela com CRUD real + negativa de escopo/RLS + reload. Backend done preservado; prova antiga de FE/E2E não certifica a reconstrução.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R07: CallPage reconstruída em PublicationSurface (6bc005288); 140 testes locais do recorte no C0. Certificação FE R05 é histórica para a UI anterior. Primeiro gate: rota normal na nova tela, operação persistida e reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R07: recertificar a nova tela com CRUD real + negativa de escopo/RLS + reload. Backend done preservado; prova antiga de FE/E2E não certifica a reconstrução.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R06 local-green omitido reconciliado: fdb081b6d3, cadeia INTERNAL_USERS_CREATE_CADEIA_21h20. R07 função v3 e preflight validados; primeiro gate é criar pela rota normal e reler, incluindo entrega segura do link P51=B.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "RPC 20260911170800 em produção no lote55 (recibo 19d3914373); Edge Function internal-user-create v3 ACTIVE, OPTIONS204 sem corpo e POST anônimo401 medidos em12/09. Falta provar criação Auth/identidade, hierarquia e reload com sessão real; não done.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "forms.location-answer",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "Decisão de Local resolvida na ADR0034 (9/12); cobertura local editor/resposta e Local em checkpointR07_0012 (929df845a4). Primeiro gate: ocorrência nova com item Local publicado; responder, persistir e reload; obrigatório sem alternativa bloqueia com aviso.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "forms.location-answer",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "ADR0034 exige referência Local atual; não espera nova decisão do Owner. Provar fonte autorizada, ocorrência/participação, negativo de escopo, persistência e reload da resposta.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md"
+  },
+  {
+    "action_id": "agenda.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura b2e61a22e. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-08-agenda-evento-reload.png",
+      "revision": "b2e61a22e; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/); prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura b2e61a22e. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-08-agenda-evento-reload.png",
+      "revision": "b2e61a22e; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas; prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 45ea9c6c2. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-19-agenda-edit-reload.png",
+      "revision": "45ea9c6c2; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/); prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "agenda.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 45ea9c6c2. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-19-agenda-edit-reload.png",
+      "revision": "45ea9c6c2; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas; prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 16c919d4a. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-11-circulars-publicada-diretorio.png",
+      "revision": "16c919d4a; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/); prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 16c919d4a. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-11-circulars-publicada-diretorio.png",
+      "revision": "16c919d4a; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); rota normal + CRUD em producao + RLS (pgTAP) + reload, mesma acao nas duas camadas; prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 231bede0a. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-18-circulars-edit-reload.png",
+      "revision": "231bede0a; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP; prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R07 reconciliação documental, sem ganho novo: prova R06 posterior à reconstrução da família Publicação preserva o aceite. Recibo publicacoes-agenda 661b6581dd; captura 231bede0a. circulars.attach/P50 são gates distintos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-publicacoes-agenda/ui/ui-18-circulars-edit-reload.png",
+      "revision": "231bede0a; recibo R06 661b6581dd; reconciliado R07",
+      "environment": "build web profile de test_driver/qa_main.dart (66a52986f) contra producao, sessao qa-r03, Chrome via CDP; prova posterior à reconstrução na R06; reconciliação documental em12/09",
+      "recordedAt": "2026-09-12T09:54:22-03:00"
+    }
+  }
+]

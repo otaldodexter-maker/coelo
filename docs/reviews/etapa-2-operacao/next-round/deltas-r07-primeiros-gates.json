@@ -1,0 +1,410 @@
+[
+  {
+    "action_id": "auth.recover",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Provar entrega segura/recuperação com QA e expiração do link; P51=B não certifica envio SMTP.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "auth.reset",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Provar redefinição real e nova sessão, sem registrar token/link em evidência pública.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "institutions.status",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Usar fixture válida, alterar estado pela UI e reler com negativa de escopo.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "institutions.files",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Exercitar gateway de arquivos autorizado, MIME/limites, persistência e reautorização.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "institutions.error",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "institutions.access-denied",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "institutions.locations-map",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Provar seleção/associação de Local autorizado, mapa/detalhe e reload; alias locations.detail-links não cria ID.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "units.error",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "units.access-denied",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Adicionar/remover vínculo sintético de turma pela rota real e reler; negar contexto cruzado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "groups.location",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Selecionar Local válido e autorizado na turma, persistir e reler.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "people.create",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Criar pela tela com resolvedor170700 já aplicado; @ e reload; goldenA não prova CRUD.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Editar dados/@ com disponibilidade/cooldown real; manter prova backend válida e medir nova UI.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "access-models.edit",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "access-models.duplicate",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "invites.resend",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Preparar convite expirado seguro com G5; reenviar e comprovar recibo sem expor link.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "activities.list",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Completar prova backend da leitura real/destinatário; P53A apenas visual.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "activities.publish",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Salvar/ativar configuração válida e criar período sintético; lote54 já removeu gate.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar assessments.entry com turma/aluno/período sintéticos válidos; lote54 já aplicado; persistência/reload/negação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar assessments.gradebook com turma/aluno/período sintéticos válidos; lote54 já aplicado; persistência/reload/negação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar assessments.close com turma/aluno/período sintéticos válidos; lote54 já aplicado; persistência/reload/negação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar assessments.reopen com turma/aluno/período sintéticos válidos; lote54 já aplicado; persistência/reload/negação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar assessments.detail com turma/aluno/período sintéticos válidos; lote54 já aplicado; persistência/reload/negação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "chat.create-group",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Concluir consumidor Flutter de chat-media já implantada; prepare/PUT/finalize/read e autorização.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "forms.location-answer",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Ocorrência nova com item Local publicado; responder/persistir/reload; decisão ADR9/12 resolvida.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Concluir question-image e fluxo de resposta distintos: upload_url/required_headers, PUT e finalize.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Ligar consumidor autorizado de mídia e provar reautorização/read em arquivo privado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "forms.expire-file",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Provar expirado/negado sem servir arquivo e registrar ciclo de expiração.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "forms.delete-file",
+    "camada": "integrated",
+    "delta": "R08 G3 — primeiro gate: Provar remoção autorizada, estado do formulário e reconsulta sem órfão acessível.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar acontece.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar agora.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar agora.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "agora.publish",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar agora.publish na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "agora.expire",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Confirmar disparador agendado de expiração, executar prova sintética e reler (H09).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar momentos.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar momentos.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "momentos.publish",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar momentos.publish na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "momentos.remove",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar remoção/escopo e reconsulta da publicação com mídia privada.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar leitura/escopo da ponte já aplicada; conciliar CTA de Comunicação H13, não repetir P17/P35.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar leitura/escopo real do Perfil e retorno no shell.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Conciliar edição Sobre/dado oficial e abas H02/H03; provar save/reload autorizado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "catalog.list",
+    "camada": "integrated",
+    "delta": "R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "catalog.validate",
+    "camada": "integrated",
+    "delta": "R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "catalog.sync",
+    "camada": "integrated",
+    "delta": "R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "catalog.publish",
+    "camada": "integrated",
+    "delta": "R08 G7 — primeiro gate: Medir destino de publicação/hosting real; validate/sync local não equivale a publicação.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "plans.assign",
+    "camada": "integrated",
+    "delta": "R08 G7 — primeiro gate: Resolver R07-PLANO conforme spec051; não confundir com activate=restaurar nem P51SMTP.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "meal-plans.list",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar meal-plans.list pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar meal-plans.create pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar meal-plans.edit pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provar meal-plans.publish pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "internal-users.create",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Criar pela UI usando v3, reautorizar hierarquia e provar Auth/identidade/reload; implementar link seguro P51=B se faltar.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "internal-users.edit",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "internal-users.suspend",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Suspender usuário sintético elegível e negar uso da sessão conforme contrato.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.403",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.403 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.404",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.404 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.409",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.409 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.500",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.500 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.503",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.503 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "errors.retry",
+    "camada": "integrated",
+    "delta": "R08 G4 — primeiro gate: Provocar errors.retry por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  },
+  {
+    "action_id": "circulars.attach",
+    "camada": "integrated",
+    "delta": "R08 G6 — primeiro gate: Origem3014 + circular-mediav13:prepare/PUT/finalize/save/read/reload com negativo; nenhum novo deploy genérico.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md"
+  }
+]
