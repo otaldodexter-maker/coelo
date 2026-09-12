@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R09 C0: download do asset R08 por API normal retornou68bytes/SHA esperado; sem Auth401, ID inexistente400 sem URL, mesmo link apos65s403 e logout local204. Persistencia/reabertura R08 reutilizada; negativa real de tenant/contrato ainda pendente antes de done. Nenhum novo asset/SQL/deploy.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/forms-download-access.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R09 C0: reautorizacao e TTL de download por API provados parcialmente; G3 ainda precisa download/reabertura pela rota normal com runtime G0 e negativa real de tenant/contrato. API e expiracao do link nao certificam UI nem expiracao do ativo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/forms-download-access.md"
+  }
+]

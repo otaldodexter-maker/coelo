@@ -1,12 +1,12 @@
 {
-  "revision": 96,
+  "revision": 97,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T18:54:32.757Z",
+  "updatedAt": "2026-09-12T19:04:12.740Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -255,6 +255,7 @@
     "94": "Retomada autorizada sem controles de tarefas/cota; posse central nova, IDs nao inventados, atribuicoes aguardam adocao; T0 1542 preservado.",
     "95": "Nove IDs novos fornecidos pelo Owner registrados; blocos de liberacao disponibilizados para encaminhamento, sem afirmar recebimento; G0/G5/G1 liberadas, adocao pendente.",
     "96": "Checkpoint ativo: cota indisponivel, nove IDs conhecidos sem ferramentas de envio; diagnostico G0 integrado; ajuste QA em validacao; nenhum novo aceite.",
+    "97": "ACKs novos por ID/round; G0 runtime confirmado; G5 primeiro handoff integrado; prova API download/TTL sem promocao; nenhum SQL/deploy.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3693,13 +3694,14 @@
       "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
       "json": "ambiente-runtime.json",
-      "ackRevision": null,
+      "ackRevision": 38,
       "primeiroGate": "C0 assume qa_main.dart e experimento de teclado; G0 medir recursos e informar PID/posse, sem novo build/browser/teste ate transferencia",
-      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "status": "ativa; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.404Z"
     },
     "G1": {
       "grupo": "estrutura",
@@ -3709,13 +3711,14 @@
       "branch": "work/etapa2-r09-estrutura-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
-      "ackRevision": null,
+      "ackRevision": 99,
       "primeiroGate": "groups.members/location ou institutions.status",
-      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "status": "ativa; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.452Z"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -3725,13 +3728,14 @@
       "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
       "json": "acessos-pessoas.json",
-      "ackRevision": null,
+      "ackRevision": 161,
       "primeiroGate": "people.create/edit e H28 focal",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.501Z"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -3741,13 +3745,14 @@
       "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
       "json": "formularios-cuidado-rotina.json",
-      "ackRevision": null,
+      "ackRevision": 85,
       "primeiroGate": "attendance.mark/correct/finish",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.545Z"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -3757,13 +3762,14 @@
       "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
       "json": "principal-chat-sistema.json",
-      "ackRevision": null,
+      "ackRevision": 74,
       "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.588Z"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -3773,13 +3779,14 @@
       "branch": "work/etapa2-r09-realm-interno-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
       "json": "realm-interno.json",
-      "ackRevision": null,
-      "primeiroGate": "revisar provas existentes de groups.members/location e Avaliacoes; propor gate BE sem repetir API/SQL verdes",
-      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "ackRevision": 79,
+      "primeiroGate": "Provar negativa real do contrato activities.assessment e assessments.detail com fixture retida e API normal; preparar runner minimo sem criar dados/SQL. Leitura remota autorizada C0; nao depende slot SQL.",
+      "status": "ativa; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.624Z"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -3789,13 +3796,14 @@
       "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
       "json": "publicacoes-agenda.json",
-      "ackRevision": null,
+      "ackRevision": 92,
       "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.666Z"
     },
     "G7": {
       "grupo": "operacoes",
@@ -3805,13 +3813,14 @@
       "branch": "work/etapa2-r09-operacoes-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
       "json": "operacoes.json",
-      "ackRevision": null,
+      "ackRevision": 82,
       "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.704Z"
     },
     "G8": {
       "grupo": "suites",
@@ -3821,20 +3830,22 @@
       "branch": "work/etapa2-r09-suites-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
       "json": "fase0.json",
-      "ackRevision": null,
+      "ackRevision": 54,
       "primeiroGate": "testes focais na base integrada",
-      "status": "fila; adocao pendente",
+      "status": "fila; adocao confirmada via Git",
       "modelConfigured": true,
       "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
-      "instructionReceived": false,
-      "hostId": "local"
+      "instructionReceived": true,
+      "hostId": "local",
+      "ackAt": "2026-09-12T19:04:12.740Z"
     }
   },
   "slotsR09": {
     "chrome": {
-      "dono": "G0 atribuido; adocao pendente",
+      "dono": "G0",
       "pid": 22592,
-      "estado": "Chrome existente; antiga aba QA ausente na descoberta CUA; nao abrir outro Chrome"
+      "inicio": "2026-09-12T16:00:54-03:00",
+      "estado": "posse confirmada G0 rev38; build/probe teclado real e login em curso"
     },
     "flutterTest": {
       "dono": "nenhum",
@@ -3845,13 +3856,12 @@
       "estado": "disponibilidade pendente; nenhum SQL autorizado sem espelho"
     },
     "ativas": [
-      "C0"
-    ],
-    "atribuicoesPendentes": [
+      "C0",
       "G0",
       "G5",
       "G1"
     ],
+    "atribuicoesPendentes": [],
     "e2eLiberado": false,
     "sqlLiberado": false
   },
@@ -4080,16 +4090,13 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T18:54:32.757Z",
-    "round": "E2-R09-20260912-1542",
-    "recorte": "apps/superadmin -> Auth -> login/entrada de texto -> auth.login (dependencia runtime, certificado historico preservado)",
-    "feito": "merge real do diagnostico2d4f5e5b7; patch QA teclado real por padrao com opt-in do mock; pub get offline exit0; validate-trackers PASS; dart analyze test_driver/qa_main.dart PASS exit0",
-    "aberto": "G0 rebuild/probe/login/leitura/reload pendentes",
+    "at": "2026-09-12T19:04:12.740Z",
+    "recorte": "forms.resolve-file BE/API; runtime QA compartilhado",
+    "feito": "download retido68B/SHA; anon401; asset inexistente400; URL60s expirada403 apos65s; logout local204; merges G0/G5",
+    "testes": "probe final6PASS/0FAIL; tentativa1 abortou antes de confirmar Auth, causa indeterminada; sem somar401 repetido",
+    "aberto": "tenant/contrato ainda nao provado neste probe; UI dependeG0/G3; nenhuma promocao",
     "novosAceites": [],
-    "testesProduto": "nao executados nesta abertura",
-    "memoria": "busca concluida; nenhuma regra de produto nova",
-    "frentes": "nove canais existentes conferidos; nenhuma adocao nova medida",
-    "qaFix": "qa_main.dart teclado real default; Driver.enterText requer --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true"
+    "nextGate": "G0 build/login/reload; G5 negativa de Avaliacoes pela API normal sem SQL novo; G1 consumidor Turmas"
   },
   "tentativaAnteriorAviso": {
     "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
