@@ -59,3 +59,11 @@ G3 publicou RED1 da largura de pintura→GREEN21tabela+16nosdoisarquivosgolden,
 37PASS/0FAIL/analyze0, sem PNG modificado. Esses resultados substituem a fatia
 anterior correspondente; não somar reruns nem declarar AA global. Nenhum runner
 G4; C0 fará a verificação integrada após receber o slot13h55.
+
+## Memória na base integrada
+
+Após fast-forward7d2b66a3e, G4 leu o delta C0 65f219550 no Design System17.1,
+na referência coelo-ui/surface-interaction-contracts e na projeção team/
+coelo-admin-directory-composite. As três fontes concordam: faixa48 disjunta,
+pintura preservada sem eventos/semântica duplicada, coluna fixa sem alça e
+residual32/42 explícito. Não foi necessária nova edição de memória por G4.

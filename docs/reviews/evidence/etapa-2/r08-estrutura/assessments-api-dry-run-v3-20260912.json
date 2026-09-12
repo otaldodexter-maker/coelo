@@ -1,0 +1,52 @@
+{
+  "mode": "dry-run",
+  "mutations": false,
+  "measured_at": "2026-09-12T16:36:41.175234+00:00",
+  "request_ids": {
+    "save_configuration": "181b19a4-7236-4e45-b397-773fb4b368d0",
+    "activate_configuration": "a8ea5147-64a3-469d-9636-f6d3a2247b14",
+    "save_gradebook": "4a0855f0-2444-4b10-a69f-6e8d759b64bb",
+    "submit": "4a98306e-6b83-4949-a4b4-1f11c78d6177",
+    "review": "3d813927-d6d1-47e7-b5d6-2bb64be9f96e",
+    "return": "21303b04-9f95-4825-8185-2e3c0d916d61"
+  },
+  "login_http_status": 200,
+  "context_options": {
+    "http_status": 200,
+    "keys": [
+      "assignments",
+      "periods"
+    ],
+    "assignment_count": 1,
+    "period_count": 0,
+    "strict_projection": true
+  },
+  "closing_queue": {
+    "http_status": 200
+  },
+  "logout_http_status": 204,
+  "executor": {
+    "enabled": false,
+    "ack_required": "G5_C0",
+    "sequence": [
+      "save_configuration",
+      "activate_configuration",
+      "save_gradebook"
+    ],
+    "payload_keys": {
+      "save_configuration": [
+        "activity_id",
+        "institution_id",
+        "unit_id",
+        "periods",
+        "instruments"
+      ],
+      "save_gradebook": [
+        "activity_group_link_id",
+        "period_id",
+        "configuration_id",
+        "students"
+      ]
+    }
+  }
+}

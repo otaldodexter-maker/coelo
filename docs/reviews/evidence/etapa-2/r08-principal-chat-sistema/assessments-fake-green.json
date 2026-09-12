@@ -1,0 +1,30 @@
+{
+  "source_sha": "d59e17f62c47d1df810fae50269395f5a21d2fda",
+  "measured_at": "2026-09-12T17:14:29.410270+00:00",
+  "environment": "local synthetic transport; urlopen blocked",
+  "network_requests": 0,
+  "results": [
+    {
+      "case": "lost_response_recovery",
+      "status": "PASS",
+      "actual_mutations": {
+        "save": 1,
+        "activate": 1,
+        "gradebook": 1
+      },
+      "receipt_count": 3,
+      "request_ids_preserved": true,
+      "failed_auth_preserved": true,
+      "changed_assignment_rejected": true
+    },
+    {
+      "case": "two_assignments",
+      "status": "PASS",
+      "visible_assignments": 2,
+      "selected_target_only": true,
+      "exit_code": 0
+    }
+  ],
+  "pass": 2,
+  "fail": 0
+}

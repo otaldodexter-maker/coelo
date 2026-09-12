@@ -417,6 +417,8 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       personDirectoryRepository: SupabasePersonDirectoryRepository(
         client,
         segmentFilterAvailable: true,
+        // H28: assinatura estendida aplicada no lote 59 em 12/09/2026.
+        contextFiltersAvailable: true,
       ),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,

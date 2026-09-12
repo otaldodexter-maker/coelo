@@ -1,6 +1,6 @@
 ---
 source: R08-prompts.md common contract and G6; spec 037; ADR 0034 decision 20
-status: local-green-browser-blocked
+status: delivered-local-and-api-green-ui-and-owner-decisions-blocked
 generated_at: 2026-09-12
 ---
 
@@ -49,3 +49,35 @@ generated_at: 2026-09-12
 - Inspecao do C0 no A+ 375/200% encontrou `Texto` quebrado em duas linhas dentro do cabecalho. O `_BlockActions` agora mede rotulo + acoes com o `TextScaler` real e desloca as acoes para uma linha propria apenas quando nao cabem; Agendamento usa duas linhas locais em 200%. Teste focal 1/1, golden update+verify 2/2 e inspecao visual verdes em `dd332b98c`; somente o A+ afetado mudou.
 - Gate adicional H14 fechado em `702e75873`: corrida de carga com centro aberto e retry apos falha de `markRead` corrigidos; feed + controlador 13/13 PASS. Continua subaceite de `shell.load`, sem novo ID ou promocao BE/E2E.
 - Smoke produtivo de API `circular-media` v13: 16/16 PASS para prepare/PUT/finalize, ordem `text-media-question-text`, publish/read/bytes, negativa anonima e P50 save/submit/summary. Prova API, nao UI/E2E. Houve desvio de retencao: a fixture foi fechada e excluida antes do ACK especifico, embora o contrato mandasse preserva-la. C0 foi avisado; auditoria somente leitura confirmou detail `CIRCULAR_NOT_FOUND`, asset read 403 e catalogos 403. Nenhuma restauracao/recriacao foi feita; detalhes em `smoke-circular-media-r08.md`.
+
+## Handoff final da frente
+
+- Os seis R foram preservados. O mapeamento final confirma que 768/1024
+  pertencem apenas ao compositor legado, enquanto os basenames 1440 existem
+  também no host produtivo; a fonte do Owner não registra path e conflita sobre
+  a presença/geometria do rodapé. Não há decisão visual suficiente para nova
+  gravação.
+- O manifesto agregado de recursos retidos foi proposto ao C0 com nove grupos,
+  somente IDs e retenção, sem e-mail, URL assinada, token, credencial ou sessão.
+- Revisões estáticas adicionais fecharam sem defeito concreto a sessão de mídia
+  de Principal e o cache/retry de unidade/local de Grupos. A revisão de
+  `anonymousEditSecrets` encontrou composição produtiva ausente; o C0 a
+  implementou e a prova focal passou 17/17, sem E2E.
+- A revisão do save/reload de perfil encontrou validação insuficiente do sujeito
+  canônico e identidade incompleta na troca de papel; o corretivo G4 passou
+  43/43 e análise estática.
+- H25 foi comparado visualmente nos seis pares: o delta era apenas elipse precoce
+  causada pela faixa de resize. A correção G3 preservou o master e passou 16
+  goldens sem rebaseline; alvos sort estreitos continuam pendência separada.
+- A matriz G8 foi aceita com 121/238/422 eventos, 293 eventos anônimos, 281
+  chaves de exibição e 12 colisões. O parser geral também foi aceito sobre o
+  ciclo 180: hash do input conferido, `done=false/time=97850`, exit nativo 1,
+  411 passed, 4 failed, 1 skipped e nenhum done órfão. Nenhum Flutter foi
+  repetido por G6.
+- O runtime API de imagem de resposta do G0 passou, inclusive download, bytes e
+  releitura; essa evidência permanece API e não promove UI.
+
+Pendências legítimas: `circulars.attach` pela UI no runtime 3014 quando o slot
+for autorizado; decisão nominal do Owner para os seis R/rodapé; integração e
+registro central pelo C0. A branch foi publicada até
+`1eccbc591d47f962092dba2f083320b28fff768e` e a worktree deve ser preservada.

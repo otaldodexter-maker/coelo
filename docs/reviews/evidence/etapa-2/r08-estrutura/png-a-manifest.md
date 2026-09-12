@@ -5,6 +5,8 @@ data: 2026-09-12
 rodada: E2-R08-20260912
 ---
 
+> Nota temporal: o texto de “preparação” abaixo é histórico. O estado vigente é a comparação, regravação e verificação dos 45 A, registrada em `png-a-20260912.log`.
+
 ## Pré-checagem de arquivos
 
 Em 12/09, a listagem local confirmou 31 PNGs em `test/goldens/activities`, os 12 nomes de detalhe de Unidade/Turma em `test/app/router/goldens` e os 2 nomes de paginação de Instituições no teste proprietário. Esta checagem só confirma a base dos arquivos; comparação e eventual regravação continuam dependentes da posse Flutter.

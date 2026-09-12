@@ -1,6 +1,6 @@
 {
-  "revision": 69,
-  "updated_at": "2026-09-12T13:56:07.455747-03:00",
+  "revision": 72,
+  "updated_at": "2026-09-12T14:27:43.976068-03:00",
   "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -8,10 +8,10 @@
   "coordinator": "R08 Coordenacao C0",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
   "branch": "work/etapa2-r08-principal-chat-sistema",
-  "base": "origin/dev 6d6cbef32",
-  "head": "d5aa7e253 + view/scanner desta revisão",
-  "status": "EXECUTANDO: view16PASS/censo7PASS/analyze0; H25fixf0e148a70revisto; próximo gate C0",
-  "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
+  "base": "origin/dev 593c6a57e observado; código G4 integrado",
+  "head": "e14ae8b4d + commit deste handoff",
+  "status": "HANDOFF G4 para revisão C0; código integrado, evidências publicadas; UI/E2E pendente",
+  "T0_assumido": "2026-09-12T10:52:16-03:00 histórico; cortes substituídos nominalmente C0/Owner14:22: frente14:40, revisão14:50, fechamentoC015:00",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
     "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
@@ -41,7 +41,8 @@
     "perfil-save-reload": "RED5falhasesperadas/native1;GREEN37PASS0FAIL0SKIP/native0 em2arquivos;5novos32existentes2oráculoswrapperobsoletossubstituidos;analyze4arquivos0/native0. NaoE2E.",
     "principal-integrado-C0": "79PASS/3arquivos baseb85fd00e0/analyze0 conforme ciclo120C0; naosomaraosrerunsG4.",
     "perfil-subject-role": "RED6 esperados/native1; GREEN43PASS0FAIL0SKIP/native0 (6novos37existentes); analyze4arquivos0. Não somar reruns.",
-    "perfil-consumidores": "ViewRED2→GREEN16PASS; scannerRED3→GREEN7PASS;23IDs únicos5novos18existentes; analyze3arquivos0; nenhumUI/E2E."
+    "perfil-consumidores": "ViewRED2→GREEN16PASS; scannerRED3→GREEN7PASS;23IDs únicos5novos18existentes; analyze3arquivos0; nenhumUI/E2E.",
+    "executor-G1-offline": "2workflows únicos; RED0PASS2FAILecbcca06f; GREEN2PASS0FAILd59e17f62/native0; 0rede/credenciaisreais/mutação remota; não somar diagnósticoou4negativosG1."
   },
   "lotes": [
     {
@@ -65,19 +66,17 @@
     "H13 destinoCTAcomunicacao"
   ],
   "pendencias_registradas_sem_bloquear": [
-    "meal_plan_template_save grava tenant_id/institution_id nulos no modelo (a lista devolve null) mesmo com instituicao escolhida; nao bloqueia a tela; conferir contrato",
-    "goldens da familia Publicacao sao da pagina isolada (sem shell do Superadmin); a comparacao com aprovadas-20260911 foi visual; golden com shell fica para a revisao de UI",
-    "com a semantica ligada, cdp_sem type nao alcanca o controller Flutter: usar clickxy no centro + qa_drive enter_text",
-    "V-1, V-2, V-3 (Perfil, Para voce, Acontece feed) pendentes; chat.create-group/attach pendentes"
+    "UI atual de PNG, Cardápios, chat.create-group/attach e Perfil não comprovada nesta rodada; código cliente/API entregues conforme delivery-summary.md.",
+    "H02/H05/H06/H13 aguardam decisão canônica; P54/V-1 pós-MVP preservado.",
+    "Agora: disparador cron materializado comprovado C0; expiração da publicação R08 após24h ainda futura.",
+    "Erros409/500 sem disparador global normal; retry contextual de Momentos mapeado."
   ],
-  "blocker": "UI:runtimeG0semacesso; cross-tenantreal:sematorQAnegativo. Momentos403ACLresolvidolote58.",
+  "blocker": "UI interativa não comprovada: HTTP200 runtimeG0 não equivale a CRUD. Cross-tenant real sem ator QA negativo; Agora24h vence13/09 12:24 BRT.",
   "perguntas_ao_coordenador": [
-    "runtimeUI paraPNG/Cardapios/create-group",
-    "conciliar spec028 bindingattachment_id semassetId antescertificacao",
-    "proximo gate independente aposAPI, semconflito demaisfrentes"
+    "Integrar evidências finais e encaminhar próximo gate R09 somente após autorização de abertura; não há pedido de mutação remota G4."
   ],
-  "next_step": "Publicar view/censo para C0 integrar; próximo gate independente solicitado; UI/atornegativo/contratos seguem pendentes.",
-  "ack": "Slot devolvido13:55. C0 concedeu posse focal rpc_contract_test.dart, G8 nãoedita; nenhum processo Flutter/ChromeG4ativo.",
+  "next_step": "C0 integrar evidências00def54c7/e14ae8b4d e este handoff; ajustes focais até14:50. R09 somente proposta em delivery-summary.md, não iniciada.",
+  "ack": "Corte nominal antecipado recebido. Sem processo/slot G4 ativo; sem mutação remota adicional.",
   "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "Sem processo/slotFlutter/Chrome G4 ativo. Slots globais coordenadosC0; semsegredos;worktreeprincipalintocado;deploy/SQL/inventario/rastreadoresC0.",
   "historico_r05": {
@@ -459,5 +458,27 @@
     "blocker": null,
     "next_step": null,
     "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7)."
+  },
+  "entrega_r08_consolidada": {
+    "documento": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md",
+    "code_commits_integrated": [
+      "1d09cb3c8",
+      "e5e0797c7",
+      "fee190810",
+      "9bee7eb26",
+      "9863512b9",
+      "b58cbaec9",
+      "2f0aef225"
+    ],
+    "evidence_pending_integration_at_snapshot": [
+      "00def54c7",
+      "e14ae8b4d",
+      "commit deste handoff"
+    ],
+    "runtime": "G0 b0e35cb76:14:23 HTTP200/PID14072; UI não comprovada",
+    "resources": "retained-r08-resources.json; sem limpeza autorizada",
+    "wip": "sem código WIP/stash; worktree preservada",
+    "new_secrets": 0,
+    "r09_started": false
   }
 }

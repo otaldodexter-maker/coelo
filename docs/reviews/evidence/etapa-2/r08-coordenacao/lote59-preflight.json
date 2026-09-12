@@ -1,0 +1,49 @@
+{
+  "measuredAt": "2026-09-12T14:29:10.518719-03:00",
+  "status": "applied-production",
+  "sourceSha256LF": "8b6c66091b89e7a319b00f894f80869cb764ba66106baa18e9acbec943761b6e",
+  "backups": [
+    {
+      "file": "schema-producao-20260912-r08-lote59.sql",
+      "bytes": 4142600,
+      "sha256": "69346b703abe3a1d6f1f81cb083a906be6ad663db2fee7501f262814cece1074",
+      "exit": 0,
+      "createFunctions": 1233,
+      "insertStatements": 0
+    },
+    {
+      "file": "dados-producao-20260912-r08-lote59.sql",
+      "bytes": 5052018,
+      "sha256": "aa4d7c03c781a772f64eed375c1f39ca79934da36bfe3574f25cc342de33fbbe",
+      "exit": 0,
+      "createFunctions": 0,
+      "insertStatements": 195
+    }
+  ],
+  "composition": {
+    "file": "composicao-producao-20260912-r08-lote59.sql",
+    "bytes": 33908,
+    "sha256": "c4815f06199c5db4e7e1dc6072501eca46dfd866e4a8a742b2c274f7b4b92408"
+  },
+  "preflight": "remote 13 args count1;17 absent; target ledger0;postgres. Backup logical ADR0034 Decision8.",
+  "applied": true,
+  "appliedAt": "2026-09-12T14:31:26-03:00",
+  "mirror": {
+    "commit": "c34fc20d4",
+    "body": "df0a281cb",
+    "tests": 44,
+    "failed": 0,
+    "rollbacks": true
+  },
+  "postflight": {
+    "at": "2026-09-12T14:31:40-03:00",
+    "ledgerVersion": "20260912143000",
+    "signatureCount": 1,
+    "arguments": 17,
+    "owner": "postgres",
+    "securityDefiner": true,
+    "authenticated": true,
+    "anon": false,
+    "neighborhoodStateCode": true
+  }
+}

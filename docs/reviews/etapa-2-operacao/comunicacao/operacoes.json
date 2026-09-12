@@ -1,6 +1,6 @@
 {
-  "revision": 73,
-  "updated_at": "2026-09-12T13:55:00-03:00",
+  "revision": 78,
+  "updated_at": "2026-09-12T14:30:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -55,17 +55,26 @@
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/worktree-closing-inventory.md",
     "next_gate": "C0 revalida após integração final e resolve WIP rastreado antes de qualquer encerramento"
   },
+  "r09DraftR08": {
+    "owner_change_at": "2026-09-12T14:22:00-03:00",
+    "status": "rascunhos de R09 individuais G0-G8 preparados e deduplicados, sem iniciar R09",
+    "files": [
+      "docs/reviews/evidence/etapa-2/r08-operacoes/r09-plan-draft.md",
+      "docs/reviews/evidence/etapa-2/r08-operacoes/r09-prompts-draft.md",
+      "docs/reviews/evidence/etapa-2/r08-operacoes/worktree-closing-inventory-update.md"
+    ],
+    "closing": "todas as worktrees R08/C0 retidas; sem stash observado; C0 reconcilia contra a base final antes de encerrar",
+    "continuity": "gate bloqueado é registrado e a frente segue para próximo trabalho independente autorizado; censo entra na primeira janela útil da R09, com T0/janela definidos pelo Owner"
+  },
   "reviewH28PeopleR08": {
     "reviewed_sha": "2eebea3f4",
     "scope": "leitura do candidato SQL/pgTAP G2, sem edição G2, SQL remoto ou certificação",
     "accepted_structure": "um EXISTS em context_rows combina os filtros no mesmo vínculo e total_count ocorre antes da paginação",
     "blockers": [
-      "repositório Flutter não envia os quatro parâmetros novos nem lê suas options",
-      "parser de options não preserva state_code/municipality_id para a cascata",
-      "memberships não retorna activity_id/activity_name expostos pelo domínio",
       "regressões A/B/cross-tenant são comentários, não asserts pgTAP executáveis"
     ],
-    "verdict": "WIP de contrato; não serializar/aplicar até completar backend, fixture e cliente",
+    "retracted": "a leitura parcial anterior sobre contextFiltersAvailable=true foi corrigida: 1cbc1f6a0 fixa false e mantém o rollout desligado; ad317fde0 preserva role_name global",
+    "verdict": "WIP de contrato; não serializar/aplicar até completar a fixture A/B e seus asserts executáveis",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/h28-people-candidate-review.md"
   },
   "reviewG6R08": {

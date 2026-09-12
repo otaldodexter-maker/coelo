@@ -1,22 +1,38 @@
 {
  "grupo": "estrutura",
- "revision": 87,
+ "revision": 96,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T13:18:00-03:00",
+ "updatedAt": "2026-09-12T14:23:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
  "branch": "work/etapa2-r08-estrutura",
- "head": "379d9cb37; groups.location com retry idempotente publicado",
+  "head": "273e5abed; executor de Avaliações com cinco guards offline",
  "upstream": "origin/work/etapa2-r08-estrutura",
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location foi corrigido e provado por C0; os 45 PNGs A foram comparados, regravados e verificados 20/20 pelos três testes proprietários em concurrency1.",
-  "pendente": "Chrome/rota real para Avaliações e groups.location; roteiro API normal de activities.assessment foi preparado para ACK, usando apenas IDs de action_id existentes e a fixture sintética autorizada.",
-  "sha": "5b79c1150 + roteiro API local, aguardando commit"
+  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20 com hashes materializados; runner de Avaliações ganhou dry-run autenticado, payload 180350, replay, projeção exata e resume seguro vinculado à turma, com cinco guards offline 5/5. Preflight remoto atual confirmou alvo único e configuration_read null.",
+  "pendente": "Executor de Avaliações aguarda arquivo ACK nominal C0 para --execute; Chrome/rota real e groups.location continuam pendentes.",
+  "sha": "273e5abed; G5 aprovado, aguardando ACK C0, sem mutação"
+ },
+ "ackInputAvaliacoes": {
+  "measuredAt": "2026-09-12T14:13:00-03:00",
+  "assignmentId": "41e161da-ebaa-4fed-b0ba-132640e6a59f",
+  "institutionId": "190dd028-3125-452d-8502-612bfa1029de",
+  "unitId": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+  "groupId": "4214106c-46a2-4bf4-84ba-9c6a619bd486",
+  "activityId": "95b98978-19e2-43ba-aa0c-70ae81557e08",
+  "configurationRead": "HTTP 200; data null",
+  "technicalGateSha": "d59e17f62; G4 fakeproof verde e guardas de resume"
+ },
+ "marcoOwner1422": {
+  "frentes": "2026-09-12T14:40:00-03:00",
+  "revisao": "2026-09-12T14:40:00-03:00 a 2026-09-12T14:50:00-03:00",
+  "fechamentoC0": "2026-09-12T15:00:00-03:00",
+  "R09": "preparar; nao iniciar automaticamente"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",

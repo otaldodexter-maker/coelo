@@ -1,0 +1,323 @@
+{
+  "schemaVersion": 1,
+  "generatedAt": "2026-09-12T17:28:15.498Z",
+  "base": "3c7ebbd5dcef2643677fc453b742c0fca02fe451",
+  "inputSha256": "0aebb61d4220a4e3a799e6300258d35777b42950c0db04d9bb55eea3f8d8ae0c",
+  "done": {
+    "events": [
+      {
+        "success": true,
+        "time": 4762
+      }
+    ],
+    "duplicate": false
+  },
+  "nativeExitCode": 0,
+  "input": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo210-people.jsonl",
+  "counts": {
+    "passed": 19,
+    "failed": 0,
+    "skipped": 0,
+    "hidden": 0,
+    "loading": 2,
+    "errors": 0
+  },
+  "cases": [
+    {
+      "testID": 1,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 3,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "the segment tab is sent to the server as p_segment",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 4,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "list uses the server-side RPC with the complete authorized filter contract",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 5,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "context activity and locality filters are forwarded only after their contract is available",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 6,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "create and update call draft and concurrent RPCs",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 7,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "filter options use the contextual role code in commands",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 8,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "legacy write retains the backend read-only SQLSTATE mapping",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 9,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "detail and reload use the internal v2 envelope without extra PII",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 10,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "detail v2 maps non-enumerating and invalid-session envelopes fail closed",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 11,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "detail v2 rejects malformed or internal-error envelopes as unavailable",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 12,
+      "suiteID": 0,
+      "path": "apps/superadmin/test/features/people/data/supabase_person_directory_repository_test.dart",
+      "name": "detail v2 normalizes non-map envelopes and non-string error codes",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 14,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "result": "success",
+      "skipped": false,
+      "hidden": true,
+      "loading": true,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 16,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "loads people and switches the approved page size with layout",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 17,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "distinguishes empty from filtered no-results",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 18,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "changing institution removes incompatible dependent filters",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 19,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "progressive filters hide and clear descendants without a compatible parent",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 20,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "revocation clears loaded people, filters and sensitive query state",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 21,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "adding a second state preserves a compatible selected neighborhood",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 22,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "keeps an activity when its alternate hierarchy link remains selected",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 23,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "exposes a duplicate activity only once and permits deselection",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    },
+    {
+      "testID": 24,
+      "suiteID": 13,
+      "path": "apps/superadmin/test/features/people/presentation/person_directory_view_model_test.dart",
+      "name": "does not retain a neighborhood through a municipality from another state",
+      "result": "success",
+      "skipped": false,
+      "hidden": false,
+      "loading": false,
+      "metadata": {
+        "skip": false,
+        "skipReason": null
+      }
+    }
+  ],
+  "orphanDone": [],
+  "unknown": []
+}
