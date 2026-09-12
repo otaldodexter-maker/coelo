@@ -1,15 +1,15 @@
 {
-  "revision": 80,
+  "revision": 81,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "4ce8a34f8 (manifesto retido e parecer G8; revisão visual H25 nesta revisão)",
+  "head": "90e2dcf06 (revisão visual H25; checkpoint de parser G8 nesta revisão)",
   "base": "origin/dev 7e889abac incorporado por merge e71bc1777d",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:52:32.7839597-03:00",
+  "updatedAt": "2026-09-12T14:00:58.4471314-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -87,7 +87,7 @@
     "unknown": "suite completa nao repetida (um flutter test por vez); rota real ainda sem arvore AX/captura por timeout do CDP"
   },
   "blocked": "circulars.attach tem runtime v13 e preflight 3014 verdes, mas o aceite pela UI permanece retido: o Chrome unico pertence a G0 e C0 vedou abrir segundo browser ou dirigir CDP. Nenhum status E2E foi promovido.",
-  "next": "C0 integrar a proposta de manifesto retido e o corretivo H25 de G3; G8 corrigir classificação de loader, caminho repo-relative e semântica de chaves de exibição; não remover esta worktree.",
+  "next": "C0 integrar os SHAs publicados; G8 corrigir no parser geral a mesma igualdade canonicalizada de loader já aceita na matriz; seguir próximo gate independente sem remover esta worktree.",
   "changes": [
     {
       "sha": "41a4b4dcf",
@@ -2650,8 +2650,10 @@
       "duplicates": "quatro nomes com multiplicidades 6/5/2/3 geram 5+4+1+2=12; rodapé não é caso nem 13ª duplicação",
       "verification": "parser e logs commitados somente; Flutter, Chrome e remoto não executados",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/g8-test-evidence-parser-review.md",
-      "followUp": "cc7e68703/cfc710b13 restauram 293 eventos anônimos, mas jsonl mantém prefixo loading genérico, caminhos absolutos impedem interseção entre worktrees e 281 mede chaves de exibição, não identidade de casos",
-      "status": "reviewed-follow-up-required-before-final-matrix"
+      "followUp": "7c2735a61 fecha a matriz com loader estrutural, paths repo-relative e chaves de exibição; e22e4c126 ainda repete a comparação absoluto/canônico no parser geral e classifica loaders como hidden",
+      "matrix": "accepted-read-only: 121/238/422 observed JSONL; anonymous 293 events, 281 display keys, 12 collisions; intersections 112 and 221",
+      "loaderDiagnostics": "8/11/11; cycle30 also has 2 hidden non-loaders setUpAll/tearDownAll",
+      "status": "matrix-accepted-general-parser-fix-pending"
     },
     "retainedR08ResourcesReview": {
       "sourceCommit": "57259e29c",

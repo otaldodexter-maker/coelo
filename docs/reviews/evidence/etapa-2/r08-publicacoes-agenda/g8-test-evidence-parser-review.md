@@ -67,3 +67,18 @@ mas ainda não fecham a matriz como prova comparativa:
 
 O C0 e o G8 receberam essa distinção. Nenhum teste foi reexecutado nesta
 revisão somente leitura.
+
+## Estado às 14h00
+
+A matriz de `7c2735a61` corrige os três pontos: compara o sufixo canonicalizado
+do marcador com o caminho canonicalizado da suíte, devolve o contador real
+`loaderMatched` e usa `uniqueDisplayKeys`/`displayKeyCollisions`. O diagnóstico
+é 8/11/11 loaders; no ciclo 30 os outros dois eventos ocultos são `setUpAll` e
+`tearDownAll`, portanto não devem ser chamados de loaders. O documento atual
+foi reescrito sem a tabela obsoleta. Matriz aceita sem rerun Flutter.
+
+O parser geral introduzido em `e22e4c126` ainda repete a comparação entre nome
+absoluto e caminho canonicalizado e classifica os 11 loaders do ciclo 90 como
+`hidden`. A correção solicitada é aplicar a mesma igualdade canonicalizada e
+priorizar `loading` antes de `hidden` na classificação exclusiva. Esse parser
+geral permanece pendente; a matriz aceita não depende dele.
