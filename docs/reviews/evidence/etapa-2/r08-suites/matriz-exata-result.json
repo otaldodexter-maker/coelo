@@ -1,5 +1,5 @@
 {
-  "generatedAt": "2026-09-12T16:35:09.719Z",
+  "generatedAt": "2026-09-12T16:43:26.903Z",
   "key": "normalized executed test path + full test name, linked by testStart.test.id to testDone.testID",
   "counts": {
     "ciclo30": {
@@ -18,8 +18,8 @@
       "duplicateOccurrences": 12
     },
     "anonimo293": {
-      "observedEvents": 291,
-      "uniqueKeys": 279,
+      "observedEvents": 293,
+      "uniqueKeys": 281,
       "duplicateOccurrences": 12
     }
   },
