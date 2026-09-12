@@ -1,5 +1,5 @@
 {
-  "revision": 70,
+  "revision": 71,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
@@ -9,7 +9,7 @@
   "head": "3a00e88f2 (smoke API 16/16; inclui A+ dd332b98c e shell.load 702e75873)",
   "base": "origin/dev 2441725d5 incorporado por merge 21c357685",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T12:53:20-03:00",
+  "updatedAt": "2026-09-12T12:58:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2600,6 +2600,13 @@
       "pending": "decisao visual focal ainda necessaria para geometria/corte do rodape e destino do host legado; referencia 1440 inclui shell completo, golden isola superficie",
       "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/six-r-final-map.md",
       "status": "reviewed-r-preserved-visual-decision-pending"
+    },
+    "groupsLocationSourceCacheReview": {
+      "scope": "WIP C0: identidade do LocationSelectionSource, rebuild, reader replacement, epoch, troca de escopo e retencao do receipt",
+      "result": "nenhum defeito concreto; source estavel entre rebuilds, substituido somente com reader novo; key instituicao/unidade e epoch preservam isolamento",
+      "verification": "analise read-only; valor vazio do select confirmado como string vazia; Flutter nao executado",
+      "evidence": "docs/reviews/evidence/etapa-2/r08-publicacoes-agenda/groups-location-source-cache-review.md",
+      "status": "reviewed-no-concrete-defect-not-executed"
     }
   },
   "r07History": {
