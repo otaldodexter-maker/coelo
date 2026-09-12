@@ -1,0 +1,92 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan  
+-------
+ 1..10
+(1 row)
+
+INSERT 0 1
+INSERT 0 6
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 3
+INSERT 0 2
+INSERT 0 5
+INSERT 0 5
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+                                       set_config                                        
+-----------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "a2800000-0000-4000-8000-000000000001", "role": "authenticated"}
+(1 row)
+
+CREATE FUNCTION
+                    ok                    
+------------------------------------------
+ ok 1 - pessoa somente B não aparece em A
+(1 row)
+
+                   throws_ok                   
+-----------------------------------------------
+ ok 2 - unidade B é recusada sob instituição A
+(1 row)
+
+                  throws_ok                  
+---------------------------------------------
+ ok 3 - turma B é recusada sob instituição A
+(1 row)
+
+                                     is                                     
+----------------------------------------------------------------------------
+ ok 4 - pessoa A+B não combina instituição A com papel exclusivo da linha B
+(1 row)
+
+                                is                                
+------------------------------------------------------------------
+ ok 5 - atividade inclui somente profissional e criança elegíveis
+(1 row)
+
+                      ok                      
+----------------------------------------------
+ ok 6 - assignment inativo/revogado não entra
+(1 row)
+
+                               is                               
+----------------------------------------------------------------
+ ok 7 - atividade, localidade e segmento compõem na mesma linha
+(1 row)
+
+                                is                                
+------------------------------------------------------------------
+ ok 8 - duas atribuições da mesma pessoa não duplicam total_count
+(1 row)
+
+                            ok                            
+----------------------------------------------------------
+ ok 9 - payload preserva nome do papel global e atividade
+(1 row)
+
+                                     ok                                     
+----------------------------------------------------------------------------
+ ok 10 - filter_options expõe as quatro coleções novas sob people.read AAL2
+(1 row)
+
+ finish 
+--------
+(0 rows)
+
+ROLLBACK
