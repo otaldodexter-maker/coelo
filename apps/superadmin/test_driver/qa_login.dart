@@ -37,7 +37,9 @@ Future<void> main(List<String> args) async {
   }
 
   final vm = await call('getVM');
-  final isolates = ((vm['result'] as Map)['isolates'] as List).cast<Map<String, Object?>>();
+  final isolates =
+      ((vm['result'] as Map<String, Object?>)['isolates'] as List)
+          .cast<Map<String, Object?>>();
   final isolateId = isolates.first['id'] as String;
   Future<Map<String, Object?>> driver(Map<String, Object?> command) async {
     final response = await call('ext.flutter.driver', {'isolateId': isolateId, ...command});
