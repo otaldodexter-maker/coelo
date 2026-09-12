@@ -1,12 +1,12 @@
 {
-  "revision": 94,
+  "revision": 95,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T18:49:16.537Z",
+  "updatedAt": "2026-09-12T18:50:03.524Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -253,6 +253,7 @@
     "64": "2026-09-12T10:52:16.727826-03:00 posse R08, nove frentes, slots e corte; sem novo aceite",
     "91": "2026-09-12T15:20:28.253637-03:00 abertura nominal R09 C0; posse e fila G0-G8; consumo49; worktrees preservadas",
     "94": "Retomada autorizada sem controles de tarefas/cota; posse central nova, IDs nao inventados, atribuicoes aguardam adocao; T0 1542 preservado.",
+    "95": "Nove IDs novos fornecidos pelo Owner registrados; blocos de liberacao disponibilizados para encaminhamento, sem afirmar recebimento; G0/G5/G1 liberadas, adocao pendente.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3685,7 +3686,7 @@
   "frentesR09": {
     "G0": {
       "grupo": "ambiente-runtime",
-      "threadId": null,
+      "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
@@ -3693,14 +3694,15 @@
       "json": "ambiente-runtime.json",
       "ackRevision": null,
       "primeiroGate": "C0 assume qa_main.dart e experimento de teclado; G0 medir recursos e informar PID/posse, sem novo build/browser/teste ate transferencia",
-      "status": "atribuicao pendente de adocao pela nova frente",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G1": {
       "grupo": "estrutura",
-      "threadId": null,
+      "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-estrutura-20260912-1542",
@@ -3708,14 +3710,15 @@
       "json": "estrutura.json",
       "ackRevision": null,
       "primeiroGate": "groups.members/location ou institutions.status",
-      "status": "atribuicao pendente de adocao pela nova frente",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G2": {
       "grupo": "acessos-pessoas",
-      "threadId": null,
+      "threadId": "01a096ed-ea61-7cb1-8ba0-b7f65dec4bf9",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
@@ -3723,14 +3726,15 @@
       "json": "acessos-pessoas.json",
       "ackRevision": null,
       "primeiroGate": "people.create/edit e H28 focal",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
-      "threadId": null,
+      "threadId": "01a096ee-1249-70d0-be68-eef51e03ac03",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
@@ -3738,14 +3742,15 @@
       "json": "formularios-cuidado-rotina.json",
       "ackRevision": null,
       "primeiroGate": "attendance.mark/correct/finish",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
-      "threadId": null,
+      "threadId": "01a096ee-7145-7a32-b869-86d6fb983504",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
@@ -3753,14 +3758,15 @@
       "json": "principal-chat-sistema.json",
       "ackRevision": null,
       "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G5": {
       "grupo": "realm-interno",
-      "threadId": null,
+      "threadId": "01a096ee-9b56-7a12-942a-932b1903458e",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-realm-interno-20260912-1542",
@@ -3768,14 +3774,15 @@
       "json": "realm-interno.json",
       "ackRevision": null,
       "primeiroGate": "revisar provas existentes de groups.members/location e Avaliacoes; propor gate BE sem repetir API/SQL verdes",
-      "status": "atribuicao pendente de adocao pela nova frente",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "vaga liberada; instrucao para encaminhamento pelo Owner; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
-      "threadId": null,
+      "threadId": "01a096ee-c996-7930-be41-d1ad42547fd2",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
@@ -3783,14 +3790,15 @@
       "json": "publicacoes-agenda.json",
       "ackRevision": null,
       "primeiroGate": "circulars.attach fixture NOVA R09 autorizada e retida",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G7": {
       "grupo": "operacoes",
-      "threadId": null,
+      "threadId": "01a096ee-f50c-7991-912a-0ae6382055e7",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-operacoes-20260912-1542",
@@ -3798,14 +3806,15 @@
       "json": "operacoes.json",
       "ackRevision": null,
       "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     },
     "G8": {
       "grupo": "suites",
-      "threadId": null,
+      "threadId": "01a096ef-1a7e-7410-a768-788168c4b881",
       "model": "gpt-6-astra",
       "reasoningEffort": "medium",
       "branch": "work/etapa2-r09-suites-20260912-1542",
@@ -3813,10 +3822,11 @@
       "json": "fase0.json",
       "ackRevision": null,
       "primeiroGate": "testes focais na base integrada",
-      "status": "fila sem polling",
-      "modelConfigured": false,
-      "taskDiscovery": "nova tarefa nao localizada; nao usar ID historico",
-      "instructionReceived": false
+      "status": "fila; adocao pendente",
+      "modelConfigured": true,
+      "taskDiscovery": "ID e papel fornecidos pelo Owner; conteudo da tarefa nao lido",
+      "instructionReceived": false,
+      "hostId": "local"
     }
   },
   "slotsR09": {
