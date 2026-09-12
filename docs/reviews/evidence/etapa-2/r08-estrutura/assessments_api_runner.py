@@ -116,11 +116,16 @@ def main() -> int:
                     raise RuntimeError("ack_invalid_for_assignment")
                 if args.resume:
                     executor = manifest.get("executor")
+                    request_ids = manifest.get("request_ids")
                     if (manifest.get("mode") != "execute" or manifest.get("mutations") is not True
                         or not isinstance(executor, dict) or executor.get("enabled") is not True
-                        or executor.get("state") == "complete" or not isinstance(executor.get("plan"), dict)):
+                        or executor.get("state") == "complete" or not isinstance(executor.get("plan"), dict)
+                        or not isinstance(request_ids, dict)
+                        or any(not _is_uuid(request_ids.get(name)) for name in ("save_configuration", "activate_configuration", "save_gradebook"))):
                         raise RuntimeError("resume_plan_invalid")
                     plan = executor["plan"]
+                    if plan != _execution_plan(assignment, request_ids):
+                        raise RuntimeError("resume_plan_mismatch")
                     save_payload = plan.get("save_configuration") if isinstance(plan, dict) else None
                     target = save_payload.get("payload") if isinstance(save_payload, dict) else None
                     if (not isinstance(target, dict) or target.get("activity_id") != assignment["activity_id"]
@@ -218,6 +223,16 @@ def _execution_plan(assignment: dict[str, object], request_ids: dict[str, str]) 
     period = {"name": "R08 sintético", "ordinal": 1, "academic_year": 2026, "starts_on": "2026-09-12", "ends_on": "2026-12-31", "entry_closes_at": "2026-12-31T20:00:00-03:00", "family_release_at": "2026-12-31T20:00:00-03:00", "timezone": "America/Sao_Paulo"}
     payload = {"activity_id": assignment["activity_id"], "institution_id": assignment["institution_id"], "unit_id": assignment["unit_id"], "periodicity": "annual", "result_scale_kind": "numeric_0_10", "scale_options": {}, "concepts": [], "periods": [period], "allow_final_override": False, "instruments": [{"name": "Instrumento R08", "weight": 100, "sort_order": 0}], "categories": []}
     return {"save_configuration": {"request_id": request_ids["save_configuration"], "configuration_id": None, "expected_version": 0, "payload": payload}, "activate_request_id": request_ids["activate_configuration"], "gradebook_request_id": request_ids["save_gradebook"]}
+
+
+def _is_uuid(value: object) -> bool:
+    if not isinstance(value, str):
+        return False
+    try:
+        uuid.UUID(value)
+    except ValueError:
+        return False
+    return True
 
 
 if __name__ == "__main__":
