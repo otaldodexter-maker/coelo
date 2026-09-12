@@ -1,12 +1,12 @@
 {
-  "revision": 117,
+  "revision": 118,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T22:00:48.866961+00:00",
+  "updatedAt": "2026-09-12T22:09:50.111867+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3682,13 +3682,15 @@
     "execucaoAte": "2026-09-12T19:42:18-03:00",
     "fechamentoAte": "2026-09-12T20:12:18-03:00",
     "threadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
-    "status": "fechamento-sem-novas-fatias",
+    "status": "encerrada-entrega-publicada",
     "escopo": "apps/superadmin -> menu -> tela/subtela/estado -> action_id; CRUD real, persistencia, reload, RLS e hierarquia",
     "fora": "outros apps, R10, senha, exportacoes gerais, endurecimento amplo",
     "regraDeEscrita": "C0 exclusivo dev, inventario, tres rastreadores, fila SQL, composicao e deploy; executoras somente dominio e handoff proprio",
     "evidencia": "rota normal, CRUD real, reload e negativa de tenant/hierarquia; FE/BE/E2E separados",
     "estimativa": "janela maxima autorizada; delta inspecionado apos primeiro gate runtime; consumo pode antecipar",
-    "preservacao": "15 worktrees limpas; sem stash; G0 2d4f5e5b7 e checkpoint1534 d2ed31572 fora de dev preservados"
+    "preservacao": "24worktrees preservadas; nove heads G0-G8 integrados; nenhum stash/WIP de produto; checkpoint1534 d2ed31572 fora de dev retido.",
+    "closedAt": "2026-09-12T22:09:50.111867+00:00",
+    "preservacaoAbertura": "15 worktrees limpas; sem stash; G0 2d4f5e5b7 e checkpoint1534 d2ed31572 fora de dev preservados"
   },
   "frentesR09": {
     "G0": {
@@ -3701,12 +3703,18 @@
       "json": "ambiente-runtime.json",
       "ackRevision": 40,
       "primeiroGate": "runtime pronto; aguardar candidato SQL/novo bloqueio sem polling",
-      "status": "fatia entregue; vaga liberada",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.404Z"
+      "ackAt": "2026-09-12T19:04:12.404Z",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a096fc-6d39-7071-9405-93f952731332",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G1": {
       "grupo": "estrutura",
@@ -3716,14 +3724,20 @@
       "branch": "work/etapa2-r09-estrutura-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
       "json": "estrutura.json",
-      "ackRevision": 112,
+      "ackRevision": 115,
       "primeiroGate": "r104: Local ACEITO C0 FE/BE/E2E, recibo groups-location-acceptance.md. Membros: causa confirmada por catalogo remoto institution_roles: guardian/student/professional/admin NAO existem. Catalogo global ativo: teacher (Professor), coordinator, institution_admin, institution_reader, secretary. Nao mapear guardian para professor nem criar papel artificial. Inspecionar contrato aprovado de pessoas/child-group-links e perfis dinamicos; corrigir consumidor Profissionais para selecao de perfil institucional real via repository existente, mantendo familia visual; Aluno/Responsavel dependem cadeia propria, nao institution_roles. Sem novo build/Flutter ate reservar slot; C0 livre para gate focal se preciso. Na mesma fatia, sem novas Avaliacoes. Nao repetir save guardian. C0 segue SQL.",
-      "status": "thread completed; r115 entregue; r104 nao adotada; Local aceitoC0, Membros com C0; Chrome recolhido",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.452Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a096fc-9657-7d33-bb9a-9bd76bcc46a3",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G2": {
       "grupo": "acessos-pessoas",
@@ -3733,14 +3747,20 @@
       "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
       "json": "acessos-pessoas.json",
-      "ackRevision": 161,
+      "ackRevision": 162,
       "primeiroGate": "people.create/edit e H28 focal",
-      "status": "fila; adocao confirmada via Git",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.501Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09701-3c27-7231-a6bd-fb5466733330",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G3": {
       "grupo": "formularios-cuidado-rotina",
@@ -3750,14 +3770,20 @@
       "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
       "json": "formularios-cuidado-rotina.json",
-      "ackRevision": 85,
+      "ackRevision": 86,
       "primeiroGate": "attendance.mark/correct/finish",
-      "status": "fila; adocao confirmada via Git",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.545Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09701-2466-7152-b845-6291d9eb7dcb",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G4": {
       "grupo": "principal-chat-sistema",
@@ -3769,12 +3795,18 @@
       "json": "principal-chat-sistema.json",
       "ackRevision": 76,
       "primeiroGate": "meal-plans CRUD ou chat.create-group/attach",
-      "status": "fila; adocao confirmada via Git",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.588Z"
+      "ackAt": "2026-09-12T19:04:12.588Z",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09700-da46-7140-bd62-1c3d4b9a07c7",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G5": {
       "grupo": "realm-interno",
@@ -3784,14 +3816,20 @@
       "branch": "work/etapa2-r09-realm-interno-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
       "json": "realm-interno.json",
-      "ackRevision": 80,
+      "ackRevision": 81,
       "primeiroGate": "Provar negativa real do contrato activities.assessment e assessments.detail com fixture retida e API normal; preparar runner minimo sem criar dados/SQL. Leitura remota autorizada C0; nao depende slot SQL.",
-      "status": "fatia leitura entregue; vaga liberada; dependencia alunos elegiveis",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.624Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09703-88d6-76e0-af7e-c2691db07323",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G6": {
       "grupo": "publicacoes-agenda",
@@ -3803,12 +3841,18 @@
       "json": "publicacoes-agenda.json",
       "ackRevision": 92,
       "primeiroGate": "circulars.attach pela UI normal 127.0.0.1:3014; fixture nova QA R09 G6 circulars.attach 20260912-1542 autorizada em contexto sintetico retido; guardar fixture e provar reload, usar negativas validas da familia",
-      "status": "fila; instrucao rev98 NAO entregue; Chrome recolhido C0 rev99",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.666Z"
+      "ackAt": "2026-09-12T19:04:12.666Z",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09700-2325-7923-97d3-2d3672e43778",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G7": {
       "grupo": "operacoes",
@@ -3818,14 +3862,20 @@
       "branch": "work/etapa2-r09-operacoes-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
       "json": "operacoes.json",
-      "ackRevision": 82,
+      "ackRevision": 83,
       "primeiroGate": "plans.assign se spec051 resolver; senao account.sessions propria",
-      "status": "fila; adocao confirmada via Git",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.704Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09703-a279-7082-8b32-1b7b03cae88d",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     },
     "G8": {
       "grupo": "suites",
@@ -3835,14 +3885,20 @@
       "branch": "work/etapa2-r09-suites-20260912-1542",
       "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
       "json": "fase0.json",
-      "ackRevision": 54,
+      "ackRevision": 55,
       "primeiroGate": "testes focais na base integrada",
-      "status": "fila; adocao confirmada via Git",
+      "status": "rodada encerrada por C0; head integrado; sem vaga ativa",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
       "hostId": "local",
-      "ackAt": "2026-09-12T19:04:12.740Z"
+      "ackAt": "2026-09-12T22:09:50.111867+00:00",
+      "lastTaskStatus": "completed",
+      "lastTurnId": "01a09703-b85c-7ed0-8a97-e156efe45f90",
+      "closingInstructionDelivered": false,
+      "deliveredHead": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "ackNote": "C0 leu revisao final integrada; nao e confirmacao de recebimento do fechamento pela frente.",
+      "lastReadAt": "2026-09-12T22:09:50.111867+00:00"
     }
   },
   "slotsR09": {
@@ -3850,12 +3906,12 @@
       "dono": "C0",
       "pid": 22592,
       "inicio": "2026-09-12T20:01:00Z",
-      "estado": "C0; Home apos gate Perfil, sem draft pendente; mesma instancia.",
+      "estado": "preservado; Home sem draft; nenhuma executora ativa, nao encerrar processo do usuario",
       "tabId": 829822468
     },
     "flutterTest": {
       "dono": "nenhum",
-      "estado": "32casos pertinentes PASS; analyze0; build55.6s concluido",
+      "estado": "livre; nenhum Flutter test/build/analyzer em execucao no fechamento",
       "inicio": "2026-09-12T20:01:00Z"
     },
     "sqlEspelho": {
@@ -3864,11 +3920,9 @@
       "container": "supabase_db_coelo_baseline",
       "estado": "lote60 aplicado; sem candidato novo; local cron forms4 desativado"
     },
-    "ativas": [
-      "C0"
-    ],
+    "ativas": [],
     "atribuicoesPendentes": [],
-    "e2eLiberado": true,
+    "e2eLiberado": false,
     "sqlLiberado": false,
     "runtime": {
       "dono": "C0",
@@ -3876,7 +3930,7 @@
       "port": 3014,
       "source": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542/apps/superadmin/build/web",
       "buildSha": "9713bbdeb",
-      "next": "Preservar runtime; fechamento sem nova fatia",
+      "next": "Servidor QA preservado; nao e deploy publico nem nova vaga",
       "buildOwner": "C0"
     }
   },
@@ -4105,7 +4159,7 @@
     }
   },
   "checkpointR09": {
-    "at": "2026-09-12T22:00:48.866961+00:00",
+    "at": "2026-09-12T22:09:50.111867+00:00",
     "novosAceites": [
       "groups.location FE/BE/E2E",
       "attendance.mark FE/E2E",
@@ -4119,12 +4173,14 @@
       "internal-users.edit FE/E2E",
       "internal-users.create/suspend FE/BE/E2E",
       "activities.list BE/E2E",
-      "principal.profile-view BE/E2E"
+      "principal.profile-view BE/E2E",
+      "activities.assessment BE (provas R08 + negativas G5 R09)",
+      "forms.upload/resolve-file BE (lote60 e consumidor real)"
     ],
-    "feito": "principal.profile-view BE/E2E aceito: UI/2contextos/reload/retorno49SQL7API PASS. Meta minima FE/BE/E2E atingida; inicio de fechamento sem nova fatia.",
+    "feito": "Meta minima atingida: FE+6.06pp BE+5.36pp E2E+8.54pp. Nove heads integrados; R09-fechamento/R09-pendencias publicados, nenhuma nova fatia.",
     "intervencao60min": "apos runtime e tentativa arquivo bloqueada pela extensao, Chrome transferidoG1 para Local sem picker; C0 completa negativa e corrige autorizacao de Formularios em paralelo",
-    "nextGate": "Fechamento: reconciliar nove branches/WIP, sete metricas, validadores e memoria; publicar R09-fechamento.",
-    "noveFrentes": "thread/read conferiu nove completed neste ciclo; nao afirmar instrucoes novas entregues, C0 executa pacotes independentes"
+    "nextGate": "Rodada encerrada. Proxima instrucao do Owner deve partir de R09-pendencias.md e estado real; nao iniciar R10 automaticamente.",
+    "noveFrentes": "Ultimo thread/read: nove completed, mesmos turnIds; nove heads Git integrados. Fechamento central via Git, nao mensagem recebida."
   },
   "tentativaAnteriorAviso": {
     "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
@@ -4133,13 +4189,13 @@
     "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   },
   "consumoR09Atual": {
-    "usedPercent": 68,
+    "usedPercent": 69,
     "limitId": "codex",
     "windowDurationMins": 10080,
-    "measuredAt": "2026-09-12T21:56:00Z",
+    "measuredAt": "2026-09-12T22:09:50.111867+00:00",
     "source": "account/rateLimits/read; Codex app-server",
     "measurementNote": "consulta real account/rateLimits/read neste checkpoint",
-    "nextCheckBy": "2026-09-12T22:06:00Z"
+    "nextCheckBy": null
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",
@@ -4151,8 +4207,8 @@
     "ultimoAplicado": 60,
     "proximo": 61,
     "dono": "C0",
-    "candidato": "20260912195837_forms_answer_media_authorization_null_guard_v1.sql",
-    "status": "lote60 aplicado e consumidor3PASS",
+    "candidato": null,
+    "status": "lote60 aplicado uma vez e consumidor3PASS; proximo61 sem candidato",
     "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md",
     "regressoes": "8falhas iniciais resolvidas:4 testes desatualizados e ACL/cron do espelho divergentes. Sem mudanca remota ampla; jobs do espelho desativados.",
     "espelho": "supabase_db_coelo_baseline; candidato aplicado e provas112PASS",
@@ -4165,7 +4221,9 @@
         "functionMd5": "bb5ec29824e4ce316c9c86cc235cd330",
         "proof": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
       }
-    ]
+    ],
+    "finalLedgerCount": 1,
+    "finalFunctionMd5": "bb5ec29824e4ce316c9c86cc235cd330"
   },
   "pendenciasOwnerR09": [
     {
@@ -4175,5 +4233,19 @@
       "owner": "C0/G7",
       "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md"
     }
-  ]
+  ],
+  "fechamentoR09": {
+    "revision": 118,
+    "at": "2026-09-12T22:09:50.111867+00:00",
+    "report": "docs/reviews/etapa-2-operacao/next-round/R09-fechamento.md",
+    "pending": "docs/reviews/etapa-2-operacao/next-round/R09-pendencias.md",
+    "base": "8eac8b540",
+    "metrics": "docs/reviews/evidence/etapa-2/r09-coordenacao/closure-metrics.json",
+    "heartbeat": "indisponivel; checkpoints manuais encerrados, nenhum timer/loop ativo",
+    "continuedAutomatically": false,
+    "memory": "no-op de conhecimento duravel;65artigosPASS,12testesPASS1SKIP symlink",
+    "frontendDeployment": "Git/dev e QA3014; sem novo deploy publico R09",
+    "quotaInitialObserved": 57,
+    "quotaFinalObserved": 69
+  }
 }

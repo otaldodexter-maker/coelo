@@ -1,0 +1,301 @@
+{
+  "at": "2026-09-12T22:09:50.111867+00:00",
+  "originDev": "8eac8b54067768b2f2d479e69e060dfdb84356ab",
+  "worktrees": [
+    {
+      "path": "C:/Users/adrie/Documents/Coelo",
+      "head": "5d57969b4a1542a8662f93486e92b2715d8ce721",
+      "branch": "refs/heads/dev",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        ".agents/skills/coelo-knowledge/scripts/__pycache__/",
+        ".agents/skills/coelo-knowledge/tests/__pycache__/",
+        "apps/catalog/.dart_tool/",
+        "apps/catalog/build/",
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/.env.local",
+        "apps/superadmin/build/",
+        "packages/coelo_api/.dart_tool/",
+        "packages/coelo_api/build/",
+        "packages/coelo_auth/.dart_tool/",
+        "packages/coelo_auth/build/",
+        "packages/coelo_domain/.dart_tool/",
+        "packages/coelo_domain/build/",
+        "packages/coelo_tokens/.dart_tool/",
+        "packages/coelo_tokens/build/",
+        "packages/coelo_ui_admin/.dart_tool/",
+        "packages/coelo_ui_admin/build/",
+        "packages/coelo_ui_core/.dart_tool/",
+        "packages/coelo_ui_core/build/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
+      "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "branch": "refs/heads/work/etapa2-r07-coordenacao",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        ".agents/skills/coelo-knowledge/scripts/__pycache__/",
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/build/",
+        "packages/coelo_api/.dart_tool/",
+        "packages/coelo_api/build/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "branch": "refs/heads/work/etapa2-r08-acessos-pessoas",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "head": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "branch": "refs/heads/work/etapa2-r08-ambiente-runtime",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/.env.local",
+        "apps/superadmin/build/",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/qa-server-final.stderr.log",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/qa-server-final.stdout.log",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/qa-server.stderr.log",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/qa-server.stdout.log"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao",
+      "head": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "branch": "refs/heads/work/etapa2-r08-coordenacao",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        ".agents/skills/coelo-knowledge/scripts/__pycache__/",
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/build/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-estrutura",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "docs/reviews/evidence/etapa-2/r08-estrutura/png-a-20260912.log"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "branch": "refs/heads/work/etapa2-r08-formularios-cuidado-rotina",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/forms-h12-analyze.log",
+        "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/forms-h12-h26-analyze.log",
+        "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/forms-media-analyze.log",
+        "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/forms-work-analyze.log"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "branch": "refs/heads/work/etapa2-r08-operacoes",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "branch": "refs/heads/work/etapa2-r08-principal-chat-sistema",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "branch": "refs/heads/work/etapa2-r08-publicacoes-agenda",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/build/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-realm-interno",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "branch": "refs/heads/work/etapa2-r08-suites",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+      "head": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "branch": "refs/heads/work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
+      "head": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "branch": "refs/heads/work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/.env.local",
+        "apps/superadmin/build/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1534",
+      "head": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1534",
+      "status": [],
+      "mergedIntoOriginDev": false,
+      "retainedUnmergedCommits": [
+        "d2ed31572 Registra abertura R09 isolada e bloqueios de controle da sessao"
+      ],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+      "head": "aafb3db788b87bb0e6fa93b56d802b65e7f35f60",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/build/",
+        "docs/reviews/evidence/etapa-2/r08-ambiente-runtime/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r08-estrutura/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/forms-answer-authorization-pgtap-green.log",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/forms-answer-authorization-pgtap.log",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-forms_security_and_operations_test.sql.log",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/runtime-attendance-server-error.log",
+        "docs/reviews/evidence/etapa-2/r09-coordenacao/runtime-attendance-server.log"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
+      "head": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "branch": "refs/heads/work/etapa2-r09-estrutura-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "apps/superadmin/.dart_tool/",
+        "apps/superadmin/.env.local",
+        "apps/superadmin/build/",
+        "docs/reviews/evidence/etapa-2/r08-estrutura/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/build.log"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "head": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "branch": "refs/heads/work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
+      "head": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "branch": "refs/heads/work/etapa2-r09-operacoes-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
+      "head": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "branch": "refs/heads/work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
+      "head": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "branch": "refs/heads/work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+      "head": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "branch": "refs/heads/work/etapa2-r09-realm-interno-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": [
+        "docs/reviews/evidence/etapa-2/r08-estrutura/__pycache__/",
+        "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/__pycache__/"
+      ]
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
+      "head": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "branch": "refs/heads/work/etapa2-r09-suites-20260912-1542",
+      "status": [],
+      "mergedIntoOriginDev": true,
+      "retainedUnmergedCommits": [],
+      "importantIgnoredPaths": []
+    }
+  ],
+  "stash": [],
+  "preservation": "Read-only inventory; no worktree/branch/ignored/stash removed.",
+  "initialAt": "2026-09-12T22:02:30.351127+00:00",
+  "finalNote": "G7 and G8 final handoffs merged; only old1534 checkpoint remains outside dev. C0 closure documentation committed after this snapshot."
+}

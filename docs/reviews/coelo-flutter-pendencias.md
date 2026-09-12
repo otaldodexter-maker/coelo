@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-12T10:23:56-03:00"
+updated_at: "2026-09-12T22:09:50.111867+00:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,13 +13,13 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-12T10:23:56-03:00"
-tracker_sync_revisions: "R07 encerrada: estrutura69; acessos146+checkpoint149; formularios62; principal48; realm51; publicacoes54; operacoes54; suites19; coordenacao63"
+tracker_sync_at: "2026-09-12T22:09:50.111867+00:00"
+tracker_sync_revisions: "R09 encerrada C0r118; nove heads integrados; inventario sincronizado"
 ---
 
 # Pendências Coelo — Front-end
 
-## Estado vigente ? R09 E2-R09-20260912-1542, C0 revisao117
+## Estado vigente ? R09 E2-R09-20260912-1542, C0 revisao118
 
 T0 12/09/2026 15:42:18 BRT preservado; corte de execucao19:42:18 e
 fechamento20:12:18, ou antes por consumo. Nove IDs/ACKs conferidos; posse
@@ -29,7 +29,7 @@ cota codex (App Server); nao e medicao de T0. Checkpoints em sessao ativa.
 Runtime G0 aprovado pela UI normal: teclado real, login, leitura de
 Instituicoes e reload, sem sessao injetada. Prova em
 [evidencia G0](evidence/etapa-2/r09-ambiente-runtime-20260912-1542/handoff.md).
-Chrome22592/aba829822468 e servidor48684/3014 recolhidos por C0 apos entrega G1; Local salvo, reload e negativa contextual provados; aceite composto publicado. Consumo real atual=68%. Lote60 aplicado/ledger/consumidor3PASS;112PASS SQL apos reconciliacao focal do espelho e testes vigentes; [preflight](evidence/etapa-2/r09-coordenacao/lote60-preflight.md).
+Chrome22592/aba829822468 e servidor48684/3014 recolhidos por C0 apos entrega G1; Local salvo, reload e negativa contextual provados; aceite composto publicado. Consumo real final=69%. Lote60 aplicado/ledger/consumidor3PASS;112PASS SQL apos reconciliacao focal do espelho e testes vigentes; [preflight](evidence/etapa-2/r09-coordenacao/lote60-preflight.md).
 A disponibilidade do runtime nao certifica automaticamente CRUDs de produto.
 
 Assiduidade: attendance.mark/finish/correct FE verified e E2E pela UI normal,
@@ -59,7 +59,9 @@ Usuarios internos criar/suspender: UI/reload, perfil Support limitado,32casos54S
 
 Atividades lista: UI/filtro institucional/unidade/reload;125SQL5API PASS; BE/E2E aceitos. [Prova](evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md).
 
-Perfil leitura: dois contextos reais, reload/retorno ao shell;49SQL7API PASS; BE/E2E aceitos. [Prova](evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md). Meta minima FE/BE/E2E atingida; fechamento sem novas fatias.
+Perfil leitura: dois contextos reais, reload/retorno ao shell;49SQL7API PASS; BE/E2E aceitos. [Prova](evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md). Meta minima FE/BE/E2E atingida; rodada encerrada, sem nova fatia.
+
+R09 encerrada apos meta minima: FE+6,06p.p.; BE+5,36p.p.; E2E+8,54p.p. [Fechamento](etapa-2-operacao/next-round/R09-fechamento.md) e [primeiros gates](etapa-2-operacao/next-round/R09-pendencias.md). Nove heads integrados; nenhum timer/Flutter ativo. Git/dev publicado; frontend publico nao recebeu novo deploy nesta R09.
 
 ## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
 

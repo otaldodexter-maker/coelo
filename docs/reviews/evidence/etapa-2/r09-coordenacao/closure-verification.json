@@ -1,0 +1,14 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "revision": 118,
+  "date": "2026-09-12",
+  "productCodeBaseline": "9713bbdeb",
+  "integratedBaseline": "8eac8b540",
+  "trackers": {"pass": true, "frontend": 175, "backend": 161, "e2e": 148, "actions": 231, "backendApplicable": 224, "activeE2E": 199},
+  "knowledge": {"articlesValidated": 65, "testsRun": 13, "passed": 12, "failed": 0, "skipped": 1, "skipReason": "Host does not permit creating a symlink in the test.", "exitCode": 0, "projectionChange": "no-op; existing contracts restored, no new durable product rule"},
+  "sql": {"lastSerializedLot": 60, "nextLot": 61, "nextCandidate": null, "version": "20260912195837", "ledgerCount": 1, "functionMd5": "bb5ec29824e4ce316c9c86cc235cd330", "reconciliation": "Higher version names20260912210000,20260912210100,20260912220000 belong to historical R06 lots50,52,54; not new external applications."},
+  "processes": {"chromePid": 22592, "staticServerPid": 48684, "port": 3014, "flutterTestActive": false, "flutterBuildActive": false, "foreignProcessesStopped": false},
+  "documentationLinks": "All relative links in R09-fechamento.md and R09-pendencias.md resolve.",
+  "checksNotRun": ["full Flutter census", "general golden suite", "physical camera", "blocked UI file upload", "new user's first login/password/SMTP", "real concurrent target logout", "future Agora expiry", "broad security review", "Etapa3"],
+  "limitations": "Per-package tests and failures are enumerated in R09-fechamento.md. No global passing percentage is inferred. This document does not replace runtime evidence."
+}

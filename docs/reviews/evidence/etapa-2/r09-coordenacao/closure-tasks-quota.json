@@ -1,0 +1,79 @@
+{
+  "at": "2026-09-12T22:09:50.111867+00:00",
+  "responses": [
+    {
+      "quota": {
+        "limitId": "codex",
+        "limitName": null,
+        "primary": {
+          "usedPercent": 69,
+          "windowDurationMins": 10080,
+          "resetsAt": 1789820315
+        },
+        "secondary": null,
+        "credits": {
+          "hasCredits": false,
+          "unlimited": false,
+          "balance": "0"
+        },
+        "individualLimit": null,
+        "planType": "pro",
+        "rateLimitReachedType": null
+      }
+    },
+    {
+      "front": "G0",
+      "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
+      "turnId": "01a096fc-6d39-7071-9405-93f952731332",
+      "status": "completed"
+    },
+    {
+      "front": "G1",
+      "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
+      "turnId": "01a096fc-9657-7d33-bb9a-9bd76bcc46a3",
+      "status": "completed"
+    },
+    {
+      "front": "G2",
+      "threadId": "01a096ed-ea61-7cb1-8ba0-b7f65dec4bf9",
+      "turnId": "01a09701-3c27-7231-a6bd-fb5466733330",
+      "status": "completed"
+    },
+    {
+      "front": "G3",
+      "threadId": "01a096ee-1249-70d0-be68-eef51e03ac03",
+      "turnId": "01a09701-2466-7152-b845-6291d9eb7dcb",
+      "status": "completed"
+    },
+    {
+      "front": "G4",
+      "threadId": "01a096ee-7145-7a32-b869-86d6fb983504",
+      "turnId": "01a09700-da46-7140-bd62-1c3d4b9a07c7",
+      "status": "completed"
+    },
+    {
+      "front": "G5",
+      "threadId": "01a096ee-9b56-7a12-942a-932b1903458e",
+      "turnId": "01a09703-88d6-76e0-af7e-c2691db07323",
+      "status": "completed"
+    },
+    {
+      "front": "G6",
+      "threadId": "01a096ee-c996-7930-be41-d1ad42547fd2",
+      "turnId": "01a09700-2325-7923-97d3-2d3672e43778",
+      "status": "completed"
+    },
+    {
+      "front": "G7",
+      "threadId": "01a096ee-f50c-7991-912a-0ae6382055e7",
+      "turnId": "01a09703-a279-7082-8b32-1b7b03cae88d",
+      "status": "completed"
+    },
+    {
+      "front": "G8",
+      "threadId": "01a096ef-1a7e-7410-a768-788168c4b881",
+      "turnId": "01a09703-b85c-7ed0-8a97-e156efe45f90",
+      "status": "completed"
+    }
+  ]
+}

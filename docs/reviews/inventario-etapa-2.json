@@ -9102,7 +9102,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T22:00:48.993Z",
+  "updatedAt": "2026-09-12T22:09:50.111867+00:00",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
@@ -9138,5 +9138,19 @@
     "fullCensus": "not executed; moved to R09 after Owner shortened cutoff to15:00",
     "skillsMemoryCommit": "65f219550",
     "remaining": "UI/runtime, cross-tenant real, six R/Owner, H19/H20/H25 and scoped residuals"
+  },
+  "r09Closure": {
+    "revision": 118,
+    "at": "2026-09-12T22:09:50.111867+00:00",
+    "report": "docs/reviews/etapa-2-operacao/next-round/R09-fechamento.md",
+    "pending": "docs/reviews/etapa-2-operacao/next-round/R09-pendencias.md",
+    "base": "8eac8b540",
+    "metrics": "docs/reviews/evidence/etapa-2/r09-coordenacao/closure-metrics.json",
+    "heartbeat": "indisponivel; checkpoints manuais encerrados, nenhum timer/loop ativo",
+    "continuedAutomatically": false,
+    "memory": "no-op de conhecimento duravel;65artigosPASS,12testesPASS1SKIP symlink",
+    "frontendDeployment": "Git/dev e QA3014; sem novo deploy publico R09",
+    "quotaInitialObserved": 57,
+    "quotaFinalObserved": 69
   }
 }
