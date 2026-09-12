@@ -2,14 +2,14 @@
   "grupo": "suites",
   "revision": 28,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:36:00-03:00",
+  "updatedAt": "2026-09-12T13:42:00-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
   "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
-  "head": "f438a9e6d257310e3a4c849677c67988fe52e3b2",
+  "head": "d106ee5a5636933e08148c979c7f448e3993d3a7",
   "upstream": "origin/dev",
   "base": "855e374d5 (base R08 publicada, contrato RPC de Unidades já corrigido por C0)",
   "papel": "corrigir suites pre-existentes vermelhas de apps/superadmin sem mudar comportamento de producao; sem deltas de estado por action_id",
@@ -75,7 +75,8 @@
     "R08 G8: matriz documental por arquivo/SHA publicada em docs/reviews/evidence/etapa-2/r08-suites/matriz-evidencias.md; ciclos 30/60/90/120/150, G1 45 A e anônimo 293 separados sem somar reruns. A fonte final anônima 72e6e6f22/recibo 8b9e784e5 identifica seis caminhos; resta apenas ausência de ID estável comum para provar interseção semântica entre ciclos.",
     "R08 G8: ciclo150 integrado por base d2a8cc813; P51 pós-allowlist mantém sete invariantes e P51/G1/anônimo permanecem evidências temporais separadas, sem promoção nova FE/BE/E2E.",
     "R08 G8: script matriz-exata.js e resultado matriz-exata-result.json/md publicados; ciclos 30/60/90 têm 245/476/820 chaves únicas, anônimo 293 eventos/281 chaves com 12 duplicatas, interseção sintática 60∩90 de 224 e zero linhas desconhecidas.",
-    "Gate do C0: parser corrigido para testDone ligado a testStart por ID; ciclos 30/60/90 = 121/238/422 casos executados, com 10/11/11 hidden/loading filtrados; log anônimo = 292 linhas de casos, 280 chaves e 12 duplicações, com rodapé +293 separado como total declarado; interseção ciclo60∩ciclo90 = 112."
+    "Gate do C0: parser corrigido para testDone ligado a testStart por ID; ciclos 30/60/90 = 121/238/422 casos executados, com 10/11/11 hidden/loading filtrados; log anônimo = 292 linhas de casos, 280 chaves e 12 duplicações, com rodapé +293 separado como total declarado; interseção ciclo60∩ciclo90 = 112.",
+    "Reconciliação do log anônimo: 293 linhas com marcador (+0 loading +1..+292 casos), sem salto; +293 é somente rodapé do runner. As 12 duplicações foram identificadas em quatro nomes completos de forms_media_reader_test.dart, nos prefixos 28..33, 34..38, 39..40 e 43..45."
   ],
   "pendente": "Aguardar próximo gate do C0; não promover equivalência semântica a partir de interseções sintáticas.",
   "commitsPublicados": [
@@ -98,7 +99,8 @@
     "d814b1e40 (rev 26)",
     "d2a8cc813 (rev 27)",
     "eb64e17eb (rev 28)",
-    "f438a9e6d (rev 29)"
+    "f438a9e6d (rev 29)",
+    "d106ee5a5 (rev 30)"
   ],
   "foraDoRecorteRegistrado": [
     {
@@ -411,5 +413,5 @@
       "total": 75
     }
   },
-  "revisao": 29
+  "revisao": 30
 }
