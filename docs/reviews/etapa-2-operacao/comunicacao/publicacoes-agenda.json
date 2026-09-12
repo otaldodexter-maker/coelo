@@ -1,15 +1,15 @@
 {
-  "revision": 55,
+  "revision": 56,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "0e7042bab (base R08; primeiro checkpoint segue)",
+  "head": "7a388ac3b (implementacao intercalada; testes Flutter aguardam slot)",
   "base": "origin/dev 0e7042bab",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T11:01:00-03:00",
+  "updatedAt": "2026-09-12T11:22:00-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -62,8 +62,8 @@
     "rotaReal": "build web-qa com qa_main servido numa porta da lista CORS (3000, 3009, 3010, 3014, 3016, 3018 ou 3020); Chrome CDP proprio com --user-data-dir %TEMP%/coelo-chrome-publicacoes; um Chrome por vez.",
     "closedAt": ""
   },
-  "firstGate": "H04/H21: o host produtivo SuperadminCircularComposerPage agrupa conteudo na autoria e previa, enquanto PrincipalCircularReader ja respeita draft.blocks; criar prova vermelha e corrigir o host produtivo sem tocar publication_surface.dart.",
-  "status": "em-andamento",
+  "firstGate": "Executar testes Flutter focais de controller, compositor, leitor e rotas quando C0 conceder o slot; analyze focal ja esta verde. Depois incorporar origin/dev antes do proximo pacote.",
+  "status": "implementado-analyze-green-testes-em-fila",
   "findings": [
     "Abertura: origin/dev ca60b096b contem os prompts da R06 e as 12 referencias da familia Publicacao; o checkout principal esta em 9bf60463b (atras).",
     "Inventario na base: agenda.location FE local-green / E2E pending; circulars.respond e circulars.attach FE pending-verification / E2E pending; as outras 21 acoes verified/done/verified-e2e."
@@ -2518,6 +2518,31 @@
     "pacotesSql": "nenhum",
     "tudoTransmitido": true,
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
+  },
+  "r08Current": {
+    "checkpoint": "2026-09-12T11:22:00-03:00",
+    "sha": "7a388ac3b",
+    "done": [
+      "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
+      "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
+      "autoria produtiva percorre blocos em ordem e permite adicionar/mover texto, midia e perguntas simples",
+      "previa percorre a mesma lista ordenada; leitor Principal ja fazia isso e recebeu chaves focais de prova",
+      "limite agregado de texto preservado em 10000; nenhum contrato reduzido para 4000",
+      "H14 reconciliado com C0 como subaceite de shell.load sem novo denominador",
+      "seis R comparados pelo recorte do rodape e preservados sem regravacao"
+    ],
+    "verification": {
+      "analyze": "dart analyze focal em 6 arquivos: No issues found",
+      "flutter": "nao executado: fila global C0, G2 ate 11:27 e depois G1/G4/G6",
+      "visual": "comparacao commitada; nenhum PNG R alterado"
+    },
+    "pending": [
+      "testes focais vermelho/verde e regressao de rotas",
+      "decidir tratamento dos goldens R sem sobrescrever as imagens reprovadas",
+      "circulars.attach no Chrome/runtime 3014 quando e2eLiberado",
+      "recertificar P50 somente apos os testes do codigo afetado"
+    ],
+    "c0": "ACK55 recebido; H14 shell.load aceito; publication_surface.dart nao tocado"
   },
   "r07History": {
     "initialReview": {
