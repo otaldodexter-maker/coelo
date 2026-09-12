@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 60,
+ "revision": 61,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T21:12:00-03:00",
+ "updatedAt": "2026-09-11T21:12:30-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
  "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
  "branch": "work/etapa2-r06-estrutura",
- "head": "(commit desta revisao); codigo ate 9a729c4f1",
+ "head": "(commit desta revisao); codigo ate o commit \"assistente de Atividades explica...\"",
  "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
   "abertura": "2026-09-11T19:36:45-03:00",
@@ -195,7 +195,8 @@
   "Plumbing StructureHandleSetter (auth scope -> main -> app -> router -> UnitFormPage/GroupFormPage/ActivityFormPage) com SupabaseStructureHandleAvailability.set -> superadmin_structure_handle_set_v1; codigos SAI_HANDLE_COOLDOWN/TAKEN/INVALID_ARGUMENT/CONCURRENT_CHANGE viram mensagens honestas (StructureHandleChange.message)",
   "unit_form_page_test: dois testes reescritos para a regra nova (hifen recusado; edicao mostra @ e Alterar @ chama set_v1 com kind/id/versao e trata taken/changed)",
   "Rota real do @ (Unidades, Turmas, Atividades) com o usuario sintetico da rodada; 13 capturas em evidence/etapa-2/r06-estrutura/rota-real/",
-  "Pacote structure_handles_client_v1 verde (9/9) e regressao vizinha verde no espelho R06"
+  "Pacote structure_handles_client_v1 verde (9/9) e regressao vizinha verde no espelho R06",
+  "Assistente de Atividades: com \"Habilitar avaliacao\" ligado, o Salvar rascunho recusado mostra a mensagem honesta (configurar na tela Configuracao avaliativa) em vez de \"Confira a conexao\" (activity_form_page_test 30/30)"
  ],
  "testes": {
   "P": "flutter analyze lib limpo; test/features/units 179/179; test/features/groups 26/26 (group_form_page, com o teste novo do @); test/features/activities 346 verdes + 9 goldens pre-existentes; pgTAP: 180000 9/9, 180100 4/4, 180200 3/3; regressao save_v2 46/46, 211100 18/18, handles 24/24, group_detail 33/33, assessments 47/47, activities read 28/28",
@@ -240,8 +241,7 @@
   "Campo \"@ da atividade\" abre vazio na edicao: mapear handle_stem do detail_v2 no cliente (ActivityDetail item.handleStem vem nulo); Alterar @ funciona mesmo assim",
   "Taps do Flutter Driver web (tap por Key/texto) falham de forma intermitente em botoes logo apos digitar num campo; clique por coordenada via CDP resolve. Registrar na skill coelo-frontend",
   "Ao usar enter_text do driver, o texto vai para o campo focado no momento: em 20:10 a senha do qa-r06-estrutura foi digitada no campo de e-mail e apareceu numa captura temporaria (apagada, nao versionada). Tratar como credencial exposta: rotacionar a senha de qa-r06-estrutura@coelo.me no fim da rodada (roteiro na skill coelo-backend: painel Supabase -> Authentication -> Users -> reset password, ou Admin API; gravar so em Coelo-backups/qa-r06-estrutura.env)",
-  "save_v2: codigo de recusa da troca de @ na edicao e ACTIVITY_INVALID_INPUT porque activity_v2_normalize_error tem lista fechada; se quiser SAI_HANDLE_USE_SET como em Turmas, incluir na lista (funcao compartilhada, pos-MVP)",
-  "Assistente de Atividades: \"Salvar rascunho\" com avaliacao habilitada falha antes do HTTP (_supportsAggregateSave exige pedagogical.enabled=false) e mostra \"Confira a conexao\": mensagem enganosa; a configuracao avaliativa vive na rota /activities/:id/assessment-settings (SupabaseAssessmentRepository.saveConfiguration/activateConfiguration) e o assistente deveria encaminhar para la ou chamar o mesmo repositorio"
+  "save_v2: codigo de recusa da troca de @ na edicao e ACTIVITY_INVALID_INPUT porque activity_v2_normalize_error tem lista fechada; se quiser SAI_HANDLE_USE_SET como em Turmas, incluir na lista (funcao compartilhada, pos-MVP)"
  ],
  "bloqueio": null,
  "wip": {
@@ -263,7 +263,7 @@
   "2106": "rev 57-59: handoff; candidatos 180100 (configuration_read) e 180200 (detail_v2 com @) verdes e publicados; teste de widget do @ em Turmas; goldens analisados. Commits publicados: 0434548b9, 9c14eddeb, 102a80b58, ee113cc08, 5005d47c7, 515a95363, 2b2b11413, 9a729c4f1"
  },
  "miniRevisao": {
-  "shaPublicado": "codigo: 9a729c4f1 (cliente 0434548b9 + 9a729c4f1; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1); docs: commit desta revisao; status limpo; nenhum WIP",
+  "shaPublicado": "codigo: ate o commit do assistente (apos 9a729c4f1); docs: commit desta revisao; status limpo; nenhum WIP",
   "fechouPorActionId": [
    "E2E propostas (FE verified + BE done): units.edit (@), groups.create (@), groups.edit (@), units.list, groups.list, activities.create (@) - deltas 1-19; 1-16 ja aplicados pelo coordenador (rev 56)",
    "FE verified + BE done sem E2E novo: activities.edit (Alterar @ por set_v1; reload do @ no campo depende do candidato 180200)",
