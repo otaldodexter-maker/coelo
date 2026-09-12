@@ -265,3 +265,16 @@ Estimativa do delta inspecionado: cerca de20min após slot disponível, calibrad
 pela pequena alteração de retorno de _load e pelos testes já existentes.
 Slot ainda não concedido: nenhum Flutter iniciado. Quadro H02/H05/H06/H13
 preserva ambiguidades reais, elimina apenas repetição de decisões adjacentes.
+
+
+## Gate Perfil concluído localmente — código9863512b9
+
+C0/G7 confirmaram baseline única plano/key/type; cinco REDs reproduzidos.
+Correção mínima de parser e confirmação após reload. Dois arquivos completos:
+37PASS/0FAIL/0SKIP/native0, analyze4arquivos0/native0. Cinco novos+32existentes;
+dois oráculos antigos de envelope page foram substituídos. Logs e prova em
+profile-contract-proof.md; sem nova fixture, SQL, golden ou aceite UI/E2E.
+Slot devolvido13h24, nenhum processo G4 ativo. H02/H05/H06/H13 preservados.
+Retenção e disparador H09 detalhados em agora-expiry-handoff.md e
+retained-r08-resources.json. Nova publicação Agora só vence13/09 12h24 BRT.
+Próximo gate focal solicitado a C0, mantendo execução até corte14h52:16.
