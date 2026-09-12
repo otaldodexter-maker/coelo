@@ -539,3 +539,20 @@ materializado contém `state_code`: [verificação do corpo](./h28-final-body-df
 Recibos das regressões finais: [segmentos](./h28-final-regression-people-list-segment.log),
 [identidade](./h28-final-regression-people-identity-lookup.log) e
 [handles](./h28-final-regression-institution-people-handles.log).
+
+## Build QA final após lote 59
+
+Após o C0 publicar e liberar `origin/dev@477e6c8df`, a base integrada foi
+materializada no merge `e2769f7beff5215e9a3cc7988c15d1de6784b523`, já com
+`contextFiltersAvailable: true`. O comando
+`flutter build web --release -t test_driver/qa_main.dart
+--dart-define-from-file=.env.local` passou em 99,1 s. O `main.dart.js` final tem
+8.432.929 bytes e SHA-256
+`f3f2a3e8a0d563dfa9e1b640d458496d972e9ad7b4bbf2db236434ec70e278b3`.
+
+O servidor anterior PID 14072 foi encerrado pelo PID exato e substituído pelo
+PID 7476 no mesmo bind `127.0.0.1:3014`. `/login` retornou 200/1020 bytes e
+`flutter_bootstrap.js`, 200/9974 bytes. A mesma aba Chrome 829822454 foi
+recarregada; nenhum segundo navegador foi criado. Isso prova a disponibilidade
+do artefato final, mas não promove login/leitura/reload a UI/E2E. Metadados:
+[build QA lote 59](./build-qa-lote59-metadata.txt).

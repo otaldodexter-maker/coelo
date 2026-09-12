@@ -1,0 +1,16 @@
+captured_at=2026-09-12T14:35:57-03:00
+integrated_origin_dev=477e6c8df
+source_merge_sha=e2769f7beff5215e9a3cc7988c15d1de6784b523
+context_filters_available=true
+command=flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local
+result=exit 0; built build/web in 99.1s
+main_dart_js_bytes=8432929
+main_dart_js_sha256=f3f2a3e8a0d563dfa9e1b640d458496d972e9ad7b4bbf2db236434ec70e278b3
+server_command=python serve.py apps/superadmin/build/web 3014 127.0.0.1
+server_pid=7476
+bind=127.0.0.1:3014
+login_http=200/1020
+flutter_bootstrap_http=200/9974
+chrome_tab=829822454
+chrome_action=reload da mesma aba; nenhum segundo navegador
+ui_certification=nao promovida; HTTP e reload nao provam login/leitura autorizada

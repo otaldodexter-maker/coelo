@@ -1,12 +1,12 @@
 {
-  "revision": 33,
+  "revision": 34,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T14:30:06-03:00",
+  "updatedAt": "2026-09-12T14:35:57-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:40:00-03:00",
@@ -138,6 +138,7 @@
       ,"superadmin_people_directory_test.sql histórico: 4 falhas e abort por permissões/assinatura12 obsoletas; rollback, não contado no verde H28"
       ,"gate lote59: candidato final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente no baseline; estrutural11/11+funcional10/10, rollback e exit0; produção/ledger intocados"
       ,"gate final lote59: regressões modernas no mesmo corpo df0a281cb passaram segmentos8/8+identidade11/11+handles4/4; total final44/44, rollback e exit0"
+      ,"build QA pós-lote59: origin/dev477e6c8df integrado em e2769f7b; build99.1s exit0, main.dart.js8432929B SHA256f3f2a3e8; servidor3014 PID7476 e mesma aba recarregada"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -154,11 +155,11 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "gate focal final lote59 publicado; aguardar revisão/integração do C0, sem iniciar R09, censo ou cleanup"
+    "nextGate": "entrega G0 completa; somente revisão e ajustes do C0, sem iniciar R09, censo ou cleanup"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
-    "server": "127.0.0.1:3014 PID 14072, ativo; /login e flutter_bootstrap HTTP200; build ciclo180 SHA-256 1f4fa2ef50f9f26f49ce71eb51b3a751c7319716d2b999222aa257492115b9e8",
+    "server": "127.0.0.1:3014 PID 7476, ativo; /login 200/1020 e flutter_bootstrap 200/9974; build lote59 main.dart.js8432929B SHA-256 f3f2a3e8a0d563dfa9e1b640d458496d972e9ad7b4bbf2db236434ec70e278b3",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "slot build usado e devolvido; censo nao liberado/iniciado; RAM livre3.32GB as14:23, mas nova janela fecha15:00 e nao comporta promessa de conclusao",
     "sql": "H28 corpo final df0a281cb/blob707cc8b4/SHA256-LF8b6c6609 aplicado somente baseline; focais21/21 e regressões modernas23/23, total final44/44 com rollback; produção e ledger intocados",
@@ -167,9 +168,9 @@
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "0d42be27d8be6b889224182086a4269df89c5a78",
-    "buildSourceSha": "b82fed9c4b997995ee723ed6fff1dd62f4b746b7",
-    "publishedSha": "0d42be27d8be6b889224182086a4269df89c5a78",
+    "head": "e2769f7beff5215e9a3cc7988c15d1de6784b523",
+    "buildSourceSha": "e2769f7beff5215e9a3cc7988c15d1de6784b523",
+    "publishedSha": "c34fc20d4",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -337,6 +338,11 @@
       "revision": 33,
       "at": "2026-09-12T14:30:06-03:00",
       "summary": "Regressões modernas executadas no corpo final df0a281cb: 8/8+11/11+4/4; total final H28 44/44, rollback; suíte histórica não repetida."
+    },
+    {
+      "revision": 34,
+      "at": "2026-09-12T14:35:57-03:00",
+      "summary": "Build QA final sobre origin/dev477e6c8df passou em99.1s; servidor PID7476/porta3014 e mesma aba Chrome recarregada; UI/E2E não promovida."
     }
   ]
 }
