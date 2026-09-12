@@ -1,0 +1,16 @@
+command=rtk python forms-question-image-api-smoke.py --execute --institution-id d0c40000-0000-4000-8000-000000000001
+at=2026-09-12T12:33:44-03:00
+{"http": 200, "status": "PASS", "step": "auth"}
+{"form_id": "f88005ab-af5e-4aa2-8cf7-f35de4ded376", "http": 200, "status": "PASS", "step": "save_identified_draft", "version": 1}
+{"form_version_id": "4adae123-1aad-4e1f-a2f4-b59d661bc3d4", "http": 200, "item_id": "b7ac860f-f23a-4b68-b320-d2098abc94e6", "status": "PASS", "step": "editor_before"}
+{"asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605", "http": 200, "replayed": false, "status": "PASS", "step": "prepare"}
+{"bytes": 68, "http": 200, "sha256": "431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460", "status": "PASS", "step": "signed_put"}
+{"asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605", "height": 1, "http": 200, "media_status": "ready", "status": "PASS", "step": "finalize", "width": 1}
+{"asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605", "http": 200, "media_status": "ready", "status": "PASS", "step": "finalize_replay"}
+{"bytes": 68, "http": 200, "sha256": "431ced6916a2a21a156e38701afe55bbd7f88969fbbfc56d7fe099d47f265460", "status": "PASS", "step": "authorized_read"}
+{"asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605", "http": 200, "media_status": "ready", "status": "PASS", "step": "editor_reload"}
+{"http": 204, "status": "PASS", "step": "session_end"}
+{"asset_id": "d25b8baa-efb5-4702-b5e6-ac3084610605", "fixture": "PRESERVED_FOR_ETAPA2_CLOSE", "form_id": "f88005ab-af5e-4aa2-8cf7-f35de4ded376", "status": "PASS", "step": "result"}
+exit_code=0
+secrets_or_signed_urls_logged=false
+delete_or_cleanup_executed=false

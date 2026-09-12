@@ -1,0 +1,136 @@
+{
+  "source": "R08 G4 serial authenticated API smoke",
+  "environment": "production",
+  "ui_e2e": false,
+  "started_at": "2026-09-12T15:26:51.738401+00:00",
+  "institution_id": "d0c40000-0000-4000-8000-000000000001",
+  "unit_id": "d0c40000-0000-4000-8000-000000000002",
+  "group_id": "368a5cea-2bcf-4fa4-ad1f-18da58694551",
+  "fixture": {
+    "name": "R08-G4-synthetic.png",
+    "width": 16,
+    "height": 16,
+    "bytes": 82,
+    "sha256": "90353b260da72f023c895ee8dc7c392bc583565dcc930caa683cdde53d4dedff"
+  },
+  "checks": [
+    {
+      "name": "qa_login",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "current_group_hierarchy",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "save_moments_draft",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "prepare_r2",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "signed_content_type",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_put",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "finalize_binding",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "publish_moment",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "published_readback",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "anonymous_denied",
+      "passed": true,
+      "http_status": 401
+    },
+    {
+      "name": "unknown_asset_denied",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "authorized_read",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "bounded_read_ttl",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "private_bytes_match",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "fresh_server_reload",
+      "passed": true,
+      "http_status": null
+    },
+    {
+      "name": "signed_url_expired",
+      "passed": true,
+      "http_status": 403
+    },
+    {
+      "name": "list_visible_moments",
+      "passed": true,
+      "http_status": 200
+    },
+    {
+      "name": "withdraw_moment",
+      "passed": false,
+      "http_status": 403
+    }
+  ],
+  "resources": {
+    "publication_id": "bd9f2361-548f-44f8-a595-fddec3ff1396",
+    "asset_id": "6f8f9fc8-215a-4e07-8b7f-583d210215c7"
+  },
+  "status": "failed",
+  "cleanup_failure_type": "RuntimeError",
+  "logout_status": [
+    204
+  ],
+  "finished_at": "2026-09-12T15:29:05.198344+00:00",
+  "negative_coverage": "anonymous and unknown asset only; real cross-tenant actor unavailable",
+  "execution_exit_code": 1,
+  "retained_state": "published synthetic fixture; withdrawal returned403; no physical cleanup"
+}
