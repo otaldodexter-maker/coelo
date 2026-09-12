@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "groups.location",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R09: UI normal criou grupo1043c165 ativo v2 com Locald5461295 na unidadef5284f2f; leitura API e detalhe/reload CUA confirmam. Negativa real de tenant/hierarquia pendente G5/C0; nao E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md"
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R09: consumidor UUID e parser de papel corrigidos,35 testes unicos verdes. Busca UI resolve fixture ec2a15a2 draft; servidor recusou vinculo, inclusao nao persistida removida. Exige fixture ativa, add/remove/reload e negativa G5; nao E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md"
+  }
+]

@@ -1,6 +1,6 @@
 {
   "grupo": "estrutura",
-  "revision": 110,
+  "revision": 111,
   "round": "E2-R09-20260912-1542",
   "adocaoR09": {
     "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
@@ -14,8 +14,8 @@
     "fechamentoAte": "2026-09-12T20:12:18-03:00",
     "corte": "primeiro corte de tempo/consumo C0",
     "base": "7907453f0362665ab87fe8faaa4854f286904148",
-    "proximoGate": "UI real groups.members/location: compilar uma base integrada com emulacoes false; usar busca normal e criar turma sintetica R09 autorizada, persistencia/reload e negativas.",
-    "bloqueio": "UI real: Sala R04 Estrutura selecionada + QA R04 Pessoa sintetica (editada) resolvida como Responsavel; unica tentativa Salvar turma recusada genericamente. Rascunho Turma R09 Estrutura 1634 preservado /groups/new. Causa da escrita ainda desconhecida; nao repetir.",
+    "proximoGate": "C0/G5 anexar negativa de tenant/hierarquia groups.location e indicar fixture global ativa para groups.members. G1 preserva grupo1043c165 e prova sem duplicar; nenhuma Avaliacao antes de fechar fatia.",
+    "bloqueio": "Local positivo UI/API/reload pronto; negativa real pendente G5/C0. Membros precisa pessoa global ativa: fixture ec2a15a2 draft recusada, removida do rascunho; mesmo grupo1043c165 agora ativo v2, Local persistido.",
     "contrato": {
       "objetivo": "fechar uma fatia CRUD real por vez",
       "incluido": "Instituicoes, Unidades, Turmas, Atividades, Avaliacoes e Locais em apps/superadmin; familia administrativa",
@@ -44,13 +44,14 @@
   "entregaR09": {
     "codigo": "9773ef969950be7f34a51e98e08a35e430b67411 + 1a5f4fa4c075dd094bf9d98371091abb778aff0d",
     "status": "codigo e provas publicados na propria branch; pronto para integracao C0; nao e E2E",
-    "pedidoC0": "Atualizacao critica: leitor sem busca passou200 e localizou draft1043c165-7f24-44fe-a868-5bfc6fb0b50f, Turma R09 Estrutura 1634, instituicao190dd028/unidadef5284f2f. Local create persistiu; composicao falhou. Preservar draft e rascunho. Verificar status pessoa ec2a15a2 (R04 originalmente draft) e auditoria group_save. Nao recriar turma nem flexibilizar identidade ativa. G1 vai reler detalhe/Local por API normal, sem repetir escrita.",
+    "pedidoC0": "Prova positiva Local pronta em location-ui-proof.md; aplicar deltas factuais deltas-turmas.json. Grupo1043c165 ativo v2, Locald5461295; precisa negativa real da familia. Membros: pessoaec2a15a2 draft; indicar identidade ativa sintetica existente, sem mudar G2 por G1. Erro SQL search22025 separado para C0. Chrome G1 no detalhe sem draft aberto.",
     "pedidoG5": "Confirmar role_codes elegiveis e negativa de groups.members; lookup existente exige people.create e busca global, nao e autorizacao de vinculo. Servidor mantido como autoridade. G1 corrigiu identidade fabricada sem SQL/grants.",
     "provas": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/member-tests.json",
     "delta": "correcao local de groups.members; FE local-green preservado, BE/E2E sem promocao; arquivo de deltas de certificacao nao criado sem aceite",
     "avaliacoes": "G5 r80 negativas recebidas e API nao repetida; diario sem alunos requer diagnostico G5/C0, sem recriar cadeia; segue depois Turmas",
     "leituraRealR09": "group-read-proof.json: login200, leitura200 e logout local204; turma/instituicao/unidade confirmadas. effective_access vazio: contrato plano nao exercitado (assertiva false, probe logico exit1); nenhuma mutacao de negocio. Nao promove aceite.",
-    "runtime": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/runtime-proof.json"
+    "runtime": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/runtime-proof.json",
+    "provasUI": "docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md"
   },
   "updatedAt": "2026-09-12T16:19:47.4370875-03:00",
   "app": "Codex",
