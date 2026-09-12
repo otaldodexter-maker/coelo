@@ -27,7 +27,7 @@ Base conjunta: `origin/dev 7d2b66a3e`, merge G3 `8fead7905`. Publicação não e
 2. Mídia: separar question-image, resposta identificada/anônima e câmera física; concluir leitura/reabertura/expiração/exclusão e UI. G0 tem prova API de question-image e avanço de resposta; usar o manifesto mais recente da frente, sem converter em E2E.
 3. H19 exige decisão nominal de elegibilidade do responsável; H20 exige gateway/consumidor da imagem de dose. Não inventar schema ou autoridade. Evidência textual da dose permanece separada.
 4. H25 conserva residual de sort32/42 em colunas80/90 de Suporte; não certificado AA global, sem ampliar largura fora do recorte.
-5. H28: gate SQL/pgTAP e ativação pertencem a C0/G5. Review FE G3 encerrado; deduplicação de cidades/bairros e retenção nos outros setters têm inspeção, sem teste novo isolado. G3 não escreveu arquivos G2 nem executou seu SQL.
+5. H28: C0 aplicou lote59 e habilitou a flag em `477e6c8df` às14:31; G3 conferiu o diff da flag e o log exit0. A prova UI remota permanece distinta. Review FE G3 encerrado; deduplicação de cidades/bairros e retenção nos outros setters têm inspeção, sem teste novo isolado. G3 não escreveu arquivos G2 nem executou seu SQL.
 
 ## Recursos e retenção
 
