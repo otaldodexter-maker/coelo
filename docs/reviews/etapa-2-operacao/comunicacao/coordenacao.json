@@ -1,12 +1,12 @@
 {
-  "revision": 98,
+  "revision": 99,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T19:13:24.176Z",
+  "updatedAt": "2026-09-12T19:15:24.249Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -257,6 +257,7 @@
     "96": "Checkpoint ativo: cota indisponivel, nove IDs conhecidos sem ferramentas de envio; diagnostico G0 integrado; ajuste QA em validacao; nenhum novo aceite.",
     "97": "ACKs novos por ID/round; G0 runtime confirmado; G5 primeiro handoff integrado; prova API download/TTL sem promocao; nenhum SQL/deploy.",
     "98": "Runtime real G0 integrado; BE activities.assessment aceito por provas combinadas; consumo real57%; leitura dos nove threads via App Server; G6 recebe Chrome apos liberacao G0. Nenhuma mensagem de liberacao ainda confirmada.",
+    "99": "CLI resume G6 rejeitado por active writer; nenhuma instrucao entregue/turno iniciado. C0 recolhe o slot Chrome nao adotado G6 e executa gate UI enquanto frentes existentes entregam por Git.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3799,7 +3800,7 @@
       "json": "publicacoes-agenda.json",
       "ackRevision": 92,
       "primeiroGate": "circulars.attach pela UI normal 127.0.0.1:3014; fixture nova QA R09 G6 circulars.attach 20260912-1542 autorizada em contexto sintetico retido; guardar fixture e provar reload, usar negativas validas da familia",
-      "status": "vaga ativa atribuida; follow-up ainda nao enviado",
+      "status": "fila; instrucao rev98 NAO entregue; Chrome recolhido C0 rev99",
       "modelConfigured": true,
       "taskDiscovery": "thread/read includeTurns=true executado pelo App Server nos IDs Owner; nenhuma tarefa duplicada",
       "instructionReceived": true,
@@ -3843,12 +3844,12 @@
   },
   "slotsR09": {
     "chrome": {
-      "dono": "G6",
+      "dono": "C0",
       "pid": 22592,
-      "browser": "2",
+      "browser": "1",
       "tab": "829822462",
-      "inicio": "2026-09-12T19:13:24.176Z",
-      "estado": "transferencia C0 apos G0 rev40; instrucao G6 pendente de envio; servidor39504 porta3014 preservado"
+      "inicio": "2026-09-12T19:15:24.249Z",
+      "estado": "C0 assume apos falha de entrega G6; nenhuma adocao rev98; servidor39504/3014 e tab829822462 confirmados"
     },
     "flutterTest": {
       "dono": "G1",
@@ -3861,8 +3862,7 @@
     "ativas": [
       "C0",
       "G1",
-      "G5",
-      "G6"
+      "G5"
     ],
     "atribuicoesPendentes": [],
     "e2eLiberado": true,
@@ -4118,7 +4118,7 @@
   },
   "canalR09": {
     "read": "Codex App Server stdio documentado; nove IDs lidos",
-    "send": "pendente: retomar somente tarefa com ultimo turno completed; nao confundir notLoaded do processo leitor com ociosidade global",
+    "send": "exec resume G6 rejeitado: thread-store conflict already has an active writer; nao contornar lock nem criar duplicata. Leitura e cota disponiveis; envio ausente.",
     "proxy": "falhou socket padrao OS10050; daemon lifecycle indisponivel Windows",
     "heartbeat": "sem agendamento; checkpoints em sessao ativa"
   }
