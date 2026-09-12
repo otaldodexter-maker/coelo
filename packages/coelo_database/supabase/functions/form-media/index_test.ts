@@ -1240,6 +1240,8 @@ const answerR2Environment: Record<string, string> = {
 };
 const answerKey =
   `tenants/${id}/forms/form/${id}/answer-image/${mediaId}/original/${readToken}.png`;
+const answerSigningAt = Date.parse("2026-09-12T13:55:00.000Z");
+const answerTicketExpiry = new Date("2026-09-12T14:00:00.000Z");
 const answerPng = new Uint8Array([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 2, 128, 0, 0, 1, 224, 8, 6, 0, 0, 0, 0, 0, 0,
 ]);
@@ -1308,7 +1310,7 @@ function answerR2Harness(options: {
     },
   };
   const transport = {
-    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: { "content-type": mime }, expiresAt: new Date() } as never); },
+    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: { "content-type": mime }, expiresAt: answerTicketExpiry } as never); },
     presignGet: (key: string, ttl: number) => { r2.push(`get:${key}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/get"), requiredHeaders: {}, expiresAt: new Date() } as never); },
     head: (key: string) => { r2.push(`head:${key}`); return Promise.resolve({ byteSize: answerPng.length, mimeType: "image/png", etag: "e" } as never); },
     get: (key: string) => { r2.push(`read:${key}`); return Promise.resolve(answerPng); },
@@ -1318,6 +1320,7 @@ function answerR2Harness(options: {
     envGet: (key) => answerR2Environment[key],
     createClient: (() => client) as unknown as FormMediaDependencies["createClient"],
     createTransport: () => transport,
+    now: () => new Date(answerSigningAt),
   };
   return { calls, r2, dependencies, finalizeParameters: () => finalizeParameters };
 }
@@ -1331,6 +1334,7 @@ Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, s
   const body = await response.json();
   assertEquals(body.asset_id, id);
   assertEquals(body.storage_provider, "r2");
+  assertEquals(body.expires_at, answerTicketExpiry.toISOString());
 });
 
 Deno.test("answer R2 resolve ator do realm interno pelo contexto Principal canonico", async () => {

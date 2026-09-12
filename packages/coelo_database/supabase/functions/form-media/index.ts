@@ -251,7 +251,12 @@ async function handleAnswerR2(
       error || !data || !answerR2Key(data.object_key) ||
       data.bucket !== QUESTION_IMAGE_BUCKET
     ) throw new Error("prepare_failed");
-    const signed = await questionImageTransport(dependencies, data.bucket).presignPut(
+    const signingAt = (dependencies.now ?? (() => new Date()))().getTime();
+    const signed = await questionImageTransport(
+      dependencies,
+      data.bucket,
+      signingAt,
+    ).presignPut(
       data.object_key,
       input.mime_type,
       QUESTION_IMAGE_UPLOAD_TTL_SECONDS,
@@ -260,7 +265,9 @@ async function handleAnswerR2(
       asset_id: data.asset_id,
       upload_url: signed.url.toString(),
       required_headers: signed.requiredHeaders,
-      expires_at: data.expires_at,
+      expires_at: new Date(
+        Math.floor(signingAt / 1000) * 1000 + QUESTION_IMAGE_UPLOAD_TTL_SECONDS * 1000,
+      ).toISOString(),
       storage_provider: "r2",
     });
   }
