@@ -890,7 +890,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         icon: const Icon(Icons.calendar_today_outlined),
         label: Text(_dateValue(item.id) ?? 'Selecionar data'),
       ),
-      FormItemKind.gallery
+      FormItemKind.photo || FormItemKind.gallery
           when widget.mediaSession != null &&
               !widget.mediaSession!.isInvalidated &&
               _galleryContextAvailable =>
@@ -904,8 +904,13 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
           item: item,
           assetIds: (_answers[item.id]?.value as FormAssetValue?)?.assetIds ?? const [],
           enabled: !_saving && _pendingCommand == null && _occurrence?.canEdit == true,
-          onChanged: (ids) =>
-              update(ids.isEmpty ? null : FormAnswer.gallery(itemId: item.id, assetIds: ids)),
+          onChanged: (ids) => update(
+            ids.isEmpty
+                ? null
+                : item.kind == FormItemKind.photo
+                ? FormAnswer.photo(itemId: item.id, assetIds: ids)
+                : FormAnswer.gallery(itemId: item.id, assetIds: ids),
+          ),
           onBusyChanged: (busy) {
             if (!_isCurrent(generation)) return;
             setState(() {
@@ -1290,10 +1295,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
       if (value is FormAssetValue && value.assetIds.isNotEmpty) return null;
-      return item.kind == FormItemKind.gallery &&
-              widget.mediaSession?.isInvalidated == false &&
-              _galleryContextAvailable
-          ? 'Adicione uma imagem antes de revisar a resposta.'
+      return widget.mediaSession?.isInvalidated == false && _galleryContextAvailable
+          ? item.kind == FormItemKind.photo && item.config.allowCamera == false
+                ? 'Esta pergunta exige foto, mas a captura está desativada.'
+                : 'Adicione uma imagem antes de revisar a resposta.'
           : 'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.';
     }
     return _hasAnswer(item)

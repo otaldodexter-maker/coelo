@@ -121,6 +121,10 @@ contrato não aprova componentes públicos, APIs, variantes ou mudanças de dom�
 - Oferecer redimensionamento por mouse e teclado, com cursor de coluna, foco
   visível e rótulo semântico para o redimensionador. Usar truncamento sem quebra
   (`ellipsis`), sem wrap; tooltip apenas para informação não crítica.
+- Separar a faixa de interação de 48 px da alça do alvo de ordenação, mantendo
+  a pintura aprovada do cabeçalho independente dos eventos e sem semântica
+  duplicada. Omitir alça em coluna de largura fixa. Colunas de 80/90 px ainda
+  deixam alvo de ordenação de 32/42 px: registrar o residual sem alegar AA global.
 - Status semântico usa chip com texto, cor e ícone opcional. Ações compactas
   expõem no máximo duas ações rápidas ou um menu contextual, separando ações
   sensíveis.

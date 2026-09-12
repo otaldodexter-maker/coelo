@@ -1,0 +1,29 @@
+{
+  "measured_at": "2026-09-12T13:41:05.354920-03:00",
+  "version": 18,
+  "verify_jwt": true,
+  "bundle_sha256": "cd8cc5f1bd2a24e0becdce81b009f6eb0f0e22c09f691f6744a9bcf33c5379e4",
+  "deno": {
+    "passed": 56,
+    "failed": 0,
+    "typecheck": true,
+    "initial_failure": "Invocacao sem deno.json: quatro imports nao resolvidos; nenhuma mudanca global."
+  },
+  "options": [
+    {
+      "origin": "http://localhost:3014",
+      "status": 204,
+      "acao": "http://localhost:3014"
+    },
+    {
+      "origin": "https://superadmin.coelo.me",
+      "status": 204,
+      "acao": "https://superadmin.coelo.me"
+    },
+    {
+      "origin": "https://fora.example",
+      "status": 403,
+      "acao": "null"
+    }
+  ]
+}

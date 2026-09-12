@@ -531,7 +531,7 @@ Deno.test("HTTP preserves legacy finalize, download and discard for People actor
           assertEquals(parameters, {
             p_asset_id: id,
             p_actor_person_id: id,
-            p_edit_secret: undefined,
+            p_edit_secret: null,
           });
           return Promise.resolve({
             data: { state: "finalized", storage_path: `ab/${id}` },
@@ -1240,18 +1240,30 @@ const answerR2Environment: Record<string, string> = {
 };
 const answerKey =
   `tenants/${id}/forms/form/${id}/answer-image/${mediaId}/original/${readToken}.png`;
+const answerSigningAt = Date.parse("2026-09-12T13:55:00.000Z");
+const answerTicketExpiry = new Date("2026-09-12T14:00:00.000Z");
 const answerPng = new Uint8Array([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 2, 128, 0, 0, 1, 224, 8, 6, 0, 0, 0, 0, 0, 0,
 ]);
 
-function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boolean; source?: unknown; denied?: boolean } = {}) {
+function answerR2Harness(options: {
+  finalizeOk?: boolean;
+  alreadyFinalized?: boolean;
+  source?: unknown;
+  denied?: boolean;
+  internalActor?: boolean;
+  internalContexts?: unknown;
+} = {}) {
   const calls: string[] = [];
   const r2: string[] = [];
   let finalizeParameters: unknown;
+  let authorizeParameters: unknown;
   const query = {
     select: () => query,
     eq: () => query,
-    maybeSingle: () => Promise.resolve({ data: { person_id: id } }),
+    maybeSingle: () => Promise.resolve({
+      data: options.internalActor ? null : { person_id: id },
+    }),
   };
   const client = {
     auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
@@ -1273,12 +1285,20 @@ function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boo
     storage: { from: () => { throw new Error("answer R2 must not use Storage"); } },
     rpc: (name: string, parameters: unknown) => {
       calls.push(name);
+      if (name === "list_my_principal_contexts") {
+        return Promise.resolve({
+          data: options.internalContexts ?? [{ person_id: id }],
+        });
+      }
       if (name === "form_prepare_asset_upload_r2_v1") {
         return Promise.resolve({ data: { asset_id: id, storage_path: `ab/${id}`, expires_at: "2026-09-08T16:00:00Z",
           media_asset_id: mediaId, bucket: "coelo-media-prod", object_key: answerKey, storage_provider: "r2" } });
       }
       if (name === "form_finalize_asset_upload") return Promise.resolve({ data: { asset_id: id, state: "uploaded" }, error: options.denied });
-      if (name === "form_media_authorize_for_worker") return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
+      if (name === "form_media_authorize_for_worker") {
+        authorizeParameters = parameters;
+        return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
+      }
       if (name === "form_asset_r2_descriptor_v1") {
         return Promise.resolve({ data: { ok: true, data: { asset_id: id, media_asset_id: mediaId, bucket: "coelo-media-prod",
           object_key: answerKey, mime_type: "image/png", expected_byte_size: answerPng.length, expected_sha256: "x".repeat(64),
@@ -1294,7 +1314,7 @@ function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boo
     },
   };
   const transport = {
-    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: { "content-type": mime }, expiresAt: new Date() } as never); },
+    presignPut: (key: string, mime: string, ttl: number) => { r2.push(`put:${key}:${mime}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/put"), requiredHeaders: { "content-type": mime }, expiresAt: answerTicketExpiry } as never); },
     presignGet: (key: string, ttl: number) => { r2.push(`get:${key}:${ttl}`); return Promise.resolve({ url: new URL("https://r2.example.test/get"), requiredHeaders: {}, expiresAt: new Date() } as never); },
     head: (key: string) => { r2.push(`head:${key}`); return Promise.resolve({ byteSize: answerPng.length, mimeType: "image/png", etag: "e" } as never); },
     get: (key: string) => { r2.push(`read:${key}`); return Promise.resolve(answerPng); },
@@ -1304,8 +1324,15 @@ function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boo
     envGet: (key) => answerR2Environment[key],
     createClient: (() => client) as unknown as FormMediaDependencies["createClient"],
     createTransport: () => transport,
+    now: () => new Date(answerSigningAt),
   };
-  return { calls, r2, dependencies, finalizeParameters: () => finalizeParameters };
+  return {
+    calls,
+    r2,
+    dependencies,
+    authorizeParameters: () => authorizeParameters,
+    finalizeParameters: () => finalizeParameters,
+  };
 }
 
 Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, sem Storage", async () => {
@@ -1317,6 +1344,32 @@ Deno.test("answer R2 prepare usa a RPC r2 e assina o PUT na chave do catalogo, s
   const body = await response.json();
   assertEquals(body.asset_id, id);
   assertEquals(body.storage_provider, "r2");
+  assertEquals(body.expires_at, answerTicketExpiry.toISOString());
+});
+
+Deno.test("answer R2 resolve ator do realm interno pelo contexto Principal canonico", async () => {
+  const harness = answerR2Harness({ internalActor: true });
+  const result = await handleFormMediaRequest(
+    request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(harness.calls, ["list_my_principal_contexts", "form_prepare_asset_upload_r2_v1"]);
+});
+
+Deno.test("answer R2 nega fallback interno vazio ou com pessoas divergentes", async () => {
+  for (const internalContexts of [
+    [],
+    [{ person_id: id }, { person_id: mediaId }],
+  ]) {
+    const harness = answerR2Harness({ internalActor: true, internalContexts });
+    const result = await handleFormMediaRequest(
+      request({ ...command, payload: { ...command.payload, mime_type: "image/png" } }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 401);
+    assertEquals(harness.calls, ["list_my_principal_contexts"]);
+  }
 });
 
 Deno.test("answer R2 finalize confirma pelo legado, mede bytes/sha256/dimensoes e finaliza pelo service_role", async () => {
@@ -1370,6 +1423,11 @@ Deno.test("answer R2 download exige legado finalized e espelho ready e assina o 
   const response = await handleFormMediaRequest(request({ ...command, action: "download", payload: { asset_id: id } }), harness.dependencies);
   assertEquals(response.status, 200);
   assertEquals(harness.calls, ["form_media_authorize_for_worker", "form_asset_r2_descriptor_v1"]);
+  assertEquals(harness.authorizeParameters(), {
+    p_asset_id: id,
+    p_actor_person_id: id,
+    p_edit_secret: null,
+  });
   assertEquals(harness.r2, [`get:${answerKey}:60`]);
   assertEquals(await response.json(), { signed_url: "https://r2.example.test/get", expires_in: 60 });
 });

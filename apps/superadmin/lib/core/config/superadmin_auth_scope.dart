@@ -111,6 +111,7 @@ import 'superadmin_app_config.dart';
 import 'superadmin_media_scope.dart';
 import '../../features/forms/data/form_export_download_resolver.dart';
 import '../../features/forms/data/forms_media_reader.dart';
+import '../../features/forms/data/forms_anonymous_edit_secret_store.dart';
 
 typedef SupabaseInitializer =
     Future<SupabaseClient> Function({
@@ -179,6 +180,7 @@ final class SuperadminAuthScope {
     this.formsDirectoryReader,
     this.formsMediaReader,
     this.formsMediaScope,
+    this.formsAnonymousEditSecrets,
     this.principalRuntimeContextRepository,
     this.profileAboutRepository,
     this.principalCircularRepository,
@@ -247,6 +249,7 @@ final class SuperadminAuthScope {
   final FormsDirectoryReader? formsDirectoryReader;
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
+  final FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final ProfileAboutRepository? profileAboutRepository;
 
@@ -374,6 +377,18 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       }
     }
     final formsBackend = SupabaseFormsBackendGateway(client);
+    final formsAnonymousStoreResolver = switch (canonicalSupabaseProjectId(supabaseUrl)) {
+      final projectId? => FormsAnonymousEditSecretStoreResolver(projectId: projectId),
+      null => null,
+    };
+    FormsAnonymousEditSecretStore? currentFormsAnonymousEditSecrets() {
+      if (!session.isAuthenticated || session.isPasswordRecovery) {
+        formsAnonymousStoreResolver?.resolve(null);
+        return null;
+      }
+      return formsAnonymousStoreResolver?.resolve(client.auth.currentUser?.id);
+    }
+
     session.addListener(platformUsers.clearSessionCache);
     return SuperadminAuthScope(
       session: session,
@@ -399,7 +414,10 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       ),
       assessmentRepository: SupabaseAssessmentRepository(client),
       assessmentMutationsEnabled: enableAssessmentMutations,
-      personDirectoryRepository: SupabasePersonDirectoryRepository(client, segmentFilterAvailable: true),
+      personDirectoryRepository: SupabasePersonDirectoryRepository(
+        client,
+        segmentFilterAvailable: true,
+      ),
       personDetailReader: SupabasePersonDetailReader(client),
       personHandleRepository: enablePersonHandles ? SupabasePersonHandleRepository(client) : null,
       // people.create: o resolvedor de identidade usa a RPC 170700; sem ela
@@ -461,6 +479,7 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       formsDirectoryReader: SupabaseSuperadminFormsDirectoryReader(formsBackend),
       formsMediaReader: FormsMediaReader(gateway: formsBackend),
       formsMediaScope: formsMediaScope,
+      formsAnonymousEditSecrets: currentFormsAnonymousEditSecrets,
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
       profileAboutRepository: SupabaseProfileAboutRepository(client),
       principalCircularRepository: SupabaseCircularRepository(client),

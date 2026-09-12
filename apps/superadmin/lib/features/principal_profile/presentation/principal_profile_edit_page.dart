@@ -70,6 +70,8 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     if (identical(oldWidget.repository, widget.repository) &&
         oldWidget.runtimeContext.membershipId == widget.runtimeContext.membershipId &&
         oldWidget.runtimeContext.personId == widget.runtimeContext.personId &&
+        oldWidget.runtimeContext.roleCode == widget.runtimeContext.roleCode &&
+        oldWidget.runtimeContext.scopeKind == widget.runtimeContext.scopeKind &&
         oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
         oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
         oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {
@@ -126,7 +128,7 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     setState(() => _state = next);
   }
 
-  Future<void> _load() async {
+  Future<bool> _load() async {
     final generation = ++_generation;
     setState(() {
       _conflictMessage = null;
@@ -139,16 +141,19 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     if (_state is! _Editing) setState(() => _state = const _Loading());
     try {
       final page = await widget.repository.load(_subject);
-      if (!mounted || generation != _generation) return;
+      if (!mounted || generation != _generation) return false;
       _replace(
         _Editing(ProfileAboutEditorController(page: page ?? ProfileAboutPage.empty(_subject))),
       );
+      return true;
     } on ProfileAboutUnauthorizedException {
-      if (!mounted || generation != _generation) return;
+      if (!mounted || generation != _generation) return false;
       _replace(const _Denied());
+      return false;
     } on Object {
-      if (!mounted || generation != _generation) return;
+      if (!mounted || generation != _generation) return false;
       _replace(const _Failed());
+      return false;
     } finally {
       if (mounted && generation == _generation) setState(() => _reloading = false);
     }
@@ -162,11 +167,10 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     try {
       await widget.repository.save(controller.page, requestId: newProfileAboutRequestId());
       if (!mounted || generation != _generation) return;
-      // Re-read from the server: the local draft never stands in for
-      // persisted state. The reload bumps the generation, so from here only
-      // `mounted` guards the completion.
-      await _load();
-      if (!mounted) return;
+      // Confirm only when this reload was accepted. A denial, read failure
+      // or context swap must not announce success in the current context.
+      final reloaded = await _load();
+      if (!mounted || !reloaded) return;
       widget.onSaved?.call();
       _announce('Sobre salvo.');
     } on ProfileAboutConflictException {

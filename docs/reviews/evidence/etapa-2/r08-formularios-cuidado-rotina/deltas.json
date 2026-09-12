@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "forms.upload",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R08 G3: consumidores de imagem de pergunta, Galeria identificada/anônima e Foto câmera com cardinalidade1; prepare/PUT/finalize, retry e cancelamento locais. Testes por pacote com sobreposição explícita. Nenhum aceite E2E ou promoção BE neste delta.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/08-camera-result.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R08 G3: leitor question-image separado, leitor interno e download anônimo por segredo no POST, TTL/purge e vínculo ao mesmo contexto. Prova local; implantação e smokeAPI externos não certificam UI.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-formularios-cuidado-rotina/07-anonymous-edit.md"
+  }
+]
