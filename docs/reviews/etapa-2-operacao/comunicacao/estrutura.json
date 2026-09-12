@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 84,
+ "revision": 85,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T12:52:00-03:00",
+ "updatedAt": "2026-09-12T13:05:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -16,7 +16,7 @@
   "coordenador": "R08 · Coordenação (C0)",
   "feito": "groups.location tem create atômico, falha parcial, edição e retry sem nova criação; o novo ramo cobre troca real B→A, retenção de unidade/local B e recibo B, com analyze verde e revisão independente sem defeito concreto.",
   "pendente": "O runner Flutter focal chegou ao último caso sem falha mas não encerrou; árvore própria encerrada para liberar a fila. Reexecutar com diagnóstico. Chrome/rota real para Avaliações e groups.location; comparação e regravação dos 45 PNGs A.",
-  "sha": "988038de8; execução Flutter inconclusiva após último caso, analyze PASS"
+  "sha": "bb22d50a1; base integrada C0 ciclo120, runner de grupos corrigido e provado pelo C0"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
