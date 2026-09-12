@@ -83,5 +83,10 @@ válidos continuam sendo preservados sem mudança.
 - Regressão `form-media/index_test.ts`: 33/33.
 - `deno check index.ts` e `git diff --check`: exit 0.
 
-Nenhum retry produtivo, deploy, SQL remoto ou pgTAP foi executado por G5. A
-retomada do mesmo ativo permanece exclusiva de C0/G0 após integração e deploy.
+Nenhum retry produtivo, deploy, SQL remoto ou pgTAP foi executado por G5.
+
+Após integração, o C0 implantou `form-media` v21 (`verify_jwt=true`) e informou
+a suíte integrada 56/56. O G0 retomou somente o download preservado: recebeu os
+mesmos 68 bytes e SHA-256 do upload, reabriu a resposta e confirmou o mesmo
+asset, com logout local 204. A retomada não repetiu prepare, PUT, finalize,
+save ou cleanup e preservou a fixture.

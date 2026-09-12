@@ -1,17 +1,17 @@
 {
   "grupo": "realm-interno",
-  "revision": 73,
+  "revision": 76,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T13:56:00-03:00",
+  "updatedAt": "2026-09-12T14:36:00-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "download answer-image corrigido localmente: p_edit_secret explícito null para resolução da RPC; H28 bloqueado em review",
+  "head": "answer-image produtivo concluído; H28 local-green 44/44 com fixture funcional rollback",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
-  "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
+  "t0": "2026-09-12T10:52:16.727826-03:00; Owner antecipou: frentes ate 14:40, revisao ate 14:50, fechamento C0 ate 15:00",
   "escopo": {
     "camada": "backend transversal (Supabase/Postgres) da R07",
     "faixaDeCarimbo": "2026091221xxxx em packages/coelo_database/candidatos/realm-interno/",
@@ -26,7 +26,7 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "review/integracao/deploy exclusivo C0 do argumento nulo; G0 retoma o mesmo download sem nova fixture",
+  "primeiroGate": "integração e promoção exclusivas C0 do candidato H28; G5 segue somente em revisão/ajustes pedidos",
   "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
@@ -67,8 +67,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "recorte original entregue; answer-image chegou a save e o defeito determinístico do download foi corrigido localmente; H28 devolvido para ajustes",
-  "proximoPasso": "publicar SHA do argumento null; após review/deploy C0, G0 retoma exatamente o download do asset e47eb9e1",
+  "status": "recorte original entregue; answer-image produtivo completo e H28 local-green no espelho descartável",
+  "proximoPasso": "revisão e handoff; C0 analisa/aplica lote59 e G5 só atende ajuste focal solicitado",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -1152,6 +1152,48 @@
         "h28G5": "code review somente; nenhum pgTAP, SQL remoto ou aplicação"
       },
       "primeiroGate": "review/deploy exclusivo C0 do argumento nulo e retomada focal G0"
+    },
+    "checkpoint14h21": {
+      "quando": "2026-09-12T14:21:14-03:00",
+      "feito": [
+        "C0 implantou form-media v21 com verify_jwt e informou suíte integrada 56/56; o follow-up actual_byte_length f0c7269fd já estava resolvido e não foi reaberto.",
+        "G0 retomou somente o download answer-image: mesmos 68 bytes e SHA-256, reopen com o mesmo asset e logout local 204; não repetiu prepare, PUT, finalize, save ou cleanup.",
+        "H28 foi corrigido por defeitos medidos de fixture nos SHAs bcf9038b0, 3eb8bb7d3 e e1cad10e2, sem bypass de constraints.",
+        "G0 aplicou o candidato H28 somente no baseline descartável e obteve estrutural 11/11, funcional 10/10 e regressões modernas 8/8+11/11+4/4, total 44/44 com rollback.",
+        "A suíte histórica superadmin_people_directory_test registrou quatro falhas e abortou por permissões/assinatura12 obsoletas; foi preservada e não contada como regressão atual.",
+        "Ciclo180 origin/dev 7d2b66a3e incorporado por merge f2da85559; produção e ledger H28 permanecem intocados."
+      ],
+      "pendente": [
+        "C0 decidir integração e eventual promoção forward-only do H28; G5 não aplica SQL nem deploy.",
+        "Aguardar próxima pendência não conflitante do C0 até o corte, sem iniciar R09."
+      ],
+      "testes": {
+        "answerImageG0C0": "form-media v21, suíte integrada 56/56; download/reopen produtivo verde com 68 bytes e mesmo SHA",
+        "h28G0": "candidate apply exit0; estrutural11/11; funcional10/10; regressões8/8+11/11+4/4; total44/44 rollback",
+        "historicoNaoVerde": "superadmin_people_directory_test: quatro falhas e abort por contrato obsoleto",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "integração/promoção exclusiva C0 ou nova revisão focal atribuída"
+    },
+    "checkpoint14h34": {
+      "quando": "2026-09-12T14:34:00-03:00",
+      "feito": [
+        "Owner antecipou os marcos: frentes 14:40, revisão 14:50 e fechamento C0 15:00; R09 somente preparada, não iniciada.",
+        "Runner Avaliações d59e17f62 recebeu ACK técnico G5 PASS: exit execute exige complete; login sem token e assignment divergente falham fechados; payload divergente bloqueia save_gradebook.",
+        "G1 publicou em 99566bed8 o assignment nominal e preflight read-only 200/data null; IDs foram entregues ao C0 para o arquivo ACK nominal.",
+        "Composição nominal lote59 e preflight somente leitura foram preparados com versão, blob, bytes e SHA-256 do candidato/testes; aplicação, backup e ledger seguem exclusivos C0.",
+        "Reconciliação detectou que o blob SQL atual 707cc8 inclui neighborhood.state_code posterior ao primeiro 44/44; promoção foi retida até nova prova.",
+        "Recibo G0 c34fc20d4 recebido: corpo final df0a281cb passou 44/44; composição liberada para análise/aplicação exclusiva C0."
+      ],
+      "pendente": [
+        "Publicar commit/push e handoff G5 até o marco antecipado, sem iniciar R09."
+      ],
+      "testes": {
+        "g1RunnerG5": "code review PASS; nenhuma API executada por G5",
+        "lote59G5": "hash/preflight preparados; nenhum pgTAP, Docker, SQL remoto ou deploy executado",
+        "lote59G0": "corpo final df0a281cb/blob707cc8: 11/11+10/10+8/8+11/11+4/4 = 44/44, rollback, exit0; recibos c34fc20d4"
+      },
+      "primeiroGate": "revisão/handoff G5; aplicação e pós-prova lote59 exclusivas C0"
     }
   }
 }
