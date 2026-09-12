@@ -6,6 +6,24 @@ generated_at: 2026-09-12
 
 # R09 — prompts preparados: CRUD real, Astra médio e consumo limitado
 
+## Nova abertura após encerramento da tentativa anterior
+
+Decisão mais recente do Owner em 12/09/2026: a tentativa R09 anterior foi
+encerrada; iniciar em novas tarefas, com novo T0, somente ao enviar os prompts.
+Esta regra substitui as instruções de reutilizar tarefas/relógio abaixo. Não
+reativar o C0 antigo nem seus timers. Preservar código integrado, branches,
+worktrees e WIP da tentativa; reconciliar antes de criar o novo isolamento.
+O Owner abrirá C0 e G0–G8 com os prompts; C0 identifica as novas tarefas pelo
+round e IDs, não cria duplicatas nem manda trabalho às antigas.
+
+C0 usa identificador E2-R09-AAAAMMDD-HHmm e branch/worktree com o mesmo sufixo
+de abertura, criadas de origin/dev. A posse anterior permanece histórica; não
+zerar revisões nem métricas. As frentes recebem de C0 seus caminhos isolados,
+vagas e corte. Antes da posse/vaga, apenas confirmar papel e aguardar instrução,
+sem polling ou novas leituras extensas. A janela e o orçamento são medidos de
+novo; 49% é somente o snapshot da preparação. Documentação da ADR0035 e skills
+pertence à base, mas não autoriza executar a Etapa3.
+
 ## Como usar e abrir a rodada
 
 Pacote revisado por pedido do Owner de 12/09/2026: avançar em todas as frentes,
