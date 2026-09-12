@@ -15,6 +15,46 @@ final _now = DateTime.utc(2026, 9, 12, 14);
 Uint8List _png() => Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10, 1]);
 
 void main() {
+  testWidgets(
+    'anonymous gallery forwards its secret to prepare finalize and pending discard only',
+    (tester) async {
+      const secret = 'synthetic-anonymous-edit-secret';
+      final api = _Api(ticketNow: DateTime.now(), failFinalizeOnce: true);
+      final session = MediaSession();
+      addTearDown(session.invalidate);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FormsGalleryAnswerField(
+              api: api,
+              session: session,
+              occurrenceId: 'occurrence',
+              editSecret: secret,
+              item: FormItem(id: 'item', kind: FormItemKind.gallery, label: 'Fotos', position: 0),
+              assetIds: const [],
+              onChanged: (_) => fail('uncertain confirmation must not enter the answer'),
+              onBusyChanged: (_) {},
+              pickImage: () async => _png(),
+              createUploadClient: () => MockClient((request) async {
+                expect(request.url.toString().contains(secret), isFalse);
+                expect(request.headers.values.any((value) => value.contains(secret)), isFalse);
+                expect(request.headers.containsKey('authorization'), isFalse);
+                return http.Response('', 200);
+              }),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Selecionar imagem'));
+      await tester.pumpAndSettle();
+      expect(api.prepared?.payload.editSecret, secret);
+      expect(api.finalized?.payload.editSecret, secret);
+      await tester.tap(find.text('Descartar envio'));
+      await tester.pumpAndSettle();
+      expect(api.discarded?.payload.editSecret, secret);
+      expect(find.textContaining(secret), findsNothing);
+    },
+  );
   testWidgets('session purge while picker is open clears its late bytes and disables upload', (
     tester,
   ) async {
@@ -324,6 +364,7 @@ final class _Api implements FormsApi {
   final finalizeIds = <String>[];
   FormCommand<FormAssetUploadPayload>? prepared;
   FormCommand<FormAssetIdPayload>? discarded;
+  FormCommand<FormAssetIdPayload>? finalized;
   FormAssetUploadTicket get ticket => FormAssetUploadTicket(
     assetId: _asset,
     uploadUrl: Uri.parse(
@@ -348,6 +389,7 @@ final class _Api implements FormsApi {
 
   @override
   Future<FormAsset> finalizeAssetUpload(FormCommand<FormAssetIdPayload> command) async {
+    finalized = command;
     events.add('finalize');
     finalizes++;
     finalizeIds.add(command.requestId);
