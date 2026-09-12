@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 18,
+  "revision": 19,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T09:50:00-03:00",
+  "updatedAt": "2026-09-12T10:05:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -91,7 +91,7 @@
     "evidencia": "execucao 1 da suite completa (json -j 6, 00:03-00:13); depois dela 6 falhas de test/app/router corrigidas e provadas isoladamente (persistent_shell 14/14, moments route, people/identity 5/5, error routes 14/14); execucao 2 pendente"
   },
   "bloqueio": null,
-  "proximoPasso": "nenhum: frente encerrada; o coordenador integra a branch e, se quiser o numero final, roda flutter test apps/superadmin (esperado 6719/36/11)",
+  "proximoPasso": "coordenador: aplicar as respostas (regravacoes A pelas frentes donas, A+ e R com as observacoes, P53 fechada = A, Criar modelo -> Estrutura, regra de produto da Circular -> conhecimento/coelo-ui) e registrar em R07-perguntas/decisoes; a frente G8 esta encerrada",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
@@ -252,6 +252,126 @@
   "artefatoDeAprovacoesR07Suites": {
     "url": "https://claude.ai/code/artifact/40dce214-7fe1-4571-b619-733da21f8a84",
     "conteudo": "75 goldens vermelhos em 10 familias (Atividades 31, detalhe Unidade/Turma 12, detalhe Pessoa 12, Circulares composer 10, Assiduidade 3, Central de ajuda 2, paginacao de Instituicoes 2, Convites 1, Pessoas 1, Usuarios internos 1) com R (referencia guardada), A (render atual) e diferenca; decisao A/A+/R por card e observacao; perguntas gerais P53 (launcher Mensagens, aplica aos 17 goldens) e Criar modelo de atividade (migrar rodape canonico ou depois do MVP). Salvar publica versao nova; o estado fica em <script id=state> (answers por nome de golden, questions.p53 e questions.modelo).",
-    "estado": "publicado 09:50 de 12/09; aguardando o Owner; a frente G8 repassa as respostas aqui (campo respostasDoOwner) assim que forem salvas"
+    "estado": "respondido pelo Owner as 09:53 de 12/09 (versao 4 do artefato, savedAt 2026-09-12T12:53:58Z); respostas abaixo em respostasDoOwner"
+  },
+  "respostasDoOwner": {
+    "fonte": "https://claude.ai/code/artifact/40dce214-7fe1-4571-b619-733da21f8a84 (script id=state, versao salva 09:53 de 12/09)",
+    "perguntasGerais": {
+      "P53_launcher": {
+        "decisao": "A",
+        "significado": "o launcher atual (web: pilula 'Mensagens' com icone de enviar; mobile: bolinha de fundo branco com balao laranja) e o aprovado; regravar os 17 goldens presos a ele. Fecha a P53 da R06.",
+        "obs": ""
+      },
+      "criarModeloDeAtividade_rodape": {
+        "decisao": "sim",
+        "significado": "migrar Criar modelo de atividade (_ActivityTemplateCreatePage) para o SuperadminFormActionFooter ancorado ainda no MVP; dono: frente Estrutura; prova: remover a linha do arquivo da lista em superadmin_form_action_footer_adoption_test.",
+        "obs": ""
+      }
+    },
+    "porFrente": {
+      "estrutura": {
+        "regravarA": [
+          "activity_detail_dark_1440",
+          "activity_detail_light_375",
+          "activity_directory_bug_open_light_1440",
+          "activity_directory_card_hover_light_1440",
+          "activity_directory_cards_dark_1024",
+          "activity_directory_cards_dark_1440",
+          "activity_directory_cards_dark_375",
+          "activity_directory_cards_dark_768",
+          "activity_directory_cards_light_1024",
+          "activity_directory_cards_light_1440",
+          "activity_directory_cards_light_375",
+          "activity_directory_cards_light_768",
+          "activity_directory_filter_open_light_1440",
+          "activity_directory_models_light_1440",
+          "activity_directory_pagination_open_light_1440",
+          "activity_directory_profile_open_light_1440",
+          "activity_directory_table_dark_1024",
+          "activity_directory_table_dark_1440",
+          "activity_directory_table_dark_375",
+          "activity_directory_table_dark_768",
+          "activity_directory_table_light_1024",
+          "activity_directory_table_light_1440",
+          "activity_directory_table_light_375",
+          "activity_directory_table_light_768",
+          "activity_directory_table_row_hover_light_1440",
+          "activity_directory_text_200_light_375",
+          "activity_directory_tour_open_light_1440",
+          "activity_form_create_light_375",
+          "activity_form_edit_dark_1440",
+          "activity_form_location_dialog_light_375",
+          "activity_form_professionals_dark_1440",
+          "group_detail_dark_1440_focus",
+          "group_detail_dark_1440_ready",
+          "group_detail_dark_1440_reload",
+          "group_detail_light_375_focus",
+          "group_detail_light_375_ready",
+          "group_detail_light_375_reload",
+          "institution_directory_pagination_disabled_light_1440",
+          "institution_directory_pagination_page_size_open_light_1440",
+          "unit_detail_dark_1440_focus",
+          "unit_detail_dark_1440_ready",
+          "unit_detail_dark_1440_reload",
+          "unit_detail_light_375_focus",
+          "unit_detail_light_375_ready",
+          "unit_detail_light_375_reload"
+        ],
+        "comoRegravar": "flutter test <arquivo> --update-goldens depois de conferir na imagem que a diferenca e so launcher/sino/menu; activity_golden_test (31), institution_directory_page_golden_test (2), structure_detail_golden_test (12)"
+      },
+      "acessosPessoas": {
+        "regravarA": [
+          "invite_form_mobile_light",
+          "person_detail_dark_1440_context",
+          "person_detail_dark_1440_denied",
+          "person_detail_dark_1440_focus",
+          "person_detail_dark_1440_identity",
+          "person_detail_dark_1440_loading",
+          "person_detail_dark_1440_unavailable",
+          "person_detail_light_375_context",
+          "person_detail_light_375_denied",
+          "person_detail_light_375_focus",
+          "person_detail_light_375_identity",
+          "person_detail_light_375_loading",
+          "person_detail_light_375_unavailable",
+          "person_form_create_light_375",
+          "platform_user_create_light_375"
+        ],
+        "comoRegravar": "person_detail_golden_test (12), invite_golden_test (1), person_golden_test (1), platform_user_pages_golden_test (1); person_form_page_test (respiro 24 -> 40) e o rodape P15 seguem a regra ja aprovada"
+      },
+      "formulariosCuidadoRotina": {
+        "attendance_new_call_marking_dark_1440": "A",
+        "attendance_call_compact_footer_dark_375": "A+ - Apenas achei o titulo muito grande, o Lançar Chamada, não sei se é o nosso padrão no mobile, caso seja, reduzir entre 20 a 30% o taamnho do texto. Mesma coisa o botão Voltar para Assiduidade, acredito que possa ser só voltar",
+        "attendance_call_compact_footer_light_375": "A+ (inferido: mesma observacao do escuro, sem radio marcado) - Apenas achei o titulo muito grande, o Lançar Chamada, não sei se é o nosso padrão no mobile, caso seja, reduzir entre 20 a 30% o taamnho do texto. Mesma coisa o botão Voltar para Assiduidade, acredito que possa ser só voltar ou cancelar",
+        "resumoDaObservacao": "no mobile o titulo 'Lancar chamada' esta grande demais: se for o padrao do app no mobile, reduzir o tamanho do texto em 20 a 30%; o botao 'Voltar para Assiduidade' vira so 'Voltar' (ou 'Cancelar'). Regravar os dois goldens compactos 375 depois de aplicar."
+      },
+      "operacoes": {
+        "regravarA": [
+          "help_center_empty_light_1440",
+          "help_center_empty_dark_375"
+        ]
+      },
+      "publicacoesAgenda": {
+        "circularComposer": {
+          "circular_composer_dark_1024": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_dark_1440": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_dark_375": "A",
+          "circular_composer_dark_768": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_1024": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_1440": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_1440_text_200": "A+ - Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_375": "A+ - Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_375_text_200": "A+ - Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final",
+          "circular_composer_light_768": "R - Esse rodapé de botão da referencia atual no web não existe. Outro detalhe é que circular no meio do texto podemos ter perguntas simples (ver formulíaros) e midias, não apenas no final"
+        },
+        "resumo": "web (768/1024/1440, claro e escuro) = R: manter a referencia e corrigir o render; observacao do Owner: 'Esse rodape de botao da referencia atual no web nao existe' (a frente deve conferir com o Owner qual rodape ele viu: a diferenca medida e de 1,4% a 2,8% e sutil na captura). 375 claro, 375 200% e 1440 200% = A+; 375 escuro = A. Regra de produto nova, vale para a Circular inteira: perguntas simples (como nos Formularios) e midias podem entrar NO MEIO do texto da circular, nao so no fim. Registrar em coelo-knowledge e na skill coelo-ui (familia Publicacao)."
+      }
+    },
+    "contagem": {
+      "A": 64,
+      "A+": 5,
+      "R": 6,
+      "total": 75
+    }
   }
 }
