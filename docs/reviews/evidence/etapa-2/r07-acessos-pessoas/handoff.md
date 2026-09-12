@@ -69,3 +69,18 @@ Nenhum segredo foi copiado para Git, JSON ou este handoff.
   expirada com pgTAP.
 - A worktree pode ser removida sem perda depois que o coordenador integrar e
   verificar o SHA remoto; antes disso, mantê-la para inspeção é mais seguro.
+
+## Hotfix C0 — internal-user-create
+
+- Commit publicado: `fcecf66bf014fe8d110b3b345cf578d5fb9beb20`.
+- Arquivos: `packages/coelo_database/supabase/functions/internal-user-create/index.ts`
+  e `cors_test.ts`.
+- Causa corrigida: `reply` serializava corpo com status 204, causando erro de
+  runtime; `Access-Control-Allow-Headers` não incluía `x-client-info`.
+- Comportamento coberto: OPTIONS permitido retorna 204 com corpo vazio e
+  headers corretos; origem não autorizada não recebe `allow-origin`; POST
+  anônimo continua 401.
+- Verificação: `deno check --config deno.json index.ts` limpo; `deno test
+  --config deno.json --allow-env cors_test.ts`: 3 passaram, 0 falharam.
+- Não houve deploy, uso de segredo, criação de usuário ou execução de
+  Flutter/Chrome.
