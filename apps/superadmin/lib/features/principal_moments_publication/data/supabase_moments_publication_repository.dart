@@ -172,6 +172,7 @@ final class SupabaseMomentsPublicationRepository implements MomentsPublicationRe
     final requiredHeaders = (prepared['required_headers'] as Map? ?? const {}).map(
       (key, value) => MapEntry(key.toString(), value.toString()),
     );
+    requiredHeaders['content-type'] = media.mimeType;
     final uploadResponse = await _httpClient.put(
       Uri.parse(prepared['upload_url'] as String),
       headers: requiredHeaders,

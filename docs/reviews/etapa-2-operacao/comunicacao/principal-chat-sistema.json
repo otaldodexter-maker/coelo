@@ -1,6 +1,6 @@
 {
-  "revision": 45,
-  "updated_at": "2026-09-11T23:50:52-03:00",
+  "revision": 46,
+  "updated_at": "2026-09-11T23:53:41-03:00",
   "round": "E2-R07-20260911",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -258,6 +258,7 @@
     "feito": [
       "errors.403/404/500/503: suíte superadmin_error_routes_test 14/14 verde; expectativa obsoleta de /profile removida do loop de erro indisponível porque a rota produtiva tem estado próprio de carregamento/falha.",
       "publicadores: suítes de repository de Acontece, Momentos e Agora + idempotência 16/16 verdes; contratos locais confirmam PUT assinado R2, finalize e ausência de credenciais no payload. Ainda não é prova E2E.",
+      "Momentos: PUT R2 agora reforça content-type com o MIME do rascunho, alinhando o contrato aos publicadores Acontece/Agora; teste de repository 2/2 verde.",
       "checkpoint inicial publicado em 4809bbc06",
       "checkpoint 23:50: servidor local 127.0.0.1:3009 responde HTTP 200; duas tentativas de controle da aba Chrome/CDP expiraram por timeout, sem captura ou CRUD real declarado"
     ],
