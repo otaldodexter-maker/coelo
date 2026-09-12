@@ -1,0 +1,272 @@
+R08 G0 pgTAP focal G5/G2 invites expired
+AT=2026-09-12T11:22:20.4567795-03:00
+SOURCE_COMMIT=76aed97cb
+SOURCE=packages/coelo_database/supabase/tests/superadmin_internal_invites_v2_test.sql
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+COMMAND=git show <commit>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..35
+(1 row)
+
+                                                                                              has_function
+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ ok 1 - Function public.superadmin_invite_directory_v2(text, text[], text[], uuid[], uuid[], uuid[], uuid[], timestamp with time zone, timestamp with time zone, integer, integer, boolean) should exist
+(1 row)
+
+                                           has_function
+---------------------------------------------------------------------------------------------------
+ ok 2 - Function public.superadmin_invite_options_v2(text, uuid, uuid, uuid, integer) should exist
+(1 row)
+
+                             has_function
+-----------------------------------------------------------------------
+ ok 3 - Function public.superadmin_invite_detail_v2(uuid) should exist
+(1 row)
+
+                                                       has_function
+---------------------------------------------------------------------------------------------------------------------------
+ ok 4 - Function public.superadmin_invite_issue_v2(uuid, uuid, uuid, uuid, uuid, uuid, text, text[], integer) should exist
+(1 row)
+
+                                    has_function
+-------------------------------------------------------------------------------------
+ ok 5 - Function public.superadmin_invite_resend_v2(uuid, uuid, bigint) should exist
+(1 row)
+
+                                       has_function
+-------------------------------------------------------------------------------------------
+ ok 6 - Function public.superadmin_invite_revoke_v2(uuid, uuid, bigint, text) should exist
+(1 row)
+
+                          ok
+-------------------------------------------------------
+ ok 7 - read capability is active without forcing aal2
+(1 row)
+
+                                ok
+------------------------------------------------------------------
+ not ok 8 - manage capability is active and requires aal2        +
+ # Failed test 8: "manage capability is active and requires aal2"
+(1 row)
+
+                          is
+------------------------------------------------------
+ ok 9 - invitation capabilities default to Owner only
+(1 row)
+
+INSERT 0 1
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+                              ok
+--------------------------------------------------------------
+ ok 10 - additive columns do not synthesize a legacy backfill
+(1 row)
+
+                              throws_ok
+---------------------------------------------------------------------
+ ok 11 - one invitation cannot mix legacy and internal issuer realms
+(1 row)
+
+INSERT 0 5
+INSERT 0 5
+INSERT 0 1
+INSERT 0 3
+INSERT 0 3
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+INSERT 0 3
+INSERT 0 2
+CREATE TABLE
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "9d100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000201"}
+(1 row)
+
+INSERT 0 3
+INSERT 0 3
+UPDATE 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "9d100000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000203"}
+(1 row)
+
+INSERT 0 2
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "9d100000-0000-4000-8000-000000000104", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000204"}
+(1 row)
+
+INSERT 0 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9d100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000201"}
+(1 row)
+
+INSERT 0 1
+                     ok
+--------------------------------------------
+ ok 12 - Owner reads the RPC-only directory
+(1 row)
+
+                                       ok
+---------------------------------------------------------------------------------
+ ok 13 - legacy detail is explicit, minimized and contains no issuer identifiers
+(1 row)
+
+                          ok
+------------------------------------------------------
+ ok 14 - aal2 Owner issues through the internal realm
+(1 row)
+
+                                 ok
+---------------------------------------------------------------------
+ ok 15 - issue replay is idempotent and never replays the clear link
+(1 row)
+
+                                                      ok
+--------------------------------------------------------------------------------------------------------------
+ ok 16 - internal invitation persists provenance, normalized channels, hash-only token and optimistic version
+(1 row)
+
+                     is
+---------------------------------------------
+ ok 17 - legacy invitation remains read-only
+(1 row)
+
+                        ok
+---------------------------------------------------
+ ok 18 - expired internal invitation can be resent
+(1 row)
+
+                                        ok
+-----------------------------------------------------------------------------------
+ ok 19 - expired invitation fixture returns one ephemeral link and becomes pending
+(1 row)
+
+                               ok
+-----------------------------------------------------------------
+ ok 20 - resend receipt never persists the clear invitation link
+(1 row)
+
+                 is
+------------------------------------
+ ok 21 - stale mutation is rejected
+(1 row)
+
+                         ok
+----------------------------------------------------
+ ok 22 - current internal invitation can be revoked
+(1 row)
+
+                       is
+-------------------------------------------------
+ ok 23 - missing identifiers are non-enumerating
+(1 row)
+
+                                     is
+----------------------------------------------------------------------------
+ ok 24 - institution-scoped operator is denied even with a capability grant
+(1 row)
+
+                                   is
+------------------------------------------------------------------------
+ ok 25 - cross-tenant detail is indistinguishable for a scoped operator
+(1 row)
+
+                                    is
+---------------------------------------------------------------------------
+ ok 26 - a Principal-style global identity cannot enter the internal realm
+(1 row)
+
+                                    isnt
+-----------------------------------------------------------------------------
+ ok 27 - com o MFA adiado, a mutacao em aal1 nao e barrada por segundo fator
+(1 row)
+
+                           ok
+---------------------------------------------------------
+ ok 28 - all gateway responses use the spec-039 envelope
+(1 row)
+
+                                              ok
+-----------------------------------------------------------------------------------------------
+ ok 29 - Superadmin writes are RPC-only while legacy authenticated self-read remains available
+(1 row)
+
+                                  ok
+-----------------------------------------------------------------------
+ ok 30 - only authenticated clients can invoke guarded public wrappers
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "9d100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000201"}
+(1 row)
+
+SET
+                                     is
+----------------------------------------------------------------------------
+ ok 31 - internal identity has no direct invitation rows through legacy RLS
+(1 row)
+
+RESET
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9d100000-0000-4000-8000-000000000105", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000205"}
+(1 row)
+
+SET
+                          is
+-------------------------------------------------------
+ ok 32 - legacy person self-read policy remains intact
+(1 row)
+
+RESET
+UPDATE 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "9d100000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "9d100000-0000-4000-8000-000000000201"}
+(1 row)
+
+INSERT 0 1
+                           is
+--------------------------------------------------------
+ ok 33 - capability revocation is effective immediately
+(1 row)
+
+UPDATE 1
+INSERT 0 1
+                           is
+--------------------------------------------------------
+ ok 34 - membership revocation is effective immediately
+(1 row)
+
+                                     ok
+----------------------------------------------------------------------------
+ ok 35 - success and denial audit entries keep a valid tamper-evident chain
+(1 row)
+
+                finish
+--------------------------------------
+ # Looks like you failed 1 test of 35
+(1 row)
+
+ROLLBACK
+NATIVE_EXIT=0
+SUITE_RESULT native_exit=0 ok=34 not_ok=1 expected=35
+WRAPPER_EXIT=1

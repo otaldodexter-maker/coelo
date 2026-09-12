@@ -1,0 +1,13 @@
+R08 G0 cleanup manifest preview only
+AT=2026-09-12T11:20:45.7756556-03:00
+SOURCE_COMMIT=086a654c6
+SOURCE=packages/coelo_database/scripts/stage2-realm-chat-cleanup-manifest.sql
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+STATIC_GUARDS=BEGIN + SET LOCAL TRANSACTION READ ONLY + temporary tables only + ROLLBACK; no DELETE/UPDATE
+COMMAND=git show <commit>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+SET
+ERROR:  cannot execute CREATE TABLE AS in a read-only transaction
+NATIVE_EXIT=3
+POST_CONNECTION_TEMP_RELATIONS= PROBE_EXIT=1
+WRAPPER_EXIT=1

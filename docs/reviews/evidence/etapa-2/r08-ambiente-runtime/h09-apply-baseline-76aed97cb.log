@@ -1,0 +1,14 @@
+R08 G0 H09 apply baseline only
+AT=2026-09-12T11:28:58.3863503-03:00
+SOURCE_COMMIT=76aed97cb
+SOURCE=packages/coelo_database/candidatos/realm-interno/20260912140545_now_publication_expiry_dispatch_v1.sql
+TARGET=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+AUTHORIZATION=C0 2026-09-12 11:28 BRT; local mirror only; production forbidden
+COMMAND=git show <ref>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+DO
+APPLY_NATIVE_EXIT=0
+PROBE_EXIT=1
+JOB_ROWS=0
+WRAPPER_EXIT=1
+coelo-now-publications-expire|*/5 * * * *|select app_private.sweep_expired_now_publications(null::uuid, 500);|t
+CORRECTED_PROBE_EXIT=0

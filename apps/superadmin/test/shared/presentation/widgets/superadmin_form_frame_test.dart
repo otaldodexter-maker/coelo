@@ -4,6 +4,38 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_form_frame.dart';
 
 void main() {
+  testWidgets('short viewport keeps body and every footer action reachable', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(375, 260));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    var cancelled = false;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SuperadminFormFrame(
+            viewportWidth: 375,
+            navigation: const SizedBox.shrink(),
+            body: const SizedBox(height: 600, child: Column(children: [Text('Conteúdo')])),
+            footer: Column(
+              children: [
+                const SizedBox(height: 260, child: Text('Ação primária')),
+                TextButton(onPressed: () => cancelled = true, child: const Text('Cancelar')),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    expect(find.text('Conteúdo').hitTestable(), findsOneWidget);
+    await tester.ensureVisible(find.text('Cancelar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Cancelar'));
+    expect(cancelled, isTrue);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('keeps a 248 px rail from the 600 px breakpoint with the canonical gap', (
     tester,
   ) async {
