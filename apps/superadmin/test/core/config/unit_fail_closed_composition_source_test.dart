@@ -10,18 +10,30 @@ void main() {
     'lib/features/units/data/unavailable_unit_composition.dart',
   ).readAsStringSync();
 
-  test('composition roots do not import or construct Supabase Unit adapters', () {
-    for (final source in [authScope, app, router]) {
+  test('only the configured auth scope constructs Supabase Unit adapters', () {
+    // Desde 58bfe1fed (ADR 0034) o auth scope configurado liga os adapters
+    // reais; app e router continuam recebendo-os por injecao, com o padrao
+    // indisponivel, e o scope sem configuracao segue fail-closed.
+    expect(authScope, contains('SupabaseUnitDirectoryRepository(client)'));
+    expect(authScope, contains('SupabaseUnitBackendCommandsGateway(client)'));
+    for (final source in [app, router]) {
       expect(source, isNot(contains('supabase_unit_directory_repository.dart')));
       expect(source, isNot(contains('supabase_unit_backend_commands_gateway.dart')));
       expect(source, isNot(contains('SupabaseUnitDirectoryRepository(')));
       expect(source, isNot(contains('SupabaseUnitBackendCommandsGateway(')));
+    }
+    for (final source in [authScope, app, router]) {
       expect(source, contains('unavailable_unit_composition.dart'));
     }
   });
 
   test('production and development Unit composition stays explicit', () {
-    expect(RegExp(r'backendCommands: unitBackendCommands').allMatches(router), hasLength(1));
+    expect(
+      RegExp(
+        r'backendCommands: hasStructureMutationCapability\(\) \? unitBackendCommands : null',
+      ).allMatches(router),
+      hasLength(1),
+    );
     expect(RegExp(r'backendCommands: null').allMatches(router), hasLength(1));
     expect(RegExp(r'UnitFormPage\(').allMatches(router), hasLength(4));
     expect(

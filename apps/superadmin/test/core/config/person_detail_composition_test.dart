@@ -30,6 +30,7 @@ void main() {
     expect(scope.personDetailReader, isA<SupabasePersonDetailReader>());
     expect(scope.personDetailReader, isNot(isA<PersonDirectoryRepository>()));
     expect(scope.session.isAuthenticated, isFalse);
-    expect(scope.structureMutationsEnabled, isFalse);
+    // Ligada na composicao de producao desde 58bfe1fed (ADR 0034, lotes 10/11).
+    expect(scope.structureMutationsEnabled, isTrue);
   });
 }

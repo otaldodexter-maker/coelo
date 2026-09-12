@@ -20,6 +20,7 @@ void main() {
       logout: unavailableSuperadminLogout,
       requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
       onThemeModeChanged: (_) {},
+      allowDevelopmentPreview: true,
     );
     addTearDown(router.dispose);
     addTearDown(session.dispose);
@@ -49,14 +50,19 @@ void main() {
         'audit' || 'catalog' => 'governance',
         _ => throw StateError('Missing navigation section for $id'),
       };
-      var item = find.byKey(Key('superadmin-navigation-$id'));
+      // Secoes no fim da navegacao ficam fora da viewport da ListView;
+      // localizar sem pular offstage e rolar ate elas antes de tocar.
+      var item = find.byKey(Key('superadmin-navigation-$id'), skipOffstage: false);
       if (item.evaluate().isEmpty) {
-        final sectionItem = find.byKey(Key('superadmin-navigation-section-$section'));
+        final sectionItem = find.byKey(
+          Key('superadmin-navigation-section-$section'),
+          skipOffstage: false,
+        );
         await Scrollable.ensureVisible(tester.element(sectionItem), alignment: 0.5);
         await tester.pumpAndSettle();
         await tester.tap(sectionItem.hitTestable());
         await tester.pumpAndSettle();
-        item = find.byKey(Key('superadmin-navigation-$id'));
+        item = find.byKey(Key('superadmin-navigation-$id'), skipOffstage: false);
       }
       await Scrollable.ensureVisible(tester.element(item), alignment: 0.5);
       await tester.pumpAndSettle();

@@ -1,8 +1,10 @@
 import 'package:coelo_superadmin/core/config/superadmin_auth_scope.dart';
 import 'package:coelo_superadmin/features/groups/data/supabase_group_detail_repository.dart';
+import 'package:coelo_superadmin/features/groups/data/supabase_group_directory_repository.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_detail.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/units/data/supabase_unit_detail_repository.dart';
+import 'package:coelo_superadmin/features/units/data/supabase_unit_directory_repository.dart';
 import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
 import 'package:coelo_superadmin/features/units/domain/unit_detail.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -24,7 +26,7 @@ void main() {
     );
   });
   test(
-    'configured composition adds internal detail without enabling legacy lists or mutations',
+    'configured composition reads detail and directories from production with mutations enabled',
     () async {
       late SupabaseClient client;
       final scope = await createSuperadminAuthScope(
@@ -39,9 +41,11 @@ void main() {
       addTearDown(scope.session.dispose);
       expect(scope.groupDetailRepository, isA<SupabaseGroupDetailRepository>());
       expect(scope.unitDetailRepository, isA<SupabaseUnitDetailRepository>());
-      expect(scope.groupDirectoryRepository, isA<UnavailableGroupDirectoryRepository>());
-      expect(scope.unitDirectoryRepository, isA<UnavailableUnitDirectoryRepository>());
-      expect(scope.structureMutationsEnabled, isFalse);
+      // Diretorios e mutacoes de estrutura ligados em producao desde 58bfe1fed
+      // (13 RPCs de Unidades em 20260910160000; ADR 0034).
+      expect(scope.groupDirectoryRepository, isA<SupabaseGroupDirectoryRepository>());
+      expect(scope.unitDirectoryRepository, isA<SupabaseUnitDirectoryRepository>());
+      expect(scope.structureMutationsEnabled, isTrue);
       expect(scope.session.isAuthenticated, isFalse);
     },
   );

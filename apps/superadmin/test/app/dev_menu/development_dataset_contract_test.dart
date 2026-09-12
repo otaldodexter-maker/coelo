@@ -17,11 +17,14 @@ void main() {
     final activities = DevelopmentActivityFixtureRepository();
     final routines = DevelopmentRoutineRepository.content();
 
-    expect(institutions.records.length, inInclusiveRange(8, 14));
+    // Dataset reduzido a cinco instituicoes em d9232a94d (01/09/2026); e o
+    // mesmo take(5) dos goldens de Instituicoes (decisao DADOS da Fase 0).
+    expect(institutions.records.length, inInclusiveRange(5, 14));
     for (final institution in institutions.records) {
       expect(institution.units.length, inInclusiveRange(1, 4));
       for (final unit in institution.units) {
-        expect(unit.groups.length, inInclusiveRange(1, 20));
+        // Mare Alta tem uma unidade com 28 turmas (fixture de paginacao).
+        expect(unit.groups.length, inInclusiveRange(1, 28));
         expect(
           groups.records.where((group) => group.unitId == unit.id),
           hasLength(unit.groups.length),
@@ -66,7 +69,7 @@ void main() {
     );
     expect(activityPage.totalCount, inInclusiveRange(1, 30));
     expect(activityPage.totalCount, 30);
-    expect(activityOptions.templates, hasLength(10));
+    expect(activityOptions.templates, hasLength(12));
 
     final routinePage = await routines.fetchPage(
       const RoutineDirectoryQuery(kind: RoutineEntryKind.model, pageSize: 20),

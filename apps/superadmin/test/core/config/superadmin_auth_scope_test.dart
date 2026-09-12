@@ -31,6 +31,7 @@ import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/notices/data/supabase_notice_repository.dart';
 import 'package:coelo_superadmin/features/notices/domain/notice_repository.dart';
 import 'package:coelo_superadmin/features/people/data/supabase_person_directory_repository.dart';
+import 'package:coelo_superadmin/features/people/data/supabase_person_identity_repository.dart';
 import 'package:coelo_superadmin/features/people/domain/person_identity.dart';
 import 'package:coelo_superadmin/features/student_tracking/domain/student_tracking.dart';
 import 'package:coelo_superadmin/features/units/data/unavailable_unit_composition.dart';
@@ -249,7 +250,8 @@ void main() {
       isTrue,
       reason: '180150 esta em producao: a chave de composicao fica ligada',
     );
-    expect(scope.personIdentityRepository, isA<UnavailablePersonIdentityRepository>());
+    // 170700 em producao (lote 54): people.create resolve identidade de verdade.
+    expect(scope.personIdentityRepository, isA<SupabasePersonIdentityRepository>());
     expect(scope.accessProfileRepository, isA<SupabaseAccessProfileRepository>());
     expect(scope.platformUserRepository, isA<SupabasePlatformUserRepository>());
     expect(scope.chatRepository, isA<SupabaseChatRepository>());
