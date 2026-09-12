@@ -108,11 +108,14 @@ def save_manifest(value: dict[str, Any]) -> None:
     MANIFEST.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
-def require_definition_projection(value: dict[str, Any], form_id: str, section_id: str, item_id: str) -> None:
+def require_definition_projection(
+    value: dict[str, Any], form_id: str, expected_status: str
+) -> tuple[str, str]:
     if (
         value.get("id") != form_id
         or value.get("institution_id") != INSTITUTION_ID
-        or value.get("status") != "published"
+        or value.get("title") != MARKER
+        or value.get("status") != expected_status
         or value.get("identity_mode") != "identified"
         or value.get("response_unit") != "person"
     ):
@@ -122,15 +125,17 @@ def require_definition_projection(value: dict[str, Any], form_id: str, section_i
         raise FixtureFailure("publish:projection_sections_mismatch")
     items = sections[0].get("items")
     if (
-        sections[0].get("id") != section_id
-        or not isinstance(items, list)
+        not isinstance(items, list)
         or len(items) != 1
         or not isinstance(items[0], dict)
-        or items[0].get("id") != item_id
         or items[0].get("kind") != "photo"
         or items[0].get("config") != {"allow_camera": True, "min_images": 1, "max_images": 1}
     ):
-        raise FixtureFailure("publish:projection_item_mismatch")
+        raise FixtureFailure("definition:projection_item_mismatch")
+    return (
+        require_uuid(sections[0].get("id"), "projection_section"),
+        require_uuid(items[0].get("id"), "projection_item"),
+    )
 
 
 def require_application_projection(value: dict[str, Any], form_id: str) -> None:
@@ -180,12 +185,16 @@ def main() -> int:
     mode = parser.add_mutually_exclusive_group()
     mode.add_argument("--preflight", action="store_true")
     mode.add_argument("--execute", action="store_true")
+    mode.add_argument("--resume", action="store_true")
     args = parser.parse_args()
-    if not args.preflight and not args.execute:
+    if not args.preflight and not args.execute and not args.resume:
         emit("guard", "READY_NO_MUTATION", planned_rpc_mutations=4)
         return 0
     if args.execute and MANIFEST.exists():
         emit("guard", "REFUSED_EXISTING_MANIFEST")
+        return 2
+    if args.resume and not MANIFEST.exists():
+        emit("guard", "REFUSED_MISSING_MANIFEST")
         return 2
 
     app = read_env(APP_ENV)
@@ -212,6 +221,36 @@ def main() -> int:
         return request_json(f"{base}/rest/v1/rpc/{name}", body=body, headers=headers)
 
     try:
+        if args.resume:
+            manifest = json.loads(MANIFEST.read_text(encoding="utf-8"))
+            form_id = require_uuid(manifest.get("form_id"), "resume_form")
+            if (
+                form_id != "afa8f922-b27d-4258-9322-8b3f96ee7df9"
+                or manifest.get("institution_id") != INSTITUTION_ID
+                or manifest.get("qa_person_id") != QA_PERSON_ID
+                or manifest.get("application_id") is not None
+                or manifest.get("schedule_id") is not None
+            ):
+                raise FixtureFailure("resume:manifest_scope_mismatch")
+            editor_status, editor = rpc("form_get_editor", {"p_form_id": form_id})
+            definition = editor.get("definition") if isinstance(editor, dict) else None
+            if editor_status != 200 or not isinstance(definition, dict):
+                raise FixtureFailure(f"resume_editor:{editor_status}:{error_code(editor)}")
+            section_id, item_id = require_definition_projection(definition, form_id, "published")
+            manifest.update({
+                "input_section_id": manifest.get("section_id"),
+                "input_item_id": manifest.get("item_id"),
+                "section_id": section_id,
+                "item_id": item_id,
+                "publish_http": 200,
+                "published_management_version": require_version(
+                    definition.get("management_version"), "resume_published"
+                ),
+            })
+            save_manifest(manifest)
+            emit("resume_editor", "PASS", http=editor_status, form_id=form_id, item_id=item_id)
+        else:
+            manifest = {}
         candidate_status, candidates = rpc("form_list_audience_candidates", {"p_query": {
             "institution_id": INSTITUTION_ID,
             "kind": "person",
@@ -228,7 +267,8 @@ def main() -> int:
             raise FixtureFailure(f"audience:{candidate_status}:{error_code(candidates)}")
         emit("audience", "PASS", http=candidate_status, target_present=True)
 
-        list_status, directory = rpc("form_list", {"p_query": {
+        if not args.resume:
+            list_status, directory = rpc("form_list", {"p_query": {
             "institution_id": INSTITUTION_ID,
             "search": MARKER,
             "statuses": ["draft", "published", "archived"],
@@ -239,21 +279,21 @@ def main() -> int:
             "cursor_updated_at": None,
             "cursor_id": None,
             "limit": 100,
-        }})
-        items = directory.get("items") if isinstance(directory, dict) else None
-        if list_status != 200 or not isinstance(items, list):
-            raise FixtureFailure(f"duplicate_preflight:{list_status}:{error_code(directory)}")
-        exact = [item for item in items if isinstance(item, dict) and item.get("title") == MARKER]
-        if exact:
-            raise FixtureFailure("duplicate_preflight:existing_fixture")
-        emit("duplicate_preflight", "PASS", http=list_status, exact_matches=0)
-        if args.preflight:
-            emit("preflight", "PASS_READ_ONLY", planned_rpc_mutations=4)
-            return 0
+            }})
+            items = directory.get("items") if isinstance(directory, dict) else None
+            if list_status != 200 or not isinstance(items, list):
+                raise FixtureFailure(f"duplicate_preflight:{list_status}:{error_code(directory)}")
+            exact = [item for item in items if isinstance(item, dict) and item.get("title") == MARKER]
+            if exact:
+                raise FixtureFailure("duplicate_preflight:existing_fixture")
+            emit("duplicate_preflight", "PASS", http=list_status, exact_matches=0)
+            if args.preflight:
+                emit("preflight", "PASS_READ_ONLY", planned_rpc_mutations=4)
+                return 0
 
-        section_id = str(uuid.uuid4())
-        item_id = str(uuid.uuid4())
-        draft_status, draft = rpc("form_save_draft", {
+            input_section_id = str(uuid.uuid4())
+            input_item_id = str(uuid.uuid4())
+            draft_status, draft = rpc("form_save_draft", {
             "p_request_id": str(uuid.uuid4()),
             "p_expected_version": 0,
             "p_payload": {
@@ -265,12 +305,12 @@ def main() -> int:
                 "title": MARKER,
                 "description": "Fixture sintetica preservada para QA R08 de resposta com imagem.",
                 "sections": [{
-                    "id": section_id,
+                    "id": input_section_id,
                     "title": "Imagem",
                     "description": None,
                     "position": 0,
                     "items": [{
-                        "id": item_id,
+                        "id": input_item_id,
                         "kind": "photo",
                         "label": "Foto QA",
                         "help_text": None,
@@ -282,40 +322,50 @@ def main() -> int:
                     }],
                 }],
             },
-        })
-        if draft_status != 200 or not isinstance(draft, dict):
-            raise FixtureFailure(f"save_draft:{draft_status}:{error_code(draft)}")
-        form_id = require_uuid(draft.get("id"), "form")
-        draft_version = require_version(draft.get("management_version"), "draft")
-        manifest: dict[str, Any] = {
+            })
+            if draft_status != 200 or not isinstance(draft, dict):
+                raise FixtureFailure(f"save_draft:{draft_status}:{error_code(draft)}")
+            form_id = require_uuid(draft.get("id"), "form")
+            section_id, item_id = require_definition_projection(draft, form_id, "draft")
+            draft_version = require_version(draft.get("management_version"), "draft")
+            manifest = {
             "schema_version": 1,
             "preserved": True,
             "institution_id": INSTITUTION_ID,
             "qa_person_id": QA_PERSON_ID,
             "form_id": form_id,
+            "input_section_id": input_section_id,
+            "input_item_id": input_item_id,
             "section_id": section_id,
             "item_id": item_id,
             "draft_http": draft_status,
             "draft_management_version": draft_version,
-        }
-        save_manifest(manifest)
-        emit("save_draft", "PASS", http=draft_status, form_id=form_id, item_id=item_id)
+            }
+            save_manifest(manifest)
+            emit("save_draft", "PASS", http=draft_status, form_id=form_id, item_id=item_id)
 
-        publish_status, published = rpc("form_publish", {
+            publish_status, published = rpc("form_publish", {
             "p_request_id": str(uuid.uuid4()),
             "p_expected_version": draft_version,
             "p_payload": {"form_id": form_id},
-        })
-        if publish_status != 200 or not isinstance(published, dict):
-            raise FixtureFailure(f"publish:{publish_status}:{error_code(published)}")
-        require_definition_projection(published, form_id, section_id, item_id)
-        published_version = require_version(published.get("management_version"), "published")
-        manifest.update({"publish_http": publish_status, "published_management_version": published_version})
-        save_manifest(manifest)
-        emit("publish", "PASS", http=publish_status)
+            })
+            if publish_status != 200 or not isinstance(published, dict):
+                raise FixtureFailure(f"publish:{publish_status}:{error_code(published)}")
+            published_section_id, published_item_id = require_definition_projection(
+                published, form_id, "published"
+            )
+            if (published_section_id, published_item_id) != (section_id, item_id):
+                raise FixtureFailure("publish:server_ids_changed")
+            published_version = require_version(published.get("management_version"), "published")
+            manifest.update({"publish_http": publish_status, "published_management_version": published_version})
+            save_manifest(manifest)
+            emit("publish", "PASS", http=publish_status)
 
+        application_request_id = str(uuid.uuid4())
+        manifest["application_request_id"] = application_request_id
+        save_manifest(manifest)
         application_status, application = rpc("form_save_application", {
-            "p_request_id": str(uuid.uuid4()),
+            "p_request_id": application_request_id,
             "p_expected_version": 0,
             "p_payload": {
                 "id": None,
@@ -344,11 +394,19 @@ def main() -> int:
         starts_at = (dt.datetime.now().astimezone() - dt.timedelta(minutes=1)).replace(
             second=0, microsecond=0, tzinfo=None
         ).isoformat()
+        schedule_request_id = str(uuid.uuid4())
+        requested_schedule_id = str(uuid.uuid4())
+        manifest.update({
+            "schedule_request_id": schedule_request_id,
+            "requested_schedule_id": requested_schedule_id,
+            "starts_at_local": starts_at,
+        })
+        save_manifest(manifest)
         schedule_status, scheduled = rpc("form_save_schedule", {
-            "p_request_id": str(uuid.uuid4()),
+            "p_request_id": schedule_request_id,
             "p_expected_version": 0,
             "p_payload": {
-                "schedule_id": None,
+                "schedule_id": requested_schedule_id,
                 "application_id": application_id,
                 "time_zone": "America/Sao_Paulo",
                 "starts_at_local": starts_at,
@@ -366,6 +424,8 @@ def main() -> int:
         if schedule_status != 200 or not isinstance(scheduled, dict):
             raise FixtureFailure(f"save_schedule:{schedule_status}:{error_code(scheduled)}")
         schedule_id = require_schedule_projection(scheduled, application_id, form_id)
+        if schedule_id != requested_schedule_id:
+            raise FixtureFailure("schedule:server_id_mismatch")
         manifest.update({
             "schedule_id": schedule_id,
             "schedule_http": schedule_status,
