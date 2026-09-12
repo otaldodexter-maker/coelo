@@ -82,3 +82,10 @@ absoluto e caminho canonicalizado e classifica os 11 loaders do ciclo 90 como
 `hidden`. A correção solicitada é aplicar a mesma igualdade canonicalizada e
 priorizar `loading` antes de `hidden` na classificação exclusiva. Esse parser
 geral permanece pendente; a matriz aceita não depende dele.
+
+O corretivo `122293fc6`, documentado em `29528d150`, aplica exatamente essa
+regra no parser geral: canonicaliza o sufixo após `loading ` e classifica loader
+antes de hidden. O reprocessamento do JSONL do ciclo 90, sem Flutter, devolveu
+422 passed, 11 loading, 0 hidden e 0 órfãos. O parser geral está aceito por
+conteúdo; seu `nativeExitCode=1` é o valor preservado da execução fonte, não uma
+nova execução nem falha do reprocessamento.
