@@ -1,9 +1,37 @@
 import 'package:coelo_domain/coelo_domain.dart';
+import '../media/media_reader.dart';
+import '../media/media_upload_contract.dart';
 
 import 'form_editor_projection_dto.dart';
 import 'form_wire_contracts.dart';
 
 enum FormApiFailureKind { unauthorized, validation, conflict, unavailable, unknown }
+
+final class FormQuestionImageTarget {
+  const FormQuestionImageTarget({
+    required this.formId,
+    required this.formVersionId,
+    required this.itemId,
+  });
+  final String formId;
+  final String formVersionId;
+  final String itemId;
+}
+
+/// Question illustrations have a different ownership/binding than response images.
+abstract interface class FormsQuestionImageApi {
+  MediaReader get questionImageReader;
+  Future<FormAssetUploadTicket> prepareQuestionImage(
+    FormQuestionImageTarget target, {
+    required String requestId,
+    required MediaUploadMetadata sourceMetadata,
+  });
+  Future<FormAsset> finalizeQuestionImage(
+    FormQuestionImageTarget target,
+    FormCommand<FormAssetIdPayload> command,
+  );
+  Future<void> deleteQuestionImage(FormCommand<FormAssetIdPayload> command);
+}
 
 final class FormApiException implements Exception {
   const FormApiException(this.kind, this.message, {this.details = const {}});
