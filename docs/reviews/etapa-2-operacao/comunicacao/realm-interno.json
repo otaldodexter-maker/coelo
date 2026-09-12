@@ -1,6 +1,6 @@
 {
   "grupo": "realm-interno",
-  "revision": 54,
+  "revision": 55,
   "round": "E2-R08-20260912",
   "updatedAt": "2026-09-12T11:10:17.4386248-03:00",
   "app": "Codex",
@@ -789,6 +789,25 @@
         "falhaIntermediaria": "convites 34/35 por expectativa histórica de MFA; corrigida e preservada como evidência, sem somar reruns"
       },
       "primeiroGate": "aguardar C0 concluir H09 e liberar o espelho para a prova focal de chat"
+    },
+    "checkpoint11h45": {
+      "quando": "2026-09-12T11:45:00-03:00",
+      "feito": [
+        "G0 aplicou o candidato H09 somente no baseline e aprovou now_publication_expiry_dispatch_v1_test.sql em 6/6; job único, ativo, */5 e sweep limitado a 500.",
+        "G0 aprovou os consumidores compartilhados de chat: attachments 28/28 e worker claims 3/3, native/wrapper 0 e rollback.",
+        "Recibo e logs commitados em 9533e4dc2c2fb99a1835b73202410dd74592c597; G5 não executou pgTAP, não aplicou SQL e não soma esses resultados como execução própria.",
+        "Contrato chat-media preserva attachment_id; divergência de assetId ficou com G4/C0, sem inventar catálogo ou ampliar o recorte."
+      ],
+      "pendente": [
+        "Receber do C0 o recibo de backup, aplicação forward-only H09 em produção, ledger e pós-prova; nenhuma ação remota por G5.",
+        "Publicar handoff final após o recibo C0; não emitir delta de estado sem certificação da coordenação."
+      ],
+      "testes": {
+        "h09EspelhoG0": "6/6, native/wrapper 0 e rollback",
+        "chatEspelhoG0": "28/28 + 3/3, native/wrapper 0 e rollback",
+        "executadosPorG5": "Deno chat-media 6/6; nenhum pgTAP"
+      },
+      "primeiroGate": "C0 aplicar e provar H09 em produção após backup, serialização e ledger"
     }
   }
 }
