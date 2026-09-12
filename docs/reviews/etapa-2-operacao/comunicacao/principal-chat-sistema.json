@@ -1,6 +1,6 @@
 {
-  "revision": 39,
-  "updated_at": "2026-09-11T21:30-03:00",
+  "revision": 41,
+  "updated_at": "2026-09-11T21:34-03:00",
   "round": "E2-R06-20260911",
   "group": "principal-chat-sistema",
   "tool": "Claude Code (VS Code)",
@@ -10,7 +10,7 @@
   "branch": "work/etapa2-r06-principal-chat-sistema",
   "base": "origin/dev ca60b096b",
   "head": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema",
-  "status": "FINALIZADO 21:30. Resposta ao pedidoDeRevisao2136 em revisao_final_T0_2h. Nao retomo depois de 21:46.",
+  "status": "FINALIZADO 21:34 (T0+2h = 21:36). Resposta ao pedidoDeRevisao2136 em revisao_final_T0_2h. Nao retomo depois de 21:46.",
   "T0_assumido": "CORRIGIDO pelo coordenacao.json rev 56: T0 = 19:36; T0+2h = 21:36; T0+2h10 = 21:46",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -198,8 +198,8 @@
     ]
   },
   "revisao_final_T0_2h": {
-    "quando": "2026-09-11T21:30-03:00 (responde ao pedidoDeRevisao2136)",
-    "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema (capturas 01-10 restauradas em 66677e45d); worktree limpa; sem stash; sem WIP",
+    "quando": "2026-09-11T21:34-03:00 (responde ao pedidoDeRevisao2136)",
+    "sha_publicado": "commit desta rev em origin/work/etapa2-r06-principal-chat-sistema; worktree limpa; sem stash; sem WIP",
     "fechado_por_action_id_com_prova": [
       "meal-plans.model-create, meal-plans.model-edit: verified-e2e (rota real cria/edita, Supabase persiste d132698c v2, reload carrega; capturas 02-08)",
       "meal-plans.list: FE verified (07)",
@@ -215,7 +215,7 @@
     "aberto_com_primeiro_gate": [
       {
         "pendencia": "midia nos publicadores (momentos/agora/acontece create-publish)",
-        "gate": "CORS alinhado pelo coordenador as 21:35; repetir a prova pela tela na proxima rodada (rascunho b173843d v2 salvo)"
+        "gate": "MEDIDO 21:32 por sonda (ferramentas/rpc.py) com Origin 127.0.0.1:3009: prepare 200 -> PUT no R2 200 (CORS ok apos 21:35) -> finalize 200 (asset 8064d199-bd3d-4bf3-b3e7-70b689bb2ea9 no R2, rascunho b173843d v3). O backend e o R2 estao corretos; so a chamada feita pelo navegador falha ('Nao foi possivel publicar agora', captura 24), com a resposta da moments-media sem corpo capturado. Proximo passo (cliente, esta frente): capturar o status/corpo da chamada do navegador (Network do DevTools ou logs da funcao) e comparar com a sonda; suspeita: preflight/headers do supabase-js functions.invoke ou o PUT do http.Client web"
       },
       {
         "pendencia": "meal-plans.create/edit/publish",
@@ -241,9 +241,10 @@
     "deltas_propostos": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/deltas-r06-pcs.json (16; formato do aplicador; ensaiado na worktree, rastreadores revertidos)",
     "pacotes_prontos": "candidatos/principal-chat-sistema/20260911130400 (P48, reescrito sobre o 210100, 4 suites verdes) e 20260911130500 (scopeRules de Cardapios, 9/9)",
     "duvidas_ao_owner": [],
-    "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d na instituicao d0c40000-0000-4000-8000-000000000001; asset 708456ae preparado sem upload; nenhum objeto no R2",
+    "dados_sinteticos": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d (v3) na instituicao d0c40000-0000-4000-8000-000000000001; assets de Momentos 708456ae e 24868396 preparados sem upload e 8064d199 FINALIZADO no R2 (coelo-media-prod, institution/d0c4.../moments/2026/09/8064d199.../original) por sonda; limpeza no fim da Etapa 2",
     "chaves_criadas": "nenhuma",
-    "ambiente_encerrado": "Chrome, servidores e cdp_net encerrados 21:15; descartavel coelo_pcs6_db removido 21:16",
+    "ambiente_encerrado": "Chrome, servidor 3009 e clone coelo_pcs6_db encerrados 21:32",
     "handoff": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/handoff.md"
-  }
+  },
+  "dados_sinteticos_r06": "modelo de cardapio d132698c (published) e rascunho de Momentos b173843d (v3) na instituicao d0c40000-0000-4000-8000-000000000001; assets de Momentos 708456ae e 24868396 preparados sem upload e 8064d199 FINALIZADO no R2 (coelo-media-prod, institution/d0c4.../moments/2026/09/8064d199.../original) por sonda; limpeza no fim da Etapa 2"
 }
