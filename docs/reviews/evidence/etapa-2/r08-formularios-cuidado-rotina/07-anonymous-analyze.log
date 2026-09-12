@@ -1,0 +1,6 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Analyzing forms_anonymous_edit_secret_store.dart, forms_media_reader.dart, supabase_forms_api.dart, form_response_page.dart, forms_gallery_answer_field.dart, forms_media_page.dart, forms_anonymous_edit_secret_store_test.dart, forms_media_reader_test.dart, forms_gallery_upload_test.dart, form_response_page_test.dart...
+
+warning - test\features\forms\data\forms_anonymous_edit_secret_store_test.dart:68:13 - This class (or a class that this class inherits from) is marked as '@immutable', but one or more of its instance fields aren't final: _Preferences.writes, _Preferences.failure, _Preferences.writeGate - must_be_immutable
+
+1 issue found.

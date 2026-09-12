@@ -7,6 +7,11 @@ import 'form_wire_contracts.dart';
 
 enum FormApiFailureKind { unauthorized, validation, conflict, unavailable, unknown }
 
+/// Anonymous answer images use the existing possession-secret download contract.
+abstract interface class FormsAnonymousImageApi {
+  MediaReader anonymousImageReader({required String editSecret});
+}
+
 final class FormQuestionImageTarget {
   const FormQuestionImageTarget({
     required this.formId,
