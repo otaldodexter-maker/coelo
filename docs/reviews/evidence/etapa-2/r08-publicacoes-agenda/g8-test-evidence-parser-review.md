@@ -85,7 +85,11 @@ geral permanece pendente; a matriz aceita não depende dele.
 
 O corretivo `122293fc6`, documentado em `29528d150`, aplica exatamente essa
 regra no parser geral: canonicaliza o sufixo após `loading ` e classifica loader
-antes de hidden. O reprocessamento do JSONL do ciclo 90, sem Flutter, devolveu
-422 passed, 11 loading, 0 hidden e 0 órfãos. O parser geral está aceito por
-conteúdo; seu `nativeExitCode=1` é o valor preservado da execução fonte, não uma
-nova execução nem falha do reprocessamento.
+antes de hidden. A lógica está aceita por inspeção.
+
+Correção de proveniência: a validação sobre o ciclo 90 recebeu manualmente
+`--exit-code 1`, embora a fonte registre sucesso/exit 0. Portanto seus 422
+passed, 11 loading, 0 hidden e 0 órfãos validam a extração, mas não validam a
+preservação do exit. A prova do parser geral permanece pendente até reprocessar
+o ciclo 180 com seu arquivo de exit real, hash do input e metadado
+`done/success`. Nenhum Flutter deve ser executado para isso.
