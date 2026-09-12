@@ -34,10 +34,10 @@ insert into public.units(id,institution_id,name,slug,unit_type_id,unit_type_othe
 insert into public.unit_addresses(unit_id,state,city,district,street,number,status) values
  ('a2800000-0000-4000-8000-000000000111','SP','São Paulo','Centro','Rua A','1','active'),
  ('a2800000-0000-4000-8000-000000000112','RJ','Rio de Janeiro','Copacabana','Rua B','2','active');
-insert into public.groups(id,institution_id,unit_id,name,group_type,status) values
- ('a2800000-0000-4000-8000-000000000121','a2800000-0000-4000-8000-000000000101','a2800000-0000-4000-8000-000000000111','H28 Turma A1','class','active'),
- ('a2800000-0000-4000-8000-000000000122','a2800000-0000-4000-8000-000000000102','a2800000-0000-4000-8000-000000000112','H28 Turma B','class','active'),
- ('a2800000-0000-4000-8000-000000000123','a2800000-0000-4000-8000-000000000101','a2800000-0000-4000-8000-000000000111','H28 Turma A2','class','active');
+insert into public.groups(id,institution_id,unit_id,name,group_type,handle,status) values
+ ('a2800000-0000-4000-8000-000000000121','a2800000-0000-4000-8000-000000000101','a2800000-0000-4000-8000-000000000111','H28 Turma A1','class','h28.turma.a1','active'),
+ ('a2800000-0000-4000-8000-000000000122','a2800000-0000-4000-8000-000000000102','a2800000-0000-4000-8000-000000000112','H28 Turma B','class','h28.turma.b','active'),
+ ('a2800000-0000-4000-8000-000000000123','a2800000-0000-4000-8000-000000000101','a2800000-0000-4000-8000-000000000111','H28 Turma A2','class','h28.turma.a2','active');
 insert into public.institution_roles(id,institution_id,code,name,is_system,status,max_scope_kind) values
  ('a2800000-0000-4000-8000-000000000131',null,'h28-global-a','H28 Global A',false,'active','institution'),
  ('a2800000-0000-4000-8000-000000000132',null,'h28-global-b','H28 Global B',false,'active','institution');
