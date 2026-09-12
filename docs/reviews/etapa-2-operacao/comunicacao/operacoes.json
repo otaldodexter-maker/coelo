@@ -1,6 +1,6 @@
 {
-  "revision": 66,
-  "updated_at": "2026-09-12T13:07:00-03:00",
+  "revision": 67,
+  "updated_at": "2026-09-12T13:19:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -61,9 +61,9 @@
   "reviewP51InternalUserR08": {
     "scope": "leitura do roteiro/evidencia G5 1548780e1; action_id canonico internal-users.create",
     "result": "uma identidade sintetica, perfil minimo support, authorize antes da EF e reautorizacao dentro da EF; detail/list reload e logout local passaram.",
-    "oracle": "password_setup_link_contract false e agregado sem subchecks registrados. Header case-sensitive e causa plausivel, mas nao prova a query redirect_to.",
-    "verdict": "nenhuma falha de produto medida; redirect_to dinamico permanece nao observado.",
-    "next": "C0 pode gerar link recovery da mesma identidade, inspecionar apenas em memoria e registrar booleans; nao criar usuario, nao registrar URL/query/token.",
+    "oracle": "o primeiro false era agregado sem subchecks; header case-sensitive foi defeito do harness, mas nao explicava sozinho a query.",
+    "verdict": "C0 gerou uma unica recovery para a mesma identidade: HTTPS/host/path/type/same-user verdadeiros e redirect_exact falso. Falha produtiva do contrato de destino confirmada; causa SDK/Auth/config ainda nao medida.",
+    "next": "nao gerar outro link/usuario nem mudar senha, SMTP ou configuracao antes do diagnostico do C0.",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/p51-internal-user-review.md"
   },
   "reviewFormsR08": {

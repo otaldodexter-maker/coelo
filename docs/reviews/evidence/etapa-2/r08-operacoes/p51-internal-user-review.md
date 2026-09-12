@@ -17,12 +17,13 @@ canonica da funcao, independente da origem CORS.
 
 ## Limite do verificador
 
-O resultado agregado password_setup_link_contract=false nao registra qual
-subcheck falhou. A leitura case-sensitive dos headers explica o falso
-negativo, mas nao demonstra por si o valor da query do action link. Portanto
-nao ha falha de produto medida e tampouco certificacao dinamica do
-redirect_to.
+O resultado agregado password_setup_link_contract=false nao registrava qual
+subcheck falhou. A leitura case-sensitive dos headers era um defeito do
+verificador, mas nao demonstrava por si o valor da query do action link.
 
-O complemento minimo e gerar um recovery link para a mesma identidade ja
-criada, inspeciona-lo apenas em memoria e registrar somente booleans. Nao criar
-outra identidade nem registrar URL, query ou token.
+C0 gerou uma unica recuperacao para a mesma identidade existente e inspecionou
+somente booleans: HTTPS, host, path, tipo e mesmo usuario passaram, mas
+redirect_exact=false. Ha portanto uma falha produtiva no contrato de destino,
+nao uma falha apenas do oraculo. A causa entre SDK, Auth ou configuracao ainda
+nao foi medida. Nao gerar novo link, nem mudar senha, SMTP ou configuracao antes
+do diagnostico.
