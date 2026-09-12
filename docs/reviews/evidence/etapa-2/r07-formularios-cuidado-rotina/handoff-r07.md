@@ -18,18 +18,18 @@ generated_at: "2026-09-12"
 
 ## Feito e evidências
 
-- `attendance.entry/complete`: tela reconstruída sobre `PublicationSurface`, com segmentos P/F/A, Marcar todos presentes, observação por aluno, resumo no web e launcher de chat desligado. Evidências locais em `apps/superadmin/test/features/attendance/`; 55 testes de página e 4 goldens aprovados localmente.
+- `attendance.mark`: `AttendanceCallPage` reconstruída sobre `PublicationSurface`, com segmentos P/F/A, Marcar todos presentes e observação por aluno. `attendance.finish`: resumo no web, rodapé com Concluir chamada e launcher de chat desligado. `attendance.correct`: estado concluído hospedado na nova superfície, com o diálogo/contrato existentes preservados. `attendance.create` não teve implementação alterada na R07; `AttendanceNewCallPage` ficou fora do delta.
 - `forms.location-question` e `forms.location-answer`: cobertura local do editor/resposta; 150 testes aprovados.
 - `daily-routine.edit/publish/list`: cobertura local selecionada; 38 testes aprovados.
 - `child-safety.list` e `child-safety.child`: cobertura local de apresentação/contexto; 55 testes aprovados.
 - Cliente de respostas de formulário: contrato tipado atualizado para `upload_url` e `required_headers`; teste de API de preparação de asset aprovado.
 - Análise Dart do app Superadmin: `No issues found`.
 
-Estados propostos permanecem separados: a chamada tem `frontend/local-green`; não há certificação `verified-e2e` nesta R07.
+Estados propostos permanecem separados: `attendance.mark`, `attendance.finish` e `attendance.correct` têm apenas `frontend/local-green`; não há certificação `verified-e2e` nova nesta R07. Pela regra R06, a reconstrução invalida a prova E2E anterior dessas ações até nova prova na rota real.
 
 ## Primeiro gate aberto e delta restante
 
-1. Prova na rota real de `attendance.entry/complete` e das demais telas R07, com reload e negativas de autorização; o gate é de ambiente/verificação porque a worktree não tinha `.env.local` público disponível.
+1. Prova na rota real de `attendance.mark`, `attendance.finish` e `attendance.correct`, além das demais telas R07, com reload e negativas de autorização; o gate é de ambiente/verificação porque a worktree não tinha `.env.local` público disponível.
 2. `forms.upload/resolve-file/expire-file/delete-file`: implementar o fluxo de question-image na tela (picker, PUT com cabeçalhos anunciados, finalize, resolve, expire e delete). Primeiro gate: cliente do editor; depois prova real com Media Gateway/R2.
 3. Reconciliar os estados no checkout integrado e aplicar os deltas pelo coordenador; esta frente não editou dev, inventário ou rastreadores.
 
