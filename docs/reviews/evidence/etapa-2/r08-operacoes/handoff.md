@@ -36,6 +36,29 @@ não exibe preview e apresenta o fallback para a origem HTTPS configurada.
 Isso não comprova que o host externo foi publicado; `catalog.publish` continua
 com esse gate aberto.
 
+## Help Center — dois A
+
+Os arquivos `help_center_empty_light_1440.png` e
+`help_center_empty_dark_375.png` foram comparados antes da regravação. A
+comparação inicial falhou em 4,52% (light 1440) e 90,85% (dark 375). As imagens
+de diferença mostram a atualização da shell/navegação e a composição mobile
+vigente, não uma regra nova do Help Center. Ambos constam como **A** nominais
+na decisão R07 do Owner, portanto somente esses dois PNGs foram regravados.
+
+O mesmo teste focal passou após a regravação: **1/1 PASS**. Esta é prova de
+aprovação visual; não promove Front-end, Back-end ou E2E.
+
+## Revisão independente — Circular G6
+
+Revisão somente leitura do pacote `work/etapa2-r08-publicacoes-agenda` contra
+spec 037 e ADR 0034, decisão 20: o host produtivo ainda seleciona apenas o
+primeiro `CircularMediaBlock`, esconde **Adicionar mídia** depois dele e a
+prévia também reduz o conteúdo ao primeiro texto/mídia. Isso não representa
+`texto → mídia → pergunta → texto → mídia`; vários arquivos dentro do mesmo
+primeiro bloco não corrigem a ordem entre blocos. O limite agregado de 10.000
+e os cards ordenados de perguntas permanecem alinhados. O achado foi repassado
+ao C0 para a G6; nenhum arquivo da frente foi editado.
+
 ## Gates externos
 
 Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
