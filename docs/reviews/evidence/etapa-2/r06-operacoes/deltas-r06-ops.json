@@ -206,5 +206,18 @@
       "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (d43e0b7a1) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421 com user-data-dir proprio",
       "recordedAt": "2026-09-11T20:24:00-03:00"
     }
+  },
+  {
+    "action_id": "imports.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R06 (11/09 21:02, rota real com qa-r06-operacoes): /imports/new abre dentro da shell (Nova importacao) com a pagina honesta \"Este recurso fica disponivel depois do MVP.\" e Voltar ao inicio; sem picker, parser, job ou RPC (adiamento da ADR 0034, como imports.list). Antes caia no redirect generico fora da shell; corrigido em 1e94633a5.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/31-imports-new-deferred-shell.png",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/31-imports-new-deferred-shell.png",
+      "revision": "comunicacao/operacoes.json rev 47",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r06-operacoes (1e94633a5) em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:02:00-03:00"
+    }
   }
 ]
