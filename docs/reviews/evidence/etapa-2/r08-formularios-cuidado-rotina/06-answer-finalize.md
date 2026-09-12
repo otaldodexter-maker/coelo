@@ -21,3 +21,5 @@ Verificação local:
 - Nenhuma operação remota ou dado sintético criado por G3. Deploy e smoke pertencem a C0. Não certifica `forms.upload` E2E.
 
 Gate de memória: compatibilidade de implementação corrigida; nenhuma regra nova de produto ou autorização. A evidência é o delta para o escritor central.
+
+Review G5 aplicado em `f0c7269fd`: a projeção usa `actual_byte_length` medido pelo worker, exige valor numérico igual ao descritor e nega medida nula/divergente. Prova final `06-answer-finalize-review-tests.log`: 53 PASS / 0 FAIL, substitui o resultado anterior sem somar rerun.
