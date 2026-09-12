@@ -20,12 +20,25 @@ tentativas interrompidas e conjuntos sobrepostos não são somados.
 | 120 Grupos/H19 | `flutter-grupos-h19-integrado.jsonl`, `flutter-grupos-h19-final.jsonl`, `ciclo120.md` | `7cc6d4e7b2d3f4f1145c4c7dd8ab8f28249e0bb4` | tentativa `60/1`; H19 `32`; retry Grupos `29/0` | sobreposição explícita; não somar `60+32+29` |
 | 120 form-media | `r08-coordenacao/deno-form-media-integrado.log` | `7cc6d4e7b2d3f4f1145c4c7dd8ab8f28249e0bb4` | `54/0` Deno | distinto do autoral `53`; não somar |
 | G1 45 A | `r08-estrutura/handoff.md`, `rodape-modelo-teste.md` | `5b79c1150ed58768646b2f424f5011abce7372c6`, prova nominal `41d3c518a` | 45 PNGs comparados/regravados; 3 testes proprietários `20/20 PASS` | visual focal; não E2E; sem interseção de casos Flutter fornecida |
-| Anônimo | `r08-formularios-cuidado-rotina/07-anonymous-edit.md` e logs finais | commits de proveniência `8344cb98a`, `e9c30f765` | `293 casos únicos / 0 falhos`; decomposição `7+40+17+154+21+54` em 6 arquivos | 18 novos; demais sobrepostos a pacotes anteriores; IDs não disponíveis nesta base para interseção exata |
+| Anônimo | `r08-formularios-cuidado-rotina/07-anonymous-tests-final.log` e `07-anonymous-edit.md` | fonte final `72e6e6f22`; reconciliação `8344cb98a`/`e9c30f765` | `293 casos únicos / 0 falhos`; decomposição `7+40+17+154+21+54` | 18 novos; demais sobrepostos a pacotes anteriores; caminhos identificados abaixo |
+
+## Caminhos e união/interseção observáveis
+
+O log anônimo final identifica estes seis caminhos: `test/features/forms/data/forms_anonymous_edit_secret_store_test.dart` (7),
+`test/features/forms/data/forms_media_reader_test.dart` (40), `test/features/forms/data/forms_gallery_upload_test.dart` (17),
+`test/features/forms/presentation/response/form_response_page_test.dart` (154),
+`test/features/forms/presentation/operations/forms_media_reader_test.dart` (21) e
+`test/features/forms/data/supabase_forms_api_test.dart` (54). A soma é 293; os 18 novos e a sobreposição restante são
+declarações do recibo autoral, não devem ser somados aos ciclos anteriores.
+
+Os JSONL de ciclos 30/60/90 estão publicados no snapshot C0 `27f44fccf`; seus caminhos e casos
+podem ser enumerados por `suite.path` e `test.name`. A matriz não afirma interseção semântica
+entre nomes de casos de ciclos diferentes quando não existe um identificador de caso estável comum.
 
 ## Lacunas de contagem
 
-- `git ls-tree` na base atual não contém os arquivos `07-anonymous-*`; somente os commits de proveniência registram o resumo. A matriz não atribui SHA de arquivo inexistente nem recalcula os 293.
-- Os resumos de ciclo 30/60/90 não preservam no Markdown uma lista completa de IDs de caso; sem os JSONL correspondentes em uma base comum, a interseção por caminho e caso permanece não calculável.
+- A base local desta branch anterior não continha os arquivos `07-anonymous-*`, mas a fonte final publicada em `72e6e6f22` foi lida diretamente; não é mais uma lacuna de existência.
+- A interseção semântica entre casos dos ciclos 30/60/90 e o pacote anônimo continua não demonstrável sem um identificador estável comum; nomes parecidos não serão tratados como o mesmo caso.
 - O pacote G1 informa o conjunto nominal de 45 PNGs e 20/20 nos três testes, mas não fornece uma tabela de IDs de teste compartilhados com os ciclos integrados; não há interseção visual inventada.
 - O `diff-check` com whitespace nativo preservado é observação de formatação/proveniência, não falha de teste.
 
