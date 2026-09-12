@@ -1,19 +1,19 @@
 {
- "revision": 62,
- "round": "E2-R07-20260911",
+ "revision": 63,
+ "round": "E2-R08-20260912",
  "group": "formularios-cuidado-rotina",
  "tool": "Codex",
- "model": "Codex Luna, esforco medio",
+ "model": "GPT-Astra, esforço médio (Owner)",
  "coordinator": "coordenador da R07",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-12T09:33:48-03:00",
- "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
+ "updatedAt": "2026-09-12T13:56:47.689Z",
+ "T0": "2026-09-12T10:52:16-03:00",
  "corteT0mais2h": "21:37",
- "revisaoAte": "21:47",
- "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
- "branch": "work/etapa2-r07-formularios-cuidado-rotina",
- "head": "a0c1f5ff1 (handoff R07 final; status limpo)",
- "base": "origin/dev a50487878",
+ "revisaoAte": "2026-09-12T15:02:16-03:00",
+ "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
+ "branch": "work/etapa2-r08-formularios-cuidado-rotina",
+ "head": "6d6cbef32",
+ "base": "origin/dev 6d6cbef32",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
   "families": [
@@ -62,15 +62,19 @@
   "V-15": "A+ Rotina: card Criar modelo de rotina e Criar rotina sempre presentes; na tabela, duplicar e arquivar como no card do modelo",
   "familiaPublicacao": "Lancar chamada aprovada 17:19"
  },
- "currentGate": {
-  "gate": "R07 aberta; inventario inicial lido; preparar prova da familia Publicacao e executar a ordem solicitada",
-  "screen": "Etapa 2 -> apps/superadmin",
-  "actionIds": []
- },
+ "currentGate": "attendance.mark/finish/correct: nova prova real aguarda runtime G0 e slot C0; independente: título/retorno compacto e overflow do frame em Medicação",
  "loopAgendado": "/loop 15m agendado na abertura (19:45)",
- "tests": {},
- "reservedFiles": [],
- "blocking": [],
+ "tests": {
+  "round": "E2-R08-20260912",
+  "executados": 0,
+  "resultado": "ainda não executados; slot solicitado"
+ },
+ "reservedFiles": [
+  "apps/superadmin/lib/shared/presentation/widgets/superadmin_form_frame.dart (C0 confirmou posse exclusiva)"
+ ],
+ "blocking": [
+  "Runtime e Chrome com G0; flutter test aguarda slot nominal C0"
+ ],
  "deltaProposals": [
   "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr.json (25 deltas; ensaiado com apply-tracker-delta + validate-trackers PASS 231/145/140/115 e revertido): health-care.list BE done + E2E; medication.create/detail/edit/evidence FE verified + BE done + E2E; daily-routine.list FE/BE/E2E; daily-routine.edit E2E; daily-routine.publish FE/BE/E2E; child-safety.list E2E; child-safety.child FE/BE/E2E",
   "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/deltas-r06-fcr-2.json (3: forms.location-question FE verified + BE done + E2E)"
@@ -2027,7 +2031,9 @@
    "child-safety.list e child-safety.child pela tela",
    "forms.upload/resolve-file/expire-file/delete-file se sobrar tempo"
   ],
-  "commitsPublicados": ["3c33810a1"],
+  "commitsPublicados": [
+   "3c33810a1"
+  ],
   "status": "limpo",
   "primeiroGateAberto": "prova E2E na rota real; nenhum bloqueio de implementação demonstrado",
   "proximoPasso": "preparar harness de rota real e depois seguir a ordem forms.location -> daily-routine -> child-safety"
@@ -2045,7 +2051,9 @@
    "forms.upload/resolve-file/expire-file/delete-file: cliente question-image/form-media e prova real ainda não iniciados"
   ],
   "bloqueio": "verificação E2E/rota real; não impede os testes locais nem ações independentes",
-  "commitsPublicados": ["3c33810a1"],
+  "commitsPublicados": [
+   "3c33810a1"
+  ],
   "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json",
   "proximoPasso": "inspecionar cliente form-media e, se houver configuração pública disponível pela coordenação, executar build/rota real com um Chrome"
  },
@@ -2061,7 +2069,9 @@
    "revisão do coordenador e aplicação dos deltas canônicos em checkout integrado"
   ],
   "bloqueio": "verificação/ambiente; nenhuma nova implementação ou teste foi iniciado",
-  "commitsPublicados": ["a0bb3796d"],
+  "commitsPublicados": [
+   "a0bb3796d"
+  ],
   "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json agora usa apenas IDs canônicos",
   "proximoPasso": "coordenador reconciliar attendance.mark, attendance.finish e attendance.correct no fechamento"
  },
@@ -2077,7 +2087,9 @@
    "forms.location, daily-routine e child-safety: testes locais executados; rota real não exercitada nesta rodada"
   ],
   "bloqueio": "T0+4h10 alcançado; não retomar novas ações. COELO_FORMS_MEDIA_PROVIDER não foi habilitado e nenhum segredo foi gravado.",
-  "commitsPublicados": ["1a6ae0aef"],
+  "commitsPublicados": [
+   "1a6ae0aef"
+  ],
   "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json mantém attendance.entry/complete como local-green; sem novo delta E2E",
   "proximoPasso": "coordenador revisar este checkpoint e executar as provas reais/integração conforme a fila"
  },
@@ -2113,5 +2125,48 @@
   "dadosSinteticos": "Reutilizar os dados sintéticos R06; qualquer novo dado será registrado aqui sem segredo.",
   "chavesCriadas": "nenhuma",
   "criterioParada": "Trabalhar até T0+4h; responder revisão de 10 minutos no JSON em T0+4h; não retomar após T0+4h10."
+ },
+ "historicoCabecalhoR07": {
+  "revision": 62,
+  "round": "E2-R07-20260911",
+  "updatedAt": "2026-09-12T09:33:48-03:00",
+  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
+  "corteT0mais2h": "21:37",
+  "revisaoAte": "21:47",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
+  "branch": "work/etapa2-r07-formularios-cuidado-rotina",
+  "head": "a0c1f5ff1 (handoff R07 final; status limpo)",
+  "base": "origin/dev a50487878",
+  "currentGate": {
+   "gate": "R07 aberta; inventario inicial lido; preparar prova da familia Publicacao e executar a ordem solicitada",
+   "screen": "Etapa 2 -> apps/superadmin",
+   "actionIds": []
+  },
+  "tests": {},
+  "blocking": [],
+  "finalizado": false
+ },
+ "corteExecucao": "2026-09-12T14:52:16-03:00",
+ "aberturaR08": {
+  "quando": "2026-09-12T13:56:47.689Z",
+  "objetivo": "Fechar primeiro gate executável do recorte G3 com correção e evidências por action_id.",
+  "dentro": "apps/superadmin -> Assiduidade/Chamada; Formulários/editor/respostas/arquivos; Cuidado/Medicação; Segurança infantil; Rotina. coelo_api/forms e form-media.",
+  "fora": "Outros apps, inventário/rastreadores, deploy/SQL produção/composição/ADRs/projeções finais (C0).",
+  "ordem": [
+   "attendance.mark/finish/correct",
+   "título e retorno 375",
+   "medication.edit overflow 375/200%",
+   "forms.upload/resolve-file/expire-file/delete-file (question-image e resposta separados)",
+   "forms.location-answer",
+   "H10/H11 conciliação"
+  ],
+  "evidencias": "Testes focais e regressão do frame, capturas comparadas A/A+, UI real com QA próprio e persistência/reload/negação; deltas em arquivo commitado.",
+  "estimativa": "Primeiro pacote local: 30–50 min para reprodução, correção e regressão, mais espera do slot; mídia/Local ainda dependem de inspeção de contrato e runtime. Sem estimativa E2E por contagem.",
+  "parada": "T0+4h sem novidades; handoff até +4h10; só ajustes C0 até +4h30.",
+  "recursos": {
+   "chrome": "não adquirido",
+   "flutterTest": "solicitado 20 min",
+   "frame": "confirmado C0"
+  }
  }
 }
