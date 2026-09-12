@@ -1644,15 +1644,15 @@
       "family": "people",
       "screen": "Criar Pessoa",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Criar pela tela com resolvedor170700 já aplicado; @ e reload; goldenA não prova CRUD.",
-      "fe": "Build release e testes locais de lookup/rota confirmam a composição do resolvedor 170700; E2E permanece pendente por renderer/driver sem resposta.",
+      "done": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+      "fe": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
       "be": "R04: superadmin_people_create_draft criou a pessoa sintetica 'QA R04 Pessoa sintetica' (ec2a15a2-76bc-4e71-8419-94413d0c5c98, status draft) com o payload do cliente e a sessao qa-r03 (ponte de ator + MFA fora do MVP). O gate que resta e do cliente (resolvedor de identidade antes do formulario).",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST); docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit (dialogo Verificar identidade); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST); docs/reviews/evidence/etapa-2/r07-acessos-pessoas/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
@@ -1668,6 +1668,18 @@
           "revision": "60d931e98",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-11T03:14:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+          "revision": "R09-C0-r110",
+          "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+          "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+          "revision": "R09-C0-r110",
+          "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+          "recordedAt": "2026-09-12T20:37:45.364333+00:00"
         }
       },
       "ownerVisualApprovalHistory": [],
@@ -1688,15 +1700,15 @@
       "family": "people",
       "screen": "Editar Pessoa",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Editar dados/@ com disponibilidade/cooldown real; manter prova backend válida e medir nova UI.",
-      "fe": "R04: capacidade de mutacao ligada para /people (2891e6977); o card do diretorio abre /people/:id/edit com os dados reais da crianca sintetica (3 passos). Salvar ainda nao provado na UI.",
+      "done": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+      "fe": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
       "be": "R04: superadmin_people_update com expected_updated_at persistiu display_name da pessoa sintetica; superadmin_person_detail_v2 relido confirma.",
-      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit2 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r102; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "evidence/etapa-2/estruturas/2026-09-07-person-read-only-detail.md; Fechamento R01 C04/r61; C04estado47/r61; C00 conjunto288PASS/analyzer34limpo; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; c76a0eb23;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/people-form-visual/handoff.md; coordenacao.json R04 rev 20 (lote8); capturas 9411-b2-people-edit2 (scratchpad; copiar na evidencia); comunicacao/acessos-pessoas.json r102; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 112, REST); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
@@ -1712,6 +1724,18 @@
           "revision": "60d931e98",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-11T03:14:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+          "revision": "R09-C0-r110",
+          "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+          "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+          "revision": "R09-C0-r110",
+          "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+          "recordedAt": "2026-09-12T20:37:45.364333+00:00"
         }
       }
     },
@@ -8906,7 +8930,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T20:26:37.728Z",
+  "updatedAt": "2026-09-12T20:37:45.447Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

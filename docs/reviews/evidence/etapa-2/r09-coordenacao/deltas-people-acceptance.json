@@ -1,0 +1,54 @@
+[
+  {
+    "action_id": "people.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+      "revision": "R09-C0-r110",
+      "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+      "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+    }
+  },
+  {
+    "action_id": "people.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+      "revision": "R09-C0-r110",
+      "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+      "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+    }
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+      "revision": "R09-C0-r110",
+      "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+      "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+    }
+  },
+  {
+    "action_id": "people.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: identidade sintetica criada/editada pela UI, @ gerado e trocado com disponibilidade/motivo; reload real. Cooldown inicial indevido corrigido;2 testes PASS e6checks API incluindo negativa real. Vinculos nao certificados nesta fatia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/people-acceptance.md",
+      "revision": "R09-C0-r110",
+      "environment": "Supabase evvbomzejfijozbtgvpt; QA release localhost3014 Chrome22592; UI normal sem emulacoes",
+      "recordedAt": "2026-09-12T20:37:45.364333+00:00"
+    }
+  }
+]

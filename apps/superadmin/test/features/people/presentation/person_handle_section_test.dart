@@ -52,7 +52,13 @@ Widget _host(PersonHandleRepository repository) => MaterialApp(
 void main() {
   testWidgets('shows the handle and changes it after availability and reason', (tester) async {
     final repository = _FakeHandles(
-      current: const PersonHandle(personId: 'p1', handle: 'ana.souza', canEdit: true),
+      current: PersonHandle(
+        personId: 'p1',
+        handle: 'ana.souza',
+        canEdit: true,
+        // The server returns its current time before the first change.
+        canChangeAt: DateTime.now().add(const Duration(minutes: 1)),
+      ),
     );
     await tester.pumpWidget(_host(repository));
     await tester.pumpAndSettle();

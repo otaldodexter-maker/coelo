@@ -24,7 +24,10 @@ final class PersonHandle {
   final DateTime? lastChangedAt;
   final DateTime? canChangeAt;
 
-  bool get inCooldown => canChangeAt != null && canChangeAt!.isAfter(DateTime.now());
+  // Before the first change, canChangeAt is the server's current time.
+  // Clock skew must not turn that timestamp into a first-change cooldown.
+  bool get inCooldown =>
+      lastChangedAt != null && canChangeAt != null && canChangeAt!.isAfter(DateTime.now());
 }
 
 enum PersonHandleAvailability {
