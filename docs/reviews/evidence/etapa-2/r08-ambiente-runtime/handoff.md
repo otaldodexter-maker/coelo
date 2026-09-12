@@ -14,7 +14,7 @@ Recorte exclusivo de ambiente local, espelho Supabase preservado e scripts QA ex
 - Docker Desktop/WSL: recuperado sem factory reset, reinício do Windows, remoção de volume ou recriação de VHDX.
 - Espelho `supabase_db_coelo_baseline`: saudável em `127.0.0.1:57322`, com volume nomeado preservado.
 - Build QA: concluído em modo release a partir de `af99409cf5bb266b4be96647690abde44ace8f23`.
-- Servidor: ativo em `127.0.0.1:3014`, PID `33856`.
+- Servidor: ativo em `127.0.0.1:3014`, PID `14724`.
 - Navegador compartilhado: aba Chrome mantida aberta, mas a automação CUA não atualizou o controller dos campos Flutter. Login, leitura autorizada e persistência após reload **não foram comprovados**.
 
 ## Docker Desktop e WSL
@@ -98,7 +98,7 @@ python docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/ferramentas/serv
 Recursos entregues:
 
 ```text
-PID: 33856
+PID: 14724
 http://127.0.0.1:3014/login -> HTTP 200, 1020 bytes
 http://127.0.0.1:3014/flutter_bootstrap.js -> HTTP 200, 9975 bytes
 ```
@@ -173,6 +173,8 @@ A investigação dos scripts existentes e do Dart MCP está em [runtime-driver-r
 O C0 liberou a tentativa com `flutter run -d web-server` na mesma porta e na mesma aba. DTD e VM Service foram encontrados, mas `qa_login.dart` falhou no DWDS (`Unexpected null value`) e o Dart MCP informou que Flutter Driver não estava habilitado; o próprio Flutter avisou que o dispositivo web-server exige a extensão Dart Debug Chrome. O servidor debug foi encerrado limpo e o release foi restaurado no PID `33856`.
 
 O probe CUA foi repetido com seletores e APIs exatos, usando apenas sentinelas: `getByRole("textbox", {name: "E-mail"}).fill(...)` + `press("Tab")`, além de `click(7)` + `pressKey("CTRL+A")` + `typeText(...)` + `pressKey("TAB")` e `setValue(7, ...)`. O Tab não transferiu o foco, o controller continuou vazio e o submit retornou as validações obrigatórias. Não houve chamada Auth. As duas rotas de driver suportadas foram, portanto, esgotadas sem CDP alternativo ou segundo navegador.
+
+O último gate solicitado pelo C0 usou clique físico `[960, 434]` e instrumentação QA temporária, sanitizada, nos controllers/focus nodes. O clique atingiu e focou o e-mail; `Tab` moveu o foco para senha, mas `typeText` e uma tecla individual mantiveram DOM e controllers em comprimento zero. Isso isola o bloqueio no canal de inserção de texto da extensão, não no hit-testing. A instrumentação foi removida integralmente, o build original foi recompilado com exit 0 e recuperou o SHA-256 original `4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1`; release ativo no PID `14724`.
 
 ## Suítes focais adicionais de G5
 

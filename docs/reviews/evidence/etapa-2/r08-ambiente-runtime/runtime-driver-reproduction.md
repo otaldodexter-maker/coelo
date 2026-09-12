@@ -65,3 +65,20 @@ O C0 liberou nominalmente a troca temporária do servidor. O procedimento foi ex
 Também foi repetido um probe sanitizado pelo locator semântico nativo da integração CUA: `getByRole("textbox", {name: "E-mail"}).fill(...)`, seguido de `press("Tab")`. O foco permaneceu no campo de e-mail e o submit exibiu `Informe seu e-mail.` e `Informe sua senha.`. Os equivalentes `click(7)` + `pressKey("CTRL+A")` + `typeText(...)` + `pressKey("TAB")` e `setValue(7, ...)` tiveram o mesmo resultado: a camada semântica recebe a ação, mas o controller Flutter não recebe o valor. Foram usados apenas valores sentinela sem credenciais nesse probe.
 
 Conclusão: as duas rotas suportadas disponíveis foram esgotadas. Para concluir login/leitura/reload é necessário reutilizar a aba em um Chrome que já tenha a extensão Dart Debug, ou um endpoint CDP nominalmente permitido. Não abrir outro navegador, não injetar sessão/localStorage e não confundir HTTP 200 com prova E2E.
+
+## Isolamento por instrumentação QA temporária
+
+Por solicitação do C0, um último probe diferenciou hit-testing/foco de entrada de texto. Foram adicionados temporariamente listeners aos dois `TextEditingController` e `FocusNode`, ativos somente pelo `test_driver/qa_main.dart`. A telemetria registrou apenas nome do campo, foco, `nonEmpty` e comprimento; nenhum conteúdo ou segredo.
+
+Na captura de 1920 x 1032, `click([960, 434])` atingiu fisicamente o centro do campo de e-mail. A sequência `pressKey("CTRL+A")`, `typeText(sentinela)` e `pressKey("TAB")` produziu:
+
+```text
+QA_INPUT field=email focused=true nonEmpty=false length=0
+QA_INPUT field=email focused=false nonEmpty=false length=0
+QA_INPUT field=password focused=true nonEmpty=false length=0
+DOM email length=0; password length=0
+```
+
+Uma tecla individual `pressKey("A")` no campo de senha também manteve DOM e controller em comprimento zero, sem novo evento de mudança. Assim, o clique por pixel e a navegação de foco funcionam; o canal de inserção de texto da extensão CUA não gera entrada consumível pelo input/engine Flutter. Não é falha de coordenada, locator ou controller específico do formulário.
+
+A instrumentação temporária foi removida por completo. O build original foi recompilado com exit `0` e voltou exatamente a `8339145` bytes e SHA-256 `4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1`. O servidor release foi restaurado na porta 3014, PID `14724`, e a mesma aba `829822454` foi recarregada em `/login`.
