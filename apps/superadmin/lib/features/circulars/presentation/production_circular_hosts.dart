@@ -329,7 +329,10 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
 
   /// Picks and uploads attachments. Local checks only give fast feedback; the
   /// asset only exists after the backend authorizes prepare and finalize.
-  Future<void> _pickAttachments(CircularComposerController controller) async {
+  Future<void> _pickAttachments(
+    CircularComposerController controller, {
+    required String afterBlockId,
+  }) async {
     if (_uploading) return;
     final uploader = _uploader;
     if (uploader == null) {
@@ -370,11 +373,12 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
         return;
       }
       var sent = 0;
+      var insertionAnchor = afterBlockId;
       String? failure;
       for (final file in accepted) {
         setState(() => _attachmentStatus = 'Enviando ${sent + 1} de ${accepted.length}…');
         try {
-          await uploader.upload(file);
+          insertionAnchor = await uploader.upload(file, afterBlockId: insertionAnchor);
         } on CircularUnauthorized {
           failure = 'Você não tem permissão para enviar anexos nesta Circular.';
         } on CircularVersionConflict {
@@ -499,7 +503,7 @@ final class _ProductionCircularComposerHostState extends State<ProductionCircula
             controller: controller,
             onCancel: widget.onCancel,
             onPublished: widget.onDone,
-            onPickFiles: () => _pickAttachments(controller),
+            onPickFiles: (afterBlockId) => _pickAttachments(controller, afterBlockId: afterBlockId),
             onChooseSchedule: _chooseSchedule,
             contextLabel: _selectedInstitution?.publicName,
           ),

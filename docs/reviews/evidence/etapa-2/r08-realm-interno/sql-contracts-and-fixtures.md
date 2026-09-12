@@ -1,7 +1,7 @@
 ---
 title: "R08 G5 — contratos SQL, fixture expirada e candidato H09"
 source: "R08-plano.md G5; migrations dos lotes 49–55; suites pgTAP"
-status: "ACL aprovada no espelho por G0; candidato H09 não aplicado"
+status: "ACL e candidato H09 aprovados no espelho por G0; produção exclusiva do C0"
 generated_at: "2026-09-12T11:06:41-03:00"
 ---
 
@@ -62,9 +62,27 @@ O mesmo preflight G0 confirmou `pg_cron`, `cron.job` e o sweep no espelho e
 retornou zero job por nome/comando. Isso fecha a reprodução local do H09; a
 consulta de produção, backup, aplicação e ledger continuam exclusivos de C0.
 
-O teste `now_publication_expiry_dispatch_v1_test.sql` tem seis casos
-declarativos. Ele foi preparado, mas não executado por ausência do espelho
-liberado; não há alegação de pgTAP verde.
+O recibo G0 `9533e4dc2c2fb99a1835b73202410dd74592c597` registra a aplicação do
+candidato **somente no baseline**, seguida de **6/6**, native 0, wrapper 0 e
+rollback da suíte. O job observado ficou único, ativo, em `*/5`, chamando o
+sweep com limite 500. Logs citáveis no recibo G0:
+
+- `h09-apply-baseline-76aed97cb.log`;
+- `pgtap-h09-expiry-dispatch-76aed97cb.log`.
+
+G5 não aplicou SQL e não reexecutou pgTAP. Produção, ledger e backup continuam
+exclusivos do C0.
+
+## Consumidores compartilhados de chat
+
+Após H09, o mesmo recibo G0 registra as suítes
+`superadmin_internal_chat_attachments_v1_test.sql` em **28/28** e
+`chat_attachment_worker_claims_v1_test.sql` em **3/3**, native 0, wrapper 0 e
+rollback. O conjunto cobre autorização/isolamento cross-tenant do prepare e
+read, ACL, ciclo de vida/expiração e claims do worker. O log commitado é
+`docs/reviews/evidence/etapa-2/r08-ambiente-runtime/pgtap-chat-consumers-post-h09.log`.
+Nenhum catálogo novo ou alias `assetId` foi inventado: o contrato vigente de
+chat continua usando `attachment_id`.
 
 ## Fixture segura de convite expirado para G2
 

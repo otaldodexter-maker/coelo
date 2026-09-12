@@ -300,3 +300,20 @@ C00 identificou assertions históricas em audit_production_test.sql:53–58/235�
 ## R02 - IDs de Sair em Auth e Conta - 2026-09-09T15:54:53.4387056-03:00
 
 O inventario vigente docs/reviews/inventario-etapa-2.json contem auth.logout e account.logout separadamente. O escopo R02 seleciona auth.logout para D01 e deixa account.logout fora; a nota historica R01 de14:30 nos rastreadores tratava auth.logout como shorthand de account.logout. Ha divergencia de mapeamento documental, nao evidencia de duas operacoes distintas. Decisao necessaria: confirmar decomposicao por superficie ou aprovar unificacao futura com recalculo de denominadores. Nesta rodada preservam-se os dois IDs e o denominador230; o aceite FE de Sair e atribuido apenas ao ID explicitamente selecionado auth.logout, sem promover account.logout. Fonte do certificado: docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md; lacuna tambem em escopo.json.
+
+## R08 — identidade de mídia do Chat — 2026-09-12
+
+A spec 028 e sua projeção de conhecimento definem `ChatAttachment.assetId`
+como ativo canônico e `id` como binding. O contrato `chat-media` aplicado e
+consumido pelo pacote R08 G4 (`fee190810`) lê por `attachment_id`; não fornece
+um `asset_id` canônico no mesmo envelope. O adaptador R08 trata esse identificador
+explicitamente como binding e reautoriza a leitura, sem fingir que seja um ativo.
+Os testes locais não resolvem a divergência documental nem certificam E2E.
+Decisão pendente para o fechamento: manter esse contrato explícito por binding
+como compatibilidade ou migrar o envelope para o catálogo canônico, preservando
+autorização, expiração e invalidação de contexto. A definição de ativo da spec
+028 permanece vigente até a reconciliação; não foi silenciosamente alterada.
+
+A divergência separada sobre reutilizar a página administrativa foi reconciliada
+pela aprovação já existente da spec 050: Principal tem UI própria e compartilha
+o repository. Essa reconciliação não exige nova aprovação visual.

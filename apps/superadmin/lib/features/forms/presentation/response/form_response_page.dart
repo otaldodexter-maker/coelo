@@ -10,17 +10,23 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../data/development_forms_api.dart';
+import 'forms_gallery_answer_field.dart';
 
 enum FormResponseAutosaveState { initial, changed, saving, saved, conflict, failure }
 
 final class FormResponsePage extends StatefulWidget {
-  const FormResponsePage({this.api, this.occurrenceId, super.key})
-    : development = false,
-      anonymous = false,
-      secretLost = false,
-      failSubmission = false,
-      initialAutosaveState = FormResponseAutosaveState.initial,
-      formId = null;
+  const FormResponsePage({
+    this.api,
+    this.occurrenceId,
+    this.mediaSession,
+    this.mediaReader,
+    super.key,
+  }) : development = false,
+       anonymous = false,
+       secretLost = false,
+       failSubmission = false,
+       initialAutosaveState = FormResponseAutosaveState.initial,
+       formId = null;
 
   const FormResponsePage.development({
     this.anonymous = false,
@@ -31,10 +37,14 @@ final class FormResponsePage extends StatefulWidget {
     super.key,
   }) : development = true,
        api = null,
+       mediaSession = null,
+       mediaReader = null,
        occurrenceId = null;
 
   final bool development;
   final FormsApi? api;
+  final MediaSession? mediaSession;
+  final MediaReader? mediaReader;
   final String? occurrenceId;
   final bool anonymous;
   final bool secretLost;
@@ -88,7 +98,12 @@ final class _FormResponsePageState extends State<FormResponsePage> {
   @override
   Widget build(BuildContext context) {
     if (!widget.development) {
-      return _ProductionFormResponse(api: widget.api, occurrenceId: widget.occurrenceId);
+      return _ProductionFormResponse(
+        api: widget.api,
+        occurrenceId: widget.occurrenceId,
+        mediaSession: widget.mediaSession,
+        mediaReader: widget.mediaReader,
+      );
     }
     return Material(
       color: Theme.of(context).colorScheme.surface,
@@ -234,9 +249,16 @@ final class _FormResponsePageState extends State<FormResponsePage> {
 enum _ProductionResponseState { loading, unavailable, unauthorized, error, content, submitted }
 
 final class _ProductionFormResponse extends StatefulWidget {
-  const _ProductionFormResponse({required this.api, required this.occurrenceId});
+  const _ProductionFormResponse({
+    required this.api,
+    required this.occurrenceId,
+    required this.mediaSession,
+    required this.mediaReader,
+  });
 
   final FormsApi? api;
+  final MediaSession? mediaSession;
+  final MediaReader? mediaReader;
   final String? occurrenceId;
 
   @override
@@ -262,6 +284,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   final _invalidAnswerReasons = <String, String>{};
   String? _activeSectionId;
   final _sectionFocus = <String, FocusNode>{};
+  final _busyMediaItems = <String>{};
   ({_ResponseCommandKind kind, FormCommand<FormResponseDraftPayload> command, int answerRevision})?
   _pendingCommand;
 
@@ -274,7 +297,9 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   @override
   void didUpdateWidget(covariant _ProductionFormResponse oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (!identical(oldWidget.api, widget.api) || oldWidget.occurrenceId != widget.occurrenceId) {
+    if (!identical(oldWidget.api, widget.api) ||
+        oldWidget.occurrenceId != widget.occurrenceId ||
+        !identical(oldWidget.mediaSession, widget.mediaSession)) {
       _load();
     }
   }
@@ -321,6 +346,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       _autosavePaused = false;
       _invalidAnswerReasons.clear();
       _activeSectionId = null;
+      _busyMediaItems.clear();
     });
     if (api == null || occurrenceId == null || occurrenceId.isEmpty) {
       setState(() => _state = _ProductionResponseState.unavailable);
@@ -764,7 +790,8 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
                 // e o unico caminho de volta para uma contagem valida.
                 if (selected) {
                   final reason = FormSelectionLimits.violation(item.config, selectedIds.length);
-                  if (reason != null && selectedIds.length > FormSelectionLimits.maximum(item.config)) {
+                  if (reason != null &&
+                      selectedIds.length > FormSelectionLimits.maximum(item.config)) {
                     _refuseAnswer(item, reason);
                     return;
                   }
@@ -804,6 +831,33 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
         icon: const Icon(Icons.calendar_today_outlined),
         label: Text(_dateValue(item.id) ?? 'Selecionar data'),
       ),
+      FormItemKind.gallery
+          when widget.mediaSession != null &&
+              !widget.mediaSession!.isInvalidated &&
+              _occurrence?.identityMode == FormIdentityMode.identified =>
+        FormsGalleryAnswerField(
+          key: ValueKey('gallery-${widget.occurrenceId}-${item.id}-$_loadGeneration'),
+          api: widget.api!,
+          session: widget.mediaSession!,
+          reader: widget.mediaReader,
+          occurrenceId: widget.occurrenceId!,
+          item: item,
+          assetIds: (_answers[item.id]?.value as FormAssetValue?)?.assetIds ?? const [],
+          enabled: !_saving && _pendingCommand == null && _occurrence?.canEdit == true,
+          onChanged: (ids) =>
+              update(ids.isEmpty ? null : FormAnswer.gallery(itemId: item.id, assetIds: ids)),
+          onBusyChanged: (busy) {
+            if (!_isCurrent(generation)) return;
+            setState(() {
+              busy ? _busyMediaItems.add(item.id) : _busyMediaItems.remove(item.id);
+            });
+            if (busy) {
+              _autosaveTimer?.cancel();
+            } else {
+              _scheduleAutosave();
+            }
+          },
+        ),
       FormItemKind.photo || FormItemKind.gallery => const CoeloStatePanel(
         icon: Icons.lock_outline_rounded,
         title: 'Anexo indisponível',
@@ -888,6 +942,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   void _pruneHiddenAnswers() {
     final visible = _visibleItemIds;
+    _busyMediaItems.removeWhere((id) => !visible.contains(id));
     _answers.removeWhere((id, _) => !visible.contains(id));
     _invalidAnswerReasons.removeWhere((id, _) => !visible.contains(id));
     final sections = _presentedSections;
@@ -940,6 +995,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   void _scheduleAutosave() {
     _autosaveTimer?.cancel();
     if (_state != _ProductionResponseState.content ||
+        _busyMediaItems.isNotEmpty ||
         _occurrence?.canEdit != true ||
         _draft?.status != FormResponseDraftStatus.draft ||
         _saving ||
@@ -990,10 +1046,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
       return;
     }
     final repaired = _invalidAnswerReasons.remove(item.id) != null;
-    _setAnswer(
-      item,
-      raw.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: raw),
-    );
+    _setAnswer(item, raw.trim().isEmpty ? null : FormAnswer.shortText(itemId: item.id, value: raw));
     if (repaired && !_autosavePaused) {
       setState(() => _message = 'Alterações ainda não salvas.');
       // Repairing back to the stored text leaves the answers identical, so
@@ -1106,6 +1159,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
   }
 
   bool _validate() {
+    if (_busyMediaItems.isNotEmpty) {
+      setState(() => _message = 'Confirme ou descarte o envio de imagem antes de continuar.');
+      return false;
+    }
     final visibleItemIds = _visibleItemIds;
     for (final section in _presentedSections) {
       for (final item in section.items) {
@@ -1151,8 +1208,7 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (item.kind == FormItemKind.multipleChoice) {
       final value = _answers[item.id]?.value;
       if (value is FormChoiceValue) {
-        if (FormSelectionLimits.violation(item.config, value.optionIds.length)
-            case final reason?) {
+        if (FormSelectionLimits.violation(item.config, value.optionIds.length) case final reason?) {
           return reason;
         }
       }
@@ -1171,7 +1227,11 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
     if (item.kind == FormItemKind.photo || item.kind == FormItemKind.gallery) {
       final value = _answers[item.id]?.value;
       if (value is FormAssetValue && value.assetIds.isNotEmpty) return null;
-      return 'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.';
+      return item.kind == FormItemKind.gallery &&
+              widget.mediaSession?.isInvalidated == false &&
+              _occurrence?.identityMode == FormIdentityMode.identified
+          ? 'Adicione uma imagem antes de revisar a resposta.'
+          : 'Este formulário exige anexo e o envio protegido ainda não está disponível nesta superfície.';
     }
     return _hasAnswer(item)
         ? null
@@ -1226,6 +1286,10 @@ final class _ProductionFormResponseState extends State<_ProductionFormResponse> 
 
   Future<void> _sendDraft(_ResponseCommandKind kind, {bool automatic = false}) async {
     _autosaveTimer?.cancel();
+    if (_busyMediaItems.isNotEmpty) {
+      setState(() => _message = 'Confirme ou descarte o envio de imagem antes de continuar.');
+      return;
+    }
     final generation = _loadGeneration;
     final api = widget.api;
     final occurrence = _occurrence;
@@ -1345,12 +1409,10 @@ String _answerLabel(FormItem item, FormAnswer answer) => switch (answer.value) {
   // Rotulo escolhido, na ordem autorada. Juntar os IDs mostrava identificador
   // interno a quem respondeu e nao dizia nada sobre a escolha.
   FormChoiceValue(:final optionIds) =>
-    (item.options.where((option) => optionIds.contains(option.id)).toList()
-          ..sort(
-            (a, b) => a.position != b.position
-                ? a.position.compareTo(b.position)
-                : a.id.compareTo(b.id),
-          ))
+    (item.options.where((option) => optionIds.contains(option.id)).toList()..sort(
+          (a, b) =>
+              a.position != b.position ? a.position.compareTo(b.position) : a.id.compareTo(b.id),
+        ))
         .map((option) => option.label)
         .join(', '),
   FormScaleValue(:final value) => '$value',
