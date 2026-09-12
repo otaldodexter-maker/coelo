@@ -2129,12 +2129,13 @@
    "proximoGate": "prova de rota real com qa-r06-acessos; resolver people.handle no inventário antes de novo delta"
   }
 ],
- "dockerR07": {
+"dockerR07": {
   "estado": "bloqueio ambiental temporario apos falha do Docker Desktop",
   "causaMedida": "backend falhava ao renomear sockets AF_UNIX stale em Docker\\run\\sailor-ingest.sock e docker-secrets-engine\\engine.sock; apos mover as arvores runtime, restaram processos GPU Docker Desktop orfaos que o Windows nao consegue finalizar",
   "evidencia": "AppData/Local/Docker/log/host/com.docker.backend.exe.log em 2026-09-12T02:31-02:47Z; docker info sem pipe dockerDesktopLinuxEngine",
   "acaoReversivel": "Docker\\run -> run.stale-r07-20260911-2; docker-secrets-engine -> docker-secrets-engine.stale-r07-20260911-2; nenhum volume/imagem/VM/reset tocado",
   "proximoGate": "reiniciar Windows se os PIDs GPU 6984/36664 continuarem orfaos; depois iniciar uma unica instancia e conferir docker info + supabase_db_coelo_baseline:57322",
+  "tentativasR07": "docker desktop restart e wsl --shutdown executados sem restaurar dockerDesktopLinuxEngine; nenhum reset de fabrica",
   "impactoR07": "nao bloqueia integracao Git, leitura dos JSONs, testes Flutter/Node nem trabalho das frentes; bloqueia somente preflight SQL local ate o daemon voltar"
  },
  "posseR07": {
@@ -2173,7 +2174,7 @@
    "publicacoes-agenda": "rev 51; worktree removida",
    "operacoes": "rev 51; worktree removida"
   },
-  "producao": "7 lotes (49-55), 14 pacotes; candidatos vazio; internal-user-create sem deploy (P52); CORS R2 alinhado",
+  "producao": "7 lotes (49-55), 14 pacotes; candidatos vazio; internal-user-create deployado e deno check verde; P52 fechado como deploy, prova funcional ainda atribuida a acessos-pessoas; CORS R2 alinhado",
   "integracao": "sete branches integradas ate as revisoes finais; 0 commits fora de dev; status limpo; sem WIP; e2-r05-coordenacao e e2-r06-coordenacao ficam",
   "rastreadores": "validate-trackers PASS; bloco Estado vigente — Rodada 6 nos tres md",
   "skills": "coelo-backend, coelo-frontend e coelo-frontend-backend com a secao \"Regras da Rodada 6\"",
