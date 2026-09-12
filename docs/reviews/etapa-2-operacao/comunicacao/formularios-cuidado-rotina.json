@@ -1,18 +1,18 @@
 {
- "revision": 60,
+ "revision": 62,
  "round": "E2-R07-20260911",
  "group": "formularios-cuidado-rotina",
  "tool": "Codex",
  "model": "Codex Luna, esforco medio",
  "coordinator": "coordenador da R07",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-12T00:24-03:00",
+ "updatedAt": "2026-09-12T09:33:48-03:00",
  "T0": "2026-09-11T19:37-03:00 (relogio da maquina na criacao da worktree; coordenacao.json rev 52 ainda nao publicada em origin/dev quando abri; corrigirei se o coordenador gravar outro T0)",
  "corteT0mais2h": "21:37",
  "revisaoAte": "21:47",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-formularios-cuidado-rotina",
  "branch": "work/etapa2-r07-formularios-cuidado-rotina",
- "head": "1a6ae0aef (codigo e JSON publicados; status limpo)",
+ "head": "a0c1f5ff1 (handoff R07 final; status limpo)",
  "base": "origin/dev a50487878",
  "usuario": "qa-r06-formularios@coelo.me (arquivo presente desde ~19:55; login por senha 200 e superadmin_medication_plan_directory 200 em producao)",
  "scope": {
@@ -160,9 +160,19 @@
    "gate": "FE"
   },
   {
-   "action_id": "attendance.entry/complete (item 7)",
-   "o_que": "nao coube: reconstrucao de Lancar chamada na familia Publicacao (referencias lancar-chamada-{mobile-375,web-1440}.png) exige tela nova + golden + prova; a tela atual (assistente Contexto/Rotina/Chamada) segue sem balao de chat",
-   "gate": "FE (proxima rodada)"
+   "action_id": "attendance.mark",
+   "o_que": "a reconstrução local da AttendanceCallPage alterou a superfície de marcação; a prova na rota real após a reconstrução ainda está pendente",
+   "gate": "FE/E2E (proxima rodada)"
+  },
+  {
+   "action_id": "attendance.finish",
+   "o_que": "a reconstrução local alterou o rodapé e o resumo da conclusão; a prova na rota real após a reconstrução ainda está pendente",
+   "gate": "FE/E2E (proxima rodada)"
+  },
+  {
+   "action_id": "attendance.correct",
+   "o_que": "a reconstrução local alterou a superfície do estado concluído que expõe Corrigir chamada; a prova na rota real após a reconstrução ainda está pendente",
+   "gate": "FE/E2E (proxima rodada)"
   },
   {
    "action_id": "politicas macro da unidade (item 6)",
@@ -2038,6 +2048,22 @@
   "commitsPublicados": ["3c33810a1"],
   "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json",
   "proximoPasso": "inspecionar cliente form-media e, se houver configuração pública disponível pela coordenação, executar build/rota real com um Chrome"
+ },
+ "checkpointR07_0933": {
+  "quando": "2026-09-12T09:33:48-03:00",
+  "feito": [
+   "reconciliação dos IDs canônicos: a reconstrução R07 corresponde a attendance.mark, attendance.finish e à superfície de attendance.correct",
+   "attendance.create não teve implementação alterada na R07; AttendanceNewCallPage ficou fora do delta",
+   "regra R06 aplicada: as provas E2E anteriores das ações reconstruídas ficam retidas até nova prova na rota real"
+  ],
+  "pendente": [
+   "prova real de attendance.mark, attendance.finish e attendance.correct; sem certificação verified-e2e nova",
+   "revisão do coordenador e aplicação dos deltas canônicos em checkout integrado"
+  ],
+  "bloqueio": "verificação/ambiente; nenhuma nova implementação ou teste foi iniciado",
+  "commitsPublicados": ["a0bb3796d"],
+  "deltas": "docs/reviews/evidence/etapa-2/r07-formularios-cuidado-rotina/deltas-r07-fcr.json agora usa apenas IDs canônicos",
+  "proximoPasso": "coordenador reconciliar attendance.mark, attendance.finish e attendance.correct no fechamento"
  },
  "checkpointR07_0024": {
   "quando": "2026-09-12T00:24-03:00",

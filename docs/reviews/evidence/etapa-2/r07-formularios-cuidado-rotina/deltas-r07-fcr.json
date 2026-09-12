@@ -1,28 +1,41 @@
 [
   {
-    "action_id": "attendance.entry/complete",
+    "action_id": "attendance.mark",
     "camada": "frontend",
     "estado_proposto": "local-green",
-    "delta": "Reconstrucao da chamada sobre PublicationSurface: contexto em card, segmentos P/F/A por aluno, Marcar todos presentes, observacao por aluno preservada no detalhe, resumo no web, rodape sem launcher de chat e sem wizard.",
+    "delta": "AttendanceCallPage reconstruida sobre PublicationSurface para a marcacao: segmentos P/F/A por aluno, Marcar todos presentes e observacao por aluno preservada no detalhe; sem wizard e sem launcher de chat.",
     "evidencia": "apps/superadmin/test/features/attendance/goldens/attendance_call_compact_start_light_375.png",
     "certificacao": {
       "evidence": "apps/superadmin/test/features/attendance/goldens/attendance_call_compact_start_light_375.png",
-      "revision": "57",
+      "revision": "61",
       "environment": "local flutter_test; rota real ainda pendente",
-      "recordedAt": "2026-09-11T23:58:00-03:00"
+      "recordedAt": "2026-09-12T09:12:00-03:00"
     }
   },
   {
-    "action_id": "attendance.entry/complete",
+    "action_id": "attendance.finish",
     "camada": "frontend",
     "estado_proposto": "local-green",
-    "delta": "Suite de paginas e goldens da Assiduidade verde apos a mudanca: 55 testes de paginas e 4 goldens; antigos testes de wizard foram ajustados para o contrato Publicacao.",
+    "delta": "AttendanceCallPage reconstruida sobre PublicationSurface para a conclusao: resumo no web, rodape com Concluir chamada e launcher de chat desligado; a operacao de completeCall foi preservada.",
     "evidencia": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
     "certificacao": {
       "evidence": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
-      "revision": "57",
-      "environment": "local flutter_test",
-      "recordedAt": "2026-09-11T23:58:00-03:00"
+      "revision": "61",
+      "environment": "local flutter_test; rota real ainda pendente",
+      "recordedAt": "2026-09-12T09:12:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "O estado concluido de AttendanceCallPage passou a ser hospedado na PublicationSurface e expoe Corrigir chamada; o dialogo e o contrato de correcao existentes foram preservados, sem nova prova de rota real.",
+    "evidencia": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
+    "certificacao": {
+      "evidence": "apps/superadmin/test/features/attendance/attendance_pages_test.dart",
+      "revision": "61",
+      "environment": "local flutter_test; rota real ainda pendente",
+      "recordedAt": "2026-09-12T09:12:00-03:00"
     }
   }
 ]
