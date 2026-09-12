@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 95,
+ "revision": 96,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T14:20:00-03:00",
+ "updatedAt": "2026-09-12T14:23:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -25,7 +25,14 @@
   "unitId": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
   "groupId": "4214106c-46a2-4bf4-84ba-9c6a619bd486",
   "activityId": "95b98978-19e2-43ba-aa0c-70ae81557e08",
-  "configurationRead": "HTTP 200; data null"
+  "configurationRead": "HTTP 200; data null",
+  "technicalGateSha": "d59e17f62; G4 fakeproof verde e guardas de resume"
+ },
+ "marcoOwner1422": {
+  "frentes": "2026-09-12T14:40:00-03:00",
+  "revisao": "2026-09-12T14:40:00-03:00 a 2026-09-12T14:50:00-03:00",
+  "fechamentoC0": "2026-09-12T15:00:00-03:00",
+  "R09": "preparar; nao iniciar automaticamente"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
