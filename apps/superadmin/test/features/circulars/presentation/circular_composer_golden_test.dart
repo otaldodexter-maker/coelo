@@ -27,9 +27,29 @@ void main() {
       }
     }
   });
+
+  testWidgets('composer covers the three approved A+ interleaving states', (tester) async {
+    for (final (width, height) in [(375.0, 1320.0), (1440.0, 1100.0)]) {
+      await _pump(
+        tester,
+        Size(width, height),
+        brightness: Brightness.light,
+        textScaler: const TextScaler.linear(2),
+      );
+      await expectLater(
+        find.byKey(const Key('circular-composer-golden-root')),
+        matchesGoldenFile('goldens/circular_composer_light_${width.toInt()}_text_200.png'),
+      );
+    }
+  });
 }
 
-Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightness}) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Size size, {
+  required Brightness brightness,
+  TextScaler textScaler = TextScaler.noScaling,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
@@ -56,6 +76,10 @@ Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightne
             CircularQuestionOption(id: 'b', label: 'Preciso de mais informações'),
           ],
         ),
+        CircularTextBlock(
+          id: 'text-after',
+          text: 'Se precisar de apoio, responda a pergunta acima antes da data da reunião.',
+        ),
       ],
       audiences: {CircularAudienceKind.families},
     ),
@@ -71,7 +95,7 @@ Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightne
       builder: (context, child) => RepaintBoundary(
         key: const Key('circular-composer-golden-root'),
         child: MediaQuery(
-          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
           child: child!,
         ),
       ),
