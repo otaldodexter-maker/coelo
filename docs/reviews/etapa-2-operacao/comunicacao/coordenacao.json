@@ -1,12 +1,12 @@
 {
- "revision": 65,
+ "revision": 67,
  "round": "E2-R08-20260912",
  "role": "C0 Coordenacao R08 ativa",
  "writer": "C0 Codex",
  "app": "Codex desktop",
  "model": "GPT-6 Astra medio",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-12T10:53:51.863872-03:00",
+ "updatedAt": "2026-09-12T10:58:14.291624-03:00",
  "relogio": "relogio da maquina",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2596,43 +2596,43 @@
   },
   "G5": {
    "grupo": "realm-interno",
-   "threadId": null,
+   "threadId": "01a095e3-4532-75e3-a851-6873668a8814",
    "modelo": "Sol medio",
    "branch": "work/etapa2-r08-realm-interno",
    "json": "realm-interno.json",
    "ultimoSHA": null,
    "ackRevision": null,
-   "status": "aguardando descoberta; nao criar duplicata"
+   "status": "local independente liberado; recursos pela fila"
   },
   "G6": {
    "grupo": "publicacoes-agenda",
-   "threadId": null,
+   "threadId": "01a095e3-7d45-7cd2-83d9-8e28cfe824ce",
    "modelo": "Sol medio",
    "branch": "work/etapa2-r08-publicacoes-agenda",
    "json": "publicacoes-agenda.json",
    "ultimoSHA": null,
    "ackRevision": null,
-   "status": "aguardando descoberta; nao criar duplicata"
+   "status": "local independente liberado; recursos pela fila"
   },
   "G7": {
    "grupo": "operacoes",
-   "threadId": null,
+   "threadId": "01a095e3-e5ef-7c63-9db0-49f8df71e081",
    "modelo": "Terra medio",
    "branch": "work/etapa2-r08-operacoes",
    "json": "operacoes.json",
    "ultimoSHA": null,
    "ackRevision": null,
-   "status": "aguardando descoberta; nao criar duplicata"
+   "status": "local independente liberado; recursos pela fila"
   },
   "G8": {
    "grupo": "suites",
-   "threadId": null,
+   "threadId": "01a095e4-57b7-7213-b151-8020b26521f3",
    "modelo": "Spark medio",
    "branch": "work/etapa2-r08-suites",
    "json": "fase0.json",
    "ultimoSHA": null,
    "ackRevision": null,
-   "status": "aguardando descoberta; nao criar duplicata"
+   "status": "local independente liberado; recursos pela fila"
   }
  },
  "slotsR08": {
@@ -2644,14 +2644,17 @@
    "estado": "reservado para diagnostico runtime; G0 registra PID antes do uso"
   },
   "flutterTest": {
-   "dono": "G2",
+   "dono": "G3",
    "pid": null,
-   "inicio": "2026-09-12T10:53:51.863872-03:00",
-   "expira": "2026-09-12T11:13:51.863872-03:00",
-   "estado": "concedido teste focal Pessoas; G2 registra PID e libera ao terminar"
+   "inicio": "2026-09-12T10:58:14.291624-03:00",
+   "expira": "2026-09-12T11:18:14.291624-03:00",
+   "estado": "concedido medication/attendance concurrency1; C0 confirmou zero flutter_tester e zero flutter test antes da transferencia"
   },
   "e2eLiberado": false,
-  "sqlLiberado": false
+  "sqlLiberado": false,
+  "filaFlutterTest": [
+   "G7 catalog_routes focal"
+  ]
  },
  "filaSqlR08": {
   "proximoLote": 56,
@@ -2667,7 +2670,9 @@
   "form-media": "G3 autor / C0 deploy",
   "chat-media": "G5 autor / C0 deploy",
   "circular-media": "G6 autor / C0 deploy",
-  "happens-media/now-media/moments-media": "G4 autor / C0 deploy"
+  "happens-media/now-media/moments-media": "G4 autor / C0 deploy",
+  "test/app/router/catalog_routes_test.dart": "G7",
+  "publication_surface.dart": "G3 parametro opcional cabecalho compacto default1; Chamada0.75"
  },
  "heartbeatR08": {
   "id": "r08-coordena-o-10-minutos",
@@ -2675,5 +2680,10 @@
   "intervaloMinutos": 10,
   "corte": "2026-09-12T15:22:16-03:00",
   "ultimoCheckpoint": "2026-09-12T10:53:51.863872-03:00"
+ },
+ "recursosR08": {
+  "medidoEm": "2026-09-12T10:56:38.575717-03:00",
+  "ramLivreKB": 971072,
+  "acao": "G0 diagnostica processos; testes futuros concurrency1; nenhum processo alheio encerrado"
  }
 }
