@@ -6,9 +6,9 @@ generated_at: "2026-09-12"
 
 # R08 G3 — Formulários, Cuidado e Rotina
 
-Worktree preservada: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina`. Branch `work/etapa2-r08-formularios-cuidado-rotina`. Base conjunta atual: `origin/dev 7e889abac`, incorporada por merge `a7b081674`, sem rebase/force e sem editar/puxar o checkout principal. C0 é o integrador e escritor dos rastreadores. Não houve deploy, migration, cleanup ou criação de fixture remota por G3.
+Worktree preservada: `C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina`. Branch `work/etapa2-r08-formularios-cuidado-rotina`. Base conjunta atual: `origin/dev 7d2b66a3e`, incorporada por merge `8fead7905`, sem rebase/force e sem editar/puxar o checkout principal. C0 é o integrador e escritor dos rastreadores. Não houve deploy, migration, cleanup ou criação de fixture remota por G3.
 
-T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; ajustes até `15:22:16`. Este documento ainda é parcial: captura Foto local-green e a rodada continua nos próximos gates autorizados.
+T0 histórico `10:52:16 BRT`. **Prazo substituído por alteração nominal do Owner comunicada por C0 às14:22:** frentes até14:40, revisão até14:50 e fechamento total C0 até15:00. Os marcos anteriores14:52:16/15:02:16/15:22:16 não estão mais vigentes. Este documento ainda é parcial enquanto G3 conclui review H28; não iniciará R09 automaticamente.
 
 ## Entregas publicadas
 
@@ -24,6 +24,7 @@ T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; aj
 | Formulários → resposta anônima → responder/editar/mídia | Guarda local particionada projeto/conta, segredo32bytes antes do RPC, open/save/submit/edit e mídia anônima; wiring entregue a C0/G6. | `07-anonymous-edit.md` |
 | Formulários → Foto → `forms.upload` | Captura web real implementada; lifecycle/bytes tardios/375×600 e200% verificados localmente com port sintético, limite1 preservado. Navegador/câmera física ainda não exercitados. | `08-camera-result.md` |
 | Formulários → diretório → tabela → H25 | Alça48 com alvo separado de ordenar; largura fixa sem alça. Pintura aprovada preservada após regressão detectada na integração. Residual de sort estreito em Suporte não certificado. | `10-h25-inspecao.md`, `12-h25-paint.md` |
+| Formulários / Cuidado / Medicação → diretórios → acessibilidade | Guideline completo de Formulários reativado após PASS. Dois de Cuidado reproduziram alvo44 do shell; posse C0 para mínimo48,8PASS e goldens preservados. | `13-directory-accessibility.md`, `14-care-accessibility.md` |
 
 ## Commits
 
@@ -40,6 +41,9 @@ T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; aj
 - `725155ec0` + `d4c71277d`: purge de câmera durante descarte da tela, revisão G4 reproduzida e corrigida; 9 testes aprovados, um novo, sem somar os oito anteriores. Evidência `09-camera-purge.md` e logs.
 - `54c892ebc` + `f0e148a70`: H25 e preservação da pintura após regressão integrada; followup21tabela+16goldens aprovados sem regravar PNG.
 - `0c92198a0`: delta de memória proposto para aplicação C0, fonte antes de projeção, sem nova ADR.
+- `17d4f2233`: reativa guideline completo de Formulários,1PASS/analyze0.
+- `1e0029e9e`: alvo mínimo48 do menu de usuário,2RED→8PASS, dois casos reativados, semPNG.
+- `8fead7905`: merge ciclo180, remoto sincronizado. Memória aplicada por C0 em `65f219550` efetivamente lida, fontes e projeções presentes nesta base.
 
 Todos os commits acima foram enviados à branch remota. O SHA final deste handoff será informado no fechamento, sem usar um SHA do próprio arquivo como certificação circular.
 
@@ -62,7 +66,7 @@ Atualização externa posterior efetivamente lida por SHA `893a3e2a3`: G0 `forms
 5. H19: C0 registrou pergunta ao Owner sobre elegibilidade dos responsáveis; G5 aguarda contrato nominal. Não criar schema ou converter destinatário de política em autoridade de dose por inferência.
 6. H20: imagem da dose tem campo `media_asset_id` no RPC, mas não tem fluxo de gateway/cliente. Aceite textual de `medication.evidence` permanece separado e preservado.
 7. H25: followup visual deve acompanhar pacote inicial. Colunas80/90 em Suporte ficam com sort32/42 após alça48; C0 aceitou registrar o residual sem ampliar larguras fora do recorte. Não certifica AA global.
-8. Gate memória: proposta concreta `11-memory-delta.md` para C0 aplicar primeiro às fontes e depois às projeções existentes. Validador64artigos; ferramenta12PASS/0FAIL/1SKIP do host. Nenhuma nova ADR inventada.
+8. Gate memória: proposta `11-memory-delta.md` aplicada por C0 em `65f219550`, fonte e projeção efetivamente conferidas nesta worktree após merge. Validação local anterior64artigos; ferramenta12PASS/0FAIL/1SKIP do host. Nenhuma nova ADR inventada. A correção do menu aplica token mínimo já canônico, sem nova regra de produto.
 
 ## Recursos e memória
 
