@@ -105,7 +105,7 @@ Future<void> _pump(
           child: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
             onChooseSchedule: () async => null,
             contextLabel: 'Colégio Coelo',
           ),

@@ -25,7 +25,7 @@ final class SuperadminCircularComposerPage extends StatefulWidget {
   /// Nome da instituição do contexto (linha de "Público e contexto" e prévia).
   final String? contextLabel;
   final VoidCallback onCancel;
-  final Future<void> Function() onPickFiles;
+  final Future<void> Function(String afterBlockId) onPickFiles;
   final VoidCallback? onPublished;
   final Future<DateTime?> Function()? onChooseSchedule;
 
@@ -141,7 +141,10 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   Widget _form() {
     final controller = widget.controller;
     final draft = controller.draft;
-    final media = draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
+    final mediaCount = draft.blocks
+        .whereType<CircularMediaBlock>()
+        .expand((block) => block.assetIds)
+        .length;
     final questions = draft.blocks.whereType<CircularQuestionBlock>().toList(growable: false);
     final preset = _responsePreset(questions);
     final colors = Theme.of(context).colorScheme;
@@ -162,6 +165,22 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
         ),
         for (var index = 0; index < draft.blocks.length; index++) ...[
           _editorBlock(draft.blocks[index], index),
+          if (index == 0 || mediaCount < CircularLimits.files)
+            Align(
+              alignment: Alignment.centerLeft,
+              child: TextButton.icon(
+                key: Key(
+                  index == 0
+                      ? 'circular-pick-files'
+                      : 'circular-pick-files-after-${draft.blocks[index].id}',
+                ),
+                onPressed: mediaCount >= CircularLimits.files
+                    ? null
+                    : () => widget.onPickFiles(draft.blocks[index].id),
+                icon: const Icon(Icons.attach_file_rounded),
+                label: const Text('Adicionar mídia aqui'),
+              ),
+            ),
           const SizedBox(height: CoeloSpacing.space2),
         ],
         Wrap(
@@ -174,13 +193,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
               icon: const Icon(Icons.notes_rounded),
               label: const Text('Adicionar texto'),
             ),
-            if (media == null)
-              TextButton.icon(
-                key: const Key('circular-pick-files'),
-                onPressed: widget.onPickFiles,
-                icon: const Icon(Icons.attach_file_rounded),
-                label: const Text('Adicionar mídia'),
-              ),
             TextButton.icon(
               key: const Key('circular-add-question'),
               onPressed: questions.length >= CircularLimits.questions
@@ -273,7 +285,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
       key: ValueKey((widget.controller, block.id)),
       controller: widget.controller,
       block: block,
-      onPickFiles: widget.onPickFiles,
     ),
     CircularQuestionBlock() => _QuestionCard(
       key: ValueKey((widget.controller, block.id)),
@@ -442,23 +453,13 @@ final class _TextBlockCardState extends State<_TextBlockCard> {
 }
 
 final class _MediaBlockCard extends StatelessWidget {
-  const _MediaBlockCard({
-    required this.controller,
-    required this.block,
-    required this.onPickFiles,
-    super.key,
-  });
+  const _MediaBlockCard({required this.controller, required this.block, super.key});
 
   final CircularComposerController controller;
   final CircularMediaBlock block;
-  final Future<void> Function() onPickFiles;
 
   @override
   Widget build(BuildContext context) {
-    final used = controller.draft.blocks
-        .whereType<CircularMediaBlock>()
-        .expand((item) => item.assetIds)
-        .length;
     return PublicationCard(
       key: Key('circular-editor-${block.id}'),
       child: Column(
@@ -477,19 +478,6 @@ final class _MediaBlockCard extends StatelessWidget {
             runSpacing: CoeloSpacing.space2,
             crossAxisAlignment: WrapCrossAlignment.center,
             children: [
-              SizedBox(
-                width: CoeloSize.touchMin,
-                height: CoeloSize.touchMin,
-                child: OutlinedButton(
-                  key: const Key('circular-pick-files'),
-                  onPressed: used >= CircularLimits.files ? null : onPickFiles,
-                  style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
-                  child: const Tooltip(
-                    message: 'Adicionar arquivo',
-                    child: Icon(Icons.add_rounded),
-                  ),
-                ),
-              ),
               for (final assetId in block.assetIds)
                 InputChip(
                   avatar: const Icon(Icons.attach_file_rounded, size: CoeloSize.iconSm),

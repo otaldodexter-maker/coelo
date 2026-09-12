@@ -26,7 +26,7 @@ void main() {
           body: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
           ),
         ),
       ),
@@ -59,7 +59,7 @@ void main() {
             body: SuperadminCircularComposerPage(
               controller: controller,
               onCancel: () {},
-              onPickFiles: () async {},
+              onPickFiles: (_) async {},
               onPublished: finished,
             ),
           ),
@@ -96,7 +96,7 @@ void main() {
         body: SuperadminCircularComposerPage(
           controller: controller,
           onCancel: () {},
-          onPickFiles: () async {},
+          onPickFiles: (_) async {},
           onChooseSchedule: () => picker.future,
         ),
       ),
@@ -127,7 +127,7 @@ void main() {
         body: SuperadminCircularComposerPage(
           controller: controller,
           onCancel: () {},
-          onPickFiles: () async {},
+          onPickFiles: (_) async {},
         ),
       ),
     );
@@ -219,7 +219,7 @@ void main() {
             body: SuperadminCircularComposerPage(
               controller: controller,
               onCancel: () {},
-              onPickFiles: () async {},
+              onPickFiles: (_) async {},
             ),
           ),
         ),
@@ -246,6 +246,7 @@ void main() {
         title: 'Circular intercalada',
         blocks: [
           CircularTextBlock(id: 'text-before', text: 'Texto antes'),
+          CircularMediaBlock(id: 'media-before-question', assetIds: ['antes.pdf']),
           CircularQuestionBlock(
             id: 'question-middle',
             prompt: 'Pergunta no meio?',
@@ -256,13 +257,14 @@ void main() {
               CircularQuestionOption(id: 'no', label: 'Nao'),
             ],
           ),
-          CircularMediaBlock(id: 'media-middle', assetIds: ['ordem.pdf']),
+          CircularMediaBlock(id: 'media-after-question', assetIds: ['depois.pdf']),
           CircularTextBlock(id: 'text-after', text: 'Texto depois'),
         ],
         audiences: {CircularAudienceKind.families},
       ),
     );
     addTearDown(controller.dispose);
+    String? insertionAnchor;
 
     await tester.pumpWidget(
       MaterialApp(
@@ -270,19 +272,50 @@ void main() {
           body: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (afterBlockId) async => insertionAnchor = afterBlockId,
           ),
         ),
       ),
     );
 
     double top(String key) => tester.getTopLeft(find.byKey(Key(key))).dy;
-    expect(top('circular-editor-text-before'), lessThan(top('circular-editor-question-middle')));
-    expect(top('circular-editor-question-middle'), lessThan(top('circular-editor-media-middle')));
-    expect(top('circular-editor-media-middle'), lessThan(top('circular-editor-text-after')));
-    expect(top('circular-preview-text-before'), lessThan(top('circular-preview-question-middle')));
-    expect(top('circular-preview-question-middle'), lessThan(top('circular-preview-media-middle')));
-    expect(top('circular-preview-media-middle'), lessThan(top('circular-preview-text-after')));
+    expect(
+      top('circular-editor-text-before'),
+      lessThan(top('circular-editor-media-before-question')),
+    );
+    expect(
+      top('circular-editor-media-before-question'),
+      lessThan(top('circular-editor-question-middle')),
+    );
+    expect(
+      top('circular-editor-question-middle'),
+      lessThan(top('circular-editor-media-after-question')),
+    );
+    expect(
+      top('circular-editor-media-after-question'),
+      lessThan(top('circular-editor-text-after')),
+    );
+    expect(
+      top('circular-preview-text-before'),
+      lessThan(top('circular-preview-media-before-question')),
+    );
+    expect(
+      top('circular-preview-media-before-question'),
+      lessThan(top('circular-preview-question-middle')),
+    );
+    expect(
+      top('circular-preview-question-middle'),
+      lessThan(top('circular-preview-media-after-question')),
+    );
+    expect(
+      top('circular-preview-media-after-question'),
+      lessThan(top('circular-preview-text-after')),
+    );
+
+    final addAfterQuestion = find.byKey(const Key('circular-pick-files-after-question-middle'));
+    await tester.ensureVisible(addAfterQuestion);
+    await tester.tap(addAfterQuestion);
+    expect(insertionAnchor, 'question-middle');
 
     await tester.ensureVisible(find.byKey(const Key('circular-response-acceptDecline')));
     await tester.tap(find.byKey(const Key('circular-response-acceptDecline')));
@@ -290,8 +323,9 @@ void main() {
 
     expect(controller.draft.blocks.map((block) => block.id).toList(), [
       'text-before',
+      'media-before-question',
       'question-middle',
-      'media-middle',
+      'media-after-question',
       'text-after',
     ]);
   });
@@ -311,7 +345,7 @@ void main() {
           body: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
           ),
         ),
       ),

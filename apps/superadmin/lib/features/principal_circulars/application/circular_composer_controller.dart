@@ -106,26 +106,21 @@ final class CircularComposerController extends ChangeNotifier {
     _replace(blocks: blocks);
   }
 
-  void addMediaAsset(String assetId) {
-    final media = _draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
-    final ids = media?.assetIds.toList() ?? <String>[];
+  String? addMediaAsset(String assetId, {String? afterBlockId}) {
     final used = _draft.blocks
         .whereType<CircularMediaBlock>()
         .expand((block) => block.assetIds)
         .toList(growable: false);
-    if (used.length >= CircularLimits.files || used.contains(assetId)) return;
-    ids.add(assetId);
+    if (used.length >= CircularLimits.files || used.contains(assetId)) return null;
     final blocks = [..._draft.blocks];
-    if (media == null) {
-      final textIndex = blocks.indexWhere((block) => block is CircularTextBlock);
-      blocks.insert(
-        textIndex < 0 ? 0 : textIndex + 1,
-        CircularMediaBlock(id: _uuid(), assetIds: ids),
-      );
-    } else {
-      blocks[blocks.indexOf(media)] = CircularMediaBlock(id: media.id, assetIds: ids);
-    }
+    final defaultAnchor = blocks.indexWhere((block) => block is CircularTextBlock);
+    final requestedAnchor = afterBlockId == null
+        ? defaultAnchor
+        : blocks.indexWhere((block) => block.id == afterBlockId);
+    final media = CircularMediaBlock(id: _uuid(), assetIds: [assetId]);
+    blocks.insert(requestedAnchor < 0 ? blocks.length : requestedAnchor + 1, media);
     _replace(blocks: blocks);
+    return media.id;
   }
 
   void removeMediaAsset(String assetId) {

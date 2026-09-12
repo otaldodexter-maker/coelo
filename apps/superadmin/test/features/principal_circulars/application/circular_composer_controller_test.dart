@@ -284,13 +284,14 @@ void main() {
     final after = controller.draft.blocks.whereType<CircularTextBlock>().last;
     controller.updateTextBlock(after.id, 'Depois');
     controller.addMediaAsset('asset-1');
-    final media = controller.draft.blocks.whereType<CircularMediaBlock>().single;
-    controller.moveBlock(media.id, 1);
+    controller.addMediaAsset('asset-2', afterBlockId: question.id);
+    final media = controller.draft.blocks.whereType<CircularMediaBlock>().toList();
 
     expect(controller.draft.blocks.map((block) => block.id), [
       'before',
+      media.first.id,
       question.id,
-      media.id,
+      media.last.id,
       after.id,
     ]);
 
@@ -319,6 +320,7 @@ void main() {
     }
 
     expect(controller.draft.blocks.whereType<CircularQuestionBlock>(), hasLength(10));
+    expect(controller.draft.blocks.whereType<CircularMediaBlock>(), hasLength(4));
     expect(
       controller.draft.blocks.whereType<CircularMediaBlock>().expand((block) => block.assetIds),
       hasLength(4),

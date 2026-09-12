@@ -116,14 +116,17 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await tester.pumpWidget(
       MaterialApp(
-        home: Scaffold(body: PrincipalCircularReader(detail: _detail, onSubmit: (_) async {})),
+        home: Scaffold(
+          body: PrincipalCircularReader(detail: _detail, onSubmit: (_) async {}),
+        ),
       ),
     );
 
     double top(String id) => tester.getTopLeft(find.byKey(Key('circular-reader-$id'))).dy;
     expect(top('text-1'), lessThan(top('media-1')));
     expect(top('media-1'), lessThan(top('question-1')));
-    expect(top('question-1'), lessThan(top('question-2')));
+    expect(top('question-1'), lessThan(top('media-2')));
+    expect(top('media-2'), lessThan(top('question-2')));
   });
 }
 
@@ -152,6 +155,7 @@ final _detail = CircularDetail(
         CircularQuestionOption(id: 'no', label: 'Não'),
       ],
     ),
+    CircularMediaBlock(id: 'media-2', assetIds: ['asset-3']),
     CircularQuestionBlock(
       id: 'question-2',
       prompt: 'Quais itens deseja reservar?',
