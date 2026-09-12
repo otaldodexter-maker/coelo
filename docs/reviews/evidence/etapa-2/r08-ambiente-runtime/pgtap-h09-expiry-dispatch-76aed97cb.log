@@ -1,0 +1,52 @@
+R08 G0 pgTAP H09 baseline
+AT=2026-09-12T11:29:26.3285004-03:00
+SOURCE_COMMIT=76aed97cb
+SOURCE=packages/coelo_database/supabase/tests/now_publication_expiry_dispatch_v1_test.sql
+CONTAINER=supabase_db_coelo_baseline PORT=57322 DATABASE=postgres USER=postgres
+COMMAND=git show <ref>:<source> | docker exec -i supabase_db_coelo_baseline psql -X -U postgres -d postgres -v ON_ERROR_STOP=1
+BEGIN
+NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+------
+ 1..6
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 1 - the Agora expiry sweep dependency exists
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 2 - exactly one Agora expiry job is scheduled
+(1 row)
+
+                         is
+-----------------------------------------------------
+ ok 3 - the Agora expiry job runs every five minutes
+(1 row)
+
+                           is
+--------------------------------------------------------
+ ok 4 - the job invokes only the bounded internal sweep
+(1 row)
+
+                         ok
+-----------------------------------------------------
+ ok 5 - clients cannot execute the system-wide sweep
+(1 row)
+
+                                 ok
+--------------------------------------------------------------------
+ ok 6 - the scheduled sweep never deletes publication or media rows
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+NATIVE_EXIT=0
+SUITE_RESULT native_exit=0 ok=6 not_ok=0 expected=6 rollback=1
+WRAPPER_EXIT=0

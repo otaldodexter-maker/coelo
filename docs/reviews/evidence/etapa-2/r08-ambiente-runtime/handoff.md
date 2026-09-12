@@ -179,3 +179,18 @@ Há um procedimento preciso para a próxima sessão tentar `flutter run -d web-s
 - preview corrigido `c9662b0ff`: native/wrapper 0, uma linha `ROLLBACK`, nove categorias com contagem zero, sem e-mails/IDs/segredos no output e sem mudança persistente. Terminal: [cleanup-manifest-preview-c9662b0ff.log](./cleanup-manifest-preview-c9662b0ff.log). Nenhuma limpeza foi executada.
 - `superadmin_internal_invites_v2_test.sql` do commit `76aed97cb`: primeira execução **34 ok / 1 not ok**, native 0, wrapper 1 e rollback. A fixture expirada (casos 18–20) passou; apenas o caso 8 ainda exigia `requires_aal2`, incompatível com MFA adiado e contraditório com o caso 27 da mesma suíte. Terminal: [pgtap-invites-expired-76aed97cb.log](./pgtap-invites-expired-76aed97cb.log).
 - G5 corrigiu somente essa expectativa em `95b501322`; rerun focal: **35/35**, native/wrapper 0 e rollback. Terminal: [pgtap-invites-expired-95b501322.log](./pgtap-invites-expired-95b501322.log). Nenhuma migration ou fixture persistente foi criada.
+
+## H09 no espelho e consumidores de Chat
+
+O C0 liberou nominalmente o baseline às 11:28 BRT. O candidato `20260912140545_now_publication_expiry_dispatch_v1.sql` de `76aed97cb` foi aplicado **somente** em `supabase_db_coelo_baseline`; produção permaneceu intocada.
+
+- aplicação: native exit 0;
+- estado materializado: um job `coelo-now-publications-expire`, agenda `*/5 * * * *`, comando limitado a `sweep_expired_now_publications(null::uuid, 500)`, ativo;
+- pgTAP do H09: **6/6**, native/wrapper 0 e rollback;
+- consumidor Chat attachments: **28/28**, native 0 e rollback;
+- consumidor Chat worker claims: **3/3**, native 0 e rollback;
+- wrapper agregado dos consumidores: 0.
+
+Terminais: [h09-apply-baseline-76aed97cb.log](./h09-apply-baseline-76aed97cb.log), [pgtap-h09-expiry-dispatch-76aed97cb.log](./pgtap-h09-expiry-dispatch-76aed97cb.log) e [pgtap-chat-consumers-post-h09.log](./pgtap-chat-consumers-post-h09.log).
+
+O primeiro probe após a aplicação teve somente erro de quoting do comando local (`column "coelo" does not exist`); o apply já havia encerrado com exit 0. O probe foi corrigido sem reaplicar o candidato e a linha nominal acima foi confirmada. O log preserva ambos os fatos. O slot SQL foi devolvido imediatamente ao C0, que mantém posse exclusiva de backup, produção e ledger do lote 56.
