@@ -1,39 +1,50 @@
----
-fonte: R08-prompts.md, R08-plano.md, R08-backlog.md e comunicacao/estrutura.json
-status: parcial; em andamento
-data: 2026-09-12
-rodada: E2-R08-20260912
----
+# Handoff R08 — Estrutura (G1)
 
-## Atualização do ciclo 120
+Data: 2026-09-12, entrega antecipada pelo Owner para fechamento C0 às 15:00.
 
-- `groups.location` possui consumidor de criação atômica no formulário; o retry com recibo, contexto B e falha parcial foi corrigido por C0 e a suíte integrada de Grupos passou 29 testes. A prova de rota real permanece aberta.
-- Os 45 PNGs A foram comparados, regravados e repetidos pelos três testes proprietários: 20/20 PASS em `--concurrency=1`. O commit `41d3c518a` altera exatamente os 45 PNGs nominais, sem A+/R nem frame de G3.
-- Primeiro gate aberto: `activities.assessment` na rota real, com fixture sintética de G5/C0; depois `assessments.entry`, `assessments.gradebook`, `assessments.close`, `assessments.reopen` e `assessments.detail` com reload e negativa de escopo.
+## Entregue
 
-# Handoff parcial — G1 Estrutura
+- `activities.create`: migração do formulário para o rodapé canônico
+  `SuperadminFormActionFooter`; teste focal 22/22.
+- `groups.location`: correção e prova integrada por C0; não alterar novamente
+  nesta frente.
+- PNGs A: 45/45 regravados sob P53=A — 31 Atividades, 12 detalhes
+  Unidade/Turma e 2 paginação de Instituições; teste combinado 20/20. Hashes
+  materializados em `png-a-object-hashes-20260912.md`.
+- Avaliações / `activities.assessment`: runner autenticado recebeu dry-run,
+  plano estrito, replay idempotente e resume seguro. G4 fakeproof e G5 revisão
+  técnica aprovaram o SHA `d59e17f62`.
+- Sob ACK nominal C0, a cadeia API única foi executada com exit 0:
+  configuração `833a89d8-466f-4ff4-8ab9-4ffb7f33a1cb` ativa v2; período
+  `c4e38ada-e062-4466-a22d-88dca177fa30` aberto; diário
+  `d2c945d8-3809-4d84-b836-2bc6da7c381d` draft v1. Reloads autoritativos
+  foram validados pelo runner; logout 204.
 
-## Entregue e publicado
+## Evidências e commits
 
-- `Criar modelo` de Atividades agora usa `SuperadminFormActionFooter` ancorado; o fluxo mantém Cancelar, Anterior, Continuar e Criar modelo.
-- Teste focal: `flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1` — 22/22 PASS, PID 35588, exit 0. Trata-se de prova FE focal, não E2E.
-- Contrato mínimo de fixture de Avaliações registrado para G5/C0; G5 publicou a fixture transacional `53b9c6d29`, com rollback, turma, vínculos, aluno, período ativado e diário com uma linha.
-- Manifest dos 45 PNGs A preparado: 31 Atividades, 12 detalhes de Unidade/Turma e 2 Instituições. Ainda não houve comparação ou regravação sem slot Flutter.
+- execução e dados do ACK: `assessments-api-execution-20260912.json` e
+  `assessments-api-execution-20260912.md`, commit `35922525b`;
+- guards/resume e smoke offline: `assessments_api_runner.py`,
+  `assessments_api_runner_smoke_test.py`, `assessments-resume-safety-20260912.md`;
+- alvo de ACK (somente UUIDs, sem segredos): `assessments-ack-input-20260912.json`,
+  commit `99566bed8`;
+- checkpoint comunicável mais recente antes da integração: `15244b682`;
+- base integrada materializada nesta worktree: merge `b7715ec6a` de
+  `origin/dev` `477e6c8df`.
 
-## Próximo primeiro gate
+## Pendente e limites
 
-Com Chrome/runtime concedido por C0, usar a fixture para salvar e ativar configuração em `activities.assessment`, confirmar o período aberto e então executar `assessments.entry`, `assessments.gradebook`, `assessments.close`, `assessments.reopen` e `assessments.detail` com reload e negativa de escopo. Não promover estado sem essa prova.
+- Não executados: Chrome/rota de UI, lançamento de notas e transições
+  submit/review/return/publish; não são certificados por esta prova API.
+- `groups.location` na UI não foi reaberto; a correção/prova C0 permanece a
+  referência.
+- Recursos sintéticos de Avaliações acima devem ser retidos até o encerramento
+  formal da Etapa 2; não houve exclusão, credencial, segredo ou chave criada.
+- R09 foi apenas preparada pelo C0 e não foi iniciada por G1.
 
-## Em aberto
+## Estado da worktree
 
-- Avaliações e `activities.assessment`: aguardam runtime/Chrome; a fixture local não é evidência remota.
-- `groups.members`: prova real de adicionar/remover vínculo sintético, reload e negação cruzada.
-- `groups.location`: o RPC/repositório possui contrato local, mas o formulário de Turmas não tem consumidor produtivo; avaliar a menor ligação autorizada após o gate de Avaliações.
-- 45 PNGs A: comparar e regravar somente na fila Flutter.
-- `institutions.status/files/error/access-denied`, `units.error/access-denied`, `activities.publish` e `institutions.locations-map`: seguem pelos gates do backlog, sem novos IDs.
-
-## Commits da frente nesta abertura
-
-- Código do rodapé: `a7ebeccf8` (reconciliado na base; SHA reescrito na rebase da worktree).
-- Evidências/checkpoints atuais: `54479a237` e ancestrais na branch `work/etapa2-r08-estrutura`.
-- Nenhum SQL, segredo, dado real ou delta de estado foi criado por G1 nesta abertura.
+Branch `work/etapa2-r08-estrutura`; worktree preservada conforme instrução.
+Sem WIP local ao concluir este handoff. O próximo responsável deve começar por
+uma autorização explícita para o próximo gate, não reaplicar SQL lote 59 nem a
+cadeia de Avaliações já executada.

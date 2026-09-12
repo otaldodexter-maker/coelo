@@ -1,22 +1,22 @@
 {
  "grupo": "estrutura",
- "revision": 96,
+ "revision": 98,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T14:23:00-03:00",
+ "updatedAt": "2026-09-12T14:34:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
  "branch": "work/etapa2-r08-estrutura",
-  "head": "273e5abed; executor de Avaliações com cinco guards offline",
+  "head": "35922525b; execução API autorizada publicada",
  "upstream": "origin/work/etapa2-r08-estrutura",
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20 com hashes materializados; runner de Avaliações ganhou dry-run autenticado, payload 180350, replay, projeção exata e resume seguro vinculado à turma, com cinco guards offline 5/5. Preflight remoto atual confirmou alvo único e configuration_read null.",
-  "pendente": "Executor de Avaliações aguarda arquivo ACK nominal C0 para --execute; Chrome/rota real e groups.location continuam pendentes.",
-  "sha": "273e5abed; G5 aprovado, aguardando ACK C0, sem mutação"
+  "feito": "groups.location foi corrigido e provado por C0; 45 PNGs A 20/20 com hashes materializados; Avaliações executou sob ACK C0: configuração ativa, período aberto e diário draft persistido/recarregado, exit 0; cinco guards offline 5/5.",
+  "pendente": "Chrome/rota real; lançamento e transições do diário; groups.location UI continuam pendentes e fora do ACK executado.",
+  "sha": "35922525b; handoff final pendente deste checkpoint"
  },
  "ackInputAvaliacoes": {
   "measuredAt": "2026-09-12T14:13:00-03:00",
@@ -298,7 +298,7 @@
  },
  "ack": "R07 aberta; lotes 51 e 54 da R06 confirmados em producao; T0 ainda nao consta em coordenacao.json",
  "proximoPasso": "(1) activities.assessment: salvar/ativar configuracao e criar periodo; (2) assessments.*; (3) groups.members/location; (4) institutions.* e units.* estados; (5) locations.detail-links; (6) activities.publish FE; goldens apenas registrar sem P53=A",
- "estado": "finalizado; handoff R07 transmitido; aguardando integracao do coordenador",
+ "estado": "R08 entregue; handoff final publicado; worktree preservada; R09 nao iniciada",
  "dadosSinteticosEmProducao": "public.groups 368a5cea (Turma QA R04 Estrutura (editada)); public.institutions 190dd028 (Escola R04 Estrutura, qa-r04-escola) + institution_addresses; public.units f5284f2f (Unidade Centro R04) + unit_addresses/unit_contacts; public.activity_locations 82e92854 (Sala R04 Estrutura, catalogo da instituicao 190dd028). Ficam ate o fim da Etapa 2 (P42). R05: activity_definitions 95b98978 (Atividade R05 Estrutura (editada), draft, unidade f5284f2f, local 82e92854) e 2e45c8bd (Atividade R05 Sonda, draft, criada por create_v2 direto para isolar o erro do icone); units f5284f2f passou a active. Ficam ate o fim da Etapa 2 (P42). institutions 190dd028 ganhou documento 11444777000161, pessoa \"Rafaela Sintetica\" (representante legal + membership owner) as 14:19. activity_locations d5461295 (copia de Sala R04 Estrutura no catalogo da unidade f5284f2f, 14:26). R06: groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro, Escola R04 Estrutura / Unidade Centro R04); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 11/09 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42).",
  "chavesCriadas": "nenhuma",
  "handoff": "docs/reviews/evidence/etapa-2/r06-estrutura/handoff.md",
