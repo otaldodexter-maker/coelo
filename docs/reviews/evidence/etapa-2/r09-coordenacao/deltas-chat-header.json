@@ -1,0 +1,26 @@
+[
+  {
+    "action_id": "chat.create-group",
+    "camada": "frontend",
+    "delta": "Prova FE anterior preservada, sem nova certificacao. R09 G4/C0: regressao real RED1PASS/2FAIL, corrigido erro residual/tardio na troca A/B; GREEN3PASS/0FAIL, sem UI/BE/E2E novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/61-chat-criar-grupo-pessoas.png",
+      "revision": "31632cd1c (rev 17)",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+      "recordedAt": "2026-09-11T03:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "shell.load",
+    "camada": "frontend",
+    "delta": "Prova FE anterior preservada, sem nova certificacao. Carregamento do shell previamente verificado; avatar dinamico NAO certificado. Owner pediu correcao posterior do OC fixo; C0 confirmou CircleAvatar const Text(OC) em superadmin_shell.dart:1786. Pendencia C0/G7, sem alterar estado/denominador nem implementar nesta fatia.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-principal-chat-sistema/rota-real-r04b/51-meal-plans.png",
+      "revision": "31632cd1c (rev 17)",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
+      "recordedAt": "2026-09-11T03:55:00-03:00"
+    }
+  }
+]

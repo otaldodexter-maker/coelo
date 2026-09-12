@@ -76,6 +76,7 @@ final class _SuperadminChatCreateGroupDialogState extends State<SuperadminChatCr
   Future<void> _selectInstitution(String? id) async {
     setState(() {
       _institutionId = id;
+      _error = null;
       _people = const [];
       _selected.clear();
       _loading = id != null;
@@ -91,7 +92,7 @@ final class _SuperadminChatCreateGroupDialogState extends State<SuperadminChatCr
         _loading = false;
       });
     } catch (error) {
-      if (!mounted) return;
+      if (!mounted || _institutionId != id) return;
       setState(() {
         _error = error;
         _loading = false;

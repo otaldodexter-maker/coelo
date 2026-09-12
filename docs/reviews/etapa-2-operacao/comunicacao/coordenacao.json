@@ -1,12 +1,12 @@
 {
-  "revision": 106,
+  "revision": 107,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T20:01:00Z",
+  "updatedAt": "2026-09-12T20:04:00Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -3854,8 +3854,8 @@
       "tabId": 829822468
     },
     "flutterTest": {
-      "dono": "C0",
-      "estado": "Reservado para regressao Chat G4 integrada; medir processos antes de iniciar, uma suite focal.",
+      "dono": "nenhum",
+      "estado": "C0 Chat3PASS finalizado; analyze0; sem processo de teste ativo",
       "inicio": "2026-09-12T20:01:00Z"
     },
     "sqlEspelho": {
@@ -4152,5 +4152,14 @@
         "proof": "docs/reviews/evidence/etapa-2/r09-coordenacao/lote60-preflight.md"
       }
     ]
-  }
+  },
+  "pendenciasOwnerR09": [
+    {
+      "scope": "apps/superadmin -> cabecalho -> shell.load",
+      "finding": "CircleAvatar Text OC fixo confirmado no codigo",
+      "instruction": "corrigir posteriormente; nao interrompe gates correntes",
+      "owner": "C0/G7",
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md"
+    }
+  ]
 }

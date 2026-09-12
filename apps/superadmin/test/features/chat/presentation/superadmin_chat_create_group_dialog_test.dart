@@ -46,7 +46,7 @@ void main() {
           await tester.pumpAndSettle();
           expect(
             find.text(
-              'N?o foi poss?vel carregar as pessoas desta institui??o.',
+              'Não foi possível carregar as pessoas desta instituição.',
             ),
             findsOneWidget,
           );
@@ -63,7 +63,7 @@ void main() {
           await tester.pumpAndSettle();
         }
         expect(
-          find.text('N?o foi poss?vel carregar as pessoas desta institui??o.'),
+          find.text('Não foi possível carregar as pessoas desta instituição.'),
           findsNothing,
         );
         final member = find.byKey(

@@ -209,9 +209,9 @@
       "screen": "Shell / Carregamento",
       "scope": "flutter-only",
       "done": "R04 principal-chat-sistema rev 12: rota real abre com sessao em producao e reload mantem.",
-      "fe": "regressao transversal do launcher (Decisao 7) corrigida em 7322260c5, 1e34eb9f4 e dcfcb9e41 (integrados em dev 7d128b3a6): flag da pagina embutida chega ao hospedeiro, SuperadminFormFrame suprime o balao em qualquer largura, destinos do Principal sem balao; shell real abre com o launcher so nos diretorios",
+      "fe": "Prova FE anterior preservada, sem nova certificacao. Carregamento do shell previamente verificado; avatar dinamico NAO certificado. Owner pediu correcao posterior do OC fixo; C0 confirmou CircleAvatar const Text(OC) em superadmin_shell.dart:1786. Pendencia C0/G7, sem alterar estado/denominador nem implementar nesta fatia.",
       "be": "Sem endpoint ou tabela próprios; depende de sessão/contexto. Qualificação local Auth R02 entregue (CLI/ledger 2 PASS); provedor remoto e personas permanecem pendentes. Não herda certificado das quatro ações Auth.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md; superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124; tela real 51-meal-plans.png (diretorio com balao) e 51-principal-moments.png (Momentos aberto sem balao)",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.load); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.load) R01/16h: C01r30; C00 integration-1600.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/C00 2026-09-08T19:00:55-03:00 c4a7feff: Header compacto usa largura disponível, texto separado das ações; inset20 preservado em375/768,claro/escuro,100/200%. RED8→GREEN8; appbar aprovado preservado. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C01/r51; C01r51 final, I021WIP; provas offline77 não equivalem Auth real; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md; superadmin_shell_chat_visibility_test 12/12; test/app/shell 124/124; tela real 51-meal-plans.png (diretorio com balao) e 51-principal-moments.png (Momentos aberto sem balao); docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "verified",
@@ -4128,9 +4128,9 @@
       "screen": "Chat / Criar grupo",
       "scope": "mvp",
       "done": "R08 G4 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
-      "fe": "dialogo Criar grupo na tela real carrega a instituicao QA R04 Cuidado (sintetico) pelo diretorio de Pessoas e lista Crianca QA R04 como membro; nome via driver enter_text (33/120). Antes da ponte de ator o diretorio negava qa-r03",
+      "fe": "Prova FE anterior preservada, sem nova certificacao. R09 G4/C0: regressao real RED1PASS/2FAIL, corrigido erro residual/tardio na troca A/B; GREEN3PASS/0FAIL, sem UI/BE/E2E novo.",
       "be": "R04 realm-interno: superadmin_chat_create_group_v2 (20260910240400) em producao (lote 9); prova qa-r03 22:32: grupo criado com membros e replay idempotente; auditoria. pgTAP 19/19.",
-      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; 61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png; 67c-inbox-reload.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; 61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png; 67c-inbox-reload.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md",
       "historicalFrontend": "pending-verification",
       "historicalBackend": "pending-verification",
       "frontendStatus": "verified",
@@ -8870,7 +8870,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T20:01:10.117Z",
+  "updatedAt": "2026-09-12T20:04:45.309Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
