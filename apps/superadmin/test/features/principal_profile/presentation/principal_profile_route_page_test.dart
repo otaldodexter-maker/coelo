@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:coelo_domain/profile_about.dart';
 import 'package:coelo_superadmin/features/principal_profile/presentation/principal_profile_route_page.dart';
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
@@ -184,6 +186,62 @@ void main() {
     expect(repository.requested, hasLength(2));
   });
 
+  for (final (label, role, scope) in [
+    ('roleCode', 'coordinator', 'unit'),
+    ('scopeKind', 'staff', 'institution'),
+  ]) {
+    testWidgets('re-reads and drops About when only $label changes', (tester) async {
+      final repository = _StubAboutRepository(
+        page: ProfileAboutPage(
+          subject: subjectOf(context),
+          version: 1,
+          fields: const [
+            ProfileAboutField(key: ProfileAboutFieldKey.description, value: 'Bio anterior'),
+          ],
+          sections: const [],
+        ),
+      );
+      await pump(tester, repository: repository);
+      await tester.pumpAndSettle();
+      expect(find.text('Bio anterior'), findsWidgets);
+      final previousRead = Completer<void>();
+      repository.gate = previousRead;
+
+      await pump(
+        tester,
+        repository: repository,
+        runtimeContext: PrincipalRuntimeContext(
+          membershipId: context.membershipId,
+          personId: context.personId,
+          institutionId: context.institutionId,
+          institutionName: context.institutionName,
+          unitId: context.unitId,
+          unitName: context.unitName,
+          roleCode: role,
+          scopeKind: scope,
+        ),
+      );
+      await tester.pump();
+      expect(repository.requested, hasLength(2));
+      expect(find.text('Bio anterior'), findsNothing);
+
+      // A second context change denies access before the previous read returns.
+      repository
+        ..gate = null
+        ..error = ProfileAboutUnauthorizedException();
+      await pump(tester, repository: repository);
+      await tester.pumpAndSettle();
+      expect(repository.requested, hasLength(3));
+      previousRead.complete();
+      await tester.pumpAndSettle();
+
+      expect(find.text('Bio anterior'), findsNothing);
+      expect(find.byKey(const Key('principal-profile-unauthorized')), findsOneWidget);
+      expect(find.byKey(const Key('principal-profile-content')), findsNothing);
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('never tells a real user the Perfil is a prototype', (tester) async {
     await pump(tester, repository: _StubAboutRepository(page: null));
     await tester.pumpAndSettle();
@@ -295,6 +353,7 @@ final class _StubAboutRepository implements ProfileAboutRepository {
 
   ProfileAboutPage? page;
   Object? error;
+  Completer<void>? gate;
   final List<ProfileAboutSubjectRef> requested = [];
 
   @override
@@ -304,8 +363,11 @@ final class _StubAboutRepository implements ProfileAboutRepository {
   }) async {
     requested.add(subject);
     final failure = error;
+    final result = page;
+    final pending = gate;
+    if (pending != null) await pending.future;
     if (failure != null) throw failure;
-    return page;
+    return result;
   }
 
   @override

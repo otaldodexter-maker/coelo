@@ -14,8 +14,10 @@ import 'package:coelo_superadmin/features/auth/domain/superadmin_auth_context.da
 import 'package:coelo_superadmin/features/forms/data/form_export_download_resolver.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_backend_gateway.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_media_reader.dart';
+import 'package:coelo_superadmin/features/forms/data/forms_anonymous_edit_secret_store.dart';
 import 'package:coelo_superadmin/features/forms/presentation/operations/forms_media_page.dart';
 import 'package:coelo_superadmin/features/forms/presentation/operations/forms_operations_page.dart';
+import 'package:coelo_superadmin/features/forms/presentation/response/form_response_page.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -106,7 +108,7 @@ void main() {
     expect(before.downloadResolver, same(media.downloadResolver));
     expect(before.openDownloadUrl, isNotNull);
     expect(downloads.calls, 0);
-    session.authorize(_authContext, sessionId: session.sessionId!);
+    session.authorize(_authContext, sessionId: '22222222-2222-4222-8222-222222222223');
     await tester.pumpAndSettle();
     final after = tester.widget<FormsOperationsPage>(find.byType(FormsOperationsPage));
     expect(after.key, isNot(before.key));
@@ -170,6 +172,73 @@ void main() {
     expect(tester.widget<FormsMediaPage>(find.byType(FormsMediaPage)).session, same(media.current));
     expect(tester.takeException(), isNull);
   });
+
+  testWidgets('response route receives the current stable anonymous store context', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    final api = _PendingResponseApi();
+    final first = _AnonymousStore();
+    final second = _AnonymousStore();
+    var current = first;
+    var providerCalls = 0;
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+      formsApi: api,
+      formsAnonymousEditSecrets: () {
+        providerCalls++;
+        return current;
+      },
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go('/forms/form-1/occurrences/occurrence-1/respond');
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pump();
+    expect(
+      tester.widget<FormResponsePage>(find.byType(FormResponsePage)).anonymousEditSecrets,
+      same(first),
+    );
+    expect(providerCalls, greaterThan(0));
+    final firstContextCalls = providerCalls;
+
+    current = second;
+    session.authorize(_authContext, sessionId: '22222222-2222-4222-8222-222222222222');
+    await tester.pump();
+    expect(
+      tester.widget<FormResponsePage>(find.byType(FormResponsePage)).anonymousEditSecrets,
+      same(second),
+    );
+    expect(providerCalls, greaterThan(firstContextCalls));
+    final authorizedCalls = providerCalls;
+
+    session.signOut();
+    router.go('/forms/form-1/occurrences/occurrence-1/respond');
+    await tester.pumpAndSettle();
+    expect(find.byType(FormResponsePage), findsNothing);
+    expect(
+      providerCalls,
+      authorizedCalls,
+      reason: 'unauthorized routes must not resolve an account store',
+    );
+  });
+}
+
+final class _AnonymousStore implements FormsAnonymousEditSecretStore {
+  @override
+  Future<String> loadOrCreate(String occurrenceId) async => 's' * 43;
+}
+
+final class _PendingResponseApi implements FormsApi {
+  final pending = Completer<FormOccurrenceForResponse>();
+
+  @override
+  Future<FormOccurrenceForResponse> getOccurrenceForResponse(String occurrenceId) => pending.future;
+
+  @override
+  dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
 }
 
 final class _Api implements FormsApi, FormsResponseContextReader {
