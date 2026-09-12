@@ -1,16 +1,16 @@
 {
-  "revision": 48,
-  "updated_at": "2026-09-12T09:30:48-03:00",
-  "round": "E2-R07-20260911",
+  "revision": 50,
+  "updated_at": "2026-09-12T10:58:04.991955-03:00",
+  "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
-  "model": "Luna (esforco medio)",
-  "coordinator": "R07 · Coordenacao",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
-  "branch": "work/etapa2-r07-principal-chat-sistema",
-  "base": "origin/dev a50487878",
-  "head": "bc6069089c99147cb6b549708253558bc2853931 antes do commit final deste JSON",
-  "status": "FECHAMENTO FORMAL R07; frente encerrada sem E2E novo por bloqueio Chrome/CDP; handoff publicado; sem retomada após T0+4h10.",
+  "model": "GPT-Astra (esforco medio, conforme Owner)",
+  "coordinator": "R08 Coordenacao C0",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+  "branch": "work/etapa2-r08-principal-chat-sistema",
+  "base": "origin/dev 6d6cbef32",
+  "head": "6d6cbef32",
+  "status": "EXECUTANDO: CORS Momentos corrigido com 27 testes Deno verdes; deploy C0 e E2E pendentes",
   "T0_assumido": "R07 desta frente: 2026-09-11T23:20:52-03:00; T0+4h = 2026-09-12T03:20:52-03:00; revisao final ate 03:30:52",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
@@ -251,9 +251,35 @@
     "t0": "2026-09-11T23:20:52-03:00",
     "escopo": "apps/superadmin -> menu Coelo (Principal) -> Publicacao (Acontece, Agora, Momentos), Cardapios, paginas de erro, Perfil e Chat",
     "objetivo": "Provar CRUD real com reload e R2 privado nos publicadores; fechar Cardapios; provar erros; avancar Perfil e Chat sem reabrir gates independentes.",
-    "incluido": ["acontece.create/publish", "momentos.create/publish/remove", "agora.create/publish/expire", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 somente se P54=A", "chat.create-group e chat.attach se houver tempo"],
-    "fora_de_escopo": ["apps/admin", "apps/principal", "site", "dev/inventario/rastreadores", "deploy Cloudflare pelo coordenador", "V-1 sem resposta P54", "SQL salvo se nao indispensavel"],
-    "ordem": ["publicadores com PNG e reload", "meal-plans", "errors", "principal.profile-edit", "V-3", "V-1 se autorizado", "chat"],
+    "incluido": [
+      "acontece.create/publish",
+      "momentos.create/publish/remove",
+      "agora.create/publish/expire",
+      "meal-plans.create/edit/publish",
+      "errors.403/409/500/503/retry",
+      "principal.profile-edit",
+      "V-3 restante",
+      "V-1 somente se P54=A",
+      "chat.create-group e chat.attach se houver tempo"
+    ],
+    "fora_de_escopo": [
+      "apps/admin",
+      "apps/principal",
+      "site",
+      "dev/inventario/rastreadores",
+      "deploy Cloudflare pelo coordenador",
+      "V-1 sem resposta P54",
+      "SQL salvo se nao indispensavel"
+    ],
+    "ordem": [
+      "publicadores com PNG e reload",
+      "meal-plans",
+      "errors",
+      "principal.profile-edit",
+      "V-3",
+      "V-1 se autorizado",
+      "chat"
+    ],
     "primeiro_gate": "Publicadores: capturar e resolver a falha do navegador apos CORS alinhado; provar persistencia, R2 e reload por action_id.",
     "feito": [
       "errors.403/404/500/503: suíte superadmin_error_routes_test 14/14 verde; expectativa obsoleta de /profile removida do loop de erro indisponível porque a rota produtiva tem estado próprio de carregamento/falha.",
@@ -263,10 +289,94 @@
       "checkpoint inicial publicado em 4809bbc06",
       "checkpoint 23:50: servidor local 127.0.0.1:3009 responde HTTP 200; duas tentativas de controle da aba Chrome/CDP expiraram por timeout, sem captura ou CRUD real declarado"
     ],
-    "pendente": ["publicadores com midia", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 condicionado a P54=A", "chat.create-group/chat.attach"],
-    "commits_publicados": ["4809bbc06: abertura R07 + deltas vazios; push concluído", "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído", "2abf24cc9: correção MIME no PUT de Momentos; push concluído", "244fed7b0: regressão curta 97/97; push concluído", "ab48ce68a: handoff formal R07; push concluído", "bc6069089: fechamento final do JSON; push concluído"],
+    "pendente": [
+      "publicadores com midia",
+      "meal-plans.create/edit/publish",
+      "errors.403/409/500/503/retry",
+      "principal.profile-edit",
+      "V-3 restante",
+      "V-1 condicionado a P54=A",
+      "chat.create-group/chat.attach"
+    ],
+    "commits_publicados": [
+      "4809bbc06: abertura R07 + deltas vazios; push concluído",
+      "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído",
+      "2abf24cc9: correção MIME no PUT de Momentos; push concluído",
+      "244fed7b0: regressão curta 97/97; push concluído",
+      "ab48ce68a: handoff formal R07; push concluído",
+      "bc6069089: fechamento final do JSON; push concluído"
+    ],
     "evidencias_esperadas": "capturas commitadas em docs/reviews/evidence/etapa-2/r07-principal-chat-sistema/rota-real e deltas-r07-pcs.json no formato do aplicador",
     "cadencia": "checkpoint JSON a cada 30 minutos; checkpoint 23:50:52 publicado; revisao final T0+4h",
     "seguranca": "qa-r06-principal lido somente do arquivo local; nenhum segredo em Git, chat, log ou JSON; um Chrome e um flutter test por vez"
+  },
+  "historico_r07_cabecalho": {
+    "revision": 48,
+    "updated_at": "2026-09-12T09:30:48-03:00",
+    "round": "E2-R07-20260911",
+    "model": "Luna (esforco medio)",
+    "coordinator": "R07 · Coordenacao",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
+    "branch": "work/etapa2-r07-principal-chat-sistema",
+    "base": "origin/dev a50487878",
+    "head": "bc6069089c99147cb6b549708253558bc2853931 antes do commit final deste JSON",
+    "status": "FECHAMENTO FORMAL R07; frente encerrada sem E2E novo por bloqueio Chrome/CDP; handoff publicado; sem retomada após T0+4h10."
+  },
+  "rodada8": {
+    "t0": "2026-09-12T10:52:16-03:00",
+    "corte_execucao": "2026-09-12T14:52:16-03:00",
+    "handoff_final_ate": "2026-09-12T15:02:16-03:00",
+    "ajustes_c0_ate": "2026-09-12T15:22:16-03:00",
+    "objetivo": "Fechar primeiro gate executavel de publicadores privados e seguir Cardapios, Chat, Perfil/Para Voce e erros em apps/superadmin.",
+    "incluido": [
+      "principal_* exceto principal_circulars",
+      "meal_plans",
+      "chat",
+      "errors",
+      "happens-media",
+      "now-media",
+      "moments-media"
+    ],
+    "fora": [
+      "outros apps",
+      "principal_circulars (G6)",
+      "inventario/rastreadores e deploy (C0)",
+      "V-1 residual P54 pos-MVP",
+      "seguranca profunda historica"
+    ],
+    "ordem": [
+      "PNG privado em Acontece/Agora/Momentos: publicar, ler, reload, remover",
+      "Cardapios lote55",
+      "chat.create-group e cliente chat.attach",
+      "Perfil/Para Voce e erros por gate do backlog",
+      "H09 com G5/C0 em paralelo ao trabalho independente"
+    ],
+    "feito": [
+      "fetch e worktree propria criada; principal sem edicoes/pull",
+      "contrato comum e G4 completos; plano/backlog/fechamento/decisoes R07 lidos",
+      "origin/dev 6d6cbef32 incorporada",
+      "C0 e G5 informados",
+      "moments-media: teste HTTP reproduziu falta de x-client-info; uma linha corrigida; 27 Deno PASS / 0 FAIL"
+    ],
+    "pendente": [
+      "provas reais de midia",
+      "Cardapios CRUD/reload",
+      "chat.create-group/attach",
+      "Perfil/Para Voce e erros",
+      "disparador H09"
+    ],
+    "primeiro_gate": "C0 implantar moments-media; G0 liberar runtime e C0 conceder Chrome. Trabalho independente: consumidor chat.attach.",
+    "evidencias_esperadas": "arquivos commitados em docs/reviews/evidence/etapa-2/r08-principal-chat-sistema; testes locais separados de UI/R2/Supabase e negativa de escopo",
+    "estimativa_delta": "CORS localizado: 15-25 min com teste; E2E depende de runtime/slot. Chat exige inspecao do consumidor antes de estimar. Demais gates na janela, sem promessa de concluir todos.",
+    "testes": {
+      "moments-media": "27 PASS / 0 FAIL; antes 0 PASS / 1 FAIL em cors_test por x-client-info",
+      "e2e": "nao executado"
+    },
+    "recursos": {
+      "chrome": "aguarda C0/G0",
+      "flutter_test": "nao solicitado ainda",
+      "deno": "local disponivel; nao consome slot Flutter"
+    },
+    "commits_publicados": []
   }
 }
