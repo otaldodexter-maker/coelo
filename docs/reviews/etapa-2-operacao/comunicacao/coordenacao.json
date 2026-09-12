@@ -2054,7 +2054,7 @@
    "grupo": "suites",
    "revisaoRecebida": 14,
    "ack": true,
-   "integradoEm": "pendente de commit deste merge",
+   "integradoEm": "aa3d7c4e4db78c6b0cb9c0bf5430bb94c33e18e1",
    "testes": "suítes tocadas em test/app/router: 19 PASS; ciclos anteriores test/app, test/core/config e test/shared: 87 PASS",
    "observacao": "novo commit 6f8506c60 dentro do recorte permitido; nenhum toque em lib/features ou lib/shared/presentation; sem delta de estado"
   },
