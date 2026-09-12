@@ -1,0 +1,17 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+apps/superadmin/lib/features/agenda/presentation/agenda_calendar_page.dart:697 [InkWell] uso cru proibido; substitua por CoeloAdminInteractiveCard ou componente Coelo especializado
+apps/superadmin/lib/features/chat/presentation/screens/superadmin_chat_page.dart:1054 [PopupMenuButton] uso cru proibido; substitua por CoeloAdminFlyout
+apps/superadmin/lib/features/chat/presentation/screens/superadmin_chat_page.dart:1064 [PopupMenuItem] uso cru proibido; substitua por CoeloAdminFlyoutItem
+apps/superadmin/lib/features/chat/presentation/screens/superadmin_chat_page.dart:1070 [PopupMenuItem] uso cru proibido; substitua por CoeloAdminFlyoutItem
+apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_create_group_dialog.dart:136 [DropdownButtonFormField] uso cru proibido; substitua por CoeloAdminSingleSelectField ou componente Coelo especializado
+apps/superadmin/lib/features/chat/presentation/widgets/superadmin_chat_create_group_dialog.dart:167 [CheckboxListTile] uso cru proibido; substitua por controle de selecao Coelo compartilhado ou composicao aprovada
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_card.dart:72 [InkWell] uso cru proibido; substitua por CoeloAdminInteractiveCard ou componente Coelo especializado
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_cards.dart:1 [allowlist] arquivo allowlistado nao existe
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_toolbar.dart:1 [allowlist] arquivo allowlistado nao existe
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_directory_toolbar.dart:1 [allowlist] arquivo allowlistado nao existe
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_filter_menu.dart:287 [MenuAnchor] uso cru proibido; substitua por CoeloAdminFlyout
+apps/superadmin/lib/features/institutions/presentation/widgets/institution_filter_menu.dart:356 [MenuItemButton] uso cru proibido; substitua por CoeloAdminFlyoutItem
+apps/superadmin/lib/features/principal_chat/presentation/principal_chat_page.dart:842 [InkWell] uso cru proibido; substitua por CoeloAdminInteractiveCard ou componente Coelo especializado
+apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart:1287 [PopupMenuButton] uso cru proibido; substitua por CoeloAdminFlyout
+apps/superadmin/lib/features/principal_happens/presentation/principal_happens_preview_page.dart:1293 [PopupMenuItem] uso cru proibido; substitua por CoeloAdminFlyoutItem
+apps/superadmin/lib/features/students/presentation/student_manage_page.dart:584 [DropdownButtonFormField] uso cru proibido; substitua por CoeloAdminSingleSelectField ou componente Coelo especializado
