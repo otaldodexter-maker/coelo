@@ -1,0 +1,145 @@
+[
+  {
+    "action_id": "meal-plans.list",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.list",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  }
+]

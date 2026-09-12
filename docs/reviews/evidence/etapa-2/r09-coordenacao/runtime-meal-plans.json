@@ -1,0 +1,11 @@
+{
+  "commit": "36ef3a43e",
+  "buildSeconds": 58.8,
+  "buildExit": 0,
+  "sha256": "52eb61ee16bec710851422b797e534737bc445cba20f0b245efa024c0627dcd2",
+  "servedMatch": true,
+  "serverPid": 48684,
+  "chromePid": 22592,
+  "textEmulation": false,
+  "syntheticCircularFile": false
+}

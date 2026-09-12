@@ -7808,15 +7808,15 @@
       "family": "meal_plans",
       "screen": "Cardápios / Diretório",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar meal-plans.list pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
+      "done": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
       "fe": "lista abre na rota real e mostra o modelo publicado com Status e Duplicar (07)",
-      "be": "R04 (lote 10): ponte de ator (220400) em producao: Cardapios deixa de negar o usuario do realm interno. Gate para done: rota normal com sessao e reload (grupo principal-chat-sistema).",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4); goldens-acontece-cardapios-decisoes-2026-09-10.md; coordenacao.json R04 rev 21 (lote10); 51-meal-plans.png; 52-meal-plans-reload.png; captura 07; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "be": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; C00 conjunto74PASS; executor102não-golden; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/reports/E2-noturna-texto-200-20260909.md; commit 085c02c68; comunicacao/principal-chat-sistema.json r7 (fila_sql_para_o_coordenador); coordenacao.json R03 rev 6 (preflightNaBaseline); coordenacao.json R03 rev 10 (lote4); goldens-acontece-cardapios-decisoes-2026-09-10.md; coordenacao.json R04 rev 21 (lote10); 51-meal-plans.png; 52-meal-plans-reload.png; captura 07; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
       "historicalFrontend": "audited",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
-      "backendStatus": "local-green",
-      "integratedStatus": "local-green",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -7839,6 +7839,18 @@
           "revision": "principal-chat-sistema r32",
           "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
           "recordedAt": "2026-09-11T20:37-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
         }
       }
     },
@@ -7847,15 +7859,15 @@
       "family": "meal_plans",
       "screen": "Criar Cardápio",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar meal-plans.create pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
-      "fe": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
-      "be": "R03 (10/09 16:45): cadeia de Cardapios em producao (lote 4). Gate para done: sessao (P17), CRUD real e reload.",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 357a275b: Troca de tenant invalida load/save tardios do wizard. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md",
+      "done": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "fe": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "be": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 357a275b: Troca de tenant invalida load/save tardios do wizard. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "ownerVisualApproval": {
@@ -7866,6 +7878,26 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-acontece-cardapios-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        }
       }
     },
     {
@@ -7873,17 +7905,37 @@
       "family": "meal_plans",
       "screen": "Editar Cardápio",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar meal-plans.edit pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
-      "fe": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
-      "be": "R03 (10/09 16:45): 190100 em producao: apagar imagem exige p_expected_revision; anon sem SELECT em meal_plans. Gate para done: sessao (P17), CRUD real e reload.",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 357a275b: Troca de tenant invalida load/save tardios do wizard. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 6; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md",
+      "done": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "fe": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "be": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 357a275b: Troca de tenant invalida load/save tardios do wizard. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema-patch-router.md; commit 7b553ab75; teste vermelho na base; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 6; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        }
+      }
     },
     {
       "id": "meal-plans.model-create",
@@ -7964,18 +8016,38 @@
       "family": "meal_plans",
       "screen": "Cardápios / Publicar",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar meal-plans.publish pela UI sobre scopeRules/lote55; não reabrir fail-closed de tenant já removido.",
-      "fe": "R09 C0: entrada Cardapios liberada no menu produtivo de Operacao;25 testes de navegacao PASS, analyze0. CRUD real em curso; nenhum novo aceite.",
-      "be": "R03 (10/09 16:45): recibos de comando e meal_plan_archive em producao (190000); excluir por meal_plan_delete (190200, decisao do Owner). Gate para done: sessao (P17), CRUD real e reload.",
-      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; Review C00 no fechamento, sem execução remota; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 1ac657de6; apps/superadmin/test/features/meal_plans/presentation/meal_plan_directory_page_test.dart -> 10 PASS; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md",
+      "done": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "fe": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "be": "R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+      "evidence": "commits0c40b1c8/682d4483/cbdc90c3/c6532889; evidence/etapa-2/agenda-operacoes/; Fechamento R01 C03/r33; Review C00 no fechamento, sem execução remota; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 1ac657de6; apps/superadmin/test/features/meal_plans/presentation/meal_plan_directory_page_test.dart -> 10 PASS; comunicacao/principal-chat-sistema.json r7; coordenacao.json R03 rev 10; capturas 09, 10, 11, 23; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-navigation.md; docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:22:14-03:00"
+      "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+          "revision": "R09-C0-r112",
+          "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+          "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+        }
+      }
     },
     {
       "id": "internal-users.list",
@@ -8930,7 +9002,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-12T20:43:56.382Z",
+  "updatedAt": "2026-09-12T20:55:38.923Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

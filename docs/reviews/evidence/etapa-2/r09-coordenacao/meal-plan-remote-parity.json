@@ -1,0 +1,271 @@
+{
+  "rls": true,
+  "policies": [
+    {
+      "cmd": "DELETE",
+      "qual": "(app_private.has_platform_permission('meal_plans.manage'::text) AND app_private.meal_plan_scope_allowed(tenant_id, institution_id))",
+      "policyname": "meal_plans_delete",
+      "with_check": null
+    },
+    {
+      "cmd": "SELECT",
+      "qual": "(app_private.has_platform_permission('meal_plans.read'::text) AND app_private.meal_plan_scope_allowed(tenant_id, institution_id))",
+      "policyname": "meal_plans_read",
+      "with_check": null
+    },
+    {
+      "cmd": "UPDATE",
+      "qual": "(app_private.has_platform_permission('meal_plans.manage'::text) AND app_private.meal_plan_scope_allowed(tenant_id, institution_id))",
+      "policyname": "meal_plans_update",
+      "with_check": "(app_private.has_platform_permission('meal_plans.manage'::text) AND app_private.meal_plan_scope_allowed(tenant_id, institution_id))"
+    },
+    {
+      "cmd": "INSERT",
+      "qual": null,
+      "policyname": "meal_plans_write",
+      "with_check": "(app_private.has_platform_permission('meal_plans.manage'::text) AND app_private.meal_plan_scope_allowed(tenant_id, institution_id))"
+    }
+  ],
+  "functions": [
+    {
+      "md5": "57dd868738151b326b195a007d3fea7c",
+      "args": "permission_code text",
+      "name": "has_platform_permission",
+      "schema": "app_private"
+    },
+    {
+      "md5": "a4423e7b8f52025ed0f3d1d345707e3c",
+      "args": "permission_code text, institution_id uuid",
+      "name": "has_platform_permission",
+      "schema": "app_private"
+    },
+    {
+      "md5": "ca06c5ef580c459f315b60f590db981d",
+      "args": "p_request_id uuid, p_checksum_sha256 text, p_alt_text text, p_replace_asset_id uuid",
+      "name": "meal_plan_finalize_image_upload",
+      "schema": "app_private"
+    },
+    {
+      "md5": "816be475e7cb5939da1af24127f51376",
+      "args": "p_request_id uuid, p_checksum_sha256 text, p_alt_text text, p_replace_asset_id uuid",
+      "name": "meal_plan_finalize_image_upload_unreceipted",
+      "schema": "app_private"
+    },
+    {
+      "md5": "900c9561479c8e9ce8d4c057df2436e7",
+      "args": "",
+      "name": "meal_plan_image_asset_parent_guard",
+      "schema": "app_private"
+    },
+    {
+      "md5": "9a41af05633b3b902d0916981888dadd",
+      "args": "",
+      "name": "meal_plan_image_delete_request_defaults",
+      "schema": "app_private"
+    },
+    {
+      "md5": "b366f5fa2e83f771b2179e71c92768ff",
+      "args": "p_asset_id uuid",
+      "name": "meal_plan_image_download_descriptor",
+      "schema": "app_private"
+    },
+    {
+      "md5": "7640193a0c0ee0599d182990a62f7c27",
+      "args": "p_asset meal_plan_image_assets",
+      "name": "meal_plan_image_parent_status",
+      "schema": "app_private"
+    },
+    {
+      "md5": "f7af784e183fe180fb2958b37094b86a",
+      "args": "p_resource_kind text, p_resource_id uuid, p_file_name text, p_mime_type text, p_size_bytes bigint, p_alt_text text, p_idempotency_key uuid",
+      "name": "meal_plan_prepare_image_upload",
+      "schema": "app_private"
+    },
+    {
+      "md5": "37f2d1fc93c83360977caeb141578603",
+      "args": "p_payload jsonb",
+      "name": "meal_plan_request_hash",
+      "schema": "app_private"
+    },
+    {
+      "md5": "3c766c71be1b6d350e0f486100657c0d",
+      "args": "p_asset_id uuid, p_idempotency_key uuid, p_expected_revision integer",
+      "name": "meal_plan_request_image_delete",
+      "schema": "app_private"
+    },
+    {
+      "md5": "f16cf017fbcc9c352576fd76cb4be239",
+      "args": "p_asset_id uuid, p_idempotency_key uuid",
+      "name": "meal_plan_request_image_delete_unreceipted",
+      "schema": "app_private"
+    },
+    {
+      "md5": "23761b48aff20549cdd4e681a51e72ad",
+      "args": "p_tenant_id uuid, p_institution_id uuid",
+      "name": "meal_plan_scope_allowed",
+      "schema": "app_private"
+    },
+    {
+      "md5": "011a17a5ef3bd52b97aff88706a0bffc",
+      "args": "p_value jsonb, p_institution_id uuid",
+      "name": "meal_plan_scope_rules_array",
+      "schema": "app_private"
+    },
+    {
+      "md5": "eb095742420bb27d3e8f06b9ca97d173",
+      "args": "p_value jsonb",
+      "name": "meal_plan_scope_rules_object",
+      "schema": "app_private"
+    },
+    {
+      "md5": "a8a7f286e75aae3ab85dbfe7cc386e98",
+      "args": "",
+      "name": "meal_plan_validate_target",
+      "schema": "app_private"
+    },
+    {
+      "md5": "7c2dbc6ca497558ff504beabdac70ef9",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_archive",
+      "schema": "public"
+    },
+    {
+      "md5": "e921cb4c6fe882a50246b57c76d436f7",
+      "args": "p_query jsonb",
+      "name": "meal_plan_audience_options",
+      "schema": "public"
+    },
+    {
+      "md5": "a373c39b0da1d6e73a4600d19708e02d",
+      "args": "p_meal_plan_id uuid, p_occurrence_date date",
+      "name": "meal_plan_audience_resolve_occurrence",
+      "schema": "public"
+    },
+    {
+      "md5": "954a2224911310e7cef26d512147208a",
+      "args": "p_limit integer",
+      "name": "meal_plan_claim_image_cleanup",
+      "schema": "public"
+    },
+    {
+      "md5": "9dc713e699cad9cd660e97d5125284f9",
+      "args": "p_request_id uuid, p_succeeded boolean, p_error text",
+      "name": "meal_plan_complete_image_cleanup",
+      "schema": "public"
+    },
+    {
+      "md5": "c2f2b3666ab340cd8dd771985f7c6d8a",
+      "args": "p_scope_level text, p_scope_id text, p_start_date date, p_end_date date, p_recurrence jsonb, p_menu jsonb",
+      "name": "meal_plan_conflicts_check",
+      "schema": "public"
+    },
+    {
+      "md5": "a93290f41ba240c095f6c9c50aae2f50",
+      "args": "p_request_id text, p_payload jsonb, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_create_or_update_draft",
+      "schema": "public"
+    },
+    {
+      "md5": "21a12498ebe2db9d2796b94109b9b9b9",
+      "args": "p_request_id text, p_payload jsonb, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_create_or_update_draft_unreceipted",
+      "schema": "public"
+    },
+    {
+      "md5": "e641942a9d59ab90f8cb9794fabfa56e",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_delete",
+      "schema": "public"
+    },
+    {
+      "md5": "43f1f31e780728b03dfa109ac802019e",
+      "args": "p_payload jsonb",
+      "name": "meal_plan_effective_snapshot",
+      "schema": "public"
+    },
+    {
+      "md5": "568f09850155d8d75c270fc6d2726a00",
+      "args": "p_request_id uuid, p_checksum_sha256 text, p_alt_text text, p_replace_asset_id uuid",
+      "name": "meal_plan_finalize_image_upload",
+      "schema": "public"
+    },
+    {
+      "md5": "c67c181f59a5ac1568c0247499db9702",
+      "args": "p_meal_plan_id uuid",
+      "name": "meal_plan_get",
+      "schema": "public"
+    },
+    {
+      "md5": "88b35e7736bf885db09e87d48fb5d6d1",
+      "args": "p_asset_id uuid",
+      "name": "meal_plan_image_download_descriptor",
+      "schema": "public"
+    },
+    {
+      "md5": "01c0c8d7475491292a6df604cb506606",
+      "args": "plan meal_plans",
+      "name": "meal_plan_json",
+      "schema": "public"
+    },
+    {
+      "md5": "dca65a73476c2d391f793bf100c2b363",
+      "args": "p_query jsonb",
+      "name": "meal_plan_list",
+      "schema": "public"
+    },
+    {
+      "md5": "2f75b65fcbf9b4800c1065e5572c4adf",
+      "args": "p_resource_kind text, p_resource_id uuid, p_file_name text, p_mime_type text, p_size_bytes bigint, p_alt_text text, p_idempotency_key uuid",
+      "name": "meal_plan_prepare_image_upload",
+      "schema": "public"
+    },
+    {
+      "md5": "661d8a9dd73a6aae70af6959b4d92182",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_publish",
+      "schema": "public"
+    },
+    {
+      "md5": "d5214e0e9efa9f7b38ae053f3b77e594",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_publish_unreceipted",
+      "schema": "public"
+    },
+    {
+      "md5": "f72724f11ac3fb78974bf7a34996110a",
+      "args": "p_asset_id uuid, p_idempotency_key uuid, p_expected_revision integer",
+      "name": "meal_plan_request_image_delete",
+      "schema": "public"
+    },
+    {
+      "md5": "7709eb6b783621fe326dcb337625d3f4",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_submit_for_review",
+      "schema": "public"
+    },
+    {
+      "md5": "8b80e2566c3fc040717a1025b371bfac",
+      "args": "p_request_id text, p_meal_plan_id uuid, p_expected_revision integer",
+      "name": "meal_plan_submit_for_review_unreceipted",
+      "schema": "public"
+    },
+    {
+      "md5": "3261a480080ce3ee17159efa5ee7bb84",
+      "args": "p_template_id uuid",
+      "name": "meal_plan_template_get",
+      "schema": "public"
+    },
+    {
+      "md5": "406fa5da2361aa2c89df9f08a33a4dad",
+      "args": "p_query jsonb",
+      "name": "meal_plan_template_list",
+      "schema": "public"
+    },
+    {
+      "md5": "a72d137c929477cbc8fe92cb854a0cb7",
+      "args": "p_template_id uuid, p_payload jsonb, p_expected_version integer, p_publish boolean",
+      "name": "meal_plan_template_save",
+      "schema": "public"
+    }
+  ]
+}

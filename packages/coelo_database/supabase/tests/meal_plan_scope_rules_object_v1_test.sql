@@ -5,7 +5,7 @@
 -- chave preserva o valor gravado.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(9);
+select plan(16);
 
 insert into auth.users(id, aud, role, email, created_at, updated_at) values
   ('9b000000-0000-4000-8000-000000000001', 'authenticated', 'authenticated', 'scope-owner@test.invalid', now(), now());
@@ -103,6 +103,52 @@ select ok(
   not has_function_privilege('authenticated', 'app_private.meal_plan_scope_rules_array(jsonb,uuid)', 'execute')
   and not has_function_privilege('anon', 'app_private.meal_plan_scope_rules_object(jsonb)', 'execute'),
   'helpers sem execute para cliente');
+
+-- The scoped B actor cannot read or mutate the plan created in A.
+insert into auth.users(id, aud, role, email, created_at, updated_at) values
+  ('9b000000-0000-4000-8000-000000000002', 'authenticated', 'authenticated', 'scope-b@test.invalid', now(), now());
+insert into public.people(id, person_type, first_name, last_name, display_name, status) values
+  ('9b100000-0000-4000-8000-000000000002', 'adult', 'Scope', 'B', 'Scope B', 'active');
+insert into public.person_auth_links(person_id, auth_user_id, status) values
+  ('9b100000-0000-4000-8000-000000000002', '9b000000-0000-4000-8000-000000000002', 'active');
+insert into public.institutions(id, public_name, legal_name, slug, status) values
+  ('9b200000-0000-4000-8000-000000000002', 'Scope B', 'Scope B', 'scope-rules-b', 'active');
+insert into public.platform_memberships(person_id, role_id, status, scope_kind, scope_institution_id, mfa_required)
+select '9b100000-0000-4000-8000-000000000002', id, 'active', 'institution',
+  '9b200000-0000-4000-8000-000000000002', false
+from public.platform_roles where code = 'owner';
+set local role authenticated;
+select set_config('request.jwt.claim.sub', '9b000000-0000-4000-8000-000000000002', true);
+select set_config('request.jwt.claims',
+  '{"sub":"9b000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}', true);
+insert into scope_results(key,result)
+select 'own-b', public.meal_plan_create_or_update_draft('r09-own-b',jsonb_build_object(
+  'name','Own B plan','institutionId','9b200000-0000-4000-8000-000000000002',
+  'tenantId','9b200000-0000-4000-8000-000000000002',
+  'scopeLevel','institution','scopeId','9b200000-0000-4000-8000-000000000002',
+  'sourceType','institution','startDate',current_date::text,'endDate',(current_date+6)::text,
+  'planVariant','complete','audienceSegment','students','menu','[]'::jsonb),null,0);
+select ok((select result->>'id' from scope_results where key='own-b') is not null,
+  'scoped B has productive capability in its own institution');
+select is(public.meal_plan_get((select (result->>'id')::uuid from scope_results where key='own-b'))->>'name',
+  'Own B plan','scoped B can read its own plan');
+select is((select count(*)::int from public.meal_plans
+  where id=(select (result->>'id')::uuid from scope_results where key='create')),
+  0, 'RLS hides tenant A plan from scoped B actor');
+select throws_ok($$select public.meal_plan_get((select (result->>'id')::uuid from scope_results where key='create'))$$,
+  'P0002', null, 'scoped B cannot fetch tenant A plan');
+select throws_ok($$select public.meal_plan_create_or_update_draft('r09-negative-edit','{}'::jsonb,
+  (select (result->>'id')::uuid from scope_results where key='edit'),
+  (select (result->>'revision')::int from scope_results where key='edit'))$$,
+  'P0002', null, 'scoped B cannot edit tenant A plan');
+select throws_ok($$select public.meal_plan_publish('r09-negative-publish',
+  (select (result->>'id')::uuid from scope_results where key='edit'),
+  (select (result->>'revision')::int from scope_results where key='edit'))$$,
+  'P0002', null, 'scoped B cannot publish tenant A plan');
+reset role;
+select is((select name from public.meal_plans
+  where id=(select (result->>'id')::uuid from scope_results where key='create')),
+  'Cardapio scopeRules lista', 'denials preserve the edited plan');
 
 select * from finish();
 rollback;

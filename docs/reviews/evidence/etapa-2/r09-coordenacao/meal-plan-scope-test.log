@@ -1,0 +1,50 @@
+BEGIN
+CREATE EXTENSION
+1..16
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ok 1 - objeto: nulo vira {}
+ok 2 - array: objeto por nivel vira duas regras (instituicao e unidade); excluidos ficam fora
+CREATE TABLE
+GRANT
+SET
+9b000000-0000-4000-8000-000000000001
+{"sub":"9b000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+INSERT 0 1
+ok 3 - rascunho criado com scopeRules objeto
+RESET
+ok 4 - scope_rules gravado como objeto (check meal_plans_scope_rules_array_check)
+ok 5 - scope_rules preserva o objeto do cliente
+ok 6 - meal_plan_scopes recebe a regra derivada da instituicao
+SET
+9b000000-0000-4000-8000-000000000001
+{"sub":"9b000000-0000-4000-8000-000000000001","aal":"aal1","role":"authenticated"}
+INSERT 0 1
+RESET
+ok 7 - lista do cliente e convertida para objeto na gravacao
+ok 8 - meal_plan_scopes reescrito a partir da lista
+ok 9 - helpers sem execute para cliente
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+SET
+9b000000-0000-4000-8000-000000000002
+{"sub":"9b000000-0000-4000-8000-000000000002","aal":"aal1","role":"authenticated"}
+INSERT 0 1
+ok 10 - scoped B has productive capability in its own institution
+ok 11 - scoped B can read its own plan
+ok 12 - RLS hides tenant A plan from scoped B actor
+ok 13 - scoped B cannot fetch tenant A plan
+ok 14 - scoped B cannot edit tenant A plan
+ok 15 - scoped B cannot publish tenant A plan
+RESET
+ok 16 - denials preserve the edited plan
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping

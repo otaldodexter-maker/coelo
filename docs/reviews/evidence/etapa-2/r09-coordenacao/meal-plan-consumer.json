@@ -1,0 +1,36 @@
+{
+  "at": "2026-09-12T20:54:24.438794+00:00",
+  "plan_id": "57ab05c3-32c6-44ae-b1d4-45180fbc9124",
+  "checks": [
+    {
+      "step": "anonymous_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "step": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "published_edit_persisted",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "edited_meal_content_persisted",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "productive_list_contains_plan",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "step": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ]
+}
