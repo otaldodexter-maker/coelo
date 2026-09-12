@@ -2514,6 +2514,7 @@
       },
       "deltasFile": "docs/reviews/evidence/etapa-2/r07-publicacoes-agenda/deltas-r07-pa.json",
       "packages": [],
+      "knowledgeGate": "no-op: consulta da projeção team encontrou publicacao-visual-family, superadmin-agenda e superadmin-notices-mvp; nenhuma regra durável nova; validate PASS para 64 artigos",
       "secrets": "nenhum segredo lido ou registrado; credencial permanece apenas no arquivo local informado"
     },
     "checkpoints": [
