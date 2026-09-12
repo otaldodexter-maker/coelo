@@ -108,6 +108,73 @@ def save_manifest(value: dict[str, Any]) -> None:
     MANIFEST.write_text(json.dumps(value, indent=2, sort_keys=True) + "\n", encoding="utf-8")
 
 
+def require_definition_projection(value: dict[str, Any], form_id: str, section_id: str, item_id: str) -> None:
+    if (
+        value.get("id") != form_id
+        or value.get("institution_id") != INSTITUTION_ID
+        or value.get("status") != "published"
+        or value.get("identity_mode") != "identified"
+        or value.get("response_unit") != "person"
+    ):
+        raise FixtureFailure("publish:projection_context_mismatch")
+    sections = value.get("sections")
+    if not isinstance(sections, list) or len(sections) != 1 or not isinstance(sections[0], dict):
+        raise FixtureFailure("publish:projection_sections_mismatch")
+    items = sections[0].get("items")
+    if (
+        sections[0].get("id") != section_id
+        or not isinstance(items, list)
+        or len(items) != 1
+        or not isinstance(items[0], dict)
+        or items[0].get("id") != item_id
+        or items[0].get("kind") != "photo"
+        or items[0].get("config") != {"allow_camera": True, "min_images": 1, "max_images": 1}
+    ):
+        raise FixtureFailure("publish:projection_item_mismatch")
+
+
+def require_application_projection(value: dict[str, Any], form_id: str) -> None:
+    rules = value.get("audience_rules")
+    if (
+        value.get("form_id") != form_id
+        or value.get("institution_id") != INSTITUTION_ID
+        or value.get("status") != "active"
+        or value.get("opens_for_days") != 1
+        or not isinstance(rules, list)
+        or len(rules) != 1
+        or not isinstance(rules[0], dict)
+        or rules[0].get("kind") != "person"
+        or rules[0].get("mode") != "include"
+        or rules[0].get("target_id") != QA_PERSON_ID
+    ):
+        raise FixtureFailure("application:projection_mismatch")
+
+
+def require_schedule_projection(value: dict[str, Any], application_id: str, form_id: str) -> str:
+    require_application_projection(value, form_id)
+    if value.get("id") != application_id:
+        raise FixtureFailure("schedule:application_changed")
+    schedules = value.get("schedules")
+    if not isinstance(schedules, list) or len(schedules) != 1 or not isinstance(schedules[0], dict):
+        raise FixtureFailure("schedule:projection_cardinality_mismatch")
+    schedule = schedules[0]
+    recurrence = schedule.get("recurrence")
+    end = schedule.get("end")
+    if (
+        schedule.get("status") != "active"
+        or schedule.get("time_zone") != "America/Sao_Paulo"
+        or not isinstance(recurrence, dict)
+        or recurrence.get("kind") != "once"
+        or recurrence.get("interval") != 1
+        or not isinstance(end, dict)
+        or end.get("kind") != "count"
+        or end.get("count") != 1
+        or schedule.get("reminders") != []
+    ):
+        raise FixtureFailure("schedule:projection_contract_mismatch")
+    return require_uuid(schedule.get("id"), "schedule")
+
+
 def main() -> int:
     parser = argparse.ArgumentParser()
     mode = parser.add_mutually_exclusive_group()
@@ -241,6 +308,7 @@ def main() -> int:
         })
         if publish_status != 200 or not isinstance(published, dict):
             raise FixtureFailure(f"publish:{publish_status}:{error_code(published)}")
+        require_definition_projection(published, form_id, section_id, item_id)
         published_version = require_version(published.get("management_version"), "published")
         manifest.update({"publish_http": publish_status, "published_management_version": published_version})
         save_manifest(manifest)
@@ -267,6 +335,7 @@ def main() -> int:
         })
         if application_status != 200 or not isinstance(application, dict):
             raise FixtureFailure(f"save_application:{application_status}:{error_code(application)}")
+        require_application_projection(application, form_id)
         application_id = require_uuid(application.get("id"), "application")
         manifest.update({"application_id": application_id, "application_http": application_status})
         save_manifest(manifest)
@@ -296,10 +365,7 @@ def main() -> int:
         })
         if schedule_status != 200 or not isinstance(scheduled, dict):
             raise FixtureFailure(f"save_schedule:{schedule_status}:{error_code(scheduled)}")
-        schedules = scheduled.get("schedules")
-        if not isinstance(schedules, list) or len(schedules) != 1 or not isinstance(schedules[0], dict):
-            raise FixtureFailure("save_schedule:invalid_projection")
-        schedule_id = require_uuid(schedules[0].get("id"), "schedule")
+        schedule_id = require_schedule_projection(scheduled, application_id, form_id)
         manifest.update({
             "schedule_id": schedule_id,
             "schedule_http": schedule_status,
@@ -323,7 +389,7 @@ def main() -> int:
         return 1
     finally:
         logout_status, _ = request_json(
-            f"{base}/auth/v1/logout",
+            f"{base}/auth/v1/logout?scope=local",
             body={},
             headers=headers,
         )
