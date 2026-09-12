@@ -51,3 +51,7 @@ A inspeção por prefixo completo encontrou `300` linhas de progresso: os seis m
 
 As 12 ocorrências duplicadas (diferença entre 293 casos e 281 chaves) ficam em quatro chaves: `rejects malformed URL without exposing it` nos prefixos `28..33` (6 ocorrências, 5 duplicações); `rejects invalid expiry or TTL over 300 seconds` em `34..38` (5, 4 duplicações); `expired receipt keeps the safe expired exception` em `39..40` (2, 1 duplicação); `backend failure is sanitized without implicit retry` em `43..45` (3, 2 duplicações). Todas pertencem a `forms_media_reader_test.dart`; o caminho completo e o nome completo permanecem na saída do parser.
 
+
+## Correção final de identidade e nomenclatura
+
+O parser agora reconhece loader somente por igualdade estrutural entre `testStart.test.name` e `loading ${suite.path}`; não usa prefixo genérico. Caminhos são canonicalizados para `apps/superadmin/...`, removendo raízes absolutas de worktrees. As métricas são nomeadas `observedEvents`, `uniqueDisplayKeys` e `displayKeyCollisions`: `281` é quantidade de chaves de exibição distintas, não quantidade de casos; os `293` eventos observados e `12` colisões permanecem preservados.
