@@ -1,6 +1,6 @@
 {
-  "revision": 67,
-  "updated_at": "2026-09-12T13:19:00-03:00",
+  "revision": 68,
+  "updated_at": "2026-09-12T13:34:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -65,6 +65,14 @@
     "verdict": "C0 gerou uma unica recovery para a mesma identidade: HTTPS/host/path/type/same-user verdadeiros e redirect_exact falso. Falha produtiva do contrato de destino confirmada; causa SDK/Auth/config ainda nao medida.",
     "next": "nao gerar outro link/usuario nem mudar senha, SMTP ou configuracao antes do diagnostico do C0.",
     "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/p51-internal-user-review.md"
+  },
+  "reviewProfileAboutReadR08": {
+    "scope": "leitura da cadeia get_profile_about/parseProfileAboutReadResponse no pacote G4 dc357d71f; sem Flutter, SQL, fixture ou producao",
+    "source": "a unica definicao vigente esta em 20260910000000_baseline_producao.sql:21946-21986; nao ha migration sucessora que a redefina",
+    "finding": "a RPC retorna pagina plana com fields.key e sections.type, mas o parser/teste esperam envelope page e field_key/section_type. Resposta plana nao nula vira null silenciosamente.",
+    "oracle_red": "teste unitario puro deve passar a resposta plana exata da RPC com um key e um type conhecidos e esperar ProfileAboutPage nao nula; hoje falha por null.",
+    "repair_boundary": "normalizar somente o contrato plano canonico antes do parser comum; preservar a leitura direta de tabelas e nao aceitar/documentar envelope inexistente.",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/profile-about-read-review.md"
   },
   "reviewFormsR08": {
     "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",
