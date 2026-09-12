@@ -2,7 +2,7 @@
 -- expire, fila de limpeza, cross-tenant e grants.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(33);
 
 insert into public.institution_types(id,code,name,status) values
  ('9f060000-0000-4000-8000-000000000001','qa-r05-fmedia','QA R05 forms media','active');
@@ -202,6 +202,12 @@ select ok(exists(select 1 from public.media_bindings where media_asset_id=(selec
   and item_id='9f060000-0000-4000-8000-000000000603')
   and exists(select 1 from public.media_bindings where media_asset_id=(select asset_id from fmlegacy)
   and item_id='9f060000-0000-4000-8000-000000000613'),'falha de remocao preserva item e binding sem associacao indevida');
+update public.forms set working_version_id=null where id='9f060000-0000-4000-8000-000000000610';
+set local role authenticated;
+insert into fm values('editor_without_working',public.form_get_editor('9f060000-0000-4000-8000-000000000610'));
+reset role;
+select is((select body->'media_context' from fm where label='editor_without_working'),'null'::jsonb,
+  'editor sem working version devolve media_context nulo');
 select ok((select body->>'ok'='true' and body#>>'{data,object_key}' like 'tenants/%' and (body#>>'{data,ttl_seconds}')::int=300 from fm where label='resolve'),
   'resolve devolve chave e ttl para o gateway');
 set local role authenticated;

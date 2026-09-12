@@ -1,15 +1,15 @@
 {
   "grupo": "realm-interno",
-  "revision": 57,
+  "revision": 58,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T11:10:17.4386248-03:00",
+  "updatedAt": "2026-09-12T11:55:12-03:00",
   "app": "Codex",
   "modelo": "GPT-5.6 Sol (esforco medio)",
   "conversa": "R08 · Realm interno e segurança",
   "coordenador": "R08 · Coordenação (thread 01a095e0-3c9f-7601-b736-7935c11fffcb)",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
   "branch": "work/etapa2-r08-realm-interno",
-  "head": "76aed97cb (branch publicada)",
+  "head": "444ac0246 publicado; correção 140547 nesta revisão a publicar",
   "upstream": "origin/dev; branch de entrega origin/work/etapa2-r08-realm-interno",
   "t0": "2026-09-12T10:52:16.727826-03:00; execucao ate 14:52:16; revisao ate 15:02:16; fechamento ate 15:22:16",
   "escopo": {
@@ -26,8 +26,8 @@
     ],
     "foraDoRecorte": "UI, aplicação em produção (coordenador), Cloudflare com custo, MCP dart, escrita em dev/inventário/rastreadores"
   },
-  "primeiroGate": "T0/ambiente do coordenador ainda não publicado; para correções, preflight no descartável com a ordem real de produção incluindo lotes 49–55 e regressão comparada R06",
-  "provaLocal": "descartável Supabase por conversa a iniciar/parar: baseline + migrations em ordem-de-aplicacao-producao.txt até lotes 49–55; pgTAP por psql -qtA; sem credenciais no JSON",
+  "primeiroGate": "G0 aplicar 140547 no baseline que já contém 140546 e executar o plano 33; parar na primeira falha sem promover produção",
+  "provaLocal": "G5 preparou SQL/testes sem Docker e não executou pgTAP; execuções do espelho pertencem ao G0 e estão registradas por recibo, sem credenciais no JSON",
   "bloqueio": null,
   "pedidosAoCoordenador": [],
   "perguntasParaOOwner": [],
@@ -65,8 +65,8 @@
     "seguranca transversal (sem action_id)": "nenhum delta de estado por action_id: o pacote fecha uma exposicao latente (0 identidades escopadas) e nao muda o estado de acoes; se o coordenador quiser, anotar nos tres md como correcao de seguranca da R06 (raiz da ponte de ator)"
   },
   "loop": "ciclo contínuo até T0+4h; checkpoint neste JSON a cada 30 min; sem MCP dart",
-  "status": "finalizado; handoff R07 gravado",
-  "proximoPasso": "coordenador integrar/conferir a branch; não retomar esta frente sem novo recorte",
+  "status": "R08 em execução; H09 entregue em produção; gate adicional question-image aguardando GREEN corretivo",
+  "proximoPasso": "G0 provar 140547 no espelho; C0 decide lote 57 somente após GREEN e regressões; G5 continua sem aplicar SQL",
   "contratoInstitutionContacts": {
     "rpc": "public.superadmin_institution_contacts_edit_v1(p_request_id uuid, p_institution_id uuid, p_expected_version bigint, p_payload jsonb) -> envelope {ok,data,error}",
     "capacidade": "institution.update; platform_role owner|operations; scope institution so a propria instituicao (outro tenant -> SAI_PERMISSION_DENIED, auditado)",
@@ -827,6 +827,26 @@
         "h09ProducaoC0": "aplicação exit 0; ledger e cron pós-prova confirmados"
       },
       "primeiroGate": "receber RED/GREEN e regressões do candidato 140546 no baseline antes de qualquer lote 57"
+    },
+    "checkpoint11h55": {
+      "quando": "2026-09-12T11:55:12-03:00",
+      "feito": [
+        "G0 confirmou RED e primeiro GREEN falho: casos 1–18 verdes, 19/20 falhos e aborto forms.read required; 140546 foi consumido somente pelo baseline, produção permaneceu intocada.",
+        "Causa localizada nos consumidores: form_get_editor, form_save_draft e superadmin_form_media_prepare_v2 usavam has_platform_permission(text), que a raiz do lote 49 nega corretamente a identidade interna institution-scoped.",
+        "Candidato corretivo forward-only 20260912140547 preparado sem mutar 140546: autorização recebe a instituição real, FK vira NO ACTION DEFERRABLE e media_context é nulo sem working version.",
+        "Teste focal ampliado para plano 33, preservando item_id estável na mesma working version, reorder por ID e remoção fail-closed. G5 não executou pgTAP nem aplicou SQL."
+      ],
+      "pendente": [
+        "G0 aplicar 140547 somente sobre o baseline que já contém 140546 e executar GREEN; em falha, parar sem empilhar outra alteração.",
+        "Se GREEN focal passar, executar regressões indicadas por C0 e devolver recibo native/wrapper; somente C0 pode decidir/aplicar o lote 57 em produção.",
+        "Em produção, serializar 140546 e 140547 como uma única unidade ordenada; nunca promover 140546 isoladamente."
+      ],
+      "testes": {
+        "questionImagePrimeiroCicloG0": "RED e GREEN falho; casos 1–18 verdes, 19/20 falhos, aborto forms.read required, native/wrapper 3; transação encerrada sem certificação",
+        "questionImageRevisao2": "plano 33 preparado; não executado por G5",
+        "pgTapExecutadoPorG5": "nenhum"
+      },
+      "primeiroGate": "GREEN focal de 140547 sobre o baseline já corrigido por 140546, antes de regressões ou produção"
     }
   }
 }
