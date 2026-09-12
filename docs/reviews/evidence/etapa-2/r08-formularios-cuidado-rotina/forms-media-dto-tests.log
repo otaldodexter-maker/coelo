@@ -1,0 +1,27 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading test/forms/form_editor_projection_dto_test.dart
+00:00 +0: editor media context preserves pending state without treating it as a ready image
+00:00 +1: editor rejects image bindings outside the displayed definition
+00:00 +2: editor media context never accepts a private storage key
+00:00 +3: editor projection DTO restores definition and normalized application
+00:00 +3 -1: editor projection DTO restores definition and normalized application [E]
+  WireFormatException: form_editor_projection is missing keys: media_context.
+  package:coelo_api/src/forms/form_wire_contracts.dart 104:5        requireOnlyKeys
+  package:coelo_api/src/forms/form_editor_projection_dto.dart 50:5  new FormEditorProjectionDto.fromJson
+  test\forms\form_editor_projection_dto_test.dart 68:45             main.<fn>
+
+00:00 +3 -1: editor projection DTO accepts no application and rejects unknown keys
+00:00 +3 -2: editor projection DTO accepts no application and rejects unknown keys [E]
+  WireFormatException: form_editor_projection is missing keys: media_context.
+  package:coelo_api/src/forms/form_wire_contracts.dart 104:5        requireOnlyKeys
+  package:coelo_api/src/forms/form_editor_projection_dto.dart 50:5  new FormEditorProjectionDto.fromJson
+  test\forms\form_editor_projection_dto_test.dart 80:36             main.<fn>
+
+00:00 +3 -2: Some tests failed.
+
+Failing tests:
+  test/forms/form_editor_projection_dto_test.dart: editor projection DTO accepts no application and rejects unknown keys
+  test/forms/form_editor_projection_dto_test.dart: editor projection DTO restores definition and normalized application
+
+Consider enabling the flag chain-stack-traces to receive more detailed exceptions.
+For example, 'dart test --chain-stack-traces'.

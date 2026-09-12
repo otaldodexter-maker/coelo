@@ -27,9 +27,36 @@ void main() {
       }
     }
   });
+
+  for (final (name, width, height, textScale) in [
+    ('375', 375.0, 1320.0, 1.0),
+    ('375 text 200', 375.0, 1320.0, 2.0),
+    ('1440 text 200', 1440.0, 1100.0, 2.0),
+  ]) {
+    testWidgets('composer A+ light $name preserves interleaving', (tester) async {
+      await _pump(
+        tester,
+        Size(width, height),
+        brightness: Brightness.light,
+        textScaler: TextScaler.linear(textScale),
+      );
+      await expectLater(
+        find.byKey(const Key('circular-composer-golden-root')),
+        matchesGoldenFile(
+          'goldens/circular_composer_light_${width.toInt()}'
+          '${textScale == 1 ? '' : '_text_200'}.png',
+        ),
+      );
+    });
+  }
 }
 
-Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightness}) async {
+Future<void> _pump(
+  WidgetTester tester,
+  Size size, {
+  required Brightness brightness,
+  TextScaler textScaler = TextScaler.noScaling,
+}) async {
   tester.view.devicePixelRatio = 1;
   tester.view.physicalSize = size;
   addTearDown(tester.view.reset);
@@ -56,6 +83,10 @@ Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightne
             CircularQuestionOption(id: 'b', label: 'Preciso de mais informações'),
           ],
         ),
+        CircularTextBlock(
+          id: 'text-after',
+          text: 'Se precisar de apoio, responda a pergunta acima antes da data da reunião.',
+        ),
       ],
       audiences: {CircularAudienceKind.families},
     ),
@@ -71,7 +102,7 @@ Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightne
       builder: (context, child) => RepaintBoundary(
         key: const Key('circular-composer-golden-root'),
         child: MediaQuery(
-          data: MediaQuery.of(context).copyWith(disableAnimations: true),
+          data: MediaQuery.of(context).copyWith(disableAnimations: true, textScaler: textScaler),
           child: child!,
         ),
       ),
@@ -81,7 +112,7 @@ Future<void> _pump(WidgetTester tester, Size size, {required Brightness brightne
           child: SuperadminCircularComposerPage(
             controller: controller,
             onCancel: () {},
-            onPickFiles: () async {},
+            onPickFiles: (_) async {},
             onChooseSchedule: () async => null,
             contextLabel: 'Colégio Coelo',
           ),

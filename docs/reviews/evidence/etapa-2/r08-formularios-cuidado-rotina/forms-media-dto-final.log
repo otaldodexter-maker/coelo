@@ -1,0 +1,8 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading test/forms/form_editor_projection_dto_test.dart
+00:00 +0: editor media context preserves pending state without treating it as a ready image
+00:00 +1: editor rejects image bindings outside the displayed definition
+00:00 +2: editor media context never accepts a private storage key
+00:00 +3: editor projection DTO restores definition and normalized application
+00:00 +4: editor projection DTO accepts no application and rejects unknown keys
+00:00 +5: All tests passed!

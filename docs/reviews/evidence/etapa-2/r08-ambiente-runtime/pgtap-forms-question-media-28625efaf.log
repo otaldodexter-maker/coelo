@@ -1,0 +1,54 @@
+R08 G0 / baseline local somente
+fonte: 28625efaf
+container: supabase_db_coelo_baseline / 127.0.0.1:57322
+credenciais: nenhuma registrada
+
+[APPLY forward fix 20260912140547]
+precondicao: baseline ja continha 20260912140546 bloqueado
+resultado: BEGIN; preflight DO; ALTER TABLE x2; CREATE FUNCTION x3; ALTER FUNCTION x3; REVOKE x2; GRANT; COMMIT
+native exit: 0
+wrapper exit: 0
+
+[FOCAL forms_question_media_r2_v1_test.sql]
+plan: 1..33
+resultado: ok 1..33; finish sem falhas; ROLLBACK
+native exit: 0
+wrapper exit: 0
+
+[REGRESSAO forms_behavioral_rpc_test.sql]
+plan: 1..17
+resultado: ok 1..17; finish sem falhas; ROLLBACK
+native exit: 0
+wrapper exit: 0
+
+[REGRESSAO superadmin_internal_form_drafts_v2_test.sql]
+plan: no_plan
+resultado parcial: ok 1..59
+falha terminal: internal auth link version mismatch
+ponto: fixture atualiza app_private.superadmin_internal_auth_links status/revoked_at sem incrementar version
+finish/ROLLBACK explicito: nao alcancado
+rollback efetivo: conexao fechada com transacao abortada
+native exit: 3
+wrapper exit: 3 (propagacao do native; TAP incompleto)
+classificacao: 140547 nao altera auth links; aparente incompatibilidade da fixture com o guard de lifecycle vigente
+acao: parada imediata, sem rerun e sem regressao adicional; reportado a G5 e C0
+
+Nenhuma migration foi aplicada em producao.
+
+[RERUN UNICO DA FIXTURE 0d52d5dbf]
+alteracao autoral: quatro transicoes incrementam version junto de status/revoked_at; nenhum guard/candidato alterado
+resultado parcial: ok 1..59
+progresso: revogacao do auth_link passou
+falha terminal seguinte: revoked internal access is terminal
+ponto: fixture tenta reativar a mesma linha revogada; o guard vigente torna a revogacao terminal
+finish/ROLLBACK explicito: nao alcancado
+rollback efetivo: conexao fechada com transacao abortada
+native exit: 3
+wrapper exit: 3 (propagacao do native; TAP incompleto)
+acao: parada sem novo rerun; fixture deve isolar os cenarios sem reativar acesso revogado
+
+[RERUN UNICO DA FIXTURE afcebccd0]
+alteracao autoral: cenarios de revogacao usam identidades independentes 105/106; identidade 101 permanece ativa; nenhum guard/migration alterado
+resultado: ok 1..159; finish 1..159; ROLLBACK
+native exit: 0
+wrapper exit: 0

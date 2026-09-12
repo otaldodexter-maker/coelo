@@ -8,6 +8,32 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final mode in FormIdentityMode.values) {
+    testWidgets('gallery capability requires identified response context $mode', (tester) async {
+      final session = MediaSession();
+      addTearDown(session.invalidate);
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: FormResponsePage(
+              api: _ResponseApi(kind: FormItemKind.gallery, identityMode: mode),
+              occurrenceId: 'occurrence-1',
+              mediaSession: session,
+            ),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      expect(
+        find.text('Selecionar imagem'),
+        mode == FormIdentityMode.identified ? findsOneWidget : findsNothing,
+      );
+      expect(
+        find.text('Anexo indisponível'),
+        mode == FormIdentityMode.anonymous ? findsOneWidget : findsNothing,
+      );
+    });
+  }
   List<FormSection> sections({bool branch = false}) => [
     FormSection(
       id: 'section-a',
@@ -59,15 +85,14 @@ void main() {
   // P16 (ADR 0034, Decisoes 9, 10 e 12): pergunta de Local com opcoes fixas
   // do snapshot; Local revogado desabilitado; obrigatoria sem alternativa
   // bloqueia; erro estavel do servidor aparece inline.
-  FormItem locationItem({required bool required, required List<FormOption> options}) =>
-      FormItem(
-        id: 'place',
-        kind: FormItemKind.location,
-        label: 'Em qual local?',
-        position: 0,
-        isRequired: required,
-        options: options,
-      );
+  FormItem locationItem({required bool required, required List<FormOption> options}) => FormItem(
+    id: 'place',
+    kind: FormItemKind.location,
+    label: 'Em qual local?',
+    position: 0,
+    isRequired: required,
+    options: options,
+  );
   const patio = FormOption(
     id: 'opt-patio',
     label: 'Pátio',
@@ -86,7 +111,11 @@ void main() {
   );
 
   testWidgets('location revoked option is disabled and cannot be answered', (tester) async {
-    final api = _ResponseApi(items: [locationItem(required: true, options: const [patio, quadra])]);
+    final api = _ResponseApi(
+      items: [
+        locationItem(required: true, options: const [patio, quadra]),
+      ],
+    );
     await tester.binding.setSurfaceSize(const Size(1000, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await open(tester, api);
@@ -111,10 +140,12 @@ void main() {
     expect((answer.value as FormChoiceValue).optionIds, {'opt-patio'});
   });
 
-  testWidgets('required location without available option blocks with a warning', (
-    tester,
-  ) async {
-    final api = _ResponseApi(items: [locationItem(required: true, options: const [quadra])]);
+  testWidgets('required location without available option blocks with a warning', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        locationItem(required: true, options: const [quadra]),
+      ],
+    );
     await tester.binding.setSurfaceSize(const Size(1000, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await open(tester, api);
@@ -131,7 +162,11 @@ void main() {
   });
 
   testWidgets('optional location without available option does not block', (tester) async {
-    final api = _ResponseApi(items: [locationItem(required: false, options: const [quadra])]);
+    final api = _ResponseApi(
+      items: [
+        locationItem(required: false, options: const [quadra]),
+      ],
+    );
     await tester.binding.setSurfaceSize(const Size(1000, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await open(tester, api);
@@ -145,12 +180,17 @@ void main() {
   testWidgets('location server refusal is shown inline as the honest message', (tester) async {
     const refusal =
         'O local escolhido não está mais disponível no catálogo da instituição. Escolha outro local.';
-    final api = _ResponseApi(items: [locationItem(required: true, options: const [patio])])
-      ..submitFailure = const FormApiException(
-        FormApiFailureKind.validation,
-        refusal,
-        details: {'code': 'FORMS_LOCATION_REVOKED'},
-      );
+    final api =
+        _ResponseApi(
+            items: [
+              locationItem(required: true, options: const [patio]),
+            ],
+          )
+          ..submitFailure = const FormApiException(
+            FormApiFailureKind.validation,
+            refusal,
+            details: {'code': 'FORMS_LOCATION_REVOKED'},
+          );
     await tester.binding.setSurfaceSize(const Size(1000, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     await open(tester, api);
@@ -1853,14 +1893,14 @@ void main() {
       (5, '0,05'),
     ]) {
       final api = _ResponseApi(
-        items: [
-          FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
-        ],
+        items: [FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0)],
         initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: minorUnits)},
       );
       await open(tester, api);
       expect(
-        tester.widget<TextFormField>(find.byKey(const Key('form-response-item-item-1'))).initialValue,
+        tester
+            .widget<TextFormField>(find.byKey(const Key('form-response-item-item-1')))
+            .initialValue,
         shown,
         reason: 'minorUnits $minorUnits',
       );
@@ -1870,9 +1910,7 @@ void main() {
 
   testWidgets('the review summary shows money in civil notation too', (tester) async {
     final api = _ResponseApi(
-      items: [
-        FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
-      ],
+      items: [FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0)],
       initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: 1050)},
     );
     await open(tester, api);
@@ -1884,9 +1922,7 @@ void main() {
 
   testWidgets('reopened money survives a round trip through the draft', (tester) async {
     final api = _ResponseApi(
-      items: [
-        FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0),
-      ],
+      items: [FormItem(id: 'item-1', kind: FormItemKind.money, label: 'Valor', position: 0)],
       initialAnswers: {'item-1': FormAnswer.money(itemId: 'item-1', minorUnits: 1050)},
     );
     await open(tester, api);
@@ -1958,9 +1994,7 @@ void main() {
           ],
         ),
       ],
-      initialAnswers: {
-        'item-1': FormAnswer.singleChoice(itemId: 'item-1', optionId: 'option-2'),
-      },
+      initialAnswers: {'item-1': FormAnswer.singleChoice(itemId: 'item-1', optionId: 'option-2')},
       initialStatus: FormResponseDraftStatus.submitted,
     );
     await open(tester, api);
@@ -2078,7 +2112,10 @@ void main() {
       isA<FormMoneyValue>().having((value) => value.minorUnits, 'minorUnits', 1050),
     );
     expect(saved['inteiro']!.value, isA<FormIntegerValue>().having((v) => v.value, 'value', 10));
-    expect(saved['texto']!.value, isA<FormShortTextValue>().having((v) => v.value, 'value', 'abcde'));
+    expect(
+      saved['texto']!.value,
+      isA<FormShortTextValue>().having((v) => v.value, 'value', 'abcde'),
+    );
     expect(saved['escala']!.value, isA<FormScaleValue>().having((v) => v.value, 'value', 7));
 
     // Revisar e enviar.
@@ -2156,10 +2193,7 @@ void main() {
   testWidgets('the date picker offers only the authored range', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await open(
-      tester,
-      dateApi(min: DateTime.utc(2026, 3, 1), max: DateTime.utc(2026, 9, 30)),
-    );
+    await open(tester, dateApi(min: DateTime.utc(2026, 3, 1), max: DateTime.utc(2026, 9, 30)));
     final picker = await openPicker(tester);
     // showDatePicker normaliza para data local sem hora, entao comparo os
     // componentes em vez do DateTime exato.
@@ -2193,10 +2227,7 @@ void main() {
   testWidgets('an inconsistent authored date range says so instead of crashing', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1000, 1200));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    await open(
-      tester,
-      dateApi(min: DateTime.utc(2026, 9, 30), max: DateTime.utc(2026, 3, 1)),
-    );
+    await open(tester, dateApi(min: DateTime.utc(2026, 9, 30), max: DateTime.utc(2026, 3, 1)));
     await tester.tap(find.widgetWithIcon(OutlinedButton, Icons.calendar_today_outlined));
     await tester.pumpAndSettle();
 
@@ -2279,7 +2310,10 @@ void main() {
     await tapChip(tester, 'Terceira');
 
     // A terceira nao entra, e a tela diz por que em vez de aceitar em silencio.
-    expect(tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Terceira')).selected, isFalse);
+    expect(
+      tester.widget<FilterChip>(find.widgetWithText(FilterChip, 'Terceira')).selected,
+      isFalse,
+    );
     expect(find.textContaining('no máximo 2'), findsWidgets);
   });
 
@@ -2339,21 +2373,15 @@ void main() {
   // o servidor recusa e inconstruivel antes de chegar a esta camada. Essa e a
   // trava mais forte que um teste, e por isso nao precisa de um.
   _ResponseApi requiredApi(FormItemKind kind, FormAnswer? answer) => _ResponseApi(
-    items: [
-      FormItem(
-        id: 'required',
-        kind: kind,
-        label: 'Required',
-        position: 0,
-        isRequired: true,
-      ),
-    ],
+    items: [FormItem(id: 'required', kind: kind, label: 'Required', position: 0, isRequired: true)],
     initialAnswers: answer == null ? const {} : {'required': answer},
   );
 
   Future<bool> reviewOpens(WidgetTester tester, _ResponseApi api) async {
     await tester.pumpWidget(
-      MaterialApp(home: FormResponsePage(api: api, occurrenceId: 'occurrence-1')),
+      MaterialApp(
+        home: FormResponsePage(api: api, occurrenceId: 'occurrence-1'),
+      ),
     );
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('form-response-review')));
@@ -2394,18 +2422,12 @@ void main() {
   // envio que o servidor aceita, e a pessoa ficaria sem conseguir enviar um
   // formulario correto.
   testWidgets('a negative answer satisfies a required yes-no', (tester) async {
-    final api = requiredApi(
-      FormItemKind.yesNo,
-      FormAnswer.yesNo(itemId: 'required', value: false),
-    );
+    final api = requiredApi(FormItemKind.yesNo, FormAnswer.yesNo(itemId: 'required', value: false));
     expect(await reviewOpens(tester, api), isTrue);
   });
 
   testWidgets('zero satisfies a required number', (tester) async {
-    final api = requiredApi(
-      FormItemKind.integer,
-      FormAnswer.integer(itemId: 'required', value: 0),
-    );
+    final api = requiredApi(FormItemKind.integer, FormAnswer.integer(itemId: 'required', value: 0));
     expect(await reviewOpens(tester, api), isTrue);
   });
 
@@ -2427,6 +2449,7 @@ void main() {
 
 final class _ResponseApi implements FormsApi {
   _ResponseApi({
+    this.identityMode = FormIdentityMode.identified,
     this.loadGate,
     this.saveGate,
     this.submitGate,
@@ -2442,6 +2465,7 @@ final class _ResponseApi implements FormsApi {
   });
 
   final Future<void>? loadGate;
+  final FormIdentityMode identityMode;
   final Future<void>? saveGate;
   final Future<void>? submitGate;
   final String label;
@@ -2546,7 +2570,7 @@ final class _ResponseApi implements FormsApi {
             ],
       ),
       participationId: 'participation-1',
-      identityMode: FormIdentityMode.identified,
+      identityMode: identityMode,
       canEdit: true,
     );
   }

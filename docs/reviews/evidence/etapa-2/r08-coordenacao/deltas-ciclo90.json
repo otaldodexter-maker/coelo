@@ -1,0 +1,51 @@
+[
+  {
+    "action_id": "forms.upload",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: forms_question_media_r2_v1 (20260911210300, lote 33): superadmin_form_media_prepare_v2 + authorize_finalize_v2 (authenticated, forms.manage) e form_media_finalize_question_r2_v1 (service_role) sobre o catalogo 230007 (media_assets form-image/question-image + bindings + variants) no R2. pgTAP 25/25. Gate: form-media trocar os ramos de Supabase Storage por R2; answer-image (respostas) continua no fluxo legado form_assets. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.upload",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "Revalidar o aceite específico desta ação: R2 privado, autorização, retomada remota e E2E pendentes. R08: Galeria identificada e pergunta com sessao/read integradas; base8809dafcd422PASS incluindo familias tocadas. Aceite parcial: Foto/camera, anonimato edit_secret e UI real continuam pendentes; nao promover acao inteira.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: superadmin_form_media_resolve_v2 (forms.read, escopo, so ready, auditado; object_key + ttl 300 s para o GET assinado) no pacote 20260911210300 (lote 33). pgTAP 25/25. Gate: form-media em R2. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.resolve-file",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "Revalidar o aceite específico desta ação: Resolução autorizada/assinada e E2E pendentes. R08: Galeria identificada e pergunta com sessao/read integradas; base8809dafcd422PASS incluindo familias tocadas. Aceite parcial: Foto/camera, anonimato edit_secret e UI real continuam pendentes; nao promover acao inteira.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.expire-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: form_media_expire_question_r2_v1 (service_role) marca pendentes com ticket vencido como deleted e enfileira a limpeza fisica (form_media_claim_cleanup_r2_v1 / mark_purged); pgTAP 25/25. Gate: cron de expire e worker de limpeza. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.delete-file",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R05 realm-interno: superadmin_form_media_delete_v2 (forms.manage, idempotente, auditado) exclui o asset e enfileira as chaves para o worker apagar no R2; pgTAP 25/25. Gate: worker de limpeza. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  },
+  {
+    "action_id": "forms.delete-file",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "Revalidar o aceite específico desta ação: Exclusão autoritativa, auditoria, retenção e E2E pendentes. R08: Galeria identificada e pergunta com sessao/read integradas; base8809dafcd422PASS incluindo familias tocadas. Aceite parcial: Foto/camera, anonimato edit_secret e UI real continuam pendentes; nao promover acao inteira.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md"
+  }
+]
