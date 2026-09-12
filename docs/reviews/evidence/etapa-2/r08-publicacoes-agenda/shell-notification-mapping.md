@@ -34,5 +34,5 @@ existente, sem criar novo `action_id`:
 O feed agora registra o callback antes da leitura, sincroniza imediatamente
 quando a carga termina com o centro aberto e o controlador dispara o callback
 em toda transicao real de fechado para aberto. Foram preparados testes para a
-corrida de carga e para falha seguida de retry. Analyze focal: verde; Flutter:
-aguarda slot global, portanto este checkpoint ainda nao certifica a correcao.
+corrida de carga e para falha seguida de retry. Resultado final do arquivo do
+feed mais a regressao do controlador: 13/13 PASS. Analyze focal: verde.
