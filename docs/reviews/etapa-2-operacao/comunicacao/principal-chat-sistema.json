@@ -1,4 +1,14 @@
 {
+  "checkpointR09G4": {
+    "action_id": "chat.create-group",
+    "changed": "Dois testes widget adicionados ao arquivo existente: erro residual apos troca A/B e erro atrasado de A apos sucesso B. Consumidor produtivo ainda sem alteracao.",
+    "proof": "dart format exit0 com aviso flutter_lints nao resolvido (pub get pendente na worktree); JSON parse PASS; execucao widget NAO EXECUTADA por slot pendente; nenhum novo aceite FE/BE/E2E",
+    "testFile": "apps/superadmin/test/features/chat/presentation/superadmin_chat_create_group_dialog_test.dart",
+    "next": "C0 liberar flutterTest ou atribuir execucao focal G8. Confirmar falha esperada antes da correcao minima em _selectInstitution; depois teste verde e prova UI/reload/RLS com Chrome nominal.",
+    "memory": "no-op; consulta de conhecimento executada pelo wrapper da skill; nenhuma regra de produto nova",
+    "wip": "testes preparados nao certificados; nao declarar correcao pronta nem E2E",
+    "coordination": "pedido de slot publicado 7d9b55520; comunicacao direta ao host local e renomeacao de conversa indisponiveis"
+  },
   "solicitacaoC0R09": {
     "at": "2026-09-12T19:05:17.214520+00:00",
     "coordinatorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
@@ -33,8 +43,8 @@
     "integracao": "C0 exclusivo dev, rastreadores, inventario, composicao, SQL e deploy",
     "memoria": "no-op; nenhuma regra duravel de produto alterada"
   },
-  "revision": 75,
-  "updated_at": "2026-09-12T19:05:17.214520+00:00",
+  "revision": 76,
+  "updated_at": "2026-09-12T19:06:49.707893+00:00",
   "round": "E2-R09-20260912-1542",
   "group": "principal-chat-sistema",
   "tool": "Codex",
@@ -44,7 +54,7 @@
   "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
   "base": "origin/dev 7907453f0362665ab87fe8faaa4854f286904148",
   "head": "ACK R09; SHA pelo commit da branch",
-  "status": "Owner pediu continuidade; preparo focal chat.create-group sem ocupar slots; solicito flutterTest ao C0",
+  "status": "WIP publicado: duas regressoes widget preparadas; aguardando slot flutterTest C0 para RED e correcao",
   "T0_assumido": "2026-09-12T10:52:16-03:00 histórico; cortes substituídos nominalmente C0/Owner14:22: frente14:40, revisão14:50, fechamentoC015:00",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
