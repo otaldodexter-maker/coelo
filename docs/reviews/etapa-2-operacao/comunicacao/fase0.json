@@ -1,11 +1,11 @@
 {
   "grupo": "suites",
-  "revision": 54,
+  "revision": 55,
   "round": "E2-R09-20260912-1542",
-  "updatedAt": "2026-09-12T15:58:51-03:00",
+  "updatedAt": "2026-09-12T16:07:43-03:00",
   "app": "Codex",
   "modelo": "gpt-6-astra; medium (atribuicao C0)",
-  "conversa": "R09 - Suites e validacao (G8)",
+  "conversa": "R09 - G8 - Suites e validacao",
   "coordenador": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
   "branch": "work/etapa2-r09-suites-20260912-1542",
@@ -49,7 +49,8 @@
     }
   },
   "feito": [
-    "G8 viva; adocao do unico C0 e da nova rodada confirmada pelo Git."
+    "G8 viva; adocao do unico C0 e da nova rodada confirmada pelo Git.",
+    "C0 rev97 confirmou ACK54 de G8. Delta 7907453f0..74f09bee2 somente documental/probe; nenhuma alteracao Flutter integrada que justifique rerun."
   ],
   "pendente": "Aguardar atribuicao de vaga, fatia/action_ids e SHA integrado pelo C0.",
   "commitsPublicados": [],
@@ -80,7 +81,7 @@
     "censo": "nao executado; aguardando vaga e avaliacao de consumo/tempo"
   },
   "bloqueio": "Espera planejada na fila C0; nenhum slot adquirido.",
-  "proximoPasso": "Testes focais na base integrada quando C0 liberar vaga e slot.",
+  "proximoPasso": "Receber de C0 vaga, slot, SHA e fatia integrada; executar somente conjunto focal suficiente e devolver regressao reproduzivel a frente dona.",
   "historicoR03": {
     "grupo": "fase0",
     "revision": 9,
@@ -561,8 +562,8 @@
     "coordenadorThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
     "hostId": "local",
     "round": "E2-R09-20260912-1542",
-    "coordenacaoRevision": 96,
-    "coordenacaoSha": "7907453f0362665ab87fe8faaa4854f286904148",
+    "coordenacaoRevision": 97,
+    "coordenacaoSha": "74f09bee2d33c4fd086169cdaf3663e929578034",
     "instructionReceived": true,
     "at": "2026-09-12T15:58:51-03:00",
     "primeiroGate": "testes focais na base integrada",
@@ -573,5 +574,16 @@
     "slot": null,
     "timersAtivos": false,
     "limites": "Historicos R03/R07/R08, miniRevisao e aprovacoes preservados como historicos; nenhum resultado de suite desta abertura. Memoria no-op: sem conhecimento novo de produto."
+  },
+  "nomeConversaSolicitado": "R09 · G8 · Suítes e validação",
+  "renomeacaoInterface": "nao executada: ferramenta de renomear conversa indisponivel",
+  "solicitacaoC0": {
+    "at": "2026-09-12T16:07:43-03:00",
+    "destinatarioThreadId": "01a096ed-314b-7c13-a9e0-3e64649e66fc",
+    "hostId": "local",
+    "estado": "aguarda atribuicao via Git ou encaminhamento do Owner",
+    "pedido": "Liberar vaga G8 e slot global flutter test apos a proxima fatia integrada; indicar SHA, action_ids, testes focais ja executados e corte. Priorizar gate do consumidor Turmas G1 ou outra fatia que libere aceite.",
+    "motivo": "Owner pediu continuidade; G8 preserva limite de vagas e nao duplica lotes. Nenhuma vaga assumida por conta propria.",
+    "censo": "nao executado; sem duracao atual medida nem cota disponivel; nao antecipar sobre CRUD."
   }
 }
