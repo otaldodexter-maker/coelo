@@ -8,6 +8,43 @@ abstract interface class FormsAnonymousEditSecretStore {
   Future<String> loadOrCreate(String occurrenceId);
 }
 
+typedef FormsAnonymousEditSecretStoreProvider = FormsAnonymousEditSecretStore? Function();
+typedef FormsAnonymousEditSecretStoreFactory =
+    FormsAnonymousEditSecretStore Function(String projectId, String accountId);
+
+/// Keeps one store identity for the active account and drops it on sign-out.
+final class FormsAnonymousEditSecretStoreResolver {
+  FormsAnonymousEditSecretStoreResolver({
+    required this.projectId,
+    FormsAnonymousEditSecretStoreFactory? create,
+  }) : _create = create ?? _createSharedPreferencesStore {
+    if (projectId.isEmpty) throw ArgumentError.value(projectId, 'projectId');
+  }
+
+  final String projectId;
+  final FormsAnonymousEditSecretStoreFactory _create;
+  String? _accountId;
+  FormsAnonymousEditSecretStore? _store;
+
+  FormsAnonymousEditSecretStore? resolve(String? accountId) {
+    if (accountId == null || accountId.isEmpty) {
+      _accountId = null;
+      _store = null;
+      return null;
+    }
+    if (_accountId != accountId || _store == null) {
+      _accountId = accountId;
+      _store = _create(projectId, accountId);
+    }
+    return _store;
+  }
+
+  static FormsAnonymousEditSecretStore _createSharedPreferencesStore(
+    String projectId,
+    String accountId,
+  ) => SharedPreferencesFormsAnonymousEditSecretStore(projectId: projectId, accountId: accountId);
+}
+
 final class FormsAnonymousEditSecretException implements Exception {
   const FormsAnonymousEditSecretException();
 

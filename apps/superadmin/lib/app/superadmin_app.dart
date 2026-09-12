@@ -78,6 +78,7 @@ import '../features/health_care/domain/health_care_repository.dart';
 import '../features/students/domain/student_link.dart';
 import '../features/health_care/domain/medication_plan_repository.dart';
 import '../features/forms/data/forms_directory_reader.dart';
+import '../features/forms/data/forms_anonymous_edit_secret_store.dart';
 import 'router/superadmin_router.dart';
 import 'theme/superadmin_theme_mode_scope.dart';
 import '../features/principal_circulars/domain/circular_repository.dart';
@@ -161,6 +162,7 @@ class SuperadminApp extends StatefulWidget {
     this.formsDirectoryReader,
     this.formsMediaReader,
     this.formsMediaScope,
+    this.formsAnonymousEditSecrets,
     this.mealPlanRepository = const UnavailableMealPlanRepository(),
     this.mealPlanImageRepository = const UnavailableMealPlanImageRepository(),
     this.authorizedMealPlanTenantId,
@@ -245,6 +247,7 @@ class SuperadminApp extends StatefulWidget {
   final FormsDirectoryReader? formsDirectoryReader;
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
+  final FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets;
   final MealPlanRepository mealPlanRepository;
   final MealPlanImageRepository mealPlanImageRepository;
   final String? authorizedMealPlanTenantId;
@@ -349,6 +352,7 @@ class _SuperadminAppState extends State<SuperadminApp> {
       formsDirectoryReader: widget.formsDirectoryReader,
       formsMediaReader: widget.formsMediaReader,
       formsMediaScope: widget.formsMediaScope,
+      formsAnonymousEditSecrets: widget.formsAnonymousEditSecrets,
       mealPlanRepository: widget.mealPlanRepository,
       mealPlanImageRepository: widget.mealPlanImageRepository,
       authorizedMealPlanTenantId: widget.authorizedMealPlanTenantId,
