@@ -305,6 +305,10 @@ ProfileAboutPage? parseProfileAboutReadResponse({
   if (response == null) return null;
   if (response is! Map) throw const FormatException('invalid_read_response');
   final json = Map<String, Object?>.from(response);
+  if (json['subject_type'] != profileAboutSubjectTypeToken(subject.type) ||
+      json['subject_id'] != subject.subjectId) {
+    throw const FormatException('mismatched_read_subject');
+  }
   return parseProfileAboutPage(
     subject: subject,
     pageRow: json,

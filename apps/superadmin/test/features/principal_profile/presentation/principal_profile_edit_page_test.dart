@@ -304,6 +304,35 @@ void main() {
     expect(repository.loaded.last.institutionId, 'institution-1');
   });
 
+  for (final (label, role, scope) in [
+    ('roleCode', 'coordinator', 'institution'),
+    ('scopeKind', 'staff', 'unit'),
+  ]) {
+    testWidgets('drops the draft when only $label changes', (tester) async {
+      final repository = _StubAboutRepository(page: pageWith('Antes'));
+      await pump(tester, repository);
+      repository.loadError = ProfileAboutUnauthorizedException();
+
+      await pump(
+        tester,
+        repository,
+        runtimeContext: PrincipalRuntimeContext(
+          membershipId: context.membershipId,
+          personId: context.personId,
+          institutionId: context.institutionId,
+          institutionName: context.institutionName,
+          roleCode: role,
+          scopeKind: scope,
+        ),
+      );
+
+      expect(repository.loaded, hasLength(2));
+      expect(find.byKey(const Key('principal-profile-edit-unauthorized')), findsOneWidget);
+      expect(find.byKey(const Key('principal-profile-edit-save')), findsNothing);
+      expect(repository.saved, isEmpty);
+    });
+  }
+
   testWidgets('reloads when the person in context changes', (tester) async {
     final repository = _StubAboutRepository(page: pageWith('Antes'));
     await pump(tester, repository);

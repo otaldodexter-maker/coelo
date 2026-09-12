@@ -70,6 +70,8 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
     if (identical(oldWidget.repository, widget.repository) &&
         oldWidget.runtimeContext.membershipId == widget.runtimeContext.membershipId &&
         oldWidget.runtimeContext.personId == widget.runtimeContext.personId &&
+        oldWidget.runtimeContext.roleCode == widget.runtimeContext.roleCode &&
+        oldWidget.runtimeContext.scopeKind == widget.runtimeContext.scopeKind &&
         oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
         oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
         oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {
