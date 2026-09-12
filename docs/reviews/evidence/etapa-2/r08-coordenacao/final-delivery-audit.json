@@ -1,0 +1,134 @@
+{
+  "measuredAt": "2026-09-12T14:46:51.517119-03:00",
+  "rows": [
+    {
+      "group": "G0",
+      "branch": "work/etapa2-r08-ambiente-runtime",
+      "head": "a8176c297666b4d89b48e972e618cc9db9308d21",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G1",
+      "branch": "work/etapa2-r08-estrutura",
+      "head": "558b3d35715e83a8f29699b6bea64cdf450acacf",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G2",
+      "branch": "work/etapa2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G3",
+      "branch": "work/etapa2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G4",
+      "branch": "work/etapa2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G5",
+      "branch": "work/etapa2-r08-realm-interno",
+      "head": "2a7609507414e3aca77fdfa63895478a9f51fa15",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G6",
+      "branch": "work/etapa2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G7",
+      "branch": "work/etapa2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    },
+    {
+      "group": "G8",
+      "branch": "work/etapa2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "localEqualsRemote": true,
+      "integratedInC0": true,
+      "worktreeClean": true
+    }
+  ],
+  "allNineIntegrated": true,
+  "allNinePushedAndClean": true,
+  "stateChanges": [
+    {
+      "action": "chat.attach",
+      "field": "frontendStatus",
+      "from": "blocked-environment",
+      "to": "local-green"
+    },
+    {
+      "action": "forms.upload",
+      "field": "frontendStatus",
+      "from": "pending-verification",
+      "to": "local-green"
+    },
+    {
+      "action": "forms.resolve-file",
+      "field": "frontendStatus",
+      "from": "pending-verification",
+      "to": "local-green"
+    }
+  ],
+  "trackerFiles": [
+    {
+      "path": "docs/reviews/coelo-flutter-pendencias.md",
+      "sha256": "46ccbf6db1313d63a9a33bf0e4cc562af01d6ef6b724226eeb794ce1ff4dfc43",
+      "closureSection": true
+    },
+    {
+      "path": "docs/reviews/coelo-supabase-pendencias.md",
+      "sha256": "b5f826f15932d0f77d1efe916a4ee495fb9dd65fc97327a601cc554318a6dc8a",
+      "closureSection": true
+    },
+    {
+      "path": "docs/reviews/coelo-flutter-integrado-supabase-pendencias.md",
+      "sha256": "e89f686eb0f992bd007b75e1cbca05689fd47bfa5b46586206ed94bd55d01578",
+      "closureSection": true
+    }
+  ],
+  "deltaAudit": {
+    "formsG3": "applied cycle180, two local-green actions",
+    "chatG4": "applied cycle60, local-green",
+    "profileG4": "already local-green before R08; functional delta recorded cycle180",
+    "errorsG4": "final-review-deltas applied; stale gates corrected",
+    "operacoes": "empty delta, no state promotion",
+    "memoryG3": "source then skill/projection applied65f219550"
+  },
+  "lateCorrections": [
+    "G2 final receipt942955410 merged after audit",
+    "G4 H03/errors stale gates reconciled across inventory and three MDs",
+    "G6 new circular fixture instruction clarified"
+  ],
+  "validation": {
+    "trackers": "PASS231actions39families161FE149BE131E2E",
+    "knowledge": "PASS64articles",
+    "newTerminalCertifications": 0
+  }
+}

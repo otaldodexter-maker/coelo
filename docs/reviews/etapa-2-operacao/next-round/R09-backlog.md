@@ -46,7 +46,7 @@ Gate bloqueado é registrado; a frente segue no próximo trabalho independente a
 | attendance.correct | G3 | local-green / done / pending-verification | R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado. |
 | attendance.finish | G3 | local-green / done / pending-verification | R08 G3 — primeiro gate: Recertificar nova CallPage/PublicationSurface por ação; observações375 e CRUD/reload; BE done preservado. |
 | chat.create-group | G4 | verified / done / pending-verification | R08 G4 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente. |
-| chat.attach | G4 | local-green / local-green / pending-verification | Cliente integrado local-green; API no mesmo anexo passou. Provar UI/reload/negativa real reutilizando dados quando possível. |
+| chat.attach | G4 | local-green / local-green / pending-verification | R08: consumidor Flutter e cadeia API prepare/PUT/finalize/read concluidos; proximo gate e UI/reload/negativa real na mesma composicao, sem recriar catalogo/Edge. |
 | forms.location-answer | G3 | local-green / pending-verification / pending-verification | R08 G3 — primeiro gate: Ocorrência nova com item Local publicado; responder/persistir/reload; decisão ADR9/12 resolvida. |
 | forms.upload | G3 | local-green / local-green / pending-verification | Question-image e answer-image API/R2 já passaram; provar upload pela UI, câmera física e fluxo anônimo separadamente. |
 | forms.resolve-file | G3 | local-green / local-green / pending-verification | Download autorizado200/reload da mesma resposta já passou viaAPI; falta UI/reabertura e negativa real, sem novo upload redundante. |
@@ -63,7 +63,7 @@ Gate bloqueado é registrado; a frente segue no próximo trabalho independente a
 | momentos.remove | G4 | pending-verification / local-green / pending-verification | Lote58 e retirada API corrigidos; falta rota normal/reload/negativa real, sem repetir grant. |
 | principal.for-you | G4 | verified / blocked-decision / pending-verification | R08 G4 — primeiro gate: Provar leitura/escopo da ponte já aplicada; conciliar CTA de Comunicação H13, não repetir P17/P35. |
 | principal.profile-view | G4 | verified / local-green / pending-verification | R08 G4 — primeiro gate: Provar leitura/escopo real do Perfil e retorno no shell. |
-| principal.profile-edit | G4 | local-green / blocked-decision / pending-verification | R08 G4 — primeiro gate: Conciliar edição Sobre/dado oficial e abas H02/H03; provar save/reload autorizado. |
+| principal.profile-edit | G4 | local-green / blocked-decision / pending-verification | R08: H03 quatro abas ja atendidas; nao reabrir. H02 atualizacao de dado oficial permanece decisao nominal. Primeiro gate executavel: Sobre save/reload real no sujeito/contexto autorizado; correcoes parser/reload locais ja integradas. |
 | catalog.list | G7 | verified / pending-verification / pending-verification | R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem. |
 | catalog.validate | G7 | verified / pending-verification / pending-verification | R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem. |
 | catalog.sync | G7 | verified / pending-verification / pending-verification | R08 G7 — primeiro gate: Provar catálogo no contrato/destino produtivo; distinguir validação local, sincronização e hospedagem. |
@@ -78,11 +78,11 @@ Gate bloqueado é registrado; a frente segue no próximo trabalho independente a
 | internal-users.suspend | G2 | pending-verification / local-green / pending-verification | R08 G2 — primeiro gate: Suspender usuário sintético elegível e negar uso da sessão conforme contrato. |
 | errors.403 | G4 | verified / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.403 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
 | errors.404 | G4 | verified / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.404 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
-| errors.409 | G4 | local-green / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.409 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
-| errors.500 | G4 | verified / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.500 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
+| errors.409 | G4 | local-green / pending-verification / pending-verification | R08: preservar composicao409 aprovada P26 e conflitos contextuais. Identificar gatilho produtivo especifico antes de requerer nova tela global; nao ha disparador global normal comprovado. |
+| errors.500 | G4 | verified / pending-verification / pending-verification | R08: identificar gatilho produtivo especifico antes de nova tela global; nao simular HTTP500 nem apresentar /dev como backend real. |
 | errors.503 | G4 | verified / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.503 por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
-| errors.retry | G4 | verified / pending-verification / pending-verification | R08 G4 — primeiro gate: Provocar errors.retry por rota/erro autorizado real, conferir feedback e retry sem vazar dados; não simular código500 como prova do backend. |
-| circulars.attach | G6 | local-green / done / pending-verification | Provar UI3014 somente após controle permitido; incidente Circular retido não autoriza restaurar/recriar ou limpar sem identificação. |
+| errors.retry | G4 | verified / pending-verification / pending-verification | R08: provar retry contextual em Momentos: falha transitoria, nova leitura autorizada list_visible_moments e feed/reload. Negacao sem retry. Nao exigir wiring global novo. |
+| circulars.attach | G6 | local-green / done / pending-verification | Provar UI3014 com fixture NOVA sintetica, autorizada pelo C0, identificada e retida. Nao restaurar/recriar o recurso do incidente aa9e26a6; ele segue excluido logicamente para auditoria. |
 
 ## Gates transversais sem novos IDs
 

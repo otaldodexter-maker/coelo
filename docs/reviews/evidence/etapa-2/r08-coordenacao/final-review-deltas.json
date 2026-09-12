@@ -1,0 +1,32 @@
+[
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "integrated",
+    "delta": "R08: H03 quatro abas ja atendidas; nao reabrir. H02 atualizacao de dado oficial permanece decisao nominal. Primeiro gate executavel: Sobre save/reload real no sujeito/contexto autorizado; correcoes parser/reload locais ja integradas.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md"
+  },
+  {
+    "action_id": "errors.retry",
+    "camada": "integrated",
+    "delta": "R08: provar retry contextual em Momentos: falha transitoria, nova leitura autorizada list_visible_moments e feed/reload. Negacao sem retry. Nao exigir wiring global novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md"
+  },
+  {
+    "action_id": "errors.409",
+    "camada": "integrated",
+    "delta": "R08: preservar composicao409 aprovada P26 e conflitos contextuais. Identificar gatilho produtivo especifico antes de requerer nova tela global; nao ha disparador global normal comprovado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md"
+  },
+  {
+    "action_id": "errors.500",
+    "camada": "integrated",
+    "delta": "R08: identificar gatilho produtivo especifico antes de nova tela global; nao simular HTTP500 nem apresentar /dev como backend real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "R08: consumidor Flutter e cadeia API prepare/PUT/finalize/read concluidos; proximo gate e UI/reload/negativa real na mesma composicao, sem recriar catalogo/Edge.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md"
+  }
+]

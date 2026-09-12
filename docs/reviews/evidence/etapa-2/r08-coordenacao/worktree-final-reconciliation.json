@@ -1,0 +1,135 @@
+{
+  "measuredAt": "2026-09-12T14:43:24.052856-03:00",
+  "base": "f444cb115e44d3bd38ad9815975b6d4856b15b57",
+  "excludedRebuildable": [
+    ".dart_tool",
+    "build",
+    "node_modules",
+    ".git",
+    "__pycache__",
+    ".venv"
+  ],
+  "rows": [
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "trackedOrUntrackedStatus": "",
+      "integrated": false,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-acessos-pessoas-ignored.zip",
+      "files": 61,
+      "uncompressedBytes": 2570359,
+      "zipBytes": 2310944,
+      "zipSha256": "11b9899eb79c35701a29edc5e9700cb26d019ede6bac27226c0f6167686daa07",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-ambiente-runtime",
+      "head": "068021440243dc4e2eb7ab98debe5fe119a4d7ac",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-ambiente-runtime-ignored.zip",
+      "files": 8,
+      "uncompressedBytes": 9647,
+      "zipBytes": 2670,
+      "zipSha256": "c403ddec5a299c101f02ec5d63f05f9b865ec0ab369b9acfd69ae9f0176af6a3",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-coordenacao",
+      "head": "f444cb115e44d3bd38ad9815975b6d4856b15b57",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-coordenacao-ignored.zip",
+      "files": 75,
+      "uncompressedBytes": 4343706,
+      "zipBytes": 3924167,
+      "zipSha256": "37b40affa616becf97c36eb5c7fdf7775a4cc1cb9d36d10f78cc6d4bcfa51f94",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-estrutura",
+      "head": "558b3d35715e83a8f29699b6bea64cdf450acacf",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-estrutura-ignored.zip",
+      "files": 182,
+      "uncompressedBytes": 12995276,
+      "zipBytes": 12131345,
+      "zipSha256": "09c9ab33d7b216050de3f469365d42ebfadca385aeecedc723a3c31d741efc97",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-formularios-cuidado-rotina-ignored.zip",
+      "files": 17,
+      "uncompressedBytes": 814048,
+      "zipBytes": 743439,
+      "zipSha256": "1fc4194fa3ff02cdf532a1c6838e3484f1c2e70262b945e3a553434b9c9510bb",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-operacoes-ignored.zip",
+      "files": 9,
+      "uncompressedBytes": 434668,
+      "zipBytes": 386412,
+      "zipSha256": "f58295267f0d30542c164bb4f9e09075d556e608be88e24c98e2a3791dd75b80",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-principal-chat-sistema-ignored.zip",
+      "files": 3,
+      "uncompressedBytes": 55013,
+      "zipBytes": 6295,
+      "zipSha256": "3fd855a8c4d070bbe0ba49eb6038c836d1d34fd9ffe3b809bf74f51e7dde090f",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-publicacoes-agenda-ignored.zip",
+      "files": 1,
+      "uncompressedBytes": 9350,
+      "zipBytes": 1134,
+      "zipSha256": "ee7fc7fb3819a2455af33f77795f98a80c7f50311b505597a2203e2a376ffea5",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-realm-interno",
+      "head": "2a7609507414e3aca77fdfa63895478a9f51fa15",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-realm-interno-ignored.zip",
+      "files": 1,
+      "uncompressedBytes": 8,
+      "zipBytes": 206,
+      "zipSha256": "312e0f68107888f14ed5c87158da59839cd63934684c8eff9117a2277755fb86",
+      "retained": true
+    },
+    {
+      "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "trackedOrUntrackedStatus": "",
+      "integrated": true,
+      "backup": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r08-worktrees-20260912\\e2-r08-suites-ignored.zip",
+      "files": 93,
+      "uncompressedBytes": 4146545,
+      "zipBytes": 3722765,
+      "zipSha256": "a78a3fc79e3b7cbcaf6c8f429228d199bd1fd2e9b1df6bd9820516f95d7b7801",
+      "retained": true
+    }
+  ],
+  "stash": ""
+}

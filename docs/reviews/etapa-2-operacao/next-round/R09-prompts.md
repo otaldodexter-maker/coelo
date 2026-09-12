@@ -103,8 +103,8 @@ segurança ampla fora de escopo, mas invariantes de autorização permanecem.
 
 Seis R só após Owner indicar caminho/componente/recorte/rodapé por arquivo.
 Preservar A/A+, intercalamento, teto10.000 e provasP50/R06-R08 sem delta.
-Gate independente circulars.attach UI3014, com fixture identificada e retida;
-não restaurar/excluir recursos do incidente sem instrução nominal. Complementar
+Gate independente circulars.attach UI3014, com fixture NOVA sintética, autorizada pelo C0, identificada e retida;
+não restaurar/recriar/excluir o recurso do incidente sem instrução nominal. Complementar
 shell.load/read_at apenas quando houver evento, sem inventar action_id.
 
 ## G7 — operações
