@@ -151,6 +151,81 @@ void main() {
     );
   });
 
+  for (final rules in [
+    const [
+      FormAudienceRule(
+        id: 'rule-a',
+        kind: FormAudienceRuleKind.institution,
+        mode: FormAudienceRuleMode.include,
+        targetId: 'institution-a',
+      ),
+      FormAudienceRule(
+        id: 'rule-b',
+        kind: FormAudienceRuleKind.person,
+        mode: FormAudienceRuleMode.exclude,
+        targetId: 'person-b',
+      ),
+    ],
+    const [
+      FormAudienceRule(
+        id: 'rule-b',
+        kind: FormAudienceRuleKind.person,
+        mode: FormAudienceRuleMode.exclude,
+        targetId: 'person-b',
+      ),
+    ],
+    const [
+      FormAudienceRule(
+        id: 'rule-c',
+        kind: FormAudienceRuleKind.unit,
+        mode: FormAudienceRuleMode.include,
+        targetId: 'unit-c',
+      ),
+    ],
+  ]) {
+    testWidgets('scheduling preserves unrepresentable audience ${rules.map((r) => r.id).join()}', (
+      tester,
+    ) async {
+      final existing = FormApplication(
+        id: 'application-a',
+        formId: '10000000-0000-4000-8000-000000000001',
+        institutionId: '20000000-0000-4000-8000-000000000001',
+        name: 'Público existente',
+        audienceRules: rules,
+        managementVersion: 4,
+      );
+      final api = _ScheduleApi(existingApplication: existing);
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Builder(
+            builder: (context) => TextButton(
+              onPressed: () => showFormsProductionScheduleDialog(
+                context: context,
+                api: api,
+                contextApi: const _ScheduleContextApi(),
+                formId: existing.formId,
+                formTitle: 'Cuidados',
+              ),
+              child: const Text('Abrir produção'),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Abrir produção'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('forms-schedule-preserved-audience')), findsOneWidget);
+      expect(find.byKey(const Key('forms-schedule-audience-kind')), findsNothing);
+      await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.widgetWithText(FilledButton, 'Salvar'));
+      await tester.pumpAndSettle();
+      expect(api.applicationCommand?.expectedVersion, 4);
+      expect(api.applicationCommand?.payload.application.audienceRules, orderedEquals(rules));
+      expect(tester.takeException(), isNull);
+    });
+  }
+
   testWidgets('persists an authorized institution audience and recurring schedule', (tester) async {
     final api = _ScheduleApi();
     await tester.pumpWidget(
@@ -214,11 +289,14 @@ final class _ScheduleContextApi implements FormsEditorContextApi {
 }
 
 final class _ScheduleApi implements FormsApi {
+  _ScheduleApi({this.existingApplication});
+  final FormApplication? existingApplication;
   FormCommand<FormSaveApplicationPayload>? applicationCommand;
   FormCommand<FormSaveSchedulePayload>? scheduleCommand;
 
   @override
   Future<FormEditorProjection> getEditor(String formId) async => FormEditorProjection(
+    application: existingApplication,
     definition: FormDefinition(
       id: formId,
       institutionId: '20000000-0000-4000-8000-000000000001',

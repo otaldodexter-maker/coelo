@@ -1364,7 +1364,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _markChanged() {
     if (!mounted) return;
-    if (widget.authoringApi == null) {
+    if (widget.development || (widget.authoringApi == null && widget.api == null)) {
       if (_feedback != null) setState(() => _feedback = null);
       return;
     }
@@ -1416,7 +1416,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
 
   void _scheduleAutosave() {
     _autosaveTimer?.cancel();
-    if (widget.authoringApi == null ||
+    if (widget.development ||
+        (widget.authoringApi == null && widget.api == null) ||
         !_canEdit ||
         _autosavePaused ||
         _confirmingDiscard ||
@@ -1426,10 +1427,10 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     final generation = _contextGeneration;
-    final api = widget.authoringApi;
+    final api = widget.authoringApi ?? widget.api;
     _autosaveTimer = Timer(const Duration(milliseconds: 800), () {
       if (!_isCurrentContext(generation) ||
-          !identical(api, widget.authoringApi) ||
+          !identical(api, widget.authoringApi ?? widget.api) ||
           !_canEdit ||
           _autosavePaused ||
           !_draftChanged) {
@@ -1606,16 +1607,15 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
             expectedVersion: _definition?.managementVersion ?? 0,
             payload: definition,
           );
-      if (authoring != null) _pendingAuthoringSave = command;
+      _pendingAuthoringSave = command;
       final saved = await (authoring != null
           ? authoring.saveDraft(command)
           : api!.saveDraft(command));
       if (!_isCurrentContext(generation)) return;
       final changedSinceCommand =
-          authoring != null &&
           (_configurationIssue != null ||
-              jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
-                  jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson()));
+          jsonEncode(FormDefinitionDto.fromDomain(_localDefinition()).toJson()) !=
+              jsonEncode(FormDefinitionDto.fromDomain(command.payload).toJson()));
       setState(() {
         _definition = saved;
         _institutionId = saved.institutionId;
@@ -3259,8 +3259,7 @@ const _catalogGroups = [
   (label: 'Estrutura', items: [FormItemKind.information]),
 ];
 
-bool _isNumericKind(FormItemKind kind) =>
-    FormNumericLimits.isNumeric(kind);
+bool _isNumericKind(FormItemKind kind) => FormNumericLimits.isNumeric(kind);
 
 String _kindLabel(FormItemKind kind) => switch (kind) {
   FormItemKind.shortText => 'Texto curto',
