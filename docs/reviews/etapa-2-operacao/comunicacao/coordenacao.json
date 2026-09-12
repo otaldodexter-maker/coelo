@@ -1,5 +1,5 @@
 {
- "revision": 61,
+  "revision": 62,
  "round": "E2-R07-20260911",
  "role": "Coordenacao R07 - Codex Luna esforco medio (C0)",
  "writer": "coordenador-codex",
@@ -2138,7 +2138,17 @@
   "tentativasR07": "docker desktop restart e wsl --shutdown executados sem restaurar dockerDesktopLinuxEngine; nenhum reset de fabrica",
   "impactoR07": "nao bloqueia integracao Git, leitura dos JSONs, testes Flutter/Node nem trabalho das frentes; bloqueia somente preflight SQL local ate o daemon voltar"
  },
- "posseR07": {
+  "recebimentoComplementarG8R07": {
+    "ackRevision": 19,
+    "sha": "d4a62918c",
+    "recebidoEm": "2026-09-12T10:00:00-03:00",
+    "estado": "ACK: complemento de aprovacoes recebido e integrado; consolidacao R07/R08 em andamento",
+    "canal": "fase0.json da branch work/etapa2-r07-suites; G8 roda no Claude, nao aparece na lista de tarefas Codex",
+    "conteudo": "P53=A; rodape Criar modelo sim; 64 A, 5 A+ (inclui um inferido), 6 R por golden. Sem transformar imagem aprovada em FE/BE/E2E.",
+    "reserva": "worktree da G8 preservada ate verificar que este e o ultimo complemento; avisar pelo fase0.json se houver novo SHA/WIP",
+    "acaoC0": "registrar decisoes, vincular goldens a IDs unicos e adaptar R08; nenhuma regravacao geral em R07"
+  },
+  "posseR07": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
   "branch": "work/etapa2-r07-coordenacao",
   "upstream": "origin/dev",
