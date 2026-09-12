@@ -1,0 +1,36 @@
+{
+  "base": "c729090f9f1f9968059e074009f06e2c45c09530",
+  "counts": {
+    "success": 411,
+    "error": 4,
+    "skipped": 1
+  },
+  "failed": [
+    {
+      "id": 432,
+      "name": "matches cards and table at supported widths and themes",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/activities/presentation/activity_golden_test.dart"
+    },
+    {
+      "id": 434,
+      "name": "matches hover, filter and pagination references",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/activities/presentation/activity_golden_test.dart"
+    },
+    {
+      "id": 455,
+      "name": "matches the institution directory cards and table references",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart"
+    },
+    {
+      "id": 461,
+      "name": "matches approved interactive directory state references",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/institutions/presentation/screens/institution_directory_page_golden_test.dart"
+    }
+  ],
+  "done": {
+    "success": false,
+    "type": "done",
+    "time": 97850
+  },
+  "nativeExit": 1
+}

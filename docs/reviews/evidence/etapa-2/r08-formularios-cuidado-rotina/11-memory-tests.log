@@ -1,0 +1,20 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+test_accepts_inline_and_block_lists_and_real_leap_day (__main__.KnowledgeTests.test_accepts_inline_and_block_lists_and_real_leap_day) ... ok
+test_identity_unique_per_audience_but_shared_across_audiences (__main__.KnowledgeTests.test_identity_unique_per_audience_but_shared_across_audiences) ... ok
+test_missing_knowledge_root_is_an_error (__main__.KnowledgeTests.test_missing_knowledge_root_is_an_error) ... ok
+test_rejects_duplicate_yaml_keys (__main__.KnowledgeTests.test_rejects_duplicate_yaml_keys) ... ok
+test_rejects_invalid_dates_and_wrong_metadata_types (__main__.KnowledgeTests.test_rejects_invalid_dates_and_wrong_metadata_types) ... ok
+test_rejects_malformed_yaml_and_unsafe_tags_without_echoing_value (__main__.KnowledgeTests.test_rejects_malformed_yaml_and_unsafe_tags_without_echoing_value) ... ok
+test_rejects_source_escape_directory_projection_and_missing_file (__main__.KnowledgeTests.test_rejects_source_escape_directory_projection_and_missing_file) ... ok
+test_rejects_symlink_source_escape (__main__.KnowledgeTests.test_rejects_symlink_source_escape) ... skipped 'O host não permite criar symlink no teste.'
+test_requires_every_metadata_field (__main__.KnowledgeTests.test_requires_every_metadata_field) ... ok
+test_search_excludes_draft_and_deprecated_by_default (__main__.KnowledgeTests.test_search_excludes_draft_and_deprecated_by_default) ... ok
+test_search_filters_audience_and_accepts_users_alias (__main__.KnowledgeTests.test_search_filters_audience_and_accepts_users_alias) ... ok
+test_security_guidance_is_not_a_secret (__main__.KnowledgeTests.test_security_guidance_is_not_a_secret) ... ok
+test_sensitive_values_rejected_without_echoing_them (__main__.KnowledgeTests.test_sensitive_values_rejected_without_echoing_them) ... ok
+
+----------------------------------------------------------------------
+Ran 13 tests in 0.710s
+
+OK (skipped=1)
+PASS: validaÃ§Ã£o e consulta; inventÃ¡rio de cenÃ¡rios conferido (nÃ£o Ã© simulaÃ§Ã£o de agente).

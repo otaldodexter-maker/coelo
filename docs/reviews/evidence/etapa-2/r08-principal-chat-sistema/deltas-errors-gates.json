@@ -1,0 +1,31 @@
+{
+  "source": "R08 C0 gate errors + code b58cbaec9 + canonical error spec + integrated tracker",
+  "generated_at": "2026-09-12T13:43:01.762361-03:00",
+  "status": "proposal-only-no-state-promotion",
+  "writer": "C0",
+  "actions": [
+    {
+      "action_id": "errors.retry",
+      "proposed_gate": "Reprovar retry contextual da rota Momentos (falha transitória→nova leitura autorizada list_visible_moments→feed/reload), preservando negação sem retry. Não exigir wiring global novo.",
+      "evidence": "errors-route-map.md",
+      "ui_e2e": "not-executed-r08"
+    },
+    {
+      "action_id": "errors.409",
+      "proposed_gate": "Preservar composição409 aprovadaP26 e conflitos contextuais; identificar gatilho produtivo específico antes de requerer nova tela global.",
+      "ui_e2e": "not-executed-r08"
+    },
+    {
+      "action_id": "errors.500",
+      "proposed_gate": "Identificar gatilho produtivo específico; não simular HTTP500 nem apresentar/dev como backend real.",
+      "ui_e2e": "not-executed-r08"
+    }
+  ],
+  "unchanged": [
+    "FE/BE/E2E states",
+    "inventory/trackers",
+    "router",
+    "backend",
+    "action denominator"
+  ]
+}

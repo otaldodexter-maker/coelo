@@ -115,6 +115,8 @@ final class _PrincipalProfileRoutePageState extends State<PrincipalProfileRouteP
     if (identical(oldWidget.aboutRepository, widget.aboutRepository) &&
         oldWidget.runtimeContext.membershipId == widget.runtimeContext.membershipId &&
         oldWidget.runtimeContext.personId == widget.runtimeContext.personId &&
+        oldWidget.runtimeContext.roleCode == widget.runtimeContext.roleCode &&
+        oldWidget.runtimeContext.scopeKind == widget.runtimeContext.scopeKind &&
         oldWidget.runtimeContext.institutionId == widget.runtimeContext.institutionId &&
         oldWidget.runtimeContext.unitId == widget.runtimeContext.unitId &&
         oldWidget.runtimeContext.groupId == widget.runtimeContext.groupId) {
