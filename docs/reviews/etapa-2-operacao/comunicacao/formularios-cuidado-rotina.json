@@ -1,19 +1,19 @@
 {
-  "revision": 70,
+  "revision": 72,
   "round": "E2-R08-20260912",
   "group": "formularios-cuidado-rotina",
   "tool": "Codex",
   "model": "GPT-Astra, esforço médio (Owner)",
   "coordinator": "C0 R08",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T16:04:41.762Z",
+  "updatedAt": "2026-09-12T16:27:45.951Z",
   "T0": "2026-09-12T10:52:16-03:00",
   "corteExecucao": "2026-09-12T14:52:16-03:00",
   "revisaoAte": "2026-09-12T15:02:16-03:00",
   "worktree": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
   "branch": "work/etapa2-r08-formularios-cuidado-rotina",
-  "head": "f0c7269fd + pacote anônimo desta revisão",
-  "base": "origin/dev 2441725d5 materializado no merge 5a421a7b9",
+  "head": "8b9e784e5 + captura Foto local-green desta revisão",
+  "base": "origin/dev 7cc6d4e7b materializado no merge8b9e784e5",
   "scope": {
     "quando": "2026-09-12T13:56:47.689Z",
     "objetivo": "Fechar primeiro gate executável do recorte G3 com correção e evidências por action_id.",
@@ -58,7 +58,7 @@
       "frame": "confirmado C0"
     }
   },
-  "currentGate": "edit_secret anônimo local-green293PASS; composição C0 e runtime G0 pendentes. H19 backend em conciliação G5.",
+  "currentGate": "Captura Foto local-green182PASS/analyze0, pronta para integração C0; câmera real e E2E dependem G0. H19 decisão nominal pendente.",
   "tests": {
     "round": "E2-R08-20260912",
     "porPacote": [
@@ -106,6 +106,13 @@
         "failed": 0,
         "overlap": "18 novos;store7/reader40/upload17/resposta154/viewer21/API54; não somar pacotes",
         "evidencia": "07-anonymous-edit.md"
+      },
+      {
+        "sha": "pacote câmera desta revisão",
+        "passed": 182,
+        "failed": 0,
+        "overlap": "11 novos;camera8/upload19/resposta155; não somar pacotes",
+        "evidencia": "08-camera-result.md"
       }
     ],
     "e2eExecutados": 0,
@@ -117,7 +124,8 @@
       "04-h12-h26.md",
       "05-h19-responsaveis.md",
       "06-answer-finalize.md",
-      "07-anonymous-edit.md"
+      "07-anonymous-edit.md",
+      "08-camera-result.md"
     ]
   },
   "reservedFiles": [
@@ -125,9 +133,9 @@
     "apps/superadmin/lib/shared/presentation/widgets/publication_surface.dart (delta focal G3 C0)"
   ],
   "resources": {
-    "flutterTest": "Liberado:64926 exit0,293PASS0FAIL concurrency1; analyze final exit0. Nenhum processo G3.",
+    "flutterTest": "Liberado83919 exit0:182PASS0FAIL concurrency1; analyze45069 exit0. Nenhum processo G3.",
     "chrome": "G0; sem posse G3; runtime E2E ainda não liberado",
-    "sql": "Lote58 aplicado pelo C0; H19 em conciliação G5. Nenhum SQL G3.",
+    "sql": "H19 sem schema especulativo; pergunta Owner registrada C0, G5 aguarda.",
     "deploy": "C0 informou form-media v17 ACTIVE; prova answer-image preparada G0. Nenhum deploy G3."
   },
   "blocking": [
@@ -163,8 +171,8 @@
         "FormResponsePage.mediaSession/mediaReader"
       ],
       "pendencias": [
-        "Foto/câmera",
-        "composição anônima normal C0",
+        "integração/build e câmera em navegador G0/C0",
+        "composição anônima normal C0/G6",
         "runtime real e expiração/exclusão remotas"
       ]
     }
@@ -217,9 +225,21 @@
     {
       "sha": "f0c7269fd",
       "o_que": "review G5: tamanho medido actual,53DenoPASS"
+    },
+    {
+      "sha": "72e6e6f22",
+      "o_que": "anônimo293PASS18novos + JSON70"
+    },
+    {
+      "sha": "8344cb98a",
+      "o_que": "conciliação timeout inicial do store"
+    },
+    {
+      "sha": "8b9e784e5",
+      "o_que": "merge origin/dev7cc6d4e7b ciclo120"
     }
   ],
-  "nextStep": "Publicar anônimo com wiring para C0; conciliar H19 quando candidato chegar e seguir próximo gate autorizado.",
+  "nextStep": "Publicar captura; merge origin/dev7e889abac; pedir próximo gate independente ao C0 até corte.",
   "finalizado": false,
   "dadosSinteticosCriados": [],
   "chavesCriadas": "nenhuma",
