@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 61,
+ "revision": 62,
  "round": "E2-R06-20260911",
- "updatedAt": "2026-09-11T21:12:30-03:00",
+ "updatedAt": "2026-09-11T21:15:00-03:00",
  "app": "Claude",
  "modelo": "Opus 5 (esforco medio)",
  "conversa": "R06 · Estrutura (G1)",
  "coordenador": "R06 · Coordenacao (coordenacao.json rev 52, T0 19:36)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r06-estrutura",
  "branch": "work/etapa2-r06-estrutura",
- "head": "(commit desta revisao); codigo ate o commit \"assistente de Atividades explica...\"",
+ "head": "(commit desta revisao); codigo ate 2726bf0c0",
  "upstream": "origin/work/etapa2-r06-estrutura (push no primeiro commit)",
  "horario": {
   "abertura": "2026-09-11T19:36:45-03:00",
@@ -177,7 +177,7 @@
   {
    "n": 4,
    "item": "locations.list e locations.detail-links",
-   "estado": "pendente"
+   "estado": "FECHADO na rota real (21:11-21:12): locations.list (catalogo da instituicao com qa-r06-estrutura) e locations.detail-links (detalhe, Agenda semanal sob demanda com a janela da R04, acoes Voltar/Duplicar/Editar/Recarregar, reload por deep link). Deltas 20-24."
   },
   {
    "n": 5,
@@ -229,10 +229,10 @@
    "estado": "verde no espelho coelo_estrutura_r06; commit 9a729c4f1 publicado; aplicar depois do 180100 (independentes)"
   }
  ],
- "deltasPropostos": "docs/reviews/evidence/etapa-2/r06-estrutura/deltas-r06-estrutura.json: 19 entradas (1-16 ja aplicadas pelo coordenador as 20:55; 17-19 novas: activities.create FE/BE/E2E); ensaio apply + validate PASS, revertido",
+ "deltasPropostos": "deltas-r06-estrutura.json: 24 entradas (1-16 aplicadas as 20:55; 17-24 novas: activities.create, locations.list, locations.detail-links); ensaio apply + validate PASS (FE 139, BE 136, E2E 109 sobre a base local), revertido",
  "pedidosAoCoordenador": [
   "Aplicar candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (pgTAP verdes; sem ALTER TYPE; sem chave de composicao)",
-  "Integrar work/etapa2-r06-estrutura ate 9a729c4f1 (cliente 0434548b9 + 9a729c4f1; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1)",
+  "Integrar work/etapa2-r06-estrutura ate 2726bf0c0 (cliente 0434548b9, 9a729c4f1, 2726bf0c0; teste 2b2b11413; candidatos 9c14eddeb, 5005d47c7, 9a729c4f1) e aplicar os deltas 17-24",
   "Confirmar se o launcher \"Mensagens\" inteiro e o aprovado para regravar os goldens de diretorio de Atividades (item 5)"
  ],
  "avisosParaOutrosGrupos": [],
@@ -250,7 +250,7 @@
  "recursos": {
   "processos": [],
   "portas": [],
-  "encerramento": "Chrome 9571, servidor 3001 e espelho coelo_estrutura_r06 fechados as 21:1x"
+  "encerramento": "Chrome 9571 e servidor 3001 reabertos 21:10 para Locais e fechados 21:16; espelho parado 21:08"
  },
  "ack": "coordenacao rev 56: lote 51 (20260912180000 structure_handles_client_v1) em producao as 20:15; 16 deltas aplicados as 20:55",
  "proximoPasso": "nenhum nesta rodada; para a proxima: aplicar 180100 e 180200, provar activities.assessment (salvar + ativar configuracao) e assessments.*, groups.members/location, institutions.status/files/error/access-denied, units.error/access-denied, locations.detail-links, goldens de Atividades apos decisao do launcher",
@@ -269,17 +269,18 @@
    "FE verified + BE done sem E2E novo: activities.edit (Alterar @ por set_v1; reload do @ no campo depende do candidato 180200)",
    "Pacote 20260912180000_structure_handles_client_v1 aplicado em producao (lote 51)",
    "Candidatos verdes publicados: 20260912180100 (configuration_read sem SAI_INTERNAL_ERROR; 4/4 + 47/47) e 20260912180200 (detail_v2 devolve o @; 3/3 + 28/28)",
-   "Testes: unit_form_page_test reescrito para a regra do @ (179/179); group_form_page_test com o teste do @ (26/26); analyze limpo"
+   "Testes: unit_form_page_test reescrito para a regra do @ (179/179); group_form_page_test com o teste do @ (26/26); analyze limpo",
+   "E2E propostas (21:12): locations.list e locations.detail-links (deltas 20-24)"
   ],
   "abertoComPrimeiroGate": [
    "activities.assessment e assessments.entry/gradebook/close/reopen/detail: gate = tela /activities/:id/assessment-settings nao carrega ate o candidato 180100 ser aplicado; depois, salvar + ativar a configuracao cria o periodo e libera o lancamento (context_options ja lista a atribuicao para o Owner de plataforma)",
    "activities.publish FE: nao retomado (BE done)",
    "groups.members (cadastro/busca de pessoa da propria instituicao) e groups.location (secao de local no assistente + repositorio available:true): nao retomados",
-   "institutions.status/files/error/access-denied, units.error/access-denied, locations.list (BE) e locations.detail-links: nao exercidos",
+   "institutions.status/files/error/access-denied e units.error/access-denied: nao exercidos",
    "Goldens de Atividades (9 testes / 31 imagens): diretorio difere so pela pilula do chat (\"Mens.\" vs \"Mensagens\"); formularios/detalhe 375 por MENU-M, sem balao e etapas 4->6; nada regravado; decisao do launcher pedida ao coordenador",
    "Assistente de Atividades: Salvar rascunho com avaliacao habilitada falha antes do HTTP com mensagem enganosa (pendencia de code review)"
   ],
-  "deltas": "deltas-r06-estrutura.json: 19 entradas; 16 aplicadas; 17-19 pendentes",
+  "deltas": "deltas-r06-estrutura.json: 24 entradas; 16 aplicadas; 17-24 pendentes",
   "pacotesSqlRestantes": "candidatos/estrutura/20260912180100_assessment_configuration_read_variable_conflict_v1.sql e 20260912180200_activity_detail_v2_handle_v1.sql (verdes; independentes; sem chave de composicao)",
   "duvidasAoOwner": "nenhuma nova; ao coordenador: confirmar se o launcher \"Mensagens\" inteiro e o aprovado (goldens de diretorio de Atividades)",
   "dadosSinteticosCriados": "groups ea3986b7 (Turma R06 Arroba, @arroba.r06.centro); activity_definitions \"Atividade R06 Arroba\" (@arroba-r06, rascunho, Escola R04 Estrutura / Unidade Centro R04 / Turma R06 Arroba); units f5284f2f handle -> centro.r04estrutura (handle_last_changed_at 20:2x); activity_definitions 95b98978 handle_stem -> estrutura-r06. Ficam ate o fim da Etapa 2 (P42)",

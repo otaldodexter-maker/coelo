@@ -245,5 +245,70 @@
    "environment": "Chrome (CDP 9571) contra o build release de qa_main (9a729c4f1 nao incluido no build; build 0434548b9+fcdded416) em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me",
    "recordedAt": "2026-09-11T21:08:00-03:00"
   }
+ },
+ {
+  "action_id": "locations.list",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06 (21:11): /institutions/190dd028/locations em producao com a sessao interna de qa-r06-estrutura lista o catalogo da instituicao (Sala R04 Estrutura, 1 local, card Criar interno/externo, grade/lista, Arquivos); superadmin_location_catalog_v2 (lote 5) pela ponte de ator do lote 49; pgTAP catalog 30/30, authorization 26/26, isolation 6/6 reexecutados na R05.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/locations-list-instituicao.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/locations-list-instituicao.jpg",
+   "revision": "estrutura.json rev 62",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me | pgTAP de Locais reexecutado na R05 (espelho coelo_estrutura_r05)",
+   "recordedAt": "2026-09-11T21:14:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: catalogo de Locais ponta a ponta com o usuario sintetico da rodada (FE verified na R04, BE done nesta).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/locations-list-instituicao.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/locations-list-instituicao.jpg",
+   "revision": "estrutura.json rev 62",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me",
+   "recordedAt": "2026-09-11T21:14:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.detail-links",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R06 (21:12): detalhe do local 82e92854 pela rota real (nome, catalogo, tipo, andar, visibilidade, status), Agenda semanal carregada sob demanda (\"Ver agenda\" -> janela Segunda 08:00-12:00 da R04), acoes Voltar/Duplicar/Editar local/Recarregar e reload por deep link mantendo o detalhe.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/locations-detail-agenda-sob-demanda.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/locations-detail-agenda-sob-demanda.jpg",
+   "revision": "estrutura.json rev 62",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me | provas: locations-detail.jpg; locations-detail-agenda-sob-demanda.jpg; locations-detail-reload.jpg",
+   "recordedAt": "2026-09-11T21:14:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.detail-links",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R06: superadmin_location_catalog_v2 (detalhe) e a agenda do local (180000 reservas / schedule 38/38, R05) em producao para a sessao interna; reload devolve o mesmo registro.",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/locations-detail-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/locations-detail-reload.jpg",
+   "revision": "estrutura.json rev 62",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me | pgTAP schedule 38/38, reservations 49/49 (R05)",
+   "recordedAt": "2026-09-11T21:14:00-03:00"
+  }
+ },
+ {
+  "action_id": "locations.detail-links",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R06: detalhe do local com agenda e acoes ponta a ponta (rota real, catalog_v2 + schedule em producao, reload).",
+  "evidencia": "evidence/etapa-2/r06-estrutura/rota-real/locations-detail-reload.jpg",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/locations-detail-reload.jpg",
+   "revision": "estrutura.json rev 62",
+   "environment": "Chrome (CDP 9571) contra o build release de qa_main em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me",
+   "recordedAt": "2026-09-11T21:14:00-03:00"
+  }
  }
 ]
