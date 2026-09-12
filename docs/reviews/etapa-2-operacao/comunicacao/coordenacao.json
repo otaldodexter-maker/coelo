@@ -2042,7 +2042,12 @@
   "escopo": "apps/superadmin/test/app; apps/superadmin/test/core/config; apps/superadmin/test/shared; apps/superadmin/lib/dev; apps/superadmin/lib/core/config",
   "foraDoEscopo": "apps/superadmin/lib/features e apps/superadmin/lib/shared/presentation; se tocar, devolver para a frente",
   "semDeltasDeEstado": true,
-  "ciclo": "ler fase0.json a cada 20 min; ACK/recibo por revisao; cobrar feito/pendente/commits a cada 30 min; integrar por merge quando publicar; rodar suites tocadas"
+  "ciclo": "ler fase0.json a cada 20 min; ACK/recibo por revisao; cobrar feito/pendente/commits a cada 30 min; integrar por merge quando publicar; rodar suites tocadas",
+  "ack": true,
+  "revisaoRecebida": 10,
+  "recebidoEm": "2026-09-11T23:36:00-03:00",
+  "headObservado": "d5da3dfaf",
+  "recibo": "G8 reconhecida; escopo restrito confirmado; sem deltas de estado; coordenacao acompanhará fase0.json"
  },
  "dockerR07": {
   "estado": "bloqueio ambiental temporario apos falha do Docker Desktop",
