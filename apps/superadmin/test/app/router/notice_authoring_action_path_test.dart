@@ -71,9 +71,7 @@ void main() {
     expect(chamada.requestId, isNotEmpty);
   });
 
-  testWidgets('authoring routes refuse to write without an authorised repository', (
-    tester,
-  ) async {
+  testWidgets('authoring routes refuse to write without an authorised repository', (tester) async {
     final router = _router(tester, const UnavailableNoticeRepository());
 
     router.go(SuperadminRoutes.noticeCreate);
@@ -100,10 +98,7 @@ Future<void> _preencherAssistente(WidgetTester tester, {required String titulo})
   await tester.enterText(_fieldIn(const Key('notice-title')), titulo);
   await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
   await tester.pumpAndSettle();
-  await tester.enterText(
-    _fieldIn(const Key('notice-message')),
-    'O serviço ficará indisponível.',
-  );
+  await tester.enterText(_fieldIn(const Key('notice-message')), 'O serviço ficará indisponível.');
   await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));
   await tester.pumpAndSettle();
   await _tapVisible(tester, find.widgetWithText(FilledButton, 'Continuar'));

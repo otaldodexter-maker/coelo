@@ -20,25 +20,28 @@ void main() {
     expect(SuperadminRoutes.settings, '/settings');
   });
 
-  testWidgets('production profile mounts the production controller and fails closed on unavailable data', (tester) async {
-    final session = SuperadminSession()..signInForTesting();
-    final router = createSuperadminRouter(
-      session: session,
-      login: unavailableSuperadminLogin,
-      logout: unavailableSuperadminLogout,
-      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-      onThemeModeChanged: (_) {},
-    );
-    addTearDown(router.dispose);
-    addTearDown(session.dispose);
+  testWidgets(
+    'production profile mounts the production controller and fails closed on unavailable data',
+    (tester) async {
+      final session = SuperadminSession()..signInForTesting();
+      final router = createSuperadminRouter(
+        session: session,
+        login: unavailableSuperadminLogin,
+        logout: unavailableSuperadminLogout,
+        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+        onThemeModeChanged: (_) {},
+      );
+      addTearDown(router.dispose);
+      addTearDown(session.dispose);
 
-    router.go(SuperadminRoutes.profile);
-    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-    await tester.pumpAndSettle();
+      router.go(SuperadminRoutes.profile);
+      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+      await tester.pumpAndSettle();
 
-    expect(find.byType(ProfilePage), findsOneWidget);
-    expect(find.text('503'), findsNothing);
-  });
+      expect(find.byType(ProfilePage), findsOneWidget);
+      expect(find.text('503'), findsNothing);
+    },
+  );
 
   testWidgets('dev profile mounts only its isolated local controller', (tester) async {
     final session = SuperadminSession();

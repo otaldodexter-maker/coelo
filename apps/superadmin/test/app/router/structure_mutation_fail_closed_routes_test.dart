@@ -20,9 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// Se essa separação for aceita, este arquivo é o que impede Unidades de abrir
 /// junto por descuido.
 void main() {
-  testWidgets('rotas de mutação de Instituições e Unidades caem na página honesta', (
-    tester,
-  ) async {
+  testWidgets('rotas de mutação de Instituições e Unidades caem na página honesta', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signInForTesting();

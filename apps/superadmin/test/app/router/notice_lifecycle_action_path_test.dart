@@ -162,11 +162,7 @@ final class _RecordingNoticeRepository implements NoticeRepository {
     required String requestId,
     required int expectedVersion,
   }) async {
-    published.add((
-      noticeId: notice.id,
-      requestId: requestId,
-      expectedVersion: expectedVersion,
-    ));
+    published.add((noticeId: notice.id, requestId: requestId, expectedVersion: expectedVersion));
     return _notice;
   }
 

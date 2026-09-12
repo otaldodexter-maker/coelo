@@ -22,9 +22,7 @@ import 'package:go_router/go_router.dart';
 /// honestamente fechada, com repositorio ela consome o feed autorizado pelo
 /// escopo real do contexto, e nunca cai na fixture de demonstracao.
 void main() {
-  testWidgets('sem repositorio de feed a rota permanece honestamente indisponivel', (
-    tester,
-  ) async {
+  testWidgets('sem repositorio de feed a rota permanece honestamente indisponivel', (tester) async {
     final fixture = await _pumpRouter(tester, authenticated: true);
     fixture.router.go(SuperadminRoutes.principalMoments);
     await tester.pumpAndSettle();

@@ -74,7 +74,8 @@ void main() {
     // proxima pagina COM o cursor. Hoje nao ha controle nenhum e a segunda
     // leitura nunca acontece: o conteudo mais antigo fica inalcancavel.
     final continuation = find.byWidgetPredicate(
-      (widget) => widget is Text && widget.data != null && widget.data!.toLowerCase().contains('mais'),
+      (widget) =>
+          widget is Text && widget.data != null && widget.data!.toLowerCase().contains('mais'),
     );
     expect(
       continuation,

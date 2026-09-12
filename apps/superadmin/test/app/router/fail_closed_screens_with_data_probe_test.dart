@@ -68,63 +68,63 @@ void main() {
 
   for (final probe in probes) {
     for (final viewport in viewports) {
-    testWidgets('${probe.name} lays out with data at ${viewport.label}', (tester) async {
-      await tester.binding.setSurfaceSize(viewport.size);
-      addTearDown(() => tester.binding.setSurfaceSize(null));
+      testWidgets('${probe.name} lays out with data at ${viewport.label}', (tester) async {
+        await tester.binding.setSurfaceSize(viewport.size);
+        addTearDown(() => tester.binding.setSurfaceSize(null));
 
-      final session = SuperadminSession()..signInForTesting();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        allowDevelopmentPreview: true,
-        mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
-
-      router.go(probe.path);
-      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-      await tester.pumpAndSettle();
-
-      // Guard against a vacuous green: if the dev route fell back to the error
-      // screen, no content was laid out and "no exception" would prove nothing.
-      // This is the same trap the probe exists to expose, one level up.
-      expect(
-        find.byType(SuperadminErrorScreen),
-        findsNothing,
-        reason:
-            '${probe.name} (${probe.path}) rendered the error screen, so this '
-            'probe never exercised the populated layout',
-      );
-
-      final exception = tester.takeException();
-      if (overflowsWithData.contains(probe.name)) {
-        expect(
-          exception,
-          isNotNull,
-          reason:
-              '${probe.name} (${probe.path}) is pinned as overflowing with '
-              'data. If it no longer does, the defect was fixed: move it out '
-              'of overflowsWithData instead of relaxing this expectation.',
+        final session = SuperadminSession()..signInForTesting();
+        final router = createSuperadminRouter(
+          session: session,
+          login: unavailableSuperadminLogin,
+          logout: unavailableSuperadminLogout,
+          requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+          allowDevelopmentPreview: true,
+          mealPlanImageRepository: const UnavailableMealPlanImageRepository(),
+          onThemeModeChanged: (_) {},
         );
-        expect('$exception', contains('overflowed'));
-      } else {
-        expect(
-          exception,
-          isNull,
-          reason:
-              '${probe.name} (${probe.path}) reported a layout error once '
-              'mounted with data. Its production composition is fail-closed, so '
-              'no other test exercises this path and the green elsewhere proves '
-              'nothing about it: $exception',
-        );
-      }
+        addTearDown(router.dispose);
+        addTearDown(session.dispose);
 
-      await tester.pumpWidget(const SizedBox.shrink());
-    });
+        router.go(probe.path);
+        await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+        await tester.pumpAndSettle();
+
+        // Guard against a vacuous green: if the dev route fell back to the error
+        // screen, no content was laid out and "no exception" would prove nothing.
+        // This is the same trap the probe exists to expose, one level up.
+        expect(
+          find.byType(SuperadminErrorScreen),
+          findsNothing,
+          reason:
+              '${probe.name} (${probe.path}) rendered the error screen, so this '
+              'probe never exercised the populated layout',
+        );
+
+        final exception = tester.takeException();
+        if (overflowsWithData.contains(probe.name)) {
+          expect(
+            exception,
+            isNotNull,
+            reason:
+                '${probe.name} (${probe.path}) is pinned as overflowing with '
+                'data. If it no longer does, the defect was fixed: move it out '
+                'of overflowsWithData instead of relaxing this expectation.',
+          );
+          expect('$exception', contains('overflowed'));
+        } else {
+          expect(
+            exception,
+            isNull,
+            reason:
+                '${probe.name} (${probe.path}) reported a layout error once '
+                'mounted with data. Its production composition is fail-closed, so '
+                'no other test exercises this path and the green elsewhere proves '
+                'nothing about it: $exception',
+          );
+        }
+
+        await tester.pumpWidget(const SizedBox.shrink());
+      });
     }
   }
 }

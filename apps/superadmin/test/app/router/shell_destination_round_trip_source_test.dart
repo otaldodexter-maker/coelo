@@ -20,10 +20,9 @@ void main() {
 
   test('every navigation leaf reaches a route in the production shell', () {
     final productionCases = _casesOf(router, 'void _navigateFromPersistentShell(');
-    final leaves = RegExp(r"_leaf\(\s*'([a-z0-9-]+)'")
-        .allMatches(navigation)
-        .map((m) => m.group(1)!)
-        .toSet();
+    final leaves = RegExp(
+      r"_leaf\(\s*'([a-z0-9-]+)'",
+    ).allMatches(navigation).map((m) => m.group(1)!).toSet();
     expect(leaves, isNotEmpty, reason: 'a varredura precisa encontrar folhas de menu');
 
     // Uma folha sem caso correspondente é um item de menu que não leva a lugar
@@ -37,10 +36,9 @@ void main() {
     final end = router.indexOf('void _navigateFromPersistentShell(');
     expect(start, greaterThan(-1));
     expect(end, greaterThan(start));
-    final derived = RegExp(r"return '([a-z0-9-]+)';")
-        .allMatches(router.substring(start, end))
-        .map((m) => m.group(1)!)
-        .toSet();
+    final derived = RegExp(
+      r"return '([a-z0-9-]+)';",
+    ).allMatches(router.substring(start, end)).map((m) => m.group(1)!).toSet();
     expect(derived, isNotEmpty);
 
     // Um destino derivável mas não navegável significa que o shell reconhece a
@@ -97,10 +95,9 @@ int _endOfFunction(String source, int start) {
 /// Por isso a guarda le a fonte e conta declaracoes.
 void _guardDuplicateRouteNames(String router) {
   test('no route name is declared twice in the router', () {
-    final names = RegExp(r"name:\s*SuperadminRoutes\.([A-Za-z0-9_]+)\s*,")
-        .allMatches(router)
-        .map((m) => m.group(1)!)
-        .toList();
+    final names = RegExp(
+      r"name:\s*SuperadminRoutes\.([A-Za-z0-9_]+)\s*,",
+    ).allMatches(router).map((m) => m.group(1)!).toList();
     expect(names, isNotEmpty, reason: 'a varredura precisa encontrar declaracoes de rota');
 
     final seen = <String, int>{};

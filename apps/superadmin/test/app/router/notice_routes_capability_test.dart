@@ -71,10 +71,7 @@ void main() {
     // A rota existe e responde com indisponibilidade honesta, em vez de montar
     // um formulário que não teria como salvar.
     expect(find.byType(NoticeFormPage), findsNothing);
-    expect(
-      find.byKey(const Key('production-mutation-capability-unavailable')),
-      findsOneWidget,
-    );
+    expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget);
   });
 }
 

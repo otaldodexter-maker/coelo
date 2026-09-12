@@ -20,9 +20,7 @@ import 'package:flutter_test/flutter_test.dart';
 /// para hospedar a composicao dentro do shell do Superadmin. Perder qualquer um
 /// dos dois e regressao: estas provas fixam que os dois coexistem.
 void main() {
-  testWidgets('a rota produtiva mantem embedded e a porta de midia ao mesmo tempo', (
-    tester,
-  ) async {
+  testWidgets('a rota produtiva mantem embedded e a porta de midia ao mesmo tempo', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final session = SuperadminSession()..signInForTesting();
@@ -53,11 +51,7 @@ void main() {
       find.byType(PrincipalMomentsPublicationPage),
     );
     expect(page.embedded, isTrue);
-    expect(
-      page.mediaPicker,
-      isNotNull,
-      reason: 'a porta de selecao de midia nao pode ser perdida',
-    );
+    expect(page.mediaPicker, isNotNull, reason: 'a porta de selecao de midia nao pode ser perdida');
     expect(find.byKey(const Key('superadmin-persistent-shell')), findsOneWidget);
   });
 

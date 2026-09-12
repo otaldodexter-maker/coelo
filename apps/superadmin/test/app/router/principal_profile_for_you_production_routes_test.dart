@@ -30,7 +30,8 @@ void main() {
   Future<GoRouterHarness> pumpProductionRoute(
     WidgetTester tester,
     String path, {
-    PrincipalRuntimeContextRepository runtimeContextRepository = const _AuthorizedContextRepository(),
+    PrincipalRuntimeContextRepository runtimeContextRepository =
+        const _AuthorizedContextRepository(),
     ProfileAboutRepository? aboutRepository,
     FakeNoticeRepository? noticeRepository,
     CircularRepository? principalCircularRepository,
@@ -274,10 +275,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byType(PrincipalProfilePreviewPage), findsOneWidget);
     expect(find.byType(SuperadminErrorScreen), findsNothing);
-    expect(
-      router.routeInformationProvider.value.uri.path,
-      SuperadminRoutes.devPrincipalProfile,
-    );
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalProfile);
 
     router.go(SuperadminRoutes.devPrincipalForYou);
     await tester.pumpAndSettle();
@@ -389,10 +387,8 @@ final class _EmptyAboutRepository implements ProfileAboutRepository {
 
 final class _UnauthorizedAboutRepository implements ProfileAboutRepository {
   @override
-  Future<ProfileAboutPage?> load(
-    ProfileAboutSubjectRef subject, {
-    ProfileAboutAudience? preview,
-  }) => Future.error(ProfileAboutUnauthorizedException());
+  Future<ProfileAboutPage?> load(ProfileAboutSubjectRef subject, {ProfileAboutAudience? preview}) =>
+      Future.error(ProfileAboutUnauthorizedException());
 
   @override
   Future<ProfileAboutSaveResult> save(
@@ -401,7 +397,6 @@ final class _UnauthorizedAboutRepository implements ProfileAboutRepository {
     Map<ProfileAboutFieldKey, String> officialUpdates = const {},
   }) => throw UnimplementedError();
 }
-
 
 final class _RecordingCircularRepository implements CircularRepository {
   final List<CircularScope> scopes = [];
@@ -452,9 +447,7 @@ final class _RecordingHappensRepository implements PrincipalHappensFeedRepositor
   final List<PrincipalHappensFeedScope> scopes = [];
 
   @override
-  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(
-    PrincipalHappensFeedScope scope,
-  ) async {
+  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(PrincipalHappensFeedScope scope) async {
     scopes.add(scope);
     return const [];
   }

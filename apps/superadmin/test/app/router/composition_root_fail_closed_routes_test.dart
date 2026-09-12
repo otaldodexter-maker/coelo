@@ -11,7 +11,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('model routes stay fail-closed and Forms production routes read authorized', (tester) async {
+  testWidgets('model routes stay fail-closed and Forms production routes read authorized', (
+    tester,
+  ) async {
     final session = SuperadminSession()..signInForTesting();
     final accessRepository = _TripwireAccessProfileRepository();
     final formsApi = _TripwireFormsApi();
