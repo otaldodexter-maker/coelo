@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 73,
+ "revision": 74,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T11:15:00-03:00",
+ "updatedAt": "2026-09-12T11:16:00-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -26,11 +26,11 @@
   "primeiroGate": "Executar o teste focal de activity_directory_page_test.dart na fila Flutter para validar a migracao de rodape ja implementada; depois iniciar activities.assessment com fixture transacional.",
   "evidenciaEsperada": "teste focal RED/GREEN, validacao visual administrativa e handoff/deltas em docs/reviews/evidence/etapa-2/r08-estrutura/.",
   "recursos": "Chrome: G0. Flutter test: solicitado a C0 para o teste focal activities, sem inicio sem posse.",
-  "feito": "origin/dev 663a7987e incorporado; posse nominal do golden confirmada; teste RED adicionado; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados.",
+  "feito": "origin/dev 663a7987e incorporado; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados.",
   "pendente": "slot Flutter; fixture transacional de Avaliacoes; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
-  "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22.",
-  "testes": "nao executados: aguardando slot global Flutter de G1 apos G3.",
-  "proximoGate": "Entregar o contrato de fixture a G5/C0 pelo checkpoint; executar activity_directory_page_test.dart somente na posse de G1; depois iniciar activities.assessment sem Chrome."
+  "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22; teste focal sera publicado neste checkpoint.",
+  "testes": "PASS: flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1, 22/22, PID 35588, exit 0; slot Flutter liberado cedo.",
+  "proximoGate": "Receber fixture transacional de G5 para activities.assessment; em seguida usar Chrome somente quando C0 conceder para salvar/ativar e abrir o diario."
  },
  "usuarioSintetico": {
   "email": "qa-r06-estrutura@coelo.me",
