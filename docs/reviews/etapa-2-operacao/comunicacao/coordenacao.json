@@ -1,12 +1,12 @@
 {
-  "revision": 85,
+  "revision": 86,
   "round": "E2-R08-20260912",
   "role": "C0 Coordenacao R08 ativa",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "GPT-6 Astra medio",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T13:54:52.764333-03:00",
+  "updatedAt": "2026-09-12T14:02:37.579215-03:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2654,10 +2654,10 @@
       "tabId": 829822454
     },
     "flutterTest": {
-      "dono": "G4",
-      "inicio": "2026-09-12T13:53:00-03:00",
-      "expira": "2026-09-12T13:58:00-03:00",
-      "estado": "Perfil view role/scope RED GREEN; C0 H25 integrado depois"
+      "dono": "G3",
+      "inicio": "2026-09-12T14:02:00-03:00",
+      "expira": "2026-09-12T14:08:00-03:00",
+      "estado": "Care/Medication alvo_ProfileSummary44para48; RED2medidos"
     },
     "e2eLiberado": false,
     "sqlLiberado": false,
@@ -3253,7 +3253,7 @@
     "status": "ACTIVE",
     "intervaloMinutos": 10,
     "corte": "2026-09-12T15:22:16-03:00",
-    "ultimoCheckpoint": "2026-09-12T13:54:52.764333-03:00"
+    "ultimoCheckpoint": "2026-09-12T14:02:37.579215-03:00"
   },
   "recursosR08": {
     "medidoEm": "2026-09-12T13:43:32.751532-03:00",
@@ -3330,6 +3330,14 @@
       "bundle": "a8527852d8e510975b9c1b052d7810726f6d9c1d5b25411411c0c290fcb46047",
       "estado": "ACTIVE verify_jwt=true; Deno56PASS; OPTIONS204/204/403; providerR2isolado; upload/finalize/save real passou, download400pendente",
       "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v20-preflight.json"
+    },
+    {
+      "funcao": "form-media",
+      "versao": 21,
+      "sha": "6d0deecd2",
+      "bundle": "d1c15689bf368ddc3c4282637cd95acbde05f25c89378dbbcc2bbcf2de33a526",
+      "estado": "ACTIVE verify_jwt=true;56PASSantesdeploy;OPTIONS204/204/403",
+      "evidencia": "docs/reviews/evidence/etapa-2/r08-coordenacao/form-media-v21-preflight.json"
     }
   ],
   "limitesR08": {
@@ -3443,6 +3451,27 @@
       "nativeExit": 0
     },
     "correcao": "f0e148a70 integrado; pintura H25 preservada semPNG; validacao focal C0 pendente de slot",
-    "publicacao": "em preparacao; sem promover resultados futuros"
+    "publicacao": "pronta; regressaoH25 corrigida semPNG e37PASSintegrados",
+    "h25Final": {
+      "passed": 37,
+      "failed": 0,
+      "seconds": 36.116,
+      "nativeExit": 0
+    },
+    "profileContractFinal": {
+      "passed": 23,
+      "failed": 0,
+      "seconds": 5.499,
+      "nativeExit": 0
+    },
+    "metricas": {
+      "feVerified": "161/231 69.70%",
+      "feLocal": "26/70 37.14%",
+      "visual": "54/231 23.38%",
+      "beLocal": "32/75 42.67%",
+      "sql": "181/224 80.80%",
+      "beDone": "149/224 66.52%",
+      "e2e": "131/199 65.83%"
+    }
   }
 }
