@@ -1,6 +1,6 @@
 {
-  "revision": 62,
-  "updated_at": "2026-09-12T11:54:02.3933840-03:00",
+  "revision": 63,
+  "updated_at": "2026-09-12T11:58:00-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -52,9 +52,12 @@
   "reviewFormsR08": {
     "scope": "somente leitura do candidato 20260912140546 contra o caminho produtivo form_get_editor/form_save_draft",
     "reviewedSha": "444ac0246d7eadd62527990492f9797285594bec",
-    "finding": "media_bindings_item_id_fkey foi recriada como ON DELETE RESTRICT DEFERRABLE. RESTRICT é verificado imediatamente pelo PostgreSQL; SET CONSTRAINTS ... DEFERRED não permite o delete em cascata da árvore. O save após imagem falha antes de reinserir o item_id estável.",
-    "verified": "item_id só é reutilizado quando pertence à mesma working version; media_context não expõe object_key, URL, ticket ou segredo.",
-    "reportedTo": "C0 às 11:51 BRT; nenhum SQL, Flutter, golden ou arquivo de outra frente foi alterado."
+    "initialFinding": "140546 recriou media_bindings_item_id_fkey como ON DELETE RESTRICT DEFERRABLE. RESTRICT é imediato; SET CONSTRAINTS ... DEFERRED não permite o delete em cascata da árvore. O save após imagem falha antes de reinserir o item_id estável.",
+    "correctedSha": "28625efaf51755f9ba8d4c6c103fafc06a58b2df",
+    "corrected": "140547 troca a FK por NO ACTION DEFERRABLE e passa institution_id real aos gates; os dois bloqueios iniciais ficam resolvidos estaticamente, pendentes de GREEN do G0.",
+    "finding": "form_get_editor consulta forms por p_form_id antes do gate e diferencia formulário inexistente/internal draft (form unavailable) de formulário existente de outra instituição (forms.read required). Isso permite enumeração cross-tenant pelo erro do public.form_get_editor delegante.",
+    "verified": "item_id só é reutilizado quando pertence à mesma working version; media_context fica nulo sem working version e não expõe object_key, URL, ticket ou segredo.",
+    "reportedTo": "C0 às 11:58 BRT; nenhum SQL, Flutter, golden ou arquivo de outra frente foi alterado."
   },
   "checkpoint60minR08": {
     "when": "2026-09-12T11:54:02.3933840-03:00",

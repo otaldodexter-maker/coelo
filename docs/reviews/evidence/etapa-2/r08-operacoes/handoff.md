@@ -73,6 +73,16 @@ encaminhado ao C0. A revisão confirmou que o ID é limitado à mesma working
 version e que `media_context` não vaza `object_key`, URL, ticket ou segredo.
 Nenhum SQL foi executado ou editado.
 
+O follow-up `28625efaf51755f9ba8d4c6c103fafc06a58b2df` corrige os dois pontos
+originais: usa `NO ACTION DEFERRABLE` e passa a instituição real aos gates. A
+revisão da composição identificou outro ponto antes do GREEN: `form_get_editor`
+consulta o formulário antes da autorização e retorna `form unavailable` para
+ID ausente, mas `forms.read required` para um formulário existente de outra
+instituição. Como `public.form_get_editor` delega diretamente, o erro permite
+enumerar existência cross-tenant. Foi pedido um erro externo uniforme e teste
+negativo do editor. `item_id` continua limitado à mesma working version e
+`media_context` permanece sem chave/URL/ticket.
+
 ## Gates externos
 
 Chrome continua reservado a G0 e E2E/SQL não estão liberados. Nenhuma sessão
