@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 74,
+ "revision": 75,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T11:16:00-03:00",
+ "updatedAt": "2026-09-12T11:21:00-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -29,7 +29,7 @@
   "feito": "origin/dev 663a7987e incorporado; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados.",
   "pendente": "slot Flutter; fixture transacional de Avaliacoes; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
   "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22; teste focal sera publicado neste checkpoint.",
-  "testes": "PASS: flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1, 22/22, PID 35588, exit 0; slot Flutter liberado cedo.",
+  "testes": "PASS: flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1, 22/22, PID 35588, exit 0; concluido as 11:16 BRT e slot Flutter liberado cedo, sem segunda suite.",
   "proximoGate": "Receber fixture transacional de G5 para activities.assessment; em seguida usar Chrome somente quando C0 conceder para salvar/ativar e abrir o diario."
  },
  "usuarioSintetico": {
