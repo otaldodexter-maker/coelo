@@ -215,6 +215,8 @@ def main() -> int:
         manifest["executor"]["state"] = "complete"
     output.write_text(json.dumps(manifest, indent=2) + "\n", encoding="utf-8")
     print(json.dumps({"mode": manifest["mode"], "mutations": manifest["mutations"], "manifest": str(output)}))
+    if args.execute:
+        return 0 if status == 200 and manifest.get("executor", {}).get("state") == "complete" else 1
     return 0 if status == 200 and manifest.get("context_options", {}).get("strict_projection") is True else 1
 
 

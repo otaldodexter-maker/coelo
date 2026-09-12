@@ -18,9 +18,10 @@ O runner permanece **sem execução remota** nesta rodada. A alteração local
 
 Validações locais: `python -m unittest assessments_api_runner_smoke_test.py`,
 `python -m py_compile assessments_api_runner.py` e `git diff --check`
-passaram. O smoke usa `call` simulado com login 401 e confirma que um manifesto
-parcial permanece `planned`, sem rede. Não houve Chrome, Flutter test, SQL nem
-chamada mutante de API.
+passaram. O smoke usa `call` simulado para login 401 e token ausente, mantendo
+um manifesto parcial em `planned`; também apresenta outro vínculo de turma e
+um diário alterado, confirmando abort antes de qualquer RPC mutante. Não houve
+Chrome, Flutter test, SQL nem chamada mutante de API.
 
 Próximo gate: revisão G5/C0 do código publicado e ACK nominal antes de qualquer
 invocação com `--execute`.
