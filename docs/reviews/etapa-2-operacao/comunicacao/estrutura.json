@@ -1,15 +1,15 @@
 {
  "grupo": "estrutura",
- "revision": 68,
+ "revision": 69,
  "round": "E2-R07-20260911",
- "updatedAt": "2026-09-12T09:30:19-03:00",
+ "updatedAt": "2026-09-12T09:31:10-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-estrutura",
  "branch": "work/etapa2-r07-estrutura",
- "head": "a126e5485d0aeae8669f6e2fbced48c12025da58; handoff final em preparacao",
+ "head": "c96d61cbfb9b9c24c74b7a79a21438f7d2484b13; handoff final publicado",
  "upstream": "origin/work/etapa2-r07-estrutura (push apos revisao inicial)",
  "horario": {
   "abertura": "2026-09-11T23:20:28-03:00",
@@ -327,7 +327,7 @@
  },
  "miniRevisaoR07": {
   "quando": "rev 67, antes do T0 do coordenador",
-  "shaPublicado": "a126e5485d0aeae8669f6e2fbced48c12025da58; branch publicada e limpa; handoff final nesta revisao",
+  "shaPublicado": "c96d61cbfb9b9c24c74b7a79a21438f7d2484b13; branch publicada e limpa; handoff final nesta revisao",
   "fechouPorActionId": [],
   "abertoComPrimeiroGate": [
    "activities.assessment: salvar/ativar pela rota real; primeiro gate operacional = Chrome/CDP controlavel e T0 registrado",
