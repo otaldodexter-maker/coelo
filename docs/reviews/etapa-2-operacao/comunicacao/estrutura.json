@@ -14,7 +14,7 @@
  "estadoAtualR08": {
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
-  "feito": "groups.location tem create atômico, falha parcial, edição e retry sem nova criação; o novo ramo cobre troca real B→A, retenção de unidade/local B e recibo B, com analyze verde.",
+  "feito": "groups.location tem create atômico, falha parcial, edição e retry sem nova criação; o novo ramo cobre troca real B→A, retenção de unidade/local B e recibo B, com analyze verde e revisão independente sem defeito concreto.",
   "pendente": "O runner Flutter focal chegou ao último caso sem falha mas não encerrou; árvore própria encerrada para liberar a fila. Reexecutar com diagnóstico. Chrome/rota real para Avaliações e groups.location; comparação e regravação dos 45 PNGs A.",
   "sha": "988038de8; execução Flutter inconclusiva após último caso, analyze PASS"
  },

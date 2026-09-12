@@ -5,6 +5,10 @@ data: 2026-09-12
 rodada: E2-R08-20260912
 ---
 
+## Revisão de retry
+
+O parecer independente sobre `0fcd66dc4`, `caebaf6f9`, `34aa368c9` e `988038de8` não encontrou defeito concreto. O teste cobre troca real de Unidade B para A depois de falha parcial, preservando Unidade/Local B, uma única criação, `group_id`/versão do recibo e nome atualizado. A execução Flutter alcançou o último caso, mas não encerrou o processo; permanece inconclusiva, não certificada como PASS.
+
 ## Checkpoint de retry
 
 Em 12/09, `flutter test test/features/groups/presentation/group_form_page_test.dart --concurrency=1` passou 28/28, exit 0. O novo cenário cobre criação atômica bem-sucedida, falha parcial de `saveComposition`, edição do nome, tentativa bloqueada de troca de unidade e retry com o mesmo `group_id`/versão e apenas uma chamada de criação. `dart analyze` focal passou sem issues. Chrome/rota real permanecem pendentes.
