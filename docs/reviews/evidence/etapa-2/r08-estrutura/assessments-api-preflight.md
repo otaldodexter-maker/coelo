@@ -35,3 +35,15 @@ O roteiro usa somente a fixture sintética já preparada por G5/C0, pela sessão
 ## Preflight de contrato concluído
 
 Leitura de `SupabaseAssessmentRepository` confirmou que a rota normal usa: `superadmin_assessment_context_options`, `superadmin_assessment_configuration_read(target_activity, target_unit)`, `superadmin_assessment_save_configuration(request_id, configuration_id, expected_version, payload)` e `superadmin_assessment_activate_configuration(request_id, configuration_id, expected_version)`. Para o diário, usa `superadmin_assessment_save_gradebook`, `superadmin_assessment_gradebook_read` e `superadmin_assessment_closing_queue`; as transições seguem RPCs de comando com `request_id`, id e `expected_version`. O cliente recarrega configuração e diário após as mutações, portanto a prova pelo fluxo normal já observa o estado autoritativo sem chamar tabelas diretamente.
+
+## Correção pelo preflight remoto G7
+
+O preflight remoto somente leitura mediu uma assignment no contexto QA, mas `periods` vazio, `configuration_read` com `data:null` e `closing_queue` vazio. A fixture G5 é rollback no espelho, não dado materializado em produção. Portanto, este roteiro substitui a hipótese anterior:
+
+1. selecionar a assignment medida pela rota normal;
+2. criar configuração com `save_configuration(request_id, configuration_id:null, expected_version:0, payload)` e reler;
+3. ativar com `activate_configuration(request_id, configuration_id, expected_version)` e reler `context_options`, exigindo período `open`;
+4. só então criar diário com `save_gradebook(request_id, gradebook_id:null, expected_version:0, payload{activity_group_link_id,period_id,configuration_id,students:[]},reason:null)` e reler por `gradebook_read(target_gradebook)`;
+5. substituir “close/reopen” pelos comandos reais `submit_gradebook`, `review_gradebook`, `return_gradebook` e, quando aplicável, `publish_gradebook`, cada um com `request_id`, `gradebook_id`, `expected_version` e motivo, seguido de releitura.
+
+Nenhuma promoção ocorre antes de configuração, período e diário autoritativos; nenhum segredo ou ID medido foi registrado neste artefato.
