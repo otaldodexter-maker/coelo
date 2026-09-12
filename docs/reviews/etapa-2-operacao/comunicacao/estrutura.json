@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 88,
+ "revision": 89,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T13:24:00-03:00",
+ "updatedAt": "2026-09-12T13:32:00-03:00",
  "app": "Codex",
  "modelo": "GPT-5.6 Terra (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -15,8 +15,8 @@
   "conversa": "R08 · Estrutura (G1)",
   "coordenador": "R08 · Coordenação (C0)",
   "feito": "groups.location foi corrigido e provado por C0; os 45 PNGs A foram comparados, regravados e verificados 20/20, com transcript rastreado; roteiro de Avaliações foi corrigido pelo preflight remoto para configurar, ativar, abrir período e só então criar diário.",
-  "pendente": "Chrome/rota real para Avaliações e groups.location; roteiro API normal de activities.assessment foi preparado para ACK, usando apenas IDs de action_id existentes e a fixture sintética autorizada.",
-  "sha": "9b29d3ed2; runners órfãos encerrados, Flutter liberado"
+  "pendente": "Executor de Avaliações está bloqueado até revisão G5: alvo único/coerente, read-null, payload estrito, replay estável, management_version e roster autoritativo. Chrome/rota real e groups.location continuam pendentes.",
+  "sha": "bdb3740b7; executor implementado mas bloqueado para revisão G5, sem mutação"
  },
  "horario": {
   "abertura": "2026-09-12T10:54:13-03:00",
