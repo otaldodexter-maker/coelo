@@ -23,5 +23,9 @@ um manifesto parcial em `planned`; também apresenta outro vínculo de turma e
 um diário alterado, confirmando abort antes de qualquer RPC mutante. Não houve
 Chrome, Flutter test, SQL nem chamada mutante de API.
 
+O quinto caso simula duas atribuições visíveis, mas uma única igual ao alvo
+autorizado: o fluxo completo simulado conclui e retorna sucesso. Assim, a
+execução não confunde pluralidade de contexto com ambiguidade do alvo.
+
 Próximo gate: revisão G5/C0 do código publicado e ACK nominal antes de qualquer
 invocação com `--execute`.
