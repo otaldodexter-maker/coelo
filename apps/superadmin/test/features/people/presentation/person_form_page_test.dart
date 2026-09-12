@@ -258,7 +258,7 @@ void main() {
     final scroll = tester.widget<SingleChildScrollView>(
       find.byKey(const Key('person-form-scroll')),
     );
-    expect((scroll.padding! as EdgeInsets).bottom, CoeloSpacing.space6);
+    expect((scroll.padding! as EdgeInsets).bottom, CoeloSpacing.space10);
     expect(
       tester.getTopLeft(find.byType(SuperadminFormActionFooter)).dy,
       greaterThanOrEqualTo(tester.getBottomLeft(find.byKey(const Key('person-form-scroll'))).dy),

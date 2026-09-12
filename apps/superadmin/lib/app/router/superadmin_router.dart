@@ -3948,7 +3948,6 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.governanceCatalogName,
             builder: (context, state) => CatalogHostPage(
               catalogUrl: catalogUrl,
-              localPreview: true,
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onInstitutionsOpen: () => context.goNamed(SuperadminRoutes.institutionsName),
@@ -5967,7 +5966,8 @@ GoRouter createSuperadminRouter({
                 ),
                 // P50 = B: a tela de resposta e o leitor do Principal hospedado
                 // no Superadmin (mesma rota do Acontece), com o repositorio real.
-                onRespond: principalCircularRepository == null ||
+                onRespond:
+                    principalCircularRepository == null ||
                         principalCircularResponseRepository == null
                     ? null
                     : () => context.pushNamed(
@@ -5996,11 +5996,11 @@ GoRouter createSuperadminRouter({
                   repository: circularRepository,
                   institutionRepository: institutionDirectoryRepository,
                   filePicker: SuperadminQaHooks.circularFilePicker,
-                // circulars.attach (R06): sem o repositorio de midia o host
-                // respondia "Envio de anexos indisponivel" na rota real; a
-                // capacidade ja estava composta no auth scope (R2 via
-                // circular-media), so nao chegava ao compositor.
-                mediaRepository: principalCircularMediaRepository,
+                  // circulars.attach (R06): sem o repositorio de midia o host
+                  // respondia "Envio de anexos indisponivel" na rota real; a
+                  // capacidade ja estava composta no auth scope (R2 via
+                  // circular-media), so nao chegava ao compositor.
+                  mediaRepository: principalCircularMediaRepository,
                   circularId: circularId,
                   onCancel: () => context.goNamed(
                     SuperadminRoutes.circularDetailName,

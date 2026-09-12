@@ -1,17 +1,17 @@
 {
-  "revision": 48,
-  "updated_at": "2026-09-12T09:30:48-03:00",
-  "round": "E2-R07-20260911",
+  "revision": 55,
+  "updated_at": "2026-09-12T11:52:34.457385-03:00",
+  "round": "E2-R08-20260912",
   "group": "principal-chat-sistema",
   "tool": "Codex",
-  "model": "Luna (esforco medio)",
-  "coordinator": "R07 · Coordenacao",
-  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
-  "branch": "work/etapa2-r07-principal-chat-sistema",
-  "base": "origin/dev a50487878",
-  "head": "bc6069089c99147cb6b549708253558bc2853931 antes do commit final deste JSON",
-  "status": "FECHAMENTO FORMAL R07; frente encerrada sem E2E novo por bloqueio Chrome/CDP; handoff publicado; sem retomada após T0+4h10.",
-  "T0_assumido": "R07 desta frente: 2026-09-11T23:20:52-03:00; T0+4h = 2026-09-12T03:20:52-03:00; revisao final ate 03:30:52",
+  "model": "GPT-Astra (esforco medio, conforme Owner)",
+  "coordinator": "R08 Coordenacao C0",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+  "branch": "work/etapa2-r08-principal-chat-sistema",
+  "base": "origin/dev 6d6cbef32",
+  "head": "547bbd92a",
+  "status": "EXECUTANDO: controlePUT Chat+3publicadores28PASS/analyze limpo; PrincipalChat recebimento WIP; UIbloqueadaG0",
+  "T0_assumido": "2026-09-12T10:52:16-03:00; corte execucao14:52:16; handoff15:02:16; ajustesC0 15:22:16",
   "scope": [
     "apps/superadmin -> menu Coelo (Principal) -> Acontece, Agora, Momentos (publicadores na familia Publicacao), Perfil (V-1), Para voce (V-2), Acontece feed (V-3)",
     "apps/superadmin -> Chat (create-group pela UI, attach no cliente sobre chat-media)",
@@ -19,7 +19,7 @@
     "apps/superadmin -> paginas de erro 403/404/409/500/503/retry pela rota real",
     "backend: P48=A pacote 130000 owner->institution_admin, operations->leitura; Edge Functions happens-media, now-media, moments-media"
   ],
-  "action_ids_status": "35 IDs: acontece 4, agora 4, momentos 4, principal 3, chat 8, meal_plans 6, error_pages 6; partida = fechamento R05 (rev 29 + deltas-r05-pcs.json aplicados pelo coordenador)",
+  "action_ids_status": "Recorte G4 R08: estados oficiais preservados ate evidencia E2E e delta C0; historico R07 nao conta como teste atual",
   "ordem_de_trabalho": [
     "0. principal_real_route_test: FEITO 08c46b1b7 (4/4; as 4 falhavam porque o Acontece composto passou a exigir principalMixedFeedRepository e o + publica no Acontece desde P28)",
     "1. Cardapios P47=A: cliente FEITO (e689033ff, dcd2e3a84); rota real: model-create/model-edit verified-e2e (modelo d132698c v2), list verified; create/edit/publish: gate de backend CORRIGIDO por candidato 20260911130500 (pgTAP 9/9): scopeRules objeto/lista aceitos, grava objeto, deriva meal_plan_scopes; prova pela tela depois de o coordenador aplicar",
@@ -126,8 +126,8 @@
     "130500 (scopeRules de Cardapios) aguarda aplicacao; depois disso esta frente reprova create/edit/publish pela tela"
   ],
   "next_step": null,
-  "ack": "coordenacao rev 57 lida (retencao do 130400 e CORS alinhado): 130400 reescrito sobre o 210100 e republicado; capturas 01-10 restauradas na branch",
-  "loop": "/loop 15m agendado na abertura",
+  "ack": "C0 ACK rev50/1d09cb3c8 no ciclo20min; pub get autorizado; slot Flutter aguardado",
+  "loop": "Heartbeat10min pertence ao C0; checkpointG4 <=30min",
   "regras_operacionais": "1 Chrome (--user-data-dir %TEMP%/coelo-chrome-principal), 1 flutter test por vez; nenhum segredo em Git/chat/JSON; so este JSON e commits/handoffs proprios; sem chat em criar/editar/publicar nem Agora/Momentos abertos (Decisao 7).",
   "historico_r05": {
     "revision": 29,
@@ -251,9 +251,35 @@
     "t0": "2026-09-11T23:20:52-03:00",
     "escopo": "apps/superadmin -> menu Coelo (Principal) -> Publicacao (Acontece, Agora, Momentos), Cardapios, paginas de erro, Perfil e Chat",
     "objetivo": "Provar CRUD real com reload e R2 privado nos publicadores; fechar Cardapios; provar erros; avancar Perfil e Chat sem reabrir gates independentes.",
-    "incluido": ["acontece.create/publish", "momentos.create/publish/remove", "agora.create/publish/expire", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 somente se P54=A", "chat.create-group e chat.attach se houver tempo"],
-    "fora_de_escopo": ["apps/admin", "apps/principal", "site", "dev/inventario/rastreadores", "deploy Cloudflare pelo coordenador", "V-1 sem resposta P54", "SQL salvo se nao indispensavel"],
-    "ordem": ["publicadores com PNG e reload", "meal-plans", "errors", "principal.profile-edit", "V-3", "V-1 se autorizado", "chat"],
+    "incluido": [
+      "acontece.create/publish",
+      "momentos.create/publish/remove",
+      "agora.create/publish/expire",
+      "meal-plans.create/edit/publish",
+      "errors.403/409/500/503/retry",
+      "principal.profile-edit",
+      "V-3 restante",
+      "V-1 somente se P54=A",
+      "chat.create-group e chat.attach se houver tempo"
+    ],
+    "fora_de_escopo": [
+      "apps/admin",
+      "apps/principal",
+      "site",
+      "dev/inventario/rastreadores",
+      "deploy Cloudflare pelo coordenador",
+      "V-1 sem resposta P54",
+      "SQL salvo se nao indispensavel"
+    ],
+    "ordem": [
+      "publicadores com PNG e reload",
+      "meal-plans",
+      "errors",
+      "principal.profile-edit",
+      "V-3",
+      "V-1 se autorizado",
+      "chat"
+    ],
     "primeiro_gate": "Publicadores: capturar e resolver a falha do navegador apos CORS alinhado; provar persistencia, R2 e reload por action_id.",
     "feito": [
       "errors.403/404/500/503: suíte superadmin_error_routes_test 14/14 verde; expectativa obsoleta de /profile removida do loop de erro indisponível porque a rota produtiva tem estado próprio de carregamento/falha.",
@@ -263,10 +289,110 @@
       "checkpoint inicial publicado em 4809bbc06",
       "checkpoint 23:50: servidor local 127.0.0.1:3009 responde HTTP 200; duas tentativas de controle da aba Chrome/CDP expiraram por timeout, sem captura ou CRUD real declarado"
     ],
-    "pendente": ["publicadores com midia", "meal-plans.create/edit/publish", "errors.403/409/500/503/retry", "principal.profile-edit", "V-3 restante", "V-1 condicionado a P54=A", "chat.create-group/chat.attach"],
-    "commits_publicados": ["4809bbc06: abertura R07 + deltas vazios; push concluído", "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído", "2abf24cc9: correção MIME no PUT de Momentos; push concluído", "244fed7b0: regressão curta 97/97; push concluído", "ab48ce68a: handoff formal R07; push concluído", "bc6069089: fechamento final do JSON; push concluído"],
+    "pendente": [
+      "publicadores com midia",
+      "meal-plans.create/edit/publish",
+      "errors.403/409/500/503/retry",
+      "principal.profile-edit",
+      "V-3 restante",
+      "V-1 condicionado a P54=A",
+      "chat.create-group/chat.attach"
+    ],
+    "commits_publicados": [
+      "4809bbc06: abertura R07 + deltas vazios; push concluído",
+      "3eb9b4ba3: ajuste da expectativa da rota produtiva de perfil na suíte de erros; push concluído",
+      "2abf24cc9: correção MIME no PUT de Momentos; push concluído",
+      "244fed7b0: regressão curta 97/97; push concluído",
+      "ab48ce68a: handoff formal R07; push concluído",
+      "bc6069089: fechamento final do JSON; push concluído"
+    ],
     "evidencias_esperadas": "capturas commitadas em docs/reviews/evidence/etapa-2/r07-principal-chat-sistema/rota-real e deltas-r07-pcs.json no formato do aplicador",
     "cadencia": "checkpoint JSON a cada 30 minutos; checkpoint 23:50:52 publicado; revisao final T0+4h",
     "seguranca": "qa-r06-principal lido somente do arquivo local; nenhum segredo em Git, chat, log ou JSON; um Chrome e um flutter test por vez"
+  },
+  "historico_r07_cabecalho": {
+    "revision": 48,
+    "updated_at": "2026-09-12T09:30:48-03:00",
+    "round": "E2-R07-20260911",
+    "model": "Luna (esforco medio)",
+    "coordinator": "R07 · Coordenacao",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-principal-chat-sistema",
+    "branch": "work/etapa2-r07-principal-chat-sistema",
+    "base": "origin/dev a50487878",
+    "head": "bc6069089c99147cb6b549708253558bc2853931 antes do commit final deste JSON",
+    "status": "FECHAMENTO FORMAL R07; frente encerrada sem E2E novo por bloqueio Chrome/CDP; handoff publicado; sem retomada após T0+4h10."
+  },
+  "rodada8": {
+    "t0": "2026-09-12T10:52:16-03:00",
+    "corte_execucao": "2026-09-12T14:52:16-03:00",
+    "handoff_final_ate": "2026-09-12T15:02:16-03:00",
+    "ajustes_c0_ate": "2026-09-12T15:22:16-03:00",
+    "objetivo": "Fechar primeiro gate executavel de publicadores privados e seguir Cardapios, Chat, Perfil/Para Voce e erros em apps/superadmin.",
+    "incluido": [
+      "principal_* exceto principal_circulars",
+      "meal_plans",
+      "chat",
+      "errors",
+      "happens-media",
+      "now-media",
+      "moments-media"
+    ],
+    "fora": [
+      "outros apps",
+      "principal_circulars (G6)",
+      "inventario/rastreadores e deploy (C0)",
+      "V-1 residual P54 pos-MVP",
+      "seguranca profunda historica"
+    ],
+    "ordem": [
+      "PNG privado em Acontece/Agora/Momentos: publicar, ler, reload, remover",
+      "Cardapios lote55",
+      "chat.create-group e cliente chat.attach",
+      "Perfil/Para Voce e erros por gate do backlog",
+      "H09 com G5/C0 em paralelo ao trabalho independente"
+    ],
+    "feito": [
+      "fetch e worktree propria criada; principal sem edicoes/pull",
+      "contrato comum e G4 completos; plano/backlog/fechamento/decisoes R07 lidos",
+      "origin/dev 6d6cbef32 incorporada",
+      "C0 e G5 informados",
+      "moments-media: teste HTTP reproduziu falta de x-client-info; uma linha corrigida; 27 Deno PASS / 0 FAIL",
+      "1d09cb3c8 commit/push; C0 integrou e implantou moments-media v10 ACTIVE",
+      "C0 integrou G5 e implantou chat-media v4 ACTIVE",
+      "pub get sem upgrade; consumidor Chat implementado localmente, testes ainda nao executados",
+      "Consumidor Chat com56PASS/0FAIL/0SKIP (11novos+45regressoes) e analise final zero issues; slot devolvidoC0",
+      "ControlePUTChat+3publicadores autorizadoC0,28PASS/0FAIL/0SKIP;analyzefinalzeroissues;slotliberado"
+    ],
+    "pendente": [
+      "provas reais de midia",
+      "Cardapios CRUD/reload",
+      "chat.create-group/attach",
+      "Perfil/Para Voce e erros",
+      "disparador H09"
+    ],
+    "primeiro_gate": "Testar e publicar controlePUTsolicitadoC0; depois renderizacao de anexos recebidos noPrincipal. PNG/Cardapios/create-groupUI aguardamruntime.",
+    "evidencias_esperadas": "arquivos commitados em docs/reviews/evidence/etapa-2/r08-principal-chat-sistema; testes locais separados de UI/R2/Supabase e negativa de escopo",
+    "estimativa_delta": "Consumidor Chat local implementado; teste focal6-8min apos slot, mais correcoes se falhar. PNG/Cardapios dependem runtime. Sem nova estimativa ampla.",
+    "testes": {
+      "moments-media": "27 PASS / 0 FAIL; antes 0 PASS / 1 FAIL em cors_test por x-client-info",
+      "e2e": "nao executado",
+      "chat": "56PASS/0FAIL/0SKIP em4arquivos; log commitado neste pacote; analyze final zero issues/exit0. Sem RED preimplementacao por slot. NenhumE2E.",
+      "signed_put": "28PASS/0FAIL/0SKIP,11novos+17existentes;6Chat sobrepoem pacote56,naosomar. logsigned-put-flutter-test.log"
+    },
+    "recursos": {
+      "chrome": "G0 restaurourelease3014,semUIlogin;usoG4naoliberado",
+      "flutter_test": "LIBERADO apos28PASS; nenhumFlutterG4ativo; proximoPrincipal depende nova concessao",
+      "deno": "local disponivel; nao consome slot Flutter"
+    },
+    "commits_publicados": [
+      "1d09cb3c8",
+      "8d1003e3a",
+      "e5e0797c7"
+    ],
+    "h09": "C0 informou execucaosucceeded14:35/14:40UTC; medicao/publicacaoautorC0/G5,semUIpropriaG4",
+    "divergencia_spec028": "Contrato aplicado retorna attachment_id sem assetId canonico. Leitura explicita binding autorizada C0 para preparo; C0 decide documentacao antes certificacao. Nenhum asset_id inferido.",
+    "delta_proposto": "deltas-chat-client.json: FEchat.attach local-green; aplicacaoC0; BE/E2E preservados",
+    "revisao_c0": "RequestPUT followRedirects=false e cabecalhosassinados exatos/MIMEcoerente noChat+Happens+Now+Moments. 11casosnovos preparados;nenhumtesterunatual.",
+    "principal_chat_recebimento": "WIPseparado: extracao do ciclo existente de leitura/purge para widgetneutro semadmin; Principalrenderiza anexo e abre imagem/PDF. Ainda semteste; nao incluido no pacotePUT."
   }
 }

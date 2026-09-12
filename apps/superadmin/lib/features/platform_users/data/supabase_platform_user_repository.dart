@@ -195,7 +195,8 @@ final class SupabasePlatformUserRepository
       _records[record.id] = record;
       return PlatformUserCreateResult(
         record: record,
-        message: 'Usuário interno criado. Ele define a senha por "Esqueci minha senha".',
+        message: 'Usuário interno criado. Entregue o link seguro de definição de senha.',
+        passwordSetupLink: _passwordSetupLink(envelope['data']),
       );
     } on PlatformUserRuleException {
       rethrow;
@@ -428,6 +429,18 @@ final class SupabasePlatformUserRepository
     'state': identity.state,
     'country': identity.country,
   };
+}
+
+Uri? _passwordSetupLink(Object? data) {
+  final value = data is Map ? data['password_setup_link'] : null;
+  if (value == null) {
+    throw const PlatformUserRuleException('backend', 'Não foi possível preparar o link seguro.');
+  }
+  final link = Uri.tryParse(value.toString());
+  if (link == null || link.scheme != 'https' || link.userInfo.isNotEmpty) {
+    throw const PlatformUserRuleException('backend', 'Não foi possível preparar o link seguro.');
+  }
+  return link;
 }
 
 Map<String, dynamic> _payload(Object? response) {

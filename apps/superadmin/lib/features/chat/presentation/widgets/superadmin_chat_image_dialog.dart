@@ -4,6 +4,8 @@ import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
 
+import '../../domain/chat_repository.dart';
+
 final class SuperadminChatImageDialog extends StatefulWidget {
   const SuperadminChatImageDialog({
     required this.assetId,
@@ -11,9 +13,22 @@ final class SuperadminChatImageDialog extends StatefulWidget {
     required this.session,
     this.isContextCurrent,
     super.key,
-  });
-  final String assetId;
-  final MediaReader reader;
+  }) : attachmentId = null,
+       attachmentRepository = null;
+
+  const SuperadminChatImageDialog.attachment({
+    required this.attachmentId,
+    required this.attachmentRepository,
+    required this.session,
+    this.isContextCurrent,
+    super.key,
+  }) : assetId = null,
+       reader = null;
+
+  final String? assetId;
+  final MediaReader? reader;
+  final String? attachmentId;
+  final ChatAttachmentRepository? attachmentRepository;
   final MediaSession session;
 
   /// Local route ownership only; never substitutes server authorization.
@@ -44,6 +59,8 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
     super.didUpdateWidget(oldWidget);
     if (oldWidget.assetId != widget.assetId ||
         oldWidget.reader != widget.reader ||
+        oldWidget.attachmentId != widget.attachmentId ||
+        oldWidget.attachmentRepository != widget.attachmentRepository ||
         oldWidget.session != widget.session) {
       _unregister?.call();
       _bind();
@@ -90,10 +107,30 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
     unawaited(_clearImage());
     setState(() => _state = null);
     try {
+      final bindingRepository = widget.attachmentRepository;
+      if (bindingRepository != null) {
+        final ticket = await bindingRepository.readAttachment(widget.attachmentId!);
+        if (!mounted ||
+            generation != _generation ||
+            !_contextCurrent ||
+            widget.session.isInvalidated) {
+          return;
+        }
+        if (!ticket.expiresAt.isAfter(DateTime.now().toUtc())) {
+          throw const MediaTicketExpiredException();
+        }
+        setState(() {
+          _state = MediaReadState.available;
+          _image = NetworkImage(ticket.url.toString());
+          _expiresAt = ticket.expiresAt;
+          _expiry = Timer(ticket.expiresAt.difference(DateTime.now().toUtc()), _expire);
+        });
+        return;
+      }
       final result = await SessionMediaReader(
-        delegate: widget.reader,
+        delegate: widget.reader!,
         session: widget.session,
-      ).read(MediaReadRequest(assetId: widget.assetId, rendition: MediaReadRendition.preview));
+      ).read(MediaReadRequest(assetId: widget.assetId!, rendition: MediaReadRendition.preview));
       if (!mounted || generation != _generation || !_contextCurrent) return;
       final ticket = result.ticket;
       setState(() {
@@ -147,11 +184,15 @@ final class _SuperadminChatImageDialogState extends State<SuperadminChatImageDia
     final route = ModalRoute.of(context);
     final assetId = widget.assetId;
     final reader = widget.reader;
+    final bindingId = widget.attachmentId;
+    final bindingRepository = widget.attachmentRepository;
     final session = widget.session;
     void closeOwnedRoute() {
       if (!mounted ||
           !_contextCurrent ||
           widget.assetId != assetId ||
+          widget.attachmentId != bindingId ||
+          !identical(widget.attachmentRepository, bindingRepository) ||
           !identical(widget.reader, reader) ||
           !identical(widget.session, session) ||
           route?.isCurrent != true) {
