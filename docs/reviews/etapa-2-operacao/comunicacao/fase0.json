@@ -1,12 +1,12 @@
 {
   "grupo": "suites",
-  "revision": 20,
+  "revision": 21,
   "round": "E2-R08-20260912",
-  "updatedAt": "2026-09-12T11:01:15-03:00",
+  "updatedAt": "2026-09-12T15:02:16-03:00",
   "app": "Claude",
   "modelo": "GPT-5.3-Codex-Spark (esforco medio)",
   "conversa": "R08 · Suites pre-existentes (G8)",
-  "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:10:16, ajustes de C0 até 15:30:16",
+  "coordenador": "C0 (Codex) integra a branch; T0 = 2026-09-12T10:52:16-03:00 (coordenacao.json rev 64); corte T0+4h = 14:52:16, handoff final até 15:02:16, ajustes de C0 até 15:22:16",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
   "branch": "work/etapa2-r08-suites",
   "head": "d615bd9b84ac0d218ed76f2e209d3edcacb953dc",
@@ -40,7 +40,8 @@
     "(4) flutter test completo do Superadmin -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md",
     "(5) mini-revisao em T0+3h"
   ],
-  "feito": [
+  "historicoR07": {
+    "feito": [
     "Sem alteração funcional nova nesta posse; revisão de mapeamento do texto e do censo base concluída. Não houve novo patch funcional além de manutenção documental de evidências.",
     "test/app: censo na base limpa 7b229593c = 637 P / 1 S / 16 F. Das 16, 4 estao nos arquivos do recorte e foram corrigidas: dev_menu_test (teste desatualizado: dependia de --dart-define=COELO_APP_ENV=local, que colide com superadmin_app_config_test; agora liga allowDevelopmentPreview no router), prototype_navigation_routes_test (teste desatualizado: sem allowDevelopmentPreview e secoes offstage apos a navegacao crescer), development_dataset_contract_test (teste desatualizado: dataset reduzido a 5 instituicoes em d9232a94d, 28 turmas em Mare Alta, 12 modelos), dev_menu_overlay_test golden 0,61% (golden defasado: ainda tinha 'Modelos de perfil', unificado em Perfis em 320a6f09f; regravado). import_development_routes_test ja passava.",
     "test/core/config: censo = 35 P / 5 F; as 5 eram teste desatualizado (afirmavam composicao fail-closed que a ADR 0034 ligou: structureMutationsEnabled, diretorios/adapters Supabase de Unidades e Turmas em 58bfe1fed, personIdentityRepository real em 7f13ee42d). Corrigidos; 40/40 verdes.",
@@ -48,6 +49,26 @@
     "golden institution_directory_pagination_disabled_light_1440 (0,21%, 2 goldens no mesmo teste: tambem pagination_page_size_open_light_1440): a diferenca e so o launcher do chat (bbox 1291,750-1412,802): golden guardado tem o circulo 'Mens.' com balao; render atual tem a pilula 'Mensagens' com icone de enviar. Nao e ruido de renderizacao; e a mesma causa de P53 (launcher Mensagens), que o Owner deixou sem resposta = B (manter golden e registrar). Nao regravado.",
     "Censo completo (execucao 1, 00:03-00:13, json -j 6): 6713 P / 42 F / 11 S (R05: 6692/53/11), por diretorio em docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md secao 3; as 42 falhas classificadas com causa e dono na secao 4.",
     "Depois do censo, mais 6 testes de test/app/router corrigidos (so teste): person_identity_fail_closed_routes_test, people_creation_requirements_red_test, superadmin_error_routes_test (/profile), persistent_shell_routes_test (2: Decisao 7 e publicadores sem etapas/Momentos em moldura), principal_moments_publication_route_test. Os tres ultimos tocam telas do Principal (G4): se a G4 alterar os mesmos testes, integrar por conteudo."
+  ],
+    "censoR07": {
+      "P": 6727,
+      "F": 33,
+      "S": 11,
+      "fonte": "docs/reviews/evidence/etapa-2/r07-coordenacao/censo-final.md",
+      "base": "2f0a1cfb7 + correções C0",
+      "observacao": "histórico R07; não é resultado executado de R08"
+    },
+    "testesR07": {
+      "P": 6727,
+      "F": 33,
+      "S": 11,
+      "evidencia": "censo final R07 publicado; não somar reruns"
+    }
+  },
+  "feito": [
+    "R08 G8: revisão documental corrigida; nenhuma suíte foi executada nesta posse por ausência de slot C0.",
+    "R08 G8: mantido o único JSON autorizado, grupo suites, revisão monotônica e recorte exclusivo Superadmin.",
+    "R08 G8: nenhuma expectativa textual foi alterada sem fonte; não houve alteração funcional, golden, imagem ou configuração global."
   ],
   "pendente": [],
   "commitsPublicados": [
@@ -84,12 +105,12 @@
     }
   ],
   "testes": {
-    "P": 6727,
-    "F": 33,
+    "P": 0,
+    "F": 0,
     "B": 0,
-    "S": 11,
+    "S": 0,
     "U": 0,
-    "evidencia": "Sem nova execução de suíte nesta posse. Base de R07 permanece 6727 PASS / 33 FAIL / 11 SKIP em 855e374d5 e censo final publicado em docs/reviews/evidence/etapa-2/r07-coordenacao/censo-final.md."
+    "evidencia": "R08: nenhuma suíte executada nesta posse; P/F/S são zero executados. Os números R07 estão preservados exclusivamente em historicoR07 e no censo-fonte."
   },
   "bloqueio": null,
   "proximoPasso": "Conferir 33 falhas de r07-coordenacao/censo-final.md, manter evidência documental atualizada e aguardar comando de fechamento do C0.",
