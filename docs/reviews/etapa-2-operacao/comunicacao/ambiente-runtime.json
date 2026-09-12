@@ -1,6 +1,18 @@
 {
-  "revision": 36,
-  "round": "E2-R08-20260912",
+  "revision": 37,
+  "round": "E2-R09-20260912",
+  "r09": {
+    "updatedAt": "2026-09-12T15:25:10-03:00",
+    "t0": "2026-09-12T15:17:09-03:00",
+    "base": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+    "status": "blocked-runtime; Chrome devolvido ao C0",
+    "done": "Duas tentativas CUA documentadas; RAM/PIDs/baseline/hash conferidos; causa provável no default enableTextEntryEmulation=true do entrypoint QA",
+    "pending": "C0 atribuir correção QA/build sem mock de teclado e medir login/leitura/reload",
+    "tests": "2 probes de entrada sem valor; nenhum teste Flutter ou SQL novo; nenhum login submetido",
+    "resources": "Chrome22592/aba829822454 liberado C0; servidor3014 PID7476; baseline57322 healthy; RAM2065644KiB; slotFlutter livre no JSON, zero processo test identificado",
+    "handoff": "docs/reviews/evidence/etapa-2/r09-ambiente-runtime/handoff.md",
+    "historyNote": "Campos R08 abaixo preservam histórico e não constituem medição R09"
+  },
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
