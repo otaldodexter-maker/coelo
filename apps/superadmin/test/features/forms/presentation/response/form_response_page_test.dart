@@ -82,6 +82,89 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  for (final kind in FormItemKind.values.where((kind) => kind != FormItemKind.information)) {
+    testWidgets('an omitted optional $kind remains absent when submitted', (tester) async {
+      final api = _ResponseApi(
+        items: [
+          FormItem(
+            id: 'optional',
+            kind: kind,
+            label: 'Opcional',
+            position: 0,
+            isRequired: false,
+            options: kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
+                ? const [FormOption(id: 'option', label: 'Opção', position: 0)]
+                : const [],
+          ),
+        ],
+      );
+      await open(tester, api);
+      await tester.ensureVisible(find.byKey(const Key('form-response-review')));
+      await tester.tap(find.byKey(const Key('form-response-review')));
+      await tester.pumpAndSettle();
+      await tester.ensureVisible(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('form-response-submit')));
+      await tester.pumpAndSettle();
+      expect(api.submitCommand, isNotNull);
+      expect(api.submitCommand!.payload.answers, isEmpty);
+    });
+  }
+  for (final kind in [FormItemKind.scale, FormItemKind.singleChoice, FormItemKind.multipleChoice]) {
+    for (final required in [false, true]) {
+      testWidgets('unanswerable legacy $kind explains the issue required=$required', (
+        tester,
+      ) async {
+        final api = _ResponseApi(
+          items: [
+            FormItem(
+              id: 'legacy',
+              kind: kind,
+              label: 'Pergunta legada',
+              position: 0,
+              isRequired: required,
+              config: kind == FormItemKind.scale
+                  ? const FormItemConfig(scaleMin: 10, scaleMax: 1)
+                  : const FormItemConfig(),
+            ),
+          ],
+        );
+        await open(tester, api);
+        expect(find.text('Pergunta indisponível'), findsOneWidget);
+        expect(find.byType(ChoiceChip), findsNothing);
+        await tester.ensureVisible(find.byKey(const Key('form-response-review')));
+        await tester.tap(find.byKey(const Key('form-response-review')));
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('form-response-submit')),
+          required ? findsNothing : findsOneWidget,
+        );
+        expect(api.submitCommand, isNull);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
+  testWidgets('invalid legacy value can only be cleared explicitly before saving', (tester) async {
+    final api = _ResponseApi(
+      items: [
+        FormItem(
+          id: 'legacy',
+          kind: FormItemKind.scale,
+          label: 'Escala legada',
+          position: 0,
+          config: const FormItemConfig(scaleMin: 10, scaleMax: 1),
+        ),
+      ],
+      initialAnswers: {'legacy': FormAnswer.scale(itemId: 'legacy', value: 5)},
+    );
+    await open(tester, api);
+    expect(find.text('Limpar resposta'), findsOneWidget);
+    await tester.tap(find.text('Limpar resposta'));
+    await tester.pump(const Duration(milliseconds: 800));
+    await tester.pumpAndSettle();
+    expect(api.saveCommand!.payload.answers, isEmpty);
+  });
+
   // P16 (ADR 0034, Decisoes 9, 10 e 12): pergunta de Local com opcoes fixas
   // do snapshot; Local revogado desabilitado; obrigatoria sem alternativa
   // bloqueia; erro estavel do servidor aparece inline.

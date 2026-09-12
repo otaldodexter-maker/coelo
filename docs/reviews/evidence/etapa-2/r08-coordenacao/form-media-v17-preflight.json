@@ -1,0 +1,23 @@
+{
+  "measured_at": "2026-09-12T12:57:47.694208-03:00",
+  "version": 17,
+  "verify_jwt": true,
+  "bundle_sha256": "ea77bf6721130bb0717dae4bcd4dff7ee8350727c0842d26d3d1fc16e243a762",
+  "options": [
+    {
+      "origin": "http://localhost:3014",
+      "status": 204,
+      "acao": "http://localhost:3014"
+    },
+    {
+      "origin": "https://superadmin.coelo.me",
+      "status": 204,
+      "acao": "https://superadmin.coelo.me"
+    },
+    {
+      "origin": "https://fora.example",
+      "status": 403,
+      "acao": "null"
+    }
+  ]
+}

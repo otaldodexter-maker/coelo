@@ -1,0 +1,56 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Resolving dependencies...
+Downloading packages...
+  clock 1.1.2 (1.1.3 available)
+  code_assets 1.2.1 (2.0.0 available)
+  cross_file 0.3.5+4 (0.3.5+5 available)
+  crypto 3.0.6 (3.0.7 available)
+  dbus 0.7.13 (0.7.15 available)
+  file_picker 10.3.10 (12.2.0 available)
+  flutter_svg 2.2.3 (2.3.0 available)
+  functions_client 2.6.4 (2.7.1 available)
+  go_router 16.3.0 (18.0.1 available)
+  gotrue 2.26.0 (2.27.2 available)
+  hooks 2.0.2 (2.2.0 available)
+  intl 0.20.2 (0.20.3 available)
+  matcher 0.12.19 (0.12.20 available)
+  material_color_utilities 0.13.0 (0.13.1 available)
+  meta 1.18.0 (1.19.0 available)
+  mime 2.0.0 (2.1.0 available)
+  objective_c 9.5.0 (9.6.0 available)
+  passkeys_platform_interface 2.8.0 (2.9.0 available)
+  platform 3.1.6 (3.2.0 available)
+  postgrest 2.8.0 (2.9.1 available)
+  realtime_client 2.11.0 (2.13.0 available)
+  record_use 0.6.0 (1.1.1 available)
+  shared_preferences_android 2.4.27 (2.4.28 available)
+  shared_preferences_foundation 2.5.6 (2.5.7 available)
+  stack_trace 1.12.1 (1.12.2 available)
+  storage_client 2.6.0 (2.8.0 available)
+  supabase 2.14.0 (2.16.1 available)
+  supabase_flutter 2.16.0 (2.17.2 available)
+  test_api 0.7.11 (0.7.14 available)
+  url_launcher_android 6.3.32 (6.3.33 available)
+  url_launcher_ios 6.4.1 (6.4.2 available)
+  url_launcher_linux 3.2.2 (3.2.3 available)
+  url_launcher_macos 3.2.5 (3.2.6 available)
+  url_launcher_windows 3.1.5 (3.1.6 available)
+  vector_graphics 1.2.2 (1.2.3 available)
+  vector_graphics_compiler 1.2.6 (1.3.0 available)
+  vector_math 2.2.0 (2.4.2 available)
+  vm_service 15.2.0 (15.3.0 available)
+  win32 5.15.0 (6.4.0 available)
+Got dependencies!
+39 packages have newer versions incompatible with dependency constraints.
+Try `flutter pub outdated` for more information.
+{"protocolVersion":"0.1.1","runnerVersion":null,"pid":43508,"type":"start","time":0}
+{"suite":{"id":0,"platform":"vm","path":"C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart"},"type":"suite","time":0}
+{"test":{"id":1,"name":"loading C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart","suiteID":0,"groupIDs":[],"metadata":{"skip":false,"skipReason":null},"line":null,"column":null,"url":null},"type":"testStart","time":0}
+{"count":1,"time":4,"type":"allSuites"}
+{"testID":1,"result":"success","skipped":false,"hidden":true,"type":"testDone","time":2172}
+{"group":{"id":2,"suiteID":0,"parentID":null,"name":"","metadata":{"skip":false,"skipReason":null},"testCount":1,"line":null,"column":null,"url":null},"type":"group","time":2173}
+{"test":{"id":3,"name":"keeps the atomic group receipt through a failed composition retry","suiteID":0,"groupIDs":[2],"metadata":{"skip":false,"skipReason":null},"line":174,"column":5,"url":"package:flutter_test/src/widget_tester.dart","root_line":857,"root_column":3,"root_url":"file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart"},"type":"testStart","time":2174}
+{"testID":3,"messageType":"print","message":"══╡ EXCEPTION CAUGHT BY FLUTTER TEST FRAMEWORK ╞════════════════════════════════════════════════════\nThe following StateError was thrown running a test:\nBad state: No element\n\nWhen the exception was thrown, this was the stack:\n#0      Iterable.single (dart:core/iterable.dart:694:25)\n#1      WidgetController.widget (package:flutter_test/src/controller.dart:828:30)\n#2      main.<anonymous closure> (file:///C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao/apps/superadmin/test/features/groups/presentation/group_form_page_test.dart:973:12)\n<asynchronous suspension>\n#3      testWidgets.<anonymous closure>.<anonymous closure> (package:flutter_test/src/widget_tester.dart:192:15)\n<asynchronous suspension>\n#4      TestWidgetsFlutterBinding._runTestBody (package:flutter_test/src/binding.dart:1952:5)\n<asynchronous suspension>\n<asynchronous suspension>\n(elided one frame from package:stack_trace)\n\nThe test description was:\n  keeps the atomic group receipt through a failed composition retry\n════════════════════════════════════════════════════════════════════════════════════════════════════","type":"print","time":4968}
+{"testID":3,"error":"Test failed. See exception logs above.\nThe test description was: keeps the atomic group receipt through a failed composition retry","stackTrace":"","isFailure":false,"type":"error","time":4975}
+{"testID":3,"result":"error","skipped":false,"hidden":false,"type":"testDone","time":4976}
+{"success":false,"type":"done","time":5024}

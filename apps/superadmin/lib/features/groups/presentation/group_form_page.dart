@@ -1,5 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
+import 'package:flutter/scheduler.dart';
+import 'package:coelo_domain/locations.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
@@ -12,7 +14,11 @@ import '../../../shared/presentation/widgets/superadmin_form_action_footer.dart'
 import '../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dart';
 import '../../units/domain/unit_handle_availability.dart';
+import '../../locations/domain/location_catalog_reader.dart';
+import '../../locations/domain/location_selection_source.dart';
+import '../../locations/presentation/location_selection_field.dart';
 import '../domain/group_directory.dart';
+import '../domain/group_location_create.dart';
 
 enum GroupFormSaveResult { created, updated }
 
@@ -123,6 +129,9 @@ final class GroupFormPage extends StatefulWidget {
     this.onBugReportSubmitted,
     this.checkHandleAvailability,
     this.setHandle,
+    this.locationCatalogReader = const UnavailableLocationCatalogReader(),
+    this.groupLocationCreateRepository = const UnavailableGroupLocationCreateRepository(),
+    this.groupLocationCreateEnabled = false,
     super.key,
   });
 
@@ -140,6 +149,9 @@ final class GroupFormPage extends StatefulWidget {
   /// acao "Alterar @" na edicao (trava de 30 dias). Opcionais.
   final StructureHandleAvailabilityChecker? checkHandleAvailability;
   final StructureHandleSetter? setHandle;
+  final LocationCatalogReader locationCatalogReader;
+  final GroupLocationCreateRepository groupLocationCreateRepository;
+  final bool groupLocationCreateEnabled;
 
   @override
   State<GroupFormPage> createState() => _GroupFormPageState();
@@ -183,6 +195,11 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final List<_GroupPersonBinding> _people = [];
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
+  CataloguedLocationSelection? _cataloguedLocationSelection;
+  late LocationSelectionSource _locationSelectionSource;
+  GroupLocationCreateResult? _createdWithLocation;
+  String? _locationCreateRequestId;
+  String? _locationCreateFingerprint;
   double _footerHeight = 0;
 
   bool get _editing => widget.groupId != null;
@@ -193,6 +210,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   void initState() {
     super.initState();
+    _locationSelectionSource = CatalogLocationSelectionSource(widget.locationCatalogReader);
     _status = GroupStatus.active;
     _nameController = TextEditingController();
     _handleController = TextEditingController();
@@ -208,6 +226,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   @override
   void didUpdateWidget(covariant GroupFormPage oldWidget) {
     super.didUpdateWidget(oldWidget);
+    if (!identical(oldWidget.locationCatalogReader, widget.locationCatalogReader)) {
+      _locationSelectionSource = CatalogLocationSelectionSource(widget.locationCatalogReader);
+    }
     if (!identical(oldWidget.repository, widget.repository) ||
         oldWidget.groupId != widget.groupId ||
         oldWidget.initialInstitutionId != widget.initialInstitutionId ||
@@ -318,18 +339,42 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     return null;
   }
 
-  void _onSelectInstitution(GroupDirectoryFilterOption institution) => setState(() {
-    _selectedInstitution = institution;
-    _selectedUnit = null;
-    final units = _unitsForInstitution(institution.id);
-    _selectedUnit = units.isEmpty ? null : units.first;
-    _markDirty();
-  });
+  bool _canChangeLocationContext() {
+    if (_createdWithLocation == null) return true;
+    setState(
+      () => _saveError = 'A turma já foi criada com este local. Reabra para alterar o contexto.',
+    );
+    return false;
+  }
 
-  void _onSelectUnit(GroupDirectoryFilterOption unit) => setState(() {
-    _selectedUnit = unit;
-    _markDirty();
-  });
+  void _clearLocationDraft({bool clearSelection = true}) {
+    if (clearSelection) _cataloguedLocationSelection = null;
+    _locationCreateRequestId = null;
+    _locationCreateFingerprint = null;
+    _pendingSave = null;
+    _pendingSaveFingerprint = null;
+  }
+
+  void _onSelectInstitution(GroupDirectoryFilterOption institution) {
+    if (!_canChangeLocationContext()) return;
+    setState(() {
+      _selectedInstitution = institution;
+      _selectedUnit = null;
+      final units = _unitsForInstitution(institution.id);
+      _selectedUnit = units.isEmpty ? null : units.first;
+      _clearLocationDraft();
+      _dirty = true;
+    });
+  }
+
+  void _onSelectUnit(GroupDirectoryFilterOption unit) {
+    if (!_canChangeLocationContext()) return;
+    setState(() {
+      _selectedUnit = unit;
+      _clearLocationDraft();
+      _dirty = true;
+    });
+  }
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
@@ -546,6 +591,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       final now = DateTime.now();
       final fingerprint = _saveFingerprint();
       if (_pendingSaveFingerprint != fingerprint) _pendingSave = null;
+      if (_createdWithLocation == null && _locationCreateFingerprint != fingerprint) {
+        _locationCreateRequestId = null;
+        _locationCreateFingerprint = fingerprint;
+      }
       final original = _original;
       final institution = _selectedInstitution!;
       final unit = _selectedUnit!;
@@ -587,10 +636,39 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                   inheritActivities: _inheritActivities,
                   updatedAt: now,
                 ));
+      final locationSelection = _cataloguedLocationSelection;
+      final createdWithLocation = _createdWithLocation;
+      final locationCreated = !_editing && locationSelection != null
+          ? createdWithLocation ??
+                await widget.groupLocationCreateRepository.create(
+                  GroupLocationCreateCommand(
+                    requestId: _locationCreateRequestId ??= widget.repository.createId(
+                      institution.id,
+                      unit.id,
+                      _nameController.text.trim(),
+                    ),
+                    institutionId: institution.id,
+                    unitId: unit.id,
+                    name: _nameController.text.trim(),
+                    groupType: _typeController.text.trim(),
+                    groupTypeOtherText: _typeController.text == 'other'
+                        ? _typeOtherController.text.trim()
+                        : null,
+                    locationSelection: locationSelection,
+                  ),
+                )
+          : null;
+      if (locationCreated != null) _createdWithLocation = locationCreated;
+      final savedRecord = locationCreated == null
+          ? record
+          : record.copyWith(
+              id: locationCreated.groupId,
+              managementVersion: locationCreated.managementVersion,
+            );
       final request = _pendingSave ??= GroupDirectorySaveRequest(
         requestId:
             'group-save-${_editing ? 'edit' : 'create'}-${DateTime.now().microsecondsSinceEpoch}',
-        record: record,
+        record: savedRecord,
         branding: {
           'accent_color': _primaryColorController.text.trim(),
           'secondary_color': _secondaryColorController.text.trim(),
@@ -799,6 +877,8 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             _fieldGrid(_prototypeFields()),
+            const SizedBox(height: CoeloSpacing.space5),
+            _locationSection(),
             const SizedBox(height: CoeloSpacing.space5),
             _activitySection(),
           ],
@@ -1112,6 +1192,74 @@ final class _GroupFormPageState extends State<GroupFormPage> {
             ),
           ],
         ],
+      ],
+    );
+  }
+
+  Widget _locationSection() {
+    if (_editing ||
+        !widget.groupLocationCreateEnabled ||
+        !widget.groupLocationCreateRepository.available) {
+      return const SizedBox.shrink();
+    }
+    final institution = _selectedInstitution;
+    final unit = _selectedUnit;
+    if (institution == null || unit == null) {
+      return const CoeloStatePanel(
+        key: Key('group-catalogued-location-context-required'),
+        title: 'Local da turma',
+        message: 'Selecione a instituição e a unidade antes de escolher um local.',
+        icon: Icons.location_off_outlined,
+      );
+    }
+    final scope = LocationScope.unit(institutionId: institution.id, unitId: unit.id);
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        const Text('Escolha um local do catálogo da unidade. Isso não reserva horário.'),
+        const SizedBox(height: CoeloSpacing.space3),
+        LocationSelectionField(
+          key: ValueKey('group-catalogued-location-${institution.id}-${unit.id}'),
+          scope: scope,
+          source: _locationSelectionSource,
+          sessionAvailable: true,
+          contextRevision: 0,
+          catalogOnly: true,
+          initialSelection: _cataloguedLocationSelection,
+          onChanged: (value) {
+            void acceptSelection() {
+              if (!mounted ||
+                  _selectedInstitution?.id != institution.id ||
+                  _selectedUnit?.id != unit.id) {
+                return;
+              }
+              final selected = _cataloguedLocationSelection;
+              if (identical(value, selected) ||
+                  value is CataloguedLocationSelection &&
+                      selected != null &&
+                      value.snapshot.id == selected.snapshot.id &&
+                      sameLocationScope(value.snapshot.scope, selected.snapshot.scope)) {
+                return;
+              }
+              if (!_canChangeLocationContext()) return;
+              if (value != null &&
+                  (value is! CataloguedLocationSelection ||
+                      !sameLocationScope(value.snapshot.scope, scope))) {
+                return;
+              }
+              setState(() {
+                _cataloguedLocationSelection = value as CataloguedLocationSelection?;
+                _clearLocationDraft(clearSelection: false);
+                _dirty = true;
+              });
+            }
+            if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+              WidgetsBinding.instance.addPostFrameCallback((_) => acceptSelection());
+            } else {
+              acceptSelection();
+            }
+          },
+        ),
       ],
     );
   }

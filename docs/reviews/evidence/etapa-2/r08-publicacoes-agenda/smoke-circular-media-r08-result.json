@@ -1,0 +1,103 @@
+{
+  "at": "2026-09-12T15:23:38.374Z",
+  "fixture": {
+    "tag": "[R08-QA 15:23:34]",
+    "institutionId": "d0c40000-0000-4000-8000-000000000001",
+    "unitId": "d0c40000-0000-4000-8000-000000000002",
+    "groupId": "368a5cea-2bcf-4fa4-ad1f-18da58694551",
+    "circularId": "aa9e26a6-2874-4e19-ac79-a41f56c44468",
+    "assetId": "429f1bc4-f579-4179-9193-0e6304aa3e0f"
+  },
+  "tests": {
+    "passed": 16,
+    "failed": 0,
+    "total": 16
+  },
+  "results": [
+    {
+      "step": "create draft",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "media prepare v13",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "R2 PUT",
+      "pass": true,
+      "detail": "status 200, host 2363eb1eadce9b73279d3c8ce46eb424.r2.cloudflarestorage.com"
+    },
+    {
+      "step": "media finalize ready",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "save ordered blocks",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "detail feeds preview/reader in order",
+      "pass": true,
+      "detail": "text>media>question>text"
+    },
+    {
+      "step": "publish",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "authorized media read ticket",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "read bytes equal PNG",
+      "pass": true,
+      "detail": "status 200, 70 bytes"
+    },
+    {
+      "step": "anonymous read denied",
+      "pass": true,
+      "detail": "status 401"
+    },
+    {
+      "step": "published revision available",
+      "pass": true,
+      "detail": "yes"
+    },
+    {
+      "step": "P50 save response as Superadmin owner",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "P50 submit response",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "P50 summary reload",
+      "pass": true,
+      "detail": "submitted 1"
+    },
+    {
+      "step": "cleanup close",
+      "pass": true,
+      "detail": "status 200"
+    },
+    {
+      "step": "cleanup delete",
+      "pass": true,
+      "detail": "status 200"
+    }
+  ],
+  "notes": [
+    "API smoke only; not UI/E2E",
+    "anonymous negative only; no cross-tenant claim for global owner",
+    "this run closed and deleted the synthetic circular before C0 clarified that R08 fixtures must be retained until the formal end of Stage 2; no restore or replacement was attempted"
+  ]
+}

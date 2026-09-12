@@ -659,12 +659,15 @@ function questionHarness(options: {
         mime_type: "image/png",
         finalize_ticket: questionTicket,
         expires_at: "2026-09-11T22:30:00+00:00",
+        status: "pending",
+        replayed: false,
       }),
     form_media_finalize_question_r2_v1: () =>
       ok({
         asset_id: questionAsset,
         status: "ready",
         finalized_at: "2026-09-11T22:01:00+00:00",
+        replayed: false,
       }),
     superadmin_form_media_resolve_v2: () =>
       ok({
@@ -946,6 +949,59 @@ Deno.test("question-image finalize measures the stored object and commits with s
   ]);
 });
 
+Deno.test("question-image finalize reconciles an identical retry already ready", async () => {
+  const harness = questionHarness({
+    rpc: {
+      superadmin_form_media_authorize_finalize_v2: () =>
+        ok({
+          asset_id: questionAsset,
+          object_key: questionKey,
+          bucket: "coelo-media-prod",
+          mime_type: "image/png",
+          finalize_ticket: questionTicket,
+          expires_at: "2026-09-11T22:30:00+00:00",
+          status: "ready",
+          replayed: true,
+        }),
+      form_media_finalize_question_r2_v1: () =>
+        ok({
+          asset_id: questionAsset,
+          status: "ready",
+          finalized_at: "2026-09-11T22:01:00+00:00",
+          replayed: true,
+        }),
+    },
+  });
+  const result = await handleFormMediaRequest(
+    request({
+      action: "finalize",
+      request_id: id,
+      expected_version: 0,
+      payload: { purpose: "question-image", asset_id: questionAsset },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    asset_id: questionAsset,
+    status: "ready",
+    finalized_at: "2026-09-11T22:01:00+00:00",
+    mime_type: "image/png",
+    byte_size: 64,
+    pixel_width: 800,
+    pixel_height: 600,
+  });
+  assertEquals(harness.calls.map((call) => call.name), [
+    "superadmin_form_media_authorize_finalize_v2",
+    "form_media_finalize_question_r2_v1",
+  ]);
+  assertEquals(harness.transport, [
+    "config:coelo-media-prod",
+    `head:${questionKey}`,
+    `get:${questionKey}:${4 * 1024 * 1024}`,
+  ]);
+});
+
 Deno.test("question-image finalize reports a mismatch as 422 and leaves the object to the cleanup queue", async () => {
   for (
     const options of [
@@ -1188,7 +1244,7 @@ const answerPng = new Uint8Array([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 2, 128, 0, 0, 1, 224, 8, 6, 0, 0, 0, 0, 0, 0,
 ]);
 
-function answerR2Harness(options: { finalizeOk?: boolean } = {}) {
+function answerR2Harness(options: { finalizeOk?: boolean; alreadyFinalized?: boolean; source?: unknown; denied?: boolean } = {}) {
   const calls: string[] = [];
   const r2: string[] = [];
   let finalizeParameters: unknown;
@@ -1199,7 +1255,21 @@ function answerR2Harness(options: { finalizeOk?: boolean } = {}) {
   };
   const client = {
     auth: { getUser: () => Promise.resolve({ data: { user: { id } } }) },
-    from: () => query,
+    from: (table: string) => {
+      if (table !== "form_assets") return query;
+      const assetQuery = {
+        select: () => assetQuery,
+        eq: (column: string, value: unknown) => {
+          assertEquals([column, value], ["id", id]);
+          return assetQuery;
+        },
+        maybeSingle: () => Promise.resolve({ data: "source" in options ? options.source : {
+          id, item_id: readToken, mime_type: "image/png",
+          actual_byte_length: answerPng.length, state: "finalized",
+        } }),
+      };
+      return assetQuery;
+    },
     storage: { from: () => { throw new Error("answer R2 must not use Storage"); } },
     rpc: (name: string, parameters: unknown) => {
       calls.push(name);
@@ -1207,12 +1277,12 @@ function answerR2Harness(options: { finalizeOk?: boolean } = {}) {
         return Promise.resolve({ data: { asset_id: id, storage_path: `ab/${id}`, expires_at: "2026-09-08T16:00:00Z",
           media_asset_id: mediaId, bucket: "coelo-media-prod", object_key: answerKey, storage_provider: "r2" } });
       }
-      if (name === "form_finalize_asset_upload") return Promise.resolve({ data: { asset_id: id, state: "uploaded" } });
+      if (name === "form_finalize_asset_upload") return Promise.resolve({ data: { asset_id: id, state: "uploaded" }, error: options.denied });
       if (name === "form_media_authorize_for_worker") return Promise.resolve({ data: { state: "finalized", storage_path: `ab/${id}` } });
       if (name === "form_asset_r2_descriptor_v1") {
         return Promise.resolve({ data: { ok: true, data: { asset_id: id, media_asset_id: mediaId, bucket: "coelo-media-prod",
           object_key: answerKey, mime_type: "image/png", expected_byte_size: answerPng.length, expected_sha256: "x".repeat(64),
-          state: "uploaded", media_status: options.finalizeOk === undefined ? "pending" : "ready" } } });
+          state: options.alreadyFinalized ? "finalized" : "uploaded", media_status: options.alreadyFinalized || options.finalizeOk !== undefined ? "ready" : "pending" } } });
       }
       if (name === "form_media_finalize_answer_r2_v1") {
         finalizeParameters = parameters;
@@ -1259,11 +1329,40 @@ Deno.test("answer R2 finalize confirma pelo legado, mede bytes/sha256/dimensoes 
   assertEquals(parameters.p_pixel_width, 640);
   assertEquals(parameters.p_pixel_height, 480);
   assertEquals(parameters.p_byte_size, answerPng.length);
-  assertEquals(await response.json(), { asset_id: id, state: "finalized", media_asset_id: mediaId });
+  assertEquals(await response.json(), { asset_id: id, state: "finalized", media_asset_id: mediaId,
+    id, item_id: readToken, mime_type: "image/png", byte_length: answerPng.length });
   const mismatch = answerR2Harness({ finalizeOk: false });
   const failed = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), mismatch.dependencies);
   assertEquals(failed.status, 400);
   assertEquals(mismatch.r2.at(-1), `delete:${answerKey}`);
+});
+
+Deno.test("answer R2 finalize replay returns the same Flutter asset envelope without touching R2", async () => {
+  const harness = answerR2Harness({ alreadyFinalized: true });
+  const result = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), harness.dependencies);
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), { asset_id: id, state: "finalized", media_asset_id: mediaId,
+    id, item_id: readToken, mime_type: "image/png", byte_length: answerPng.length });
+  assertEquals(harness.r2, []);
+  assertEquals(harness.calls, ["form_finalize_asset_upload", "form_asset_r2_descriptor_v1"]);
+});
+
+Deno.test("answer R2 finalize never returns an unconfirmed or mismatched source", async () => {
+  for (const source of [null, { id: mediaId },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: answerPng.length, state: "uploaded" },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: null, state: "finalized" },
+    { id, item_id: readToken, mime_type: "image/png", actual_byte_length: answerPng.length + 1, state: "finalized" },
+  ]) {
+    const harness = answerR2Harness({ alreadyFinalized: true, source });
+    const result = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), harness.dependencies);
+    assertEquals(result.status, 400);
+    assertEquals(harness.r2, []);
+  }
+  const denied = answerR2Harness({ denied: true });
+  const result = await handleFormMediaRequest(request({ ...command, action: "finalize", payload: { asset_id: id } }), denied.dependencies);
+  assertEquals(result.status, 400);
+  assertEquals(denied.calls, ["form_finalize_asset_upload"]);
+  assertEquals(denied.r2, []);
 });
 
 Deno.test("answer R2 download exige legado finalized e espelho ready e assina o GET por 60 s", async () => {

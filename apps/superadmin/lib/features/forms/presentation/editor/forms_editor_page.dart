@@ -1410,7 +1410,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return 'Esta opção é usada em um ramo. Remova a referência antes de excluir.';
     }
     if (question.kind == FormItemKind.multipleChoice &&
-        (question.loadedConfig.minSelections ?? 1) > question.options.length - 1) {
+        (int.tryParse(question.minimumSelections.text) ?? 1) > question.options.length - 1) {
       return 'O mínimo de seleções exige manter esta quantidade de opções.';
     }
     return null;
@@ -1543,6 +1543,12 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
           if (question.kind == FormItemKind.gallery)
             [question.id, question.minimumImages.text, question.maximumImages.text],
     ];
+    payload['selection_limit_inputs'] = [
+      for (final section in _sections)
+        for (final question in _flattenQuestions(section.questions))
+          if (question.kind == FormItemKind.multipleChoice)
+            [question.id, question.minimumSelections.text, question.maximumSelections.text],
+    ];
     payload['date_rule_inputs'] = [
       for (final section in _sections)
         for (final question in _flattenQuestions(section.questions))
@@ -1561,6 +1567,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     for (final section in _sections) {
       for (final question in _flattenQuestions(section.questions)) {
         if (question.galleryLimitsIssue case final issue?) return issue;
+        if (question.selectionLimitsIssue case final issue?) return issue;
         if (question.textLimitsIssue case final issue?) return issue;
         if (question.numericLimitsIssue case final issue?) return issue;
         if (question.dateLimitsIssue case final issue?) return issue;
@@ -1689,8 +1696,8 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
               (question.dateRule == _DateRule.until || question.dateRule == _DateRule.range)
           ? question.until
           : null,
-      minSelections: question.loadedConfig.minSelections,
-      maxSelections: question.loadedConfig.maxSelections,
+      minSelections: int.tryParse(question.minimumSelections.text.trim()),
+      maxSelections: int.tryParse(question.maximumSelections.text.trim()),
       decimalPlaces: question.loadedConfig.decimalPlaces,
       scaleMin: question.loadedConfig.scaleMin,
       scaleMax: question.loadedConfig.scaleMax,
@@ -2338,6 +2345,12 @@ final class _EditorQuestionDraft {
        maxLength = TextEditingController(text: loadedConfig.maxLength?.toString() ?? ''),
        minimumImages = TextEditingController(text: loadedConfig.minImages?.toString() ?? ''),
        maximumImages = TextEditingController(text: loadedConfig.maxImages?.toString() ?? ''),
+       minimumSelections = TextEditingController(
+         text: loadedConfig.minSelections?.toString() ?? '',
+       ),
+       maximumSelections = TextEditingController(
+         text: loadedConfig.maxSelections?.toString() ?? '',
+       ),
        options = kind == FormItemKind.singleChoice || kind == FormItemKind.multipleChoice
            ? [TextEditingController(text: 'Opção 1'), TextEditingController(text: 'Opção 2')]
            : [] {
@@ -2364,6 +2377,8 @@ final class _EditorQuestionDraft {
   final TextEditingController maxLength;
   final TextEditingController minimumImages;
   final TextEditingController maximumImages;
+  final TextEditingController minimumSelections;
+  final TextEditingController maximumSelections;
   final List<TextEditingController> options;
   final Map<TextEditingController, String> optionIds = {};
   final List<_EditorQuestionDraft> branchQuestions = [];
@@ -2436,6 +2451,22 @@ final class _EditorQuestionDraft {
     return null;
   }
 
+  String? get selectionLimitsIssue {
+    if (kind != FormItemKind.multipleChoice) return null;
+    final lowText = minimumSelections.text.trim();
+    final highText = maximumSelections.text.trim();
+    final low = lowText.isEmpty ? 1 : int.tryParse(lowText);
+    final high = highText.isEmpty ? 50 : int.tryParse(highText);
+    if (low == null || high == null || low < 1 || low > 50 || high < 1 || high > 50) {
+      return 'Informe limites de seleção inteiros entre 1 e 50.';
+    }
+    if (low > high) return 'O mínimo de seleções deve ser menor ou igual ao máximo.';
+    if (low > options.length) {
+      return 'O mínimo de seleções não pode exceder a quantidade de opções.';
+    }
+    return null;
+  }
+
   String optionLabel(String id) => options.firstWhere((option) => optionIds[option] == id).text;
 
   void replaceOptions(List<FormOption> values) {
@@ -2504,6 +2535,8 @@ final class _EditorQuestionDraft {
       ..maxLength.text = maxLength.text
       ..minimumImages.text = minimumImages.text
       ..maximumImages.text = maximumImages.text;
+    value.minimumSelections.text = minimumSelections.text;
+    value.maximumSelections.text = maximumSelections.text;
     value.replaceOptions([
       for (var index = 0; index < options.length; index++)
         FormOption(
@@ -2531,6 +2564,8 @@ final class _EditorQuestionDraft {
     maxLength.dispose();
     minimumImages.dispose();
     maximumImages.dispose();
+    minimumSelections.dispose();
+    maximumSelections.dispose();
     for (final option in options) {
       option.dispose();
     }
@@ -3076,19 +3111,25 @@ final class _QuestionCardState extends State<_QuestionCard> {
           widget.branchPanel!,
         ],
       ],
-      if (widget.question.kind == FormItemKind.gallery) ...[
+      if (widget.question.kind == FormItemKind.gallery ||
+          widget.question.kind == FormItemKind.multipleChoice) ...[
         const SizedBox(height: CoeloSpacing.space3),
         LayoutBuilder(
           builder: (context, constraints) {
+            final gallery = widget.question.kind == FormItemKind.gallery;
             void changed(String _) {
               setState(() {});
               widget.onChanged();
             }
 
             final minimum = CoeloFormTextField(
-              fieldKey: ValueKey('forms-gallery-min-${widget.question.id}'),
-              controller: widget.question.minimumImages,
-              labelText: 'Mínimo de imagens',
+              fieldKey: ValueKey(
+                'forms-${gallery ? 'gallery' : 'selection'}-min-${widget.question.id}',
+              ),
+              controller: gallery
+                  ? widget.question.minimumImages
+                  : widget.question.minimumSelections,
+              labelText: gallery ? 'Mínimo de imagens' : 'Mínimo de seleções',
               hintText: '1 (padrão)',
               prefixIcon: Icons.vertical_align_bottom_rounded,
               keyboardType: TextInputType.number,
@@ -3096,10 +3137,14 @@ final class _QuestionCardState extends State<_QuestionCard> {
               onChanged: changed,
             );
             final maximum = CoeloFormTextField(
-              fieldKey: ValueKey('forms-gallery-max-${widget.question.id}'),
-              controller: widget.question.maximumImages,
-              labelText: 'Máximo de imagens',
-              hintText: '5 (padrão)',
+              fieldKey: ValueKey(
+                'forms-${gallery ? 'gallery' : 'selection'}-max-${widget.question.id}',
+              ),
+              controller: gallery
+                  ? widget.question.maximumImages
+                  : widget.question.maximumSelections,
+              labelText: gallery ? 'Máximo de imagens' : 'Máximo de seleções',
+              hintText: gallery ? '5 (padrão)' : '50 (padrão)',
               prefixIcon: Icons.vertical_align_top_rounded,
               keyboardType: TextInputType.number,
               textInputAction: TextInputAction.done,
@@ -3123,7 +3168,8 @@ final class _QuestionCardState extends State<_QuestionCard> {
             );
           },
         ),
-        if (widget.question.galleryLimitsIssue case final issue?)
+        if ((widget.question.galleryLimitsIssue ?? widget.question.selectionLimitsIssue)
+            case final issue?)
           Text(
             issue,
             style: Theme.of(
