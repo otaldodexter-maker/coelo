@@ -53,3 +53,19 @@ checkpoint.
 - `1e6ac1077` — registra checkpoint local da R07 de acessos.
 
 Nenhum segredo foi copiado para Git, JSON ou este handoff.
+
+## Fechamento C0
+
+- Branch publicada: `work/etapa2-r07-acessos-pessoas`.
+- SHA final publicado: `6bf1b576c2ed10456c924ddbfe7de30fdbf170d7`.
+- Estado local: `git status` limpo; nenhum stash; nenhum arquivo de trabalho
+  adicional pendente.
+- Não foram criados dados sintéticos, migrations, chaves ou segredos nesta
+  rodada. Não há fixture expirada para `invites.resend`.
+- Handoffs da frente disponíveis para R03, R04, R05, R06 e R07; R01/R02
+  permanecem referenciadas pelos relatórios/manifests históricos da operação.
+- O delta restante é estimado em 1–2 horas de prova real após renderer Chrome
+  estável, além dos gates independentes de deploy da Edge Function e fixture
+  expirada com pgTAP.
+- A worktree pode ser removida sem perda depois que o coordenador integrar e
+  verificar o SHA remoto; antes disso, mantê-la para inspeção é mais seguro.
