@@ -1,8 +1,8 @@
 ---
 title: "R08 G5/G3 — retry de finalize, delete nominal e não-enumeração"
 source: "R08-plano.md G3/G5; forms_question_media_r2_v1 e revisão C0/G3 de 2026-09-12"
-status: "candidatos 140548/140549 e casos preparados; RED/GREEN pendentes do espelho"
-generated_at: "2026-09-12T12:04:58-03:00"
+status: "candidatos 140548/140549 verdes no espelho; produção pendente C0"
+generated_at: "2026-09-12T12:16:44-03:00"
 ---
 
 # Resíduos do fluxo question-image
@@ -60,3 +60,19 @@ remove apenas bindings de assets já logicamente encerrados; catálogo, variante
 ticket, limpeza e auditoria são preservados. A suíte focal de plano 7 cobre
 mismatch, expiração, remoção dos dois bindings e save posterior sem as
 perguntas. Também não foi aplicada nem executada por G5.
+
+## Resultado do espelho
+
+O G0 executou o ciclo serializado sobre o baseline com 140546..140549:
+
+- RED de 140548: 4 passaram e 5 falharam; GREEN: 9/9;
+- RED de 140549: 3 passaram e 4 falharam; GREEN: 7/7;
+- regressão question-image: a primeira execução ficou 32/33 porque a
+  expectativa histórica ainda recusava o replay idêntico; após o ajuste
+  autoral 684eea023, 33/33;
+- regressões `forms_behavioral_rpc_test.sql` 17/17 e
+  `superadmin_internal_form_drafts_v2_test.sql` 159/159.
+
+Todos os resultados finais tiveram rollback e native/wrapper 0. G5 não os
+executou nem os soma como execução própria. Produção permaneceu intocada e a
+decisão/aplicação do lote 57 continua exclusiva do C0.
