@@ -659,12 +659,15 @@ function questionHarness(options: {
         mime_type: "image/png",
         finalize_ticket: questionTicket,
         expires_at: "2026-09-11T22:30:00+00:00",
+        status: "pending",
+        replayed: false,
       }),
     form_media_finalize_question_r2_v1: () =>
       ok({
         asset_id: questionAsset,
         status: "ready",
         finalized_at: "2026-09-11T22:01:00+00:00",
+        replayed: false,
       }),
     superadmin_form_media_resolve_v2: () =>
       ok({
@@ -939,6 +942,59 @@ Deno.test("question-image finalize measures the stored object and commits with s
     p_pixel_width: 800,
     p_pixel_height: 600,
   });
+  assertEquals(harness.transport, [
+    "config:coelo-media-prod",
+    `head:${questionKey}`,
+    `get:${questionKey}:${4 * 1024 * 1024}`,
+  ]);
+});
+
+Deno.test("question-image finalize reconciles an identical retry already ready", async () => {
+  const harness = questionHarness({
+    rpc: {
+      superadmin_form_media_authorize_finalize_v2: () =>
+        ok({
+          asset_id: questionAsset,
+          object_key: questionKey,
+          bucket: "coelo-media-prod",
+          mime_type: "image/png",
+          finalize_ticket: questionTicket,
+          expires_at: "2026-09-11T22:30:00+00:00",
+          status: "ready",
+          replayed: true,
+        }),
+      form_media_finalize_question_r2_v1: () =>
+        ok({
+          asset_id: questionAsset,
+          status: "ready",
+          finalized_at: "2026-09-11T22:01:00+00:00",
+          replayed: true,
+        }),
+    },
+  });
+  const result = await handleFormMediaRequest(
+    request({
+      action: "finalize",
+      request_id: id,
+      expected_version: 0,
+      payload: { purpose: "question-image", asset_id: questionAsset },
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 200);
+  assertEquals(await result.json(), {
+    asset_id: questionAsset,
+    status: "ready",
+    finalized_at: "2026-09-11T22:01:00+00:00",
+    mime_type: "image/png",
+    byte_size: 64,
+    pixel_width: 800,
+    pixel_height: 600,
+  });
+  assertEquals(harness.calls.map((call) => call.name), [
+    "superadmin_form_media_authorize_finalize_v2",
+    "form_media_finalize_question_r2_v1",
+  ]);
   assertEquals(harness.transport, [
     "config:coelo-media-prod",
     `head:${questionKey}`,
