@@ -1,0 +1,87 @@
+---
+fonte: R08 G5; form-media; recibos G0/C0
+status: em revisão antes do deploy
+generated_at: 2026-09-12T13:31:41-03:00
+---
+
+# Answer-image: ator do realm interno na Edge
+
+## Defeito medido
+
+O smoke normal API autenticou a identidade interna e passou por
+`form_get_occurrence_for_response` e `form_open_response_draft`, mas a Edge
+`form-media` v17 devolveu `401 unauthorized` antes de preparar o ativo. Nenhum
+asset foi criado; o draft foi preservado.
+
+O C0 confirmou `getUser` 200 e zero `person_auth_links` ativos para o usuário.
+Esse é o estado canônico do realm interno, ligado por
+`superadmin_internal_auth_links -> superadmin_internal_actor_people`. O código
+da Edge só consultava `person_auth_links`, embora as RPCs de Forms já resolvessem
+a mesma pessoa pela ponte interna.
+
+## Correção focal
+
+O resolvedor da Edge preserva a precedência de `person_auth_links`. Somente
+quando a consulta passa sem erro e não encontra pessoa ele usa, com o JWT do
+próprio usuário, `list_my_principal_contexts()`. Essa RPC existente resolve a
+pessoa pelo helper canônico `person_id_for_auth_user(auth.uid())` e só projeta
+memberships ativas.
+
+O fallback aceita uma ou mais linhas somente quando todas contêm o mesmo UUID de
+pessoa. Erro, resposta vazia, UUID inválido ou pessoas divergentes continuam
+falhando com 401. O ID resolvido continua sendo passado ao autorizador existente;
+ownership, autorização da participação e RPCs mutantes permanecem inalterados.
+
+Limite: o fallback exige ao menos um contexto Principal ativo. Esta correção não
+certifica atores internos sem contexto ativo nem altera o contrato desses atores.
+
+## Testes locais executados por G5
+
+- RED: ator interno sem `person_auth_links` devolveu 401 em vez de chegar ao
+  prepare; a negativa também mostrou que o fallback ainda não era chamado.
+- GREEN focal: 2/2 — contexto interno coerente passa; vazio/divergente nega.
+- Regressão `form-media/index_test.ts`: 33/33.
+- `deno check index.ts`: exit 0.
+- `git diff --check`: exit 0.
+
+Nenhum pgTAP, SQL remoto, deploy, Flutter ou Chrome foi executado por G5.
+
+## Expiração do PUT no replay R2
+
+Após o C0 habilitar o provider R2, a retomada reutilizou o mesmo form asset e
+recebeu um envelope R2, mas parou antes do PUT porque `expires_at` vinha do
+recibo legado. Essa expiração não descreve a URL que acabara de ser assinada.
+
+O RED comparou a expiração legada com a janela do signer e falhou no valor
+exato. A correção usa o mesmo relógio congelável e a mesma janela conservadora
+de 300 segundos já adotados pelo ramo question-image. O asset, o objeto, a
+autorização e os request IDs não mudam.
+
+- RED focal: 0/1 pelo horário legado divergente.
+- GREEN focal: 1/1.
+- Regressão `form-media/index_test.ts`: 33/33.
+- `deno check index.ts` e `git diff --check`: exit 0.
+
+Deploy e nova retomada continuam exclusivos do C0/G0, respectivamente.
+
+## Download identificado e argumento nulo da RPC
+
+Após PUT, finalize, replay e save passarem, a retomada recebeu 400 somente no
+download. A leitura feita pelo C0 provou que o ativo legado estava `finalized`,
+o espelho estava `ready` e as RPCs retornavam envelopes válidos quando
+`p_edit_secret` era enviado explicitamente como `null`.
+
+A assinatura `form_media_authorize_for_worker(uuid, uuid, text)` não possui
+default. Para atores identificados, `parseAssetAccess` não produz
+`edit_secret`; o cliente Supabase omite propriedades `undefined`, impedindo o
+PostgREST de resolver a chamada de três argumentos. A correção focal envia
+`access.edit_secret ?? null` em todos os caminhos dessa RPC. Segredos anônimos
+válidos continuam sendo preservados sem mudança.
+
+- RED focal: 0/1; o teste recebeu `undefined` onde o contrato exige `null`.
+- GREEN focal: 1/1.
+- Regressão `form-media/index_test.ts`: 33/33.
+- `deno check index.ts` e `git diff --check`: exit 0.
+
+Nenhum retry produtivo, deploy, SQL remoto ou pgTAP foi executado por G5. A
+retomada do mesmo ativo permanece exclusiva de C0/G0 após integração e deploy.

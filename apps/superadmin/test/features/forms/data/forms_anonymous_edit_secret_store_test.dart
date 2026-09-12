@@ -63,6 +63,28 @@ void main() {
       expect(recovered.length, 43);
     });
   }
+
+  test('account resolver is stable and drops the previous account context', () {
+    final created = <String, _SecretStore>{};
+    final resolver = FormsAnonymousEditSecretStoreResolver(
+      projectId: 'project-a',
+      create: (projectId, accountId) =>
+          created.putIfAbsent('$projectId/$accountId', _SecretStore.new),
+    );
+
+    final first = resolver.resolve('account-a');
+    expect(resolver.resolve('account-a'), same(first));
+    expect(resolver.resolve(null), isNull);
+    final second = resolver.resolve('account-b');
+    expect(second, isNot(same(first)));
+    expect(resolver.resolve('account-b'), same(second));
+    expect(created.keys, unorderedEquals(['project-a/account-a', 'project-a/account-b']));
+  });
+}
+
+final class _SecretStore implements FormsAnonymousEditSecretStore {
+  @override
+  Future<String> loadOrCreate(String occurrenceId) async => occurrenceId;
 }
 
 final class _Preferences implements SharedPreferencesAsync {
