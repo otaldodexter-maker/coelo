@@ -2,7 +2,7 @@
 title: "R08 G0 — inventário de capacidades do runtime"
 source: "CUA da sessão, Dart MCP e perfil Chrome local"
 status: "evidência local sanitizada"
-generated_at: "2026-09-12T12:14:00-03:00"
+generated_at: "2026-09-12T12:06:35-03:00"
 ---
 
 # Capacidades disponíveis nesta sessão

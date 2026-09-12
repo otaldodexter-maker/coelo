@@ -34,3 +34,10 @@ finish: failed 1 test of 33; ROLLBACK
 native exit: 0
 wrapper exit: 1
 acao: parada na primeira regressao; suites 17/159 nao executadas neste ciclo
+
+[RERUN FINAL 684eea023]
+alteracao autoral: caso 17 exige replay idempotente, mesmo asset, ready, replayed=true, variante original unica e medidas persistidas; mismatch alterado continua coberto pelo plano 9
+forms_question_media_r2_v1_test.sql: 33/33; ROLLBACK; native/wrapper 0/0
+forms_behavioral_rpc_test.sql: 17/17; ROLLBACK; native/wrapper 0/0
+superadmin_internal_form_drafts_v2_test.sql: 159/159; finish 1..159; ROLLBACK; native/wrapper 0/0
+slot SQL liberado; nenhuma migration adicional; producao intocada
