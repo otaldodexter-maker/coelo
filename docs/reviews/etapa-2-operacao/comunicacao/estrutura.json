@@ -9,7 +9,7 @@
  "coordenador": "R07 · Coordenacao (coordenacao.json; T0 ainda nao gravado)",
  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-estrutura",
  "branch": "work/etapa2-r07-estrutura",
- "head": "c96d61cbfb9b9c24c74b7a79a21438f7d2484b13; handoff final publicado",
+ "head": "e2ca6e3763282ac6befd854206bdb277b10a85f6; handoff final publicado",
  "upstream": "origin/work/etapa2-r07-estrutura (push apos revisao inicial)",
  "horario": {
   "abertura": "2026-09-11T23:20:28-03:00",
@@ -327,7 +327,7 @@
  },
  "miniRevisaoR07": {
   "quando": "rev 67, antes do T0 do coordenador",
-  "shaPublicado": "c96d61cbfb9b9c24c74b7a79a21438f7d2484b13; branch publicada e limpa; handoff final nesta revisao",
+  "shaPublicado": "e2ca6e3763282ac6befd854206bdb277b10a85f6; branch publicada e limpa; handoff final nesta revisao",
   "fechouPorActionId": [],
   "abertoComPrimeiroGate": [
    "activities.assessment: salvar/ativar pela rota real; primeiro gate operacional = Chrome/CDP controlavel e T0 registrado",

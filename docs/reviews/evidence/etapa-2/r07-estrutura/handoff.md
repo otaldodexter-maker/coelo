@@ -11,7 +11,7 @@ timezone: "America/Sao_Paulo"
 ## Entrega
 
 - Branch: `work/etapa2-r07-estrutura`.
-- SHA publicado: `c96d61cbfb9b9c24c74b7a79a21438f7d2484b13`.
+- SHA publicado: `e2ca6e3763282ac6befd854206bdb277b10a85f6`.
 - A branch estava limpa, sem arquivos untracked, sem alterações modificadas e sem stash; upstream estava sincronizado.
 - A worktree não deve ser removida antes de o coordenador integrar e conferir este handoff.
 
