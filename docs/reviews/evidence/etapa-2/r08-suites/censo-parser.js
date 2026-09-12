@@ -18,11 +18,13 @@ for (const line of fs.readFileSync(args.input, 'utf8').split(/\r?\n/)) {
   if (x.type === 'testDone') {
     const start = starts.get(x.testID); if (!start) { orphanDone.push({ testID: x.testID, result: x.result }); continue; }
     const row = { testID: start.testID, suiteID: start.suiteID, path: start.path, name: start.name, result: x.result, skipped: Boolean(x.skipped), hidden: Boolean(x.hidden), loading: Boolean(start.loading), metadata: start.metadata };
-    if (row.hidden) counts.hidden++; else if (row.loading) counts.loading++; else if (row.skipped || row.metadata.skip) counts.skipped++; else if (row.result === 'success') counts.passed++; else counts.failed++;
+    if (row.loading) counts.loading++; else if (row.hidden) counts.hidden++; else if (row.skipped || row.metadata.skip) counts.skipped++; else if (row.result === 'success') counts.passed++; else counts.failed++;
     cases.push(row);
   }
 }
 const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), base: args.base, nativeExitCode: Number(args['exit-code']), input: args.input, counts, cases, orphanDone, unknown };fs.writeFileSync(args.output, JSON.stringify(report, null, 2) + '\n');console.log(JSON.stringify({ base: report.base, nativeExitCode: report.nativeExitCode, counts: report.counts, cases: report.cases.length, orphanDone: report.orphanDone.length, unknown: report.unknown.length }));
+
+
 
 
 
