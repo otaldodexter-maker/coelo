@@ -1,0 +1,23 @@
+{
+  "measured_at": "2026-09-12T13:07:04.685589-03:00",
+  "internal_identity_id": "0ddeebc0-ee10-4565-96e0-ef11cacfc734",
+  "auth_user_id": "e7efaa3d-d965-457b-999e-9b62bb8e59d2",
+  "operation": "Auth Admin generate_link recovery for existing synthetic only",
+  "http_status": 200,
+  "checks": {
+    "https": true,
+    "host": true,
+    "path": true,
+    "no_authority_credentials": true,
+    "redirect_exact": false,
+    "type_recovery": true,
+    "same_auth_user": true
+  },
+  "passed": false,
+  "new_users": 0,
+  "new_api_keys": 0,
+  "link_opened": false,
+  "password_changed": false,
+  "smtp_sent": false,
+  "link_retained": false
+}

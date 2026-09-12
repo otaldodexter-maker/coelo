@@ -24,6 +24,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
     required this.onChanged,
     required this.onBusyChanged,
     this.reader,
+    this.editSecret,
     this.enabled = true,
     this.pickImage = pickFormsGalleryImage,
     this.createUploadClient,
@@ -49,6 +50,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
        questionApi = api,
        questionTarget = target,
        occurrenceId = '',
+       editSecret = null,
        reader = null;
   final FormsApi? api;
   final FormsQuestionImageApi? questionApi;
@@ -57,6 +59,7 @@ final class FormsGalleryAnswerField extends StatefulWidget {
   final http.Client Function()? createUploadClient;
   final MediaSession session;
   final MediaReader? reader;
+  final String? editSecret;
   final String occurrenceId;
   final FormItem item;
   final List<String> assetIds;
@@ -142,6 +145,7 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
               session: _lifetime,
               occurrenceId: widget.occurrenceId,
               itemId: widget.item.id,
+              editSecret: widget.editSecret,
               requestId: _requestId(),
               finalizeRequestId: _requestId(),
               createClient: widget.createUploadClient,
@@ -233,6 +237,9 @@ final class _FormsGalleryAnswerFieldState extends State<FormsGalleryAnswerField>
           body: FormsMediaPage(
             assetId: assetId,
             reader: reader,
+            rendition: widget.editSecret == null
+                ? MediaReadRendition.preview
+                : MediaReadRendition.original,
             session: _lifetime,
             onBack: () => Navigator.of(context).pop(),
           ),
