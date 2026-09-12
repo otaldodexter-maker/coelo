@@ -1,15 +1,15 @@
 {
-  "revision": 72,
+  "revision": 73,
   "round": "E2-R08-20260912",
   "group": "publicacoes-agenda",
   "tool": "Codex",
   "model": "GPT-5.6 Sol, esforco medio",
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
   "branch": "work/etapa2-r08-publicacoes-agenda",
-  "head": "3a00e88f2 (smoke API 16/16; inclui A+ dd332b98c e shell.load 702e75873)",
-  "base": "origin/dev 2441725d5 incorporado por merge 21c357685",
+  "head": "d263f8b93 (merge do ciclo 120; inclui origin/dev 7cc6d4e7b e deltas R08 ate 5ed2c0b1d)",
+  "base": "origin/dev 7cc6d4e7b incorporado por merge d263f8b93",
   "coordinator": "Codex (R08 · C0)",
-  "updatedAt": "2026-09-12T13:05:00-03:00",
+  "updatedAt": "2026-09-12T13:05:06-03:00",
   "scope": {
     "app": "apps/superadmin",
     "families": [
@@ -2520,8 +2520,8 @@
     "worktreePodeSerRemovidaSemPerda": "Sim, após C0 conferir e integrar o conteúdo/SHA publicado; não remover antes da integração."
   },
   "r08Current": {
-    "checkpoint": "2026-09-12T12:03:00-03:00",
-    "sha": "4c4aaae68",
+    "checkpoint": "2026-09-12T13:05:06-03:00",
+    "sha": "d263f8b93",
     "done": [
       "host produtivo identificado: ProductionCircularComposerHost -> SuperadminCircularComposerPage",
       "host antigo identificado: PrincipalCircularComposerPage, preservado para testes/compatibilidade",
@@ -2544,9 +2544,9 @@
     "pending": [
       "circulars.attach no Chrome/runtime 3014 quando e2eLiberado",
       "provar P50 apenas se a base integrada alterar o caminho ja recertificado localmente",
-      "integrar 3def837bf e 4c4aaae68 por conteudo no consolidado do C0"
+      "aguardar decisao visual do Owner para atribuir os seis R ao path/componente e definir a geometria/corte do rodape"
     ],
-    "c0": "G6 recebido para integracao; H14 shell.load aceito; publication_surface.dart nao tocado",
+    "c0": "ciclo 120 em origin/dev 7cc6d4e7b incorporado sem conflitos por d263f8b93; H14 shell.load aceito; publication_surface.dart nao tocado",
     "additionalGate": {
       "actionId": "shell.load",
       "finding": "carga concluida com centro ja aberto nao sincronizava read_at; falha transitória de markRead nao era repetida na reabertura",
