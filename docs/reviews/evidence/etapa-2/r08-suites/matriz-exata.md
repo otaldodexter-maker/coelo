@@ -36,3 +36,11 @@ observado 293 e reportam-se 281 chaves únicas.
 
 Linhas desconhecidas: zero em todos os quatro pacotes. Resultado bruto:
 `matriz-exata-result.json`.
+
+## Correção do gate de extração
+
+O parser foi corrigido para contar somente `testDone` de casos não `hidden`, não `skipped` e não `loading`, ligados por `testStart.test.id -> testDone.testID`. Resultado: ciclo30 `121`, ciclo60 `238`, ciclo90 `422`; os totais brutos de `testStart/testDone` eram `131/131`, `249/249` e `433/433`, explicando por que a leitura anterior produzia `245/476/820` ao misturar eventos.
+
+No log anônimo, `loading <path>` é apenas marcador de arquivo e não caso. Há `292` linhas de casos concluídos, `280` chaves exatas e `12` duplicações; o rodapé `+293: All tests passed!` é o prefixo final do runner e permanece documentado como total declarado `293`, não como caso adicional. O parser não usa `package:flutter_test/src/widget_tester.dart` como suite.
+
+Interseção exata após a correção: ciclo30∩ciclo60 `0`, ciclo30∩ciclo90 `0`, ciclo60∩ciclo90 `112`; pares com anônimo `0`. O JSON inclui a decomposição completa em `diagnostics`.
