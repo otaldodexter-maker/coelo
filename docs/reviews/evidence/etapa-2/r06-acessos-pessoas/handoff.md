@@ -13,7 +13,7 @@ timezone: "America/Sao_Paulo"
 Recorte: people, access_profiles, access_models, invites, internal_users,
 students (32 acoes; 11 em E2E na abertura). Canal oficial:
 `docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json` (revisoes 138
-a 141). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
+a 143). Deltas por action_id: `deltas-r06.json` (18 entradas, ensaiadas com
 `apply-tracker-delta.cjs` + `validate-trackers.cjs` PASS FE 147 / BE 132 /
 E2E 114 e revertidas; o coordenador aplica). Capturas em `capturas/`.
 
@@ -75,7 +75,7 @@ o lote 49 + os tres candidatos), encerrado no fechamento.
 | access-profiles.edit E2E, assign, delete; access-models.edit/duplicate pela UI | build com 0aeb9b729 existe (ee35cce3a); faltou tempo de Chrome; delete de modelo de sistema depende do 170600 em producao |
 | people.create/edit pela UI | 170700 em producao + build novo com 7f13ee42d |
 | @ na tela de Alunos | nao iniciado (o @ da crianca ja e editavel no detalhe de Pessoas; a tela de gerir aluno nao mostra o @) |
-| V-11 (card Criar sempre presente em Perfis e Usuarios internos, sem dados de demonstracao) | nao iniciado nesta rodada; Usuarios internos hoje nao mostra o card Criar |
+| V-11 (card Criar sempre presente, sem dados de demonstracao) | Usuarios internos: card Criar ligado na rota normal (d58cc041a), prova pela tela depende de build novo; Perfis ja mostrava; 'sem dados de demonstracao no app real' a conferir na R07 |
 
 ## Dados sinteticos desta rodada
 
