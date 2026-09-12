@@ -1,0 +1,36 @@
+R08 G0 / baseline local somente
+fonte: 3f494eb51
+ordem inicial: baseline com 140546+140547
+credenciais: nenhuma registrada
+
+[RED forms_question_media_retry_delete_v1_test.sql]
+plan: 1..9
+resultado: 4 ok / 5 not ok (retry authorize/finalize, unbind delete, remover pergunta, resposta cross-tenant)
+finish: failed 5 tests of 9; ROLLBACK
+native exit: 0
+wrapper exit: 1
+
+[RED forms_question_media_terminal_unbind_v1_test.sql]
+plan: 1..7
+resultado: 3 ok / 4 not ok (trigger ausente, unbind mismatch/expire, remover perguntas)
+finish: failed 4 tests of 7; ROLLBACK
+native exit: 0
+wrapper exit: 1
+
+[APPLY LOCAL]
+140548: COMMIT; native/wrapper exit 0/0
+140549: COMMIT; native/wrapper exit 0/0; backfill DELETE 0
+producao: intocada
+
+[GREEN focais]
+retry/delete: 9/9; finish sem falhas; ROLLBACK; native/wrapper 0/0
+terminal unbind: 7/7; finish sem falhas; ROLLBACK; native/wrapper 0/0
+
+[REGRESSAO forms_question_media_r2_v1_test.sql]
+plan: 1..33
+resultado: 32 ok / 1 not ok
+falha 17: teste espera FORM_MEDIA_TICKET_INVALID no segundo finalize identico; 140548 agora reconcilia retry idempotente e retorna sucesso, portanto error.code NULL
+finish: failed 1 test of 33; ROLLBACK
+native exit: 0
+wrapper exit: 1
+acao: parada na primeira regressao; suites 17/159 nao executadas neste ciclo

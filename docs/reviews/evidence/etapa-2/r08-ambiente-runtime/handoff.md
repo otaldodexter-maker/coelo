@@ -214,3 +214,9 @@ O rerun único autorizado com a fixture `0d52d5dbf` confirmou o próximo invaria
 A fixture final `afcebccd0` isolou revogações em identidades independentes e passou **159/159**, `finish 1..159`, rollback e exits `0/0`. Nenhuma migration/WIP adicional foi aplicada. O slot SQL foi solto imediatamente. O histórico RED e as duas correções de fixture permanecem no mesmo recibo.
 
 O inventário objetivo das capacidades já presentes está em [runtime-capabilities.md](./runtime-capabilities.md). CUA oferece AX/DOM, locators, ações de ponteiro/teclado e logs, mas não expõe CDP e não injeta texto consumível nesta superfície Flutter. Dart MCP oferece DTD/Driver/Inspector/runtime apenas com DTD ativo; o release não tem DTD, e o Chrome compartilhado não possui Dart Debug. Nenhuma ferramenta/extensão foi instalada ou reconfigurada.
+
+## Fechamento terminal de question-image
+
+Com revisão G7 e posse C0, o baseline recebeu sequencialmente `140548` e `140549` sobre `140547`, ambos COMMIT e exits `0/0`; produção ficou intocada. Antes do apply, os REDs foram **4 ok / 5 not ok** no plano 9 e **3 ok / 4 not ok** no plano 7, ambos rollback, native `0`/wrapper `1`. Depois, as focais passaram **9/9** e **7/7**, rollback e `0/0`.
+
+A primeira regressão de 33 testes ficou **32 ok / 1 not ok**: o caso 17 ainda espera ticket inválido no segundo finalize idêntico, enquanto 140548 passou a reconciliar resposta perdida com sucesso idempotente. Native `0`, wrapper `1`, rollback. O ciclo parou antes das regressões 17/159 e aguarda ajuste autoral da expectativa sem enfraquecer o mismatch fail-closed. Recibo: [pgtap-forms-question-media-3f494eb51.log](./pgtap-forms-question-media-3f494eb51.log).
