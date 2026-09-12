@@ -1,8 +1,8 @@
 ---
 title: "R08 G5 — P51 criação de usuário interno pela API"
 source: "gate nominal C0; internal-user-create v4 em produção; execução G5"
-status: "criacao-e-reload-verdes-link-runtime-parcial"
-generated_at: "2026-09-12T13:08:00-03:00"
+status: "criacao-e-reload-verdes-redirect-runtime-falhou"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # P51 — criação normal, link seguro e releitura
@@ -36,18 +36,22 @@ validar HTTPS, origem do projeto, ausência de credenciais na authority e path
 `https://superadmin.coelo.me/reset-password` ao Auth Admin.
 
 O primeiro verificador local terminou `password_setup_link_contract=false`
-depois da criação porque tratou nomes de headers HTTP como case-sensitive;
+depois da criação. Ele tratava nomes de headers HTTP como case-sensitive;
 `urllib` os entregou em minúsculas. Um OPTIONS read-only imediatamente depois
 confirmou `Cache-Control: no-store`, CORS exato para 3014 e os quatro headers
-permitidos. O runner foi corrigido para normalizar nomes de headers.
+permitidos. O runner foi corrigido para normalizar nomes de headers, mas o
+oráculo agregado não permitia concluir que essa era a única causa.
 
 Como o action link não é armazenado e foi descartado da memória sem ser
-impresso, não é possível repetir a verificação dinâmica do `redirect_to` sem
-gerar outro link privilegiado. Assim, HTTPS/host/path são controles produtivos
-executados pela função, `no-store`/CORS foram medidos remotamente e o redirect
-exato está provado por fonte implantada + Deno 8/8 informado pelo C0/G2; a query
-do link desta execução específica permanece **não observada**. Não criar um
-segundo usuário para mascarar essa limitação.
+impresso, G5 não repetiu a criação. O C0 então gerou uma única recuperação Auth
+Admin para **o mesmo usuário existente**, também sem abrir ou registrar link,
+query ou token. O resultado às 13:05:46 BRT foi HTTP 200, HTTPS/host/path/type e
+mesmo usuário verdadeiros, mas `redirect_exact=false`.
+
+Portanto o redirect canônico na fonte e os Deno 8/8 não equivalem ao resultado
+produtivo: há uma negativa real do destino no link gerado. C0 está conferindo a
+semântica do SDK/configuração Auth antes de atribuir causa. Não gerar outro
+link, não mudar senha/SMTP/configuração e não declarar P51 concluído.
 
 O modo read-only `--verify-existing-id` passou depois: `existing_count=1`,
 detail/list/reload verdes, perfil `support`, duas permissões, logout local 204.

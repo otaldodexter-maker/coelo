@@ -1,8 +1,8 @@
 ---
 title: "R08 G5 — retirada de Momentos e lote 58"
 source: "G4 smoke API produtivo; migrations 171600/130300/130400; candidato 140550; recibos G0/C0"
-status: "aplicado-em-producao-pos-prova-funcional-em-curso"
-generated_at: "2026-09-12T12:55:00-03:00"
+status: "api-producao-aprovada-ui-e2e-pendente"
+generated_at: "2026-09-12T13:12:28-03:00"
 ---
 
 # Retirada de Momentos — defeito medido e correção mínima
@@ -62,6 +62,8 @@ somente nessa evidência central, sem duplicar caminhos privados neste arquivo.
 No replay produtivo do G4, a retirada da mesma publicação passou e o reload do
 feed não a listou. A leitura pelo próprio autor continuou 200, coerente com o
 ramo autoral de `authorize_moments_media_read`; portanto a antiga expectativa
-403 do harness não demonstra novo defeito. Falta apenas concluir a negativa
-read-only com outro consumidor autorizado da mesma instituição. Isso não será
-rotulado como prova cross-tenant.
+403 do harness não demonstra novo defeito. A consulta read-only posterior com
+`qa-r06-realm` negou o mesmo asset com 403 e encerrou a sessão local com 204.
+A prova foi publicada por G4 em `3f664595a` e integrada pelo C0. Ela comprova o
+contrato API em produção, mas não é cross-tenant (ambas as contas são
+Owner/platform) nem UI/E2E.
