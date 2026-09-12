@@ -39,7 +39,7 @@ void main() {
             : SuperadminCircularComposerPage(
                 controller: controller,
                 onCancel: () {},
-                onPickFiles: () async {},
+                onPickFiles: (_) async {},
                 onPublished: () => publishedCallbacks++,
               );
         await tester.pumpWidget(MaterialApp(home: Scaffold(body: page)));

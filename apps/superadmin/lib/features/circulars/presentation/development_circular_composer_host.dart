@@ -62,8 +62,11 @@ final class _DevelopmentCircularComposerHostState extends State<DevelopmentCircu
       controller: controller,
       onCancel: widget.onCancel,
       onPublished: widget.onDone,
-      onPickFiles: () async {
-        controller.addMediaAsset('anexo-circular-${_assetSequence++}.pdf');
+      onPickFiles: (afterBlockId) async {
+        controller.addMediaAsset(
+          'anexo-circular-${_assetSequence++}.pdf',
+          afterBlockId: afterBlockId,
+        );
       },
     );
   }

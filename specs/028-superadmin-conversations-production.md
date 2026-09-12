@@ -21,10 +21,12 @@ faz parte da experiência produtiva.
 ### Reuso na superfície Coelo (Principal)
 
 `Coelo (Principal)` é uma superfície do menu de `apps/superadmin`, não o
-aplicativo `apps/principal`. A opção Chat dessa superfície reutiliza a mesma
-`SuperadminChatPage` e o mesmo `ChatRepository` de Comunicação > Conversas.
-Ela pode navegar para a rota existente com uma origem de retorno, mas não cria
-repository, cache, contrato Supabase, modelo ou cópia de mensagens próprios.
+aplicativo `apps/principal`. Conforme a revisão aprovada em
+`specs/050-principal-ui-ux-closure.md`, sua opção Chat possui UI própria e
+retorno contextual, compartilhando o `ChatRepository` de Comunicação > Conversas.
+A composição não importa widgets `SuperadminChat*` nem cria repository,
+cache de domínio, contrato Supabase, modelo ou cópia de mensagens próprios.
+Essa revisão substitui a orientação inicial de reutilizar `SuperadminChatPage`.
 No `/dev`, ambas as entradas compartilham a mesma instância determinística da
 sessão; em produção, ambas passam exclusivamente pelo adapter RPC autorizado.
 Nenhum arquivo de `apps/principal`, `apps/admin` ou `apps/site` é dependência
