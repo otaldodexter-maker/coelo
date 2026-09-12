@@ -140,7 +140,9 @@ void main() {
     }
   });
 
-  testWidgets('real route opens the first context and offers the profile selector (P28)', (tester) async {
+  testWidgets('real route opens the first context and offers the profile selector (P28)', (
+    tester,
+  ) async {
     final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,

@@ -109,10 +109,7 @@ void main() {
     shell.onDestinationSelected!('principal-chat');
     await tester.pumpAndSettle();
 
-    expect(
-      router.routeInformationProvider.value.uri.path,
-      SuperadminRoutes.principalConversations,
-    );
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalConversations);
   });
 }
 

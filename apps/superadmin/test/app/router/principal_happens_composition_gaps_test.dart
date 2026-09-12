@@ -33,100 +33,95 @@ import 'package:flutter_test/flutter_test.dart';
 /// integração, então esta frente registra a evidência em vez de corrigir.
 /// Quando a correção entrar, estes testes devem ser INVERTIDOS, não apagados.
 void main() {
-  testWidgets(
-    'READ: real route projects authorized Circular without administrative navigation',
-    (tester) async {
-      final session = SuperadminSession()..signInForTesting();
-      final mixed = _RecordingMixedFeedRepository();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        principalRuntimeContextRepository: const _GroupScopedContext(),
-        principalHappensFeedRepository: _EmptyFeedRepository(),
-        principalMixedFeedRepository: mixed,
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
-
-      router.go(SuperadminRoutes.principalHappens);
-      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-      await tester.pumpAndSettle();
-
-      final page = tester.widget<PrincipalHappensPreviewPage>(
-        find.byType(PrincipalHappensPreviewPage),
-      );
-
-      expect(page.mixedFeedRepository, same(mixed));
-      expect(page.feedScope, isNull);
-      expect(page.embedded, isTrue);
-      expect(mixed.calls, hasLength(1));
-      expect(mixed.calls.single.institutionId, 'institution-real');
-      expect(mixed.calls.single.unitId, 'unit-real');
-      expect(mixed.calls.single.groupId, 'group-real');
-      expect(find.text('Circular autorizada'), findsOneWidget);
-      // Teste INVERTIDO apos a correcao do leitor: sem a capacidade de leitura
-      // composta a acao continua honestamente indisponivel, sem navegar para o
-      // detalhe administrativo e sem virar um toque morto.
-      final card = tester.widget<PrincipalCircularFeedCard>(find.byType(PrincipalCircularFeedCard));
-      card.onOpen();
-      await tester.pump();
-      expect(
-        router.routerDelegate.currentConfiguration.uri.path,
-        SuperadminRoutes.principalHappens,
-      );
-      expect(find.byType(SnackBar), findsOneWidget);
-      expect(find.textContaining('ainda não está disponível'), findsOneWidget);
-      session.authorize(
-        const SuperadminAuthContext(platformRoleCode: 'test-role', scopeKind: SuperadminAuthScopeKind.platform,
-          permissionCodes: {'platform.read'}, aal: 'aal2'),
-        sessionId: session.sessionId!,
-      );
-      await tester.pumpAndSettle();
-      expect(mixed.calls, hasLength(2));
-      expect(mixed.calls.last.institutionId, 'institution-real');
-    },
-  );
-
-  testWidgets(
-    'P35: o ator de escopo institucional compoe o publicador do Acontece '
-    '(unidade e turma opcionais)',
-    (tester) async {
-      final session = SuperadminSession()..signInForTesting();
-      final router = createSuperadminRouter(
-        session: session,
-        login: unavailableSuperadminLogin,
-        logout: unavailableSuperadminLogout,
-        requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
-        principalRuntimeContextRepository: const _InstitutionScopedContext(),
-        happensPublicationRepository: InMemoryHappensPublicationRepository(),
-        onThemeModeChanged: (_) {},
-      );
-      addTearDown(router.dispose);
-      addTearDown(session.dispose);
-
-      router.go(SuperadminRoutes.principalHappensPublish);
-      await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
-      await tester.pumpAndSettle();
-
-      // O esquema aceita publicacao de escopo institucional (unit_id e group_id
-      // nulos); desde a R05 a composicao acompanha o dominio (Superadmin ve
-      // tudo, P35).
-      final page = tester.widget<PrincipalHappensPublicationPage>(
-        find.byType(PrincipalHappensPublicationPage),
-      );
-      expect(page.publicationContext.unitId, isNull);
-      expect(page.publicationContext.groupId, isNull);
-      expect(page.publicationContext.scopeLabel, page.publicationContext.institutionName);
-      expect(find.byType(SuperadminErrorScreen), findsNothing);
-    },
-  );
-
-  testWidgets('sem repositorio de publicacao a composicao continua indisponivel', (
+  testWidgets('READ: real route projects authorized Circular without administrative navigation', (
     tester,
   ) async {
+    final session = SuperadminSession()..signInForTesting();
+    final mixed = _RecordingMixedFeedRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      principalRuntimeContextRepository: const _GroupScopedContext(),
+      principalHappensFeedRepository: _EmptyFeedRepository(),
+      principalMixedFeedRepository: mixed,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.principalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    final page = tester.widget<PrincipalHappensPreviewPage>(
+      find.byType(PrincipalHappensPreviewPage),
+    );
+
+    expect(page.mixedFeedRepository, same(mixed));
+    expect(page.feedScope, isNull);
+    expect(page.embedded, isTrue);
+    expect(mixed.calls, hasLength(1));
+    expect(mixed.calls.single.institutionId, 'institution-real');
+    expect(mixed.calls.single.unitId, 'unit-real');
+    expect(mixed.calls.single.groupId, 'group-real');
+    expect(find.text('Circular autorizada'), findsOneWidget);
+    // Teste INVERTIDO apos a correcao do leitor: sem a capacidade de leitura
+    // composta a acao continua honestamente indisponivel, sem navegar para o
+    // detalhe administrativo e sem virar um toque morto.
+    final card = tester.widget<PrincipalCircularFeedCard>(find.byType(PrincipalCircularFeedCard));
+    card.onOpen();
+    await tester.pump();
+    expect(router.routerDelegate.currentConfiguration.uri.path, SuperadminRoutes.principalHappens);
+    expect(find.byType(SnackBar), findsOneWidget);
+    expect(find.textContaining('ainda não está disponível'), findsOneWidget);
+    session.authorize(
+      const SuperadminAuthContext(
+        platformRoleCode: 'test-role',
+        scopeKind: SuperadminAuthScopeKind.platform,
+        permissionCodes: {'platform.read'},
+        aal: 'aal2',
+      ),
+      sessionId: session.sessionId!,
+    );
+    await tester.pumpAndSettle();
+    expect(mixed.calls, hasLength(2));
+    expect(mixed.calls.last.institutionId, 'institution-real');
+  });
+
+  testWidgets('P35: o ator de escopo institucional compoe o publicador do Acontece '
+      '(unidade e turma opcionais)', (tester) async {
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      principalRuntimeContextRepository: const _InstitutionScopedContext(),
+      happensPublicationRepository: InMemoryHappensPublicationRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.principalHappensPublish);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    // O esquema aceita publicacao de escopo institucional (unit_id e group_id
+    // nulos); desde a R05 a composicao acompanha o dominio (Superadmin ve
+    // tudo, P35).
+    final page = tester.widget<PrincipalHappensPublicationPage>(
+      find.byType(PrincipalHappensPublicationPage),
+    );
+    expect(page.publicationContext.unitId, isNull);
+    expect(page.publicationContext.groupId, isNull);
+    expect(page.publicationContext.scopeLabel, page.publicationContext.institutionName);
+    expect(find.byType(SuperadminErrorScreen), findsNothing);
+  });
+
+  testWidgets('sem repositorio de publicacao a composicao continua indisponivel', (tester) async {
     final session = SuperadminSession()..signInForTesting();
     final router = createSuperadminRouter(
       session: session,
@@ -191,12 +186,28 @@ final class _RecordingMixedFeedRepository implements PrincipalMixedFeedRepositor
     int limit = 20,
   }) async {
     calls.add(scope);
-    return PrincipalHappensFeedPage(items: [PrincipalHappensCircularItem(
-      id: 'circular-1', publishedAt: DateTime.utc(2026,9,9), authorName: 'Institution', contextLabel: 'Group',
-      summary: CircularSummary(id: 'circular-1', title: 'Circular autorizada', excerpt: 'Authorized content',
-        authorName: 'Institution', contextLabel: 'Group', publishedAt: DateTime.utc(2026,9,9),
-        attachmentCount: 0, questionCount: 0, responseState: CircularResponseState.unanswered),
-    )], nextCursor: null);
+    return PrincipalHappensFeedPage(
+      items: [
+        PrincipalHappensCircularItem(
+          id: 'circular-1',
+          publishedAt: DateTime.utc(2026, 9, 9),
+          authorName: 'Institution',
+          contextLabel: 'Group',
+          summary: CircularSummary(
+            id: 'circular-1',
+            title: 'Circular autorizada',
+            excerpt: 'Authorized content',
+            authorName: 'Institution',
+            contextLabel: 'Group',
+            publishedAt: DateTime.utc(2026, 9, 9),
+            attachmentCount: 0,
+            questionCount: 0,
+            responseState: CircularResponseState.unanswered,
+          ),
+        ),
+      ],
+      nextCursor: null,
+    );
   }
 }
 

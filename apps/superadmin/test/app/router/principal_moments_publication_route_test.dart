@@ -60,11 +60,8 @@ void main() {
         find.byType(PrincipalMomentsPublicationPage),
       );
       expect(page.embedded, isFalse, reason: 'width $width');
-      for (final formComponent in [
-        PrincipalPublicationFrame,
-        PrincipalPublicationStepNavigation,
-        PrincipalPublicationActionFooter,
-      ]) {
+      // Familia Publicacao sem etapas desde a R06 (sheet unica com rodape).
+      for (final formComponent in [PrincipalPublicationSheet, PrincipalPublicationActionFooter]) {
         expect(
           find.byType(formComponent),
           findsOneWidget,

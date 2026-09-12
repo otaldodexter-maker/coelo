@@ -124,9 +124,8 @@ final class _FailingFeed implements PrincipalMomentsFeedRepository {
   final PrincipalMomentsFeedFailure failure;
 
   @override
-  Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(
-    PrincipalMomentsFeedScope scope,
-  ) => Future.error(failure);
+  Future<List<PrincipalMomentPreviewItem>> listVisibleMoments(PrincipalMomentsFeedScope scope) =>
+      Future.error(failure);
 }
 
 final class _EmptyFeed implements PrincipalMomentsFeedRepository {
@@ -155,4 +154,3 @@ final class _GroupScopedContext implements PrincipalRuntimeContextRepository {
     ),
   ];
 }
-

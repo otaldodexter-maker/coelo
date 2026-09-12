@@ -315,10 +315,11 @@ final class _TripwireNowPublicationRepository implements NowPublicationRepositor
   Future<NowPublicationDraft?> loadDraft(NowPublicationContext context) => _fail();
 
   @override
-  Future<NowPublication> publish(NowPublicationContext context, NowPublicationDraft draft, {
+  Future<NowPublication> publish(
+    NowPublicationContext context,
+    NowPublicationDraft draft, {
     required String requestId,
-  }) =>
-      _fail();
+  }) => _fail();
 
   @override
   Future<NowPublicationDraft> saveDraft(NowPublicationContext context, NowPublicationDraft draft) =>

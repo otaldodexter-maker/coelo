@@ -121,7 +121,9 @@ void main() {
     expect(form, findsNothing);
   });
 
-  testWidgets('propagates the activity footer inset through the persistent host', (tester) async {
+  testWidgets('hides the chat launcher over the activity form footer (Decisao 7)', (tester) async {
+    // ADR 0034 Decisao 7: criar/editar/publicar nao mostram o balao de chat;
+    // por isso nao ha mais inset do rodape a propagar ao launcher.
     tester.view.physicalSize = const Size(375, 900);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.reset);
@@ -133,12 +135,7 @@ void main() {
     await tester.pumpWidget(_app(router));
     final footer = find.byKey(const Key('activity-form-footer-surface'));
     await _pumpUntilFound(tester, footer);
-    final launcher = find.byKey(const Key('superadmin-chat-launcher-surface'));
-    expect(launcher, findsOneWidget);
-    expect(
-      tester.getBottomLeft(launcher).dy,
-      lessThanOrEqualTo(tester.getTopLeft(footer).dy - CoeloSpacing.space4),
-    );
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsNothing);
   });
 
   testWidgets('uses the wide activity frame inset inside the persistent host', (tester) async {
@@ -324,7 +321,7 @@ void main() {
       (path: SuperadminRoutes.devPrincipalProfile, contentKey: Key('principal-profile-scroll')),
       (
         path: SuperadminRoutes.devPrincipalHappensPublish,
-        contentKey: Key('happens-publication-step-0'),
+        contentKey: Key('happens-publication-scroll'),
       ),
       (
         path: SuperadminRoutes.devPrincipalMomentsPublish,
@@ -332,7 +329,7 @@ void main() {
       ),
       (
         path: SuperadminRoutes.devPrincipalNowPublication,
-        contentKey: Key('now-publication-step-0'),
+        contentKey: Key('now-publication-scroll'),
       ),
     ];
 
@@ -382,7 +379,12 @@ void main() {
             reason: reason,
           );
           if (immersive) {
-            expect(contentRect, Offset.zero & Size(width, 1200), reason: reason);
+            // Momentos e tela cheia ate 768; a partir de 840 vive numa moldura
+            // vertical sobre preto, com aside a partir de 1200 (composicao
+            // aprovada, R04): so os limites da viewport valem nessas larguras.
+            if (width < 840) {
+              expect(contentRect, Offset.zero & Size(width, 1200), reason: reason);
+            }
             expect(find.byKey(const Key('principal-global-dock')), findsNothing, reason: reason);
             expect(
               find.byKey(const Key('principal-global-messages')),

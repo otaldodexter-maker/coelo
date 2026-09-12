@@ -110,10 +110,9 @@ Future<({GoRouter router, SuperadminSession session})> _pumpReader(
       theme: CoeloTheme.light,
       routerConfig: router,
       builder: (context, child) => MediaQuery(
-        data: MediaQuery.of(context).copyWith(
-          disableAnimations: true,
-          textScaler: TextScaler.linear(textScale),
-        ),
+        data: MediaQuery.of(
+          context,
+        ).copyWith(disableAnimations: true, textScaler: TextScaler.linear(textScale)),
         child: child!,
       ),
     ),
@@ -177,9 +176,8 @@ final class _MixedFeedRepository implements PrincipalMixedFeedRepository {
 /// repositorio proprio e a resolucao de midia nao e exercida por estas provas.
 final class _HappensMediaRepository implements PrincipalHappensFeedRepository {
   @override
-  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(
-    PrincipalHappensFeedScope scope,
-  ) async => const [];
+  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(PrincipalHappensFeedScope scope) async =>
+      const [];
 
   @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) =>

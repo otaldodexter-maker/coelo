@@ -30,9 +30,7 @@ void main() {
       onThemeModeChanged: (_) {},
       planCatalogRepository: composed
           ? FakePlanCatalogRepository(
-              store: SuperadminPrototypeStore(
-                activityController: SuperadminActivityController(),
-              ),
+              store: SuperadminPrototypeStore(activityController: SuperadminActivityController()),
             )
           : const UnavailablePlanCatalogRepository(),
     );
@@ -44,10 +42,17 @@ void main() {
 
   testWidgets('sem catalogo composto, criar e editar plano caem na pagina honesta', (tester) async {
     final router = await pump(tester);
-    for (final route in [SuperadminRoutes.planCreate, '/plans/33333333-3333-4333-8333-333333333333/edit']) {
+    for (final route in [
+      SuperadminRoutes.planCreate,
+      '/plans/33333333-3333-4333-8333-333333333333/edit',
+    ]) {
       router.go(route);
       await tester.pumpAndSettle();
-      expect(find.byKey(const Key('production-mutation-capability-unavailable')), findsOneWidget, reason: route);
+      expect(
+        find.byKey(const Key('production-mutation-capability-unavailable')),
+        findsOneWidget,
+        reason: route,
+      );
       expect(find.byType(PlanFormPage), findsNothing, reason: route);
     }
   });

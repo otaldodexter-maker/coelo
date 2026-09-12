@@ -42,10 +42,7 @@ void main() {
     await tester.tap(find.byKey(const Key('principal-chat-back')));
     await tester.pumpAndSettle();
 
-    expect(
-      router.routeInformationProvider.value.uri.path,
-      SuperadminRoutes.devPrincipalHappens,
-    );
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.devPrincipalHappens);
   });
 
   testWidgets('the protected Principal chat route requires a session', (tester) async {

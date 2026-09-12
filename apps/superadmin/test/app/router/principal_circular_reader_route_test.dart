@@ -74,9 +74,7 @@ void main() {
     expect(find.text('Renovacao de matricula 2027'), findsWidgets);
   });
 
-  testWidgets('abrir a Circular do feed misto entrega o leitor Principal no shell', (
-    tester,
-  ) async {
+  testWidgets('abrir a Circular do feed misto entrega o leitor Principal no shell', (tester) async {
     final fixture = await _pumpRouter(
       tester,
       authenticated: true,
@@ -190,9 +188,8 @@ final class _MixedFeedRepository implements PrincipalMixedFeedRepository {
 /// repositorio proprio e a resolucao de midia nao e exercida por estas provas.
 final class _HappensMediaRepository implements PrincipalHappensFeedRepository {
   @override
-  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(
-    PrincipalHappensFeedScope scope,
-  ) async => const [];
+  Future<List<PrincipalPostPreviewItem>> listVisiblePosts(PrincipalHappensFeedScope scope) async =>
+      const [];
 
   @override
   Future<PrincipalHappensMediaRead> resolveMedia(PrincipalHappensMediaDescriptor media) =>
