@@ -6,7 +6,7 @@
  "app": "Codex desktop",
  "model": "Codex Luna medio",
  "timezone": "America/Sao_Paulo",
- "updatedAt": "2026-09-11T23:19:34-03:00",
+ "updatedAt": "2026-09-11T23:31:40-03:00",
  "relogio": "relogio da maquina; posse as 23:19:34 -03:00 de 11/09/2026 (T0)",
  "posseR04": {
   "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -2045,7 +2045,7 @@
   "T0+4h30": "2026-09-12T03:49:34-03:00",
   "loop": "ler sete JSONs a cada 20 min; integrar, aplicar deltas, atualizar rastreadores e percentual a cada 30 min",
   "regraDeEscrita": "unica escritora de dev, inventario e tres rastreadores; JSON de cada frente lido da branch work/etapa2-r07-<grupo>",
-  "status": "posse registrada; varredura R01-R06 e gates iniciais em andamento"
+  "status": "posse registrada; frentes liberadas; varredura R01-R06 e gates iniciais em andamento"
  },
  "pausaSegura2255": {
   "ordem": "Owner: \"pause brevemente de forma segura\" (22:53)",
@@ -2094,6 +2094,19 @@
   "modelo": "Codex Luna medio em todas as conversas",
   "janela": "T0 = prompt C0; frentes T0+10 a T0+4h; revisao ate T0+4h10; fechamento ate T0+4h30; cobranca e integracao a cada 30 min",
   "usuarios": "qa-r06-<grupo>.env (os mesmos da R06)",
-  "frentesLiberadas": null
+  "frentesLiberadas": {
+   "gravadoEm": "2026-09-11T23:29:34-03:00",
+   "status": "LIBERADAS",
+   "frentes": [
+    "estrutura",
+    "acessos-pessoas",
+    "formularios-cuidado-rotina",
+    "principal-chat-sistema",
+    "realm-interno",
+    "publicacoes-agenda",
+    "operacoes"
+   ],
+   "regra": "trabalhar sem parar ate T0+4h; registrar feito/pendente/commits a cada 30 min; sem aguardar Owner"
+  }
  }
 }
