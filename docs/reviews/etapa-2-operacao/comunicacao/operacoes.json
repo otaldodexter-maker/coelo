@@ -1,6 +1,6 @@
 {
-  "revision": 71,
-  "updated_at": "2026-09-12T13:37:00-03:00",
+  "revision": 72,
+  "updated_at": "2026-09-12T13:51:55-03:00",
   "round": "E2-R08-20260912",
   "group": "operacoes",
   "tool_model": "Codex, GPT-5.6 Terra, esforco medio — conversa R08 · Operacoes",
@@ -40,6 +40,20 @@
     "comparison": "baseline inicial RED: 4,52% (light 1440) e 90,85% (dark 375); diferença conferida como shell/navegação e composição mobile vigente, sem alteração de regra da tela",
     "result": "somente os dois PNGs A foram regravados; teste focal verde 1/1 após a regravação",
     "state": "aprovação visual registrada; não propõe promoção frontend/backend/E2E"
+  },
+  "worktreeClosingReviewR08": {
+    "scope": "inventário somente leitura das nove worktrees G0-G8 e C0; sem remoção, movimento, stash ou alteração em worktree alheia",
+    "observed_at": "2026-09-12T13:50:29-03:00",
+    "result": "nenhuma das dez branches tinha HEAD ancestral de origin/dev; todas devem ser retidas até a integração/dispensa central",
+    "wip_tracked": [
+      "G3 packages/coelo_ui_admin/test/table/coelo_admin_resizable_table_test.dart",
+      "G4 apps/superadmin/test/features/principal_profile/presentation/principal_profile_route_page_test.dart",
+      "C0 coordenacao.json e quatro evidências não rastreadas"
+    ],
+    "stash": "git stash list vazio",
+    "privacy": "env local, temp do Supabase e tmp/r08-p51-auth-config foram apenas identificados por caminho/tamanho e devem permanecer locais; nenhum conteúdo foi lido ou copiado",
+    "evidence": "docs/reviews/evidence/etapa-2/r08-operacoes/worktree-closing-inventory.md",
+    "next_gate": "C0 revalida após integração final e resolve WIP rastreado antes de qualquer encerramento"
   },
   "reviewG6R08": {
     "scope": "somente leitura do pacote Circular da G6 contra spec037 e ADR0034 decisão20",
