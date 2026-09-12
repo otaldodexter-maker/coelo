@@ -3,6 +3,8 @@
 // Fala direto com o VM Service (ext.flutter.driver) para a credencial nunca
 // passar por chat, log ou arquivo versionado. Uso:
 //   dart run test_driver/qa_login.dart ws://127.0.0.1:PORT/TOKEN=/ws
+// Compilar qa_main.dart com --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true;
+// o padrao false preserva teclado real para automacao pelo navegador.
 import 'dart:async';
 import 'dart:convert';
 import 'dart:io';

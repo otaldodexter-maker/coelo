@@ -1,12 +1,12 @@
 {
-  "revision": 95,
+  "revision": 96,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T18:50:03.524Z",
+  "updatedAt": "2026-09-12T18:54:32.757Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -254,6 +254,7 @@
     "91": "2026-09-12T15:20:28.253637-03:00 abertura nominal R09 C0; posse e fila G0-G8; consumo49; worktrees preservadas",
     "94": "Retomada autorizada sem controles de tarefas/cota; posse central nova, IDs nao inventados, atribuicoes aguardam adocao; T0 1542 preservado.",
     "95": "Nove IDs novos fornecidos pelo Owner registrados; blocos de liberacao disponibilizados para encaminhamento, sem afirmar recebimento; G0/G5/G1 liberadas, adocao pendente.",
+    "96": "Checkpoint ativo: cota indisponivel, nove IDs conhecidos sem ferramentas de envio; diagnostico G0 integrado; ajuste QA em validacao; nenhum novo aceite.",
     "correcaoDeRelogio": "os carimbos das revisoes 2 a 5 (15:10 a 16:58) estavam adiantados em cerca de 1h40; a hora real da rev 5 foi ~15:15 -03:00. A partir da rev 6 os carimbos vem do relogio da maquina."
   },
   "fechamentoR03": {
@@ -3831,8 +3832,9 @@
   },
   "slotsR09": {
     "chrome": {
-      "dono": "nenhum confirmado",
-      "estado": "aba QA anterior ausente; nao iniciar segundo Chrome"
+      "dono": "G0 atribuido; adocao pendente",
+      "pid": 22592,
+      "estado": "Chrome existente; antiga aba QA ausente na descoberta CUA; nao abrir outro Chrome"
     },
     "flutterTest": {
       "dono": "nenhum",
@@ -4076,5 +4078,23 @@
       "metaEncerrarAte": 85,
       "regra": "primeiro corte tempo/consumo; maior taxa das ultimas duas amostras; sem reset/reserva"
     }
+  },
+  "checkpointR09": {
+    "at": "2026-09-12T18:54:32.757Z",
+    "round": "E2-R09-20260912-1542",
+    "recorte": "apps/superadmin -> Auth -> login/entrada de texto -> auth.login (dependencia runtime, certificado historico preservado)",
+    "feito": "merge real do diagnostico2d4f5e5b7; patch QA teclado real por padrao com opt-in do mock; pub get offline exit0; validate-trackers PASS; dart analyze test_driver/qa_main.dart PASS exit0",
+    "aberto": "G0 rebuild/probe/login/leitura/reload pendentes",
+    "novosAceites": [],
+    "testesProduto": "nao executados nesta abertura",
+    "memoria": "busca concluida; nenhuma regra de produto nova",
+    "frentes": "nove canais existentes conferidos; nenhuma adocao nova medida",
+    "qaFix": "qa_main.dart teclado real default; Driver.enterText requer --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true"
+  },
+  "tentativaAnteriorAviso": {
+    "sourceThread": "01a096d5-dfe4-7d42-aa97-62137c233882",
+    "receivedAt": "2026-09-12T18:54:32.757Z",
+    "reported": "C0 antigo reconhece nova coordenacao e suspende escritas; reportou heartbeat antigo ainda ACTIVE e dispatches antigos G0/G1/G5",
+    "adoption": "nao reutilizar T0, IDs ou quota antiga; pausa do heartbeat ainda nao confirmada"
   }
 }

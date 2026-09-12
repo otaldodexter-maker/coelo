@@ -19,7 +19,27 @@ tracker_sync_revisions: "R07 encerrada: estrutura69; acessos146+checkpoint149; f
 
 # Pendências Coelo — Back-end
 
-## Estado vigente — Rodada 8 (E2-R08-20260912), checkpoint 11h14
+## Estado vigente — R09 E2-R09-20260912-1542, C0 revisao96
+
+T0 preservado 12/09/2026 15:42:18 BRT; execucao ate19:42:18 e fechamento
+ate20:12:18, sujeitos a corte antecipado. Posse C0 publicada; nove IDs novos
+fornecidos pelo Owner, adocao das atribuicoes ainda nao confirmada. Sem
+ferramentas de tarefas/cota/heartbeat nesta sessao: ciclos curtos via Git,
+conforme ajuste expresso do Owner; nenhum percentual de consumo presumido.
+
+Primeiro gate: apps/superadmin -> Auth -> Login -> entrada de texto
+(auth.login como dependencia compartilhada). Diagnostico G0 2d4f5e5b7
+integrado por merge; ajuste no entrypoint QA preserva teclado real por padrao
+e permite mock somente por opt-in. Analise focal PASS exit0; build e probe
+login/leitura/reload pendentes. Sem nova certificacao FE, BE ou E2E.
+
+Base R08 preservada: FE161/231 (69,70%); FE local26/70 (37,14%); visual54/231
+(23,38%); BE local32/75 (42,67%); SQL181/224 (80,80%); BE149/224 (66,52%);
+E2E131/199 (65,83%). validate-trackers PASS nesta abertura e apenas estrutural.
+Lote59 concluido segundo fechamentoR08; proximo60 ainda exige confirmacao
+real/espelho/pgTAP/backup/preflight. Nenhum SQL ou deploy executado aqui.
+
+## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
 
 C0 publicou a posse em dev às 10h52, com nove frentes G0–G8 identificadas.
 Execução até 14h52:16; revisão até 15h02:16 e fechamento até 15h22:16.

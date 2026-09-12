@@ -3,6 +3,8 @@
 // na web. Serve para a sessao de teste em producao (ADR 0034, Decisao 10).
 //
 // Uso:
+//   Compilar qa_main.dart com --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true
+//   para login/enter_text deste runner; automacao por teclado real usa false.
 //   dart run test_driver/qa_drive.dart <ws da pagina> login
 //       le QA_EMAIL/QA_PASSWORD do ambiente e entra; nunca imprime a senha
 //   dart run test_driver/qa_drive.dart <ws da pagina> cmd command=tap finderType=ByText text=Entrar

@@ -15,7 +15,14 @@ const _qaPngBase64 =
     'iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==';
 
 Future<void> main() async {
-  enableFlutterDriverExtension();
+  // A automacao pelo navegador usa o teclado real. O mock intercepta esse
+  // canal e deixa os controllers vazios. Runners que usam Driver.enterText
+  // devem compilar com --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true.
+  enableFlutterDriverExtension(
+    enableTextEntryEmulation: const bool.fromEnvironment(
+      'COELO_QA_TEXT_ENTRY_EMULATION',
+    ),
+  );
   // O seletor nativo de arquivos nao e dirigivel pelo CDP; na sessao de QA o
   // botao "Adicionar arquivo" entrega um PNG sintetico e o resto do fluxo
   // (prepare -> R2 -> finalize -> bloco de midia) continua real.
