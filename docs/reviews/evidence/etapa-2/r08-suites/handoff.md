@@ -80,6 +80,14 @@ Os caminhos foram descobertos por `git ls-tree -r --name-only`; SHAs e datas de 
 - O SHA integrado/publicado da base do ciclo é `2d97892d9`; ele não substitui a base explicitamente testada `5c1cf503c`. Deploys mencionados no recibo devem permanecer separados de resultados locais.
 - Limite operacional desta auditoria: Spark em 100% da janela; nenhum teste adicional foi prometido ou executado por G8.
 
+## Auditoria textual G4 — recibo integrado `d01f92023`
+
+- O pacote Chat registra `56 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 45 regressões existentes; não é uma suíte independente única.
+- O pacote de controle do PUT registra `28 PASS / 0 FAIL / 0 SKIP`: 11 casos novos e 17 existentes; seis casos Chat já pertencem aos 56, portanto `56 + 28` é contagem sobreposta e não deve ser somada.
+- O smoke de Momentos `20 PASS / 1 FAIL` é uma checagem local/focal; não comprova leitura, reload, remoção ou E2E e não deve ser promovido a aceite de produto.
+- Os `101` casos do Principal foram recebidos em três arquivos; devem ser relatados por arquivo, distinguindo casos novos, existentes e reruns, nunca como uma suíte única agregada.
+- Para Agora, Momentos e Cardápios, deploy/preflight e testes locais permanecem métricas distintas; ausência de uma contagem focal explícita não autoriza inferir PASS, E2E ou suite única.
+
 ## Auditoria de coerência com o censo R07
 
 - Os `23 PASS` de `person_form_page_test.dart` e `39 PASS` de `platform_user_pages_test.dart` documentados por G2 são suítes focais diferentes das falhas nominais do censo R07; não reduzem nem reclassificam os `33 FAIL` históricos.
