@@ -34,13 +34,13 @@ Cardinalidade: a fonte13/08 contém Foto/Galeria até5, enquanto o contrato exec
 
 ## Texto proposto para design-system17.1 e referência visual
 
-> A coluna redimensionável reserva uma faixa própria de48px para a alça, sem sobrepor a área de ordenação. O indicador visual permanece estreito e alinhado à borda. Colunas com largura mínima igual à máxima não oferecem redimensionamento sem efeito. Nome e direção da ordenação permanecem acessíveis mesmo quando o espaço visual só comporta o ícone.
+> A coluna redimensionável reserva uma faixa interativa própria de48px para a alça, sem sobrepor a área interativa de ordenação. A pintura do cabeçalho conserva a largura integral aprovada, em camada sem hit testing; não se deve reduzir o texto ao reservar os alvos. O indicador visual permanece estreito e alinhado à borda. Colunas com largura mínima igual à máxima não oferecem redimensionamento sem efeito. Nome e direção da ordenação permanecem acessíveis sem duplicação da camada visual.
 
 Incluir imediatamente o limite de aplicação, para não generalizar o aceite:
 
 > A faixa de48px não certifica sozinha todos os alvos do cabeçalho: uma coluna de80/90px deixa apenas32/42px para ordenar. Esses consumidores exigem revisão específica de composição/largura; não ampliar seus mínimos silenciosamente.
 
-Fonte executável: `54c892ebc`, `10-h25-inspecao.md`; review G4 `d5aa7e253`. Em Formulários foram medidos toque e rótulo em375/1440. Contraste e AA de todos os consumidores não foram certificados. Depois da fonte, a projeção do composto pode resumir a reserva sem sobreposição e a ausência de alça em largura fixa, com link à seção canônica e sem números de testes efêmeros.
+Fonte executável: `54c892ebc` com correção visual obrigatória `f0e148a70`, `10-h25-inspecao.md` e `12-h25-paint.md`; review G4 inicial `d5aa7e253`. O pacote inicial reduziu texto e falhou nos goldens integrados; o followup preserva as referências existentes. Em Formulários foram medidos toque e rótulo em375/1440. Contraste e AA de todos os consumidores não foram certificados. Depois da fonte, a projeção do composto pode resumir a reserva sem sobreposição e a ausência de alça em largura fixa, com link à seção canônica e sem números de testes efêmeros.
 
 ## Validação e resultado do gate
 

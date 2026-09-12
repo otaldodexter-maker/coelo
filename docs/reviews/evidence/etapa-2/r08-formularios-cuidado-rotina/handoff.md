@@ -23,6 +23,7 @@ T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; aj
 | Formulários → Galeria → confirmar upload de resposta → `forms.upload` | Envelope R2 fresh/replay compatível com Flutter, usando tamanho medido. Review G5 aprovado; C0 informou deploy v17. | `06-answer-finalize.md` |
 | Formulários → resposta anônima → responder/editar/mídia | Guarda local particionada projeto/conta, segredo32bytes antes do RPC, open/save/submit/edit e mídia anônima; wiring entregue a C0/G6. | `07-anonymous-edit.md` |
 | Formulários → Foto → `forms.upload` | Captura web real implementada; lifecycle/bytes tardios/375×600 e200% verificados localmente com port sintético, limite1 preservado. Navegador/câmera física ainda não exercitados. | `08-camera-result.md` |
+| Formulários → diretório → tabela → H25 | Alça48 com alvo separado de ordenar; largura fixa sem alça. Pintura aprovada preservada após regressão detectada na integração. Residual de sort estreito em Suporte não certificado. | `10-h25-inspecao.md`, `12-h25-paint.md` |
 
 ## Commits
 
@@ -37,6 +38,8 @@ T0 `10:52:16 BRT`; execução até `14:52:16`; handoff final até `15:02:16`; aj
 - `d3d3d5d63`: captura Foto, 182 testes aprovados no pacote.
 - `a7b081674`: merge da base C0 ciclo150.
 - `725155ec0` + `d4c71277d`: purge de câmera durante descarte da tela, revisão G4 reproduzida e corrigida; 9 testes aprovados, um novo, sem somar os oito anteriores. Evidência `09-camera-purge.md` e logs.
+- `54c892ebc` + `f0e148a70`: H25 e preservação da pintura após regressão integrada; followup21tabela+16goldens aprovados sem regravar PNG.
+- `0c92198a0`: delta de memória proposto para aplicação C0, fonte antes de projeção, sem nova ADR.
 
 Todos os commits acima foram enviados à branch remota. O SHA final deste handoff será informado no fechamento, sem usar um SHA do próprio arquivo como certificação circular.
 
@@ -48,6 +51,8 @@ E2E UI executado por G3: **0**. Build, testes isolados, API smoke e tela aberta 
 
 Evidência externa reutilizável, efetivamente lida: manifesto G0 `../r08-ambiente-runtime/forms-question-image-api-smoke-manifest.md`. Question-image teve save/prepare/PUT/finalize/replay/resolve/GET e reload do binding PASS via API, fixture preservada. Não inclui a resposta Foto/Galeria, negação cross-tenant real, exclusão/expiração remota nem uso pela UI Flutter. C0 implantou lote57 e depois form-media v17; implantação não é prova da ação inteira.
 
+Atualização externa posterior efetivamente lida por SHA `893a3e2a3`: G0 `forms-answer-image-api-v20-20260912.log`, medido13:50BRT, form-media v20. Resposta identificada Foto: preflight/open, prepare, PUT68bytes, finalize/replay e save draft PASS via API. Autorizar download falhou400 `media_request_failed`; GET e reopen não executados. Logout local204; fixture preservada sem cleanup. Isso avança upload/persistência de resposta separadamente de question-image e não certifica download, reload, câmera física ou UI. Investigação é C0/G5/G0; G3 não repetiu o smoke.
+
 ## Pendências e próximo gate
 
 1. Captura Foto local-green: integrar/build e provar no navegador pelo runtime G0/C0. Mantém Foto1; não amplia cardinalidade por fonte antiga. Propostas focais em `deltas.json`, sem aplicação direta ao inventário.
@@ -56,6 +61,8 @@ Evidência externa reutilizável, efetivamente lida: manifesto G0 `../r08-ambien
 4. Mídia: prova real de answer-image identificada/anônima, expiração e exclusão continua com G0/C0. Fixtures preservadas; G3 não fará DELETE/cleanup.
 5. H19: C0 registrou pergunta ao Owner sobre elegibilidade dos responsáveis; G5 aguarda contrato nominal. Não criar schema ou converter destinatário de política em autoridade de dose por inferência.
 6. H20: imagem da dose tem campo `media_asset_id` no RPC, mas não tem fluxo de gateway/cliente. Aceite textual de `medication.evidence` permanece separado e preservado.
+7. H25: followup visual deve acompanhar pacote inicial. Colunas80/90 em Suporte ficam com sort32/42 após alça48; C0 aceitou registrar o residual sem ampliar larguras fora do recorte. Não certifica AA global.
+8. Gate memória: proposta concreta `11-memory-delta.md` para C0 aplicar primeiro às fontes e depois às projeções existentes. Validador64artigos; ferramenta12PASS/0FAIL/1SKIP do host. Nenhuma nova ADR inventada.
 
 ## Recursos e memória
 

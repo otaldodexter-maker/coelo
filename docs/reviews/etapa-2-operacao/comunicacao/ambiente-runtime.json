@@ -1,12 +1,12 @@
 {
-  "revision": 20,
+  "revision": 28,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:45:29-03:00",
+  "updatedAt": "2026-09-12T14:03:20-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -67,10 +67,20 @@
       "smoke API autorizado executado uma vez: identified draft + question-image prepare/PUT/finalize/replay/resolve/reload PASS; fixture preservada e logout local 204",
       "origin/dev 2441725d5 incorporado por merge; build QA integrado 615aaa6f verde e servidor 3014 restaurado no PID 44404",
       "lote 58 RED comportamental e9a3dc18d executado uma vez no baseline: 4 ok/7 not ok de 11, rollback, native 0 e wrapper 1; sem apply",
-      "lote 58 140550 aplicado somente no espelho após ACK: GREEN 4/4+11/11 e regressões 23/23+30/30, total único 68/68; slot devolvido"
+      "lote 58 140550 aplicado somente no espelho após ACK: GREEN 4/4+11/11 e regressões 23/23+30/30, total único 68/68; slot devolvido",
+      "smoke API answer-image preparado sem rede/mutação: reutiliza occurrence/photo existente, preserva respostas, exige edit_secret externo quando anônimo e não possui cleanup",
+      "descoberta API read-only: zero formulários identificados ativos com photo/gallery e zero occurrences candidatas; logout local 204",
+      "fixture answer-image identificada criada uma unica vez com revisao G5/C0: form publicado, application e schedule ativos; IDs server-side e receipts preservados",
+      "primeira assertion rejeitou corretamente o oraculo de IDs de input; resume no mesmo recurso capturou IDs server-side sem recriar form/publicacao",
+      "C0 confirmou exatamente uma occurrence aberta e uma participation elegivel; primeira tentativa principal falhou P0002 sem mutacao e segunda credencial canonica abriu/reutilizou um response draft",
+      "review focal G0 do fix 49bd4c83d aprovado: list_my_principal_contexts retorna linhas diretas com person_id, people-link mantem precedencia, erros/vazio/misto negam e ownership segue no backend",
+      "C0 integrou o fix e obteve Deno 56/56 com deno.json; form-media v18 ativa aceitou o ator interno e o prepare HTTP 200 materializou/reproduziu um asset no mesmo draft",
+      "C0 configurou somente COELO_FORMS_MEDIA_PROVIDER=r2; retomada idempotente reutilizou o mesmo asset e confirmou envelope R2, sem PUT por validade insegura",
+      "fix TTL 5927718f2 aprovado, integrado e implantado na form-media v20; mesmo asset passou prepare/PUT/finalize/replay/save com bytes e SHA medidos",
+      "form-media v21 corrigiu argumento nulo do download; modo download-only com reload_request_id pré-persistido passou GET exato e reopen da resposta version2, exit0"
     ],
     "pending": [
-      "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
+      "prova UI de login, leitura autorizada e persistencia apos reload segue bloqueada porque CUA nao atualiza os controllers Flutter; a prova API answer-image fechou, mas nao promove UI"
     ],
     "tests": [
       "docker version: client/server 29.7.2",
@@ -107,6 +117,15 @@
       ,"GET /login 200/1020 bytes e flutter_bootstrap.js 200/9975 bytes após restart PID 44404"
       ,"moments_withdraw_permission_behavior_v1_test.sql RED: 4 ok/7 not ok de 11, finish failed 7, rollback, native 0/wrapper 1"
       ,"lote58 GREEN: estrutural 4/4, comportamental 11/11, regressões Moments 23/23 e 30/30; total 68/68, rollback e native/wrapper 0"
+      ,"forms-answer-image-api-smoke.py: AST PASS, dry-run READY_NO_MUTATION, guard inválido para antes da auth; discovery HTTP 200 encontrou 0 candidatos e logout 204"
+      ,"forms-answer-image-fixture.py: preflight read-only auth/audience/deduplicacao 200 e logout204; execute criou/publicou um form e parou fail-closed no oraculo de IDs; resume revisado criou exatamente uma application e um schedule, ambos HTTP200"
+      ,"form_get_editor pos-resume: form version2, application version1, schedule version1 active; section/item server-side confirmados; sem worker pelo G0"
+      ,"answer-image tentativa1 com qa-r06-principal: occurrence 500/P0002, zero response/asset; tentativa2 com qa-r03 canonico: auth/occurrence/open draft 200, prepare Edge v17 401 unauthorized, response bb1f3443 preservada e asset nulo"
+      ,"form-media v18 integrado: primeira invocacao sem deno.json falhou type-check; comando corrigido passou 56/56, deploy ACTIVE verify_jwt=true e OPTIONS localhost/prod 204, origem externa 403"
+      ,"answer-image retomada unica: auth/occurrence/open draft PASS; prepare HTTP200 asset e47eb9e1, depois prepare:invalid_ticket; PUT/finalize/save/download/reopen nao executados, logout local204"
+      ,"answer-image apos flag R2: mesmo draft/request_ids/asset, prepare HTTP200 e envelope R2; prepare:unsafe_ticket antes do PUT, coerente com expires_at legado em vez da assinatura de 300s; logout local204"
+      ,"answer-image v20: prepare/PUT68B SHA431ced/finalize/replay/save PASS no mesmo asset; download authorize 400 media_request_failed, GET/reopen nao executados, logout local204"
+      ,"download-only v21: fresh open response version2, authorized GET 68B SHA431ced e replay/reopen do mesmo reload ID PASS; exit0, logout local204, sem repetir escrita"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -123,7 +142,7 @@
       "baseline": "140546+140547+140548+140549 materializados e verdes localmente; producao intocada",
       "reportedToC0": true
     },
-    "nextGate": "lote58 devolvido ao C0; aguardar próxima pendência não conflitante, preservando build, baseline e fixtures do smoke"
+    "nextGate": "incorporar origin/dev ciclo180 e, com slot C0, gerar build QA integrado final, reiniciar somente o servidor 3014 e publicar SHA/PID/HTTP sem abrir outro Chrome"
   },
   "resources": {
     "chrome": "aba compartilhada 829822454 marcada para handoff; raiz Chrome 22592; renderers candidatos 41024 e 4624; sem PID exclusivo exposto pela extensao",
@@ -131,14 +150,14 @@
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
     "sql": "slot devolvido ao C0; baseline inclui 140550 local, GREEN/regressões lote58 68/68; produção e ledger intocados",
-    "apiSmoke": "PASS exit 0; form f88005ab-af5e-4aa2-8cf7-f35de4ded376, version 4adae123-1aad-4e1f-a2f4-b59d661bc3d4, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605 preservados; logout local 204; sem DELETE"
+    "apiSmoke": "question-image PASS preservado: form f88005ab-af5e-4aa2-8cf7-f35de4ded376, item b7ac860f-f23a-4b68-b320-d2098abc94e6, asset d25b8baa-efb5-4702-b5e6-ac3084610605; answer-image PASS API preservado: form afa8f922, item95cdf8cf, applicationc87a7e84, schedule5af5a32f, occurrence5762fe8f, participation095d0236, response bb1f3443 version2, asset e47eb9e1; prepare/PUT/finalize/replay/save/download/reopen todos comprovados, sem cleanup"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
+    "head": "3b134d456bde954b3ae3fca7cbc525d77a8d740e",
     "buildSourceSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
-    "publishedSha": "615aaa6f9b60a00a93d6e8c21d1fe58a973bd3a9",
+    "publishedSha": "3b134d456bde954b3ae3fca7cbc525d77a8d740e",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -241,6 +260,46 @@
       "revision": 20,
       "at": "2026-09-12T12:45:29-03:00",
       "summary": "140550 aplicado somente no espelho após ACK; GREEN 4+11 e regressões 23+30 totalizaram 68/68, com rollback; slot devolvido."
+    },
+    {
+      "revision": 21,
+      "at": "2026-09-12T12:56:22-03:00",
+      "summary": "Smoke answer-image preparado; fix G3 integrado/deployado; discovery QA read-only achou zero candidates, sem abrir rascunho ou gerar fixture."
+    },
+    {
+      "revision": 22,
+      "at": "2026-09-12T13:18:00-03:00",
+      "summary": "Fixture identificada unica criada e publicada; oraculo de IDs de input parou fail-closed, foi corrigido por review G5 e resume no mesmo recurso criou uma application e um schedule HTTP200; aguardando worker/lookup exclusivo C0."
+    },
+    {
+      "revision": 23,
+      "at": "2026-09-12T13:30:00-03:00",
+      "summary": "Occurrence/participation unicas confirmadas por C0. Tentativa principal falhou P0002 sem mutacao; credencial canonica passou REST e abriu draft, mas prepare Edge v17 retornou 401. Duas tentativas distintas encerradas e diagnostico preciso enviado ao C0/G5."
+    },
+    {
+      "revision": 24,
+      "at": "2026-09-12T13:33:49-03:00",
+      "summary": "Causa 401 confirmada no lookup people-only da Edge. Resume com cinco request IDs publicado; review focal 49bd4c83d aprovado e deploy permanece exclusivo C0."
+    },
+    {
+      "revision": 25,
+      "at": "2026-09-12T13:42:34-03:00",
+      "summary": "C0 implantou form-media v18 apos 56/56. Retomada unica aceitou ator/draft e criou asset, mas parou antes do PUT por ticket R2 invalido; logout local e preservacao confirmados."
+    },
+    {
+      "revision": 26,
+      "at": "2026-09-12T13:45:49-03:00",
+      "summary": "Flag R2 configurada isoladamente; resume reutilizou o mesmo asset e recebeu envelope R2, mas rejeitou expires_at inseguro antes do PUT. Causa focal enviada ao C0/G5."
+    },
+    {
+      "revision": 27,
+      "at": "2026-09-12T13:51:08-03:00",
+      "summary": "Fix TTL implantado na v20; mesmo asset passou prepare, PUT, finalize/replay e save. Download authorize 400 interrompeu GET/reopen; prova API sanitizada preservada."
+    },
+    {
+      "revision": 28,
+      "at": "2026-09-12T14:03:20-03:00",
+      "summary": "v21 e reload ID pré-persistido fecharam o answer-image API: GET 68 bytes/SHA esperado e reopen da resposta version2 passaram, sem nova escrita ou cleanup."
     }
   ]
 }

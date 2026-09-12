@@ -1,6 +1,6 @@
 ---
 source: "C0 R08; commit d106ee5a5; logs commitados dos ciclos 30/60/90 e anonymous final"
-status: "reviewed-read-only; anonymous-filter-defect-found"
+status: "reviewed-read-only; matrix-and-general-parser-accepted"
 generated_at: "2026-09-12"
 ---
 
@@ -67,3 +67,43 @@ mas ainda não fecham a matriz como prova comparativa:
 
 O C0 e o G8 receberam essa distinção. Nenhum teste foi reexecutado nesta
 revisão somente leitura.
+
+## Estado às 14h00
+
+A matriz de `7c2735a61` corrige os três pontos: compara o sufixo canonicalizado
+do marcador com o caminho canonicalizado da suíte, devolve o contador real
+`loaderMatched` e usa `uniqueDisplayKeys`/`displayKeyCollisions`. O diagnóstico
+é 8/11/11 loaders; no ciclo 30 os outros dois eventos ocultos são `setUpAll` e
+`tearDownAll`, portanto não devem ser chamados de loaders. O documento atual
+foi reescrito sem a tabela obsoleta. Matriz aceita sem rerun Flutter.
+
+O parser geral introduzido em `e22e4c126` ainda repete a comparação entre nome
+absoluto e caminho canonicalizado e classifica os 11 loaders do ciclo 90 como
+`hidden`. A correção solicitada é aplicar a mesma igualdade canonicalizada e
+priorizar `loading` antes de `hidden` na classificação exclusiva. Esse parser
+geral permanece pendente; a matriz aceita não depende dele.
+
+O corretivo `122293fc6`, documentado em `29528d150`, aplica exatamente essa
+regra no parser geral: canonicaliza o sufixo após `loading ` e classifica loader
+antes de hidden. A lógica está aceita por inspeção.
+
+Correção de proveniência: a validação sobre o ciclo 90 recebeu manualmente
+`--exit-code 1`, embora a fonte registre sucesso/exit 0. Portanto seus 422
+passed, 11 loading, 0 hidden e 0 órfãos validam a extração, mas não validam a
+preservação do exit. A prova do parser geral permanece pendente até reprocessar
+o ciclo 180 com seu arquivo de exit real, hash do input e metadado
+`done/success`. Nenhum Flutter deve ser executado para isso.
+
+## Parecer final do ciclo 180
+
+O conjunto `0a7b0ad27321cccc80df393d1b6566563d73e072` e
+`bd192fdbcea30ddc4e072c167a901fd8ae18caf5` fecha a prova sem nova execução
+Flutter. O SHA-256 gravado coincide com o JSONL integrado; o evento terminal é
+`success=false`, `time=97850`; a saída nativa é 1; e as contagens são 411
+passed, 4 failed, 1 skipped, 4 errors, 16 loading, 6 hidden e nenhum `done`
+órfão. A base abreviada no resultado é desambiguada pelo SHA completo no
+documento de fase. C0 confirmou a mesma fonte e aceitou essa representação.
+
+Parecer: matriz e parser geral aprovados para merge. O aviso do hook RTK e os
+quatro eventos de erro permanecem classificados como entradas desconhecidas;
+isso é relato fiel da fonte, não sucesso do lote.
