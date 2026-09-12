@@ -1,8 +1,8 @@
 {
  "grupo": "estrutura",
- "revision": 78,
+ "revision": 79,
  "round": "E2-R08-20260912",
- "updatedAt": "2026-09-12T11:48:00-03:00",
+ "updatedAt": "2026-09-12T12:05:00-03:00",
  "app": "Codex",
  "modelo": "Luna (esforco medio)",
  "conversa": "R07 · Estrutura (G1)",
@@ -29,7 +29,7 @@
   "feito": "origin/dev integrado por C0; posse nominal do golden confirmada; Criar modelo migrou para SuperadminFormActionFooter ancorado e foi publicado; teste focal Flutter 22/22 PASS (PID 35588, exit 0); contrato de fixture sem IDs reais e manifest nominal dos 45 PNGs A preparados; groups.location ganhou consumidor de criação atômica + saveComposition com recibo/retry, analyze focal PASS.",
   "pendente": "execucao do teste widget preparado de groups.location na fila Flutter; runtime/Chrome para usar a fixture transacional de Avaliacoes; gates de Avaliacoes e grupos; comparacao/regravacao dos PNGs A.",
   "sha": "rodape: a7ebeccf8; contrato de fixture: cc79cbac8; manifest PNG A: 1fe5c9a22; teste focal sera publicado neste checkpoint.",
-  "testes": "PASS: flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1, 22/22, PID 35588, exit 0; analyze focal de groups.location e teste de widget preparados PASS; execucao Flutter do novo teste aguarda slot."
+  "testes": "PASS: flutter test test/features/activities/presentation/activity_directory_page_test.dart --concurrency=1, 22/22, PID 35588, exit 0; dart analyze focal do codigo e do teste groups.location sem issues. PENDENTE: flutter test test/features/groups/presentation/group_form_page_test.dart --concurrency=1, previsao 2–3 min, sem golden.",
   "proximoGate": "Fixture G5 53b9c6d29 preparada (turma, vinculos, aluno, periodo ativo e diario; rollback). Usar Chrome somente quando C0 conceder para salvar/ativar e abrir o diario; groups.location tem RPC/repo testado, mas ainda sem consumidor no formulario e fica apos Avaliacoes."
  },
  "usuarioSintetico": {
