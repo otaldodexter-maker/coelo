@@ -211,6 +211,7 @@ import '../../features/meal_plans/presentation/meal_plan_wizard_page.dart';
 import '../../features/forms/presentation/directory/forms_directory_page.dart';
 import '../../features/forms/data/forms_directory_reader.dart';
 import '../../features/forms/data/forms_editor_context.dart';
+import '../../features/forms/data/forms_anonymous_edit_secret_store.dart';
 import '../../features/forms/presentation/directory/forms_schedule_dialog.dart';
 import '../../features/forms/presentation/overview/forms_overview_page.dart';
 import '../../features/forms/presentation/operations/forms_operations_page.dart';
@@ -496,6 +497,7 @@ GoRouter createSuperadminRouter({
   FormsDirectoryReader? formsDirectoryReader,
   MediaReader? formsMediaReader,
   SuperadminMediaScope? formsMediaScope,
+  FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets,
   PrincipalRuntimeContextRepository principalRuntimeContextRepository =
       const UnavailablePrincipalRuntimeContextRepository(),
   ProfileAboutRepository? profileAboutRepository,
@@ -2991,6 +2993,9 @@ GoRouter createSuperadminRouter({
                   occurrenceId: state.pathParameters['occurrenceId'],
                   mediaSession: formsMediaScope?.current,
                   mediaReader: formsMediaReader,
+                  anonymousEditSecrets: session.isAuthenticated && !session.isPasswordRecovery
+                      ? formsAnonymousEditSecrets?.call()
+                      : null,
                 ),
               ),
             ),

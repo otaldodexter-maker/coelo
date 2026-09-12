@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R08 G4 9863512b9: confirma save somente apos reload aceito no mesmo contexto; falha/403/swap nao anunciam sucesso. Parser compartilhado le objeto plano/key/type canonico de get_profile_about em vez de retornar vazio. 37PASS/0FAIL/0SKIP em2arquivos, analyze0. H02 dadosoficiais/UIE2E/cross-tenant continuam pendentes; nenhum novo aceite integrado.",
+    "evidencia": "evidence/etapa-2/r08-principal-chat-sistema/profile-contract-proof.md; evidence/etapa-2/r08-principal-chat-sistema/profile-contract-green.jsonl"
+  }
+]

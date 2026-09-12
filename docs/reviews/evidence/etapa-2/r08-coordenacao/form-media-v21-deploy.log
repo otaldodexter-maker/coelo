@@ -1,0 +1,4 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+Bundling Function: form-media
+Deploying Function: form-media (script size: 852 kB)
+{"project_ref":"evvbomzejfijozbtgvpt","functions":["form-media"],"dashboard_url":"https://supabase.com/dashboard/project/evvbomzejfijozbtgvpt/functions","message":"Deployed Functions."}

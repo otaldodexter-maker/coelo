@@ -325,56 +325,91 @@ void main() {
   });
 
   group('leitura autorizada por RPC', () {
-    test('le a pagina, os campos e as secoes do retorno de get_profile_about', () {
+    test('le o objeto plano canonico com key e type devolvidos pela RPC', () {
+      // get_profile_about in the integrated production baseline returns a flat
+      // page and aliases field_key/section_type to key/type. There is no
+      // nested page wrapper in this contract.
       final page = parseProfileAboutReadResponse(
         subject: _institution,
         response: <String, Object?>{
-          'page': <String, Object?>{
-            'id': '22222222-2222-4222-8222-222222222222',
-            'version': 7,
-            'state': 'published',
-          },
+          'id': '22222222-2222-4222-8222-222222222222',
+          'subject_type': 'institution',
+          'subject_id': _institution.subjectId,
+          'version': 8,
+          'state': 'published',
           'fields': [
-            <String, Object?>{
-              'field_key': 'display_name',
-              'value': 'Escola Coelo',
+            {
+              'id': 'field-1',
+              'key': 'display_name',
+              'value': 'Perfil existente',
               'visibility': 'profile_access',
               'origin': 'manual',
             },
           ],
           'sections': [
-            <String, Object?>{
+            {
               'id': '33333333-3333-4333-8333-333333333333',
-              'section_type': 'icon_list',
+              'type': 'icon_list',
               'title': 'Estrutura',
-              'body': '',
+              'body': 'Conteúdo persistido',
               'items': ['Biblioteca'],
               'position': 0,
-              'visibility': 'profile_access',
+              'visibility': 'linked',
               'state': 'published',
               'origin': 'manual',
-              'revision': 3,
             },
           ],
         },
       );
 
       expect(page, isNotNull);
-      expect(page!.version, 7);
+      expect(page!.version, 8);
       expect(page.fields.single.key, ProfileAboutFieldKey.displayName);
-      expect(page.fields.single.value, 'Escola Coelo');
+      expect(page.fields.single.value, 'Perfil existente');
       expect(page.sections.single.type, ProfileAboutSectionType.iconList);
+      expect(page.sections.single.body, 'Conteúdo persistido');
       expect(page.sections.single.items, ['Biblioteca']);
-      expect(page.sections.single.revision, 3);
+      expect(page.sections.single.visibility, ProfileAboutVisibility.linked);
+      expect(page.sections.single.state, ProfileAboutSectionState.published);
     });
 
-    test('pagina nula e ausencia de conteudo, nao falha nem negacao', () {
+    for (final (label, type, id) in [
+      ('different subject id', 'institution', 'other-institution'),
+      ('different subject type', 'unit', _institution.subjectId),
+      ('missing subject id', 'institution', null),
+      ('missing subject type', null, _institution.subjectId),
+    ]) {
+      test('rejects $label in the canonical response', () {
+        expect(
+          () => parseProfileAboutReadResponse(
+            subject: _institution,
+            response: <String, Object?>{
+              'id': 'page-1',
+              'subject_type': type,
+              'subject_id': id,
+              'version': 8,
+              'fields': <Object?>[],
+              'sections': <Object?>[],
+            },
+          ),
+          throwsFormatException,
+        );
+      });
+    }
+
+    test('objeto plano sem versao nao vira ausencia silenciosa de Sobre', () {
       expect(
-        parseProfileAboutReadResponse(
+        () => parseProfileAboutReadResponse(
           subject: _institution,
-          response: <String, Object?>{'page': null, 'fields': [], 'sections': []},
+          response: <String, Object?>{
+            'id': '22222222-2222-4222-8222-222222222222',
+            'subject_type': 'institution',
+            'subject_id': _institution.subjectId,
+            'fields': <Object?>[],
+            'sections': <Object?>[],
+          },
         ),
-        isNull,
+        throwsFormatException,
       );
     });
 

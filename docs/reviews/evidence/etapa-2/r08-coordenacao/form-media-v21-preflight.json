@@ -1,0 +1,30 @@
+{
+  "measured_at": "2026-09-12T13:58:59.078188-03:00",
+  "version": 21,
+  "verify_jwt": true,
+  "bundle_sha256": "d1c15689bf368ddc3c4282637cd95acbde05f25c89378dbbcc2bbcf2de33a526",
+  "deno": {
+    "passed": 56,
+    "failed": 0,
+    "typecheck": true,
+    "nativeExit": 0
+  },
+  "source": "6d0deecd2",
+  "options": [
+    {
+      "origin": "http://localhost:3014",
+      "status": 204,
+      "acao": "http://localhost:3014"
+    },
+    {
+      "origin": "https://superadmin.coelo.me",
+      "status": 204,
+      "acao": "https://superadmin.coelo.me"
+    },
+    {
+      "origin": "https://fora.example",
+      "status": 403,
+      "acao": "null"
+    }
+  ]
+}
