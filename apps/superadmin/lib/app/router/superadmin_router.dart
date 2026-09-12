@@ -2216,6 +2216,7 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    personIdentityRepository: personIdentityRepository,
                     locationCatalogReader: locationCatalogReader,
                     groupLocationCreateRepository: groupLocationCreateRepository,
                     groupLocationCreateEnabled: enableGroupLocationCreate,
@@ -2239,6 +2240,7 @@ GoRouter createSuperadminRouter({
                 ? blockedProductionMutationPage(context)
                 : GroupFormPage(
                     repository: groupRepository,
+                    personIdentityRepository: personIdentityRepository,
                     locationCatalogReader: locationCatalogReader,
                     groupLocationCreateRepository: groupLocationCreateRepository,
                     groupLocationCreateEnabled: enableGroupLocationCreate,

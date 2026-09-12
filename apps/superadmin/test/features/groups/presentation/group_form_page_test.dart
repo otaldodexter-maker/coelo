@@ -6,6 +6,7 @@ import 'package:coelo_superadmin/features/groups/data/fake_group_directory_repos
 import 'package:coelo_superadmin/features/groups/domain/group_directory.dart';
 import 'package:coelo_superadmin/features/groups/domain/group_location_create.dart';
 import 'package:coelo_superadmin/features/groups/presentation/group_form_page.dart';
+import 'package:coelo_superadmin/features/people/domain/person_identity.dart';
 import 'package:coelo_superadmin/features/institutions/data/fake_institution_directory_repository.dart';
 import 'package:coelo_superadmin/features/locations/presentation/location_selection_field.dart';
 import 'package:coelo_superadmin/features/locations/domain/location_catalog_reader.dart';
@@ -20,6 +21,62 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('group member search saves the resolved identity in its hierarchy', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1100));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _PendingGroupRepository(
+      FakeGroupDirectoryRepository(FakeInstitutionDirectoryRepository()),
+    );
+    final identity = _GroupIdentityRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: GroupFormPage(
+          repository: repository,
+          personIdentityRepository: identity,
+          logout: () async => const LogoutResult.success(),
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-continue')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-search-person')));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('group-person-name-field')), '@pessoa-sintetica');
+    await tester.tap(find.byKey(const Key('group-person-save')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Selecionar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-person-save')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('step-convites')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('group-form-save')));
+    await tester.pump();
+
+    final request = repository.requests.single;
+    expect(request.people.single.id, _GroupIdentityRepository.personId);
+    expect(request.people.single.name, 'Pessoa sintética');
+    expect(request.people.single.identifier, '@pessoa-sintetica');
+    expect(identity.query, '@pessoa-sintetica');
+    expect(identity.institutionId, request.record.institutionId);
+    expect(identity.unitId, request.record.unitId);
+    repository.pending.complete(
+      GroupDirectorySaveResult(
+        requestId: request.requestId,
+        steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('does not accept an unresolved group member', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -1157,6 +1214,40 @@ final class _ErrorOnSaveGroupDirectoryRepository implements GroupDirectoryReposi
 
   @override
   Future<void> upsert(GroupRecord record) => _delegate.upsert(record);
+}
+
+final class _GroupIdentityRepository implements PersonIdentityRepository {
+  static const personId = '99000000-0000-4000-8000-000000000001';
+  String? query;
+  String? institutionId;
+  String? unitId;
+
+  @override
+  Future<List<PersonIdentityCandidate>> resolve({
+    required PersonIdentityLookupKind kind,
+    required String query,
+    String? institutionId,
+    String? unitId,
+    String? childContextId,
+  }) async {
+    this.query = query;
+    this.institutionId = institutionId;
+    this.unitId = unitId;
+    return [
+      PersonIdentityCandidate(
+        personId: personId,
+        displayName: 'Pessoa sintética',
+        personType: 'adult',
+        matchedBy: kind,
+        maskedMatch: '@pessoa-sintetica',
+        access: PersonIdentityResolutionAccess.linkOnly,
+      ),
+    ];
+  }
+
+  @override
+  Future<PersonHandleCheck> checkHandle({required String handle, String? personId}) =>
+      throw UnimplementedError();
 }
 
 final class _PendingGroupRepository implements GroupDirectoryRepository {

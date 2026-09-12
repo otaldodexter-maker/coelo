@@ -17,6 +17,7 @@ import '../../units/domain/unit_handle_availability.dart';
 import '../../locations/domain/location_catalog_reader.dart';
 import '../../locations/domain/location_selection_source.dart';
 import '../../locations/presentation/location_selection_field.dart';
+import '../../people/domain/person_identity.dart';
 import '../domain/group_directory.dart';
 import '../domain/group_location_create.dart';
 
@@ -132,6 +133,7 @@ final class GroupFormPage extends StatefulWidget {
     this.locationCatalogReader = const UnavailableLocationCatalogReader(),
     this.groupLocationCreateRepository = const UnavailableGroupLocationCreateRepository(),
     this.groupLocationCreateEnabled = false,
+    this.personIdentityRepository = const UnavailablePersonIdentityRepository(),
     super.key,
   });
 
@@ -152,6 +154,7 @@ final class GroupFormPage extends StatefulWidget {
   final LocationCatalogReader locationCatalogReader;
   final GroupLocationCreateRepository groupLocationCreateRepository;
   final bool groupLocationCreateEnabled;
+  final PersonIdentityRepository personIdentityRepository;
 
   @override
   State<GroupFormPage> createState() => _GroupFormPageState();
@@ -1259,6 +1262,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                 _dirty = true;
               });
             }
+
             if (WidgetsBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
               WidgetsBinding.instance.addPostFrameCallback((_) => acceptSelection());
             } else {
@@ -1903,7 +1907,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     final result = await _showPersonDialog(
       title: person == null ? 'Cadastrar pessoa' : 'Editar pessoa',
       initialName: person?.name,
-      initialIdentifier: person?.identifier,
+      initialIdentifier: person?.id,
       initialRole: person?.role,
     );
     if (result == null) return;
@@ -1911,7 +1915,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       if (person == null) {
         _people.add(
           _GroupPersonBinding(
-            id: 'person-pending-${DateTime.now().millisecondsSinceEpoch}',
+            id: result.id,
             name: result.name,
             identifier: result.identifier,
             role: result.role,
@@ -1935,7 +1939,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     final result = await _showPersonDialog(
       title: item == null ? 'Adicionar profissional/admin' : 'Editar profissional/admin',
       initialName: item?.name,
-      initialIdentifier: item?.identifier,
+      initialIdentifier: item?.id,
       initialRole: item?.role,
       showProfile: true,
       initialProfile: item?.note,
@@ -1945,7 +1949,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       if (item == null) {
         _professionals.add(
           _GroupPersonBinding(
-            id: 'professional-pending-${DateTime.now().millisecondsSinceEpoch}',
+            id: result.id,
             name: result.name,
             identifier: result.identifier,
             role: result.role,
@@ -1966,16 +1970,37 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   Future<void> _searchAndInvitePerson() async {
+    final institutionId = _selectedInstitution?.id;
+    final unitId = _selectedUnit?.id;
+    if (institutionId == null || unitId == null) return;
+    final identityRepository = widget.personIdentityRepository;
     final result = await showDialog<_GroupPersonBinding>(
       context: context,
       barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
-      builder: (dialogContext) => const _GroupPersonDialog(mode: 'search', title: 'Buscar usuário'),
+      builder: (dialogContext) => _GroupPersonDialog(
+        mode: 'search',
+        title: 'Buscar usuário',
+        identityRepository: identityRepository,
+        institutionId: institutionId,
+        unitId: unitId,
+      ),
     );
-    if (result == null) return;
+    if (!mounted ||
+        _saveContextInvalidated ||
+        result == null ||
+        institutionId != _selectedInstitution?.id ||
+        unitId != _selectedUnit?.id ||
+        !identical(identityRepository, widget.personIdentityRepository)) {
+      return;
+    }
     setState(() {
+      if (_people.any((person) => person.id == result.id) ||
+          _professionals.any((person) => person.id == result.id)) {
+        return;
+      }
       _people.add(
         _GroupPersonBinding(
-          id: 'person-pending-${DateTime.now().millisecondsSinceEpoch}-found',
+          id: result.id,
           name: result.name,
           identifier: result.identifier,
           role: result.role,
@@ -2161,6 +2186,9 @@ final class _GroupPersonDialog extends StatefulWidget {
     this.initialProfile,
     this.showProfile = false,
     this.allowedProfiles,
+    this.identityRepository = const UnavailablePersonIdentityRepository(),
+    this.institutionId,
+    this.unitId,
   });
 
   final String mode;
@@ -2171,6 +2199,9 @@ final class _GroupPersonDialog extends StatefulWidget {
   final String? initialProfile;
   final bool showProfile;
   final List<String>? allowedProfiles;
+  final PersonIdentityRepository identityRepository;
+  final String? institutionId;
+  final String? unitId;
 
   @override
   State<_GroupPersonDialog> createState() => _GroupPersonDialogState();
@@ -2181,6 +2212,48 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
   late final TextEditingController _identifierController;
   late _GroupRoleType _role;
   String _profile = 'Observador';
+  PersonIdentityLookupKind _lookupKind = PersonIdentityLookupKind.handle;
+  List<PersonIdentityCandidate> _candidates = const [];
+  PersonIdentityCandidate? _selected;
+  bool _resolving = false;
+  String? _error;
+
+  Future<void> _resolve() async {
+    final query = _nameController.text.trim();
+    if (_resolving || query.isEmpty) return;
+    final kind = _lookupKind;
+    setState(() {
+      _resolving = true;
+      _error = null;
+      _candidates = const [];
+      _selected = null;
+    });
+    try {
+      final candidates = await widget.identityRepository.resolve(
+        kind: kind,
+        query: query,
+        institutionId: widget.institutionId,
+        unitId: widget.unitId,
+      );
+      if (!mounted || query != _nameController.text.trim() || kind != _lookupKind) return;
+      setState(() {
+        _candidates = candidates
+            .where(
+              (candidate) =>
+                  candidate.access == PersonIdentityResolutionAccess.editGlobal ||
+                  candidate.access == PersonIdentityResolutionAccess.linkOnly,
+            )
+            .toList();
+        if (_candidates.isEmpty) _error = 'Nenhuma pessoa disponível para vincular.';
+      });
+    } on PersonIdentityAccessDeniedException {
+      if (mounted) setState(() => _error = 'Você não tem permissão para buscar esta pessoa.');
+    } on Object {
+      if (mounted) setState(() => _error = 'Não foi possível buscar a pessoa. Tente novamente.');
+    } finally {
+      if (mounted) setState(() => _resolving = false);
+    }
+  }
 
   @override
   void initState() {
@@ -2212,12 +2285,53 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         children: [
           Text(dialogMessage),
           const SizedBox(height: CoeloSpacing.space4),
+          if (widget.mode == 'search') ...[
+            CoeloAdminSingleSelectField<PersonIdentityLookupKind>(
+              label: 'Buscar por',
+              value: _lookupKind,
+              options: PersonIdentityLookupKind.values,
+              optionLabel: (kind) => switch (kind) {
+                PersonIdentityLookupKind.handle => '@ usuário',
+                PersonIdentityLookupKind.email => 'E-mail',
+                PersonIdentityLookupKind.phone => 'Celular',
+                PersonIdentityLookupKind.cpf => 'CPF',
+                PersonIdentityLookupKind.name => 'Nome',
+              },
+              onChanged: (kind) => setState(() {
+                _lookupKind = kind;
+                _selected = null;
+                _candidates = const [];
+                _error = null;
+              }),
+            ),
+            const SizedBox(height: CoeloSpacing.space4),
+          ],
           CoeloFormTextField(
             fieldKey: const Key('group-person-name-field'),
             controller: _nameController,
             labelText: widget.mode == 'search' ? 'Identificador' : 'Nome',
             prefixIcon: Icons.search_rounded,
+            errorText: _error,
+            onChanged: (_) => setState(() {
+              _selected = null;
+              _candidates = const [];
+              _error = null;
+            }),
           ),
+          if (widget.mode == 'search')
+            for (final candidate in _candidates)
+              CoeloStatePanel(
+                key: Key('group-person-candidate-${candidate.personId}'),
+                title: candidate.displayName,
+                message: candidate.maskedMatch,
+                icon: _selected?.personId == candidate.personId
+                    ? Icons.check_circle_outline
+                    : Icons.person_outline,
+                actionLabel: _selected?.personId == candidate.personId
+                    ? 'Selecionado'
+                    : 'Selecionar',
+                onAction: () => setState(() => _selected = candidate),
+              ),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget.mode != 'search')
             CoeloFormTextField(
@@ -2255,21 +2369,52 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
       ),
       primaryAction: FilledButton(
         key: const Key('group-person-save'),
-        onPressed: () {
-          final name = _nameController.text.trim();
-          final identifier = _identifierController.text.trim();
-          if (name.isEmpty && identifier.isEmpty) return;
-          Navigator.of(context).pop(
-            _GroupPersonBinding(
-              id: 'person-${DateTime.now().millisecondsSinceEpoch}',
-              name: name.isEmpty ? identifier : name,
-              identifier: identifier.isEmpty ? name : identifier,
-              role: _role,
-              note: widget.showProfile ? _profile : null,
-            ),
-          );
-        },
-        child: Text(widget.mode == 'search' ? 'Incluir usuário' : 'Salvar'),
+        onPressed: _resolving
+            ? null
+            : () {
+                if (widget.mode == 'search') {
+                  final selected = _selected;
+                  if (selected == null) {
+                    unawaited(_resolve());
+                    return;
+                  }
+                  Navigator.of(context).pop(
+                    _GroupPersonBinding(
+                      id: selected.personId,
+                      name: selected.displayName,
+                      identifier: selected.maskedMatch,
+                      role: _role,
+                    ),
+                  );
+                  return;
+                }
+                final name = _nameController.text.trim();
+                final identifier = _identifierController.text.trim();
+                if (!RegExp(
+                  r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',
+                ).hasMatch(identifier)) {
+                  setState(() => _error = 'Informe uma pessoa existente ou use a busca.');
+                  return;
+                }
+                Navigator.of(context).pop(
+                  _GroupPersonBinding(
+                    id: identifier,
+                    name: name.isEmpty ? identifier : name,
+                    identifier: identifier.isEmpty ? name : identifier,
+                    role: _role,
+                    note: widget.showProfile ? _profile : null,
+                  ),
+                );
+              },
+        child: Text(
+          widget.mode == 'search'
+              ? _resolving
+                    ? 'Buscando…'
+                    : _selected == null
+                    ? 'Buscar'
+                    : 'Incluir usuário'
+              : 'Salvar',
+        ),
       ),
     );
   }

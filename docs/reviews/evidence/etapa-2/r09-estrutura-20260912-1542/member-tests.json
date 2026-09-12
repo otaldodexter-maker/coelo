@@ -1,0 +1,36 @@
+{
+  "round": "E2-R09-20260912-1542",
+  "actionIds": ["groups.members"],
+  "environment": "Windows; Flutter local; worktree G1; repositories doubles nos widgets",
+  "red": {
+    "command": "flutter test test/features/groups/presentation/group_form_page_test.dart --plain-name 'does not accept an unresolved group member' --concurrency=1 --reporter expanded",
+    "exitCode": 1,
+    "pass": 0,
+    "fail": 1,
+    "failure": "Expected exactly one group-person-dialog; found 0: dialog closed accepting @nao-resolvido without resolving an identity"
+  },
+  "greenFocal": {
+    "command": "flutter test test/features/groups/presentation/group_form_page_test.dart --plain-name 'group member' --concurrency=1 --reporter expanded --no-pub",
+    "exitCode": 0,
+    "pass": 2,
+    "fail": 0
+  },
+  "greenRegression": {
+    "command": "flutter test test/features/groups/presentation/group_form_page_test.dart --concurrency=1 --reporter expanded --no-pub",
+    "exitCode": 0,
+    "pass": 30,
+    "fail": 0,
+    "skipped": 0,
+    "reportedDurationSeconds": 13,
+    "note": "Includes both focal cases; do not add focal rerun counts. Covers form contexts, retry, hierarchy, 200% text and existing atomic Local consumer."
+  },
+  "analysis": {
+    "command": "dart analyze lib/features/groups/presentation/group_form_page.dart lib/app/router/superadmin_router.dart test/features/groups/presentation/group_form_page_test.dart",
+    "exitCode": 0,
+    "result": "No issues found!",
+    "resolved": "2 curly_braces_in_flow_control_structures infos from first analysis"
+  },
+  "notExecuted": ["production UI", "real persistence/reload", "remote member negative", "goldens"],
+  "newVerifiedActions": [],
+  "memory": "no-op; fixes existing identity contract, no new role or hierarchy rule"
+}
