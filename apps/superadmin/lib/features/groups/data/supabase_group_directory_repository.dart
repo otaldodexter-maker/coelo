@@ -258,9 +258,9 @@ GroupRecord _record(Map<String, dynamic> row) {
           displayName: item['display_name'] as String? ?? '',
           origin: item['origin'] as String? ?? 'group',
           inherited: item['inherited'] == true,
-          profileId: profile['id'] as String? ?? '',
-          profileCode: profile['code'] as String? ?? '',
-          profileName: profile['name'] as String? ?? '',
+          profileId: item['profile_id'] as String? ?? profile['id'] as String? ?? '',
+          profileCode: item['profile_code'] as String? ?? profile['code'] as String? ?? '',
+          profileName: item['profile_name'] as String? ?? profile['name'] as String? ?? '',
           capabilities: _strings(item['capabilities']),
           restrictions: _strings(item['restrictions']),
         );

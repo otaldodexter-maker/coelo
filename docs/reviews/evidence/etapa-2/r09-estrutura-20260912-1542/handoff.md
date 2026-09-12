@@ -1,10 +1,52 @@
 ---
 source: docs/reviews/etapa-2-operacao/comunicacao/coordenacao.json; docs/reviews/etapa-2-operacao/next-round/R09-backlog.md; codigo e evidencias R08 citados abaixo
-status: gate-ui-bloqueado-por-runtime
+status: consumidor-membros-corrigido-local-gate-ui-pendente
 generated_at: 2026-09-12
 ---
 
 # G1 — primeira fatia da nova R09
+
+## Atualizacao apos continuidade solicitada pelo Owner
+
+A mesma fatia Turmas agora inclui correcao de `groups.members`: busca usa
+`PersonIdentityRepository.resolve`, mostra candidatos minimamente expostos,
+aceita apenas `editGlobal`/`linkOnly` e preserva o UUID retornado. Consulta
+obsoleta e retorno em contexto de formulario alterado nao viram inclusao.
+As duas rotas produtivas de Turmas recebem o repository existente; nenhum
+composition root, SQL, grant ou RPC foi alterado. Cadastro manual/profissional
+preserva o ID global informado e exige formato UUID, em vez de fabricar ID.
+Isso nao cria pessoa global: o servidor continua exigindo identidade ativa.
+
+Segundo defeito da mesma cadeia corrigido: `_record` esperava perfil aninhado,
+mas `group_management_payload` vigente (`20260912180000:714`) devolve
+`profile_id/profile_code/profile_name` planos. O papel ficava vazio e a
+hidratacao de Membros ignorava a pessoa ao reabrir. Parser agora prioriza os
+campos produtivos, preservando a compatibilidade aninhada. Teste novo RED
+esperava guardian e recebeu vazio; GREEN do repository 5 PASS/0 FAIL e analyze
+sem issues. Nenhuma repeticao da suite de formulario, nem mudanca de backend.
+
+Regressao nova reproduziu a falha antes da correcao (0 PASS/1 FAIL). Depois:
+2 PASS focais, incluidos nos 30 PASS/0 FAIL da regressao do formulario (13 s,
+exit0); analyze dos tres arquivos sem issues. `member-tests.json` registra
+comandos/resultados e limites. Slot Flutter liberado depois da regressao.
+Nao regravar goldens nem repetir suites verdes; proximo gate e a UI real.
+
+Contrato do lookup170700: exige `people.create`; seus parametros de contexto
+sao auditados, nao filtram os candidatos no corpo inspecionado. O consumidor
+nao afirma autorizacao contextual com base na busca: `superadmin_group_save`
+reautoriza a escrita/hierarquia. G5/C0 devem reconciliar capacidade e papeis
+antes de certificar a acao para usuarios escopados; nenhuma permissao foi
+flexibilizada para tornar o teste verde. Busca sem permissao/indisponivel
+permanece no dialogo com erro honesto.
+
+G5 r80 ja publicou negativas de Avaliacoes e proposta BE de
+`activities.assessment`; diario retido esta sem alunos. Reutilizar
+`r09-realm-interno-20260912-1542/assessment-read-proof.md`, sem repetir API.
+Esse gate continua posterior a Turmas, com diagnostico da fixture por G5/C0.
+
+Os paragrafos abaixo preservam a inspecao inicial; os bloqueios de IDs
+fabricados estao corrigidos localmente pela atualizacao acima. Ainda nao ha
+novo aceite FE verified/BE done/E2E. A transferencia Chrome continua com C0/G0.
 
 Round `E2-R09-20260912-1542`; G1 `01a096ed-b723-78f0-ac64-84ea6b11be8b`,
 host `local`; unico C0 `01a096ed-314b-7c13-a9e0-3e64649e66fc`.
@@ -72,5 +114,6 @@ Memoria: consulta `Search-CoeloKnowledge -Query hierarquia -Audience team`
 executada com Root explicito; projecoes Turmas/Locais e fontes consultadas.
 No-op: nenhuma regra duravel de produto mudou. Projecao antiga de Turmas
 descreve demonstracao local; nao foi usada como prova do backend atual.
-Sem codigo de produto alterado, WIP, segredos ou recursos remotos criados.
-Nao ha polling ou timer; a continuacao depende de follow-up/transferencia C0.
+Na inspecao inicial nao havia codigo alterado; agora o consumidor acima foi
+corrigido/testado. Sem segredos ou recursos remotos criados. Sem polling ou
+timer; proxima prova UI depende de transferencia C0/G0.
