@@ -89,4 +89,7 @@ Primeiro replay G0: 34/35, native 0, wrapper 1 e rollback. Os três casos novos
 do convite expirado passaram; a única falha era a asserção histórica de
 `platform.invites.manage.requires_mfa = true`, incompatível com a migration
 vigente que adiou MFA no MVP e com o caso AAL1 já presente na própria suíte.
-A expectativa foi corrigida para `false`; rerun focal permanece pendente.
+A expectativa foi corrigida para `false`. No recibo G0
+`0a9811a86e94cdca4cc425c85bc1d73042f8dd41`, o rerun focal passou em
+**35/35**, native 0, wrapper 0 e rollback. A falha intermediária permanece
+registrada, sem ser somada ao resultado final.

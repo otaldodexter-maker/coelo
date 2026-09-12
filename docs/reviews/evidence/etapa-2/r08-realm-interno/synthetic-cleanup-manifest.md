@@ -32,7 +32,9 @@ ou mudança porque `CREATE TEMP TABLE AS` não é permitido em transação
 read-only (exit 3). A versão seguinte substitui as quatro temporárias por CTEs;
 essa falha não executou cleanup.
 
-Rerun G0 de `c9662b0ff`: native 0, wrapper 0 e uma linha `ROLLBACK`. As nove
+Rerun G0 de `c9662b0ff`, publicado no recibo
+`0a9811a86e94cdca4cc425c85bc1d73042f8dd41`: native 0, wrapper 0 e uma linha
+`ROLLBACK`. As nove
 categorias retornaram contagem zero no espelho, sem e-mails, IDs ou segredos no
 output e sem DML persistente. Isso valida a forma read-only do preview; não
 autoriza nem executa a limpeza futura.

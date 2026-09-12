@@ -1,7 +1,7 @@
 ---
 title: "R08 G5 — fixtures transacionais para G1 e G3"
 source: "contratos G1 cc79cbac8 e G3; suítes SQL vigentes"
-status: "preparado; execução focal pendente no espelho"
+status: "fixture G1 aprovada no espelho; fixture G3 reutilizada sem execução duplicada"
 generated_at: "2026-09-12T11:10:17-03:00"
 ---
 
@@ -21,8 +21,10 @@ estendida, ainda sob `begin`/`rollback`, com:
 - criação do diário com exatamente uma linha de aluno.
 
 O plano passa de 47 para 52. Os UUIDs usam apenas o prefixo sintético `8d20` e
-nenhuma credencial. A suíte deve ser executada isoladamente no espelho antes
-de G1 reutilizar a forma no runtime; não há mutação remota autorizada aqui.
+nenhuma credencial. O recibo G0
+`0a9811a86e94cdca4cc425c85bc1d73042f8dd41` registra **52/52**, native 0,
+wrapper 0 e rollback na base materializada pós-lotes 49–55. Não há mutação
+remota autorizada aqui, e esta frente não soma o replay como execução própria.
 
 ## G3 — Local e mídia de Formulários
 

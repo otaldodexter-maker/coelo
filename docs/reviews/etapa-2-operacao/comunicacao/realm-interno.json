@@ -1,6 +1,6 @@
 {
   "grupo": "realm-interno",
-  "revision": 53,
+  "revision": 54,
   "round": "E2-R08-20260912",
   "updatedAt": "2026-09-12T11:10:17.4386248-03:00",
   "app": "Codex",
@@ -768,6 +768,27 @@
         "pgTAP": "não executado por G5; espelho sob posse do G0"
       },
       "primeiroGate": "aguardar resultado ACL/RLS do G0 e revisar qualquer falha antes de propor novo SQL"
+    },
+    "checkpoint11h35": {
+      "quando": "2026-09-12T11:35:00-03:00",
+      "feito": [
+        "ACL/RLS pós-lotes 49–55 aprovada pelo G0: 22/22 + 46/46 + 4/4 + 16/16, native/wrapper 0 e rollback; preflight final 20/20; recibo b1ec76b120d62557e457749adc100940c0c039c1.",
+        "Fixture G1 de avaliações aprovada no espelho em 52/52, native/wrapper 0 e rollback.",
+        "Fixture G2 de convite expirado: primeiro replay 34/35 isolou expectativa histórica de MFA; após alinhamento à ADR 0034, rerun focal 35/35, native/wrapper 0 e rollback.",
+        "Manifesto futuro de limpeza validado read-only: a primeira forma falhou fechada antes de consultar; a forma CTE passou com nove contagens zero, native/wrapper 0 e rollback, sem IDs, e-mails, segredos ou DML.",
+        "Resultados G1/G2/manifesto publicados pelo G0 no recibo 0a9811a86e94cdca4cc425c85bc1d73042f8dd41; G5 não os reexecutou nem os soma como execução própria."
+      ],
+      "pendente": [
+        "C0 revisar/aplicar o candidato H09 primeiro no espelho, executar seus seis casos, fazer backup e somente então decidir aplicação forward-only em produção.",
+        "Após liberação nominal do slot SQL, G0 executar sem duplicidade as suítes compartilhadas de anexos de chat plan 28 e worker claims plan 3.",
+        "Publicar handoff final G5 e solicitar ao C0 nova pendência não conflitante somente depois desses recibos."
+      ],
+      "testes": {
+        "executadosPorG5": "Deno chat-media 6/6 local; nenhum pgTAP executado por G5",
+        "recebidosDoG0": "ACL 22+46+4+16; preflight 20; avaliações 52; convites 35; manifesto read-only, todos finais native/wrapper 0 e rollback",
+        "falhaIntermediaria": "convites 34/35 por expectativa histórica de MFA; corrigida e preservada como evidência, sem somar reruns"
+      },
+      "primeiroGate": "aguardar C0 concluir H09 e liberar o espelho para a prova focal de chat"
     }
   }
 }
