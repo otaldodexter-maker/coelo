@@ -1,8 +1,8 @@
 {
   "grupo": "suites",
-  "revision": 13,
+  "revision": 14,
   "round": "E2-R07-20260911",
-  "updatedAt": "2026-09-12T00:14:00-03:00",
+  "updatedAt": "2026-09-12T00:28:00-03:00",
   "app": "Claude",
   "modelo": "Opus 5 (esforco medio)",
   "conversa": "R07 · Suites pre-existentes (G8)",
@@ -47,8 +47,8 @@
     "golden institution_directory_pagination_disabled_light_1440 (0,21%, 2 goldens no mesmo teste: tambem pagination_page_size_open_light_1440): a diferenca e so o launcher do chat (bbox 1291,750-1412,802): golden guardado tem o circulo 'Mens.' com balao; render atual tem a pilula 'Mensagens' com icone de enviar. Nao e ruido de renderizacao; e a mesma causa de P53 (launcher Mensagens), que o Owner deixou sem resposta = B (manter golden e registrar). Nao regravado."
   ],
   "pendente": [
-    "censo da suite completa -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md (em execucao a partir de 00:15)",
-    "classificar as 12 falhas de test/app fora dos arquivos nomeados com o log expandido do censo"
+    "censo da suite completa em execucao (JSON) desde 00:25 -> docs/reviews/evidence/etapa-2/r07-suites/censo-suite-completa.md",
+    "classificar as falhas de test/app fora dos arquivos nomeados a partir do JSON"
   ],
   "commitsPublicados": [
     "d5da3dfaf abertura",
@@ -205,5 +205,8 @@
       "Outra conversa edita principal_for_you, principal_happens (marcadores de conflito em principal_happens_preview_page.dart em 20:30) e referencias do coelo-ui neste mesmo checkout; a Fase 0 nao commita esses arquivos. flutter analyze lib acusa esse arquivo enquanto o WIP nao fechar.",
       "Corte do Owner as 17:10 de 10/09 (via coordenacao coelo-af): Fase 0 nao retoma por conta propria; working tree de dev limpo nos caminhos da Fase 0, WIP dos outros grupos permanece identificado no checkout compartilhado."
     ]
-  }
+  },
+  "avisosR07": [
+    "00:21: ao abortar meu primeiro censo (reporter expanded intercala isolates e nao permite censo por diretorio; reiniciado com --reporter json -j 6 as 00:25) executei taskkill /F /IM dart.exe e flutter_tester.exe para limpar os processos do meu flutter test. Isso pode ter derrubado por alguns segundos servidores de analise (MCP dart) ou um flutter test de outra frente que estivesse ativo naquele instante; um flutter test de outra frente iniciado as 00:00 seguia vivo as 00:24. Se alguma frente viu um 'flutter test' morrer ~00:21, a causa fui eu; nao repito o comando por imagem de processo."
+  ]
 }
