@@ -235,6 +235,56 @@ void main() {
     });
   }
 
+  testWidgets('productive composer and preview preserve interleaved block order', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final controller = CircularComposerController(
+      repository: _ComposerRepository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+      initialDraft: const CircularDraft(
+        id: 'circular-ordered',
+        title: 'Circular intercalada',
+        blocks: [
+          CircularTextBlock(id: 'text-before', text: 'Texto antes'),
+          CircularQuestionBlock(
+            id: 'question-middle',
+            prompt: 'Pergunta no meio?',
+            kind: CircularQuestionKind.singleChoice,
+            required: true,
+            options: [
+              CircularQuestionOption(id: 'yes', label: 'Sim'),
+              CircularQuestionOption(id: 'no', label: 'Nao'),
+            ],
+          ),
+          CircularMediaBlock(id: 'media-middle', assetIds: ['ordem.pdf']),
+          CircularTextBlock(id: 'text-after', text: 'Texto depois'),
+        ],
+        audiences: {CircularAudienceKind.families},
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: SuperadminCircularComposerPage(
+            controller: controller,
+            onCancel: () {},
+            onPickFiles: () async {},
+          ),
+        ),
+      ),
+    );
+
+    double top(String key) => tester.getTopLeft(find.byKey(Key(key))).dy;
+    expect(top('circular-editor-text-before'), lessThan(top('circular-editor-question-middle')));
+    expect(top('circular-editor-question-middle'), lessThan(top('circular-editor-media-middle')));
+    expect(top('circular-editor-media-middle'), lessThan(top('circular-editor-text-after')));
+    expect(top('circular-preview-text-before'), lessThan(top('circular-preview-question-middle')));
+    expect(top('circular-preview-question-middle'), lessThan(top('circular-preview-media-middle')));
+    expect(top('circular-preview-media-middle'), lessThan(top('circular-preview-text-after')));
+  });
+
   testWidgets('admin composer saves and publishes through the existing domain controller', (
     tester,
   ) async {

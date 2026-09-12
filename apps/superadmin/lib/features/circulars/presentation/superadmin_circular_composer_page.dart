@@ -1,5 +1,4 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
@@ -36,7 +35,6 @@ final class SuperadminCircularComposerPage extends StatefulWidget {
 
 final class _SuperadminCircularComposerPageState extends State<SuperadminCircularComposerPage> {
   late final TextEditingController _title;
-  late final TextEditingController _body;
   DateTime? _publishAt;
   int _contextGeneration = 0;
   int _scheduleGeneration = 0;
@@ -45,7 +43,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   void initState() {
     super.initState();
     _title = TextEditingController(text: widget.controller.draft.title);
-    _body = TextEditingController(text: _bodyText(widget.controller.draft));
   }
 
   @override
@@ -55,7 +52,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
     _contextGeneration++;
     _scheduleGeneration++;
     _title.text = widget.controller.draft.title;
-    _body.text = _bodyText(widget.controller.draft);
     _publishAt = null;
   }
 
@@ -64,7 +60,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
     _contextGeneration++;
     _scheduleGeneration++;
     _title.dispose();
-    _body.dispose();
     super.dispose();
   }
 
@@ -161,47 +156,39 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
           maxLength: CircularLimits.titleCharacters,
           onChanged: controller.updateTitle,
         ),
-        const PublicationLabel('Texto da circular'),
-        PublicationTextField(
-          fieldKey: const Key('circular-body'),
-          controller: _body,
-          hintText: 'Escreva a comunicação completa.',
-          maxLength: CircularLimits.bodyCharacters,
-          maxLines: 6,
-          onChanged: controller.updateBody,
+        const PublicationLabel(
+          'Conteúdo da circular',
+          hint: 'texto, mídia e perguntas na ordem de leitura',
         ),
-        PublicationLabel('Anexos', hint: 'até ${CircularLimits.files} · PDF ou imagem'),
+        for (var index = 0; index < draft.blocks.length; index++) ...[
+          _editorBlock(draft.blocks[index], index),
+          const SizedBox(height: CoeloSpacing.space2),
+        ],
         Wrap(
           spacing: CoeloSpacing.space2,
           runSpacing: CoeloSpacing.space2,
-          crossAxisAlignment: WrapCrossAlignment.center,
           children: [
-            SizedBox(
-              width: CoeloSize.touchMin,
-              height: CoeloSize.touchMin,
-              child: OutlinedButton(
-                key: const Key('circular-pick-files'),
-                onPressed: media != null && media.assetIds.length >= CircularLimits.files
-                    ? null
-                    : widget.onPickFiles,
-                style: OutlinedButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(CoeloRadius.md)),
-                ),
-                child: const Tooltip(message: 'Adicionar arquivo', child: Icon(Icons.add_rounded)),
-              ),
+            TextButton.icon(
+              key: const Key('circular-add-text'),
+              onPressed: () => controller.addTextBlock(),
+              icon: const Icon(Icons.notes_rounded),
+              label: const Text('Adicionar texto'),
             ),
-            if (media != null)
-              for (final assetId in media.assetIds)
-                InputChip(
-                  avatar: const Icon(Icons.attach_file_rounded, size: CoeloSize.iconSm),
-                  label: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 220),
-                    child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis),
-                  ),
-                  deleteButtonTooltipMessage: 'Remover arquivo',
-                  onDeleted: () => controller.removeMediaAsset(assetId),
-                ),
+            if (media == null)
+              TextButton.icon(
+                key: const Key('circular-pick-files'),
+                onPressed: widget.onPickFiles,
+                icon: const Icon(Icons.attach_file_rounded),
+                label: const Text('Adicionar mídia'),
+              ),
+            TextButton.icon(
+              key: const Key('circular-add-question'),
+              onPressed: questions.length >= CircularLimits.questions
+                  ? null
+                  : () => controller.addQuestion(CircularQuestionKind.singleChoice),
+              icon: const Icon(Icons.add_rounded),
+              label: const Text('Adicionar pergunta'),
+            ),
           ],
         ),
         const PublicationLabel('Público e contexto'),
@@ -241,28 +228,6 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
               ),
           ],
         ),
-        if (preset == null) ...[
-          const SizedBox(height: CoeloSpacing.space3),
-          for (final question in questions) ...[
-            _QuestionCard(
-              key: ValueKey((controller, question.id)),
-              controller: controller,
-              question: question,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-          ],
-        ],
-        Align(
-          alignment: Alignment.centerLeft,
-          child: TextButton.icon(
-            key: const Key('circular-add-question'),
-            onPressed: questions.length >= CircularLimits.questions
-                ? null
-                : () => controller.addQuestion(CircularQuestionKind.singleChoice),
-            icon: const Icon(Icons.add_rounded),
-            label: const Text('Adicionar pergunta'),
-          ),
-        ),
         const SizedBox(height: CoeloSpacing.space2),
         PublicationRow(
           icon: Icons.calendar_today_outlined,
@@ -287,12 +252,35 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
             padding: const EdgeInsets.only(top: CoeloSpacing.space2),
             child: Text(
               'Circular ${_statusLabel(draft.status)}: as alterações só valem ao publicar de novo.',
-              style: Theme.of(context).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colors.onSurfaceVariant),
             ),
           ),
       ],
     );
   }
+
+  Widget _editorBlock(CircularBlock block, int index) => switch (block) {
+    CircularTextBlock() => _TextBlockCard(
+      key: ValueKey((widget.controller, block.id)),
+      controller: widget.controller,
+      block: block,
+      first:
+          index == widget.controller.draft.blocks.indexWhere((item) => item is CircularTextBlock),
+    ),
+    CircularMediaBlock() => _MediaBlockCard(
+      key: ValueKey((widget.controller, block.id)),
+      controller: widget.controller,
+      block: block,
+      onPickFiles: widget.onPickFiles,
+    ),
+    CircularQuestionBlock() => _QuestionCard(
+      key: ValueKey((widget.controller, block.id)),
+      controller: widget.controller,
+      question: block,
+    ),
+  };
 
   _ResponsePreset? _responsePreset(List<CircularQuestionBlock> questions) {
     if (questions.isEmpty) return _ResponsePreset.readOnly;
@@ -367,6 +355,182 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
   };
 }
 
+final class _TextBlockCard extends StatefulWidget {
+  const _TextBlockCard({
+    required this.controller,
+    required this.block,
+    required this.first,
+    super.key,
+  });
+
+  final CircularComposerController controller;
+  final CircularTextBlock block;
+  final bool first;
+
+  @override
+  State<_TextBlockCard> createState() => _TextBlockCardState();
+}
+
+final class _TextBlockCardState extends State<_TextBlockCard> {
+  late final TextEditingController _text = TextEditingController(text: widget.block.text);
+
+  @override
+  void didUpdateWidget(covariant _TextBlockCard oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_text.text != widget.block.text) _text.text = widget.block.text;
+  }
+
+  @override
+  void dispose() {
+    _text.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final otherCharacters = widget.controller.draft.blocks
+        .whereType<CircularTextBlock>()
+        .where((block) => block.id != widget.block.id)
+        .fold<int>(0, (total, block) => total + block.text.characters.length);
+    return PublicationCard(
+      key: Key('circular-editor-${widget.block.id}'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _BlockActions(
+            label: 'Texto',
+            blockId: widget.block.id,
+            controller: widget.controller,
+            onDelete: widget.controller.draft.blocks.whereType<CircularTextBlock>().length > 1
+                ? () => widget.controller.removeTextBlock(widget.block.id)
+                : null,
+          ),
+          const SizedBox(height: CoeloSpacing.space2),
+          PublicationTextField(
+            fieldKey: widget.first
+                ? const Key('circular-body')
+                : Key('circular-text-${widget.block.id}'),
+            controller: _text,
+            hintText: 'Escreva a comunicação.',
+            maxLength: (CircularLimits.bodyCharacters - otherCharacters).clamp(
+              1,
+              CircularLimits.bodyCharacters,
+            ).toInt(),
+            maxLines: 5,
+            onChanged: (value) => widget.controller.updateTextBlock(widget.block.id, value),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final class _MediaBlockCard extends StatelessWidget {
+  const _MediaBlockCard({
+    required this.controller,
+    required this.block,
+    required this.onPickFiles,
+    super.key,
+  });
+
+  final CircularComposerController controller;
+  final CircularMediaBlock block;
+  final Future<void> Function() onPickFiles;
+
+  @override
+  Widget build(BuildContext context) {
+    final used = controller.draft.blocks
+        .whereType<CircularMediaBlock>()
+        .expand((item) => item.assetIds)
+        .length;
+    return PublicationCard(
+      key: Key('circular-editor-${block.id}'),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          _BlockActions(label: 'Mídia', blockId: block.id, controller: controller),
+          const SizedBox(height: CoeloSpacing.space2),
+          Wrap(
+            spacing: CoeloSpacing.space2,
+            runSpacing: CoeloSpacing.space2,
+            crossAxisAlignment: WrapCrossAlignment.center,
+            children: [
+              SizedBox(
+                width: CoeloSize.touchMin,
+                height: CoeloSize.touchMin,
+                child: OutlinedButton(
+                  key: const Key('circular-pick-files'),
+                  onPressed: used >= CircularLimits.files ? null : onPickFiles,
+                  style: OutlinedButton.styleFrom(padding: EdgeInsets.zero),
+                  child: const Tooltip(
+                    message: 'Adicionar arquivo',
+                    child: Icon(Icons.add_rounded),
+                  ),
+                ),
+              ),
+              for (final assetId in block.assetIds)
+                InputChip(
+                  avatar: const Icon(Icons.attach_file_rounded, size: CoeloSize.iconSm),
+                  label: ConstrainedBox(
+                    constraints: const BoxConstraints(maxWidth: 220),
+                    child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis),
+                  ),
+                  deleteButtonTooltipMessage: 'Remover arquivo',
+                  onDeleted: () => controller.removeMediaAsset(assetId),
+                ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+final class _BlockActions extends StatelessWidget {
+  const _BlockActions({
+    required this.label,
+    required this.blockId,
+    required this.controller,
+    this.onDelete,
+  });
+
+  final String label;
+  final String blockId;
+  final CircularComposerController controller;
+  final VoidCallback? onDelete;
+
+  @override
+  Widget build(BuildContext context) => Row(
+    children: [
+      const Icon(Icons.drag_indicator_rounded),
+      const SizedBox(width: CoeloSpacing.space1),
+      Expanded(
+        child: Text(
+          label,
+          style: Theme.of(context).textTheme.titleSmall?.copyWith(fontWeight: FontWeight.w800),
+        ),
+      ),
+      IconButton(
+        tooltip: 'Mover para cima',
+        onPressed: () => controller.moveBlock(blockId, -1),
+        icon: const Icon(Icons.arrow_upward_rounded),
+      ),
+      IconButton(
+        tooltip: 'Mover para baixo',
+        onPressed: () => controller.moveBlock(blockId, 1),
+        icon: const Icon(Icons.arrow_downward_rounded),
+      ),
+      if (onDelete != null)
+        IconButton(
+          tooltip: 'Excluir',
+          color: Theme.of(context).colorScheme.error,
+          onPressed: onDelete,
+          icon: const Icon(Icons.delete_outline_rounded),
+        ),
+    ],
+  );
+}
+
 final class _QuestionCard extends StatefulWidget {
   const _QuestionCard({required this.controller, required this.question, super.key});
   final CircularComposerController controller;
@@ -398,29 +562,25 @@ final class _QuestionCardState extends State<_QuestionCard> {
   }
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.all(CoeloSpacing.space3),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-    ),
+  Widget build(BuildContext context) => PublicationCard(
+    key: Key('circular-editor-${widget.question.id}'),
     child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        Row(
-          children: [
-            const Icon(Icons.drag_indicator_rounded),
-            const SizedBox(width: CoeloSpacing.space2),
-            const Expanded(child: Text('Pergunta')),
-            IconButton(
-              tooltip: 'Excluir pergunta',
-              color: Theme.of(context).colorScheme.error,
-              onPressed: () => widget.controller.removeQuestion(widget.question.id),
-              icon: const Icon(Icons.delete_outline_rounded),
-            ),
-          ],
+        _BlockActions(
+          label: 'Pergunta',
+          blockId: widget.question.id,
+          controller: widget.controller,
+          onDelete: () => widget.controller.removeQuestion(widget.question.id),
         ),
-        const SizedBox(height: CoeloSpacing.space2),
+        Align(
+          alignment: Alignment.centerRight,
+          child: TextButton.icon(
+            onPressed: () => widget.controller.duplicateQuestion(widget.question.id),
+            icon: const Icon(Icons.copy_outlined),
+            label: const Text('Duplicar'),
+          ),
+        ),
         CoeloFormTextField(
           controller: _prompt,
           labelText: 'Enunciado',
@@ -429,14 +589,111 @@ final class _QuestionCardState extends State<_QuestionCard> {
           onChanged: (value) => widget.controller.updateQuestion(widget.question.id, prompt: value),
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        CoeloAdminToggleField(
-          label: 'Resposta obrigatória',
-          value: widget.question.required,
-          onChanged: (value) =>
-              widget.controller.updateQuestion(widget.question.id, required: value),
+        Wrap(
+          spacing: CoeloSpacing.space2,
+          runSpacing: CoeloSpacing.space2,
+          children: [
+            OutlinedButton.icon(
+              onPressed: () => widget.controller.updateQuestion(
+                widget.question.id,
+                kind: widget.question.kind == CircularQuestionKind.singleChoice
+                    ? CircularQuestionKind.multipleChoice
+                    : CircularQuestionKind.singleChoice,
+              ),
+              icon: Icon(
+                widget.question.kind == CircularQuestionKind.singleChoice
+                    ? Icons.radio_button_checked_rounded
+                    : Icons.check_box_rounded,
+              ),
+              label: Text(
+                widget.question.kind == CircularQuestionKind.singleChoice
+                    ? 'Escolha única'
+                    : 'Múltipla escolha',
+              ),
+            ),
+            OutlinedButton.icon(
+              onPressed: () => widget.controller.updateQuestion(
+                widget.question.id,
+                required: !widget.question.required,
+              ),
+              icon: Icon(
+                widget.question.required
+                    ? Icons.check_box_rounded
+                    : Icons.check_box_outline_blank_rounded,
+              ),
+              label: const Text('Obrigatória'),
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space2),
+        for (final option in widget.question.options)
+          Padding(
+            padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
+                  child: _OptionField(
+                    key: ValueKey((widget.question.id, option.id)),
+                    value: option.label,
+                    onChanged: (value) =>
+                        widget.controller.updateOption(widget.question.id, option.id, value),
+                  ),
+                ),
+                IconButton(
+                  tooltip: 'Remover alternativa',
+                  color: Theme.of(context).colorScheme.error,
+                  onPressed: widget.question.options.length <= CircularLimits.minimumOptions
+                      ? null
+                      : () => widget.controller.removeOption(widget.question.id, option.id),
+                  icon: const Icon(Icons.remove_circle_outline_rounded),
+                ),
+              ],
+            ),
+          ),
+        TextButton.icon(
+          onPressed: widget.question.options.length >= CircularLimits.maximumOptions
+              ? null
+              : () => widget.controller.addOption(widget.question.id),
+          icon: const Icon(Icons.add_rounded),
+          label: const Text('Adicionar alternativa'),
         ),
       ],
     ),
+  );
+}
+
+final class _OptionField extends StatefulWidget {
+  const _OptionField({required this.value, required this.onChanged, super.key});
+  final String value;
+  final ValueChanged<String> onChanged;
+
+  @override
+  State<_OptionField> createState() => _OptionFieldState();
+}
+
+final class _OptionFieldState extends State<_OptionField> {
+  late final TextEditingController _controller = TextEditingController(text: widget.value);
+
+  @override
+  void didUpdateWidget(covariant _OptionField oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (_controller.text != widget.value) _controller.text = widget.value;
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) => CoeloFormTextField(
+    controller: _controller,
+    labelText: 'Alternativa',
+    prefixIcon: Icons.circle_outlined,
+    maxLength: CircularLimits.optionCharacters,
+    onChanged: widget.onChanged,
   );
 }
 
@@ -445,11 +702,10 @@ final class _QuestionCardState extends State<_QuestionCard> {
 /// domínio). "Só leitura" é a ausência de perguntas.
 enum _ResponsePreset {
   readOnly('Só leitura', '', ['', '']),
-  acknowledge(
-    'Confirmar ciência',
-    'Confirmo ciência desta circular',
-    ['Estou ciente', 'Preciso de mais informações'],
-  ),
+  acknowledge('Confirmar ciência', 'Confirmo ciência desta circular', [
+    'Estou ciente',
+    'Preciso de mais informações',
+  ]),
   acceptDecline('Aceitar / recusar', 'Você aceita?', ['Aceito', 'Recuso']);
 
   const _ResponsePreset(this.label, this.prompt, this.options);
@@ -474,7 +730,6 @@ final class _CircularAdminPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final media = draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
     final questions = draft.blocks.whereType<CircularQuestionBlock>().toList(growable: false);
     final institution = (contextLabel ?? '').trim().isEmpty ? 'Instituição' : contextLabel!.trim();
     final action = questions.isEmpty
@@ -528,33 +783,13 @@ final class _CircularAdminPreview extends StatelessWidget {
             style: textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
           ),
           const SizedBox(height: CoeloSpacing.space2),
-          Text(_bodyText(draft).trim().isEmpty ? 'O conteúdo aparecerá aqui.' : _bodyText(draft)),
-          if (media != null && media.assetIds.isNotEmpty) ...[
-            const SizedBox(height: CoeloSpacing.space3),
-            for (final assetId in media.assetIds)
-              Container(
-                margin: const EdgeInsets.only(bottom: CoeloSpacing.space1),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: CoeloSpacing.space3,
-                  vertical: CoeloSpacing.space2,
-                ),
-                decoration: BoxDecoration(
-                  color: colors.surfaceContainer,
-                  borderRadius: BorderRadius.circular(CoeloRadius.sm),
-                ),
-                child: Row(
-                  children: [
-                    Icon(
-                      Icons.attach_file_rounded,
-                      size: CoeloSize.iconSm,
-                      color: colors.onSurfaceVariant,
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Expanded(child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis)),
-                  ],
-                ),
-              ),
-          ],
+          if (draft.blocks.isEmpty)
+            const Text('O conteúdo aparecerá aqui.')
+          else
+            for (final block in draft.blocks) ...[
+              _previewBlock(context, block),
+              const SizedBox(height: CoeloSpacing.space3),
+            ],
           const SizedBox(height: CoeloSpacing.space3),
           FilledButton.icon(
             onPressed: null,
@@ -574,6 +809,63 @@ final class _CircularAdminPreview extends StatelessWidget {
 
   static String _audienceLabelOf(CircularAudienceKind kind) =>
       _SuperadminCircularComposerPageState._audienceLabels[kind] ?? kind.name;
+
+  Widget _previewBlock(BuildContext context, CircularBlock block) {
+    final colors = Theme.of(context).colorScheme;
+    return switch (block) {
+      CircularTextBlock() => Text(
+        key: Key('circular-preview-${block.id}'),
+        block.text.trim().isEmpty ? 'Novo bloco de texto' : block.text,
+      ),
+      CircularMediaBlock() => Container(
+        key: Key('circular-preview-${block.id}'),
+        padding: const EdgeInsets.all(CoeloSpacing.space2),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.sm),
+        ),
+        child: Column(
+          children: [
+            for (final assetId in block.assetIds)
+              Row(
+                children: [
+                  Icon(
+                    Icons.attach_file_rounded,
+                    size: CoeloSize.iconSm,
+                    color: colors.onSurfaceVariant,
+                  ),
+                  const SizedBox(width: CoeloSpacing.space2),
+                  Expanded(child: Text(assetId, maxLines: 1, overflow: TextOverflow.ellipsis)),
+                ],
+              ),
+          ],
+        ),
+      ),
+      CircularQuestionBlock() => Container(
+        key: Key('circular-preview-${block.id}'),
+        padding: const EdgeInsets.all(CoeloSpacing.space3),
+        decoration: BoxDecoration(
+          color: colors.surfaceContainer,
+          borderRadius: BorderRadius.circular(CoeloRadius.sm),
+        ),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Text(
+              block.prompt,
+              style: Theme.of(context).textTheme.labelLarge?.copyWith(fontWeight: FontWeight.w700),
+            ),
+            const SizedBox(height: CoeloSpacing.space1),
+            for (final option in block.options)
+              Text(
+                '${block.kind == CircularQuestionKind.singleChoice ? '○' : '□'}  ${option.label}',
+                style: Theme.of(context).textTheme.bodySmall,
+              ),
+          ],
+        ),
+      ),
+    };
+  }
 }
 
 final class _Feedback extends StatelessWidget {
@@ -597,6 +889,3 @@ final class _Feedback extends StatelessWidget {
     );
   }
 }
-
-String _bodyText(CircularDraft draft) =>
-    draft.blocks.whereType<CircularTextBlock>().firstOrNull?.text ?? '';

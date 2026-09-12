@@ -48,22 +48,72 @@ final class CircularComposerController extends ChangeNotifier {
   void updateBody(String value) {
     final blocks = [..._draft.blocks];
     final index = blocks.indexWhere((block) => block is CircularTextBlock);
-    final next = CircularTextBlock(
-      id: index < 0 ? _uuid() : blocks[index].id,
-      text: value.characters.take(CircularLimits.bodyCharacters).toString(),
-    );
     if (index < 0) {
-      blocks.insert(0, next);
-    } else {
-      blocks[index] = next;
+      blocks.insert(
+        0,
+        CircularTextBlock(
+          id: _uuid(),
+          text: value.characters.take(CircularLimits.bodyCharacters).toString(),
+        ),
+      );
+      _replace(blocks: blocks);
+      return;
     }
+    updateTextBlock(blocks[index].id, value);
+  }
+
+  void addTextBlock({String? afterBlockId}) {
+    final blocks = [..._draft.blocks];
+    final anchor = afterBlockId == null
+        ? blocks.length - 1
+        : blocks.indexWhere((block) => block.id == afterBlockId);
+    blocks.insert(
+      anchor < 0 ? blocks.length : anchor + 1,
+      CircularTextBlock(id: _uuid(), text: ''),
+    );
+    _replace(blocks: blocks);
+  }
+
+  void updateTextBlock(String blockId, String value) {
+    final blocks = [..._draft.blocks];
+    final index = blocks.indexWhere((block) => block.id == blockId && block is CircularTextBlock);
+    if (index < 0) return;
+    final usedByOtherBlocks = blocks
+        .whereType<CircularTextBlock>()
+        .where((block) => block.id != blockId)
+        .fold<int>(0, (total, block) => total + block.text.characters.length);
+    final available = max(0, CircularLimits.bodyCharacters - usedByOtherBlocks);
+    blocks[index] = CircularTextBlock(
+      id: blockId,
+      text: value.characters.take(available).toString(),
+    );
+    _replace(blocks: blocks);
+  }
+
+  void removeTextBlock(String blockId) {
+    if (_draft.blocks.whereType<CircularTextBlock>().length <= 1) return;
+    _replace(blocks: _draft.blocks.where((block) => block.id != blockId).toList(growable: false));
+  }
+
+  void moveBlock(String blockId, int delta) {
+    final blocks = [..._draft.blocks];
+    final from = blocks.indexWhere((block) => block.id == blockId);
+    if (from < 0) return;
+    final to = (from + delta).clamp(0, blocks.length - 1);
+    if (from == to) return;
+    final block = blocks.removeAt(from);
+    blocks.insert(to, block);
     _replace(blocks: blocks);
   }
 
   void addMediaAsset(String assetId) {
     final media = _draft.blocks.whereType<CircularMediaBlock>().firstOrNull;
     final ids = media?.assetIds.toList() ?? <String>[];
-    if (ids.length >= CircularLimits.files || ids.contains(assetId)) return;
+    final used = _draft.blocks
+        .whereType<CircularMediaBlock>()
+        .expand((block) => block.assetIds)
+        .toList(growable: false);
+    if (used.length >= CircularLimits.files || used.contains(assetId)) return;
     ids.add(assetId);
     final blocks = [..._draft.blocks];
     if (media == null) {
@@ -80,7 +130,9 @@ final class CircularComposerController extends ChangeNotifier {
 
   void removeMediaAsset(String assetId) {
     final blocks = [..._draft.blocks];
-    final index = blocks.indexWhere((block) => block is CircularMediaBlock);
+    final index = blocks.indexWhere(
+      (block) => block is CircularMediaBlock && block.assetIds.contains(assetId),
+    );
     if (index < 0) return;
     final media = blocks[index] as CircularMediaBlock;
     final ids = media.assetIds.where((id) => id != assetId).toList(growable: false);
@@ -98,24 +150,27 @@ final class CircularComposerController extends ChangeNotifier {
     _replace(audiences: audiences);
   }
 
-  void addQuestion(CircularQuestionKind kind) {
+  void addQuestion(CircularQuestionKind kind, {String? afterBlockId}) {
     if (_draft.blocks.whereType<CircularQuestionBlock>().length >= CircularLimits.questions) return;
     final questionId = _uuid();
-    _replace(
-      blocks: [
-        ..._draft.blocks,
-        CircularQuestionBlock(
-          id: questionId,
-          prompt: 'Nova pergunta',
-          kind: kind,
-          required: false,
-          options: [
-            CircularQuestionOption(id: _uuid(), label: 'Opção 1'),
-            CircularQuestionOption(id: _uuid(), label: 'Opção 2'),
-          ],
-        ),
-      ],
+    final blocks = [..._draft.blocks];
+    final anchor = afterBlockId == null
+        ? blocks.length - 1
+        : blocks.indexWhere((block) => block.id == afterBlockId);
+    blocks.insert(
+      anchor < 0 ? blocks.length : anchor + 1,
+      CircularQuestionBlock(
+        id: questionId,
+        prompt: 'Nova pergunta',
+        kind: kind,
+        required: false,
+        options: [
+          CircularQuestionOption(id: _uuid(), label: 'Opção 1'),
+          CircularQuestionOption(id: _uuid(), label: 'Opção 2'),
+        ],
+      ),
     );
+    _replace(blocks: blocks);
   }
 
   void updateQuestion(
@@ -202,16 +257,7 @@ final class CircularComposerController extends ChangeNotifier {
     _replace(blocks: blocks);
   }
 
-  void moveQuestion(String questionId, int delta) {
-    final blocks = [..._draft.blocks];
-    final from = blocks.indexWhere((block) => block.id == questionId);
-    if (from < 0) return;
-    final to = (from + delta).clamp(0, blocks.length - 1);
-    if (from == to) return;
-    final block = blocks.removeAt(from);
-    blocks.insert(to, block);
-    _replace(blocks: blocks);
-  }
+  void moveQuestion(String questionId, int delta) => moveBlock(questionId, delta);
 
   Future<CircularSaveResult> save() {
     if (_disposed) return Future.error(const CircularInvalid('contextDisposed'));

@@ -24,3 +24,17 @@ generated_at: 2026-09-12
 - Limite canonico: `CircularLimits.bodyCharacters = 10000`, coerente com spec 037; a indicacao visual de 4.000 nao altera o contrato.
 - Leitor: `PrincipalCircularReader` ja renderiza cada item de `detail.blocks` sequencialmente.
 - Primeiro gate: a autoria e a previa produtivas ainda agrupam o primeiro texto, um bloco de midia e as perguntas por tipo.
+
+## Decisoes reconciliadas
+
+- H14: C0 aceitou shell.load como acao-pai da carga/contagem do ContextNotificationFeed; abrir o centro e persistir read_at e evidencia complementar nomeada. Nao existe ID novo, nao muda o denominador e nao promove BE/E2E de uma acao flutter-only.
+- H21: spec 037 e CircularLimits.bodyCharacters fixam 10.000 caracteres somados entre blocos de texto. O contador 4.000 da referencia visual e conflito documental/visual, nao autorizacao para reduzir o contrato.
+- Os seis R nominais sao circular_composer_{light,dark}_{768,1024,1440}. A comparacao do caso 1440 mostra rodape interno no render atual contra rodape no conteiner/shell da referencia. Nenhum PNG R sera sobrescrito; a geometria continua focal para o Owner/C0.
+
+## Implementacao em curso
+
+- O controlador agora prepara operacoes por identidade para adicionar, editar e mover blocos de texto e mover qualquer bloco, mantendo o teto agregado de 10.000.
+- O compositor produtivo renderiza os blocos na ordem do dominio e expoe texto, midia e pergunta simples com movimento; a previa percorre a mesma lista.
+- O leitor do Principal ja percorria a lista em ordem; foi acrescentada uma chave semantica por bloco para a prova focal, sem alterar a composicao.
+- Testes focais preparados; execucao aguarda a posse serializada do slot Flutter.
+- Analise focal dos seis arquivos Dart tocados: No issues found (11:16 BRT).

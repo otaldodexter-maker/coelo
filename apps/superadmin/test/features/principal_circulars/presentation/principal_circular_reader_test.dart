@@ -110,6 +110,21 @@ void main() {
 
     expect(find.text('Responda às perguntas obrigatórias.'), findsOneWidget);
   });
+
+  testWidgets('reader preserves the published interleaved block order', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1600));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(body: PrincipalCircularReader(detail: _detail, onSubmit: (_) async {})),
+      ),
+    );
+
+    double top(String id) => tester.getTopLeft(find.byKey(Key('circular-reader-$id'))).dy;
+    expect(top('text-1'), lessThan(top('media-1')));
+    expect(top('media-1'), lessThan(top('question-1')));
+    expect(top('question-1'), lessThan(top('question-2')));
+  });
 }
 
 final _detail = CircularDetail(

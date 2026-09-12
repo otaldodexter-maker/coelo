@@ -266,6 +266,46 @@ void main() {
     expect(controller.draft.validate(), isEmpty);
   });
 
+  test('authors interleaved blocks and enforces the shared ten-thousand character limit', () {
+    final controller = CircularComposerController(
+      repository: _Repository(),
+      scope: const CircularScope(institutionId: 'institution-1'),
+      initialDraft: const CircularDraft(
+        id: '',
+        title: 'Circular',
+        blocks: [CircularTextBlock(id: 'before', text: 'Antes')],
+      ),
+    );
+    addTearDown(controller.dispose);
+
+    controller.addQuestion(CircularQuestionKind.singleChoice, afterBlockId: 'before');
+    final question = controller.draft.blocks.whereType<CircularQuestionBlock>().single;
+    controller.addTextBlock(afterBlockId: question.id);
+    final after = controller.draft.blocks.whereType<CircularTextBlock>().last;
+    controller.updateTextBlock(after.id, 'Depois');
+    controller.addMediaAsset('asset-1');
+    final media = controller.draft.blocks.whereType<CircularMediaBlock>().single;
+    controller.moveBlock(media.id, 1);
+
+    expect(controller.draft.blocks.map((block) => block.id), [
+      'before',
+      question.id,
+      media.id,
+      after.id,
+    ]);
+
+    controller.updateTextBlock('before', 'a' * 9998);
+    controller.updateTextBlock(after.id, 'depois demais');
+    expect(
+      controller.draft.blocks.whereType<CircularTextBlock>().fold<int>(
+        0,
+        (total, block) => total + block.text.length,
+      ),
+      CircularLimits.bodyCharacters,
+    );
+    expect(controller.draft.blocks.whereType<CircularTextBlock>().last.text, 'depois');
+  });
+
   test('never accepts more than ten questions or four files', () {
     final controller = CircularComposerController(
       repository: _Repository(),
