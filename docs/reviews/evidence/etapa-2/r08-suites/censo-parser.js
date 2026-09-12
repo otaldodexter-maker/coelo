@@ -13,7 +13,8 @@ for (const line of fs.readFileSync(args.input, 'utf8').split(/\r?\n/)) {
     const suite = suites.get(x.test.suiteID); const name = x.test.name || ''; const loading = suite && name === `loading ${x.test.url || suite.path}`;
     starts.set(x.test.id, { testID: x.test.id, suiteID: x.test.suiteID, path: pathRel(x.test.root_url || x.test.url || suite?.path), name, metadata: x.test.metadata || {}, loading });
   }
-  if (x.type === 'error') { counts.errors++; unknown.push({ type: 'error', error: x.error || x }); }\n  if (['start','suite','allSuites','group','print','testStart','testDone','error'].includes(x.type)) continue;
+  if (x.type === 'error') { counts.errors++; unknown.push({ type: 'error', error: x.error || x }); }
+  if (['start','suite','allSuites','group','print','testStart','testDone','error'].includes(x.type)) continue;
   if (x.type === 'testDone') {
     const start = starts.get(x.testID); if (!start) { orphanDone.push({ testID: x.testID, result: x.result }); continue; }
     const row = { testID: start.testID, suiteID: start.suiteID, path: start.path, name: start.name, result: x.result, skipped: Boolean(x.skipped), hidden: Boolean(x.hidden), loading: Boolean(start.loading), metadata: start.metadata };
@@ -22,4 +23,5 @@ for (const line of fs.readFileSync(args.input, 'utf8').split(/\r?\n/)) {
   }
 }
 const report = { schemaVersion: 1, generatedAt: new Date().toISOString(), base: args.base, nativeExitCode: Number(args['exit-code']), input: args.input, counts, cases, orphanDone, unknown };fs.writeFileSync(args.output, JSON.stringify(report, null, 2) + '\n');console.log(JSON.stringify({ base: report.base, nativeExitCode: report.nativeExitCode, counts: report.counts, cases: report.cases.length, orphanDone: report.orphanDone.length, unknown: report.unknown.length }));
+
 
