@@ -46,3 +46,9 @@ rollback efetivo: conexao fechada com transacao abortada
 native exit: 3
 wrapper exit: 3 (propagacao do native; TAP incompleto)
 acao: parada sem novo rerun; fixture deve isolar os cenarios sem reativar acesso revogado
+
+[RERUN UNICO DA FIXTURE afcebccd0]
+alteracao autoral: cenarios de revogacao usam identidades independentes 105/106; identidade 101 permanece ativa; nenhum guard/migration alterado
+resultado: ok 1..159; finish 1..159; ROLLBACK
+native exit: 0
+wrapper exit: 0

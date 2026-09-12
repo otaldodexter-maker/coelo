@@ -1,12 +1,12 @@
 {
-  "revision": 11,
+  "revision": 12,
   "round": "E2-R08-20260912",
   "role": "G0 - Ambiente e runtime",
   "writer": "Codex G0",
   "app": "Codex desktop",
   "model": "GPT-5.6 Sol medio (papel atribuido)",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T12:08:00-03:00",
+  "updatedAt": "2026-09-12T12:14:00-03:00",
   "t0": "2026-09-12T10:52:16.727826-03:00",
   "cutoffs": {
     "stopNewWork": "2026-09-12T14:52:16.727826-03:00",
@@ -56,7 +56,9 @@
       "instrumentacao QA temporaria isolou hit-testing: click fisico focou email e Tab moveu foco para senha, mas typeText e tecla individual mantiveram DOM/controllers length 0; instrumentacao removida e SHA original restaurado",
       "pacote Forms 444ac024: RED 1-18 ok e falha 19/20/abort; candidato 140546 aplicado apenas baseline exit 0; GREEN repetiu falha e regressões foram interrompidas",
       "alternativa CUA pressSequentially encerrada: dois inputs DOM detectados, mas locator sem actionability e nenhuma insercao; sem CDP, bypass ou segundo browser",
-      "forward fix Forms 140547 aplicado somente baseline: focal 33/33 e behavioral 17/17 verdes, rollback e exits 0/0"
+      "forward fix Forms 140547 aplicado somente baseline: focal 33/33 e behavioral 17/17 verdes, rollback e exits 0/0",
+      "fixture internal drafts afcebccd0 isolou revogacoes e passou 159/159 com rollback e exits 0/0",
+      "inventario sanitizado das capacidades CUA, Dart MCP e extensoes presentes concluido sem instalar/reconfigurar"
     ],
     "pending": [
       "prova de login, leitura autorizada e persistencia apos reload; bloqueada porque CUA nao atualiza os controllers Flutter"
@@ -84,6 +86,7 @@
       ,"forms_behavioral_rpc_test.sql em 28625efaf: 17/17, native/wrapper exit 0, rollback"
       ,"superadmin_internal_form_drafts_v2_test.sql em 28625efaf: 59 ok antes de abort internal auth link version mismatch, native/wrapper exit 3, transacao revertida"
       ,"rerun unico internal drafts em 0d52d5dbf: 59 ok, revogacao com version passou, reativacao falhou revoked internal access is terminal, native/wrapper exit 3, transacao revertida"
+      ,"rerun final internal drafts em afcebccd0: 159/159, native/wrapper exit 0, rollback"
     ],
     "blocked": {
       "gate": "login/leitura/reload",
@@ -94,9 +97,9 @@
     },
     "sqlBlocked": {
       "candidate": "28625efaf:20260912140547_forms_question_media_draft_bridge_fix_v1.sql aplicado sobre 140546",
-      "result": "focal 33/33 e behavioral 17/17 verdes; internal drafts 0d52d5dbf ok1-59, revoke passa e reativacao aborta revoked internal access is terminal, native/wrapper 3",
-      "diagnosis": "version bump corrigiu a primeira falha, mas a fixture tenta reativar o mesmo auth link revogado; guard vigente torna revogacao terminal e os cenarios precisam ser isolados",
-      "baseline": "140546+140547 materializados localmente; ciclo parado sem rerun; producao intocada",
+      "result": "focal 33/33, behavioral 17/17 e internal drafts 159/159 verdes; todos rollback e native/wrapper 0 no ciclo final",
+      "diagnosis": "falhas anteriores eram candidato sem institution_id/FK RESTRICT e fixtures que violavam version/revogacao terminal; preservadas no historico",
+      "baseline": "140546+140547 materializados localmente; provas focais/regressoes verdes; producao intocada",
       "reportedToC0": true
     },
     "nextGate": "C0 disponibilizar ferramenta de browser proposito-especifico compativel com Flutter, sem shell CDP, segundo navegador ou reconfiguracao global"
@@ -106,14 +109,14 @@
     "server": "127.0.0.1:3014 PID 14724, ativo; /login HTTP 200; build original SHA-256 4ca0e74024f379b451b78fb36daeca2a09a29445474eacf938266005845e4bf1",
     "docker": "daemon 29.7.2 ativo; supabase_db_coelo_baseline healthy em 57322",
     "flutterTest": "nao reservado; nao usar",
-    "sql": "slot devolvido ao C0; espelho inclui H09 e Forms 140546+140547; focal33 e behavioral17 verdes, internal drafts bloqueada apos 59 ok por fixture version; producao/backup/ledger permanecem com C0"
+    "sql": "slot devolvido ao C0; espelho inclui H09 e Forms 140546+140547; focal33, behavioral17 e internal drafts159 verdes; producao/backup/ledger permanecem com C0"
   },
   "git": {
     "branch": "work/etapa2-r08-ambiente-runtime",
     "base": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
-    "head": "19b54a33e79c130a8107f2e42cecc350521399d2",
+    "head": "e303bcfdf932504533b8589f9c0a69661319f95a",
     "buildSourceSha": "af99409cf5bb266b4be96647690abde44ace8f23",
-    "publishedSha": "19b54a33e79c130a8107f2e42cecc350521399d2",
+    "publishedSha": "e303bcfdf932504533b8589f9c0a69661319f95a",
     "deploy": "nenhum deploy; artefato e servidor somente locais; producao sob posse exclusiva do C0"
   },
   "history": [
@@ -171,6 +174,11 @@
       "revision": 11,
       "at": "2026-09-12T12:08:00-03:00",
       "summary": "Rerun unico da fixture com version bump passou a revogacao e expôs tentativa invalida de reativar acesso terminal; 59 ok, abort, rollback e slot liberado."
+    },
+    {
+      "revision": 12,
+      "at": "2026-09-12T12:14:00-03:00",
+      "summary": "Fixture afcebccd0 passou 159/159; slot SQL liberado. Base 2d97892d9 mergeada e inventario de runtime existente concluido sem reconfiguracao."
     }
   ]
 }
