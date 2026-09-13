@@ -407,7 +407,7 @@
   },
   {
     "id": "owner.r12-22",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "access-profiles.create",
       "access-profiles.edit"
@@ -486,7 +486,7 @@
   },
   {
     "id": "owner.r12-26",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "access-profiles.edit"
     ],

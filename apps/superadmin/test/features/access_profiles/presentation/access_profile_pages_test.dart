@@ -330,6 +330,54 @@ void main() {
     );
   });
 
+  testWidgets('new profile keeps internal code out of the user flow', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Código'), findsNothing);
+    await tester.enterText(
+      find.widgetWithText(CoeloFormTextField, 'Nome do perfil'),
+      'Professor regional',
+    );
+    final page = tester.widget<AccessProfileFormPage>(find.byType(AccessProfileFormPage));
+    expect(page, isNotNull);
+    expect(find.text('Código:'), findsNothing);
+  });
+
+  testWidgets('editing keeps the enabled continuation filled', (tester) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AccessProfileFormPage(
+          repository: FakeAccessProfileRepository(),
+          logout: unavailableSuperadminLogout,
+          domain: AccessProfileDomain.platform,
+          profileId: 'demo-owner',
+          onCancel: () {},
+          onSaved: (_) {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('access-profile-continue')), findsOneWidget);
+    expect(
+      tester.widget<FilledButton>(find.byKey(const Key('access-profile-continue'))).onPressed,
+      isNotNull,
+    );
+  });
+
   testWidgets('directory switches between profiles and models in one access area', (tester) async {
     AccessProfileDirectoryKind? selected;
     await tester.pumpWidget(

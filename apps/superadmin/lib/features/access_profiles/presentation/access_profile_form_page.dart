@@ -33,6 +33,15 @@ String? _profileCodeError(String? value) {
 String? _profileDescriptionError(String? value) =>
     value == null || value.trim().isEmpty ? 'Explique o propósito do perfil.' : null;
 
+String _generatedProfileCode(String name) {
+  final code = name
+      .trim()
+      .toLowerCase()
+      .replaceAll(RegExp(r'[^a-z0-9]+'), '-')
+      .replaceAll(RegExp(r'^-+|-+$'), '');
+  return code.isEmpty ? 'perfil-novo' : code;
+}
+
 final class AccessProfileFormPage extends StatefulWidget {
   const AccessProfileFormPage({
     required this.repository,
@@ -330,7 +339,11 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
 
   AccessProfile _draft() => _original!.copyWith(
     name: _nameController.text.trim(),
-    code: _codeController.text.trim().toLowerCase(),
+    // Keep the technical identifier in the contract without exposing it in
+    // the operational form. Existing identifiers remain immutable to users.
+    code: _editing
+        ? _codeController.text.trim().toLowerCase()
+        : _generatedProfileCode(_nameController.text),
     description: _descriptionController.text.trim(),
     status: _status,
     maxScope: _scope,
@@ -339,7 +352,10 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
 
   bool get _identityDraftIsValid =>
       _profileNameError(_nameController.text) == null &&
-      _profileCodeError(_codeController.text) == null &&
+      _profileCodeError(
+            _editing ? _codeController.text : _generatedProfileCode(_nameController.text),
+          ) ==
+          null &&
       _profileDescriptionError(_descriptionController.text) == null;
 
   bool _validateIdentity() {
@@ -504,7 +520,6 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     if (_currentStep == 0) {
       return _IdentitySection(
         nameController: _nameController,
-        codeController: _codeController,
         descriptionController: _descriptionController,
         status: _status,
         scope: _scope,
@@ -717,18 +732,11 @@ final class _FormFooter extends StatelessWidget {
           child: const Text('Anterior'),
         ),
       if (!lastStep)
-        if (editing)
-          OutlinedButton(
-            key: const Key('access-profile-continue'),
-            onPressed: saving ? null : onContinue,
-            child: const Text('Continuar'),
-          )
-        else
-          FilledButton(
-            key: const Key('access-profile-continue'),
-            onPressed: saving ? null : onContinue,
-            child: const Text('Continuar'),
-          ),
+        FilledButton(
+          key: const Key('access-profile-continue'),
+          onPressed: saving ? null : onContinue,
+          child: const Text('Continuar'),
+        ),
       if (lastStep)
         FilledButton(
           key: const Key('access-profile-save'),
@@ -747,7 +755,6 @@ final class _FormFooter extends StatelessWidget {
 final class _IdentitySection extends StatelessWidget {
   const _IdentitySection({
     required this.nameController,
-    required this.codeController,
     required this.descriptionController,
     required this.status,
     required this.scope,
@@ -757,7 +764,6 @@ final class _IdentitySection extends StatelessWidget {
   });
 
   final TextEditingController nameController;
-  final TextEditingController codeController;
   final TextEditingController descriptionController;
   final AccessProfileStatus status;
   final AccessProfileScope scope;
@@ -792,13 +798,6 @@ final class _IdentitySection extends StatelessWidget {
               labelText: 'Nome do perfil',
               prefixIcon: Icons.badge_outlined,
               validator: _profileNameError,
-            ),
-            CoeloFormTextField(
-              controller: codeController,
-              labelText: 'Código',
-              prefixIcon: Icons.code_rounded,
-              hintText: 'exemplo.perfil',
-              validator: _profileCodeError,
             ),
           ];
           return Column(
@@ -1545,7 +1544,6 @@ final class _ReviewSection extends StatelessWidget {
           title: 'Identidade e status',
           value:
               'Nome: de ${original.name} para ${draft.name}\n'
-              'Código: de ${original.code} para ${draft.code}\n'
               'Status: de ${original.status.label} para ${draft.status.label}',
         ),
         const SizedBox(height: CoeloSpacing.space3),

@@ -1,0 +1,30 @@
+[
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: criação não expõe Código; identificador interno é derivado do nome e enviado no draft.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md"
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: edição preserva identificador interno e usa Continuar preenchido.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md"
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A superfície de criação mudou; rota normal, persistência/reload e negativa cross-tenant precisam de prova integrada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md"
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A superfície de edição mudou; rota normal, persistência/reload e negativa cross-tenant precisam de prova integrada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md"
+  }
+]
