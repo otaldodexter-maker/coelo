@@ -1,0 +1,24 @@
+{
+  "round": "E2-R10-20260912-2314",
+  "author": "/root/terra_members",
+  "action_id": "groups.members",
+  "proposed_delta": {
+    "frontend": "pending-verification",
+    "backend": "local-green-candidate",
+    "e2e": "pending-verification"
+  },
+  "basis": {
+    "environment": "supabase_db_coelo_baseline:57322",
+    "date": "2026-09-13",
+    "red": "adapter absent before candidate",
+    "green": "7 pgTAP assertions pass inside one rollback transaction",
+    "not_proven": [
+      "fixture behavior",
+      "remote application",
+      "Flutter integration",
+      "normal-route persistence and reload",
+      "cross-tenant denial"
+    ]
+  },
+  "integration_required": true
+}

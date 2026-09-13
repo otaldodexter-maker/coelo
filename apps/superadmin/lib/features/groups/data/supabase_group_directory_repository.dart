@@ -62,10 +62,81 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
         throw const GroupDirectoryUnavailableException();
       }
       _cache[saved.id] = saved;
-      return GroupDirectorySaveResult(
-        requestId: request.requestId,
-        steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
-      );
+      final steps = <GroupDirectorySaveStepResult>[
+        GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group),
+      ];
+      final desiredStudentIds = request.studentPersonIds.toSet();
+      final originalStudentIds = request.originalStudentLinks
+          .map((student) => student.personId)
+          .toSet();
+      for (final student in request.originalStudentLinks) {
+        if (desiredStudentIds.contains(student.personId)) continue;
+        try {
+          await _client.rpc<Object?>(
+            'superadmin_group_student_unlink',
+            params: {
+              'p_request_id': _studentOperationRequestId(
+                request.requestId,
+                'unlink',
+                '${student.childContextId}:${saved.id}',
+              ),
+              'p_child_context_id': student.childContextId,
+              'p_group_id': saved.id,
+            },
+          );
+          steps.add(GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people));
+        } on PostgrestException {
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel desvincular este aluno da turma.',
+            ),
+          );
+        } on ClientException {
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel desvincular este aluno da turma.',
+            ),
+          );
+        }
+      }
+      for (final personId in desiredStudentIds) {
+        if (originalStudentIds.contains(personId)) continue;
+        try {
+          await _client.rpc<Object?>(
+            'superadmin_group_student_link',
+            params: {
+              'p_request_id': _studentOperationRequestId(
+                request.requestId,
+                'link',
+                '$personId:${saved.id}',
+              ),
+              'p_person_id': personId,
+              'p_group_id': saved.id,
+            },
+          );
+          steps.add(GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people));
+        } on PostgrestException {
+          // A turma ja foi salva por seu comando canonico. Cada aluno e um
+          // vinculo contextual independente; informar a falha permite corrigir
+          // somente aquele vinculo sem perder profissionais ou outros alunos.
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel vincular este aluno a turma.',
+            ),
+          );
+        } on ClientException {
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel vincular este aluno a turma.',
+            ),
+          );
+        }
+      }
+      return GroupDirectorySaveResult(requestId: request.requestId, steps: steps);
     } on PostgrestException catch (error) {
       throw _mapError(error);
     } on ClientException {
@@ -229,8 +300,7 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'inherit_activities': request.record.inheritActivities,
   if (!request.record.inheritAppearance) 'branding': request.branding,
   'local_people': [
-    for (final person in [...request.people, ...request.professionals])
-      {'person_id': person.id, 'role_code': person.role},
+    for (final person in request.professionals) {'person_id': person.id, 'role_code': person.role},
   ],
   'activity_ids': request.activityIds,
   'invites': [
@@ -267,6 +337,16 @@ GroupRecord _record(Map<String, dynamic> row) {
       })
       .toList(growable: false);
   final activities = _strings(row['activity_ids']);
+  final students = _rows(row['students'])
+      .map(
+        (item) => GroupDirectoryStudentBinding(
+          childContextId: _string(item, 'child_context_id'),
+          personId: _string(item, 'person_id'),
+          displayName: _string(item, 'display_name'),
+          status: _string(item, 'status'),
+        ),
+      )
+      .toList(growable: false);
   return GroupRecord(
     id: _string(row, 'id'),
     institutionId: _string(row, 'institution_id'),
@@ -289,6 +369,7 @@ GroupRecord _record(Map<String, dynamic> row) {
       row['effective_appearance'],
     ).map((key, value) => MapEntry(key, value as String?)),
     effectiveAccess: access,
+    students: students,
     activityIds: activities,
     invites: [
       for (final invite in _rows(row['invites']))
@@ -370,6 +451,9 @@ String _requestUuid(String value) {
   return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-4${hex.substring(13, 16)}-'
       '8${hex.substring(17, 20)}-${hex.substring(20, 32)}';
 }
+
+String _studentOperationRequestId(String requestId, String operation, String target) =>
+    _requestUuid('$requestId:$operation:$target');
 
 bool _isUuid(String value) => RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',

@@ -196,6 +196,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final Set<String> _mandatoryActivities = {};
   final List<_GroupActivityBinding> _activityByStudentLinks = const [];
   final List<_GroupPersonBinding> _people = [];
+  List<GroupDirectoryStudentBinding> _originalStudentLinks = const [];
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
   CataloguedLocationSelection? _cataloguedLocationSelection;
@@ -381,6 +382,18 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
+    _originalStudentLinks = List.unmodifiable(record.students);
+    for (final student in record.students) {
+      _people.add(
+        _GroupPersonBinding(
+          id: student.personId,
+          name: student.displayName,
+          identifier: student.personId,
+          role: _GroupRoleType.aluno,
+          note: 'Contexto infantil ativo',
+        ),
+      );
+    }
     for (final access in record.effectiveAccess.where((entry) => !entry.inherited)) {
       final role = switch (access.profileCode) {
         'student' => _GroupRoleType.aluno,
@@ -397,6 +410,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         role: role,
         note: access.profileName,
       );
+      if (role == _GroupRoleType.aluno && _people.any((person) => person.id == access.personId)) {
+        continue;
+      }
       if (role == _GroupRoleType.profissional || role == _GroupRoleType.administrador) {
         _professionals.add(binding);
       } else {
@@ -677,16 +693,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           'secondary_color': _secondaryColorController.text.trim(),
           'surface_color': _surfaceColorController.text.trim(),
         },
-        people: [
+        people: const [],
+        studentPersonIds: [
           for (final person in _people)
-            GroupDirectoryPersonBinding(
-              id: person.id,
-              name: person.name,
-              identifier: person.identifier,
-              role: _GroupRoleLabel.label(person.role),
-              profile: person.note,
-            ),
+            if (person.role == _GroupRoleType.aluno) person.id,
         ],
+        originalStudentLinks: _originalStudentLinks,
         professionals: [
           for (final professional in _professionals)
             GroupDirectoryPersonBinding(
@@ -896,12 +908,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           sectionTitle: 'Pessoas associadas',
           onAdd: () => _editPerson(),
           onEdit: (index) => _editPerson(index: index),
-          onRemove: (index) {
-            setState(() {
-              _people.removeAt(index);
-              _markDirty();
-            });
-          },
+          onRemove: _removePerson,
         ),
       ),
       _GroupFormStep.professionals => _formSection(
@@ -1934,6 +1941,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     });
   }
 
+  void _removePerson(int index) {
+    setState(() {
+      _people.removeAt(index);
+      _markDirty();
+    });
+  }
+
   Future<void> _editProfessional({int? index}) async {
     final item = index == null ? null : _professionals[index];
     final result = await _showPersonDialog(
@@ -2240,8 +2254,9 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         _candidates = candidates
             .where(
               (candidate) =>
-                  candidate.access == PersonIdentityResolutionAccess.editGlobal ||
-                  candidate.access == PersonIdentityResolutionAccess.linkOnly,
+                  candidate.personType == 'child' &&
+                  (candidate.access == PersonIdentityResolutionAccess.editGlobal ||
+                      candidate.access == PersonIdentityResolutionAccess.linkOnly),
             )
             .toList();
         if (_candidates.isEmpty) _error = 'Nenhuma pessoa disponível para vincular.';
@@ -2284,6 +2299,10 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(dialogMessage),
+          if (widget.mode == 'search')
+            const Text(
+              'Selecione uma crianca com contexto ativo. Responsaveis tem acesso derivado.',
+            ),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget.mode == 'search') ...[
             CoeloAdminSingleSelectField<PersonIdentityLookupKind>(
@@ -2383,7 +2402,7 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
                       id: selected.personId,
                       name: selected.displayName,
                       identifier: selected.maskedMatch,
-                      role: _role,
+                      role: _GroupRoleType.aluno,
                     ),
                   );
                   return;
