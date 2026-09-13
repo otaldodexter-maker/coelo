@@ -185,6 +185,7 @@ void main() {
     expect(find.byTooltip('Arrastar pergunta'), findsWidgets);
     expect(find.byTooltip('Duplicar seção'), findsOneWidget);
     expect(find.byTooltip('Excluir seção'), findsOneWidget);
+    expect(find.byTooltip('Renomear seção'), findsOneWidget);
     expect(find.byTooltip('Mover pergunta para cima'), findsWidgets);
     expect(find.byTooltip('Mover pergunta para outra seção'), findsWidgets);
     expect(find.byTooltip('Duplicar pergunta'), findsWidgets);
@@ -210,6 +211,13 @@ void main() {
     await tester.pump();
     expect(find.textContaining('cópia'), findsWidgets);
     expect(tester.takeException(), isNull);
+
+    await tester.tap(find.byTooltip('Renomear seção'));
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextField).last, 'Rotina atualizada');
+    await tester.tap(find.text('Salvar nome'));
+    await tester.pumpAndSettle();
+    expect(find.text('Rotina atualizada'), findsWidgets);
   });
 
   testWidgets('configures information details and numeric bounds', (tester) async {

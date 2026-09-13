@@ -488,6 +488,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       onSelected: _selectSection,
       onAdd: _addSection,
       onDuplicate: _duplicateSection,
+      onRename: _renameSection,
       onDelete: _confirmDeleteSection,
       onMove: _moveSection,
       onReorder: _reorderSection,
@@ -1019,6 +1020,39 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       _sections.insert(_selectedSection + 1, copy);
       _selectedSection++;
       _expandedQuestionId = copy.questions.firstOrNull?.id;
+      _feedback = null;
+    });
+  }
+
+  Future<void> _renameSection() async {
+    final controller = TextEditingController(text: _section.title);
+    final value = await showDialog<String>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Renomear seção'),
+        content: TextField(
+          controller: controller,
+          autofocus: true,
+          maxLength: 120,
+          decoration: const InputDecoration(labelText: 'Nome da seção'),
+          onSubmitted: (value) => Navigator.of(context).pop(value.trim()),
+        ),
+        actions: [
+          TextButton(onPressed: () => Navigator.of(context).pop(), child: const Text('Cancelar')),
+          FilledButton(
+            onPressed: () => Navigator.of(context).pop(controller.text.trim()),
+            child: const Text('Salvar nome'),
+          ),
+        ],
+      ),
+    );
+    // The dialog route may still be rebuilding during its closing transition.
+    // Keep the controller alive until that transition has completed.
+    await Future<void>.delayed(const Duration(milliseconds: 250));
+    controller.dispose();
+    if (!mounted || value == null || value.isEmpty || value == _section.title) return;
+    _changeDraft(() {
+      _section.title = value;
       _feedback = null;
     });
   }
@@ -2296,7 +2330,7 @@ final class _EditorSectionDraft {
   });
 
   final String id;
-  final String title;
+  String title;
   final String description;
   final List<_EditorQuestionDraft> questions;
 
@@ -2583,6 +2617,7 @@ final class _SectionNavigation extends StatelessWidget {
     required this.onSelected,
     required this.onAdd,
     required this.onDuplicate,
+    required this.onRename,
     required this.onDelete,
     required this.onMove,
     required this.onReorder,
@@ -2594,6 +2629,7 @@ final class _SectionNavigation extends StatelessWidget {
   final ValueChanged<int> onSelected;
   final VoidCallback onAdd;
   final VoidCallback onDuplicate;
+  final VoidCallback onRename;
   final VoidCallback onDelete;
   final ValueChanged<int> onMove;
   final void Function(int from, int to) onReorder;
@@ -2632,6 +2668,11 @@ final class _SectionNavigation extends StatelessWidget {
                 tooltip: 'Duplicar seção',
                 onPressed: onDuplicate,
                 icon: const Icon(Icons.copy_outlined),
+              ),
+              IconButton(
+                tooltip: 'Renomear seção',
+                onPressed: onRename,
+                icon: const Icon(Icons.edit_outlined),
               ),
               IconButton(
                 tooltip: 'Excluir seção',

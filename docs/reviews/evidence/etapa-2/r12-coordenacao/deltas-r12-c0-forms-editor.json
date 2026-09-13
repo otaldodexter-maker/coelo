@@ -1,0 +1,6 @@
+[
+  {"action_id":"forms.create","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: editor mantém reordenação e permite renomear seção no draft.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md"},
+  {"action_id":"forms.edit","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: editor mantém reordenação e permite renomear seção no draft.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md"},
+  {"action_id":"forms.create","camada":"integrated","estado_proposto":"pending-verification","delta":"Editor mudou; provar save/reload e posição/nome pela rota normal.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md"},
+  {"action_id":"forms.edit","camada":"integrated","estado_proposto":"pending-verification","delta":"Editor mudou; provar save/reload e posição/nome pela rota normal.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md"}
+]

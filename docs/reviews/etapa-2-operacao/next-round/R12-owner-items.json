@@ -752,7 +752,7 @@
   },
   {
     "id": "owner.r12-39",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "forms.edit",
       "forms.create"
@@ -772,7 +772,7 @@
   },
   {
     "id": "owner.r12-40",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "forms.edit",
       "forms.create"
