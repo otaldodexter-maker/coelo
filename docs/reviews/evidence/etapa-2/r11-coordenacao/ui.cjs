@@ -27,6 +27,17 @@ const fs = require('node:fs');
     await send('Emulation.setFocusEmulationEnabled',{enabled:true});
     const browserWindow=await send('Browser.getWindowForTarget');
     await send('Browser.setWindowBounds',{windowId:browserWindow.windowId,bounds:{windowState:'normal'}});
+    if (args[0] === 'choose-profile-photo') {
+      await send('Page.enable');
+      await send('Page.setInterceptFileChooserDialog',{enabled:true});
+      for(const type of ['mousePressed','mouseReleased']) await send('Input.dispatchMouseEvent',{type,x:535,y:275,button:'left',clickCount:1});
+      for(let n=0;n<40 && !events.some(e=>e.method==='Page.fileChooserOpened');n++) await new Promise(r=>setTimeout(r,100));
+      const chooser=events.find(e=>e.method==='Page.fileChooserOpened');
+      if(!chooser) throw Error('Normal profile file chooser not observed');
+      await send('DOM.setFileInputFiles',{backendNodeId:chooser.params.backendNodeId,files:['C:/Users/adrie/Documents/Coelo/apps/superadmin/assets/brand/logo-coelo-orange.png']});
+      await send('Page.setInterceptFileChooserDialog',{enabled:false});
+      console.log('Normal picker selected static brand PNG for synthetic profile proof');
+    }
     if (args[0] === 'save-assessment') {
       await send('Network.enable');
       await driver({command:'tap',finderType:'ByText',text:'Salvar rascunho'});

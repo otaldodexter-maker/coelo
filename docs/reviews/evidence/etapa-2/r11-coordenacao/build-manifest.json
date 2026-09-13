@@ -1,9 +1,9 @@
 ﻿{
-    "build":  "C:/Users/adrie/Documents/Coelo/apps/superadmin/build/r11-account-v2",
-    "code_sha":  "c17ca4cb7157718367f79de3fd35fc64fddb0077",
-    "runtime_pid":  36632,
+    "build":  "C:/Users/adrie/Documents/Coelo/apps/superadmin/build/r11-account-v3",
+    "code_sha":  "d20bcfcf277d91be541776007804215b93548beb",
+    "runtime_pid":  39272,
     "environment":  "Supabase production; synthetic QA; local QA entrypoint",
-    "generated_at":  "2026-09-13T11:54:41.7395538-03:00",
-    "main_dart_js_sha256":  "c63d68dd8027179a5e796ba9e0a9ee2f88b142e5df8e1386dc8984f0c0ea43dc",
+    "generated_at":  "2026-09-13T12:21:52.2943468-03:00",
+    "main_dart_js_sha256":  "1dd04dca028d7b48e0909895ed5885641dfd434c1cd655c89a0dd603b217db36",
     "origin":  "http://127.0.0.1:3000"
 }

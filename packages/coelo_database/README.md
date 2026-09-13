@@ -1,8 +1,8 @@
 ---
 title: coelo_database
-source: specs/011-superadmin-database-rls.md; packages/coelo_database/scripts; packages/coelo_database/replay/foundation-migrations.sha256
+source: specs/011-superadmin-database-rls.md; packages/coelo_database/scripts; packages/coelo_database/replay/foundation-migrations.sha256; packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt
 status: active
-generated_at: 2026-09-07
+generated_at: 2026-09-13
 ---
 
 # coelo_database
@@ -38,8 +38,11 @@ Status: pacote ativo. A primeira migration real nasceu de `specs/011-superadmin-
    baseline** e `supabase db reset` aplicam a baseline e o seed.
    `db reset` com `migrations/` inteira **nao funciona**: `20260910170100`
    exige o catalogo (seed) antes dela e o seed so roda depois das migrations.
-2. Aplicar com `psql`, na ordem do carimbo, todas as migrations de
-   `migrations/` posteriores a baseline (as que producao ja tem).
+2. Aplicar com `psql` os arquivos listados em
+   `migrations/ordem-de-aplicacao-producao.txt`, exatamente na ordem do manifesto.
+   A ordem dos carimbos nao reproduz a producao: ha dependencias entre lotes
+   aplicados fora dessa ordenacao. O replay R11 confirmou os 167 arquivos do
+   manifesto apos baseline e seed, sem reaplicar historico remoto.
 3. Aplicar o pacote candidato com `psql` e rodar seus pgTAP em cima. Fixture
    que use coluna ou funcao que producao nao tem (por exemplo
    `units.institution_type_id`) falha aqui e precisa ser corrigida antes de

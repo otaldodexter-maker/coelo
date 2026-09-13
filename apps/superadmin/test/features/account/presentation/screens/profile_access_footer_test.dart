@@ -9,8 +9,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  for (final width in [375.0, 1440.0]) {
-    testWidgets('long access list keeps save visible at $width', (tester) async {
+  for (final (width, scale) in [(375.0, 1.0), (1440.0, 1.0), (375.0, 2.0), (1440.0, 2.0)]) {
+    testWidgets('long access list keeps save visible at $width scale $scale', (tester) async {
       await tester.binding.setSurfaceSize(Size(width, 1000));
       addTearDown(() => tester.binding.setSurfaceSize(null));
       final activities = SuperadminActivityController();
@@ -33,6 +33,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           theme: CoeloTheme.light,
+          builder: (context, child) => MediaQuery(
+            data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+            child: child!,
+          ),
           home: ProfilePage(
             controller: controller,
             logout: () async => const LogoutResult.success(),

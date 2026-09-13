@@ -1,0 +1,23 @@
+[
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11 candidato20260913143441 local-green:8/8 pgTAP; diagnostico transacional adicional23503 confirma DELETE em outra configuracao. Aguardando requisito PITR/aplicacao; UPDATE UI ainda falha no mesmo b04c879e.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11 candidato20260913143659 local-green:10/10 pgTAP cobrem contadores, status, heranca e isolamento real. RPC remoto ainda omite campos; UI/reload permanecem sem aceite dos contadores.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11 build d20bcfcf2: nome/cancelar/reload/header Principal, footer/busca/mobile observados;58 testes Flutter focais unicos PASS incluindo4goldens e texto200%. Foto mostra ausencia de confirmacao real; persistencia R2, cor/sigla remotas e grupos de acesso SQL ainda pendentes. Sem aceite integral.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  }
+]

@@ -337,3 +337,11 @@ Fonte: [catálogo consolidado](reviews/etapa-2-operacao/next-round/R12-sincroniz
 - R12-18: quais campos são obrigatórios no cadastro de pessoa sem conta; expressão não obrigatórios pode se referir apenas a celular/e-mail.
 - R12-33: definir eventos, destinatários por capacidade e canal/antecedência das notificações de medicação.
 - R12-36/37: retirada de prioridade e datas excluídas da UX não define nova precedência nem elimina exceções históricas; conferir contrato antes de alterar persistência.
+
+## R11 — requisito de backup remoto — 2026-09-13
+
+Fontes: `docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md` e prompt de execucao do Owner exigem PITR ligado; `decisions/0034-mvp-remote-application-and-acceptance-bar.md`, Decisao8, registra a excecao anterior com backup por lote antes de clientes reais (conforme R10-fechamento). Preflight R11: PITR=false. Decisao solicitada ao Owner: manter a excecao para este lote ou exigir PITR antes da aplicacao. C0 preparou quatro candidatos e pgTAP local; nenhum SQL remoto foi aplicado. Primeiro gate do integrador: resolver esse requisito e medir novamente a configuracao antes de aplicar. Backup logico preparado nao resolve silenciosamente o conflito.
+
+### R11 — ordem do replay local reconciliada
+
+O README antigo dizia ordem por carimbo; `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt` ja documentava a ordem REAL por lote e a dependencia que impede ordenar por timestamp. C0 corrigiu o README para apontar ao manifesto operacional existente apos replay local dos167 arquivos. Isso nao altera ordem de producao nem aprova reaplicacao do historico. Evidencia: `docs/reviews/evidence/etapa-2/r11-coordenacao/local-replay.json`.

@@ -1,0 +1,97 @@
+BEGIN
+CREATE EXTENSION
+ plan
+------
+ 1..4
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "a8938993-231e-47cc-848f-53c33afd5851", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ set_config
+------------
+
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+SELECT 1
+SELECT 1
+                is
+-----------------------------------
+ ok 1 - create first configuration
+(1 row)
+
+                                                                            superadmin_assessment_activate_configuration
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"ok": true, "data": {"id": "7dc434f6-e5a9-467c-82cc-6a12bd4e0c1a", "status": "active", "version": 2, "replayed": false, "correlation_id": "4e681146-a1c4-4289-bbbf-7f313e7fc65f"}, "error": null}
+(1 row)
+
+SELECT 1
+                            is
+-----------------------------------------------------------
+ ok 2 - retained gradebook references active configuration
+(1 row)
+
+SELECT 1
+                 is
+-------------------------------------
+ ok 3 - create second retained draft
+(1 row)
+
+CREATE FUNCTION
+CREATE FUNCTION
+                                 alike
+------------------------------------------------------------------------
+ ok 4 - original update fails on a foreign key of another configuration
+(1 row)
+
+                 sanitized_local_sqlstate
+-----------------------------------------------------------
+ 23503:assessment_gradebooks_period_id_institution_id_fkey
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
