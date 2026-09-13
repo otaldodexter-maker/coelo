@@ -435,7 +435,11 @@ final class AssessmentVersionConflictException implements Exception {
 }
 
 final class AssessmentOfflineException implements Exception {
-  const AssessmentOfflineException();
+  const AssessmentOfflineException({this.diagnosticCode});
+
+  /// Only a bounded server-envelope code. It is shown exclusively by the
+  /// opt-in QA diagnostic build and never contains server messages or payloads.
+  final String? diagnosticCode;
 }
 
 final class UnavailableAssessmentRepository implements AssessmentRepository {

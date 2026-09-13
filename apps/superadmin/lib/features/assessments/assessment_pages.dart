@@ -1136,6 +1136,20 @@ final class _LegacyAssessmentConfigurationPrototypeState
           const SnackBar(content: Text('Você não tem permissão para configurar avaliações.')),
         );
       }
+    } on AssessmentOfflineException catch (error) {
+      if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
+        final diagnosticCode = const bool.fromEnvironment('COELO_ASSESSMENT_SAVE_DIAGNOSTICS')
+            ? error.diagnosticCode
+            : null;
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'N\u00e3o foi poss\u00edvel salvar. Tente novamente.'
+              '${diagnosticCode == null ? '' : '\nC\u00f3digo de diagn\u00f3stico: $diagnosticCode'}',
+            ),
+          ),
+        );
+      }
     } on Object {
       if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
         ScaffoldMessenger.of(
