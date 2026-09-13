@@ -388,8 +388,11 @@ final class _AssessmentRepositoryStub implements AssessmentRepository {
   Future<AssessmentContextOptions> fetchContextOptions() async =>
       const AssessmentContextOptions(assignments: [], periods: []);
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async =>
-      null;
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) async => null;
   @override
   Future<AssessmentGradebook> createOrResumeGradebook(
     AssessmentContext context,

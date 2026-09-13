@@ -125,6 +125,64 @@ void main() {
     expect(result.events.single.actorPersonId, 'person-reviewer');
   });
 
+  test(
+    'save configuration reloads the exact saved draft instead of the active configuration',
+    () async {
+      final calls = <Request>[];
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          calls.add(request);
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_save_configuration')) {
+            return _json({'id': 'draft-r10', 'version': 1, 'status': 'draft'}, request);
+          }
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_configuration_read_by_id')) {
+            return _json(
+              _configurationEnvelope('draft-r10', 'draft', 'R08 sintético — revisão R10'),
+              request,
+            );
+          }
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_configuration_read')) {
+            return _json(
+              _configurationEnvelope('active-old', 'active', 'Período ativo antigo'),
+              request,
+            );
+          }
+          return Response('not found', 404, request: request);
+        }),
+      );
+      addTearDown(client.dispose);
+      const source = AssessmentConfiguration(
+        id: 'active-old',
+        activityId: 'activity-r10',
+        institutionId: 'institution-r10',
+        unitId: 'unit-r10',
+        periodicity: 'annual',
+        scaleKind: AssessmentScaleKind.numeric,
+        version: 2,
+        status: 'active',
+        instruments: [],
+        competencies: [],
+        availableCompetencies: [],
+        concepts: [],
+        periods: [],
+      );
+
+      final saved = await SupabaseAssessmentRepository(client).saveConfiguration(source);
+
+      expect(saved.id, 'draft-r10');
+      expect(saved.status, 'draft');
+      expect(saved.periods.single.name, 'R08 sintético — revisão R10');
+      expect(calls.map((request) => request.url.path), [
+        endsWith('/rpc/superadmin_assessment_save_configuration'),
+        endsWith('/rpc/superadmin_assessment_configuration_read_by_id'),
+      ]);
+      final readBody = jsonDecode(calls.last.body) as Map<String, dynamic>;
+      expect(readBody, {'target_configuration': 'draft-r10'});
+    },
+  );
+
   test('maps internal v2 envelopes without exposing backend details', () async {
     SupabaseAssessmentRepository repositoryFor(String code, int status) {
       final client = SupabaseClient(
@@ -185,3 +243,43 @@ void main() {
     );
   });
 }
+
+Response _json(Object? data, Request request) => Response(
+  jsonEncode({'ok': true, 'data': data, 'error': null}),
+  200,
+  headers: {'content-type': 'application/json'},
+  request: request,
+);
+
+Map<String, Object?> _configurationEnvelope(String id, String status, String periodName) => {
+  'configuration': {
+    'id': id,
+    'activity_id': 'activity-r10',
+    'institution_id': 'institution-r10',
+    'unit_id': 'unit-r10',
+    'periodicity': 'annual',
+    'result_scale_kind': 'numeric',
+    'scale_options': {'step': 0.1},
+    'allow_final_override': false,
+    'management_version': 1,
+    'status': status,
+  },
+  'instruments': <Object?>[],
+  'concepts': <Object?>[],
+  'competencies': <Object?>[],
+  'available_competencies': <Object?>[],
+  'periods': [
+    {
+      'id': 'period-r10',
+      'name': periodName,
+      'ordinal': 1,
+      'academic_year': 2026,
+      'starts_on': '2026-01-01',
+      'ends_on': '2026-12-31',
+      'entry_closes_at': '2026-12-31T18:00:00Z',
+      'family_release_at': '2027-01-02T08:00:00Z',
+      'timezone': 'America/Sao_Paulo',
+      'status': 'active',
+    },
+  ],
+};

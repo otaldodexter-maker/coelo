@@ -399,7 +399,11 @@ final class AssessmentClosingItem {
 
 abstract interface class AssessmentRepository {
   Future<AssessmentContextOptions> fetchContextOptions();
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId});
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  });
   Future<AssessmentGradebook> createOrResumeGradebook(
     AssessmentContext context,
     AssessmentConfiguration configuration,
@@ -440,8 +444,11 @@ final class UnavailableAssessmentRepository implements AssessmentRepository {
   @override
   Future<AssessmentContextOptions> fetchContextOptions() async => _fail();
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async =>
-      _fail();
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) async => _fail();
   @override
   Future<AssessmentGradebook> createOrResumeGradebook(
     AssessmentContext context,
