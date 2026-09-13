@@ -1116,6 +1116,7 @@ GoRouter createSuperadminRouter({
           ? MemoryImage(profile!.avatar.photoBytes!)
           : null,
       onOpenProfile: (context) => context.goNamed(SuperadminRoutes.principalProfileName),
+      onOpenHome: (context) => context.goNamed(SuperadminRoutes.principalHappensName),
     );
   }
 

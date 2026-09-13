@@ -41,12 +41,20 @@ final class PrincipalBrandButton extends StatelessWidget {
       message: 'Abrir menu',
       child: TextButton(
         key: ValueKey('$keyPrefix-menu'),
-        style: TextButton.styleFrom(
-          foregroundColor: scheme.onSurface,
-          overlayColor: scheme.primaryContainer,
-          padding: EdgeInsets.zero,
-          shape: const RoundedRectangleBorder(),
-        ),
+        style:
+            TextButton.styleFrom(
+              foregroundColor: scheme.onSurface,
+              overlayColor: Colors.transparent,
+              padding: EdgeInsets.zero,
+              shape: const RoundedRectangleBorder(),
+            ).copyWith(
+              foregroundColor: WidgetStateProperty.resolveWith(
+                (states) =>
+                    states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
+                    ? scheme.primary
+                    : scheme.onSurface,
+              ),
+            ),
         onPressed: onPressed,
         child: row,
       ),
@@ -131,21 +139,26 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                   icon: const Icon(Icons.notifications_none_rounded, size: 22),
                 ),
               if (onChooseContexts != null)
-                PopupMenuButton<String>(
-                  key: ValueKey('$keyPrefix-context-avatar'),
-                  tooltip: 'Abrir menu do perfil',
-                  color: scheme.surface,
-                  surfaceTintColor: Colors.transparent,
-                  onSelected: (value) =>
-                      value == 'contexts' ? onChooseContexts!() : onOpenProfile(),
-                  itemBuilder: (_) => const [
-                    PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
-                    PopupMenuItem(value: 'contexts', child: Text('Ver como')),
-                  ],
-                  icon: CircleAvatar(
-                    radius: 18,
-                    backgroundImage: avatarImage,
-                    child: avatarImage == null ? Text(avatarInitials) : null,
+                Theme(
+                  data: Theme.of(
+                    context,
+                  ).copyWith(hoverColor: Colors.transparent, highlightColor: Colors.transparent),
+                  child: PopupMenuButton<String>(
+                    key: ValueKey('$keyPrefix-context-avatar'),
+                    tooltip: 'Abrir menu do perfil',
+                    color: scheme.surface,
+                    surfaceTintColor: Colors.transparent,
+                    onSelected: (value) =>
+                        value == 'contexts' ? onChooseContexts!() : onOpenProfile(),
+                    itemBuilder: (_) => const [
+                      PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
+                      PopupMenuItem(value: 'contexts', child: Text('Ver como')),
+                    ],
+                    icon: CircleAvatar(
+                      radius: 18,
+                      backgroundImage: avatarImage,
+                      child: avatarImage == null ? Text(avatarInitials) : null,
+                    ),
                   ),
                 )
               else

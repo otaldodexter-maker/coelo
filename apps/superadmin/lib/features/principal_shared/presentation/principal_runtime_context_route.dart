@@ -23,6 +23,7 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
     this.avatarInitials = '?',
     this.avatarImage,
     this.onOpenProfile,
+    this.onOpenHome,
     this.notificationAction,
     this.onReportProblem,
     super.key,
@@ -34,6 +35,7 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
   final String avatarInitials;
   final ImageProvider? avatarImage;
   final ValueChanged<BuildContext>? onOpenProfile;
+  final ValueChanged<BuildContext>? onOpenHome;
   final Widget? notificationAction;
   final ValueChanged<BuildContext>? onReportProblem;
 
@@ -127,7 +129,7 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
             keyPrefix: 'principal-context-header',
             avatarInitials: widget.avatarInitials,
             avatarImage: widget.avatarImage,
-            onOpenMenu: () => widget.onOpenProfile?.call(context),
+            onOpenMenu: () => widget.onOpenHome?.call(context),
             onOpenNotifications: () => ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Consulte as notificações pelo sino do Superadmin.')),
             ),
@@ -390,10 +392,11 @@ class _MultipleContextSheetState extends State<_MultipleContextSheet> {
                     hoverColor: Colors.transparent,
                     controlAffinity: ListTileControlAffinity.leading,
                     onChanged: (value) => setState(() {
-                      if (value == true)
+                      if (value == true) {
                         selected.add(item.membershipId);
-                      else
+                      } else {
                         selected.remove(item.membershipId);
+                      }
                     }),
                   ),
               ],
