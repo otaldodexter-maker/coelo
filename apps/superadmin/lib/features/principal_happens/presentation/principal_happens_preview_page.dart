@@ -727,15 +727,15 @@ final class _FeedStatePanel extends StatelessWidget {
     : this._(
         icon: Icons.dynamic_feed_outlined,
         title: 'Carregando publicações',
-        message: 'Buscando as novidades deste contexto.',
+        message: 'Buscando as publicações deste contexto.',
         loading: true,
       );
 
   const _FeedStatePanel.empty()
     : this._(
         icon: Icons.auto_awesome_outlined,
-        title: 'Tudo em dia por aqui',
-        message: 'As próximas publicações aparecerão neste espaço.',
+        title: 'Nenhuma publicação neste contexto',
+        message: 'As publicações disponíveis aparecerão aqui, mesmo depois de vistas.',
       );
 
   factory _FeedStatePanel.error({required bool unauthorized, required VoidCallback onRetry}) =>

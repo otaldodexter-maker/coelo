@@ -141,7 +141,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('principal-happens-gallery')), findsNothing);
-    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(find.text('Nenhuma publicação neste contexto'), findsOneWidget);
     expect(
       find.byWidgetPredicate(
         (widget) =>
@@ -182,7 +182,7 @@ void main() {
 
     completer.complete(const []);
     await tester.pumpAndSettle();
-    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(find.text('Nenhuma publicação neste contexto'), findsOneWidget);
   });
 
   testWidgets('renders posts returned by the injected feed repository', (tester) async {
@@ -249,7 +249,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(attempts, 2);
-    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(find.text('Nenhuma publicação neste contexto'), findsOneWidget);
   });
 
   testWidgets('reloads the feed to obtain a fresh ticket after media read failure', (tester) async {

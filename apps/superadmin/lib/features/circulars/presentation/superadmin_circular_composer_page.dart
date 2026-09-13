@@ -166,9 +166,9 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
         for (var index = 0; index < draft.blocks.length; index++) ...[
           _editorBlock(draft.blocks[index], index),
           if (index == 0 || mediaCount < CircularLimits.files)
-            Align(
-              alignment: Alignment.centerLeft,
-              child: TextButton.icon(
+            SizedBox(
+              height: 160,
+              child: CoeloCreateAction(
                 key: Key(
                   index == 0
                       ? 'circular-pick-files'
@@ -177,8 +177,8 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
                 onPressed: mediaCount >= CircularLimits.files
                     ? null
                     : () => widget.onPickFiles(draft.blocks[index].id),
-                icon: const Icon(Icons.attach_file_rounded),
-                label: const Text('Adicionar mídia aqui'),
+                icon: Icons.add_photo_alternate_outlined,
+                label: 'Adicionar mídia aqui',
               ),
             ),
           const SizedBox(height: CoeloSpacing.space2),

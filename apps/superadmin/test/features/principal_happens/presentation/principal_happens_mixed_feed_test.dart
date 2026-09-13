@@ -50,7 +50,7 @@ void main() {
     read();
     await tester.pumpAndSettle();
     expect(opened, isEmpty);
-    expect(find.text('Tudo em dia por aqui'), findsOneWidget);
+    expect(find.text('Nenhuma publicação neste contexto'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 

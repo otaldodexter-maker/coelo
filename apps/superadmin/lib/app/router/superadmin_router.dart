@@ -1102,21 +1102,26 @@ GoRouter createSuperadminRouter({
     PrincipalRuntimeContextBuilder? builder,
     Widget Function(BuildContext, List<PrincipalRuntimeContext>)? multipleBuilder,
   }) {
-    final profile = productionAccountController.profile;
-    return PrincipalRuntimeContextRoute(
-      key: key,
-      repository: repository,
-      builder: builder,
-      multipleBuilder: multipleBuilder,
-      avatarInitials: profile?.avatar.initials ?? '?',
-      notificationAction: SuperadminActivityCenter(controller: operationalActivities),
-      onReportProblem: (context) => context.goNamed(SuperadminRoutes.supportName),
-      avatarImage:
-          profile?.avatar.mode == AccountAvatarMode.photo && profile?.avatar.photoBytes != null
-          ? MemoryImage(profile!.avatar.photoBytes!)
-          : null,
-      onOpenProfile: (context) => context.goNamed(SuperadminRoutes.principalProfileName),
-      onOpenHome: (context) => context.goNamed(SuperadminRoutes.principalHappensName),
+    return ListenableBuilder(
+      listenable: productionAccountController,
+      builder: (context, _) {
+        final profile = productionAccountController.profile;
+        return PrincipalRuntimeContextRoute(
+          key: key,
+          repository: repository,
+          builder: builder,
+          multipleBuilder: multipleBuilder,
+          avatarInitials: profile?.avatar.initials ?? '?',
+          notificationAction: SuperadminActivityCenter(controller: operationalActivities),
+          onReportProblem: (context) => context.goNamed(SuperadminRoutes.supportName),
+          avatarImage:
+              profile?.avatar.mode == AccountAvatarMode.photo && profile?.avatar.photoBytes != null
+              ? MemoryImage(profile!.avatar.photoBytes!)
+              : null,
+          onOpenProfile: (context) => context.goNamed(SuperadminRoutes.principalProfileName),
+          onOpenHome: (context) => context.goNamed(SuperadminRoutes.principalHappensName),
+        );
+      },
     );
   }
 
