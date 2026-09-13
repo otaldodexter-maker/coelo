@@ -293,3 +293,7 @@ regravar depois de aplicar a observação.
   lista; responsável não tem "+ Agora", que adiciona no Acontece e só aparece
   para quem pode publicar; ao publicar fora do perfil selecionado, o app
   pergunta em qual perfil vai publicar.
+
+## Apontamento posterior do Owner — Meu perfil, preparação R11
+
+Ver `docs/design/account-profile-owner-adjustments-20260913.md`: header deve refletir nome/foto persistidos; ações acessíveis; Meu acesso com rolagem limitada, busca e grupos por hierarquia real. Direção solicitada, ainda sem novo render aprovado. Preservar a família administrativa e comparar com as baselines desta referência.

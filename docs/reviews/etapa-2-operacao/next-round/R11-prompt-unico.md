@@ -15,8 +15,8 @@ Não iniciar R12 nem Etapa 3 automaticamente.
 
 Concluir o maior conjunto coerente de ações possível dentro da cota real,
 priorizando problemas reproduzidos e provas que reutilizam código já integrado.
-Recorte: apps/superadmin > Auth e menu Estrutura > Atividades, Avaliações e
-Turmas. Coelo (Principal) é outro menu hospedado: preservar suas correções.
+Recorte: apps/superadmin > Meu perfil/Conta, Auth e menu Estrutura >
+Atividades, Avaliações e Turmas. Coelo (Principal) é outro menu hospedado: preservar suas correções.
 Não interpretar esta rodada como auditoria de todas as 231 ações.
 
 A R10 e a extensão posterior estão encerradas. Base entregue antes desta
@@ -71,6 +71,27 @@ Execução serial C0 é o padrão econômico; não iniciar enxame de auxiliares.
 
 ## Ordem focal e aceites
 
+### A0. Meu perfil e cabeçalho — account.profile
+
+Prioridade acrescentada pelo Owner após a preparação inicial. Ler
+`docs/design/account-profile-owner-adjustments-20260913.md`.
+Na UI o formulário mostra foto selecionada, mas o cabeçalho continua com sigla;
+nome também foi apontado como possível falha, ainda a reproduzir.
+Confirmar primeiro antes/depois de Salvar e reload: prévia local não é foto
+persistida. Depois de sucesso real, cabeçalho deve refletir foto/nome da mesma
+conta no shell e no Principal hospedado, inclusive após navegar/recarregar.
+Não usar valor fixo nem aceitar identidade residual ao trocar sessão.
+
+A lista longa Meu acesso empurra Salvar para o fim da página. Aplicar o rodapé
+de ações padrão acessível no contêiner; limitar altura de Meu acesso, com
+rolagem interna, busca e agrupamento de permissões por módulo e escopo/hierarquia
+que o catálogo/backend realmente informar. Preservar leitura apenas, teclado,
+scroll mobile e texto ampliado, sem rolagem aprisionada ou botão encoberto.
+Explicar capacidades de funções adiadas sem prometer operação disponível.
+Não criar papéis/permissões nem alterar autorização por ajuste de apresentação.
+Agrupamento visual não substitui tenant/ownership/RLS. Provar salvar/cancelar,
+nome/foto no header, busca/grupos e reload antes de declarar corrigido.
+
 ### A. Recuperar/redefinir senha — auth.recover, auth.reset
 
 Primeiro faça uma inspeção curta do fluxo/configuração e da caixa sintética
@@ -116,7 +137,7 @@ com filtro de status e hierarquia do contrato vigente. Provar UI e reload.
 Não tratar o aceite anterior da listagem como prova de contadores corretos.
 Esta ação é independente: antecipar se a cadeia avaliativa ficar bloqueada.
 
-Se estes quatro blocos terminarem com margem, escolher somente uma ação
+Se Conta/Auth e os três blocos de Estrutura terminarem com margem, escolher somente uma ação
 vizinha executável: institutions.status ou institutions.locations-map.
 Não ampliar para outro macrotema para aumentar contagem. Diante de bloqueio,
 registrar causa e seguir o próximo bloco independente dentro da cota.

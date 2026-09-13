@@ -1239,6 +1239,19 @@
       "evidence": "docs/design/chat-media-composer-owner-reference-20260913.md",
       "owner": "C0 na rodada designada da Etapa 2",
       "nextGate": "Comparar chat produtivo com direção registrada; render, implementação e prova por ação. Fora da prioridade R11; não adiado para pós-MVP."
+    },
+    {
+      "id": "owner.r11-account-header-access",
+      "status": "open",
+      "actionIds": [
+        "account.profile"
+      ],
+      "fe": "reported-pending-reproduction",
+      "be": "not-diagnosed",
+      "e2e": "new-observation-not-certified",
+      "evidence": "docs/design/account-profile-owner-adjustments-20260913.md",
+      "owner": "C0 R11",
+      "nextGate": "Reproduzir depois de salvar e reload; conferir projeção do cabeçalho e rodapé/Meu acesso; implementar e provar na cota R11."
     }
   ],
   "evidenceFiles": [
@@ -1251,11 +1264,13 @@
     "docs/knowledge/team/principal-host-context-media.md",
     "docs/design/chat-media-composer-owner-reference-20260913.md",
     "docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md",
-    "docs/knowledge/team/chat-media-composer-direction.md"
+    "docs/knowledge/team/chat-media-composer-direction.md",
+    "docs/design/account-profile-owner-adjustments-20260913.md",
+    "docs/knowledge/team/account-profile-header-access.md"
   ],
   "memory": {
     "status": "captured",
-    "reason": "Direção visual aprovada pelo Owner registrada na fonte canônica e projetada para team, explicitamente sem render/implementação concluídos.",
+    "reason": "Direção visual aprovada pelo Owner registrada na fonte canônica e projetada para team, explicitamente sem render/implementação concluídos. Também capturada orientação de Meu perfil/header/Meu acesso com fonte canônica, sem alegar implementação.",
     "evidence": "docs/knowledge/team/chat-media-composer-direction.md"
   },
   "deployment": {
