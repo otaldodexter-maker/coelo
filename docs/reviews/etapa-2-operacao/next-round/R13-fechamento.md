@@ -9,7 +9,7 @@ generated_at: 2026-09-13
 R13 foi encerrada dentro da fase de reserva, sem iniciar Etapa 3 e sem alterar
 Supabase, SQL, R2, Stream, Edge Functions ou deploy público. A posse veio da
 R12 no SHA `4ded9c567ef8415d62421b503a7e38c27ba53fa4`; a base entregue desta
-rodada é `f8c209a1796389a7f6cf76799caa106320e32d5f` em `dev` e `origin/dev`.
+rodada é `495a5deb720c018a341889270a9342ced937e178` em `dev` e `origin/dev`.
 
 ## Compromissos e resultado
 
@@ -44,14 +44,14 @@ bloqueio externo, não por tentativa de consumir o teto.
 ## Git, memória e entrega
 
 O checkout final é `C:\Users\adrie\Documents\Coelo`, branch `dev`, sem stash e
-sem worktrees adicionais; `HEAD=origin/dev=f8c209a17`. Commits publicados:
-`100f30f6e` (checkpoint de abertura) e `f8c209a17` (ajuste visual e teste).
+sem worktrees adicionais; `HEAD=origin/dev=495a5deb7`. Commits publicados:
+`100f30f6e` (checkpoint), `f8c209a17` (ajuste visual/teste) e `495a5deb7`
+(fechamento/documentação).
 O gate de memória é `no-op`: a direção visual já existe na fonte canônica
 `docs/design/chat-media-composer-owner-reference-20260913.md`, e o delta desta
 rodada não cria regra durável nova.
 
-Não houve deploy público. O resultado permitido é
-`PASS DOCUMENTED_PARTIAL`, condicionado à execução do delivery gate após o
-commit final. Primeiro gate da continuação: Owner resolve PITR/backup/ordem;
+Não houve deploy público. O resultado do delivery gate foi
+`PASS DOCUMENTED_PARTIAL` após o commit final. Primeiro gate da continuação: Owner resolve PITR/backup/ordem;
 depois C0 retoma configuração/publicação/diário/contadores e, em seguida,
 provas de Conta/Auth e mídia conforme a dependência real.
