@@ -127,7 +127,7 @@ segue R13, sem redesenho oportunista.
 - [x] Executar o mesmo comando com `--apply`: transfere cada item selecionado
   ainda aberto para R13, mantendo ID, provas, candidato, camadas e bloqueio.
   Não transferir item concluído nem abrir R13 automaticamente.
-- [ ] Gate final após publicação: commit/push dev sem force; executar delivery_gate.py após push,
+- [x] Gate final após publicação: commit/push dev sem force; executar delivery_gate.py após push,
   reconciliar remoto/WIP e reportar a lista transferida. PASS parcial não é
   conclusão do produto. Falta de cota não autoriza omitir o fechamento.
 

@@ -49,3 +49,7 @@ Uma worktree consolidada dev, sem stash ou WIP de código retido. Branches hist�
 Executar preview/apply após este status encerrada; recibo R12-transferencia-final-R13.json é a lista exata autoritativa. Os três selecionados completos não são transferidos; os50 previamente planejados permanecem R13, com seus bloqueios e aceites anteriores. Dívidas auxiliares de teste/validador constam em R12-pendencias.md para C0 R13, sem inventar IDs de produto.
 
 Supervisor confirmado waiting, PID11180, run32e2492208434a1dac9aa6adeae1ca04, preparado independentemente. Após commit/push, HEAD=origin/dev, checkout limpo e delivery_gate PASS DOCUMENTED_PARTIAL, o último comando C0 é `r12-luna-dispatch.py release --release-writer`. O próprio comando revalida esses gates e emite recibo privado atômico. Após sucesso não há ferramenta/escrita C0; R13 Luna medium fica sob supervisão e admite uma retomada na reserva. Este arquivo não antecipa resultado do release nem certifica execução R13.
+
+## Resultado do gate de publicação
+
+Em 2026-09-13T14:29:26.886672-03:00, após push48b0df816: PASS DOCUMENTED_PARTIAL; HEAD=origin/dev, sem alterações locais. Supervisor11180 confirmado waiting, cota95%. Este adendo segue em commit sucessor; o gate é repetido nessa base e novamente pelo release antes do sinal. Duração até este adendo: 42.1min, incluindo consolidação. Transferência formal confirmou0 adicionais e50 pendências R13.
