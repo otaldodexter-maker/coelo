@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 
 import '../../domain/chat_repository.dart';
 import '../../../../core/platform/open_download.dart';
+import 'superadmin_chat_inline_media.dart';
 import 'superadmin_chat_image_dialog.dart';
 
 enum SuperadminChatAttachmentState { pending, ready, failed, deleted }
@@ -240,6 +241,15 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                       status.label,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: status.color),
                     ),
+                    if (const {'image/jpeg', 'image/png', 'image/webp'}.contains(attachment.mediaType) &&
+                        state == SuperadminChatAttachmentState.ready &&
+                        widget.attachmentRepository != null &&
+                        widget.mediaSession != null)
+                      SuperadminChatInlineMedia(
+                        attachment: attachment,
+                        attachmentRepository: widget.attachmentRepository!,
+                        session: widget.mediaSession!,
+                      ),
                     if (attachment.mediaType == 'application/pdf' &&
                         state == SuperadminChatAttachmentState.ready)
                       TextButton(
@@ -260,7 +270,8 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                         onPressed: _canOpen ? _openImage : null,
                         child: const Text('Abrir imagem'),
                       ),
-                      if (!_canOpen)
+                      if (!_canOpen &&
+                          (widget.attachmentRepository == null || widget.mediaSession == null))
                         Text(
                           'Visualização indisponível neste contexto.',
                           style: Theme.of(context).textTheme.labelSmall,
@@ -326,8 +337,8 @@ final class _AttachmentStatus {
         color: colors.primary,
       ),
       SuperadminChatAttachmentState.ready => _AttachmentStatus(
-        label: 'Pronto para enviar',
-        semanticsLabel: 'Pronto para enviar',
+        label: 'Anexo disponível',
+        semanticsLabel: 'Anexo disponível',
         color: colors.primary,
       ),
       SuperadminChatAttachmentState.failed => _AttachmentStatus(
