@@ -1,6 +1,6 @@
 ---
 source: Owner R11 2026-09-13; R11-checkpoint.md; inventario-etapa-2.json; evidence/etapa-2/r11-coordenacao
-status: fechamento parcial em verificacao
+status: encerrada; entrega parcial documentada
 generated_at: 2026-09-13
 ---
 
@@ -81,4 +81,6 @@ Commits C0 publicados: ed4e19b25, e4d9ffcc8, ebf7f23e2, cf1b7ee70, c17ca4cb7, d2
 
 Ignorados preservados: env privado, credenciais QA fora do Git, builds R10/R11, Chrome QA e espelho local. Dados sinteticos retidos: configb04c879e-bedd-4e45-9358-66c545215646, atividad95b98978-19e2-43ba-aa0c-70ae81557e08, diariod2c945d8-3809-4d84-b836-2bc6da7c381d e turma4214106c-46a2-4bf4-84ba-9c6a619bd486. Nome QA original restaurado, senha nao alterada; nenhuma duplicacao de vinculo/config/diario. Foto de prova foi PNG estatico da marca, sem objeto remoto criado.
 
-O gate final e executado somente apos commit/push. Este documento em verificacao nao antecipa PASS. Pendencias completas do recorte em [R11-pendencias.md](R11-pendencias.md); decisao PITR separada em docs/open-questions.md. Nao iniciar rodada posterior automaticamente.
+O gate foi executado apos commit/push e retornou PASS DOCUMENTED_PARTIAL, conforme registro abaixo. Pendencias completas do recorte em [R11-pendencias.md](R11-pendencias.md); decisao PITR separada em docs/open-questions.md. Nao iniciar rodada posterior automaticamente.
+
+Fechamento registrado em 2026-09-13T15:42:06.430654+00:00 (114.46min desde T0). Gate apos commit/push f4d602f2e9f1aee24b24f5c202bf8f5641d23977: PASS DOCUMENTED_PARTIAL, exit0. Cota final medida92% usados, abertura87%, consumo5p.p.; mesma janela/reset. HEAD/origin-dev sem divergencia e checkout sem WIP no gate. Este registro documental sera publicado e o gate repetido na base final, sem rerun de testes de produto. Retomada somente mediante instrucao explicita; R12/Etapa3 nao iniciadas.
