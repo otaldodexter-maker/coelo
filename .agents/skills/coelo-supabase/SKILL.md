@@ -9,6 +9,16 @@ metadata:
 
 # Coelo Back-end
 
+## Estado documental atual
+
+A R10 foi encerrada. Para pend?ncias e avan?os vigentes, consultar
+[fechamento R10](../../../docs/reviews/etapa-2-operacao/next-round/R10-fechamento.md),
+[estado por tela e subtela](../../../docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md)
+e o invent?rio/tr?s rastreadores sincronizados em `docs/reviews/`.
+Notas de rodadas anteriores abaixo s?o hist?ricas; n?o trat?-las como falta
+atual de implementa??o ou autoriza??o sem conferir o registro mais recente.
+Uma consulta documental n?o reabre a rodada nem inicia R11 ou Etapa 3.
+
 ## Entrega atual e limite da Etapa 3
 
 Na Etapa 2, fechar o backend das ações por contratos produtivos, persistência,

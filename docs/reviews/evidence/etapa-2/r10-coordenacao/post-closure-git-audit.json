@@ -1,0 +1,317 @@
+{
+  "at": "2026-09-13T05:30:56.428936+00:00",
+  "remote": "c8c38e28b3603a04bcff332d5a49421613adf22f",
+  "worktrees": [
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo",
+      "HEAD": "5d57969b4a1542a8662f93486e92b2715d8ce721",
+      "branch": "refs/heads/dev",
+      "status": [],
+      "aheadBehindOriginDev": "0\t814"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
+      "HEAD": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "branch": "refs/heads/work/etapa2-r07-coordenacao",
+      "status": [],
+      "aheadBehindOriginDev": "0\t710"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "HEAD": "942955410699007fd86515fd34fb804b6b96903d",
+      "branch": "refs/heads/work/etapa2-r08-acessos-pessoas",
+      "status": [],
+      "aheadBehindOriginDev": "0\t364"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "HEAD": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "branch": "refs/heads/work/etapa2-r08-ambiente-runtime",
+      "status": [],
+      "aheadBehindOriginDev": "0\t179"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao",
+      "HEAD": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "branch": "refs/heads/work/etapa2-r08-coordenacao",
+      "status": [],
+      "aheadBehindOriginDev": "0\t178"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-estrutura",
+      "status": [],
+      "aheadBehindOriginDev": "0\t180"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "HEAD": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "branch": "refs/heads/work/etapa2-r08-formularios-cuidado-rotina",
+      "status": [],
+      "aheadBehindOriginDev": "0\t383"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "HEAD": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "branch": "refs/heads/work/etapa2-r08-operacoes",
+      "status": [],
+      "aheadBehindOriginDev": "0\t383"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "HEAD": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "branch": "refs/heads/work/etapa2-r08-principal-chat-sistema",
+      "status": [],
+      "aheadBehindOriginDev": "0\t388"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "HEAD": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "branch": "refs/heads/work/etapa2-r08-publicacoes-agenda",
+      "status": [],
+      "aheadBehindOriginDev": "0\t381"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-realm-interno",
+      "status": [],
+      "aheadBehindOriginDev": "0\t180"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "HEAD": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "branch": "refs/heads/work/etapa2-r08-suites",
+      "status": [],
+      "aheadBehindOriginDev": "0\t316"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+      "HEAD": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "branch": "refs/heads/work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t170"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
+      "HEAD": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "branch": "refs/heads/work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t168"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao",
+      "status": [],
+      "aheadBehindOriginDev": "0\t180"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1534",
+      "HEAD": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1534",
+      "status": [],
+      "aheadBehindOriginDev": "1\t178"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+      "HEAD": "ff11b17980d1519849c1bf472b4bc74c05e2994d",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t87"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
+      "HEAD": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "branch": "refs/heads/work/etapa2-r09-estrutura-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t117"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "HEAD": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "branch": "refs/heads/work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t170"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
+      "HEAD": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "branch": "refs/heads/work/etapa2-r09-operacoes-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t170"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
+      "HEAD": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "branch": "refs/heads/work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t169"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
+      "HEAD": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "branch": "refs/heads/work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t170"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+      "HEAD": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "branch": "refs/heads/work/etapa2-r09-realm-interno-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t164"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
+      "HEAD": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "branch": "refs/heads/work/etapa2-r09-suites-20260912-1542",
+      "status": [],
+      "aheadBehindOriginDev": "0\t170"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-chat-inline",
+      "HEAD": "b3ad72d7f7fb4ff838556d1314911897c53cd2ac",
+      "branch": "refs/heads/work/etapa2-r10-chat-inline",
+      "status": [],
+      "aheadBehindOriginDev": "0\t68"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-chat-upload",
+      "HEAD": "17168309f738582c1bcb63c98742e3b3cd84fb44",
+      "branch": "refs/heads/work/etapa2-r10-chat-upload",
+      "status": [],
+      "aheadBehindOriginDev": "0\t19"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-coordenacao-20260912-2314",
+      "HEAD": "c8c38e28b3603a04bcff332d5a49421613adf22f",
+      "branch": "refs/heads/work/etapa2-r10-coordenacao-20260912-2314",
+      "status": [],
+      "aheadBehindOriginDev": "0\t0"
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-terra-members",
+      "HEAD": "9916ae76ba76e7b563e3f053fa7d293e0e9480ad",
+      "branch": "refs/heads/work/etapa2-r10-terra-members",
+      "status": [],
+      "aheadBehindOriginDev": "0\t26"
+    }
+  ],
+  "nonAncestorBranches": [
+    {
+      "branch": "codex/e2-r02-d01-autenticacao",
+      "sha": "dc44df9e139302985fa47896cc9d794bc8843af2",
+      "aheadBehind": "30\t3111",
+      "upstream": "origin/codex/e2-r02-d01-autenticacao",
+      "patchUnique": 20
+    },
+    {
+      "branch": "codex/e2-r02-d02-estrutura",
+      "sha": "40ec50d7244881be153e61e0ad7bfa7237d97619",
+      "aheadBehind": "81\t3111",
+      "upstream": "",
+      "patchUnique": 39
+    },
+    {
+      "branch": "codex/e2-r02-d03-acompanhamento",
+      "sha": "0a2ecb34ece5e642102f106d50e0ccd9dfecaef7",
+      "aheadBehind": "46\t3111",
+      "upstream": "",
+      "patchUnique": 29
+    },
+    {
+      "branch": "codex/e2-r02-d04-acessos",
+      "sha": "375e0a62a41cb28cb4c9ef20818e0ad11b1010e5",
+      "aheadBehind": "34\t3111",
+      "upstream": "",
+      "patchUnique": 32
+    },
+    {
+      "branch": "codex/e2-r02-l00-coordenacao-claude",
+      "sha": "bdef0f55993b4a21d1a74079ecbbc68f16fd6336",
+      "aheadBehind": "50\t3111",
+      "upstream": "origin/codex/e2-r02-l00-coordenacao-claude",
+      "patchUnique": 50
+    },
+    {
+      "branch": "codex/e2-r02-l01-publicacoes",
+      "sha": "3697dd49e6441f1614a16ebf9d555fde0ee1ebc8",
+      "aheadBehind": "40\t3111",
+      "upstream": "origin/codex/e2-r02-l01-publicacoes",
+      "patchUnique": 40
+    },
+    {
+      "branch": "codex/e2-r02-l02-chat-comunicacoes",
+      "sha": "45d92b9c1826bc0c66d4d4b07e40648278ff68ff",
+      "aheadBehind": "49\t3111",
+      "upstream": "origin/codex/e2-r02-l02-chat-comunicacoes",
+      "patchUnique": 35
+    },
+    {
+      "branch": "wip/fase0-arquivo-chat",
+      "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
+      "aheadBehind": "1\t2003",
+      "upstream": "origin/wip/fase0-arquivo-chat",
+      "patchUnique": 1
+    },
+    {
+      "branch": "work/etapa2-noturna-copia-previa",
+      "sha": "80f160599a30d0c4fbae10197b36f42022e17ff3",
+      "aheadBehind": "1\t2430",
+      "upstream": "origin/work/etapa2-noturna-copia-previa",
+      "patchUnique": 1
+    },
+    {
+      "branch": "work/etapa2-noturna-formularios-cuidado",
+      "sha": "55f4b59102718122efb7d0ed6b0dee6be3cf5d1d",
+      "aheadBehind": "5\t2928",
+      "upstream": "origin/work/etapa2-noturna-formularios-cuidado",
+      "patchUnique": 0
+    },
+    {
+      "branch": "work/etapa2-noturna-import-orfao",
+      "sha": "8a09d66acc321127676520bf0cebedd082c204bb",
+      "aheadBehind": "1\t2154",
+      "upstream": "origin/work/etapa2-noturna-import-orfao",
+      "patchUnique": 0
+    },
+    {
+      "branch": "work/etapa2-noturna-operacoes-sistema",
+      "sha": "dd1a95bcd83ba47da1a5091d47a3b8624adfaa4b",
+      "aheadBehind": "2\t2464",
+      "upstream": "origin/work/etapa2-noturna-operacoes-sistema",
+      "patchUnique": 0
+    },
+    {
+      "branch": "work/etapa2-noturna-perfil-para-voce",
+      "sha": "1d46746ff7d8e70f06287e362571af3a3dd682e0",
+      "aheadBehind": "2\t2327",
+      "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
+      "patchUnique": 0
+    },
+    {
+      "branch": "work/etapa2-noturna-publicacoes-midia",
+      "sha": "69e377f3ec471c4b6e83ff87fe21aec8d8839220",
+      "aheadBehind": "3\t2624",
+      "upstream": "origin/work/etapa2-noturna-publicacoes-midia",
+      "patchUnique": 0
+    },
+    {
+      "branch": "work/etapa2-r09-coordenacao-20260912-1534",
+      "sha": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "aheadBehind": "1\t178",
+      "upstream": "origin/dev",
+      "patchUnique": 1
+    },
+    {
+      "branch": "work/etapa2-r10-chat-upload-first-delivery",
+      "sha": "df90f05b0daac2753cd8935efbdd6575b1eb0a37",
+      "aheadBehind": "1\t85",
+      "upstream": "",
+      "patchUnique": 1
+    }
+  ],
+  "stash": []
+}
