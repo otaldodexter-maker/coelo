@@ -1,0 +1,37 @@
+{
+  "at": "2026-09-13T03:15:30.268494+00:00",
+  "scope": "dois anexos ready do chat; configuracao publica dos tres buckets",
+  "provider": "r2",
+  "checks": [
+    {
+      "asset_id": "9ed2bcc3-dfb9-4f56-a67d-0e582593ca3e",
+      "bytes_db": 82,
+      "bytes_r2": 82,
+      "status": "ready",
+      "r2_http": 200
+    },
+    {
+      "asset_id": "2d6d28e3-8100-4a52-96ab-65bb8f205d72",
+      "bytes_db": 543603,
+      "bytes_r2": 543603,
+      "status": "ready",
+      "r2_http": 200
+    }
+  ],
+  "buckets": {
+    "coelo-media-prod": {
+      "r2_dev_enabled": false,
+      "custom_domains": []
+    },
+    "coelo-documents-prod": {
+      "r2_dev_enabled": false,
+      "custom_domains": []
+    },
+    "coelo-transient-prod": {
+      "r2_dev_enabled": false,
+      "custom_domains": []
+    }
+  },
+  "public_urls_or_secrets_recorded": false,
+  "functional_certificate": false
+}
