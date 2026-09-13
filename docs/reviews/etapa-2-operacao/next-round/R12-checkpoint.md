@@ -20,4 +20,5 @@ Não interpretar status de processo como avanço do produto.
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.
 Backend sem mudança; E2E continua pending-verification por falta de rota real,
 reload, mídia R2/MP4 e negativa cross-tenant.
-Próximo passo: commit/push da fatia e preparar prova normal do próximo gate.
+Commit/push concluído em `3b7446f6fccbd963d42f89abeb117ea81e6975e6`; próximo
+passo: preparar prova normal do próximo gate.

@@ -15,7 +15,7 @@ itens adicionais. Mensagens com uma mídia ou anexos não visuais mantêm o tile
 existente. O contrato produtivo `SupabaseChatRepository`/`chat-media` não foi
 alterado; cada preview continua reautorizado pelo binding privado.
 
-Provas locais, Windows, checkout `dev`, base `8202d3bf8`:
+Provas locais, Windows, checkout `dev`, commit publicado `3b7446f6fccbd963d42f89abeb117ea81e6975e6`:
 
 - `flutter test test/features/chat/presentation/superadmin_chat_page_test.dart`: 32 PASS;
 - `flutter test test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: 21 PASS;
