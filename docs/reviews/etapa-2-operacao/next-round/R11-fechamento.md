@@ -84,3 +84,7 @@ Ignorados preservados: env privado, credenciais QA fora do Git, builds R10/R11, 
 O gate foi executado apos commit/push e retornou PASS DOCUMENTED_PARTIAL, conforme registro abaixo. Pendencias completas do recorte em [R11-pendencias.md](R11-pendencias.md); decisao PITR separada em docs/open-questions.md. Nao iniciar rodada posterior automaticamente.
 
 Fechamento registrado em 2026-09-13T15:42:06.430654+00:00 (114.46min desde T0). Gate apos commit/push f4d602f2e9f1aee24b24f5c202bf8f5641d23977: PASS DOCUMENTED_PARTIAL, exit0. Cota final medida92% usados, abertura87%, consumo5p.p.; mesma janela/reset. HEAD/origin-dev sem divergencia e checkout sem WIP no gate. Este registro documental sera publicado e o gate repetido na base final, sem rerun de testes de produto. Retomada somente mediante instrucao explicita; R12/Etapa3 nao iniciadas.
+
+## Destino das pendências R11 — decisão Owner 2026-09-13
+
+As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.

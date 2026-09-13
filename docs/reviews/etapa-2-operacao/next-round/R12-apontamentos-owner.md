@@ -107,3 +107,7 @@ Ver [R12-chat-contorno-owner.md](R12-chat-contorno-owner.md): R12-43, contorno/c
 ## Oitavo bloco — Convites
 
 Ver [R12-convites-owner.md](R12-convites-owner.md): R12-44 e R12-45, somente tabela e ação Reenviar convite não encontrada.
+
+## Destino das pendências R11 — decisão Owner 2026-09-13
+
+As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.

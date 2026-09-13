@@ -7,7 +7,7 @@ generated_at: 2026-09-13
 # R12 — Incorporação nos três rastreadores
 
 Pedido explícito do Owner: incorporar todos os apontamentos nas camadas FE, BE e
-FE+BE. 45 compromissos registrados, mantendo itens correlatos sem contar avanço
+FE+BE. 53 compromissos registrados (45 apontamentos originais e oito registros herdados da R11), mantendo itens correlatos sem contar avanço
 ou criar ações novas. Quatro itens de diretório/aprovações ainda sem action_id
 específico confirmado permanecem abaixo, sem desaparecer nem mudar denominador.
 
@@ -71,3 +71,7 @@ permanecem pendentes R12. Nenhum deploy, SQL, runtime ou R12 iniciado aqui.
 | R12-45 | invites.resend | [R12-convites-owner](R12-convites-owner.md) — Reconciliar R12-45 e reproduzir na R12 autorizada. |
 
 Responsável funcional: C0 R12. Gate documental não certifica o produto. Perguntas abertas: arquivar originais Coelo; obrigatoriedade dos campos de cadastro sem conta; perfis profissionais no Principal versus spec 018; eventos/destinatários de notificações; precedência de cardápios e preservação de exceções históricas.
+
+## Transferência R11 autorizada pelo Owner
+
+Destino: [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md). R12-46 a53 incorporam Conta, Auth, configuração/publicação, diário/notas, contadores, gate SQL/PITR, compositor de chat e opção vizinha condicional. Preservam estados FE/BE/E2E e evidências R11; execução não iniciada. A tabela original acima continua sendo o catálogo R12-01 a45.

@@ -1,0 +1,278 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "delta": "R11 parcial:59 casos Flutter focais PASS, teclado mobile/Tab com rodape acima do teclado, texto200%, crop e confirmacao autoritativa; nome/cancelar/reload/header observados. Foto R2 ausente e sigla/cor/metadados SQL nao aplicados; E2E pendente. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "delta": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "delta": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "auth.recover",
+    "camada": "frontend",
+    "delta": "Critérios Front-end reconciliados e aprovados: fluxo normal, validação, envio único, estados seguros, reenvio, semântica/teclado, temas/responsividade, adapter/ViewModel e gateway. Reabrir somente por regressão ou mudança material. SMTP/token real pertencem a BE/E2E ainda pendentes. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/identidade-acessos/r02-d01-20260909/recover-fe-reconciliation.md",
+      "revision": "d1b9cbe04563cd111d7e83eadc82f432a979ade6",
+      "environment": "Windows local Flutter3.44.2/Dart3.12.2; normal composition; faithful gateway doubles, matching historical blobs and current9+61 cases; sourceD01r5",
+      "recordedAt": "2026-09-09T13:37:29.319567-03:00"
+    }
+  },
+  {
+    "action_id": "auth.recover",
+    "camada": "backend",
+    "delta": "Pacote Auth R02 de duas migrations preparado e qualificado localmente: 36 TAP + 9 HTTP + 1 cold; AuthProof 6 PASS e transporte CLI/ledger 2 PASS em planos separados. O rascunho I021 da R01 foi superado pela entrega local, sem aplicação remota. Atomicidade DDL/ledger comprovada por arquivo, não entre as duas migrations. Restam autorização nominal, credenciais, preflight fresco, aplicação e provas do provedor: personas, SMTP, redirect, token, senha, revogação e negativas A/B. AAL1 permanece válido no MVP. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "auth.recover",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Provar entrega segura/recuperação com QA e expiração do link; P51=B não certifica envio SMTP. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "auth.reset",
+    "camada": "frontend",
+    "delta": "Aceite Front-end verificado no recorte Auth; reabrir somente por regressao ou mudanca material. R02 D00: gate de reabertura encerrado. Candidato173000+173100 integrado9e7e23f18 passou36TAP+9HTTP+1cold. Cold recria SDK/scope, reabre reset-password com purge permanentemente falho, backend local real nega contexto e logout funciona. Aceites FE anteriores preservados; FE novamente verificado. Storage e simulado na composicao, sem alegar reinicio real do processo nem validacao remota. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r02-d00-integration-20260909/auth-fe-reconciliation.md",
+      "revision": "437a973cb3e9a34dd33c85ab440477bf3562da1d; B4 feb3e3932; AMR 9e7e23f18",
+      "environment": "Local Flutter/Chrome with synthetic HTTP for B4; SDK/scope composition with simulated failed storage and real disposable Supabase for cold; prior scoped FE proofs reconciled",
+      "recordedAt": "2026-09-09T15:49:54.589050-03:00"
+    }
+  },
+  {
+    "action_id": "auth.reset",
+    "camada": "backend",
+    "delta": "Pacote Auth R02 de duas migrations preparado e qualificado localmente: 36 TAP + 9 HTTP + 1 cold; AuthProof 6 PASS e transporte CLI/ledger 2 PASS em planos separados. O rascunho I021 da R01 foi superado pela entrega local, sem aplicação remota. Atomicidade DDL/ledger comprovada por arquivo, não entre as duas migrations. Restam autorização nominal, credenciais, preflight fresco, aplicação e provas do provedor: personas, SMTP, redirect, token, senha, revogação e negativas A/B. AAL1 permanece válido no MVP. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "auth.reset",
+    "camada": "integrated",
+    "delta": "R08 G2 — primeiro gate: Provar redefinição real e nova sessão, sem registrar token/link em evidência pública. | Destino Owner: R12-47; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "frontend",
+    "delta": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "delta": "R11 candidato20260913143441 local-green:8/8 pgTAP; diagnostico transacional adicional23503 confirma DELETE em outra configuracao. Aguardando requisito PITR/aplicacao; UPDATE UI ainda falha no mesmo b04c879e. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+      "revision": "G5-R09-r80",
+      "environment": "Supabase producao; pgTAP R08 G0 reutilizado",
+      "recordedAt": "2026-09-12T19:11:01.449001+00:00"
+    }
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "delta": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "activities.publish",
+    "camada": "frontend",
+    "delta": "R05: o botao \"Salvar alteracoes\" (publish) da edicao fecha antes do HTTP com \"Nao foi possivel salvar a atividade\" (a rota de edicao nao conhece o status corrente e publish_v2 exige draft; pendencia da rev 40) e, depois da falha, o coordenador de tentativas congela tambem o Salvar rascunho ate recarregar. Gate: decidir p_publish pelo status do detalhe (draft -> publish; active -> so save) e nao congelar o rascunho apos falha local. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "activities.publish",
+    "camada": "backend",
+    "delta": "R05 (14:55): superadmin_activity_save_v2 com p_publish=true e a turma 4214106c vinculada (P36, lote 35) publicou a atividade 95b98978 em producao (status active, management_version 24); o detalhe recarregado na rota real mostra Ativa com 1 turma. Chamada feita pela sessao do app (token do proprio Chrome via CDP, sem imprimir). Negativas: superadmin_activity_save_v2_test 46/46 e permissions_publish 18/18 no espelho (R04/R05). | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg",
+      "revision": "estrutura.json rev 46",
+      "environment": "producao coelo; RPC superadmin_activity_save_v2 p_publish=true ok=true status active management_version 24 | pgTAP activity_save_v2 46/46, permissions_publish 18/18",
+      "recordedAt": "2026-09-11T15:03:00-03:00"
+    }
+  },
+  {
+    "action_id": "activities.publish",
+    "camada": "integrated",
+    "delta": "R08 G1 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "frontend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "backend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "integrated",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "frontend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "backend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "integrated",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "frontend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "backend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "integrated",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "frontend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "backend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "frontend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "backend",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "frontend",
+    "delta": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes. | Destino Owner: R12-50; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+      "revision": "estrutura.json rev 33",
+      "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-list-vazio.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+      "recordedAt": "2026-09-11T09:41:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "backend",
+    "delta": "R11 candidato20260913143659 local-green:10/10 pgTAP cobrem contadores, status, heranca e isolamento real. RPC remoto ainda omite campos; UI/reload permanecem sem aceite dos contadores. | Destino Owner: R12-50; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+      "revision": "estrutura.json rev 56",
+      "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+      "recordedAt": "2026-09-11T20:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "integrated",
+    "delta": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes. | Destino Owner: R12-50; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+      "revision": "estrutura.json rev 56",
+      "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+      "recordedAt": "2026-09-11T20:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "delta": "Referência Owner da preparação R11: aprimorar fotos/vídeos inline, mosaico e compositor arredondado. Backlog Etapa 2; fora da prioridade R11. Render e implementação ainda pendentes. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada. | Destino Owner: R12-52; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "backend",
+    "delta": "Referência visual futura preserva R2 privado e autorização. Agrupamento de anexos exige conferir contrato de envio conjunto; nenhum SQL ou mudança remota nesta preparação. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada. | Destino Owner: R12-52; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "Direção de acabamento registrada, sem novo aceite. Executar prova própria de mídia/compositor e reload/escopo na rodada designada da Etapa 2; não obrigatória na R11. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada. | Destino Owner: R12-52; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md"
+  }
+]

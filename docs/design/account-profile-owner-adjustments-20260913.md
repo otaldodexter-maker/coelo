@@ -55,3 +55,5 @@ foto R2 ainda não possui transporte persistente. O estado por camada e os gates
 remotos estão em `docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md`.
 Este registro não converte render automatizado em aprovação visual A nem
 certifica a ação inteira.
+
+Destino operacional após decisão do Owner em13/09/2026: R12, conforme `docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md` (Conta R12-46; compositor R12-52, coordenado com R12-43). Direção e aceites preservados; transferência não certifica implementação.

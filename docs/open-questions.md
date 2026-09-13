@@ -345,3 +345,7 @@ Fontes: `docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md` e prompt 
 ### R11 — ordem do replay local reconciliada
 
 O README antigo dizia ordem por carimbo; `packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt` ja documentava a ordem REAL por lote e a dependencia que impede ordenar por timestamp. C0 corrigiu o README para apontar ao manifesto operacional existente apos replay local dos167 arquivos. Isso nao altera ordem de producao nem aprova reaplicacao do historico. Evidencia: `docs/reviews/evidence/etapa-2/r11-coordenacao/local-replay.json`.
+
+## Destino R12 do gate herdado de PITR — 2026-09-13
+
+O Owner transferiu as pendências R11 para R12. A decisão de PITR permanece aberta no item R12-51 de `docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md`; não foi concedida exceção por esta transferência. Owner decide, C0 R12 verifica e aplica o lote somente sob a regra vigente.

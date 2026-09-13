@@ -73,3 +73,7 @@ Flutter59 casos unicos PASS (novo teclado/Tab/rodape acima de300px); pgTAP41 ass
 Runtime39272/3000 serve codigo d20bcfcf2, QAChrome31192/CDP9427; ChromeOwner18924 preservado, slotFlutter ocioso. Quatro candidatos locais, backups schema/data externos concluídos, referencias/codigo no checkout consolidado; nenhum deploy remoto. WIP deste checkpoint: docs de fechamento/pendencias, projecao team, evidencia e teste de teclado, a publicar. Nenhuma alteracao de produto retida fora de commit anterior. Reconciliacao final em R11-fechamento.md/entrega-atual.json; historicos de branches preservados.
 
 Fechamento 2026-09-13T15:42:06.430654+00:00: gate PASS DOCUMENTED_PARTIAL/exit0 apos push f4d602f2e9f1aee24b24f5c202bf8f5641d23977; 114.46min, cota87->92% (+5p.p.). Checkout sem WIP, divergencia0/0, uma worktree/stash vazio; residuos historicos preservados. Registrar esta ata e repetir gate apos push final. C0 libera slots de trabalho, preserva runtime39272/3000 e QAChrome31192; nenhum processo do Owner encerrado. Pendencias/primeiros gates em R11-pendencias.md.
+
+## Destino das pendências R11 — decisão Owner 2026-09-13
+
+As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.

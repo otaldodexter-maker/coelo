@@ -23,3 +23,7 @@ Responsável C0 R12. Registro apenas, fora da R11; sem código/runtime/deploy.
 Integrador central deve incorporar owner.r12-43 e nota por camada de chat.open
 via apply-tracker-delta.cjs, rebaseando as notas vigentes e preservando certificado.
 Atualização dos três rastreadores ainda pendente, pois R11 mantém escritor central.
+
+## Destino das pendências R11 — decisão Owner 2026-09-13
+
+As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.

@@ -33,3 +33,7 @@ institutions.status/locations-map nao foram abertos: condicao A0/A/B/C/D conclui
 Build/runtime e preservacao: r11-account-v3/d20bcfcf2/JS1dd04dca..., Python39272/3000; QAChrome31192/CDP9427, OwnerChrome18924 intocado; Flutter livre. Espelho localcoelo_r11 e builds/env/backups preservados. Uma worktree, stash vazio no checkpoint; branches historicas nao apagadas. Base de retomada e origin/dev atual, nao SHA antigo de handoff. Ver R11-fechamento.md, build-manifest.json, backup-manifest.json, closure-metrics.json e entrega-atual.json. Push nao e deploy.
 
 Fechamento registrado em 2026-09-13T15:42:06.430654+00:00 (114.46min desde T0). Gate apos commit/push f4d602f2e9f1aee24b24f5c202bf8f5641d23977: PASS DOCUMENTED_PARTIAL, exit0. Cota final medida92% usados, abertura87%, consumo5p.p.; mesma janela/reset. HEAD/origin-dev sem divergencia e checkout sem WIP no gate. Este registro documental sera publicado e o gate repetido na base final, sem rerun de testes de produto. Retomada somente mediante instrucao explicita; R12/Etapa3 nao iniciadas.
+
+## Destino das pendências R11 — decisão Owner 2026-09-13
+
+As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.

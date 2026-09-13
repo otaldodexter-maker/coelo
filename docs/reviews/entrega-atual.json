@@ -1242,20 +1242,20 @@
     },
     {
       "id": "owner.r11-account-header-access",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [
         "account.profile"
       ],
       "fe": "partial-tested",
       "be": "partial-local-candidate",
       "e2e": "pending-verification",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "Aplicar sigla/cor/metadados apos requisito PITR e implementar/provar foto privada R2; headers/reload/remocao/outra sessao"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-46; Aplicar sigla/cor/metadados apos requisito PITR e implementar/provar foto privada R2; headers/reload/remocao/outra sessao"
     },
     {
       "id": "owner.r11-auth",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [
         "auth.recover",
         "auth.reset"
@@ -1263,13 +1263,13 @@
       "fe": "historical-verified-current-request-only",
       "be": "blocked-mailbox-smtp-redirect",
       "e2e": "pending-verification",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "Owner: caixa/SMTP e redirect; C0: mensagem real, reset/nova sessao/expiracao/uso unico"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-47; Owner: caixa/SMTP e redirect; C0: mensagem real, reset/nova sessao/expiracao/uso unico"
     },
     {
       "id": "owner.r11-assessment",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [
         "activities.assessment",
         "activities.publish"
@@ -1277,13 +1277,13 @@
       "fe": "pending-verification",
       "be": "local-green-assessment-historical-done-publish",
       "e2e": "pending-verification",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "C0 aplica candidato apos requisito PITR, salva mesmo b04c879e e fecha cadeia normal; atividade retida ja active"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-48; C0 aplica candidato apos requisito PITR, salva mesmo b04c879e e fecha cadeia normal; atividade retida ja active"
     },
     {
       "id": "owner.r11-gradebook",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [
         "assessments.entry",
         "assessments.gradebook",
@@ -1294,22 +1294,22 @@
       "fe": "pending-verification",
       "be": "local-green",
       "e2e": "pending-verification",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "C0 aplica all/selected apos requisito PITR; nota/detalhe/fechar/reabrir/escopo no mesmo d2c945d8"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-49; C0 aplica all/selected apos requisito PITR; nota/detalhe/fechar/reabrir/escopo no mesmo d2c945d8"
     },
     {
       "id": "owner.r11-group-counters",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [
         "groups.list"
       ],
       "fe": "pending-verification",
       "be": "local-green",
       "e2e": "pending-verification",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "C0 aplica contadores apos requisito PITR e prova turma UI/reload"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-50; C0 aplica contadores apos requisito PITR e prova turma UI/reload"
     },
     {
       "id": "owner.r11-checkpoints-delivery",
@@ -1329,9 +1329,9 @@
       "fe": "not-started",
       "be": "not-started",
       "e2e": "not-started",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
-      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
-      "nextGate": "Condicao de abertura nao satisfeita: concluir A0/A/B/C/D e reavaliar somente em retomada autorizada"
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12",
+      "nextGate": "Transferido pelo Owner para R12-53; Condicao de abertura nao satisfeita: concluir A0/A/B/C/D e reavaliar somente em retomada autorizada"
     },
     {
       "id": "owner.r12-01",
@@ -1945,6 +1945,123 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
       "owner": "C0 R12",
       "nextGate": "Reconciliar R12-45 e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-46",
+      "status": "deferred",
+      "actionIds": [
+        "account.profile"
+      ],
+      "fe": "Parcial: rodapé/busca, nome, crop e confirmação autoritativa testados.",
+      "be": "Sigla/cor/metadados em candidato local; foto R2 ausente.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão."
+    },
+    {
+      "id": "owner.r12-47",
+      "status": "deferred",
+      "actionIds": [
+        "auth.recover",
+        "auth.reset"
+      ],
+      "fe": "Verified histórico; pedido normal e endereço inexistente observados na R11.",
+      "be": "Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP."
+    },
+    {
+      "id": "owner.r12-48",
+      "status": "deferred",
+      "actionIds": [
+        "activities.assessment",
+        "activities.publish"
+      ],
+      "fe": "UPDATE do rascunho retido falha; publicação sem novo aceite.",
+      "be": "Correção causal local8/8 pgTAP; publicação BE done histórico.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço."
+    },
+    {
+      "id": "owner.r12-49",
+      "status": "deferred",
+      "actionIds": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.detail",
+        "assessments.close",
+        "assessments.reopen"
+      ],
+      "fe": "Aluno ausente reproduzido; prova remota pendente.",
+      "be": "Candidato all/selected13/13 pgTAP; local-green preservado.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário."
+    },
+    {
+      "id": "owner.r12-50",
+      "status": "deferred",
+      "actionIds": [
+        "groups.list"
+      ],
+      "fe": "Zeros incorretos reproduzidos; UI/reload pendentes.",
+      "be": "Candidato10/10 pgTAP para contagens, herança, status e isolamento.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores."
+    },
+    {
+      "id": "owner.r12-51",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Não aplicável.",
+      "be": "Quatro candidatos locais; nenhum aplicado remotamente.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova."
+    },
+    {
+      "id": "owner.r12-52",
+      "status": "deferred",
+      "actionIds": [
+        "chat.attach"
+      ],
+      "fe": "Direção visual registrada; não é render A nem implementação.",
+      "be": "Contrato existente a preservar e verificar no recorte.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Reutilizar chat-media-composer-owner-reference-20260913.md: foto inline maior, vídeo com play/duração, mosaico e escrita em cápsula. Coordenar com R12-43 (contorno), sem duplicar aceite nem alterar formulários administrativos globalmente."
+    },
+    {
+      "id": "owner.r12-53",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Não iniciada; condição de abertura não atendida.",
+      "be": "Não iniciado.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0 R12; Owner nas decisões de PITR e acesso de e-mail",
+      "nextGate": "Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema."
+    },
+    {
+      "id": "owner.r11-to-r12-transfer",
+      "status": "done",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "owner": "C0",
+      "nextGate": ""
     }
   ],
   "evidenceFiles": [
@@ -1977,12 +2094,13 @@
     "docs/reviews/evidence/etapa-2/r11-coordenacao/build-manifest.json",
     "docs/reviews/evidence/etapa-2/r11-coordenacao/ui-acceptance-plan.json",
     "docs/reviews/evidence/etapa-2/r11-coordenacao/git-checkpoint.json",
-    "docs/open-questions.md"
+    "docs/open-questions.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
   ],
   "memory": {
-    "status": "captured",
-    "reason": "Fonte canonica de Conta atualizada primeiro; projecao team preserva confirmacao autoritativa e metadados reais sem certificar disponibilidade. Validacao77artigos; suite12P/1S. Referencias chat e R12 preservadas.",
-    "evidence": "docs/knowledge/team/account-profile-header-access.md"
+    "status": "no-op",
+    "reason": "Transferência de pendências entre rodadas registrada nas fontes operacionais; nenhuma regra nova de produto, autorização ou aceite. Projeções duráveis existentes de Conta/chat preservadas."
   },
   "deployment": {
     "status": "pending",
