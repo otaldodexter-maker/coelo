@@ -1,0 +1,15 @@
+[
+  {
+    "path": "/rest/v1/rpc/save_happens_draft",
+    "status": 200
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "status": 403
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "error": "net::ERR_FAILED",
+    "cors": "PreflightMissingAllowOriginHeader"
+  }
+]

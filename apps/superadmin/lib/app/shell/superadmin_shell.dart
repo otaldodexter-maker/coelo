@@ -324,17 +324,19 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
             return _withChatLauncher(
               Scaffold(
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                appBar: _CompactAppBar(
-                  drawerOpen: _drawerOpen,
-                  onLogout: _handleLogout,
-                  onDestinationSelected: widget.onDestinationSelected,
-                  activityController: _activityController,
-                  headerProfile: widget.headerProfile,
-                  currentScreen:
-                      coeloNavigationNodeById(widget.currentDestination)?.label ??
-                      widget.currentDestination,
-                  onBugReportSubmitted: widget.onBugReportSubmitted,
-                ),
+                appBar: widget.frameHostedContent
+                    ? null
+                    : _CompactAppBar(
+                        drawerOpen: _drawerOpen,
+                        onLogout: _handleLogout,
+                        onDestinationSelected: widget.onDestinationSelected,
+                        activityController: _activityController,
+                        headerProfile: widget.headerProfile,
+                        currentScreen:
+                            coeloNavigationNodeById(widget.currentDestination)?.label ??
+                            widget.currentDestination,
+                        onBugReportSubmitted: widget.onBugReportSubmitted,
+                      ),
                 onDrawerChanged: (open) => setState(() => _drawerOpen = open),
                 drawer: Drawer(
                   backgroundColor: Theme.of(context).colorScheme.surface,

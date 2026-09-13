@@ -129,7 +129,14 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
             keyPrefix: 'principal-context-header',
             avatarInitials: widget.avatarInitials,
             avatarImage: widget.avatarImage,
-            onOpenMenu: () => widget.onOpenHome?.call(context),
+            onOpenMenu: () {
+              final host = Scaffold.maybeOf(context);
+              if (host?.hasDrawer ?? false) {
+                host!.openDrawer();
+              } else {
+                widget.onOpenHome?.call(context);
+              }
+            },
             onOpenNotifications: () => ScaffoldMessenger.of(context).showSnackBar(
               const SnackBar(content: Text('Consulte as notificações pelo sino do Superadmin.')),
             ),

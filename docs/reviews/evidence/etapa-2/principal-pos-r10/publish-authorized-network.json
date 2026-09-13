@@ -1,0 +1,62 @@
+[
+  {
+    "path": "/rest/v1/rpc/save_happens_draft",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/save_happens_draft",
+    "status": 200
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "status": 200
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "status": 200
+  },
+  {
+    "path": "/coelo-media-prod/tenants/d0c40000-0000-4000-8000-000000000001/happens/post/a46f62d9-23b9-4b0a-bf27-35ea22e9c9e1/attachment/70729c12-3010-4220-a594-6371e294ace4/original/87cff674-7424-4909-a46e-04a7268f64fc.png",
+    "status": 204
+  },
+  {
+    "path": "/coelo-media-prod/tenants/d0c40000-0000-4000-8000-000000000001/happens/post/a46f62d9-23b9-4b0a-bf27-35ea22e9c9e1/attachment/70729c12-3010-4220-a594-6371e294ace4/original/87cff674-7424-4909-a46e-04a7268f64fc.png",
+    "status": 200
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/publish_happens_post",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/publish_happens_post",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/list_my_principal_contexts",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/superadmin_chat_inbox_v2",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/superadmin_chat_unread_total_v2",
+    "status": 200
+  },
+  {
+    "path": "/rest/v1/rpc/list_visible_happens_feed",
+    "status": 200
+  },
+  {
+    "path": "/functions/v1/happens-media",
+    "status": 200
+  },
+  {
+    "path": "/coelo-media-prod/tenants/d0c40000-0000-4000-8000-000000000001/happens/post/a46f62d9-23b9-4b0a-bf27-35ea22e9c9e1/attachment/70729c12-3010-4220-a594-6371e294ace4/original/87cff674-7424-4909-a46e-04a7268f64fc.png",
+    "status": 200
+  }
+]

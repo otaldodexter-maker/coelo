@@ -57,6 +57,7 @@ void main() {
     expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
     expect(find.byKey(const Key('principal-global-messages')), findsNothing);
+    expect(find.byTooltip('Reportar problema'), findsOneWidget, reason: 'one header at each viewport');
     final page = tester.widget<PrincipalHappensPreviewPage>(
       find.byType(PrincipalHappensPreviewPage),
     );
@@ -73,6 +74,7 @@ void main() {
       final publish = tester.getRect(find.byKey(const Key('principal-global-publish-now')));
       expect(launcher.bottom, lessThan(publish.top), reason: 'launcher above dock at $width');
       expect(find.byKey(const Key('principal-global-messages')), findsNothing);
+      expect(find.byTooltip('Reportar problema'), findsOneWidget, reason: 'one header at each viewport');
       expect(tester.takeException(), isNull);
     }
     await tester.tap(find.byTooltip('Para você'));
