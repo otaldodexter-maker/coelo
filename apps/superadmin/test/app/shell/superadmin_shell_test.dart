@@ -847,7 +847,7 @@ void main() {
 
     expect(find.text('Coelo'), findsNothing);
     expect(find.text('Instituições'), findsWidgets);
-    expect(find.text('Owner Coelo'), findsOneWidget);
+    expect(find.text('Conta'), findsOneWidget);
     expect(find.text('Sair'), findsNothing);
     expect(find.byKey(const Key('superadmin-notifications')), findsOneWidget);
     expect(find.byKey(const Key('superadmin-report-bug')), findsOneWidget);
@@ -918,7 +918,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(tester.getSize(find.byKey(const Key('superadmin-sidebar'))).width, 88);
-    expect(find.text('Owner Coelo'), findsOneWidget);
+    expect(find.text('Conta'), findsOneWidget);
     expect(find.text('Configurações'), findsNothing);
   });
 

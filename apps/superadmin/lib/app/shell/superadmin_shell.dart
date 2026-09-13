@@ -32,6 +32,23 @@ const _coeloMotionCurve = Curves.easeInOut;
 /// assíncrono (repositório produtivo); a shell aguarda e avisa o resultado.
 typedef SuperadminBugReportSubmit = FutureOr<void> Function(SupportReportDraft draft);
 
+@immutable
+class SuperadminHeaderProfile {
+  const SuperadminHeaderProfile({
+    required this.name,
+    required this.role,
+    required this.initials,
+    required this.avatarBackgroundColor,
+    this.avatarImage,
+  });
+
+  final String name;
+  final String role;
+  final String initials;
+  final Color avatarBackgroundColor;
+  final ImageProvider? avatarImage;
+}
+
 class SuperadminShell extends StatefulWidget {
   const SuperadminShell({
     required this.logout,
@@ -51,6 +68,7 @@ class SuperadminShell extends StatefulWidget {
     this.chatLauncherBottomInset = 0,
     this.isHost = false,
     this.canAccessCapability,
+    this.headerProfile,
     super.key,
   }) : assert(chatLauncherBottomInset >= 0);
 
@@ -64,6 +82,7 @@ class SuperadminShell extends StatefulWidget {
     this.chatUnreadCountLoader,
     this.chatRecentConversationsLoader,
     this.canAccessCapability,
+    this.headerProfile,
     super.key,
   }) : title = '',
        subtitle = '',
@@ -127,6 +146,7 @@ class SuperadminShell extends StatefulWidget {
   }
 
   final CoeloNavigationCapabilityCheck? canAccessCapability;
+  final SuperadminHeaderProfile? headerProfile;
 
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
@@ -304,6 +324,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                   onLogout: _handleLogout,
                   onDestinationSelected: widget.onDestinationSelected,
                   activityController: _activityController,
+                  headerProfile: widget.headerProfile,
                   currentScreen:
                       coeloNavigationNodeById(widget.currentDestination)?.label ??
                       widget.currentDestination,
@@ -351,6 +372,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 onLogout: _handleLogout,
                 onDestinationSelected: widget.onDestinationSelected,
                 activityController: _activityController,
+                headerProfile: widget.headerProfile,
                 currentScreen: widget.title,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
@@ -392,6 +414,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                       onLogout: _handleLogout,
                       onDestinationSelected: widget.onDestinationSelected,
                       activityController: _activityController,
+                      headerProfile: widget.headerProfile,
                       compact: true,
                       onBugReportSubmitted: widget.onBugReportSubmitted,
                     ),
@@ -421,6 +444,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                         onLogout: _handleLogout,
                         onDestinationSelected: widget.onDestinationSelected,
                         activityController: _activityController,
+                        headerProfile: widget.headerProfile,
                         onBugReportSubmitted: widget.onBugReportSubmitted,
                       ),
                       const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -518,6 +542,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                   onLogout: _handleLogout,
                   onDestinationSelected: hostScope.onDestinationSelected,
                   activityController: _activityController,
+                  headerProfile: widget.headerProfile,
                   onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
                 const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -535,6 +560,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 onLogout: _handleLogout,
                 onDestinationSelected: hostScope.onDestinationSelected,
                 activityController: _activityController,
+                headerProfile: widget.headerProfile,
                 compact: true,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
@@ -1519,6 +1545,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
     required this.onLogout,
     required this.onDestinationSelected,
     required this.activityController,
+    this.headerProfile,
     required this.currentScreen,
     this.onBugReportSubmitted,
   });
@@ -1527,6 +1554,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
+  final SuperadminHeaderProfile? headerProfile;
   final String currentScreen;
   final SuperadminBugReportSubmit? onBugReportSubmitted;
 
@@ -1589,6 +1617,7 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
           onLogout: onLogout,
           onDestinationSelected: onDestinationSelected,
           compact: true,
+          headerProfile: headerProfile,
         ),
         const SizedBox(width: CoeloSpacing.space2),
       ],
@@ -1605,6 +1634,7 @@ class _PageHeader extends StatelessWidget {
     required this.onLogout,
     required this.onDestinationSelected,
     required this.activityController,
+    this.headerProfile,
     this.onBugReportSubmitted,
     this.compact = false,
   });
@@ -1616,6 +1646,7 @@ class _PageHeader extends StatelessWidget {
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final SuperadminActivityController activityController;
+  final SuperadminHeaderProfile? headerProfile;
   final SuperadminBugReportSubmit? onBugReportSubmitted;
   final bool compact;
 
@@ -1706,6 +1737,7 @@ class _PageHeader extends StatelessWidget {
                     onLogout: onLogout,
                     onDestinationSelected: onDestinationSelected,
                     compact: compactProfile,
+                    headerProfile: headerProfile,
                   ),
                 ],
               ],
@@ -1722,16 +1754,19 @@ class _ProfileSummary extends StatelessWidget {
     required this.onLogout,
     required this.onDestinationSelected,
     required this.compact,
+    this.headerProfile,
   });
 
   final VoidCallback onLogout;
   final ValueChanged<String>? onDestinationSelected;
   final bool compact;
+  final SuperadminHeaderProfile? headerProfile;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
+    final profile = headerProfile;
     final items = <CoeloAdminFlyoutItem<String>>[
       for (final destination in _accountDestinations)
         CoeloAdminFlyoutItem<String>(
@@ -1783,15 +1818,22 @@ class _ProfileSummary extends StatelessWidget {
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      const CircleAvatar(radius: 18, child: Text('OC')),
+                      CircleAvatar(
+                        radius: 18,
+                        backgroundColor: profile?.avatarBackgroundColor,
+                        backgroundImage: profile?.avatarImage,
+                        child: profile?.avatarImage == null
+                            ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')
+                            : null,
+                      ),
                       if (!compact) ...[
                         const SizedBox(width: CoeloSpacing.space2),
                         Column(
                           mainAxisSize: MainAxisSize.min,
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Text('Owner Coelo', style: theme.textTheme.labelLarge),
-                            Text('Superadmin', style: theme.textTheme.bodySmall),
+                            Text(profile?.name ?? 'Conta', style: theme.textTheme.labelLarge),
+                            Text(profile?.role ?? 'Superadmin', style: theme.textTheme.bodySmall),
                           ],
                         ),
                         const SizedBox(width: CoeloSpacing.space1),
