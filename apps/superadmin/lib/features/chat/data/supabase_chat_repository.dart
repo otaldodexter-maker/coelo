@@ -34,12 +34,15 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
       });
       final attachmentId = _string(prepared, 'attachment_id');
       final messageId = _string(prepared, 'message_id');
-      if (prepared['replayed'] == true) {
-        // A consumed/failed ticket also reports replayed. Only an authorised
-        // read proves that the previous attempt reached the ready state.
+      if (prepared['replayed'] == true &&
+          (prepared['upload_status'] == 'ready' || prepared['upload_status'] == null)) {
+        // Only an authorised read confirms an existing ready attachment. A
+        // pending ticket must continue through PUT and finalize on retry.
         await readAttachment(attachmentId);
         return messageId;
       }
+      final uploadStatus = prepared['upload_status'];
+      if (uploadStatus != null && uploadStatus != 'pending') throw const ChatFailureException();
       final expiresAt = _date(prepared, 'expires_at');
       if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
       final url = _signedUrl(prepared, 'upload_url');

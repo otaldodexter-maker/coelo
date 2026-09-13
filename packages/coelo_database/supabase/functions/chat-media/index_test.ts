@@ -30,3 +30,8 @@ Deno.test("finalize mede os bytes e usa ticket do usuario com RPC service_role",
   assertEquals(source.includes("p_checksum_sha256: measured.sha256"), true);
   assertEquals(source.includes('.schema("app_private")'), false);
 });
+
+Deno.test("prepare preserva o status autoritativo do anexo", async () => {
+  const source = await Deno.readTextFile(new URL("./index.ts", import.meta.url));
+  assertEquals(source.includes("upload_status: prepared.upload_status"), true);
+});

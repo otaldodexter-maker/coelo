@@ -181,6 +181,7 @@ Deno.serve(async (request) => {
         upload_url: signed.url.toString(),
         required_headers: signed.requiredHeaders,
         expires_at: new Date(Date.now() + 300_000).toISOString(),
+        upload_status: prepared.upload_status,
         replayed: prepared.replayed === true,
       });
     }
