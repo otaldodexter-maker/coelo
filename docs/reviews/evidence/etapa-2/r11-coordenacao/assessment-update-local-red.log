@@ -1,0 +1,126 @@
+BEGIN
+CREATE EXTENSION
+ plan 
+------
+ 1..8
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config                                                                                                                                                                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "61023678-a00a-4f9d-b111-588f195ac024", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ set_config 
+------------
+ 
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+SELECT 1
+SELECT 1
+                is                 
+-----------------------------------
+ ok 1 - create first configuration
+(1 row)
+
+                                                                            superadmin_assessment_activate_configuration                                                                            
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"ok": true, "data": {"id": "ad08ad95-ab96-4822-ac6b-de7f33af3f60", "status": "active", "version": 2, "replayed": false, "correlation_id": "1a9e45f6-a916-4b00-acd5-c676978d5305"}, "error": null}
+(1 row)
+
+SELECT 1
+                            is                             
+-----------------------------------------------------------
+ ok 2 - retained gradebook references active configuration
+(1 row)
+
+SELECT 1
+                 is                  
+-------------------------------------
+ ok 3 - create second retained draft
+(1 row)
+
+SELECT 1
+                                  is                                   
+-----------------------------------------------------------------------
+ not ok 4 - update same draft succeeds beside active gradebook        +
+ # Failed test 4: "update same draft succeeds beside active gradebook"+
+ #         have: false                                                +
+ #         want: true
+(1 row)
+
+                          is                          
+------------------------------------------------------
+ not ok 5 - update preserves draft identity          +
+ # Failed test 5: "update preserves draft identity"  +
+ #         have: NULL                                +
+ #         want: 09f137df-498f-4892-a06a-9be922cb512f
+(1 row)
+
+                       is                       
+------------------------------------------------
+ not ok 6 - draft version advances once        +
+ # Failed test 6: "draft version advances once"+
+ #         have: 1                             +
+ #         want: 2
+(1 row)
+
+                            is                            
+----------------------------------------------------------
+ ok 7 - active configuration period survives draft update
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                                ok                                
+------------------------------------------------------------------
+ ok 8 - institution-scoped actor cannot move draft across tenants
+(1 row)
+
+                finish                
+--------------------------------------
+ # Looks like you failed 3 tests of 8
+(1 row)
+
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping

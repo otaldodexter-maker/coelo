@@ -1,0 +1,116 @@
+BEGIN
+CREATE EXTENSION
+ plan 
+------
+ 1..8
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config                                                                                                                                                                                                                  
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "f9e0f0f8-9bf1-400d-8fc4-7d12dfd40bbc", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ set_config 
+------------
+ 
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+SELECT 1
+SELECT 1
+                is                 
+-----------------------------------
+ ok 1 - create first configuration
+(1 row)
+
+                                                                            superadmin_assessment_activate_configuration                                                                            
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"ok": true, "data": {"id": "e0fa103c-d431-4233-a952-e43202ea1a40", "status": "active", "version": 2, "replayed": false, "correlation_id": "de7b0489-8c77-4cb2-b9ae-1a206194f22c"}, "error": null}
+(1 row)
+
+SELECT 1
+                            is                             
+-----------------------------------------------------------
+ ok 2 - retained gradebook references active configuration
+(1 row)
+
+SELECT 1
+                 is                  
+-------------------------------------
+ ok 3 - create second retained draft
+(1 row)
+
+SELECT 1
+                            is                             
+-----------------------------------------------------------
+ ok 4 - update same draft succeeds beside active gradebook
+(1 row)
+
+                   is                   
+----------------------------------------
+ ok 5 - update preserves draft identity
+(1 row)
+
+                 is                 
+------------------------------------
+ ok 6 - draft version advances once
+(1 row)
+
+                            is                            
+----------------------------------------------------------
+ ok 7 - active configuration period survives draft update
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                                ok                                
+------------------------------------------------------------------
+ ok 8 - institution-scoped actor cannot move draft across tenants
+(1 row)
+
+ finish 
+--------
+(0 rows)
+
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping

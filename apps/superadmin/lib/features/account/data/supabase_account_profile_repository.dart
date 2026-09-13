@@ -8,9 +8,10 @@ import 'account_profile_repository.dart';
 
 final class SupabaseAccountProfileRepository
     implements AccountProfileRepository, AccountEmailChangeCancellation {
-  const SupabaseAccountProfileRepository(this._client);
+  SupabaseAccountProfileRepository(this._client);
 
   final SupabaseClient _client;
+  int _avatarContractVersion = 1;
 
   @override
   Future<AccountProfile> load() async => _profile(await _rpc('superadmin_account_profile_get'));
@@ -18,14 +19,22 @@ final class SupabaseAccountProfileRepository
   @override
   Future<AccountProfile> save(AccountProfile profile) async {
     return _profile(
-      await _rpc('superadmin_account_profile_save', {
-        'p_request_id': _uuidV4(),
-        'p_first_name': profile.firstName.trim(),
-        'p_last_name': profile.lastName.trim(),
-        'p_mobile_phone': profile.mobilePhone.trim(),
-        'p_requested_email': profile.emailChange?.requestedEmail,
-        'p_avatar_initials': profile.avatar.initials.trim(),
-      }),
+      await _rpc(
+        _avatarContractVersion >= 2
+            ? 'superadmin_account_profile_save_v2'
+            : 'superadmin_account_profile_save',
+        {
+          'p_request_id': _uuidV4(),
+          'p_first_name': profile.firstName.trim(),
+          'p_last_name': profile.lastName.trim(),
+          'p_mobile_phone': profile.mobilePhone.trim(),
+          'p_requested_email': profile.emailChange?.requestedEmail,
+          'p_avatar_initials': profile.avatar.initials.trim(),
+          if (_avatarContractVersion >= 2)
+            'p_avatar_background_color':
+                '#${(profile.avatar.backgroundColor.toARGB32() & 0xFFFFFF).toRadixString(16).padLeft(6, '0').toUpperCase()}',
+        },
+      ),
     );
   }
 
@@ -47,6 +56,7 @@ final class SupabaseAccountProfileRepository
   AccountProfile _profile(Object? raw) {
     if (raw is! Map) throw const AccountProfileRepositoryException('Resposta de perfil inválida.');
     final json = Map<String, Object?>.from(raw);
+    _avatarContractVersion = json['avatar_contract_version'] == 2 ? 2 : 1;
     final avatar = _map(json['avatar']);
     final access = _map(json['access']);
     final emailChange = json['email_change'];
@@ -71,6 +81,23 @@ final class SupabaseAccountProfileRepository
         role: _string(access, 'role'),
         mfaEnabled: access['mfa_enabled'] == true,
         capabilities: _list(access['capabilities']),
+        capabilityDetails: [
+          for (final item in (access['capability_details'] as List? ?? const []))
+            if (item is Map &&
+                item['module_code'] is String &&
+                item['module_label'] is String &&
+                item['scope_kind'] is String &&
+                item['scope_label'] is String)
+              AccountCapabilityDetail(
+                code: item['code'] as String,
+                label: item['label'] as String,
+                moduleCode: item['module_code'] as String,
+                moduleLabel: item['module_label'] as String,
+                scopeKind: item['scope_kind'] as String,
+                scopeId: item['scope_id'] as String?,
+                scopeLabel: item['scope_label'] as String,
+              ),
+        ],
       ),
       emailChange: emailChange == null ? null : _emailChange(_map(emailChange)),
     );

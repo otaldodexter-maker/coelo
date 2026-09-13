@@ -730,6 +730,13 @@ class _AccessCardState extends State<_AccessCard> {
         .where((item) => item.toLowerCase().contains(query))
         .toSet()
         .toList();
+    final groups = <String, List<AccountCapabilityDetail>>{};
+    for (final item in widget.access.capabilityDetails) {
+      if ('${item.label} ${item.moduleLabel} ${item.scopeLabel}'.toLowerCase().contains(query)) {
+        (groups[item.groupKey] ??= []).add(item);
+      }
+    }
+    final hasDetails = widget.access.capabilityDetails.isNotEmpty;
     return _SectionCard(
       cardKey: widget.cardKey,
       title: 'Meu acesso',
@@ -748,8 +755,6 @@ class _AccessCardState extends State<_AccessCard> {
             onChanged: (_) => setState(() {}),
           ),
           const SizedBox(height: CoeloSpacing.space3),
-          const Text('O servidor ainda não detalha módulo e escopo destas permissões.'),
-          const SizedBox(height: CoeloSpacing.space2),
           ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: CoeloSpacing.space10 * 10),
             child: Scrollbar(
@@ -762,15 +767,35 @@ class _AccessCardState extends State<_AccessCard> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    if (capabilities.isEmpty) const Text('Nenhuma permissão encontrada.'),
-                    for (final capability in capabilities)
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          bottom: CoeloSpacing.space3,
-                          right: CoeloSpacing.space3,
+                    if (hasDetails ? groups.isEmpty : capabilities.isEmpty)
+                      const Text('Nenhuma permissão encontrada.'),
+                    if (hasDetails)
+                      for (final group in groups.values) ...[
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: CoeloSpacing.space2),
+                          child: Text(
+                            group.first.groupLabel,
+                            style: Theme.of(context).textTheme.titleSmall,
+                          ),
                         ),
-                        child: Text(capability),
-                      ),
+                        for (final item in group)
+                          Padding(
+                            padding: const EdgeInsets.only(
+                              bottom: CoeloSpacing.space3,
+                              right: CoeloSpacing.space3,
+                            ),
+                            child: Text(item.label),
+                          ),
+                      ],
+                    if (!hasDetails)
+                      for (final capability in capabilities)
+                        Padding(
+                          padding: const EdgeInsets.only(
+                            bottom: CoeloSpacing.space3,
+                            right: CoeloSpacing.space3,
+                          ),
+                          child: Text(capability),
+                        ),
                   ],
                 ),
               ),

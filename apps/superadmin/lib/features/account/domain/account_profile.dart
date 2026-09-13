@@ -108,16 +108,40 @@ class EmailChangeRequest {
 }
 
 @immutable
+class AccountCapabilityDetail {
+  const AccountCapabilityDetail({
+    required this.code,
+    required this.label,
+    required this.moduleCode,
+    required this.moduleLabel,
+    required this.scopeKind,
+    required this.scopeId,
+    required this.scopeLabel,
+  });
+  final String code;
+  final String label;
+  final String moduleCode;
+  final String moduleLabel;
+  final String scopeKind;
+  final String? scopeId;
+  final String scopeLabel;
+  String get groupKey => '$moduleCode|$scopeKind|${scopeId ?? ""}';
+  String get groupLabel => '$moduleLabel · $scopeLabel';
+}
+
+@immutable
 class AccountAccessSummary {
   const AccountAccessSummary({
     required this.role,
     required this.mfaEnabled,
     required this.capabilities,
+    this.capabilityDetails = const [],
   });
 
   final String role;
   final bool mfaEnabled;
   final List<String> capabilities;
+  final List<AccountCapabilityDetail> capabilityDetails;
 }
 
 @immutable
