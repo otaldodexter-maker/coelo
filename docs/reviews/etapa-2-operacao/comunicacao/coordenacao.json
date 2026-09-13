@@ -1,12 +1,12 @@
 {
-  "revision": 126,
+  "revision": 127,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T03:25:49.959978+00:00",
+  "updatedAt": "2026-09-13T03:34:41.714961+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4291,8 +4291,8 @@
     },
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
-      "chrome": "C0;3000 principal;3016 preservado para Owner",
-      "heavy": "C0 build release",
+      "chrome": "C0 abas829822503 groups e829822506 chat/upload bloqueado",
+      "heavy": "dev_senior_fe_be teste dialog aluno",
       "sql": "C0 lote61 aplicado; livre"
     },
     "auxiliary": {
@@ -4317,9 +4317,9 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:27:35.611455+00:00",
-    "base": "171922209",
-    "quotaUsedPercent": 75,
+    "time": "2026-09-13T03:34:41.714961+00:00",
+    "base": "113979a42",
+    "quotaUsedPercent": 76,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
@@ -4332,8 +4332,8 @@
       "/root/chat_inline": "slot Flutter exclusivo pub get/test/analyze video",
       "/root/chat_upload": "assessment e15724340 entregue; SQL slot livre"
     },
-    "wip": "SQL61 aplicado; Edge chat-media deploy exit0. Primeira tentativa usou cwd errado400 e foi corrigida. Build integrado em andamento C0. Fixture MP4 real auxiliar; nenhum novo aceite.",
-    "next": "UI avatar, assessment draft/reload, groups.members CRUD e chat MP4.",
+    "wip": "Build release68.9s PASS sha2565097C909D03E583B580FEFAE163C2BAF34E9DB2ED47F30C9B5813E8451E1FFEA; avatar real OE confirmado em Conversas e Meu perfil apos reload. Foto531KB renderinline. MP4 real preparado, seletor setFiles bloqueado Not allowed. Groups turmaR05 semchild_context ativo na instituicao; C0 abrira Pessoas para criar contexto pela UI.",
+    "next": "Pessoas/contexto infantil normal e members; assessment draft/reload. Picker bloqueado extensao, sembypass.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
