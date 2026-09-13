@@ -177,6 +177,7 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
     required this.selectedTableView,
     required this.tableViews,
     required this.onTableViewSelected,
+    this.showDisplayToggle = true,
     this.filters = const [],
     this.trailing = const [],
     this.fileActions,
@@ -244,6 +245,9 @@ final class CoeloAdminDirectory<TView> extends StatefulWidget {
   /// Chamado ao escolher uma visão de tabela (inclusive ao clicar no segmento
   /// Tabela). O consumidor muda o display para tabela nesse callback.
   final ValueChanged<TView> onTableViewSelected;
+
+  /// Owner-approved table-only directories do not expose a cards/table toggle.
+  final bool showDisplayToggle;
 
   final CoeloAdminDirectoryCreate? create;
 
@@ -435,19 +439,20 @@ final class _Toolbar<TView> extends StatelessWidget {
         child: Row(
           mainAxisSize: MainAxisSize.min,
           children: [
-            CoeloAdminDirectoryViewToggle<TView>(
-              key: directory.toggleKey,
-              cardsKey: directory.cardsKey,
-              tableKey: directory.tableKey,
-              cardsSelected: directory.display == CoeloAdminDirectoryDisplay.cards,
-              groupedView: directory.groupedTableView,
-              selectedTableView: directory.selectedTableView,
-              tableViews: directory.tableViews,
-              onCardsSelected: () => directory.onDisplayChanged(CoeloAdminDirectoryDisplay.cards),
-              // Quem recebe a visão de tabela troca o display para tabela; o
-              // composto não dispara duas recargas.
-              onTableViewSelected: directory.onTableViewSelected,
-            ),
+            if (directory.showDisplayToggle)
+              CoeloAdminDirectoryViewToggle<TView>(
+                key: directory.toggleKey,
+                cardsKey: directory.cardsKey,
+                tableKey: directory.tableKey,
+                cardsSelected: directory.display == CoeloAdminDirectoryDisplay.cards,
+                groupedView: directory.groupedTableView,
+                selectedTableView: directory.selectedTableView,
+                tableViews: directory.tableViews,
+                onCardsSelected: () => directory.onDisplayChanged(CoeloAdminDirectoryDisplay.cards),
+                // Quem recebe a visão de tabela troca o display para tabela; o
+                // composto não dispara duas recargas.
+                onTableViewSelected: directory.onTableViewSelected,
+              ),
             if (directory.fileActionsBusyLabel case final busy?) ...[
               const SizedBox(width: CoeloSpacing.space2),
               Semantics(

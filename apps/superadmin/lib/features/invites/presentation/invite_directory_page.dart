@@ -45,10 +45,10 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
   final Map<String, String> _actionRequestIds = {};
   final Set<_OwnedInviteOverlay> _ownedOverlays = {};
   var _page = 1;
-  var _pageSize = 11;
+  var _pageSize = 8;
   var _requestEpoch = 0;
   var _commandGeneration = 0;
-  var _display = CoeloAdminDirectoryDisplay.cards;
+  var _display = CoeloAdminDirectoryDisplay.table;
   var _footerHeight = 0.0;
 
   InviteDirectoryQuery get _query => InviteDirectoryQuery(
@@ -424,6 +424,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
         ],
         display: _display,
         onDisplayChanged: _changeDisplay,
+        showDisplayToggle: false,
         groupedTableView: InviteDirectoryTableView.all,
         selectedTableView: InviteDirectoryTableView.all,
         tableViews: const [
@@ -468,9 +469,7 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
                 currentPage: page.page,
                 totalPages: page.totalPages,
                 pageSize: page.pageSize,
-                pageSizeOptions: _display == CoeloAdminDirectoryDisplay.cards
-                    ? InviteDirectoryQuery.cardPageSizes
-                    : InviteDirectoryQuery.tablePageSizes,
+                pageSizeOptions: InviteDirectoryQuery.tablePageSizes,
                 onPageSelected: _goToPage,
                 onPageSizeChanged: (value) {
                   setState(() {

@@ -11,7 +11,7 @@ metadata:
 
 ## Fonte operacional vigente — R12 consolidada, início manual
 
-Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md), [pendências por camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md) e [prompt Luna médio](../../../docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md). R12/R13 foram reunidas pelo Owner:53 compromissos,3 ajustes visuais entregues e50 abertos, com chat.attach parcialmente implementado. Preservar R01–R13, fontes e provas. A antiga divisão e o supervisor são históricos; não disparar outro processo.
+Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md), [pendências por camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md) e [prompt Luna médio](../../../docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md). R12/R13 foram reunidas pelo Owner:53 compromissos,3 ajustes visuais entregues e50 abertos; `chat.attach` tem mosaico FE local-green e `invites.list` tem diretório table-only FE local-green, ambos com E2E ainda aberto. Preservar R01–R13, fontes e provas. A antiga divisão e o supervisor são históricos; não disparar outro processo.
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 

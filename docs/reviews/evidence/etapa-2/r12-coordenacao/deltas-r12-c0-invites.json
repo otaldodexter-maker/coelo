@@ -1,0 +1,22 @@
+[
+  {
+    "action_id": "invites.list",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: diretório de convites fixado na tabela canônica conforme decisão do Owner; cards e toggle removidos, busca, filtros, paginação, Novo convite e ações por linha preservados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
+      "revision": "7e2dce6675890e71e152dc2da5bce5eb2c5898e1",
+      "environment": "Windows local; Flutter test; sem rota remota",
+      "recordedAt": "2026-09-13T00:00:00-03:00"
+    }
+  },
+  {
+    "action_id": "invites.list",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A composição aprovada para R12-44 substitui a superfície anteriormente certificada; a rota normal, reload e escopo precisam ser reproduzidos antes de manter o certificado integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md"
+  }
+]

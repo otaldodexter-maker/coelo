@@ -4,7 +4,6 @@ import 'package:coelo_superadmin/features/invites/domain/platform_invite.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_widgets.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_presentation_support.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -13,6 +12,18 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  testWidgets('renders the owner-approved table-only invite directory', (tester) async {
+    final repository = TestInviteRepository();
+    await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onCreate: () {})));
+    await tester.pumpAndSettle();
+
+    expect(find.byType(InviteTableRows), findsOneWidget);
+    expect(find.byKey(const Key('invite-display-toggle')), findsNothing);
+    expect(find.byKey(const Key('invite-card-grid')), findsNothing);
+    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
+    expect(repository.lastQuery?.pageSize, InviteDirectoryQuery.tablePageSizes.first);
+  });
+
   for (final width in [375.0, 1100.0]) {
     testWidgets('card rows preserve spacing at width $width', (tester) async {
       await tester.binding.setSurfaceSize(Size(width, 1400));
@@ -110,54 +121,28 @@ void main() {
     expect(find.text('Importação de convites ainda não está disponível.'), findsOneWidget);
   });
 
-  testWidgets('loads cards first and can switch to the aligned canonical table', (tester) async {
+  testWidgets('loads the owner-approved table-only directory', (tester) async {
     final repository = TestInviteRepository();
     await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onCreate: () {})));
     await tester.pumpAndSettle();
 
     expect(repository.lastQuery?.page, 1);
-    expect(repository.lastQuery?.pageSize, 11);
-    expect(
-      tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination)).pageSizeOptions,
-      InviteDirectoryQuery.cardPageSizes,
-    );
-    expect(find.byType(CoeloAdminListingToolbar), findsOneWidget);
-    expect(find.byKey(const Key('invite-card-grid')), findsOneWidget);
-    expect(find.byKey(const Key('invite-create-card')), findsOneWidget);
-    expect(find.byType(CoeloAdminExpandableStatusIndicator), findsOneWidget);
-    expect(find.byType(InviteStatusChip), findsNothing);
-    final cardStatus = tester.widget<CoeloAdminExpandableStatusIndicator>(
-      find.byType(CoeloAdminExpandableStatusIndicator),
-    );
-    expect(cardStatus.semanticLabel, 'Status: Pendente');
-    await tester.tap(find.byType(CoeloAdminExpandableStatusIndicator));
-    await tester.pumpAndSettle();
-    expect(find.text('Pendente'), findsOneWidget);
-    expect(find.byType(InviteTableRows), findsNothing);
-    expect(find.byType(SuperadminDirectoryViewToggle<InviteDirectoryTableView>), findsOneWidget);
-    await tester.tap(find.byKey(const Key('invite-view-table')));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('invite-card-grid')), findsNothing);
-    expect(find.byType(InviteTableRows), findsOneWidget);
-    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
     expect(repository.lastQuery?.pageSize, 8);
     expect(
       tester.widget<CoeloAdminPagination>(find.byType(CoeloAdminPagination)).pageSizeOptions,
       InviteDirectoryQuery.tablePageSizes,
     );
+    expect(find.byType(CoeloAdminListingToolbar), findsOneWidget);
+    expect(find.byKey(const Key('invite-display-toggle')), findsNothing);
+    expect(find.byKey(const Key('invite-card-grid')), findsNothing);
+    expect(find.byType(InviteTableRows), findsOneWidget);
+    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
     expect(find.byType(InviteStatusChip), findsOneWidget);
     final recipient = find.text('a***@aurora.test').first;
     final align = tester.widget<Align>(
       find.ancestor(of: recipient, matching: find.byType(Align)).first,
     );
     expect(align.alignment, Alignment.centerLeft);
-
-    await tester.tap(find.byKey(const Key('invite-view-cards')));
-    await tester.pumpAndSettle();
-    expect(repository.lastQuery?.pageSize, 11);
-    expect(find.text('a***@aurora.test'), findsAtLeastNWidgets(1));
-    expect(find.textContaining('Total de'), findsNothing);
-    expect(find.textContaining('fict'), findsNothing);
   });
 
   testWidgets('debounces search and sends it to the repository', (tester) async {
@@ -197,20 +182,20 @@ void main() {
     await tester.pumpWidget(_app(InviteDirectoryPage(repository: repository, onCreate: () {})));
     await tester.pumpAndSettle();
     expect(find.text('Nenhum convite'), findsOneWidget);
-    expect(find.byKey(const Key('invite-create-card')), findsOneWidget);
+    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
 
     repository.invites = [testInvite()];
     await tester.enterText(find.byType(TextField).first, 'sem-resultado');
     await tester.pump(const Duration(milliseconds: 301));
     await tester.pumpAndSettle();
     expect(find.text('Nenhum resultado'), findsOneWidget);
-    expect(find.byKey(const Key('invite-create-card')), findsOneWidget);
+    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
 
     repository.failure = Exception('offline');
     await tester.tap(find.byKey(const Key('invite-clear-filters')));
     await tester.pumpAndSettle();
     expect(find.text('Convites indisponíveis'), findsOneWidget);
-    expect(find.byKey(const Key('invite-create-card')), findsOneWidget);
+    expect(find.byKey(const Key('invite-create-action')), findsOneWidget);
   });
 
   testWidgets('expired row offers resend and exposes the one-time link', (tester) async {

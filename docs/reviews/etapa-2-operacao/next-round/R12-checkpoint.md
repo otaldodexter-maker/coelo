@@ -15,6 +15,16 @@ múltiplas mídias visuais → `chat.attach`. Código R12/R13 já conjunto em de
 R12-07/41/43 preservados. Primeiro aceite: mosaico local por mensagem,
 contador de adicionais e single-media preservado; evidência em
 `docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md`.
+
+## R12-44 checkpoint de execução (C0)
+
+FE local-green: Convites agora renderiza somente a tabela canônica, sem cards
+ou toggle, preservando busca, filtros, paginação, Novo convite e ações por
+linha. Testes direcionados 24/24 e goldens compartilhados 14/14 PASS. O
+contrato backend permaneceu inalterado; por mudança de superfície o E2E foi
+reaberto para pending-verification, aguardando rota normal, reload e negativa
+cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.

@@ -1,12 +1,12 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: pronto para início manual; execução não iniciada nesta consolidação
+status: execução em andamento; C0 fechou dois aceites FE locais e mantém E2E aberto
 generated_at: 2026-09-13
 ---
 
 # R12 — Catálogo consolidado por camada
 
-53 IDs preservados:3 ajustes visuais entregues e50 abertos. C0 R12 é o responsável pela execução futura; decisões externas continuam com Owner. Nenhuma promoção funcional por consolidação.
+53 IDs preservados:4 ajustes visuais entregues e49 abertos. C0 R12 é o responsável pela execução; decisões externas continuam com Owner. Nenhuma promoção funcional por consolidação.
 
 | Item | action_ids | Estado / FE / BE / E2E | Prova preservada | Primeiro gate |
 |---|---|---|---|---|
@@ -53,7 +53,7 @@ generated_at: 2026-09-13
 | owner.r12-41 | forms.list | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
 | owner.r12-42 | gate/mapeamento pendente | open / Planejado R12; sem implementação. / Sem diagnóstico novo. / Sem prova nova. | docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md | Reconciliar R12-42, mapear e reproduzir na R12 autorizada. |
 | owner.r12-43 | chat.open | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
-| owner.r12-44 | invites.list | open / Planejado R12; não implementado. / Contrato preservado, reenvio a conferir. / Sem prova nova. | docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md | Reconciliar R12-44 e reproduzir na R12 autorizada. |
+| owner.r12-44 | invites.list | open / FE local-green: tabela-only, cards/toggle removidos e busca/filtros/paginação/Novo convite preservados. / Contrato preservado; nenhum envio/reenvio executado. / Pending-verification: composição mudou e rota normal/reload/escopo precisam de nova prova. | docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md | Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture. |
 | owner.r12-45 | invites.resend | open / Planejado R12; não implementado. / Contrato preservado, reenvio a conferir. / Sem prova nova. | docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md | Reconciliar R12-45 e reproduzir na R12 autorizada. |
 | owner.r12-46 | account.profile | open / Parcial: rodapé/busca, nome, crop e confirmação autoritativa testados. / Sigla/cor/metadados em candidato local; foto R2 ausente. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. |
 | owner.r12-47 | auth.recover, auth.reset | open / Verified histórico; pedido normal e endereço inexistente observados na R11. / Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP. |
@@ -61,7 +61,7 @@ generated_at: 2026-09-13
 | owner.r12-49 | assessments.entry, assessments.gradebook, assessments.detail, assessments.close, assessments.reopen | open / Aluno ausente reproduzido; prova remota pendente. / Candidato all/selected13/13 pgTAP; local-green preservado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário. |
 | owner.r12-50 | groups.list | open / Zeros incorretos reproduzidos; UI/reload pendentes. / Candidato10/10 pgTAP para contagens, herança, status e isolamento. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores. |
 | owner.r12-51 | gate/mapeamento pendente | open / Não aplicável. / Quatro candidatos locais; nenhum aplicado remotamente. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova. |
-| owner.r12-52 | chat.attach | open / Avanço local em f8c209a17: imagens/vídeos sem cartão administrativo; mídia inline, play/retry e viewer preservados. Não é aceite integral. / Sem mudança backend; R2 privado, ownership e autorização existentes a preservar. / Não certificado; faltam rota normal, mosaico/compositor, reload e escopo conforme aceite. | docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md | Preservar delta f8c209a17 e29 testes únicos PASS (20 tile +9 goldens); construir código atual, verificar rota normal e completar primeiro aceite faltante da referência de mídia/compositor. Não refazer contorno R12-43. |
+| owner.r12-52 | chat.attach | open / FE local-green: mosaico por mensagem para múltiplas mídias visuais, contador de adicionais, tile único e anexos não visuais preservados. / Sem mudança backend; R2 privado, ownership e autorização existentes preservados. / Pending-verification: faltam rota normal, mídia R2/MP4 real, reload e negativa cross-tenant. | docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md | Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema. |
 
 ## R12-52 checkpoint de execução (C0)
@@ -73,6 +73,21 @@ single-media e anexos não visuais permanecem no tile existente. Provas:
 Backend permanece inalterado e E2E não certificado; faltam rota normal, upload
 MP4 real, reload e negativa cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md`.
+
+## R12-44 checkpoint de execução (C0)
+
+FE local-green nesta fatia: Convites renderiza somente a tabela canônica;
+cards e toggle foram removidos, preservando busca, filtros, paginação, Novo
+convite e ações por linha. `flutter test
+test/features/invites/invite_directory_page_test.dart` passou 24/24 e o golden
+do diretório compartilhado passou 14/14. `flutter analyze --no-fatal-infos`
+foi reexecutado após remover um import de teste não usado.
+
+Nenhum contrato Supabase, RPC, RLS, envio ou reenvio foi alterado. Como a
+composição substitui a superfície anteriormente certificada, o integrado foi
+reaberto para `pending-verification`; faltam rota normal QA, reload e negativa
+cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md`.
 
 ## Dívidas transversais preservadas
 

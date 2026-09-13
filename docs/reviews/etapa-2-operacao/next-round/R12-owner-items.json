@@ -853,12 +853,12 @@
     "actionIds": [
       "invites.list"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contrato preservado, reenvio a conferir.",
-    "e2e": "Sem prova nova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+    "fe": "local-green: diretório table-only; cards/toggle removidos e busca, filtros, paginação, Novo convite e ações por linha preservados.",
+    "be": "Contrato preservado; nenhum envio ou reenvio real executado.",
+    "e2e": "pending-verification: composição substituiu superfície certificada; rota normal, reload e negativa cross-tenant pendentes.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-44 e reproduzir na R12 autorizada.",
+    "nextGate": "Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
