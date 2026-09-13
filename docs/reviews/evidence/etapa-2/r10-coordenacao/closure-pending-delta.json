@@ -1,0 +1,188 @@
+[
+  {
+    "action_id": "groups.list",
+    "camada": "frontend",
+    "delta": "R10: listagem abre turma e permite CRUD; observado card com Alunos0/Atividades0 embora links reais ativos. Lacuna de contadores a corrigir no repository/proje??o; aceite hist?rico lista/criar/reload preservado, sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+      "revision": "estrutura.json rev 33",
+      "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-list-vazio.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
+      "recordedAt": "2026-09-11T09:41:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "backend",
+    "delta": "R10: listagem abre turma e permite CRUD; observado card com Alunos0/Atividades0 embora links reais ativos. Lacuna de contadores a corrigir no repository/proje??o; aceite hist?rico lista/criar/reload preservado, sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+      "revision": "estrutura.json rev 56",
+      "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+      "recordedAt": "2026-09-11T20:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "integrated",
+    "delta": "R10: listagem abre turma e permite CRUD; observado card com Alunos0/Atividades0 embora links reais ativos. Lacuna de contadores a corrigir no repository/proje??o; aceite hist?rico lista/criar/reload preservado, sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
+      "revision": "estrutura.json rev 56",
+      "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
+      "recordedAt": "2026-09-11T20:40:00-03:00"
+    }
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "frontend",
+    "delta": "R10: Periodicidade/gap/detalhe/read-by-id corrigidos e build/UI integrados. UPDATE do draft b04 ainda SAI_INTERNAL_ERROR; payload exato6PASS e replay local verde n?o certificam produ??o. Primeiro gate: diagn?stico SQL interno sanitizado e UPDATE pela UI no mesmo draft.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "delta": "R10: Periodicidade/gap/detalhe/read-by-id corrigidos e build/UI integrados. UPDATE do draft b04 ainda SAI_INTERNAL_ERROR; payload exato6PASS e replay local verde n?o certificam produ??o. Primeiro gate: diagn?stico SQL interno sanitizado e UPDATE pela UI no mesmo draft.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+      "revision": "G5-R09-r80",
+      "environment": "Supabase producao; pgTAP R08 G0 reutilizado",
+      "recordedAt": "2026-09-12T19:11:01.449001+00:00"
+    }
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "delta": "R10: Periodicidade/gap/detalhe/read-by-id corrigidos e build/UI integrados. UPDATE do draft b04 ainda SAI_INTERNAL_ERROR; payload exato6PASS e replay local verde n?o certificam produ??o. Primeiro gate: diagn?stico SQL interno sanitizado e UPDATE pela UI no mesmo draft.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "frontend",
+    "delta": "R10: rota normal Estrutura > Atividades > Lan?ar avalia??es abre contexto retido; ap?s groups.members CRUD o di?rio ainda mostra Turma sem alunos. Gate: cadeia activity_group_participants + reconcilia??o do snapshot do di?rio retido, sem recriar di?rio/configura??o.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "backend",
+    "delta": "R10: rota normal Estrutura > Atividades > Lan?ar avalia??es abre contexto retido; ap?s groups.members CRUD o di?rio ainda mostra Turma sem alunos. Gate: cadeia activity_group_participants + reconcilia??o do snapshot do di?rio retido, sem recriar di?rio/configura??o.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "integrated",
+    "delta": "R10: rota normal Estrutura > Atividades > Lan?ar avalia??es abre contexto retido; ap?s groups.members CRUD o di?rio ainda mostra Turma sem alunos. Gate: cadeia activity_group_participants + reconcilia??o do snapshot do di?rio retido, sem recriar di?rio/configura??o.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "frontend",
+    "delta": "R10: di?rio d2c945d8 retido draft v1, sem lan?amento novo. UI sem alunos mesmo ap?s turma ativa; reconciliar participantes/snapshot pela rota can?nica sem recriar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "backend",
+    "delta": "R10: di?rio d2c945d8 retido draft v1, sem lan?amento novo. UI sem alunos mesmo ap?s turma ativa; reconciliar participantes/snapshot pela rota can?nica sem recriar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "integrated",
+    "delta": "R10: di?rio d2c945d8 retido draft v1, sem lan?amento novo. UI sem alunos mesmo ap?s turma ativa; reconciliar participantes/snapshot pela rota can?nica sem recriar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "frontend",
+    "delta": "R10: bloqueado pela cadeia do di?rio retido sem alunos; n?o executado fechar/reabrir. Primeiro gate: participante eleg?vel e nota persistida pelo fluxo normal.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "backend",
+    "delta": "R10: bloqueado pela cadeia do di?rio retido sem alunos; n?o executado fechar/reabrir. Primeiro gate: participante eleg?vel e nota persistida pelo fluxo normal.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "delta": "R10: bloqueado pela cadeia do di?rio retido sem alunos; n?o executado fechar/reabrir. Primeiro gate: participante eleg?vel e nota persistida pelo fluxo normal.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "frontend",
+    "delta": "R10: bloqueado por fechamento ainda n?o executado; n?o recriar di?rio para provar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "backend",
+    "delta": "R10: bloqueado por fechamento ainda n?o executado; n?o recriar di?rio para provar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "delta": "R10: bloqueado por fechamento ainda n?o executado; n?o recriar di?rio para provar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "frontend",
+    "delta": "R10: depende da cadeia de participantes da atividade e do di?rio retido; v?nculo de aluno na turma conclu?do, lan?amento ainda n?o. N?o contar teste isolado como UI/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "backend",
+    "delta": "R10: depende da cadeia de participantes da atividade e do di?rio retido; v?nculo de aluno na turma conclu?do, lan?amento ainda n?o. N?o contar teste isolado como UI/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "integrated",
+    "delta": "R10: depende da cadeia de participantes da atividade e do di?rio retido; v?nculo de aluno na turma conclu?do, lan?amento ainda n?o. N?o contar teste isolado como UI/E2E.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "delta": "R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "delta": "R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "delta": "R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  }
+]

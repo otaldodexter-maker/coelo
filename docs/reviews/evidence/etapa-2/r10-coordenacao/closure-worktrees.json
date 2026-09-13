@@ -1,0 +1,177 @@
+{
+  "at": "2026-09-13T05:04:45.602286+00:00",
+  "worktrees": [
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo",
+      "HEAD": "5d57969b4a1542a8662f93486e92b2715d8ce721",
+      "branch": "refs/heads/dev",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
+      "HEAD": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "branch": "refs/heads/work/etapa2-r07-coordenacao",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "HEAD": "942955410699007fd86515fd34fb804b6b96903d",
+      "branch": "refs/heads/work/etapa2-r08-acessos-pessoas",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "HEAD": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "branch": "refs/heads/work/etapa2-r08-ambiente-runtime",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao",
+      "HEAD": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "branch": "refs/heads/work/etapa2-r08-coordenacao",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-estrutura",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "HEAD": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "branch": "refs/heads/work/etapa2-r08-formularios-cuidado-rotina",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "HEAD": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "branch": "refs/heads/work/etapa2-r08-operacoes",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "HEAD": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "branch": "refs/heads/work/etapa2-r08-principal-chat-sistema",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "HEAD": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "branch": "refs/heads/work/etapa2-r08-publicacoes-agenda",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-realm-interno",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "HEAD": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "branch": "refs/heads/work/etapa2-r08-suites",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+      "HEAD": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "branch": "refs/heads/work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
+      "HEAD": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "branch": "refs/heads/work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+      "HEAD": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1534",
+      "HEAD": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1534",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+      "HEAD": "ff11b17980d1519849c1bf472b4bc74c05e2994d",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
+      "HEAD": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "branch": "refs/heads/work/etapa2-r09-estrutura-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "HEAD": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "branch": "refs/heads/work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
+      "HEAD": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "branch": "refs/heads/work/etapa2-r09-operacoes-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
+      "HEAD": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "branch": "refs/heads/work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
+      "HEAD": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "branch": "refs/heads/work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+      "HEAD": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "branch": "refs/heads/work/etapa2-r09-realm-interno-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
+      "HEAD": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "branch": "refs/heads/work/etapa2-r09-suites-20260912-1542",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-chat-inline",
+      "HEAD": "b3ad72d7f7fb4ff838556d1314911897c53cd2ac",
+      "branch": "refs/heads/work/etapa2-r10-chat-inline",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-chat-upload",
+      "HEAD": "17168309f738582c1bcb63c98742e3b3cd84fb44",
+      "branch": "refs/heads/work/etapa2-r10-chat-upload",
+      "status": []
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-coordenacao-20260912-2314",
+      "HEAD": "ec689231d6f1cb1491593ed6c2a2e3bb04908c62",
+      "branch": "refs/heads/work/etapa2-r10-coordenacao-20260912-2314",
+      "status": [
+        "?? docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md"
+      ]
+    },
+    {
+      "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-terra-members",
+      "HEAD": "9916ae76ba76e7b563e3f053fa7d293e0e9480ad",
+      "branch": "refs/heads/work/etapa2-r10-terra-members",
+      "status": []
+    }
+  ],
+  "stash": [],
+  "note": "Preserved; no removals. Ignored env/build/backups not included or exposed."
+}

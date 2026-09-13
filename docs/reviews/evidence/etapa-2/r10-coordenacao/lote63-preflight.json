@@ -1,5 +1,4 @@
 {
-  "at": "2026-09-13T04:51:00Z",
   "project": "evvbomzejfijozbtgvpt",
   "candidate": "20260913035000_student_link_platform_scope_v1.sql",
   "localProof": "23PASS0FAIL rollback; real scoped platform helper and institution membership; current_person/context resolver controlled. HelperMD5 local=remote168be6e9557e84828bd6c75d29b9f3a6",
@@ -17,5 +16,10 @@
       "sha256": "3fdbc66b2a885ed6679c246a3c138917e2db434a65792432b7a0b05a39d76b4e",
       "exitCode": 0
     }
-  ]
+  ],
+  "timeWindowUTC": [
+    "2026-09-13T04:49:50Z",
+    "2026-09-13T04:50:39Z"
+  ],
+  "timeQualification": "Preflight completed before apply; interval anchored by clock call and migration ledger, not an invented exact timestamp."
 }
