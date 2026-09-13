@@ -1,0 +1,65 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: rodapé/busca e confirmação autoritativa publicados ebf7f23e2;37 testes PASS/build/UI focal; persistência avatar e grupos reais abertos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: rodapé/busca e confirmação autoritativa publicados ebf7f23e2;37 testes PASS/build/UI focal; persistência avatar e grupos reais abertos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: rodapé/busca e confirmação autoritativa publicados ebf7f23e2;37 testes PASS/build/UI focal; persistência avatar e grupos reais abertos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: contadores0/0 reproduzidos com1aluno e3vínculos de atividades; directory omite projeções; aceite anterior não cobre contadores.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: contadores0/0 reproduzidos com1aluno e3vínculos de atividades; directory omite projeções; aceite anterior não cobre contadores.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: contadores0/0 reproduzidos com1aluno e3vínculos de atividades; directory omite projeções; aceite anterior não cobre contadores.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md"
+  }
+]

@@ -9,8 +9,8 @@ const fs = require('node:fs');
   const page = pages.find(p => p.type === 'page' && p.url.startsWith('http://127.0.0.1:3000') && (auth ? authPath(p) : !authPath(p)));
   const ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise(r => ws.onopen = r);
-  let id = 0; const pending = new Map();
-  ws.onmessage = e => { const d = JSON.parse(e.data); if (d.id && pending.has(d.id)) { const p = pending.get(d.id); pending.delete(d.id); d.error ? p.reject(Error(d.error.message)) : p.resolve(d.result); } };
+  let id = 0; const pending = new Map(); const events = [];
+  ws.onmessage = e => { const d = JSON.parse(e.data); if(d.method) events.push(d); if (d.id && pending.has(d.id)) { const p = pending.get(d.id); pending.delete(d.id); d.error ? p.reject(Error(d.error.message)) : p.resolve(d.result); } };
   const send = (method, params = {}) => new Promise((resolve, reject) => { const n = ++id; pending.set(n, {resolve,reject}); ws.send(JSON.stringify({id:n,method,params})); });
   const evaluate = async expression => (await send('Runtime.evaluate',{expression,awaitPromise:true,returnByValue:true})).result?.value;
   const driver = async command => {
@@ -27,6 +27,18 @@ const fs = require('node:fs');
     await send('Emulation.setFocusEmulationEnabled',{enabled:true});
     const browserWindow=await send('Browser.getWindowForTarget');
     await send('Browser.setWindowBounds',{windowId:browserWindow.windowId,bounds:{windowState:'normal'}});
+    if (args[0] === 'save-assessment') {
+      await send('Network.enable');
+      await driver({command:'tap',finderType:'ByText',text:'Salvar rascunho'});
+      await new Promise(r=>setTimeout(r,3000));
+      const response=events.find(e=>e.method==='Network.responseReceived' && e.params.type!=='Preflight' && e.params.response.url.endsWith('/rpc/superadmin_assessment_save_configuration'));
+      if(!response) throw Error('Assessment response not observed');
+      const result=JSON.parse((await send('Network.getResponseBody',{requestId:response.params.requestId})).body);
+      const request=events.find(e=>e.method==='Network.requestWillBeSent' && e.params.requestId===response.params.requestId);
+      const safe={at:new Date().toISOString(),status:response.params.response.status,request:JSON.parse(request.params.request.postData),result};
+      fs.writeFileSync(args[1],JSON.stringify(safe,null,2)+'\n');
+      console.log(JSON.stringify({status:safe.status,result}));
+    }
     if (args[0] === 'auth-context') {
       const context=await send('Target.createBrowserContext');
       const target=await send('Target.createTarget',{url:'http://127.0.0.1:3000/login',browserContextId:context.browserContextId});

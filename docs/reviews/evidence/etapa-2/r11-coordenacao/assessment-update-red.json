@@ -1,0 +1,52 @@
+{
+  "at": "2026-09-13T14:33:24.534Z",
+  "status": 200,
+  "request": {
+    "request_id": "59c6a710-c448-45b6-926b-8d7a6a381705",
+    "configuration_id": "b04c879e-bedd-4e45-9358-66c545215646",
+    "expected_version": 1,
+    "payload": {
+      "activity_id": "95b98978-19e2-43ba-aa0c-70ae81557e08",
+      "institution_id": "190dd028-3125-452d-8502-612bfa1029de",
+      "unit_id": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3",
+      "periodicity": "annual",
+      "result_scale_kind": "numeric_0_10",
+      "scale_options": {
+        "step": 0.01
+      },
+      "concepts": [],
+      "periods": [
+        {
+          "name": "R08 sintético",
+          "ordinal": 1,
+          "academic_year": 2026,
+          "starts_on": "2026-09-12",
+          "ends_on": "2026-12-31",
+          "entry_closes_at": "2026-12-31T23:00:00.000Z",
+          "family_release_at": "2026-12-31T23:00:00.000Z",
+          "timezone": "America/Sao_Paulo",
+          "status": "draft"
+        }
+      ],
+      "allow_final_override": false,
+      "instruments": [
+        {
+          "name": "Instrumento R08",
+          "weight": 100,
+          "sort_order": 0
+        }
+      ],
+      "categories": []
+    }
+  },
+  "result": {
+    "ok": false,
+    "data": null,
+    "error": {
+      "code": "SAI_INTERNAL_ERROR",
+      "message": "Acesso negado.",
+      "http_status": 500,
+      "correlation_id": "3c8a0b30-2047-4700-a323-9b3dba90e0e9"
+    }
+  }
+}

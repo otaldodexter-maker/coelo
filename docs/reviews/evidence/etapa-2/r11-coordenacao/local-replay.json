@@ -1,0 +1,837 @@
+[
+  {
+    "file": "20260910130000_meal_plans_owner_permission_grants_v1.sql",
+    "sha256": "2d464b1d9b25569ec362997b8a7d3bb7e3dc4cf4e5fa47e42d46aed884d39bbe",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910160000_units_rpcs_versioned_from_production_v1.sql",
+    "sha256": "a1512176e3d22348576428bf1932b8fdbf225b84b9bc80aa53a79b95142a62bb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010000_daily_routine_foundation_v1.sql",
+    "sha256": "51cc099bd6772ec01ae3e6f49fc4e83ff2bf61215b21156240affd2b113d589c",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010100_daily_routine_behavior_v1.sql",
+    "sha256": "bc04f2337f0d3d2576014ba2b4162e35ff6c499d0d1d4b5d6cc01045e1592b99",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010200_attendance_authorization_and_idempotency_v1.sql",
+    "sha256": "949d9d8a780cde7a6279a2eef8d0eee70ad64c5877a4cc8daf8dc4b72d137aed",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010300_health_care_and_medication_plans_v1.sql",
+    "sha256": "09488ff44b680d6ac1005becc29b2f5b92e468d261cbdf2bad52d699d83b7381",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010400_health_care_behavior_v1.sql",
+    "sha256": "ca0368152f066842e948a89af45a0e6993c9adcd25b01d19b5af5010d60c3e33",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910010500_daily_routine_client_contract_v1.sql",
+    "sha256": "6b3fdb52853fee92aa6cf5698044f3952dae435d0a309072c2967a08b82631ea",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230001_superadmin_internal_institution_list_filter.sql",
+    "sha256": "c4496229e2d004907b1c878e9719cadfa60169307eeb92be67cd76c3ad5551aa",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230002_superadmin_internal_institution_edit_core.sql",
+    "sha256": "102a543e5c5e2c8efcc30c39f69fef8d8749ee207a3a3be934f1efdbb4fa96fb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230003_superadmin_forms_directory_internal_read.sql",
+    "sha256": "8900f60c8951efd20550a918684b335d10d3bf77d90fc4676a9381d16b27a119",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230004_superadmin_internal_form_drafts_v2.sql",
+    "sha256": "db787041686d9240878077486a981ef63ada007e8cbd23652acb15f96dd7dfab",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230005_superadmin_forms_authoring_institution_context_v2.sql",
+    "sha256": "12feb76bf9b3f1a607d9eb73491904bc1e7f109563b952e31501fba94c442025",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230006_forms_internal_provenance_guards.sql",
+    "sha256": "aa50173739e95330000a23a888a49a096b678897240b8f3b917eb7e07735eeff",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230007_private_media_catalog_r2_v1.sql",
+    "sha256": "0e403320fbc7fc72ea53894b31f1820729a5610531942d98ded2cd0d173c70d7",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230008_forms_xlsx_private_r2_v1.sql",
+    "sha256": "281e10759d4d2920ddfd3a8fab7e0e4149366df2d9d9ca6450ab56ec72d74a1b",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230009_forms_response_edit_validation_v1.sql",
+    "sha256": "bdf1a6ceb1c554218ac79aa10b6706fbf3bf83c594597ddf30aa53c69d81660d",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230010_forms_superadmin_operations_read_v2.sql",
+    "sha256": "476572d6be5951e2075f3d548d738c5123344af1975b0a61b98ea5c924104108",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230011_forms_superadmin_media_read_r2_v1.sql",
+    "sha256": "33b5186c28c8039dbb0eacd151de1c7f248506778971fa57bf7d38d65b9146a3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220000_health_care_guardian_read_v1.sql",
+    "sha256": "654897f1ae77e0dd760b261792d99dd2ff764d81e8700ecab78c7780c07aa867",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220200_student_link_commands_v1.sql",
+    "sha256": "49e5d70bfcc87aea92738683c47c11a44d72c084ef63375578c2444ba7f67df4",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220100_forms_revoke_production_drift_v1.sql",
+    "sha256": "a7f5d31ff6f70aa37bcf2e3f57fe15ae51502ff6641f429be28e009119222544",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190000_meal_plans_media_lifecycle_receipts_v2.sql",
+    "sha256": "2fe0400d59ed9af08454f1d0ae2696730e7c5c2fca0d6cd601349370d0622cd4",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190100_meal_plan_image_delete_requires_revision_v2.sql",
+    "sha256": "69af0e78e8e3564e8dfd869e7e9ae9529dc3d6432a44dcc14b1da62645415717",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190200_meal_plan_delete_v1.sql",
+    "sha256": "9f736163917062a81fa8ddbfe90caf1efbce0a71e93b4d7c9dd80d364ccc5c89",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170100_superadmin_internal_person_detail.sql",
+    "sha256": "0afa2702610b8439859e385d2cd9a36925687e58d2d46b6dbab2e1f763c8bc73",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170200_superadmin_internal_invites_v2.sql",
+    "sha256": "3c213af21d09ccd3b6afeab04efac17c1546d76504fa08191d15a997ae3265f3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170300_superadmin_internal_users_directory.sql",
+    "sha256": "2409a8bf67b491c4da65f73ff06dab42ea007ae1eb4e4b19dcd615339d4c88ee",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170400_superadmin_internal_users_read_minimization.sql",
+    "sha256": "da0eaf76a909c45d7522f7123d514aa4c686d935dbe8513cd4c1a9aac7769b1d",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170500_child_safety_schema.sql",
+    "sha256": "79955843480f2107b3fa81061e36813f9da141222cc4a1ed92ac39936fa65a8f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170600_child_safety_read_models.sql",
+    "sha256": "2890443e22ea583c776d3d3adb44fe1591e4f373a4e7efe6830f574ea76e4e71",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170700_child_safety_security_closure.sql",
+    "sha256": "2dc5d1ad9b0b924f64a03ec7c5f0dfa833ac5bd233d41fb46e2aa7c449da1ef1",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910170800_d04_child_safety_internal_reads.sql",
+    "sha256": "01e7ddd622944f4a96aac7e521d3dd162d4078a10b209686ec58a9df96cd9084",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230012_locations_capabilities_v1.sql",
+    "sha256": "848b33467054b418a0851ffcde9b599bacef9e0b06fa43452e22bc247c116f44",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230013_superadmin_location_catalog_v2_baseline.sql",
+    "sha256": "b44ab64ba08e0b98932c74208c213f06f9170e7f403562b2a27f3d933a31b8c0",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230014_superadmin_locations_update_status_v2.sql",
+    "sha256": "2b96f81408fa1c1b99678ddf0b70e071a519f98acda6d43a8670d6d8457aa061",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230015_superadmin_locations_copy_v2.sql",
+    "sha256": "b7e21511d0a8db634aefdf7ecaa89c75616f941a82728a48a86c7a16a852fd76",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230016_superadmin_locations_schedule_v2.sql",
+    "sha256": "ef3e84af397b1808c27573ea8eb0a75541f1d0d32330fd4507c3464997760ac3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230017_moments_publication_mvp.sql",
+    "sha256": "3f1459bcf1673184d4b64f0a2589b6bc08dafadf9b5295bd651e2e4f62c81910",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230018_moments_media_bucket_topology_v1.sql",
+    "sha256": "a6d1115ed5fc9ad01e31390126bb385739e80d74446940d3a4f1bc674eafd8bd",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230019_superadmin_support_production_v1.sql",
+    "sha256": "e4fe093afc395c8a0bf90c8a27fc897abd037f54bcf3c271fd8576583f361fab",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230020_superadmin_account_profile_v1.sql",
+    "sha256": "11954dff747ab812650997cbd9ef6cef719d767f0207ed2ca821394cf32e20f9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230021_mfa_fora_do_mvp_v1.sql",
+    "sha256": "08e5ff116ea9884564c66020114a6b64df0253ff2b20980e34eb5811fea67670",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220300_student_links_read_v1.sql",
+    "sha256": "6b49c213513b91fd16be0a44480b9b08e87f52fa2989a273140cb7bbe7eab23c",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190300_now_publication_mvp_baseline.sql",
+    "sha256": "1fb2930b39b675d5edadec6538d6aeab14d0e19299c05174f1227d7b9f82127a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190400_now_custom_role_audience_hardening_baseline.sql",
+    "sha256": "26f9c4165229f05967fd798c25ceae65a475ad22c9efc87545a1db432fa5a8cf",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190500_now_publication_expiry_transition_baseline.sql",
+    "sha256": "0e9b1dec0f313300164c8c55f64836fbc91c1457661305792543b64e690978d3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190600_now_media_private_r2_v1.sql",
+    "sha256": "03a3cc0ef24b2cdc6f8ac666e0bcf6f0c3316990694ded4a55f8d20736179a1b",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190700_happens_media_private_r2_v1.sql",
+    "sha256": "6ee85309429d60b7460c59489c397048da55dad608b5e5c61f5bf2c9d0822ee9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190800_happens_post_withdrawal_baseline.sql",
+    "sha256": "f6a0ef928188f6a02af40dc9d367d6785db04a9b3eaa00e6ab79ff6ac51bc52a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240000_chat_production_contract_v1.sql",
+    "sha256": "ede31749412ab6e5cb55d9f461e3ad0161bd86e3c5d01aff59bf7dfca2695af7",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240100_superadmin_internal_chat_v2.sql",
+    "sha256": "d6de93b32f3e00488d4dd2a652f1837fc0edd3ba91cae50c96f4a58c07c7a5a3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240200_superadmin_internal_chat_receipts_edit_revoke_v2.sql",
+    "sha256": "17bff79fa0e6ca07e0298e56417f3d339412dec7f82af953746d400b50f908eb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240300_chat_conversation_preferences_v1.sql",
+    "sha256": "106f2e4d4e74a2757866ccff5efaa8c76ab7e232c454f689cd28ef9ee9bbd428",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240400_superadmin_internal_chat_groups_v1.sql",
+    "sha256": "3abeb1a8d200c284f47171fb0970afec1d3f32a28615737bf63ed215ded64ebf",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200000_superadmin_internal_notices_v2_baseline.sql",
+    "sha256": "2d7f3db536d23ffa3554b8be4337959aaccdcbe710cc06365f88d1f4d18c25b2",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200100_superadmin_internal_circulars_v2_baseline.sql",
+    "sha256": "df1538a4c39a80ce51755a78b667b82d460abc8e26602bd6e20751162caa3604",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200200_superadmin_internal_circular_delete_v2.sql",
+    "sha256": "05c5a00745277b006384e89314906cb74a2bdd75ce56f8b0e7bb2908d58e1b05",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200300_agenda_internal_realm_compat_v1.sql",
+    "sha256": "7a5e0df7fee11c7945b082a80a959b0615385b37d298a44dde6d8cc19b6e25eb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240500_revoke_anon_direct_access_v1.sql",
+    "sha256": "bd0bfe3f956503c2b9054f85d4b01471f0c6f470341e4d44d09877bb1a1a88bb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171000_has_platform_permission_institution_membership_v1.sql",
+    "sha256": "3839f3057c3d88ea951c164de9df345eca0de55f02269829b8539a3b9ceadcd5",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910210000_support_create_internal_scope_v1.sql",
+    "sha256": "92dc88e97d7057019602a997b09bc7c227bc9ee3e98b67552370e6e8d731f79d",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910210100_superadmin_internal_audit_read_v2.sql",
+    "sha256": "3a14121447bbe21aa20acd8a291bec94ac3bb9bddc5ede8a96da8806ca1729b2",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180000_superadmin_location_reservations_v2.sql",
+    "sha256": "1f29776a5ee92ccc8d6127db3d583dfe76390db85708e894ad9bd5620a9cb775",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180020_activities_v2_actor_attribution.sql",
+    "sha256": "ad10aa26bd2c7c797ef606f9ee9cc9038c02bba10543b9930d14d36b9ad383bf",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180030_activities_v2_actor_provenance_hardening.sql",
+    "sha256": "31f54a5b8bc1c8dde45f60903ae0c5ef1651db580169a83aba37fc5487af50c8",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180040_activities_v2_actor_provenance_semantics.sql",
+    "sha256": "19c3168014d7710b248da92100bb1b61528e9299150a54da74080315e8b99745",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180050_activities_v2_permissions_receipts.sql",
+    "sha256": "84bfc497aae6e4d8ad950fc03035896d6b9246c42531823e32ce34817b0d02b5",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180060_activities_v2_internal_gateways.sql",
+    "sha256": "443be75040ca103a7a6723aa90037359c11c1681afdc6a6361c2d81f667a6dfa",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180070_activities_v2_rls_grants.sql",
+    "sha256": "0e156b3beb53ebbf1caca033908f0d6755f274b9fa9d38b26bcc4b7da7c65dc1",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180080_activities_v2_final_review_hardening.sql",
+    "sha256": "01663a89c55e5de081aa97b808cec0329ae4af9dd6a24ef2d80c87d6c0ddc898",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180090_activity_template_unit_scope.sql",
+    "sha256": "5be7c88d13e6442fedf88ee68c5a09390563413c355b73cd354a676e041c54a6",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180100_superadmin_activity_directory_v2_client_contract.sql",
+    "sha256": "e72e11c5d0f8fd8d49bfe098a230530edb3d4070d80ca5b4ae04b61b72eb196f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180110_superadmin_activity_save_v2.sql",
+    "sha256": "17a282d3105536c751a6b908cf6dbb9ff8820ebbdc2751cab9f0227faf991a90",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180120_superadmin_activity_link_end_clock_v1.sql",
+    "sha256": "be66e47436dfaf61bc3655fa5c1bedbeb88725077912e5c8fb28155bbcb7b069",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180140_superadmin_location_consumer_bindings_v2.sql",
+    "sha256": "4c08a29e80736bd8f9b5a32b4183b40be173d30c5aa6dca38f27b3ed49c82ddd",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180150_superadmin_activity_location_create_v2.sql",
+    "sha256": "711fa34dd063a46d8d8964e839201a242089580c63fcf9c5f6d105dc7c54d5a0",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180200_superadmin_group_location_create_v2.sql",
+    "sha256": "3e76d07fa9c780befe960cf904f8a172771ceb15982715ac7e8e6edb15c2e1e4",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180300_superadmin_internal_unit_detail_v2_baseline.sql",
+    "sha256": "110f68a91607b32e6f8b994dbd21b7dd26280c8feb4833d7350bffbaf6a7c770",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180310_superadmin_internal_group_detail_v2_baseline.sql",
+    "sha256": "f4f3ccacf25b28f0c1fd1bef3f32fd25ebd572549febb04fdba74dadf549c334",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180320_structure_type_catalog_seed_v1.sql",
+    "sha256": "31e4656bbefcd6b6f98649538fd909665684dd1e4cd03a8abf60731ca7120919",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180330_superadmin_internal_institution_detail_v2_baseline.sql",
+    "sha256": "ac3592f2b6f2a03d0a1531865069feb344bb047ddfe9308c6801d83fec4af652",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180340_superadmin_internal_institution_create_v2.sql",
+    "sha256": "96de01db43ba719f8b808efca2e74dab79ac591c31048ff4c00400fa30263650",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220400_internal_actor_service_person_v1.sql",
+    "sha256": "b3fd01a26b82a94058b4f4825a533194a4cde1d9e714b84b881e227c40ed9905",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200400_superadmin_circular_save_draft_v2_fix.sql",
+    "sha256": "c4a047b2fa0427ad24b0cf9d85dbd324d9a7f90f9d5d2933d085cc5db528b89d",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180350_superadmin_assessments_internal_v2.sql",
+    "sha256": "6f884e5860cf2844e2cdc7f37df0912f0ad6e0772633bfea57d5e9de12098493",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910190900_public_security_definer_revoke_anon_v1.sql",
+    "sha256": "f2356bef14fb8c34eb719606f60aaf6c57daf9159c7fac3e6c4b7aee7efcaf77",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171100_follow_links_automatic_hierarchy_v1.sql",
+    "sha256": "0d2e67619b4427152cdc7a8f4fe5998a42123646ab65e864577ce1f8564e4b7f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910240600_revoke_authenticated_truncate_references_trigger_v1.sql",
+    "sha256": "6fe227334225a60b0131b4c5d2de371b93f3bde868ca2ea2fa20b4470d4bd848",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171200_qa_r03_internal_profile_seed_v1.sql",
+    "sha256": "2329d98b7f890019fd4fca04fee8427909a68f32a33d82921ee10b778f60fa14",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910200500_notice_publication_worker_v2.sql",
+    "sha256": "bed2fd63a133db5329a3a0d88ed420ac465f2cb429f812eb9e867d1e0ee8ecd9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171300_access_profile_models_catalog_v2_baseline.sql",
+    "sha256": "6ddf7a7abc1531e5395cd32e940af86f4c4817161b82cb0352dc11bc9cb50587",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171500_follow_links_backfill_v1.sql",
+    "sha256": "a043023a4b79974987fb42d141a3a071329385b1d3a76fde98e390f2dc12f3f9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220500_forms_location_question_v1.sql",
+    "sha256": "87083f9dbe96f6a407012e0997512c924c8bcba4d6ec78b860506f441c9fce8a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171700_access_profile_detail_v3_draft_and_matrix.sql",
+    "sha256": "a7d192ed6d39c14da677f245a5efee1f330a12479a1af6cb316fe29f96bb4113",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171900_child_safety_decision_enum_cast_fix_v1.sql",
+    "sha256": "75a5d02c0db58e8d13796e8f9119cdb1d2670e5f708431723db79bddca341459",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910172000_owner_child_safety_review_grant_v1.sql",
+    "sha256": "b78583587260c37dca48d96b2e62ef847e1dc4246d3908b644d79817845b90eb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql",
+    "sha256": "b236e0ea7c071fdb528b85a96de65eeca8bf0ce65e04138f450c27f2775efb14",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910191000_principal_runtime_contexts_baseline.sql",
+    "sha256": "b3bae9f5f2a624719ec60f9d2006ec0006adeb8ac639ad25df22cd22c16c8aff",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220600_child_context_directory_v2_baseline.sql",
+    "sha256": "f4767b84547b3313e5c37481ca8168a99e3652caeed1bc156ae70337f715c17f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220700_attendance_dashboard_access_and_context_options_v1.sql",
+    "sha256": "41c30ecc0cf78f683a0663c8f4edcb1bcb803240db15be3514bfc4c3700e9b96",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910220800_forms_location_snapshot_v1_route.sql",
+    "sha256": "3d15c55a3c7943f4e1378badae613dfe4209a26b59b45ccdf702c2d3509a7775",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910180360_superadmin_institution_create_v2_type_by_name.sql",
+    "sha256": "23f7686b2143903ef97bb2204b61136f14e497ab719269366835ce2eee5ac575",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171600_institution_role_system_templates_v1.sql",
+    "sha256": "302d7f94d21b6ef2dd10acc1a1c278f197e6d73e5768b035e7fea297f5794ecb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910171800_child_safety_platform_decision_v1.sql",
+    "sha256": "edf9ed443e47b75c92e7b1e5debfeb793a1c0f7463ad797c460ce125938c293f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230023_notice_worker_dispatch_v1.sql",
+    "sha256": "f46751dbb69091b148b1318b829baad7dbd08625818a9f4c001183a33621de23",
+    "exit_code": 0
+  },
+  {
+    "file": "20260910230024_qa_r03_synthetic_institution_memberships_v1.sql",
+    "sha256": "e6df11ac66612210e6c994de3f9fd44a78c6c1c7b30f311602fbdd2f106c3123",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210000_institution_contacts_v1.sql",
+    "sha256": "e9f07d2326a425e8dc988a1e452870e4a3d62a3a092c1e85e92265b4076f02f3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130000_principal_internal_actor_bridge_v1.sql",
+    "sha256": "fe6ef05affefc4f0ad18612d43767e31ecc16ec2dfb4438de94bd88f11224c4e",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210100_revoke_authenticated_crud_without_policy_v1.sql",
+    "sha256": "70fcb998c0c591556826f2e67bb91795e4fea419c1425462e2058f345a155128",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170100_person_handles_v1.sql",
+    "sha256": "48d94280baa7eec5ed3a18f9cea195be135a24c19d6b8a5489a5c2b76ce2a0c0",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210200_superadmin_internal_chat_attachments_v1.sql",
+    "sha256": "269bb07d2875926bed23b2cd3c6103ae21612ed98e1ffae28aa67f36310f44ec",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210300_forms_question_media_r2_v1.sql",
+    "sha256": "4a9b09fb2f8d589021bd0c133daf6d780ef3f90fdc0685d84a91be2143974fc3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170200_follow_links_safeupdate_fix_v1.sql",
+    "sha256": "3792df6935ea05f3ef1b7770a810cc9701151e1538880c20896e953b89327b2c",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210400_structure_hierarchy_p36_v1.sql",
+    "sha256": "50973b35f4512f3cbe52cfba652bdff93ed37ee1daa3ec5bf260205b73f1259c",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210500_unit_care_policies_notifications_v1.sql",
+    "sha256": "a801fd423a988f7254aaf1269254a31c4fc2567a5d34e56f11c051f457056f4f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210600_institution_people_handles_v1.sql",
+    "sha256": "207e611c36472e701904af847e2e45df8ee7bba11ad8b2d3b105e95684885ce0",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210700_chat_media_expire_dispatch_v1.sql",
+    "sha256": "ce7ed6c12b40c7fc2cdd7ad5b030a77a981de1069f62a917cd1ecc6938191e09",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130100_principal_context_handles_and_coelo_profile_v1.sql",
+    "sha256": "e276d2db5c1e54e9ba89692f4721f05326ecfb548a22d045908fd5ef6976c63a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911220100_attendance_superadmin_contract_v1.sql",
+    "sha256": "632d54ee77f21c3c2530543c7b91e796d3555c637bd723dbe160486beeaa895e",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911230000_form_media_r2_cleanup_dispatch_v1.sql",
+    "sha256": "b04d843f4b0944d877d94d4fd6ead6a20630cb23e5d9595552d14a38f2867d6a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210800_forms_answer_media_r2_v1.sql",
+    "sha256": "82c09de3b4ff947e2f6949fda0cf9308837791751e30a2776567d1d9950892eb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911200000_superadmin_plans_platform_scope_v1.sql",
+    "sha256": "6a8e45d55805be5bb225193aeece720cb00f6a78f8043828a89533c09d5d96bb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170300_institution_profile_system_model_create_v1.sql",
+    "sha256": "038553989fcec4858a8aed06396c359f2f7222f381ec40a369abf28bfc4019bd",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911220000_daily_routine_directory_can_manage_v1.sql",
+    "sha256": "2038abd94870259da60d13e7f877de0439147845342b484a996e0ade7933a063",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911190000_circular_actor_internal_bridge_v1.sql",
+    "sha256": "02c351a65488511d29567e73cc127608b9f3cdd0d2da81254855b3188b97d8f8",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911180000_structure_handles_v1.sql",
+    "sha256": "1c7140f67e7c5ad161e3c14f9401c3a125b0c7bf1448adef711b92fc745baf01",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130200_happens_feed_owner_visibility_v1.sql",
+    "sha256": "2ef44daba5a310a7dcfe47d10a36939a8da0ef77311f7e7218a005e876750520",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130300_moments_feed_and_withdrawal_baseline.sql",
+    "sha256": "a5ea54e36f156b5ef9def591bf77899801f406930c2d1ff26fd65698f4b24b28",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911200100_superadmin_support_assignees_v1.sql",
+    "sha256": "efaaf6b5354ae808cbc07bdcc9d971acb8345811b40d1b2bbfeee52c4d1d4e5f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911210900_forms_media_expire_dispatch_v1.sql",
+    "sha256": "b14ac43b59b413f0ec8ac2289a7836536ca991247a4cc45d45d5fe23dfbc4dd9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211000_plans_select_for_institution_directory_v1.sql",
+    "sha256": "c96cc154239882221a4e8a34cd51529e28838ad5de6a2c57001ffccc6c48aeca",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211100_structure_handles_create_payload_v1.sql",
+    "sha256": "0ab0664b017b7d4f9f391aa00d56fb842716e25c6a594128b4898a81ef0a3cb6",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911190100_agenda_requests_labels_v1.sql",
+    "sha256": "ea6cdfd8f3ad16dd86ea9ca30d829691c39e50c8fce18b5e8f51a81834c88d6a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911190200_circulars_media_private_r2_v1_reapply.sql",
+    "sha256": "83f15de207d391af12487701527eb24ac1434777ba55b3b9cfcea80a73897110",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911190300_superadmin_circulars_v2_media_v1.sql",
+    "sha256": "a6d2ae15e45257506d879338cd3a0f263869bd2a25d24e59d95a15d8ef6b2a81",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211200_agenda_scoped_internal_identity_denied_v1.sql",
+    "sha256": "7a4516bc1b4125199a4264fa18b28cfc4ec0728d5104d3a1e2c9c59b168ef324",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211300_chat_attachment_worker_claims_v1.sql",
+    "sha256": "a21ebc9435702ed4f10650ff26d77e12eddf951e992a2228f845f8f977179b4f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170400_people_list_segment_v1.sql",
+    "sha256": "decdfb01ad21bfc8bd9b732f81506481974a7e4fae83822ad7e42aac5d7d2c92",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211400_unit_default_handle_fit_v1.sql",
+    "sha256": "965c4d6956e866ac37b68f2319d9fc6c3459f26e1f763c6dfdeffd01f25334c3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911211500_plans_revoke_select_reconcile_v1.sql",
+    "sha256": "1357884f260468f90671aa92501620c16f9aa54ef7b13e46f4d387577d491b9f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911230100_qa_r06_group_users_seed_v1.sql",
+    "sha256": "450489f5a42fa1b41a5f62300400e6f3a98ef2125031c68de71cb9a11af39c97",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912210000_internal_actor_scope_root_v1.sql",
+    "sha256": "35509a09654ac6caa82a8d92b9a1e3b7b32eb4a75eca9c64eda367806845d1d3",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170500_internal_user_handles_v1.sql",
+    "sha256": "47605027e82e8c0c40441a140ef51b925c8f456b8e3a6ddf21ddc8dd2a44ecfb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170600_institution_system_model_delete_v1.sql",
+    "sha256": "ef9c66e9680066ffc2b1efb10af44588b346447d25fef982be348656158a377b",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911200200_superadmin_account_sessions_v1.sql",
+    "sha256": "3a667ad6267b8c1dfd31042f368005da8db803698cb12ece87085339bb19ede4",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912180000_structure_handles_client_v1.sql",
+    "sha256": "f1bea8cb78e7dc1a3680dcf46b056bd4f49c7606a04df0334f5c51364653aa44",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912210100_internal_actor_scope_root_v1_hotfix.sql",
+    "sha256": "5641babc240f463781d29551fdecffc6a81a14c1af6a81934be25ad6be24fd38",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911200300_account_profile_service_person_email_v1.sql",
+    "sha256": "4a926f888b6d4681ce5a605b96b719ec0a551a0d134537a419b33598f0cf8d40",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912180100_assessment_configuration_read_variable_conflict_v1.sql",
+    "sha256": "4f2bb7aa916d4dbf9a852f53f15456f4370f0db568d89f78445754b066293e5b",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912180200_activity_detail_v2_handle_v1.sql",
+    "sha256": "ec8be93b57e382905c1d10138ce20a1001788667fe83e1e6c133a14f0123c881",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170700_people_identity_lookup_v1.sql",
+    "sha256": "0abc149514557f78da071b9338a8f613a888c27da5b2c84cedc2f8394aca871f",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912220000_form_save_draft_version_number_fix_v1.sql",
+    "sha256": "5c3f72bbbf440ea8e75882136a1ff852f77f2f0728c9d515ec7abdea9958cb22",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130400_internal_actor_institution_access_by_role_v1.sql",
+    "sha256": "c233b2db3ea58b08fc7cdec5145259ad32b114f00c3bc75947894d7bb82014d9",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911130500_meal_plan_scope_rules_object_v1.sql",
+    "sha256": "cc6235cd60d9a6617e40db15e20e5fa6b64af61fb2c83b25b76aca24ccc5e041",
+    "exit_code": 0
+  },
+  {
+    "file": "20260911170800_internal_user_create_v1.sql",
+    "sha256": "f7ce907f095f687515fc7b5e9cabfd26246b3b9d8361602349adca6856674900",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140545_now_publication_expiry_dispatch_v1.sql",
+    "sha256": "c50e894f0c3f7ba942b06bcc4a7c9de5088938e5f99463f0b32fa0eae7f06084",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140546_forms_question_media_draft_bridge_v1.sql",
+    "sha256": "fde495aad55c481ebf7320f19a73b1f21aec497e7f7d35c1ff1b9c257bd91c0d",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140547_forms_question_media_draft_bridge_fix_v1.sql",
+    "sha256": "a3ab6cfe4c70d1488b6ac5a8b7e963dc93e71a4fc7feaa6eaa4a8ab7cd8e3629",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140548_forms_question_media_retry_delete_v1.sql",
+    "sha256": "d75234de0109a63d71d78d2135ece61515ad640ad0189e7a099a8797522b9e05",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140549_forms_question_media_terminal_unbind_v1.sql",
+    "sha256": "6a1978f9e5c349b21a7b1b328595beb0aff1f62f6c8d7f06358a71ff530c5c45",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912140550_moments_withdraw_permission_v1.sql",
+    "sha256": "671d901eccc4e9b6ba86b86ae8b05a5feb0c764ff38fedac65ba21d4733f778c",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912143000_people_directory_context_filters_v1.sql",
+    "sha256": "ae744ab14283beb48bec970b130e5942cf573b318c2aa683eab9f31af3210305",
+    "exit_code": 0
+  },
+  {
+    "file": "20260912195837_forms_answer_media_authorization_null_guard_v1.sql",
+    "sha256": "878a961ee9e86b2324053191e2a821f04bbc8026b1560453215c593acb8029f8",
+    "exit_code": 0
+  },
+  {
+    "file": "20260913032627_r10_group_students_assessment_selected_chat_mp4_v1.sql",
+    "sha256": "beb78b2f9eab9a3245e353dfda788fee7de93b9b3892390aa7a32786b056e89a",
+    "exit_code": 0
+  },
+  {
+    "file": "20260913043053_r10_access_profile_private_rls_forward.sql",
+    "sha256": "3a0bea70f24cce1e1faf871ce63ea1907c9e1b80238da5b69036bc7f2d0e8ffb",
+    "exit_code": 0
+  },
+  {
+    "file": "20260913045039_r10_student_link_platform_scope_v1.sql",
+    "sha256": "7a48a17c9c05ecc9d15659951897ff332a6d815b714c3ef4dcb36a10ef76a70b",
+    "exit_code": 0
+  }
+]
