@@ -4317,9 +4317,9 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T04:22:00Z",
-    "base": "75149a8de +35f959e6a integrado",
-    "quotaUsedPercent": 79,
+    "time": "2026-09-13T04:31:00Z",
+    "base": "34aa6908e +SQL62",
+    "quotaUsedPercent": 80,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
@@ -4333,7 +4333,7 @@
       "/root/chat_inline": "fixture b3ad72d7f integrada; idle"
     },
     "wip": "Perfil QA R10 exclusao criado/reload/excluido/reload pela UI (424d4d15). Banco0perfil/0vinculos; consumidor anon401/detailP0002. pgTAP negativa6PASS1FAIL: tres tabelas privadas semRLS noespelho/prod, grantsdiretosnegados; hardening historico nao vigente. C0 avalia correcao focal. Grupos/avaliacao prontos para repeticao diagnostica no buildnovo.",
-    "next": "Ler codigo diagnostico dos dois saves; resolver RLSfocal com pgTAP/backup/SQLserial; fechar aceiteperfil sem esconder falha.",
+    "next": "UI grupo comcorrecaoinheritActivities; profileCRUD consumidorposRLS; assessmentdiagnosticocontrollocalTerra",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
@@ -4350,21 +4350,21 @@
     "profileDeletedByUI": "424d4d15-009f-4e32-911c-9ae37c056bd1"
   },
   "filaSqlR10": {
-    "ultimoAplicado": 61,
-    "proximo": 62,
+    "ultimoAplicado": 62,
+    "proximo": 63,
     "dono": "C0",
-    "status": "lote61 aplicado uma vez; consumidor UI pendente",
+    "status": "lote62 aplicado uma vez; RLSforce3tabelastrue e grantsnegados; consumidorUIpendente",
     "backup": [
       {
-        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-schema-20260913.sql",
-        "bytes": 4143028,
-        "sha256": "01fe84e018e308432dbde31646f3632619da8b65503571a77a36c6b2453652c5",
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-schema-20260913.sql",
+        "bytes": 4154000,
+        "sha256": "d51abbfe4d097ae0f8a7473436bb443c1e77167b68805f04d63408f4b6716dc9",
         "exitCode": 0
       },
       {
-        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-data-20260913.sql",
-        "bytes": 4538939,
-        "sha256": "0be962c90be5102f240da7e4bfa6d1ac5ce66735e3a0fb1df42f88d984ea2d40",
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-data-20260913.sql",
+        "bytes": 4564781,
+        "sha256": "2a3157dc724d9ae4e6839cb11eb6ce0a3da7e20b27e1cfd234d65d7e409d38f8",
         "exitCode": 0
       }
     ],
@@ -4376,8 +4376,35 @@
       "chat MP4 limit/extension"
     ],
     "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas.",
-    "version": "20260913032627",
-    "name": "r10_group_students_assessment_selected_chat_mp4_v1",
-    "postflight": "link/unlink/read-by-id existem; limite MP4=10485760"
+    "version": "20260913043053",
+    "name": "r10_access_profile_private_rls_forward",
+    "postflight": "3tabelas RLS+FORCE true; authenticated SELECTfalse; ledgerconfirmado",
+    "lote61Preservado": {
+      "backup": [
+        {
+          "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-schema-20260913.sql",
+          "bytes": 4143028,
+          "sha256": "01fe84e018e308432dbde31646f3632619da8b65503571a77a36c6b2453652c5",
+          "exitCode": 0
+        },
+        {
+          "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-data-20260913.sql",
+          "bytes": 4538939,
+          "sha256": "0be962c90be5102f240da7e4bfa6d1ac5ce66735e3a0fb1df42f88d984ea2d40",
+          "exitCode": 0
+        }
+      ],
+      "candidatos": [
+        "groups student link",
+        "groups students projection",
+        "groups student unlink",
+        "assessment read by id",
+        "chat MP4 limit/extension"
+      ],
+      "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas.",
+      "version": "20260913032627",
+      "name": "r10_group_students_assessment_selected_chat_mp4_v1",
+      "postflight": "link/unlink/read-by-id existem; limite MP4=10485760"
+    }
   }
 }

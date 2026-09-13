@@ -231,3 +231,12 @@
 
 # lote 59 (12/09 14:31) - R08 H28: filtros contextuais de Pessoas; corpo final44/44, backup esquema/dados, ledger atomico; composicao habilitada apos postflight
 20260912143000_people_directory_context_filters_v1.sql
+
+# lote 60 - reconciliado C0 R10 por ledger e estado real, sem reaplicacao
+20260912195837_forms_answer_media_authorization_null_guard_v1.sql
+
+# lote 61 - reconciliado C0 R10 por ledger e estado real, sem reaplicacao
+20260913032627_r10_group_students_assessment_selected_chat_mp4_v1.sql
+
+# lote 62 - reconciliado C0 R10 por ledger e estado real, sem reaplicacao
+20260913043053_r10_access_profile_private_rls_forward.sql
