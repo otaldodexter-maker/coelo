@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_superadmin/features/chat/domain/chat_repository.dart';
+import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_inline_media.dart';
 import 'package:coelo_superadmin/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -17,7 +18,49 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
-  testWidgets('binding read is explicit and discards its pending ticket after purge', (
+
+  testWidgets(
+    'ready image is reauthorised and rendered inside the attachment tile',
+    (tester) async {
+      final repository = _ImmediateBindingReader();
+      final session = MediaSession();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: const ChatAttachment(
+                id: 'inline-image-1',
+                fileName: 'R08-G4-synthetic.png',
+                mediaType: 'image/png',
+                byteSize: 82,
+              ),
+              state: SuperadminChatAttachmentState.ready,
+              attachmentRepository: repository,
+              mediaSession: session,
+            ),
+          ),
+        ),
+      );
+      await tester.pump();
+
+      expect(repository.requests, ['inline-image-1']);
+      expect(find.byType(SuperadminChatInlineMedia), findsOneWidget);
+      expect(
+        find.byKey(const Key('superadmin-chat-inline-image-inline-image-1')),
+        findsOneWidget,
+      );
+      expect(find.text('Anexo disponível'), findsOneWidget);
+
+      await session.invalidate();
+      await tester.pump();
+      expect(
+        find.byKey(const Key('superadmin-chat-inline-image-inline-image-1')),
+        findsNothing,
+      );
+    },
+  );
+  testWidgets('binding read discards its pending inline ticket after purge', (
     tester,
   ) async {
     final repository = _BindingReader();
@@ -40,9 +83,7 @@ void main() {
         ),
       ),
     );
-    expect(repository.requests, isEmpty);
-    await tester.tap(find.text('Abrir imagem'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(repository.requests, ['binding-1']);
     await session.invalidate();
     repository.pending.complete(
@@ -53,66 +94,145 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('chat-image-preview')), findsNothing);
-    expect(find.text('A imagem não está disponível neste contexto.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
   for (final control in ['footer', 'header']) {
     for (final change in ['covered', 'disposed']) {
-      testWidgets('image $control close cannot affect another route after $change', (tester) async {
-        final navigator = GlobalKey<NavigatorState>();
-        final session = MediaSession();
-        Widget host(bool disposed) => MaterialApp(
-          navigatorKey: navigator,
-          home: Scaffold(
-            body: disposed
-                ? const Text('Origem')
-                : SuperadminChatAttachmentTile(
-                    attachment: canonicalImage,
-                    state: SuperadminChatAttachmentState.ready,
-                    mediaReader: _Reader(),
-                    mediaSession: session,
-                  ),
-          ),
-        );
-        await tester.pumpWidget(host(false));
-        await tester.tap(find.text('Abrir imagem'));
-        await tester.pumpAndSettle();
-        final close = control == 'footer'
-            ? tester
-                  .widget<OutlinedButton>(find.widgetWithText(OutlinedButton, 'Fechar'))
-                  .onPressed!
-            : tester
-                  .widget<IconButton>(
-                    find.byWidgetPredicate(
-                      (widget) => widget is IconButton && widget.tooltip == 'Fechar',
+      testWidgets(
+        'image $control close cannot affect another route after $change',
+        (tester) async {
+          final navigator = GlobalKey<NavigatorState>();
+          final session = MediaSession();
+          Widget host(bool disposed) => MaterialApp(
+            navigatorKey: navigator,
+            home: Scaffold(
+              body: disposed
+                  ? const Text('Origem')
+                  : SuperadminChatAttachmentTile(
+                      attachment: canonicalImage,
+                      state: SuperadminChatAttachmentState.ready,
+                      mediaReader: _Reader(),
+                      mediaSession: session,
                     ),
-                  )
-                  .onPressed!;
-        navigator.currentState!.push(
-          MaterialPageRoute<void>(builder: (_) => const Scaffold(body: Text('Outra rota'))),
-        );
-        await tester.pumpAndSettle();
-        if (change == 'disposed') {
-          await tester.pumpWidget(host(true));
+            ),
+          );
+          await tester.pumpWidget(host(false));
+          await tester.tap(find.text('Abrir imagem'));
           await tester.pumpAndSettle();
-        }
-        close();
-        await tester.pumpAndSettle();
-        expect(find.text('Outra rota'), findsOneWidget);
-        expect(tester.takeException(), isNull);
-      });
+          final close = control == 'footer'
+              ? tester
+                    .widget<OutlinedButton>(
+                      find.widgetWithText(OutlinedButton, 'Fechar'),
+                    )
+                    .onPressed!
+              : tester
+                    .widget<IconButton>(
+                      find.byWidgetPredicate(
+                        (widget) =>
+                            widget is IconButton && widget.tooltip == 'Fechar',
+                      ),
+                    )
+                    .onPressed!;
+          navigator.currentState!.push(
+            MaterialPageRoute<void>(
+              builder: (_) => const Scaffold(body: Text('Outra rota')),
+            ),
+          );
+          await tester.pumpAndSettle();
+          if (change == 'disposed') {
+            await tester.pumpWidget(host(true));
+            await tester.pumpAndSettle();
+          }
+          close();
+          await tester.pumpAndSettle();
+          expect(find.text('Outra rota'), findsOneWidget);
+          expect(tester.takeException(), isNull);
+        },
+      );
     }
   }
 
-  testWidgets('image route honors reduced motion and keyboard open close focus', (tester) async {
-    final reader = _Reader();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: MediaQuery(
-          data: const MediaQueryData(disableAnimations: true),
-          child: Scaffold(
+  testWidgets(
+    'image route honors reduced motion and keyboard open close focus',
+    (tester) async {
+      final reader = _Reader();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: MediaQuery(
+            data: const MediaQueryData(disableAnimations: true),
+            child: Scaffold(
+              body: SuperadminChatAttachmentTile(
+                attachment: canonicalImage,
+                state: SuperadminChatAttachmentState.ready,
+                mediaReader: reader,
+                mediaSession: MediaSession(),
+              ),
+            ),
+          ),
+        ),
+      );
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Abrir imagem'),
+      );
+      button.focusNode!.requestFocus();
+      await tester.pump();
+      await tester.sendKeyEvent(LogicalKeyboardKey.enter);
+      await tester.pumpAndSettle();
+      final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
+      expect(route.transitionDuration, Duration.zero);
+      expect(route.reverseTransitionDuration, Duration.zero);
+      expect(reader.requests, hasLength(1));
+      await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+      await tester.pumpAndSettle();
+      expect(find.byType(Dialog), findsNothing);
+      expect(button.focusNode!.hasFocus, isTrue);
+    },
+  );
+
+  testWidgets(
+    'image dialog captures local theme barrier and closed focus traversal',
+    (tester) async {
+      const barrier = Color(0x99000000);
+      final localTheme = CoeloTheme.dark.copyWith(
+        dialogTheme: CoeloTheme.dark.dialogTheme.copyWith(
+          barrierColor: barrier,
+        ),
+      );
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Theme(
+            data: localTheme,
+            child: Scaffold(
+              body: SuperadminChatAttachmentTile(
+                attachment: canonicalImage,
+                state: SuperadminChatAttachmentState.ready,
+                mediaReader: _Reader(),
+                mediaSession: MediaSession(),
+              ),
+            ),
+          ),
+        ),
+      );
+      await tester.tap(find.text('Abrir imagem'));
+      await tester.pumpAndSettle();
+      final dialog = tester.widget<Dialog>(find.byType(Dialog));
+      expect(dialog.backgroundColor, localTheme.colorScheme.surface);
+      final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
+      expect(route.barrierColor, barrier);
+      expect(route.traversalEdgeBehavior, TraversalEdgeBehavior.closedLoop);
+    },
+  );
+  testWidgets(
+    'canonical image reads only after explicit open and restores focus',
+    (tester) async {
+      final reader = _Reader();
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: Scaffold(
             body: SuperadminChatAttachmentTile(
               attachment: canonicalImage,
               state: SuperadminChatAttachmentState.ready,
@@ -121,99 +241,48 @@ void main() {
             ),
           ),
         ),
-      ),
-    );
-    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
-    button.focusNode!.requestFocus();
-    await tester.pump();
-    await tester.sendKeyEvent(LogicalKeyboardKey.enter);
-    await tester.pumpAndSettle();
-    final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
-    expect(route.transitionDuration, Duration.zero);
-    expect(route.reverseTransitionDuration, Duration.zero);
-    expect(reader.requests, hasLength(1));
-    await tester.sendKeyEvent(LogicalKeyboardKey.escape);
-    await tester.pumpAndSettle();
-    expect(find.byType(Dialog), findsNothing);
-    expect(button.focusNode!.hasFocus, isTrue);
-  });
+      );
+      expect(reader.requests, isEmpty);
+      final open = find.text('Abrir imagem');
+      expect(open, findsOneWidget);
+      await tester.tap(open);
+      await tester.pumpAndSettle();
+      expect(reader.requests, hasLength(1));
+      expect(reader.requests.single.assetId, canonicalImage.assetId);
+      expect(find.byKey(const Key('chat-image-processing')), findsOneWidget);
+      await tester.tap(find.byTooltip('Fechar'));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('chat-image-processing')), findsNothing);
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Abrir imagem'),
+      );
+      expect(button.focusNode!.hasFocus, isTrue);
+    },
+  );
 
-  testWidgets('image dialog captures local theme barrier and closed focus traversal', (
-    tester,
-  ) async {
-    const barrier = Color(0x99000000);
-    final localTheme = CoeloTheme.dark.copyWith(
-      dialogTheme: CoeloTheme.dark.dialogTheme.copyWith(barrierColor: barrier),
-    );
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: Theme(
-          data: localTheme,
-          child: Scaffold(
+  testWidgets(
+    'missing transport exposes disabled image action without fallback',
+    (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
             body: SuperadminChatAttachmentTile(
               attachment: canonicalImage,
               state: SuperadminChatAttachmentState.ready,
-              mediaReader: _Reader(),
-              mediaSession: MediaSession(),
             ),
           ),
         ),
-      ),
-    );
-    await tester.tap(find.text('Abrir imagem'));
-    await tester.pumpAndSettle();
-    final dialog = tester.widget<Dialog>(find.byType(Dialog));
-    expect(dialog.backgroundColor, localTheme.colorScheme.surface);
-    final route = ModalRoute.of(tester.element(find.byType(Dialog)))!;
-    expect(route.barrierColor, barrier);
-    expect(route.traversalEdgeBehavior, TraversalEdgeBehavior.closedLoop);
-  });
-  testWidgets('canonical image reads only after explicit open and restores focus', (tester) async {
-    final reader = _Reader();
-    await tester.pumpWidget(
-      MaterialApp(
-        theme: CoeloTheme.light,
-        home: Scaffold(
-          body: SuperadminChatAttachmentTile(
-            attachment: canonicalImage,
-            state: SuperadminChatAttachmentState.ready,
-            mediaReader: reader,
-            mediaSession: MediaSession(),
-          ),
-        ),
-      ),
-    );
-    expect(reader.requests, isEmpty);
-    final open = find.text('Abrir imagem');
-    expect(open, findsOneWidget);
-    await tester.tap(open);
-    await tester.pumpAndSettle();
-    expect(reader.requests, hasLength(1));
-    expect(reader.requests.single.assetId, canonicalImage.assetId);
-    expect(find.byKey(const Key('chat-image-processing')), findsOneWidget);
-    await tester.tap(find.byTooltip('Fechar'));
-    await tester.pumpAndSettle();
-    expect(find.byKey(const Key('chat-image-processing')), findsNothing);
-    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
-    expect(button.focusNode!.hasFocus, isTrue);
-  });
-
-  testWidgets('missing transport exposes disabled image action without fallback', (tester) async {
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SuperadminChatAttachmentTile(
-            attachment: canonicalImage,
-            state: SuperadminChatAttachmentState.ready,
-          ),
-        ),
-      ),
-    );
-    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
-    expect(button.onPressed, isNull);
-    expect(find.text('Visualização indisponível neste contexto.'), findsOneWidget);
-  });
+      );
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Abrir imagem'),
+      );
+      expect(button.onPressed, isNull);
+      expect(
+        find.text('Visualização indisponível neste contexto.'),
+        findsOneWidget,
+      );
+    },
+  );
 
   const attachment = ChatAttachment(
     id: 'attachment-1',
@@ -222,7 +291,9 @@ void main() {
     byteSize: 1536000,
   );
 
-  testWidgets('context replacement dismisses only the owned image route', (tester) async {
+  testWidgets('context replacement dismisses only the owned image route', (
+    tester,
+  ) async {
     final reader = _Reader();
     final session = MediaSession();
     final navigator = GlobalKey<NavigatorState>();
@@ -259,57 +330,42 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('legacy image never treats metadata id or URL as canonical asset', (tester) async {
-    final reader = _Reader();
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SuperadminChatAttachmentTile(
-            attachment: ChatAttachment(
-              id: canonicalImage.assetId!,
-              fileName: 'legado.png',
-              mediaType: 'image/png',
-              byteSize: 100,
-              downloadUrl: canonicalImage.downloadUrl,
+  testWidgets(
+    'legacy image never treats metadata id or URL as canonical asset',
+    (tester) async {
+      final reader = _Reader();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: ChatAttachment(
+                id: canonicalImage.assetId!,
+                fileName: 'legado.png',
+                mediaType: 'image/png',
+                byteSize: 100,
+                downloadUrl: canonicalImage.downloadUrl,
+              ),
+              state: SuperadminChatAttachmentState.ready,
+              mediaReader: reader,
+              mediaSession: MediaSession(),
             ),
-            state: SuperadminChatAttachmentState.ready,
-            mediaReader: reader,
-            mediaSession: MediaSession(),
           ),
         ),
-      ),
-    );
-    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
-    expect(button.onPressed, isNull);
-    expect(reader.requests, isEmpty);
-  });
+      );
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Abrir imagem'),
+      );
+      expect(button.onPressed, isNull);
+      expect(reader.requests, isEmpty);
+    },
+  );
 
-  testWidgets('context change before dialog first build never starts old read', (tester) async {
-    final reader = _Reader();
-    Widget host(MediaSession session) => MaterialApp(
-      theme: CoeloTheme.light,
-      home: Scaffold(
-        body: SuperadminChatAttachmentTile(
-          attachment: canonicalImage,
-          state: SuperadminChatAttachmentState.ready,
-          mediaReader: reader,
-          mediaSession: session,
-        ),
-      ),
-    );
-    await tester.pumpWidget(host(MediaSession()));
-    await tester.tap(find.text('Abrir imagem'));
-    await tester.pumpWidget(host(MediaSession()));
-    await tester.pumpAndSettle();
-    expect(reader.requests, isEmpty);
-    expect(find.byKey(const Key('chat-image-processing')), findsNothing);
-  });
-
-  testWidgets('session invalidation disables opening with no widget replacement', (tester) async {
-    final reader = _Reader();
-    final session = MediaSession();
-    await tester.pumpWidget(
-      MaterialApp(
+  testWidgets(
+    'context change before dialog first build never starts old read',
+    (tester) async {
+      final reader = _Reader();
+      Widget host(MediaSession session) => MaterialApp(
+        theme: CoeloTheme.light,
         home: Scaffold(
           body: SuperadminChatAttachmentTile(
             attachment: canonicalImage,
@@ -318,16 +374,46 @@ void main() {
             mediaSession: session,
           ),
         ),
-      ),
-    );
-    await session.invalidate();
-    await tester.pump();
-    final button = tester.widget<TextButton>(find.widgetWithText(TextButton, 'Abrir imagem'));
-    expect(button.onPressed, isNull);
-    expect(reader.requests, isEmpty);
-  });
+      );
+      await tester.pumpWidget(host(MediaSession()));
+      await tester.tap(find.text('Abrir imagem'));
+      await tester.pumpWidget(host(MediaSession()));
+      await tester.pumpAndSettle();
+      expect(reader.requests, isEmpty);
+      expect(find.byKey(const Key('chat-image-processing')), findsNothing);
+    },
+  );
 
-  testWidgets('disposing tile before dialog first build never starts a read', (tester) async {
+  testWidgets(
+    'session invalidation disables opening with no widget replacement',
+    (tester) async {
+      final reader = _Reader();
+      final session = MediaSession();
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: canonicalImage,
+              state: SuperadminChatAttachmentState.ready,
+              mediaReader: reader,
+              mediaSession: session,
+            ),
+          ),
+        ),
+      );
+      await session.invalidate();
+      await tester.pump();
+      final button = tester.widget<TextButton>(
+        find.widgetWithText(TextButton, 'Abrir imagem'),
+      );
+      expect(button.onPressed, isNull);
+      expect(reader.requests, isEmpty);
+    },
+  );
+
+  testWidgets('disposing tile before dialog first build never starts a read', (
+    tester,
+  ) async {
     final reader = _Reader();
     await tester.pumpWidget(
       MaterialApp(
@@ -349,35 +435,40 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
-  testWidgets('shows failed attachment metadata and retries only when requested', (tester) async {
-    var retryCount = 0;
+  testWidgets(
+    'shows failed attachment metadata and retries only when requested',
+    (tester) async {
+      var retryCount = 0;
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: SuperadminChatAttachmentTile(
-            attachment: attachment,
-            state: SuperadminChatAttachmentState.failed,
-            onRetry: () => retryCount += 1,
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: SuperadminChatAttachmentTile(
+              attachment: attachment,
+              state: SuperadminChatAttachmentState.failed,
+              onRetry: () => retryCount += 1,
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    final filename = find.text(attachment.fileName);
-    expect(filename, findsOneWidget);
-    final filenameText = tester.widget<Text>(filename);
-    expect(filenameText.maxLines, 1);
-    expect(filenameText.overflow, TextOverflow.ellipsis);
-    expect(find.text('application/pdf · 1,5 MB'), findsOneWidget);
-    expect(find.byTooltip('Tentar novamente'), findsOneWidget);
-    expect(find.bySemanticsLabel(RegExp('Falha no envio')), findsOneWidget);
+      final filename = find.text(attachment.fileName);
+      expect(filename, findsOneWidget);
+      final filenameText = tester.widget<Text>(filename);
+      expect(filenameText.maxLines, 1);
+      expect(filenameText.overflow, TextOverflow.ellipsis);
+      expect(find.text('application/pdf · 1,5 MB'), findsOneWidget);
+      expect(find.byTooltip('Tentar novamente'), findsOneWidget);
+      expect(find.bySemanticsLabel(RegExp('Falha no envio')), findsOneWidget);
 
-    await tester.tap(find.byTooltip('Tentar novamente'));
-    expect(retryCount, 1);
-  });
+      await tester.tap(find.byTooltip('Tentar novamente'));
+      expect(retryCount, 1);
+    },
+  );
 
-  testWidgets('ready attachment does not expose a retry action', (tester) async {
+  testWidgets('ready attachment does not expose a retry action', (
+    tester,
+  ) async {
     await tester.pumpWidget(
       const MaterialApp(
         home: Scaffold(
@@ -389,7 +480,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Pronto para enviar'), findsOneWidget);
+    expect(find.text('Anexo disponível'), findsOneWidget);
     expect(find.byTooltip('Tentar novamente'), findsNothing);
   });
 }
@@ -399,7 +490,10 @@ final class _Reader implements MediaReader {
   @override
   Future<MediaReadResult> read(MediaReadRequest request) async {
     requests.add(request);
-    return MediaReadResult.fromJson({'asset_id': request.assetId, 'state': 'processing'});
+    return MediaReadResult.fromJson({
+      'asset_id': request.assetId,
+      'state': 'processing',
+    });
   }
 }
 
@@ -413,5 +507,23 @@ final class _BindingReader implements ChatAttachmentRepository {
   }
 
   @override
-  Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
+  Future<String> uploadAttachment(ChatAttachmentUpload command) =>
+      throw UnimplementedError();
+}
+
+final class _ImmediateBindingReader implements ChatAttachmentRepository {
+  final requests = <String>[];
+
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
+    requests.add(attachmentId);
+    return ChatAttachmentRead(
+      url: Uri.parse('https://private.invalid/read'),
+      expiresAt: DateTime.now().toUtc().add(const Duration(minutes: 5)),
+    );
+  }
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) =>
+      throw UnimplementedError();
 }
