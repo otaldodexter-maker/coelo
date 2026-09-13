@@ -49,8 +49,11 @@ final class DevelopmentAssessmentRepository implements AssessmentRepository {
   );
 
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async =>
-      _configuration;
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) async => _configuration;
 
   @override
   Future<AssessmentGradebook> createOrResumeGradebook(

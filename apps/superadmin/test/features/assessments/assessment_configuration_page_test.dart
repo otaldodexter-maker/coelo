@@ -135,8 +135,11 @@ final class _DelayedConfigurationRepository implements AssessmentRepository {
   }
 
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) =>
-      (requests[activityId] ??= Completer<AssessmentConfiguration?>()).future;
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) => (requests[activityId] ??= Completer<AssessmentConfiguration?>()).future;
 
   @override
   dynamic noSuchMethod(Invocation invocation) => super.noSuchMethod(invocation);
@@ -146,8 +149,11 @@ final class _DelayedSaveConfigurationRepository implements AssessmentRepository 
   final pendingSave = Completer<AssessmentConfiguration>();
 
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async =>
-      _configuration(activityId);
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) async => _configuration(activityId);
 
   @override
   Future<AssessmentConfiguration> saveConfiguration(AssessmentConfiguration value) =>

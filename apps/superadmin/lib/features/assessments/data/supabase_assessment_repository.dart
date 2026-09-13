@@ -25,11 +25,19 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
   }
 
   @override
-  Future<AssessmentConfiguration?> fetchConfiguration(String activityId, {String? unitId}) async {
-    final value = await _rpc('superadmin_assessment_configuration_read', {
-      'target_activity': activityId,
-      'target_unit': unitId,
-    });
+  Future<AssessmentConfiguration?> fetchConfiguration(
+    String activityId, {
+    String? unitId,
+    String? configurationId,
+  }) async {
+    final value = await _rpc(
+      configurationId == null
+          ? 'superadmin_assessment_configuration_read'
+          : 'superadmin_assessment_configuration_read_by_id',
+      configurationId == null
+          ? {'target_activity': activityId, 'target_unit': unitId}
+          : {'target_configuration': configurationId},
+    );
     return value == null ? null : _configuration(_map(value));
   }
 
@@ -130,7 +138,12 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       version: _int(result['version']),
       status: _string(result['status']),
     );
-    return await fetchConfiguration(saved.activityId, unitId: saved.unitId) ?? saved;
+    return await fetchConfiguration(
+          saved.activityId,
+          unitId: saved.unitId,
+          configurationId: saved.id,
+        ) ??
+        saved;
   }
 
   @override
@@ -146,7 +159,12 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       version: _int(result['version']),
       status: _string(result['status']),
     );
-    return await fetchConfiguration(activated.activityId, unitId: activated.unitId) ?? activated;
+    return await fetchConfiguration(
+          activated.activityId,
+          unitId: activated.unitId,
+          configurationId: activated.id,
+        ) ??
+        activated;
   }
 
   @override
