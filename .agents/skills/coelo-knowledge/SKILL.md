@@ -9,6 +9,12 @@ metadata:
 
 # Memória de conhecimento Coelo
 
+## Fonte operacional vigente — retomada R13 e extensão da Etapa2
+
+Consultar [retomada autorizada](../../../docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md), [pendências R13](../../../docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md) e inventário/três rastreadores atuais. O catálogo de origem tem53 compromissos; R12-07/41/43 foram entregues no recorte visual e50 seguiram R13. Há avanço local posterior em chat.attach, sem E2E novo. Não usar a antiga nota de45 itens/não iniciado como estado vigente.
+
+Nesta retomada explicitamente autorizada, atualizar estas referências conforme avanço e registrar feitos/abertos por ação e camada nas fontes operacionais. Preservar provas válidas, atualizar conhecimento durável apenas na audiência correta e preparar a R14 para Claude Opus médio ao fechar, sem executá-la. Orçamento desta sessão e limites remotos estão no aditivo; não são autorização geral para outras rodadas ou Etapa3.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)

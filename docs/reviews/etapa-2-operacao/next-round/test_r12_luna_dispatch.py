@@ -75,6 +75,54 @@ class DispatchTests(unittest.TestCase):
         with self.assertRaises(FileExistsError):
             d.watch(self.state)
 
+    def test_authorized_reopening_preserves_thread_in_normal_phase(self):
+        self.cfg.update(resumeThread='existing-thread', normalThreshold=99)
+        d.write(self.state / 'config.json', self.cfg)
+        calls = self.execute({'failure': None, 'threadId': 'existing-thread'})
+        self.assertEqual(calls[0].kwargs.get('resume_id'), 'existing-thread')
+
+    def test_exhaust_normal_does_not_honor_early_reserve_request(self):
+        self.cfg['normalThreshold'] = 99
+        d.write(self.state / 'config.json', self.cfg)
+        d.write(self.state / 'continuation.json', {'status': 'needs_reserve'})
+        calls = self.execute({'failure': None, 'threadId': 'x'},
+                             dict(self.usage, ordinaryUsageAllowed=True,
+                                  rateLimits={'primary': {'usedPercent': 98}}))
+        self.assertFalse(any(c.kwargs.get('reserve') for c in calls))
+        self.assertEqual(len(calls), 2)  # Continue once in normal, no reserve purchase/early switch.
+
+    def test_exhaust_normal_service_denial_can_transition(self):
+        self.cfg['normalThreshold'] = 99
+        d.write(self.state / 'config.json', self.cfg)
+        d.write(self.state / 'continuation.json', {'status': 'needs_reserve'})
+        calls = self.execute({'failure': None, 'threadId': 'x'},
+                             dict(self.usage, ordinaryUsageAllowed=False))
+        self.assertTrue(calls[1].kwargs['reserve'])
+
+    def test_owner_threshold_99_switches_without_waiting_for_hard_denial(self):
+        self.cfg['normalThreshold'] = 99
+        d.write(self.state / 'config.json', self.cfg)
+        d.write(self.state / 'continuation.json', {'status': 'needs_reserve'})
+        calls = self.execute({'failure': None, 'threadId': 'x'},
+                             dict(self.usage, ordinaryUsageAllowed=True,
+                                  rateLimits={'primary': {'usedPercent': 99}}))
+        self.assertTrue(calls[1].kwargs['reserve'])
+
+    def test_reopening_allows_reserve_until_99_and_no_old_time_cutoff(self):
+        self.cfg['normalThreshold'] = 99
+        d.write(self.state / 'config.json', self.cfg)
+        self.usage['rateLimitsByLimitId']['reserve']['primary']['usedPercent'] = 98
+        calls = self.execute({'failure': 'usage_limit', 'threadId': 'x'})
+        self.assertEqual(len(calls), 2)
+        self.assertEqual(calls[0].args[1]['executionDeadline'], 0)
+
+    def test_reopening_does_not_enter_reserve_already_at_99(self):
+        self.cfg['normalThreshold'] = 99
+        d.write(self.state / 'config.json', self.cfg)
+        self.usage['rateLimitsByLimitId']['reserve']['primary']['usedPercent'] = 99
+        calls = self.execute({'failure': 'usage_limit', 'threadId': 'x'})
+        self.assertEqual(len(calls), 1)
+
 
 if __name__ == '__main__':
     unittest.main()

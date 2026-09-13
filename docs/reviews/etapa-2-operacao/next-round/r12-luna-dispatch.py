@@ -93,12 +93,20 @@ def child_flags():
     return subprocess.CREATE_NO_WINDOW if os.name == 'nt' else 0
 
 
-def reserve_available(usage):
+def reserve_available(usage, ceiling=95):
     for bucket in (usage.get('rateLimitsByLimitId') or {}).values():
         if bucket.get('limitName') == 'gpt-reserve' and bucket.get('normalModelSlug') == MODEL:
             windows = [bucket[k] for k in ('primary', 'secondary') if bucket.get(k)]
-            return bool(windows) and all(w['usedPercent'] < 95 for w in windows)
+            return bool(windows) and all(w['usedPercent'] < ceiling for w in windows)
     return False
+
+
+def normal_threshold_reached(usage, threshold):
+    if usage.get('ordinaryUsageAllowed') is False:
+        return True
+    bucket = (usage.get('rateLimitsByLimitId') or {}).get('codex') or usage.get('rateLimits') or {}
+    return any(bucket.get(k, {}).get('usedPercent', 0) >= threshold
+               for k in ('primary', 'secondary') if bucket.get(k))
 
 
 def execute_model(state, cfg, resume_id=None, reserve=False):
@@ -112,6 +120,11 @@ def execute_model(state, cfg, resume_id=None, reserve=False):
                   '. Diretorio de controle: ' + str(state) +
                   '. Fase de reserva: ' + str(reserve) +
                   '. Prazo global UTC epoch: ' + str(cfg['executionDeadline']) + '.')
+    if not test and cfg.get('normalThreshold'):
+        prompt += (' NOVA INSTRUÇÃO EXPLÍCITA DO OWNER: reabrir a mesma R13; ler primeiro '
+                   + str(DOCS / 'R13-retomada-cota-owner.md') +
+                   '. Este aditivo substitui os cortes históricos de95/96/98%. '
+                   'Normal até99%; só então needs_reserve. Não encerrar por PITR enquanto houver trabalho independente.')
     model = 'gpt-reserve' if reserve else MODEL
     args = [cfg['codex'], '-a', 'never', 'exec', '--skip-git-repo-check',
             '-C', cwd, '-s', 'read-only' if test else 'danger-full-access',
@@ -153,7 +166,7 @@ def execute_model(state, cfg, resume_id=None, reserve=False):
                 write(state / 'heartbeat.json', {'pid': process.pid, 'time': time.time(),
                       'model': model, 'alive': process.poll() is None,
                       'quietSeconds': int(time.time() - last_event),
-                      'deadlineExceeded': time.time() > cfg['executionDeadline'],
+                      'deadlineExceeded': bool(cfg['executionDeadline']) and time.time() > cfg['executionDeadline'],
                       'note': 'Never start another writer while this process is alive'})
                 continue
             if line is None:
@@ -207,24 +220,40 @@ def watch(state):
                 with (state / 'dispatch.claim').open('x') as claim:
                     claim.write(str(time.time()))
                 cfg['releasedSha'] = signal['sha']
-                cfg['executionDeadline'] = time.time() + 12600
+                cfg['executionDeadline'] = 0 if cfg.get('normalThreshold') == 99 else time.time() + 12600
                 write(state / 'status.json', {'status': 'running', 'pid': os.getpid()})
-                result = execute_model(state, cfg)
+                result = execute_model(state, cfg, resume_id=cfg.get('resumeThread'))
                 request_path = state / 'continuation.json'
                 wants_reserve = (request_path.exists() and
                     read(request_path).get('status') == 'needs_reserve')
                 if not cfg['test'] and (result['failure'] == 'usage_limit' or wants_reserve):
                     usage = quota(cfg['codex'])
                     write(state / 'quota-after-limit.json', usage)
-                    if result['threadId'] and reserve_available(usage) and time.time() < cfg['executionDeadline']:
-                        write(state / 'retry.json', {'reason': 'usage_limit', 'attempt': 1,
+                    threshold = cfg.get('normalThreshold')
+                    if threshold and result['failure'] != 'usage_limit' and not normal_threshold_reached(usage, threshold):
+                        # An old prompt must not spend reserve early. Continue the SAME writer once in normal.
+                        if request_path.exists():
+                            os.replace(request_path, state / 'continuation-before-normal-resume.json')
+                        if result['threadId']:
+                            result = execute_model(state, cfg, resume_id=result['threadId'])
+                            wants_reserve = request_path.exists() and read(request_path).get('status') == 'needs_reserve'
+                            usage = quota(cfg['codex'])
+                            write(state / 'quota-after-normal-resume.json', usage)
+                    eligible = (result['failure'] == 'usage_limit' or
+                                (wants_reserve and (not threshold or normal_threshold_reached(usage, threshold))))
+                    within_time = not cfg['executionDeadline'] or time.time() < cfg['executionDeadline']
+                    if eligible and result['threadId'] and reserve_available(usage, 99 if threshold else 95) and within_time:
+                        reason = 'usage_limit' if result['failure'] == 'usage_limit' else 'normal_threshold' if threshold else 'checkpoint_request'
+                        write(state / 'retry.json', {'reason': reason, 'attempt': 1,
                               'reserveRequested': True, 'reserveConfirmed': True,
                               'model': 'gpt-reserve', 'normalModel': MODEL})
                         if request_path.exists():
                             request_path.rename(state / 'continuation-before-reserve.json')
                         result = execute_model(state, cfg, result['threadId'], reserve=True)
-                    else:
+                    elif eligible:
                         result['reserveBlocked'] = True
+                    elif wants_reserve:
+                        result['normalStoppedEarly'] = True
                 write(state / 'status.json', {'status': 'finished', **result})
                 return
             time.sleep(5)
@@ -240,13 +269,24 @@ def main():
     parser.add_argument('--test', action='store_true')
     parser.add_argument('--run-id')
     parser.add_argument('--release-writer', action='store_true')
+    parser.add_argument('--resume-thread')
+    parser.add_argument('--normal-threshold', type=int, choices=[99])
     args = parser.parse_args()
+    if args.resume_thread or args.normal_threshold:
+        if args.command != 'arm' or args.test or not args.resume_thread or args.normal_threshold != 99:
+            parser.error('Authorized reopening requires arm --resume-thread ID --normal-threshold 99')
     if args.command == 'quota':
         print(json.dumps(quota(shutil.which('codex'))))
         return
     CONTROL.mkdir(parents=True, exist_ok=True)
     pointer = CONTROL / ('test-current.json' if args.test else 'current.json')
     if args.command == 'arm':
+        if args.resume_thread:
+            previous_state = CONTROL / read(pointer)['runId']
+            previous_status = read(previous_state / 'status.json')
+            previous_thread = previous_status.get('threadId') or read(previous_state / 'config.json').get('resumeThread')
+            if previous_status.get('status') not in ('finished', 'cancelled') or previous_thread != args.resume_thread:
+                raise RuntimeError('Resume only the finished supervisor thread; active writers cannot be replaced')
         if pointer.exists():
             previous = read(pointer)['runId']
             old = CONTROL / previous / 'status.json'
@@ -264,7 +304,8 @@ def main():
         state = CONTROL / identifier
         state.mkdir()
         write(state / 'config.json', {'runId': identifier, 'test': args.test,
-                                     'codex': codex, 'expiresAt': time.time() + 43200})
+                                     'codex': codex, 'expiresAt': time.time() + 43200,
+                                     'resumeThread': args.resume_thread, 'normalThreshold': args.normal_threshold})
         write(state / 'status.json', {'status': 'starting'})
         write(pointer, {'runId': identifier})
         flags = child_flags()

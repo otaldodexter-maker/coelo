@@ -6,6 +6,16 @@ generated_at: 2026-09-13
 
 # Disparo independente R12 → R13 e reserva Luna
 
+## Retomada autorizada após o primeiro fechamento
+
+Pedido posterior do Owner: mesmo thread visível na interface, normal até99% e
+depois reserva Luna. Executar `arm --resume-thread 01a09bd2-3ba1-7761-96a5-0ef1c4a33eba --normal-threshold 99`
+e o release habitual após publicação/gate. O histórico desta primeira espera
+fica preservado; novo run tem estado próprio. Quinze testes PASS. A reserva da
+execução anterior foi antecipada por needs_reserve com normal95%, não por
+esgotamento; retry.reason agora distingue limite real, threshold e pedido de
+checkpoint. Fonte vigente: R13-retomada-cota-owner.md, incluindo reserva até99%, extensão Etapa2 e preparação R14 Claude Opus médio.
+
 O Owner autorizou a passagem automática após o fechamento da R12 e a retomada
 da sessão Luna na reserva se parar por consumo. Esta instrução específica
 substitui a proibição histórica de iniciar R13 automaticamente; não muda

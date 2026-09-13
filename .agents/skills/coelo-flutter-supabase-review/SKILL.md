@@ -9,9 +9,11 @@ metadata:
 
 # Coelo Front-end + Back-end
 
-## Backlog R12 — fonte vigente dos apontamentos Owner
+## Fonte operacional vigente — retomada R13 e extensão da Etapa2
 
-Consultar [R12 — catálogo por tela/subtela e camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md) e as notas R12 no inventário/três rastreadores. Todos os 45 compromissos estão registrados, incluindo quatro itens com mapeamento pendente. Fontes de captura preservam anexos descritos, decisões e suspeitas; implementação não foi iniciada. Não reaplicar deltas antigos de captura nem substituir avanços R11. Esta referência não abre R12 ou Etapa 3 automaticamente.
+Consultar [retomada autorizada](../../../docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md), [pendências R13](../../../docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md) e inventário/três rastreadores atuais. O catálogo de origem tem53 compromissos; R12-07/41/43 foram entregues no recorte visual e50 seguiram R13. Há avanço local posterior em chat.attach, sem E2E novo. Não usar a antiga nota de45 itens/não iniciado como estado vigente.
+
+Nesta retomada explicitamente autorizada, atualizar estas referências conforme avanço e registrar feitos/abertos por ação e camada nas fontes operacionais. Preservar provas válidas, atualizar conhecimento durável apenas na audiência correta e preparar a R14 para Claude Opus médio ao fechar, sem executá-la. Orçamento desta sessão e limites remotos estão no aditivo; não são autorização geral para outras rodadas ou Etapa3.
 
 ## Entrega: gate bloqueante obrigatório
 

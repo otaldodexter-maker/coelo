@@ -2255,16 +2255,68 @@
     },
     {
       "id": "owner.r13-supervised-luna-reserve",
-      "status": "deferred",
+      "status": "open",
       "actionIds": [],
       "fe": "not-applicable",
       "be": "not-applicable",
       "e2e": "not-applicable",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
-      "owner": "C0",
-      "nextGate": "Supervisor11180/run32e2492208434a1dac9aa6adeae1ca04 preparado waiting. Após commit/push e gate, último comando C0: release --release-writer; R13 Luna medium exclusiva, uma retomada de reserva. Estado real posterior consta no recibo privado do supervisor.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "owner": "Supervisor R13; mesmo thread",
+      "nextGate": "Publicar retomada explícita, gate e release; normal até99% e reserva automática. Conversa já aberta e conferida na interface; processo retomado após liberação.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md"
+    },
+    {
+      "id": "owner.r13-visible-thread",
+      "status": "done",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "owner": "C0 R13 supervisionado",
+      "nextGate": "",
+      "result": "Conversa aberta e conferida pela janela nativa; thread01a09bd2-3ba1-7761-96a5-0ef1c4a33eba.",
+      "destinationRound": "R13"
+    },
+    {
+      "id": "owner.r13-skills-live-progress",
+      "status": "open",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "owner": "C0 R13 supervisionado",
+      "nextGate": "Atualizar quatro skills/referências, fontes de conhecimento e três rastreadores a cada delta; referências de abertura já reconciliadas.",
+      "result": "Atualizar quatro skills/referências, fontes de conhecimento e três rastreadores a cada delta; referências de abertura já reconciliadas.",
+      "destinationRound": "R13"
+    },
+    {
+      "id": "owner.r13-etapa2-through-reserve99",
+      "status": "open",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "owner": "C0 R13 supervisionado",
+      "nextGate": "Normal até99%, reserva até99% ou parada Owner; avançar R13 e primeiros gates independentes Etapa2, preservar margem final para fechamento.",
+      "result": "Normal até99%, reserva até99% ou parada Owner; avançar R13 e primeiros gates independentes Etapa2, preservar margem final para fechamento.",
+      "destinationRound": "R13"
+    },
+    {
+      "id": "owner.r14-claude-opus-medium-preparation",
+      "status": "open",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "owner": "C0 R13 supervisionado",
+      "nextGate": "Antes do limite reserva preparar prompt/plano/pendências/catálogo R14 Claude Opus médio; estimativa Owner12% uso não verificada; sem disparar Claude.",
+      "result": "Antes do limite reserva preparar prompt/plano/pendências/catálogo R14 Claude Opus médio; estimativa Owner12% uso não verificada; sem disparar Claude.",
+      "destinationRound": "R14 preparation"
     }
   ],
   "r13Closure": {
@@ -2272,8 +2324,13 @@
     "status": "ended-document-partial",
     "base": "4ded9c567ef8415d62421b503a7e38c27ba53fa4",
     "target": "f8c209a1796389a7f6cf76799caa106320e32d5f",
-    "ownerItems": ["owner.r12-51", "owner.r12-52"],
-    "completedLocal": ["chat.attach visual surface without admin card"],
+    "ownerItems": [
+      "owner.r12-51",
+      "owner.r12-52"
+    ],
+    "completedLocal": [
+      "chat.attach visual surface without admin card"
+    ],
     "openFirstGate": "Owner resolve PITR/backup/ordem serial before SQL-dependent R13 work",
     "tests": "29P/0F/0B/0S/0U; no new E2E certificate",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
@@ -2330,12 +2387,12 @@
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
     "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
-    "docs/knowledge/team/r12-routine-attendance-direction.md"
+    "docs/knowledge/team/r12-routine-attendance-direction.md",
+    "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md"
   ],
   "memory": {
-    "status": "captured",
-    "reason": "Fonte canônica atualizada primeiro. Projeção team existente distingue respiro do alerta entregue dos demais requisitos futuros R13; nenhuma regra/permissão nova e nenhum artigo de atividade criado.",
-    "evidence": "docs/knowledge/team/r12-routine-attendance-direction.md"
+    "status": "no-op",
+    "reason": "Autorização operacional de orçamento desta retomada registrada em R13-retomada-cota-owner.md; não altera regra permanente de produto, segurança ou autorização remota."
   },
   "deployment": {
     "status": "pending",

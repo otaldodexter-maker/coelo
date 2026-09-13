@@ -6,6 +6,11 @@ generated_at: 2026-09-13
 
 # Continuidade supervisionada da R13
 
+**Retomada explícita posterior do Owner:** quando o supervisor informar
+normalThreshold99, aplicar primeiro `R13-retomada-cota-owner.md`. Esse aditivo
+reabre a mesma R13 e substitui os cortes normais96/98% abaixo por99%; o teto da reserva passa a99% e o corte de relógio é substituído pelo aditivo. Limites de segurança permanecem. A seção abaixo conserva o contrato
+da primeira execução, não autoriza trocar antecipadamente nesta retomada.
+
 Você é C0, escritor serial exclusivo. O supervisor informou diretório de
 controle, SHA liberado, fase de reserva e prazo global. Use Luna médio;
 `gpt-reserve` é o alias da reserva associado pelo serviço a `gpt-5.6-luna`.
