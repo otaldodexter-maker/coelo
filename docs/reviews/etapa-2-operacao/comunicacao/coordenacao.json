@@ -1,12 +1,12 @@
 {
-  "revision": 118,
+  "revision": 119,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-12T22:09:50.111867+00:00",
+  "updatedAt": "2026-09-13T01:50:30.036549+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4247,5 +4247,17 @@
     "frontendDeployment": "Git/dev e QA3014; sem novo deploy publico R09",
     "quotaInitialObserved": 57,
     "quotaFinalObserved": 69
+  },
+  "postClosureAuditR09": {
+    "at": "2026-09-13T01:50:30.036549+00:00",
+    "revision": 119,
+    "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/post-closure-audit.json",
+    "nineThreadsRead": true,
+    "nineLocalAndRemoteHeadsIntegrated": true,
+    "worktrees": 24,
+    "productWip": 0,
+    "stash": 0,
+    "retainedHistoricalCommit": "d2ed31572",
+    "roundReopened": false
   }
 }

@@ -63,6 +63,8 @@ Perfil leitura: dois contextos reais, reload/retorno ao shell;49SQL7API PASS; BE
 
 R09 encerrada apos meta minima: FE+6,06p.p.; BE+5,36p.p.; E2E+8,54p.p. [Fechamento](etapa-2-operacao/next-round/R09-fechamento.md) e [primeiros gates](etapa-2-operacao/next-round/R09-pendencias.md). Nove heads integrados; nenhum timer/Flutter ativo. Git/dev publicado; frontend publico nao recebeu novo deploy nesta R09.
 
+Conferencia posterior solicitada pelo Owner, C0r119: nove conversas relidas, nove heads locais/remotos integrados,24worktrees preservadas e sem WIP de produto; contagens inalteradas e validadores PASS. [Recibo](evidence/etapa-2/r09-coordenacao/post-closure-audit.json). A R09 permanece encerrada.
+
 ## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
 
 C0 publicou a posse em dev às 10h52, com nove frentes G0–G8 identificadas.

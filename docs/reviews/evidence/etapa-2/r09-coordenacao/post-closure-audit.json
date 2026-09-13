@@ -1,0 +1,237 @@
+{
+  "at": "2026-09-13T01:49:45.472104+00:00",
+  "originDev": "31afacdb82c57ad998048b45211c27c622d128a5",
+  "fronts": [
+    {
+      "front": "G0",
+      "threadId": "01a096ed-88b6-79e3-a35c-3197d533b24d",
+      "head": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "remoteHead": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G1",
+      "threadId": "01a096ed-b723-78f0-ac64-84ea6b11be8b",
+      "head": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "remoteHead": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G2",
+      "threadId": "01a096ed-ea61-7cb1-8ba0-b7f65dec4bf9",
+      "head": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "remoteHead": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G3",
+      "threadId": "01a096ee-1249-70d0-be68-eef51e03ac03",
+      "head": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "remoteHead": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G4",
+      "threadId": "01a096ee-7145-7a32-b869-86d6fb983504",
+      "head": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "remoteHead": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G5",
+      "threadId": "01a096ee-9b56-7a12-942a-932b1903458e",
+      "head": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "remoteHead": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G6",
+      "threadId": "01a096ee-c996-7930-be41-d1ad42547fd2",
+      "head": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "remoteHead": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G7",
+      "threadId": "01a096ee-f50c-7991-912a-0ae6382055e7",
+      "head": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "remoteHead": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "unmergedHeads": [],
+      "status": []
+    },
+    {
+      "front": "G8",
+      "threadId": "01a096ef-1a7e-7410-a768-788168c4b881",
+      "head": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "remoteHead": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "unmergedHeads": [],
+      "status": []
+    }
+  ],
+  "worktrees": [
+    {
+      "path": "C:/Users/adrie/Documents/Coelo",
+      "head": "5d57969b4a1542a8662f93486e92b2715d8ce721",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r07-coordenacao",
+      "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-ambiente-runtime",
+      "head": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-coordenacao",
+      "head": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-estrutura",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-realm-interno",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-acessos-pessoas-20260912-1542",
+      "head": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-ambiente-runtime-20260912-1542",
+      "head": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1534",
+      "head": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "status": [],
+      "merged": false
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1542",
+      "head": "31afacdb82c57ad998048b45211c27c622d128a5",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-estrutura-20260912-1542",
+      "head": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "head": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-operacoes-20260912-1542",
+      "head": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-principal-chat-sistema-20260912-1542",
+      "head": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-publicacoes-agenda-20260912-1542",
+      "head": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-realm-interno-20260912-1542",
+      "head": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "status": [],
+      "merged": true
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-suites-20260912-1542",
+      "head": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "status": [],
+      "merged": true
+    }
+  ],
+  "stash": [],
+  "conclusion": "All nine local and available remote heads integrated; no new task turn or product WIP. Old1534 checkpoint retained outside dev.",
+  "taskRead": {
+    "count": 9,
+    "statuses": "all completed",
+    "newTurnsSinceClosure": 0,
+    "messagesRead": "last three assistant messages per exact Owner task ID; no new delivery beyond integrated heads",
+    "limitation": "Task turn completed does not mean all planned work completed; queued/blocked fronts remain explicit."
+  },
+  "validation": {
+    "trackers": "PASS175FE/161BE/148E2E",
+    "knowledge": "PASS65articles"
+  }
+}
