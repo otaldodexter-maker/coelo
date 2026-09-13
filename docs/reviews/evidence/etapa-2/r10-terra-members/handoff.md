@@ -270,3 +270,9 @@ contrario usa o do host. Isso cobre Home, atividades e demais paginas dentro do
 shell persistente. Prova focal adicional: host com perfil + filho sem perfil
 mostra nome real e atualiza para a nova sigla/nome apos nova composição; 3/3
 PASS e analyze focal PASS.
+
+## groups.members - dialogo de aluno contextual
+
+O passo Pessoas da turma agora expõe somente `Buscar por @, CPF, e-mail ou celular` para associar um aluno. O antigo cadastro manual, que pedia UUID e permitia salvar `Responsável`, foi removido desse passo; ele nao criava uma identidade real nem validava contexto infantil. A busca mostra `Aluno contextual`, fixa o resultado em `studentPersonIds` e nao renderiza o seletor de papel. A remocao continua disponivel; editar papel de aluno nao e oferecido. O dialogo de profissional/admin continua separado, com seus campos e perfil de acesso.
+
+Provas locais: `flutter test test/features/groups/presentation/group_form_page_test.dart` PASS 30 e `dart analyze lib/features/groups/presentation/group_form_page.dart test/features/groups/presentation/group_form_page_test.dart` PASS. O teste confirma que a busca nao mostra `Responsável`, mostra a indicacao contextual e salva a crianca resolvida por hierarquia. Sem UI runtime, SQL, deploy ou integracao. Primeiro gate institucional permanece com C0: a fixture atual nao possui aluno ativo na instituicao da rota normal, portanto esse ambiente ainda nao prova o fluxo produtivo.

@@ -50,6 +50,8 @@ void main() {
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-search-person')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-person-contextual-role')), findsOneWidget);
+    expect(find.text('Responsável'), findsNothing);
     await tester.enterText(find.byKey(const Key('group-person-name-field')), '@pessoa-sintetica');
     await tester.tap(find.byKey(const Key('group-person-save')));
     await tester.pumpAndSettle();
