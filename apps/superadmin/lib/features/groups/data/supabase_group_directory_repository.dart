@@ -7,8 +7,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/group_directory.dart';
 
-final class SupabaseGroupDirectoryRepository
-    implements GroupDirectoryRepository {
+final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository {
   SupabaseGroupDirectoryRepository(this._client);
 
   final SupabaseClient _client;
@@ -18,12 +17,7 @@ final class SupabaseGroupDirectoryRepository
   Future<GroupRecord?> findById(String id) async {
     try {
       final record = _record(
-        _map(
-          await _client.rpc<Object?>(
-            'superadmin_group_get',
-            params: {'p_group_id': id},
-          ),
-        ),
+        _map(await _client.rpc<Object?>('superadmin_group_get', params: {'p_group_id': id})),
       );
       _cache[record.id] = record;
       return record;
@@ -36,8 +30,7 @@ final class SupabaseGroupDirectoryRepository
   }
 
   @override
-  String createId(String institutionId, String unitId, String name) =>
-      _uuidV4();
+  String createId(String institutionId, String unitId, String name) => _uuidV4();
 
   @override
   Future<void> upsert(GroupRecord record) async {
@@ -48,18 +41,14 @@ final class SupabaseGroupDirectoryRepository
   }
 
   @override
-  Future<GroupDirectorySaveResult> saveComposition(
-    GroupDirectorySaveRequest request,
-  ) async {
+  Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) async {
     try {
       final response = _map(
         await _client.rpc<Object?>(
           'superadmin_group_save',
           params: {
             'p_request_id': _requestUuid(request.requestId),
-            'p_group_id': request.record.managementVersion == 0
-                ? null
-                : request.record.id,
+            'p_group_id': request.record.managementVersion == 0 ? null : request.record.id,
             'p_expected_version': request.record.managementVersion,
             'p_payload': _savePayload(request),
           },
@@ -69,31 +58,20 @@ final class SupabaseGroupDirectoryRepository
       // Em atualizacao o recibo tem de corresponder a turma pedida; sem isto uma
       // resposta de outra turma entraria no cache como registro salvo. Na criacao
       // o identificador vem do servidor, entao nao ha o que comparar.
-      if (request.record.managementVersion != 0 &&
-          saved.id != request.record.id) {
+      if (request.record.managementVersion != 0 && saved.id != request.record.id) {
         throw const GroupDirectoryUnavailableException();
       }
       _cache[saved.id] = saved;
       final steps = <GroupDirectorySaveStepResult>[
-        GroupDirectorySaveStepResult.success(
-          stage: GroupDirectorySaveStage.group,
-        ),
+        GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group),
       ];
       for (final personId in request.studentPersonIds) {
         try {
           await _client.rpc<Object?>(
             'superadmin_group_student_link',
-            params: {
-              'p_request_id': _uuidV4(),
-              'p_person_id': personId,
-              'p_group_id': saved.id,
-            },
+            params: {'p_request_id': _uuidV4(), 'p_person_id': personId, 'p_group_id': saved.id},
           );
-          steps.add(
-            GroupDirectorySaveStepResult.success(
-              stage: GroupDirectorySaveStage.people,
-            ),
-          );
+          steps.add(GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people));
         } on PostgrestException {
           // A turma ja foi salva por seu comando canonico. Cada aluno e um
           // vinculo contextual independente; informar a falha permite corrigir
@@ -113,10 +91,7 @@ final class SupabaseGroupDirectoryRepository
           );
         }
       }
-      return GroupDirectorySaveResult(
-        requestId: request.requestId,
-        steps: steps,
-      );
+      return GroupDirectorySaveResult(requestId: request.requestId, steps: steps);
     } on PostgrestException catch (error) {
       throw _mapError(error);
     } on ClientException {
@@ -135,9 +110,7 @@ final class SupabaseGroupDirectoryRepository
             'p_institution_ids': query.institutionIds.toList(growable: false),
             'p_unit_ids': query.unitIds.toList(growable: false),
             'p_type_ids': query.typeIds.toList(growable: false),
-            'p_statuses': query.statuses
-                .map((item) => item.databaseValue)
-                .toList(),
+            'p_statuses': query.statuses.map((item) => item.databaseValue).toList(),
             'p_limit': query.pageSize,
             'p_offset': query.offset,
             'p_sort': _sort(query.sortColumn),
@@ -218,9 +191,7 @@ final class SupabaseGroupDirectoryRepository
   }
 
   @override
-  Future<GroupDirectoryFormContext> fetchFormContext({
-    String? institutionId,
-  }) async {
+  Future<GroupDirectoryFormContext> fetchFormContext({String? institutionId}) async {
     final options = await fetchFilterOptions(
       institutionIds: institutionId == null ? const {} : {institutionId},
     );
@@ -232,9 +203,7 @@ final class SupabaseGroupDirectoryRepository
   }
 
   @override
-  Future<GroupDirectoryExportResult> requestExport(
-    GroupDirectoryQuery query,
-  ) async {
+  Future<GroupDirectoryExportResult> requestExport(GroupDirectoryQuery query) async {
     try {
       final payload = _map(
         await _client.rpc<Object?>(
@@ -246,9 +215,7 @@ final class SupabaseGroupDirectoryRepository
               'institution_ids': query.institutionIds.toList(growable: false),
               'unit_ids': query.unitIds.toList(growable: false),
               'type_ids': query.typeIds.toList(growable: false),
-              'statuses': query.statuses
-                  .map((item) => item.databaseValue)
-                  .toList(),
+              'statuses': query.statuses.map((item) => item.databaseValue).toList(),
               'format': 'xlsx',
             },
           },
@@ -278,8 +245,7 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'name': request.record.name.trim(),
   // Decisao 16: @ opcional na criacao (vazio -> @turma.unidade pelo gatilho);
   // na edicao a troca passa por superadmin_structure_handle_set_v1.
-  if (request.record.managementVersion == 0 &&
-      request.record.handle.trim().isNotEmpty)
+  if (request.record.managementVersion == 0 && request.record.handle.trim().isNotEmpty)
     'handle': request.record.handle.trim(),
   'group_type': request.record.groupType.trim().toLowerCase(),
   'group_type_other_text': request.record.groupTypeOtherText,
@@ -289,8 +255,7 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'inherit_activities': request.record.inheritActivities,
   if (!request.record.inheritAppearance) 'branding': request.branding,
   'local_people': [
-    for (final person in request.professionals)
-      {'person_id': person.id, 'role_code': person.role},
+    for (final person in request.professionals) {'person_id': person.id, 'role_code': person.role},
   ],
   'activity_ids': request.activityIds,
   'invites': [
@@ -318,16 +283,9 @@ GroupRecord _record(Map<String, dynamic> row) {
           displayName: item['display_name'] as String? ?? '',
           origin: item['origin'] as String? ?? 'group',
           inherited: item['inherited'] == true,
-          profileId:
-              item['profile_id'] as String? ?? profile['id'] as String? ?? '',
-          profileCode:
-              item['profile_code'] as String? ??
-              profile['code'] as String? ??
-              '',
-          profileName:
-              item['profile_name'] as String? ??
-              profile['name'] as String? ??
-              '',
+          profileId: item['profile_id'] as String? ?? profile['id'] as String? ?? '',
+          profileCode: item['profile_code'] as String? ?? profile['code'] as String? ?? '',
+          profileName: item['profile_name'] as String? ?? profile['name'] as String? ?? '',
           capabilities: _strings(item['capabilities']),
           restrictions: _strings(item['restrictions']),
         );
@@ -381,11 +339,7 @@ GroupRecord _record(Map<String, dynamic> row) {
     studentCount: _int(row['student_count']),
     handle: row['handle'] as String? ?? '',
     teacherOrResponsibleNames: access
-        .where(
-          (item) =>
-              item.profileCode == 'teacher' ||
-              item.profileCode == 'professional',
-        )
+        .where((item) => item.profileCode == 'teacher' || item.profileCode == 'professional')
         .map((item) => item.displayName)
         .where((name) => name.isNotEmpty)
         .toList(growable: false),
@@ -411,21 +365,13 @@ String _sort(GroupDirectorySortColumn column) => switch (column) {
 };
 
 Map<String, dynamic> _map(Object? value) {
-  if (value is Map<Object?, Object?>) {
-    return Map<String, dynamic>.from(value);
-  }
-  if (value is String) {
-    return Map<String, dynamic>.from(
-      jsonDecode(value) as Map<Object?, Object?>,
-    );
-  }
+  if (value is Map<Object?, Object?>) return Map<String, dynamic>.from(value);
+  if (value is String) return Map<String, dynamic>.from(jsonDecode(value) as Map<Object?, Object?>);
   throw const GroupDirectoryUnavailableException();
 }
 
 Map<String, dynamic> _mapOrEmpty(Object? value) =>
-    value is Map<Object?, Object?>
-    ? Map<String, dynamic>.from(value)
-    : <String, dynamic>{};
+    value is Map<Object?, Object?> ? Map<String, dynamic>.from(value) : <String, dynamic>{};
 
 List<Map<String, dynamic>> _rows(Object? value) => value is List
     ? value
@@ -435,10 +381,7 @@ List<Map<String, dynamic>> _rows(Object? value) => value is List
     : const [];
 
 List<String> _strings(Object? value) => value is List
-    ? value
-          .whereType<Object>()
-          .map((item) => item.toString())
-          .toList(growable: false)
+    ? value.whereType<Object>().map((item) => item.toString()).toList(growable: false)
     : const [];
 
 String _string(Map<String, dynamic> row, String key) {
@@ -447,12 +390,10 @@ String _string(Map<String, dynamic> row, String key) {
   throw const GroupDirectoryUnavailableException();
 }
 
-int _int(Object? value) =>
-    value is num ? value.toInt() : int.tryParse('$value') ?? 0;
+int _int(Object? value) => value is num ? value.toInt() : int.tryParse('$value') ?? 0;
 
-DateTime _date(Object? value) => value is String
-    ? DateTime.parse(value)
-    : DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
+DateTime _date(Object? value) =>
+    value is String ? DateTime.parse(value) : DateTime.fromMillisecondsSinceEpoch(0, isUtc: true);
 
 Exception _mapError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
@@ -475,9 +416,7 @@ String _uuidV4() {
   final bytes = List<int>.generate(16, (_) => random.nextInt(256));
   bytes[6] = (bytes[6] & 0x0f) | 0x40;
   bytes[8] = (bytes[8] & 0x3f) | 0x80;
-  final hex = bytes
-      .map((byte) => byte.toRadixString(16).padLeft(2, '0'))
-      .join();
+  final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
   return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
       '${hex.substring(16, 20)}-${hex.substring(20)}';
 }

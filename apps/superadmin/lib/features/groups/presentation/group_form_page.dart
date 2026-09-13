@@ -78,6 +78,7 @@ final class _GroupPersonBinding {
     required this.identifier,
     required this.role,
     this.note,
+    this.isPersistedStudent = false,
   });
 
   final String id;
@@ -85,6 +86,7 @@ final class _GroupPersonBinding {
   final String identifier;
   final _GroupRoleType role;
   final String? note;
+  final bool isPersistedStudent;
 
   _GroupPersonBinding copyWith({
     String? id,
@@ -92,12 +94,14 @@ final class _GroupPersonBinding {
     String? identifier,
     _GroupRoleType? role,
     String? note,
+    bool? isPersistedStudent,
   }) => _GroupPersonBinding(
     id: id ?? this.id,
     name: name ?? this.name,
     identifier: identifier ?? this.identifier,
     role: role ?? this.role,
     note: note ?? this.note,
+    isPersistedStudent: isPersistedStudent ?? this.isPersistedStudent,
   );
 }
 
@@ -389,6 +393,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           identifier: student.personId,
           role: _GroupRoleType.aluno,
           note: 'Contexto infantil ativo',
+          isPersistedStudent: true,
         ),
       );
     }
@@ -914,12 +919,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           sectionTitle: 'Pessoas associadas',
           onAdd: () => _editPerson(),
           onEdit: (index) => _editPerson(index: index),
-          onRemove: (index) {
-            setState(() {
-              _people.removeAt(index);
-              _markDirty();
-            });
-          },
+          onRemove: _removePerson,
         ),
       ),
       _GroupFormStep.professionals => _formSection(
@@ -1599,6 +1599,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       Text(sectionTitle, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space3),
       _entryTable(entries: entries, allowProfile: allowProfile, onEdit: onEdit, onRemove: onRemove),
+      if (!allowProfile && entries.any((entry) => entry.isPersistedStudent)) ...[
+        const SizedBox(height: CoeloSpacing.space2),
+        Text(
+          'Alunos já vinculados permanecem visíveis. A remoção por turma ainda não está disponível.',
+          style: Theme.of(context).textTheme.bodySmall,
+        ),
+      ],
       const SizedBox(height: CoeloSpacing.space4),
       Wrap(
         spacing: CoeloSpacing.space2,
@@ -1686,6 +1693,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
+                    final persistedStudent = entries[index].isPersistedStudent;
                     final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
                     if (compact) {
                       return Column(
@@ -1711,13 +1719,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                tooltip: 'Editar',
-                                onPressed: () => onEdit(index),
+                                tooltip: persistedStudent ? 'Edição indisponível' : 'Editar',
+                                onPressed: persistedStudent ? null : () => onEdit(index),
                                 icon: const Icon(Icons.edit_outlined),
                               ),
                               IconButton(
-                                tooltip: 'Remover',
-                                onPressed: () => onRemove(index),
+                                tooltip: persistedStudent ? 'Remoção indisponível' : 'Remover',
+                                onPressed: persistedStudent ? null : () => onRemove(index),
                                 style: IconButton.styleFrom(foregroundColor: colors.error),
                                 icon: const Icon(Icons.delete_outline_rounded),
                               ),
@@ -1758,13 +1766,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             child: Text(entries[index].note ?? 'Sem configuração', maxLines: 2),
                           ),
                         IconButton(
-                          tooltip: 'Editar',
-                          onPressed: () => onEdit(index),
+                          tooltip: persistedStudent ? 'Edição indisponível' : 'Editar',
+                          onPressed: persistedStudent ? null : () => onEdit(index),
                           icon: const Icon(Icons.edit_outlined),
                         ),
                         IconButton(
-                          tooltip: 'Remover',
-                          onPressed: () => onRemove(index),
+                          tooltip: persistedStudent ? 'Remoção indisponível' : 'Remover',
+                          onPressed: persistedStudent ? null : () => onRemove(index),
                           style: IconButton.styleFrom(foregroundColor: colors.error),
                           icon: const Icon(Icons.delete_outline_rounded),
                         ),
@@ -1948,6 +1956,20 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           note: person.note,
         );
       }
+      _markDirty();
+    });
+  }
+
+  void _removePerson(int index) {
+    final person = _people[index];
+    if (person.isPersistedStudent) {
+      setState(() {
+        _saveError = 'A remoção de aluno já vinculado ainda não está disponível para esta turma.';
+      });
+      return;
+    }
+    setState(() {
+      _people.removeAt(index);
       _markDirty();
     });
   }

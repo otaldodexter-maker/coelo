@@ -147,3 +147,23 @@ leitura positiva com ids de pessoa/contexto, exclusao de filho de outro tenant,
 funcao privada sem EXECUTE do cliente e negativa `groups.read`. O espelho ficou
 sem o candidato apos rollback. Foi preparado teste focal Flutter de parsing da
 projecao para reload; sua execucao esta pendente do slot exclusivo de C0.
+
+## Correcao de remocao enganosa
+
+O formulario nao oferece mais editar ou remover um aluno que foi hidratado de
+`students`: ele permanece visivel com a indicacao de que a remocao por turma
+ainda nao esta disponivel. A protecao tambem existe no callback local, para que
+um acionamento futuro nao esconda um vinculo que o salvamento preservaria.
+
+Foi conferido o contrato canonico em
+`20260910220200_student_link_commands_v1.sql`. Nao existe desvinculacao por
+turma; `superadmin_student_revoke` encerra o vinculo da unidade e todas as suas
+turmas ativas. Ele nao pode ser usado para esta tela sem remover associacoes
+fora do escopo. Alunos novos, ainda nao persistidos, continuam removiveis antes
+do salvamento. Responsaveis e profissionais nao foram alterados.
+
+Resultado desta correcao: `git diff --check` PASS. O slot Flutter estava em
+uso por outro executor, portanto nenhum `flutter test`, build ou analyze foi
+executado neste delta. O teste focal de parsing e a prova normal de UI/reload
+seguem como gate de C0. O CRUD de remocao de aluno nao esta completo ate existir
+um comando canonico, autorizado e restrito a `child_group_link`.
