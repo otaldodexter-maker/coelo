@@ -25,6 +25,16 @@ contrato backend permaneceu inalterado; por mudança de superfície o E2E foi
 reaberto para pending-verification, aguardando rota normal, reload e negativa
 cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md`.
+
+## R12-45 checkpoint de execução (C0)
+
+FE local-green de descoberta: `Reenviar convite` aparece no menu da linha e
+no detalhe expirado quando elegível; pending vigente permanece bloqueado. A
+ação preserva `requestId`, `managementVersion`, o RPC v2 e o link somente no
+diálogo temporário. Detalhe 32 PASS, repositório 13 PASS e diretório 24 PASS.
+O integrado segue pending-verification por falta de convite expirado real,
+recibo, reload e negativa cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.

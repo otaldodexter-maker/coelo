@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "invites.resend",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: ação Reenviar convite está encontrável no menu da linha e no detalhe expirado, com elegibilidade por status, requestId/managementVersion, feedback e diálogo de link temporário preservados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md"
+  },
+  {
+    "action_id": "invites.resend",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A descoberta local não substitui a prova positiva em rota normal com convite expirado real, recibo, reload e escopo; nenhum contrato backend foi alterado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md"
+  }
+]

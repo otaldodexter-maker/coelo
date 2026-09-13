@@ -6,7 +6,7 @@ generated_at: 2026-09-13
 
 # R12 — Catálogo consolidado por camada
 
-53 IDs preservados:4 ajustes visuais entregues e49 abertos. C0 R12 é o responsável pela execução; decisões externas continuam com Owner. Nenhuma promoção funcional por consolidação.
+53 IDs preservados:5 ajustes visuais entregues e48 abertos. C0 R12 é o responsável pela execução; decisões externas continuam com Owner. Nenhuma promoção funcional por consolidação.
 
 | Item | action_ids | Estado / FE / BE / E2E | Prova preservada | Primeiro gate |
 |---|---|---|---|---|
@@ -54,7 +54,7 @@ generated_at: 2026-09-13
 | owner.r12-42 | gate/mapeamento pendente | open / Planejado R12; sem implementação. / Sem diagnóstico novo. / Sem prova nova. | docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md | Reconciliar R12-42, mapear e reproduzir na R12 autorizada. |
 | owner.r12-43 | chat.open | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
 | owner.r12-44 | invites.list | open / FE local-green: tabela-only, cards/toggle removidos e busca/filtros/paginação/Novo convite preservados. / Contrato preservado; nenhum envio/reenvio executado. / Pending-verification: composição mudou e rota normal/reload/escopo precisam de nova prova. | docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md | Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture. |
-| owner.r12-45 | invites.resend | open / Planejado R12; não implementado. / Contrato preservado, reenvio a conferir. / Sem prova nova. | docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md | Reconciliar R12-45 e reproduzir na R12 autorizada. |
+| owner.r12-45 | invites.resend | open / FE local-green: `Reenviar convite` já encontrável na linha/detalhe expirado, com guards e recibo local. / RPC v2 e contrato preservados; nenhum envio real. / Pending-verification: falta convite expirado real, recibo, reload e escopo. | docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md | Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez, provar recibo/link de uso único, reload e negativa cross-tenant; não simular SMTP/Admin API. |
 | owner.r12-46 | account.profile | open / Parcial: rodapé/busca, nome, crop e confirmação autoritativa testados. / Sigla/cor/metadados em candidato local; foto R2 ausente. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. |
 | owner.r12-47 | auth.recover, auth.reset | open / Verified histórico; pedido normal e endereço inexistente observados na R11. / Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP. |
 | owner.r12-48 | activities.assessment, activities.publish | open / UPDATE do rascunho retido falha; publicação sem novo aceite. / Correção causal local8/8 pgTAP; publicação BE done histórico. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço. |
@@ -88,6 +88,19 @@ composição substitui a superfície anteriormente certificada, o integrado foi
 reaberto para `pending-verification`; faltam rota normal QA, reload e negativa
 cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md`.
+
+## R12-45 checkpoint de execução (C0)
+
+FE local-green de descoberta: `Reenviar convite` aparece no menu da linha e
+no detalhe expirado quando `canResend` permite; pending vigente permanece sem
+reenvio. O comando conserva `requestId`, `managementVersion`, RPC
+`superadmin_invite_resend_v2` e link somente em diálogo temporário. Provas:
+detalhe 32 PASS, repositório 13 PASS e diretório R12-44 24 PASS.
+
+Não houve envio real nem alteração backend. O integrado segue
+`pending-verification`: falta convite expirado real na rota normal, recibo,
+reload e negativa cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md`.
 
 ## Dívidas transversais preservadas
 

@@ -872,12 +872,12 @@
     "actionIds": [
       "invites.resend"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contrato preservado, reenvio a conferir.",
-    "e2e": "Sem prova nova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+    "fe": "local-green: Reenviar convite encontrável na linha/detalhe expirado, com guards, feedback e link temporário preservados.",
+    "be": "RPC v2 e contrato preservados; nenhum envio real executado.",
+    "e2e": "pending-verification: convite expirado real, recibo, reload e negativa cross-tenant pendentes.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-45 e reproduzir na R12 autorizada.",
+    "nextGate": "Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez e provar recibo, reload e negativa cross-tenant; não simular SMTP/Admin API.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
