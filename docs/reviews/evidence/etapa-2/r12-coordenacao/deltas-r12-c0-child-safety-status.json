@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "child-safety.child",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: tabela de autorizações distingue decisão e ciclo de vida em texto, preservando validade e indicador dos cards.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md"
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A composição da tabela mudou; golden, rota normal, reload e escopo autorizado precisam ser reproduzidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md"
+  }
+]

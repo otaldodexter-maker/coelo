@@ -385,6 +385,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('authorized-persons-table')), findsOneWidget);
+    expect(find.text('Aprovado · Ativa'), findsOneWidget);
     expect(find.byKey(const Key('safety-create-authorization-banner')), findsOneWidget);
     expect(find.text('Criar autorização'), findsOneWidget);
     expect(find.text('Cadastrar pessoa'), findsNothing);

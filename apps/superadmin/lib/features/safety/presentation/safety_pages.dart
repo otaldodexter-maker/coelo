@@ -726,7 +726,11 @@ final class _AuthorizedRows extends StatelessWidget {
         initialWidth: 150,
         minWidth: 140,
         maxWidth: 220,
-        cellBuilder: (_, item) => _Status(status: item.status),
+        cellBuilder: (_, item) => Text(
+          _statusSummary(item),
+          maxLines: 2,
+          overflow: TextOverflow.ellipsis,
+        ),
       ),
       CoeloAdminTableColumn(
         id: 'actions',
@@ -1674,6 +1678,12 @@ final class _Status extends StatelessWidget {
       foregroundColor: colors.$2,
     );
   }
+}
+
+String _statusSummary(PickupAuthorization value) {
+  final decision = value.status.label;
+  if (value.status != PickupAuthorizationStatus.approved) return decision;
+  return '$decision · ${value.lifecycleStatus.label}';
 }
 
 Future<void> _manage(

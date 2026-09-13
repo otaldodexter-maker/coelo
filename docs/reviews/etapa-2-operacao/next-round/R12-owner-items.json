@@ -221,12 +221,12 @@
     "actionIds": [
       "child-safety.child"
     ],
-    "fe": "Planejado R12; sem implementação.",
-    "be": "Contrato a verificar; sem diagnóstico novo.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "fe": "local-green: tabela distingue decisão e ciclo de vida em texto (`Aprovado · Ativa`) e preserva validade.",
+    "be": "Contrato preservado; nenhum SQL/RPC novo.",
+    "e2e": "pending-verification: golden, rota normal, reload e escopo autorizado.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-12, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+    "nextGate": "Revisar golden aprovado/failure e provar rota normal, reload e escopo autorizado da criança.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
