@@ -1,0 +1,48 @@
+{
+  "round": "E2-R09-20260912-1534",
+  "revision": 92,
+  "status": "abertura-bloqueada-antes-da-posse",
+  "T0": "2026-09-12T15:34:47-03:00",
+  "execucaoAte": "2026-09-12T19:34:47-03:00",
+  "fechamentoAte": "2026-09-12T20:04:47-03:00",
+  "checkpointAt": "2026-09-12T15:36:16-03:00",
+  "base": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+  "branch": "work/etapa2-r09-coordenacao-20260912-1534",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r09-coordenacao-20260912-1534",
+  "modelRequested": "gpt-6-astra",
+  "reasoningEffortRequested": "medium",
+  "taskIds": {"C0": null, "G0": null, "G1": null, "G2": null, "G3": null, "G4": null, "G5": null, "G6": null, "G7": null, "G8": null},
+  "consumoInicialPercent": null,
+  "bloqueios": [
+    "Ferramentas da sessão não expõem consulta de cota real.",
+    "Ferramentas da sessão não expõem list_threads/read_thread ou envio às tarefas externas novas; collaboration.list_agents retorna somente /root.",
+    "Agendamento de heartbeat não está disponível nesta sessão. Nenhum timer antigo foi reativado."
+  ],
+  "possePublicada": false,
+  "frentesLiberadas": [],
+  "heartbeat": "nao-criado",
+  "reconciliacao": {
+    "worktreesExistentes": 13,
+    "worktreesComAlteracoesRastreaveis": 0,
+    "stash": [],
+    "principalHead": "5d57969b4",
+    "principalEditadoOuPull": false,
+    "commitPreservadoForaDeDev": "2d4f5e5b7",
+    "commitFrente": "work/etapa2-r08-ambiente-runtime",
+    "commitConteudo": "Diagnóstico de teclado QA e handoff; hipótese enableTextEntryEmulation ainda sem prova experimental.",
+    "posseAntiga": "coordenacao.json rev91 ainda diz ativa; superada pela nova abertura em R09-prompts.md e pelo Owner; IDs e T0 não reutilizados.",
+    "ignorados": "preservados; conteúdo não inventariado nesta abertura"
+  },
+  "limites": {
+    "inventarioETresRastreadoresIntegrais": "pendente antes da liberação; leitura ampla contida por cota indisponível",
+    "testesProduto": "nao executados",
+    "runtimeAtual": "nao medido nesta abertura",
+    "sqlAtual": "nao consultado; R08 registra lote59 e próximo60, sem nova aplicação",
+    "novosAceites": [],
+    "novosDadosSinteticos": [],
+    "novasChaves": [],
+    "memoria": "no-op; nenhuma regra nova de produto aprovada"
+  },
+  "primeiroGate": "Disponibilizar cota real e acesso às novas tarefas para registrar IDs, concluir leituras/reconciliação, publicar posse e liberar G0/G5/produto conforme consumo.",
+  "regraDeCorte": "Primeiro corte tempo/consumo; relógio desta abertura não reinicia durante o bloqueio; não iniciar R10."
+}
