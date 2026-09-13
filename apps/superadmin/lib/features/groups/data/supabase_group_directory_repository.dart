@@ -302,7 +302,9 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'local_people': [
     for (final person in request.professionals) {'person_id': person.id, 'role_code': person.role},
   ],
-  'activity_ids': request.activityIds,
+  // Quando a turma herda atividades, a chave ausente preserva os vínculos
+  // existentes. Um array vazio é um comando explícito para encerrá-los.
+  if (!request.record.inheritActivities) 'activity_ids': request.activityIds,
   'invites': [
     for (final invite in request.invites)
       {

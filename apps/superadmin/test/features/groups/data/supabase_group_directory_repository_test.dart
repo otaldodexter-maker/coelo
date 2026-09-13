@@ -137,6 +137,49 @@ void main() {
     },
   );
 
+  test('preserves activity links when an edited group inherits activities', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json(_groupRow(), request);
+    });
+    addTearDown(client.dispose);
+
+    await SupabaseGroupDirectoryRepository(client).saveComposition(
+      GroupDirectorySaveRequest(
+        requestId: 'group-save-preserve-inherited-activities',
+        record: _record(),
+        activityIds: const ['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'],
+      ),
+    );
+
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload.containsKey('activity_ids'), isFalse);
+  });
+
+  test('sends explicit activity links after inheritance is disabled', () async {
+    Request? captured;
+    final client = _client((request) async {
+      captured = request;
+      return _json(_groupRow(), request);
+    });
+    addTearDown(client.dispose);
+    final record = _record().copyWith(inheritActivities: false);
+
+    await SupabaseGroupDirectoryRepository(client).saveComposition(
+      GroupDirectorySaveRequest(
+        requestId: 'group-save-explicit-activities',
+        record: record,
+        activityIds: const ['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa'],
+      ),
+    );
+
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['activity_ids'], ['aaaaaaaa-aaaa-4aaa-8aaa-aaaaaaaaaaaa']);
+  });
+
   test('recibo de outra turma na atualizacao nao entra no cache', () async {
     // Mesma guarda aplicada em Unidades e ja existente em Instituicoes: em
     // atualizacao o recibo tem de corresponder a turma pedida.
