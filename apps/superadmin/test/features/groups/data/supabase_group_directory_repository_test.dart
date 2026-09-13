@@ -180,7 +180,7 @@ void main() {
   test('keeps an allowlisted save diagnostic code without the server message', () async {
     final client = _client(
       (request) async => Response(
-        jsonEncode({'code': '40001', 'message': 'stale group version 7 for Pessoa privada'}),
+        jsonEncode({'code': '23514', 'message': 'new row violates check constraint "audit_logs_internal_actor_check"'}),
         409,
         headers: {'content-type': 'application/json'},
         request: request,
@@ -196,7 +196,7 @@ void main() {
         isA<GroupDirectoryUnavailableException>().having(
           (error) => error.diagnosticCode,
           'diagnosticCode',
-          '40001',
+          'CHECK_AUDIT',
         ),
       ),
     );

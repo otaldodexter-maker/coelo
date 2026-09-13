@@ -447,13 +447,29 @@ Exception _mapError(PostgrestException error) => switch (error.code) {
 
 Exception _mapSaveError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
-  _ => GroupDirectoryUnavailableException(diagnosticCode: _safeDiagnosticCode(error.code)),
+  _ => GroupDirectoryUnavailableException(
+    diagnosticCode: _safeDiagnosticCode(error.code, error.message),
+  ),
 };
 
-String _safeDiagnosticCode(String? code) => switch (code) {
-  '22023' || '23505' || '40001' || 'P0002' || '55000' => code!,
-  _ => 'UNKNOWN',
-};
+String _safeDiagnosticCode(String? code, String message) {
+  if (code != '23514') {
+    return switch (code) {
+      '22023' || '23505' || '40001' || 'P0002' || '55000' => code!,
+      _ => 'UNKNOWN',
+    };
+  }
+  return switch (message) {
+    final value when value.contains('groups_handle_check') => 'CHECK_GROUP_HANDLE',
+    final value when value.contains('groups_type_other_text_check') => 'CHECK_GROUP_TYPE',
+    final value when value.contains('activity_group_links_dates_check') => 'CHECK_ACTIVITY_DATES',
+    final value when value.contains('institution_role_assignments_scope_check') =>
+      'CHECK_ROLE_SCOPE',
+    final value when value.contains('audit_logs_') => 'CHECK_AUDIT',
+    final value when value.contains('group_management_command_receip_') => 'CHECK_RECEIPT',
+    _ => 'CHECK_UNKNOWN',
+  };
+}
 
 Map<String, dynamic> _saveResponse(Object? value) {
   try {
