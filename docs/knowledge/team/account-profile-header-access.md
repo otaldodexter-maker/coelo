@@ -10,7 +10,7 @@ visibility: internal
 review_owner: Coelo Owner
 ---
 
-A direção aprovada exige que nome/foto salvos sejam refletidos no cabeçalho e
+A direção aprovada exige que nome/foto e sigla/cor salvos sejam refletidos no cabeçalho e
 mantidos após reload. Prévia de foto no editor não prova persistência.
 
 As ações de salvar/cancelar permanecem acessíveis; Meu acesso usa rolagem

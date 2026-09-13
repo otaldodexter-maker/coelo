@@ -1251,7 +1251,7 @@
       "e2e": "new-observation-not-certified",
       "evidence": "docs/design/account-profile-owner-adjustments-20260913.md",
       "owner": "C0 R11",
-      "nextGate": "Reproduzir depois de salvar e reload; conferir projeção do cabeçalho e rodapé/Meu acesso; implementar e provar na cota R11."
+      "nextGate": "Reproduzir após salvar/reload foto, nome, sigla e COR no cabeçalho, inclusive remover foto; corrigir rodapé e Meu acesso na cota R11."
     }
   ],
   "evidenceFiles": [

@@ -77,10 +77,13 @@ Prioridade acrescentada pelo Owner após a preparação inicial. Ler
 `docs/design/account-profile-owner-adjustments-20260913.md`.
 Na UI o formulário mostra foto selecionada, mas o cabeçalho continua com sigla;
 nome também foi apontado como possível falha, ainda a reproduzir.
+O Owner acrescentou: a cor escolhida do avatar com sigla também não atualiza.
 Confirmar primeiro antes/depois de Salvar e reload: prévia local não é foto
 persistida. Depois de sucesso real, cabeçalho deve refletir foto/nome da mesma
 conta no shell e no Principal hospedado, inclusive após navegar/recarregar.
-Não usar valor fixo nem aceitar identidade residual ao trocar sessão.
+Incluir sigla/cor persistidas na mesma prova; remover a foto deve restaurar
+a sigla e sua cor corretas. Não usar cor/nome fixos nem identidade residual
+ao trocar sessão.
 
 A lista longa Meu acesso empurra Salvar para o fim da página. Aplicar o rodapé
 de ações padrão acessível no contêiner; limitar altura de Meu acesso, com

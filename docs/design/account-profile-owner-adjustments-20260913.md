@@ -35,3 +35,7 @@ confirmada ainda. Não confundir esta tela com principal.profile-edit/Sobre.
 
 Os originais permanecem anexados à conversa; nenhum caminho de cópia binária
 foi exposto. Registro textual sem nomes, e-mails ou conteúdo pessoal das imagens.
+
+## Complemento Owner — cor da sigla
+
+O Owner também informou que a cor escolhida do avatar sem foto não muda no cabeçalho. Reproduzir após salvar; validar sigla e cor persistidas no editor, header e navegação/reload. Remover foto deve recuperar a sigla/cor corretas da mesma conta, sem cor fixa ou estado de outra sessão. Preservar contraste e o fallback aprovado.
