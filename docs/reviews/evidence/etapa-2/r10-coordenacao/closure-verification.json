@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-13T05:12:06.175106+00:00",
+  "head": "07aa98936287c707794daf01cce9ef39f5c5a068",
+  "helpers": [
+    {
+      "branch": "work/etapa2-r10-terra-members",
+      "head": "9916ae76ba76e7b563e3f053fa7d293e0e9480ad",
+      "integrated": true
+    },
+    {
+      "branch": "work/etapa2-r10-chat-upload",
+      "head": "17168309f738582c1bcb63c98742e3b3cd84fb44",
+      "integrated": true
+    },
+    {
+      "branch": "work/etapa2-r10-chat-inline",
+      "head": "b3ad72d7f7fb4ff838556d1314911897c53cd2ac",
+      "integrated": true
+    }
+  ],
+  "remoteDivergence": "0\t0",
+  "mainStatus": "",
+  "checks": {
+    "trackers": "PASS177/162/150",
+    "knowledge": "PASS",
+    "knowledgeTests": "12PASS1SKIP symlink host",
+    "diffCheck": "PASS",
+    "R09FilesUnchanged": true
+  }
+}

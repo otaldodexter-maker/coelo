@@ -9184,5 +9184,18 @@
     "frontendDeployment": "Git/dev e QA3014; sem novo deploy publico R09",
     "quotaInitialObserved": 57,
     "quotaFinalObserved": 69
+  },
+  "r10Closure": {
+    "status": "closed",
+    "at": "2026-09-13T05:12:45.278748+00:00",
+    "base": "07aa98936287c707794daf01cce9ef39f5c5a068",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-fechamento.md",
+    "functionalGain": {
+      "FE": 2,
+      "BE": 1,
+      "E2E": 2
+    },
+    "scopeGain": 0,
+    "quotaUsedPercent": 83
   }
 }

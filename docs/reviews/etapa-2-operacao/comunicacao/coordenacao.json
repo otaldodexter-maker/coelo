@@ -1,12 +1,12 @@
 {
-  "revision": 128,
+  "revision": 130,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T03:43:42.382907+00:00",
+  "updatedAt": "2026-09-13T05:12:45.278748+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4279,7 +4279,7 @@
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-coordenacao-20260912-2314",
     "branch": "work/etapa2-r10-coordenacao-20260912-2314",
     "writer": "C0 /root",
-    "status": "abertura-em-execucao",
+    "status": "encerrada",
     "scope": "apps/superadmin; primeiro gate Estrutura > Atividades > Publicar/Avaliacao; activities.publish/activities.assessment",
     "outside": "R11, Etapa3, outros apps, senhas, import/export adiado, limpeza geral",
     "evidence": "rota normal, repository produtivo, Supabase real, reload e negativas vigentes por familia",
@@ -4291,9 +4291,9 @@
     },
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
-      "chrome": "C0: turma draft preservado; atividade edit sem alteracoes; chat picker bloqueado",
-      "heavy": "C0 reserva build conjunto",
-      "sql": "livre; somente C0 remoto"
+      "chrome": "C0 Chrome1; sessaoQA R06restaurada; runtimes3000/3016 preservados",
+      "heavy": "livre",
+      "sql": "livre; ultimo63/proximo64 sem pacote"
     },
     "auxiliary": {
       "id": "/root/terra_members",
@@ -4317,8 +4317,8 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T05:02:55.574281+00:00",
-    "base": "500bc17a1",
+    "time": "2026-09-13T05:12:45.278748+00:00",
+    "base": "07aa98936287c707794daf01cce9ef39f5c5a068",
     "quotaUsedPercent": 83,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
@@ -4332,8 +4332,8 @@
       "/root/chat_upload": "entrega integrada; sem nova fatia apos80%; slots livres",
       "/root/chat_inline": "entrega integrada; sem nova fatia apos80%; slots livres"
     },
-    "wip": "groups.members FE/BE/E2E aceito; diario retido permanece sem alunos porque exige activity_group_participants. Header segunda identidade O/Operador interno41462594 apos logout/login normal PASS; recarga voltoulogin com Manter sessao desmarcado, repetir com persistencia. Sem novas fatias auxiliares.",
-    "next": "finalizar header duas identidades e preparar fechamento; sem novoSQL planejado",
+    "wip": "Codigo integrado e helpers limpos. Recursos/branches/worktrees/ignorados preservados. Pendencias documentadas; nenhumslotpesado/SQL em uso.",
+    "next": "Nenhuma execucao automatica. Proxima autorizacao deve lerR10-fechamento/R10-pendencias, confirmarorigin/dev e retomar primeirogate.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
@@ -4348,7 +4348,8 @@
       "unit": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3"
     },
     "profileDeletedByUI": "424d4d15-009f-4e32-911c-9ae37c056bd1",
-    "profileDeletedPostRLSByUI": "80cf70c6-f2e3-4088-82eb-97df303e5aa2"
+    "profileDeletedPostRLSByUI": "80cf70c6-f2e3-4088-82eb-97df303e5aa2",
+    "status": "R10 encerrada; somente publicacao final"
   },
   "filaSqlR10": {
     "ultimoAplicado": 63,
@@ -4430,5 +4431,20 @@
       "name": "r10_access_profile_private_rls_forward",
       "postflight": "3tabelas RLS+FORCE true; authenticated SELECTfalse; ledgerconfirmado"
     }
+  },
+  "fechamentoR10": {
+    "status": "closed",
+    "at": "2026-09-13T05:12:45.278748+00:00",
+    "document": "docs/reviews/etapa-2-operacao/next-round/R10-fechamento.md",
+    "quotaOpening": 69,
+    "quotaLast": 83,
+    "metrics": {
+      "FE": "177/231",
+      "BE": "162/224",
+      "E2E": "150/199"
+    },
+    "executionStoppedEarly": "proximo gate exige cadeia SQL/UI sem janela suficiente; preservar fechamento antes do teto",
+    "newRoundStarted": false,
+    "quotaDeltaPercentagePoints": 14
   }
 }

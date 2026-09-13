@@ -1,6 +1,6 @@
 ---
 source: R10 C0
-status: fechamento em preparacao; execucao ainda aberta ate corte
+status: checkpoint historico; superado por R10-fechamento.md
 generated_at: 2026-09-13
 ---
 

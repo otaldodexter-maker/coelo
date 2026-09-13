@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-12T22:09:50.111867+00:00"
+updated_at: "2026-09-13T05:11:32.728751+00:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,13 +13,23 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-12T22:09:50.111867+00:00"
-tracker_sync_revisions: "R09 encerrada C0r118; nove heads integrados; inventario sincronizado"
+tracker_sync_at: "2026-09-13T05:11:32.728751+00:00"
+tracker_sync_revisions: "R10 C0 fechamento; R09 historica preservada"
 ---
 
 # Pendências Coelo — Back-end
 
-## Estado vigente ? R09 E2-R09-20260912-1542, C0 revisao118
+## Estado vigente ? R10, fechamento
+
+FE177/231 (76,62%); BE162/224 (72,32%); E2E150/199 (75,38%).
+Ganho funcional2FE/1BE/2E2E; meta7?9p.p. nao atingida. Filtros,
+periodicidade/gap, editaratividade, fotosinline e headerduasidentidades
+corrigidos; SQL61/62/63 aplicados. MP4UI, UPDATEavaliacao e diariosem
+participantes permanecemabertos. [Entrega](etapa-2-operacao/next-round/R10-fechamento.md)
+e [primeiros gates](etapa-2-operacao/next-round/R10-pendencias.md).
+
+
+## Historico ? R09 E2-R09-20260912-1542, C0 revisao118
 
 T0 12/09/2026 15:42:18 BRT preservado; corte de execucao19:42:18 e
 fechamento20:12:18, ou antes por consumo. Nove IDs/ACKs conferidos; posse
