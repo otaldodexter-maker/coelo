@@ -1,0 +1,30 @@
+[
+  {
+    "action_id": "attendance.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: wizard de Nova chamada reduzido a Contexto → Chamada; rotina diária vinculada é resolvida pelo contexto autorizado e permanece somente leitura, sem troca durante o lançamento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md"
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: a etapa separada Rotina diária foi removida do wizard; a resolução da rotina efetiva continua pertencendo ao contrato server-side e ao contexto autorizado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md"
+  },
+  {
+    "action_id": "attendance.create",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A composição do wizard mudou; rota normal, persistência/reload, rotina/versionamento e negativa cross-tenant ainda precisam de prova integrada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md"
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A etapa visual foi removida sem mutar o contrato; vínculo efetivo, versão, snapshot e autorização server-side permanecem pendentes de prova integrada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md"
+  }
+]

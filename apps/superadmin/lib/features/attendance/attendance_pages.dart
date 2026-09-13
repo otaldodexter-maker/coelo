@@ -58,7 +58,6 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
   late String _context;
   String? _activity;
   late DateTime _date;
-  var _currentStep = 0;
   var _submitting = false;
   Object? _commandError;
   var _optionsLoadGeneration = 0;
@@ -93,7 +92,6 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
     _group = null;
     _activity = null;
     _context = widget.initialActivityId == null ? 'group' : 'activity';
-    _currentStep = 0;
     _date = _today;
     _loadOptions(useInitialValues: true);
   }
@@ -163,19 +161,11 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                   ? CoeloSpacing.space6
                   : CoeloSpacing.space4;
               final navigation = SuperadminFormStepNavigation(
-                currentIndex: _currentStep,
+                currentIndex: 0,
                 steps: [
-                  SuperadminFormStep(
+                  const SuperadminFormStep(
                     label: 'Contexto',
-                    status: _currentStep == 0
-                        ? SuperadminFormStepStatus.current
-                        : SuperadminFormStepStatus.complete,
-                  ),
-                  SuperadminFormStep(
-                    label: 'Rotina diária',
-                    status: _currentStep == 1
-                        ? SuperadminFormStepStatus.current
-                        : SuperadminFormStepStatus.incomplete,
+                    status: SuperadminFormStepStatus.current,
                   ),
                   const SuperadminFormStep(
                     label: 'Chamada',
@@ -183,8 +173,7 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                   ),
                 ],
                 onStepSelected: (index) {
-                  if (index < 2) setState(() => _currentStep = index);
-                  if (index == 2 && _canCreate && !_submitting) _create();
+                  if (index == 1 && _canCreate && !_submitting) _create();
                 },
               );
               final content = Expanded(
@@ -202,16 +191,12 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                               crossAxisAlignment: CrossAxisAlignment.stretch,
                               children: [
                                 Text(
-                                  _currentStep == 0
-                                      ? 'Contexto da chamada'
-                                      : 'Rotina diária vinculada',
+                                  'Contexto da chamada',
                                   style: Theme.of(context).textTheme.headlineSmall,
                                 ),
                                 const SizedBox(height: CoeloSpacing.space2),
                                 Text(
-                                  _currentStep == 0
-                                      ? 'Escolha a data, a turma e, quando necessário, a atividade.'
-                                      : 'Confira a rotina efetiva antes de lançar a chamada.',
+                                  'Escolha a data, a turma e, quando necessário, a atividade. A rotina diária vinculada será resolvida pelo contexto autorizado.',
                                   style: Theme.of(context).textTheme.bodyLarge?.copyWith(
                                     color: Theme.of(context).colorScheme.onSurfaceVariant,
                                   ),
@@ -230,12 +215,6 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                                   icon: const Icon(Icons.calendar_today_outlined),
                                   label: Text('Data da chamada · ${_attendanceDate(_date)}'),
                                 ),
-                                if (_currentStep == 1) ...[
-                                  const SizedBox(height: CoeloSpacing.space4),
-                                  const Text(
-                                    'A rotina aplicável será resolvida pelo contexto autorizado.',
-                                  ),
-                                ],
                                 const SizedBox(height: CoeloSpacing.space5),
                                 CoeloAdminSingleSelectField<String>(
                                   label: 'Instituição',
@@ -327,12 +306,8 @@ class _AttendanceNewCallPageState extends State<AttendanceNewCallPage> {
                       continuationActions: [
                         FilledButton(
                           key: const Key('attendance-context-continue'),
-                          onPressed: !_canCreate || _submitting
-                              ? null
-                              : _currentStep == 0
-                              ? () => setState(() => _currentStep = 1)
-                              : _create,
-                          child: Text(_currentStep == 0 ? 'Continuar' : 'Lançar chamada'),
+                          onPressed: !_canCreate || _submitting ? null : _create,
+                          child: const Text('Lançar chamada'),
                         ),
                       ],
                     ),

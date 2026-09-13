@@ -168,14 +168,14 @@ void main() {
 
     expect(find.byType(SuperadminFormStepNavigation), findsOneWidget);
     expect(find.text('Contexto da chamada'), findsOneWidget);
-    expect(find.text('Rotina diária'), findsOneWidget);
+    expect(find.text('Rotina diária'), findsNothing);
     expect(find.text('Chamada'), findsOneWidget);
     expect(find.text('Instituição'), findsOneWidget);
     expect(find.text('Unidade'), findsOneWidget);
     expect(find.text('Turma'), findsWidgets);
     expect(find.byKey(const Key('attendance-date-picker')), findsOneWidget);
     expect(find.byType(SuperadminFormActionFooter), findsOneWidget);
-    expect(find.widgetWithText(FilledButton, 'Continuar'), findsOneWidget);
+    expect(find.widgetWithText(FilledButton, 'Lançar chamada'), findsOneWidget);
   });
 
   testWidgets('new call opens Chamada directly from the step navigation', (tester) async {
@@ -196,7 +196,7 @@ void main() {
     );
     await tester.pumpAndSettle();
 
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pump();
 
     expect(createdCallId, isNotNull);
@@ -222,8 +222,8 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chamada'));
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pump();
 
     expect(repository.createCallCount, 1);
@@ -251,7 +251,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pump();
 
     expect(repository.createCallCount, 1);
@@ -296,7 +296,7 @@ void main() {
 
     await tester.pumpWidget(page(repositoryA));
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pump();
     expect(repositoryA.createCallCount, 1);
 
@@ -327,7 +327,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pumpAndSettle();
 
     expect(find.text('Contexto da chamada'), findsOneWidget);
@@ -352,7 +352,7 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
-    await tester.tap(find.text('Chamada'));
+    await tester.tap(find.byKey(const Key('attendance-context-continue')));
     await tester.pumpAndSettle();
 
     expect(createdCallId, isNull);

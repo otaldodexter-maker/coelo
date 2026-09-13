@@ -103,12 +103,12 @@
       "attendance.create",
       "daily-routine.apply"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "local-green: wizard reduzido a Contexto → Chamada; rotina vinculada resolvida pelo contexto autorizado e somente leitura.",
+    "be": "Contrato server-side preservado; sem RPC/RLS novo.",
+    "e2e": "pending-verification: rota normal, rotina/versão, persistência/reload e negativa cross-tenant pendentes.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Reproduzir com contexto real autorizado, confirmar rotina efetiva/versionamento e snapshot no servidor, persistência/reload e negativa cross-tenant.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
