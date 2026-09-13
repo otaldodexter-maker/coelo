@@ -16,7 +16,7 @@ function text(bytes: Uint8Array, start: number, end: number) {
   return new TextDecoder().decode(bytes.slice(start, end));
 }
 
-/** Assinatura real dos quatro tipos que o chat aceita (sem video, sem Stream). */
+/** Assinatura real dos tipos aceitos pelo chat privado, sem Stream. */
 export function matchesDeclaredType(bytes: Uint8Array, mimeType: string) {
   if (mimeType === "image/jpeg") return bytes[0] === 0xff && bytes[1] === 0xd8;
   if (mimeType === "image/png") {
@@ -26,6 +26,9 @@ export function matchesDeclaredType(bytes: Uint8Array, mimeType: string) {
     return text(bytes, 0, 4) === "RIFF" && text(bytes, 8, 12) === "WEBP";
   }
   if (mimeType === "application/pdf") return text(bytes, 0, 5) === "%PDF-";
+  if (mimeType === "video/mp4") {
+    return bytes.length >= 12 && text(bytes, 4, 8) === "ftyp";
+  }
   return false;
 }
 

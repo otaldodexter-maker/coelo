@@ -14,6 +14,7 @@ const allowedMimeTypes = new Set([
   "image/png",
   "image/webp",
   "application/pdf",
+  "video/mp4",
 ]);
 const maximumBytes = 10 * 1024 * 1024;
 

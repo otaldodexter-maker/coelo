@@ -10,6 +10,7 @@ Deno.test("assinaturas reais dos quatro tipos aceitos", () => {
   assertEquals(matchesDeclaredType(png, "application/pdf"), false);
   assertEquals(matchesDeclaredType(new Uint8Array([0xff, 0xd8, 0]), "image/jpeg"), true);
   assertEquals(matchesDeclaredType(png, "video/mp4"), false);
+  assertEquals(matchesDeclaredType(new Uint8Array([0, 0, 0, 20, 0x66, 0x74, 0x79, 0x70, 0x69, 0x73, 0x6f, 0x6d]), "video/mp4"), true);
 });
 
 Deno.test("readStoredBytes devolve sha256 e apaga objeto divergente", async () => {
