@@ -235,3 +235,29 @@ crianca passaram no espelho: link 17 PASS / 0 FAIL e unlink 14 PASS / 0 FAIL,
 ambos em transacao/rollback. A verificacao posterior confirmou que nenhuma das
 funcoes candidatas ficou no espelho. `dart analyze` focal de formulario passou
 sem issues.
+
+## account.profile — cabecalho da sessao
+
+O shell recebe `SuperadminHeaderProfile`, com nome, papel, sigla/cor e imagem
+opcional. Sem perfil carregado ele mostra a identidade neutra `Conta`, sem
+inventar `Owner Coelo` ou `OC`. `ProfilePage` observa o `AccountController` e
+reconstrói o shell com o perfil confirmado, portanto nome e avatar mudam após
+save e no reload da página. O teste cobre nome/papel real no desktop, sigla no
+compacto e atualização depois de uma nova composição.
+
+### Wiring pendente de C0 (router, fora desta autoria)
+
+Na composição que constrói `SuperadminShell.host`, reutilizar o
+`productionAccountController` já criado no router, chamar `unawaited(
+productionAccountController.load())` quando a sessão autenticada inicia e
+passar `headerProfile` derivado de `productionAccountController.profile`. Como
+o shell hospedeiro deve observar o controller, o router deve envolvê-lo em
+`ListenableBuilder` (ou adaptador equivalente) para reconstruir o valor após
+load/save. A mesma regra vale para o controller de preview somente nas rotas
+`/dev`. Isso faz o nome real aparecer antes de visitar Meu perfil e evita o
+flash de Owner falso. Nenhum router foi modificado neste pacote.
+
+Provas locais: `flutter test test/app/shell/superadmin_shell_header_profile_test.dart
+test/app/shell/superadmin_shell_test.dart` PASS 68; `dart analyze` focal PASS.
+O aceite E2E continua aberto para C0: login normal, desktop e compacto, salvar
+perfil, recarregar rota e confirmar a mesma identidade da sessão.
