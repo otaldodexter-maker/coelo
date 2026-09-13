@@ -1,12 +1,12 @@
 {
-  "revision": 127,
+  "revision": 128,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T03:34:41.714961+00:00",
+  "updatedAt": "2026-09-13T03:43:42.382907+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4292,8 +4292,8 @@
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
       "chrome": "C0 abas829822503 groups e829822506 chat/upload bloqueado",
-      "heavy": "dev_senior_fe_be teste dialog aluno",
-      "sql": "C0 lote61 aplicado; livre"
+      "heavy": "livre",
+      "sql": "livre; C0producao"
     },
     "auxiliary": {
       "id": "/root/terra_members",
@@ -4317,8 +4317,8 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:34:41.714961+00:00",
-    "base": "113979a42",
+    "time": "2026-09-13T03:43:42.382907+00:00",
+    "base": "75f68ff58 integrado",
     "quotaUsedPercent": 76,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
@@ -4332,14 +4332,21 @@
       "/root/chat_inline": "slot Flutter exclusivo pub get/test/analyze video",
       "/root/chat_upload": "assessment e15724340 entregue; SQL slot livre"
     },
-    "wip": "Build release68.9s PASS sha2565097C909D03E583B580FEFAE163C2BAF34E9DB2ED47F30C9B5813E8451E1FFEA; avatar real OE confirmado em Conversas e Meu perfil apos reload. Foto531KB renderinline. MP4 real preparado, seletor setFiles bloqueado Not allowed. Groups turmaR05 semchild_context ativo na instituicao; C0 abrira Pessoas para criar contexto pela UI.",
-    "next": "Pessoas/contexto infantil normal e members; assessment draft/reload. Picker bloqueado extensao, sembypass.",
+    "wip": "Build55.5s PASS sha25686A97BBB227589C794C6066F1636629FF41C7C66EC564C213E0A28686ED6AEB1; groupform30PASS baseconjunta. UI criou child_context ativo viaPessoas e unidadepending, preservando contexto anterior; grupoR05 buscaaluno @crianca.qar04 emandamento. Negativas reais6checksPASS (semsegunda sessao tenantB), reutilizacao MVP porfamilia com paridade.",
+    "next": "Salvar/relervinculoaluno, unlink/relink UI; avaliar participanteatividade/diario; draftavaliacao porid. PickerMP4bloqueadoextensao, fixturevalida preservada.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
-    "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60."
+    "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60.",
+    "childContextCreatedByUI": {
+      "person": "d0c40000-0000-4000-8000-000000000003",
+      "childContext": "b1520810-ca23-4632-8b53-cc36e558013c",
+      "unitLink": "6427c9a4-27c7-4048-a7ad-4ebe08a58a0d",
+      "institution": "190dd028-3125-452d-8502-612bfa1029de",
+      "unit": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3"
+    }
   },
   "filaSqlR10": {
     "ultimoAplicado": 61,
