@@ -159,7 +159,7 @@ void main() {
         institutionId: 'institution-r10',
         unitId: 'unit-r10',
         periodicity: 'annual',
-        scaleKind: AssessmentScaleKind.numeric,
+        scaleKind: AssessmentScaleKind.numeric0To10,
         version: 2,
         status: 'active',
         instruments: [],
