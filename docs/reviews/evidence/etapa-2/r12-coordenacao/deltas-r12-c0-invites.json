@@ -7,7 +7,7 @@
     "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
     "certificacao": {
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-      "revision": "7e2dce6675890e71e152dc2da5bce5eb2c5898e1",
+      "revision": "c0645ddfe94af01982f87ec293873193bd0d72a1",
       "environment": "Windows local; Flutter test; sem rota remota",
       "recordedAt": "2026-09-13T00:00:00-03:00"
     }
