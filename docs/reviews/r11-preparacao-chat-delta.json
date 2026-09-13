@@ -1,0 +1,92 @@
+[
+  {
+    "action_id": "chat.open",
+    "camada": "frontend",
+    "delta": "Referência Owner da preparação R11: aprimorar fotos/vídeos inline, mosaico e compositor arredondado. Backlog Etapa 2; fora da prioridade R11. Render e implementação ainda pendentes. Anterior: R04 principal-chat-sistema rev 12: conversa abre pela tela real com recibo (captura 22).",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+      "revision": "77fa469a9",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+      "recordedAt": "2026-09-10T23:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.open",
+    "camada": "backend",
+    "delta": "Referência visual futura preserva R2 privado e autorização. Agrupamento de anexos exige conferir contrato de envio conjunto; nenhum SQL ou mudança remota nesta preparação. Anterior: R04 realm-interno: superadmin_chat_thread_v2 (240100 + 240200) em producao; prova qa-r03: thread com receipt e can_manage, id inexistente responde CHAT_NOT_FOUND. pgTAP 23/23 + 36/36 (cross-tenant CHAT_NOT_FOUND).",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+      "revision": "f007c7156",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-10T22:32:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.open",
+    "camada": "integrated",
+    "delta": "Direção de acabamento registrada, sem novo aceite. Executar prova própria de mídia/compositor e reload/escopo na rodada designada da Etapa 2; não obrigatória na R11. Anterior: R04 principal-chat-sistema rev 12: conversa aberta pela tela real com dado de producao, reload mantem, cross-tenant CHAT_NOT_FOUND.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+      "revision": "77fa469a9",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+      "recordedAt": "2026-09-10T23:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.send",
+    "camada": "frontend",
+    "delta": "Referência Owner da preparação R11: aprimorar fotos/vídeos inline, mosaico e compositor arredondado. Backlog Etapa 2; fora da prioridade R11. Render e implementação ainda pendentes. Anterior: R04 principal-chat-sistema rev 12: mensagem enviada PELA TELA persiste e volta no reload (capturas 24-26).",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+      "revision": "77fa469a9",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+      "recordedAt": "2026-09-10T23:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.send",
+    "camada": "backend",
+    "delta": "Referência visual futura preserva R2 privado e autorização. Agrupamento de anexos exige conferir contrato de envio conjunto; nenhum SQL ou mudança remota nesta preparação. Anterior: R04 realm-interno: superadmin_chat_send_message_v2 (240100) em producao; prova qa-r03: envio persistido com author_kind=superadmin_internal e replay idempotente; auditoria chat.message.send registrada. pgTAP 23/23.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md",
+      "revision": "f007c7156",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-10T22:32:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.send",
+    "camada": "integrated",
+    "delta": "Direção de acabamento registrada, sem novo aceite. Executar prova própria de mídia/compositor e reload/escopo na rodada designada da Etapa 2; não obrigatória na R11. Anterior: R04 principal-chat-sistema rev 12: envio pela tela real persistiu em producao (superadmin_chat_send_message_v2, replay idempotente) e voltou no reload; negativa cross-tenant no pgTAP.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/principal-chat-sistema-handoff.md",
+      "revision": "77fa469a9",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, build web release",
+      "recordedAt": "2026-09-10T23:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "delta": "Referência Owner da preparação R11: aprimorar fotos/vídeos inline, mosaico e compositor arredondado. Backlog Etapa 2; fora da prioridade R11. Render e implementação ainda pendentes. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "backend",
+    "delta": "Referência visual futura preserva R2 privado e autorização. Agrupamento de anexos exige conferir contrato de envio conjunto; nenhum SQL ou mudança remota nesta preparação. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "Direção de acabamento registrada, sem novo aceite. Executar prova própria de mídia/compositor e reload/escopo na rodada designada da Etapa 2; não obrigatória na R11. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada.",
+    "evidencia": "docs/design/chat-media-composer-owner-reference-20260913.md"
+  }
+]

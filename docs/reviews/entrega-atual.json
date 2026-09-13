@@ -1202,6 +1202,43 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
       "owner": "C0",
       "nextGate": "Comparar demais estados responsivos; título comum e hover cinza da marca corrigidos."
+    },
+    {
+      "id": "owner.r11-preparation",
+      "status": "done",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md",
+      "owner": "C0",
+      "nextGate": ""
+    },
+    {
+      "id": "owner.chat-media-reference-record",
+      "status": "done",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/design/chat-media-composer-owner-reference-20260913.md",
+      "owner": "C0",
+      "nextGate": ""
+    },
+    {
+      "id": "owner.chat-media-polish-etapa2",
+      "status": "deferred",
+      "actionIds": [
+        "chat.open",
+        "chat.attach",
+        "chat.send"
+      ],
+      "fe": "reference-recorded-not-implemented",
+      "be": "existing-contract-preserved",
+      "e2e": "not-newly-certified",
+      "evidence": "docs/design/chat-media-composer-owner-reference-20260913.md",
+      "owner": "C0 na rodada designada da Etapa 2",
+      "nextGate": "Comparar chat produtivo com direção registrada; render, implementação e prova por ação. Fora da prioridade R11; não adiado para pós-MVP."
     }
   ],
   "evidenceFiles": [
@@ -1211,12 +1248,15 @@
     "decisions/0036-delivery-reconciliation-and-owner-commitments.md",
     "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
     "decisions/0037-principal-host-context-and-media-controls.md",
-    "docs/knowledge/team/principal-host-context-media.md"
+    "docs/knowledge/team/principal-host-context-media.md",
+    "docs/design/chat-media-composer-owner-reference-20260913.md",
+    "docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md",
+    "docs/knowledge/team/chat-media-composer-direction.md"
   ],
   "memory": {
     "status": "captured",
-    "reason": "ADR0036 entrega e ADR0037 regras aprovadas de host/contexto/mídia capturadas para team; não certifica recurso ainda sem prova.",
-    "evidence": "docs/knowledge/team/principal-host-context-media.md"
+    "reason": "Direção visual aprovada pelo Owner registrada na fonte canônica e projetada para team, explicitamente sem render/implementação concluídos.",
+    "evidence": "docs/knowledge/team/chat-media-composer-direction.md"
   },
   "deployment": {
     "status": "not-requested",
