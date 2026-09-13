@@ -265,7 +265,7 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       if (status == 409 || code == 'SAI_CONCURRENT_CHANGE' || code == 'ASSESSMENT_INVALID_STATE') {
         throw const AssessmentVersionConflictException();
       }
-      throw const AssessmentOfflineException();
+      throw AssessmentOfflineException(diagnosticCode: _safeConfigurationSaveDiagnostic(code));
     } on PostgrestException catch (error) {
       if (error.code == '40001') throw const AssessmentVersionConflictException();
       if (error.code == '42501') throw const AssessmentUnauthorizedException();
@@ -283,6 +283,11 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
     }
   }
 }
+
+String? _safeConfigurationSaveDiagnostic(String? code) => switch (code) {
+  'ASSESSMENT_INVALID_INPUT' || 'ASSESSMENT_INVALID_REFERENCE' || 'SAI_INTERNAL_ERROR' => code,
+  _ => null,
+};
 
 Map<String, dynamic> _map(dynamic value) =>
     value is Map<String, dynamic> ? value : Map<String, dynamic>.from(value as Map);

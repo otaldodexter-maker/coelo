@@ -215,14 +215,36 @@ void main() {
     );
     await expectLater(
       repositoryFor('ASSESSMENT_INVALID_INPUT', 422).fetchClosingQueue(),
-      throwsA(isA<AssessmentOfflineException>()),
+      throwsA(
+        isA<AssessmentOfflineException>().having(
+          (error) => error.diagnosticCode,
+          'diagnosticCode',
+          'ASSESSMENT_INVALID_INPUT',
+        ),
+      ),
     );
-    for (final code in ['SAI_INTERNAL_ERROR', 'SAI_UNKNOWN_ERROR']) {
+    for (final code in ['SAI_INTERNAL_ERROR']) {
       await expectLater(
         repositoryFor(code, 500).fetchClosingQueue(),
-        throwsA(isA<AssessmentOfflineException>()),
+        throwsA(
+          isA<AssessmentOfflineException>().having(
+            (error) => error.diagnosticCode,
+            'diagnosticCode',
+            code,
+          ),
+        ),
       );
     }
+    await expectLater(
+      repositoryFor('SAI_UNKNOWN_ERROR', 500).fetchClosingQueue(),
+      throwsA(
+        isA<AssessmentOfflineException>().having(
+          (error) => error.diagnosticCode,
+          'diagnosticCode',
+          isNull,
+        ),
+      ),
+    );
     for (final code in [
       'SAI_AUTH_REQUIRED',
       'SAI_SESSION_INVALID',
