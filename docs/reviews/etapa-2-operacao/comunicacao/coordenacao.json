@@ -4317,29 +4317,29 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T04:31:00Z",
-    "base": "34aa6908e +SQL62",
-    "quotaUsedPercent": 80,
+    "time": "2026-09-13T04:47:00Z",
+    "base": "883ecaac7",
+    "quotaUsedPercent": 82,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
       "pid": 51176,
       "owner": "C0",
-      "build": "release56.7s PASS SHA25682F73B881D07DB41967ADC8FB233C3207C13D68D8F27A1236F6A3F4DBEF849DC"
+      "build": "release56.6s PASS SHA256 B3F3C8C80606A6367B1B7CD69178C1A18C4036E8AF7D4A890DBBBB06D40FED42"
     },
     "helpers": {
-      "/root/dev_senior_fe_be": "23514 turma, mesma fatia; SQL local exclusivo",
-      "/root/chat_upload": "3b32085d5 integrado; slot liberado",
-      "/root/chat_inline": "fixture b3ad72d7f integrada; idle"
+      "/root/dev_senior_fe_be": "entrega integrada; sem nova fatia apos80%; slots livres",
+      "/root/chat_upload": "entrega integrada; sem nova fatia apos80%; slots livres",
+      "/root/chat_inline": "entrega integrada; sem nova fatia apos80%; slots livres"
     },
-    "wip": "Perfil QA R10 exclusao criado/reload/excluido/reload pela UI (424d4d15). Banco0perfil/0vinculos; consumidor anon401/detailP0002. pgTAP negativa6PASS1FAIL: tres tabelas privadas semRLS noespelho/prod, grantsdiretosnegados; hardening historico nao vigente. C0 avalia correcao focal. Grupos/avaliacao prontos para repeticao diagnostica no buildnovo.",
-    "next": "UI grupo comcorrecaoinheritActivities; profileCRUD consumidorposRLS; assessmentdiagnosticocontrollocalTerra",
+    "wip": "Perfil sintetico posSQL62 criado e excluido pela UI; banco confirma0perfil0membership. Grupo primarysave passou; studentlink aguardaSQL63. Assessmentdraftretido segueSAI_INTERNAL_ERROR.",
+    "next": "C0 validar helper scoped real para63, backup/apply/UI; fechar aceite perfil e rastreadores.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
-    "remote": "SQL lote61 aplicado version20260913032627, Edge chat-media MP4 implantada; R2 privado confirmado. Proximo lote62.",
+    "remote": "SQL61 e62 aplicados;63 apenas candidato integrado. Edge chat-media implantada.",
     "childContextCreatedByUI": {
       "person": "d0c40000-0000-4000-8000-000000000003",
       "childContext": "b1520810-ca23-4632-8b53-cc36e558013c",
@@ -4347,13 +4347,14 @@
       "institution": "190dd028-3125-452d-8502-612bfa1029de",
       "unit": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3"
     },
-    "profileDeletedByUI": "424d4d15-009f-4e32-911c-9ae37c056bd1"
+    "profileDeletedByUI": "424d4d15-009f-4e32-911c-9ae37c056bd1",
+    "profileDeletedPostRLSByUI": "80cf70c6-f2e3-4088-82eb-97df303e5aa2"
   },
   "filaSqlR10": {
     "ultimoAplicado": 62,
     "proximo": 63,
     "dono": "C0",
-    "status": "lote62 aplicado uma vez; RLSforce3tabelastrue e grantsnegados; consumidorUIpendente",
+    "status": "lote62 aplicado; consumidor UI criar/excluir posRLS PASS;63 aguarda prova scoped helper real",
     "backup": [
       {
         "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-schema-20260913.sql",
@@ -4369,13 +4370,9 @@
       }
     ],
     "candidatos": [
-      "groups student link",
-      "groups students projection",
-      "groups student unlink",
-      "assessment read by id",
-      "chat MP4 limit/extension"
+      "access profile private RLS forward"
     ],
-    "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas.",
+    "localProof": "focal7PASS; regressao88:82PASS6falhas legadas vs67PASS21falhas baseline; nenhuma nova falha",
     "version": "20260913043053",
     "name": "r10_access_profile_private_rls_forward",
     "postflight": "3tabelas RLS+FORCE true; authenticated SELECTfalse; ledgerconfirmado",
