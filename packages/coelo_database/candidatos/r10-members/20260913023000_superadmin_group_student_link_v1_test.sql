@@ -1,6 +1,14 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(19);
+select plan(23);
+
+select ok(
+  pg_get_functiondef('app_private.student_link_require_scope(uuid,uuid,uuid)'::regprocedure)
+    like '%has_scoped_platform_permission(''people.assign_children'', institution)%'
+  and pg_get_functiondef('app_private.student_link_require_scope(uuid,uuid,uuid)'::regprocedure)
+    like '%or app_private.has_context_permission(%',
+  'student-link gate keeps contextual authorization and adds a scoped platform path'
+);
 
 select has_function(
   'public','superadmin_group_student_link',array['uuid','uuid','uuid'],
@@ -82,6 +90,12 @@ create or replace function app_private.has_context_permission(
   select target_permission_code = 'people.assign_children'
     and current_setting('test.r10_members_allow', true) = 'true'
 $$;
+create or replace function app_private.has_scoped_platform_permission(
+  p_permission_code text, p_institution_id uuid
+) returns boolean language sql stable security definer set search_path='' as $$
+  select p_permission_code='people.assign_children'
+    and p_institution_id::text=current_setting('test.r10_members_platform_institution', true)
+$$;
 
 select set_config('test.r10_members_allow','true',true);
 set local role authenticated;
@@ -114,7 +128,35 @@ select is(
   'canonical link reuses the pending unit link without duplication'
 );
 
+-- A platform grant is scoped to the child context institution. It is an
+-- additional path, never a global bypass of the contextual authorization.
 set local role authenticated;
+select set_config('test.r10_members_allow','false',true);
+select set_config('test.r10_members_platform_institution','f6200000-0000-4000-8000-000000000001',true);
+select lives_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000010',
+    'f6100000-0000-4000-8000-000000000004',
+    'f6400000-0000-4000-8000-000000000001')$$,
+  'platform actor scoped to institution A can link a child in institution A'
+);
+select throws_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000011',
+    'f6100000-0000-4000-8000-000000000003',
+    'f6400000-0000-4000-8000-000000000002')$$,
+  'P0002','student link unavailable','platform actor scoped to institution A cannot link a child in institution B'
+);
+reset role;
+select is(
+  (select count(*)::integer from public.child_group_links
+   where group_id='f6400000-0000-4000-8000-000000000001' and status='active'),
+  2,
+  'platform-scoped link creates only the authorized group A link'
+);
+
+set local role authenticated;
+select set_config('test.r10_members_platform_institution','',true);
 select set_config('test.r10_members_allow','false',true);
 select throws_ok(
   $$select public.superadmin_group_student_link(
@@ -168,7 +210,7 @@ select throws_ok(
   'P0002','student link unavailable','missing capability cannot distinguish a cross-tenant child'
 );
 reset role;
-select is((select count(*)::integer from public.child_group_links),1,
+select is((select count(*)::integer from public.child_group_links),2,
   'negative paths create no cross-tenant, invalid-hierarchy, or unauthorized group link');
 
 select * from finish();
