@@ -1,0 +1,83 @@
+{
+  "at": "2026-09-13T04:31:00Z",
+  "lot": 62,
+  "owner": "postgres BYPASSRLS",
+  "authorization": "ADR0034 decisions5/8; forward only with per-batch backups",
+  "scope": "three app_private access profile receipt/catalog tables",
+  "historicalCandidate": "20260908000500_harden_access_profile_private_tables_rls.sql reviewed by content; absent ledger and false current flags",
+  "currentFlags": false,
+  "directAuthenticatedGrants": false,
+  "newPolicies": 0,
+  "focalPgTap": {
+    "pass": 7,
+    "fail": 0,
+    "rollback": true
+  },
+  "historicalRegression": {
+    "baselineFailed": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      24,
+      38,
+      41,
+      42,
+      45,
+      47,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87
+    ],
+    "candidateFailed": [
+      24,
+      38,
+      41,
+      42,
+      45,
+      47
+    ],
+    "resolved": [
+      5,
+      6,
+      7,
+      8,
+      9,
+      10,
+      79,
+      80,
+      81,
+      82,
+      83,
+      84,
+      85,
+      86,
+      87
+    ],
+    "newFailures": [],
+    "unrelatedLegacyFailures": "catalog seed empty and v1 receipt expectations against current v2 gateway; retained without changing tests"
+  },
+  "backups": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-schema-20260913.sql",
+      "bytes": 4154000,
+      "sha256": "d51abbfe4d097ae0f8a7473436bb443c1e77167b68805f04d63408f4b6716dc9",
+      "exitCode": 0
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-data-20260913.sql",
+      "bytes": 4564781,
+      "sha256": "2a3157dc724d9ae4e6839cb11eb6ce0a3da7e20b27e1cfd234d65d7e409d38f8",
+      "exitCode": 0
+    }
+  ],
+  "next": "apply once afterpreflight; ledger/postflight; normalUI consumer"
+}
