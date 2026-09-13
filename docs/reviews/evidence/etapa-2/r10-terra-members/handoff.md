@@ -261,3 +261,12 @@ Provas locais: `flutter test test/app/shell/superadmin_shell_header_profile_test
 test/app/shell/superadmin_shell_test.dart` PASS 68; `dart analyze` focal PASS.
 O aceite E2E continua aberto para C0: login normal, desktop e compacto, salvar
 perfil, recarregar rota e confirmar a mesma identidade da sessão.
+
+### Correcao de heranca no shell hospedeiro
+
+`_SuperadminShellHostScope` agora transporta `headerProfile`, notifica quando
+ele muda e a pagina filha usa o perfil proprio somente quando fornecido; caso
+contrario usa o do host. Isso cobre Home, atividades e demais paginas dentro do
+shell persistente. Prova focal adicional: host com perfil + filho sem perfil
+mostra nome real e atualiza para a nova sigla/nome apos nova composição; 3/3
+PASS e analyze focal PASS.
