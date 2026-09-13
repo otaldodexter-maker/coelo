@@ -483,7 +483,9 @@ final class GroupDirectoryUnauthorizedException implements Exception {
 }
 
 final class GroupDirectoryUnavailableException implements Exception {
-  const GroupDirectoryUnavailableException();
+  const GroupDirectoryUnavailableException({this.diagnosticCode});
+
+  final String? diagnosticCode;
 }
 
 final class UnavailableGroupDirectoryRepository implements GroupDirectoryRepository {

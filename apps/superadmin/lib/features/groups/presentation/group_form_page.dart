@@ -772,15 +772,20 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         _saving = false;
       });
       widget.onSaved(original == null ? GroupFormSaveResult.created : GroupFormSaveResult.updated);
-    } on Object {
+    } on Object catch (error) {
       // An Error escaping here leaves `_saving` true and the save action
       // permanently disabled, so every failed save must restore an actionable UI.
       if (!mounted) return;
+      final diagnosticCode = const bool.fromEnvironment('COELO_GROUP_SAVE_DIAGNOSTICS') &&
+              error is GroupDirectoryUnavailableException
+          ? error.diagnosticCode
+          : null;
       setState(() {
         _saving = false;
         _saveError = _saveContextInvalidated
             ? _changedSaveContextMessage
-            : 'Não foi possível salvar a turma. Revise os dados e tente novamente.';
+            : 'Não foi possível salvar a turma. Revise os dados e tente novamente.'
+                  '${diagnosticCode == null ? '' : '\nCódigo de diagnóstico: $diagnosticCode'}';
       });
     }
   }

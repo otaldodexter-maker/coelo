@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
-import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -44,7 +43,7 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) async {
     try {
-      final response = _map(
+      final response = _saveResponse(
         await _client.rpc<Object?>(
           'superadmin_group_save',
           params: {
@@ -55,12 +54,12 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
           },
         ),
       );
-      final saved = _record(response);
+      final saved = _saveRecord(response);
       // Em atualizacao o recibo tem de corresponder a turma pedida; sem isto uma
       // resposta de outra turma entraria no cache como registro salvo. Na criacao
       // o identificador vem do servidor, entao nao ha o que comparar.
       if (request.record.managementVersion != 0 && saved.id != request.record.id) {
-        throw const GroupDirectoryUnavailableException();
+        throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_TARGET');
       }
       _cache[saved.id] = saved;
       final steps = <GroupDirectorySaveStepResult>[
@@ -139,10 +138,9 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
       }
       return GroupDirectorySaveResult(requestId: request.requestId, steps: steps);
     } on PostgrestException catch (error) {
-      _debugGroupSaveFailure(error);
-      throw _mapError(error);
+      throw _mapSaveError(error);
     } on ClientException {
-      throw const GroupDirectoryUnavailableException();
+      throw const GroupDirectoryUnavailableException(diagnosticCode: 'TRANSPORT');
     }
   }
 
@@ -447,12 +445,30 @@ Exception _mapError(PostgrestException error) => switch (error.code) {
   _ => const GroupDirectoryUnavailableException(),
 };
 
-void _debugGroupSaveFailure(PostgrestException error) {
-  assert(() {
-    debugPrint('groups.members superadmin_group_save failed: '
-        'code=${error.code}, message=${error.message}');
-    return true;
-  }());
+Exception _mapSaveError(PostgrestException error) => switch (error.code) {
+  '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
+  _ => GroupDirectoryUnavailableException(diagnosticCode: _safeDiagnosticCode(error.code)),
+};
+
+String _safeDiagnosticCode(String? code) => switch (code) {
+  '22023' || '23505' || '40001' || 'P0002' || '55000' => code!,
+  _ => 'UNKNOWN',
+};
+
+Map<String, dynamic> _saveResponse(Object? value) {
+  try {
+    return _map(value);
+  } on Object {
+    throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_SHAPE');
+  }
+}
+
+GroupRecord _saveRecord(Map<String, dynamic> response) {
+  try {
+    return _record(response);
+  } on Object {
+    throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_SHAPE');
+  }
 }
 
 String _requestUuid(String value) {

@@ -286,3 +286,9 @@ O adaptador de Turmas delega para `app_private.superadmin_student_link`. O coman
 Leitura remota sem escrita confirmou a Turma R05 ativa, na unidade esperada, com `management_version = 1`. O hash de `app_private.superadmin_group_save` e igual no espelho e producao; o wrapper publico produtivo agrega a projeÃ§Ã£o de alunos apÃ³s o save. A negativa generica acontece antes dos comandos link/unlink, pois uma falha desses comandos voltaria como etapa parcial de Pessoas.
 
 O repositÃ³rio agora emite somente em builds com `assert` o `code` e `message` de `PostgrestException` que escapar de `superadmin_group_save`; nao imprime request, payload, IDs de sessao ou token. C0 pode integrar e repetir apenas a rota normal para obter a causa do servidor. Teste repository 9 PASS e analyze focal PASS. O primeiro teste da instrumentaÃ§Ã£o falhou por import ausente de `debugPrint`; GREEN depois de importar `foundation.dart`.
+
+### Diagnostico QA de resposta do save
+
+O diagnostico de release e habilitado somente com `--dart-define=COELO_GROUP_SAVE_DIAGNOSTICS=true`; por padrao ele permanece oculto. A tela mostra apenas um cÃ³digo de allowlist, nunca a mensagem do PostgREST, payload, SQL ou token. CÃ³digos do servidor: `22023`, `23505`, `40001`, `P0002`, `55000`; os demais viram `UNKNOWN`. O consumidor tambÃ©m classifica os caminhos pÃ³s-RPC: `RESPONSE_SHAPE` se o retorno nÃ£o pode ser lido, `RESPONSE_TARGET` se o recibo pertence a outra turma e `TRANSPORT` para falha de rede. Logo a prÃ³xima reconstruÃ§Ã£o QA pode separar negativa do servidor, projeÃ§Ã£o incompatÃ­vel e resposta cruzada sem repetir a escrita de produÃ§Ã£o.
+
+Provas: teste focal do repositÃ³rio 10 PASS, incluindo `40001` saneado e recibo de outra turma; analyze focal PASS. Sem build, SQL remoto ou nova chamada de save produtivo.
