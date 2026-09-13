@@ -628,29 +628,10 @@ final class _MediaPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final media = controller.state.draft.media;
     if (media == null) {
-      final enlargedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-      return _PrincipalInteractiveSurface(
-        semanticLabel: 'Adicionar mídia ao Agora',
+      return CoeloCreateAction(
+        label: 'Adicionar mídia',
+        icon: Icons.add_photo_alternate_outlined,
         onPressed: onPick,
-        child: Center(
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Icon(
-                Icons.add_photo_alternate_outlined,
-                size: enlargedText ? 32 : 42,
-                color: Theme.of(context).colorScheme.primary,
-              ),
-              SizedBox(height: enlargedText ? CoeloSpacing.space1 : CoeloSpacing.space2),
-              Text(
-                'Adicionar mídia',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w700),
-              ),
-              const SizedBox(height: CoeloSpacing.space1),
-              const Text('Imagem ou vídeo vertical', textAlign: TextAlign.center),
-            ],
-          ),
-        ),
       );
     }
     return Stack(

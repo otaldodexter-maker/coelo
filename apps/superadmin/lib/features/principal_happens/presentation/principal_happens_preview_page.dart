@@ -504,6 +504,7 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
               ],
             ),
             PrincipalGlobalNavigation(
+              showMessages: !widget.embedded,
               selected: PrincipalDestination.home,
               onHome: () {},
               onForYou: () => widget.onOpenForYou?.call(),

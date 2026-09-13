@@ -67,6 +67,7 @@ class SuperadminShell extends StatefulWidget {
     this.showChatLauncher = true,
     this.chatLauncherBottomInset = 0,
     this.isHost = false,
+    this.frameHostedContent = false,
     this.canAccessCapability,
     this.headerProfile,
     super.key,
@@ -83,6 +84,8 @@ class SuperadminShell extends StatefulWidget {
     this.chatRecentConversationsLoader,
     this.canAccessCapability,
     this.headerProfile,
+    this.frameHostedContent = false,
+    this.chatLauncherBottomInset = 0,
     super.key,
   }) : title = '',
        subtitle = '',
@@ -90,7 +93,6 @@ class SuperadminShell extends StatefulWidget {
        compactActions = const [],
        onOpenConversations = null,
        showChatLauncher = true,
-       chatLauncherBottomInset = 0,
        isHost = true;
 
   final LogoutAction logout;
@@ -111,6 +113,9 @@ class SuperadminShell extends StatefulWidget {
   final bool showChatLauncher;
   final double chatLauncherBottomInset;
   final bool isHost;
+
+  /// Frames raw feature pages that do not provide an embedded shell surface.
+  final bool frameHostedContent;
 
   /// Destinos em que o balao "Mensagens" nunca aparece, mesmo com
   /// [showChatLauncher] verdadeiro. Conversas e o Chat do Principal porque o
@@ -136,9 +141,9 @@ class SuperadminShell extends StatefulWidget {
   /// [showChatLauncher]. O callback devolvido e seguro em dispose porque nao
   /// consulta ancestrais.
   static VoidCallback? suppressChatLauncher(BuildContext context) {
-    final scope = context
-        .getElementForInheritedWidgetOfExactType<_SuperadminShellHostScope>()
-        ?.widget as _SuperadminShellHostScope?;
+    final scope =
+        context.getElementForInheritedWidgetOfExactType<_SuperadminShellHostScope>()?.widget
+            as _SuperadminShellHostScope?;
     if (scope == null) return null;
     final notify = scope.onChatLauncherSuppressionChanged;
     notify(true);
@@ -430,7 +435,16 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 
         final contentSurface = Expanded(
           child: widget.isHost
-              ? _hostedContent(pageBody, isDesktop: true)
+              ? _hostedContent(
+                  widget.frameHostedContent
+                      ? _FloatingSurface(
+                          key: const Key('superadmin-floating-content'),
+                          clip: true,
+                          child: pageBody,
+                        )
+                      : pageBody,
+                  isDesktop: true,
+                )
               : _FloatingSurface(
                   key: const Key('superadmin-floating-content'),
                   clip: true,
@@ -589,7 +603,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
         (destinationHandler == null ? null : () => destinationHandler('conversations'));
     if (openConversations == null) return child;
     final pageBottomInset = widget.isHost
-        ? _embeddedChatLauncherBottomInset
+        ? math.max(widget.chatLauncherBottomInset, _embeddedChatLauncherBottomInset)
         : widget.chatLauncherBottomInset;
     final effectiveBottomInset = pageBottomInset + reservedBottomInset;
     final launcherReservedBottom = effectiveBottomInset > 0

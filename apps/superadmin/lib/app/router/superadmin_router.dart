@@ -74,6 +74,7 @@ import '../../features/principal_profile/presentation/principal_profile_edit_pag
 import '../../features/principal_profile/presentation/principal_profile_route_page.dart';
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
+import '../../features/principal_shared/presentation/principal_global_navigation.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/imports/domain/import_job.dart';
@@ -1250,6 +1251,10 @@ GoRouter createSuperadminRouter({
                         ? headerController.profile
                         : null;
                     return SuperadminShell.host(
+                      frameHostedContent: location.startsWith('/principal-'),
+                      chatLauncherBottomInset: location == SuperadminRoutes.principalHappens
+                          ? PrincipalGlobalNavigation.launcherBottomInsetFor(context)
+                          : 0,
                       headerProfile: profile == null
                           ? null
                           : SuperadminHeaderProfile(
@@ -1350,6 +1355,12 @@ GoRouter createSuperadminRouter({
                           embedded: true,
                           onCreatePost: () =>
                               context.goNamed(SuperadminRoutes.principalHappensPublishName),
+                          onOpenForYou: () => context.goNamed(SuperadminRoutes.principalForYouName),
+                          onOpenMoments: () =>
+                              context.pushNamed(SuperadminRoutes.principalMomentsName),
+                          onOpenProfile: () =>
+                              context.goNamed(SuperadminRoutes.principalProfileName),
+                          onOpenAgenda: () => context.goNamed(SuperadminRoutes.agendaName),
                           onOpenNow: () => context.pushNamed(SuperadminRoutes.principalNowName),
                           // P28: o "+" adiciona no Acontece.
                           onPublishNow: () =>

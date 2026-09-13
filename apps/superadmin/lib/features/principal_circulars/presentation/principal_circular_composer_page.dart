@@ -228,13 +228,16 @@ final class _CircularEditor extends StatelessWidget {
                 trailing: '${media?.assetIds.length ?? 0}/4',
               ),
               const SizedBox(height: CoeloSpacing.space2),
-              OutlinedButton.icon(
-                key: const Key('circular-pick-files'),
-                onPressed: media != null && media.assetIds.length >= CircularLimits.files
-                    ? null
-                    : onPickFiles,
-                icon: const Icon(Icons.add_photo_alternate_outlined),
-                label: const Text('Adicionar foto, vídeo ou PDF'),
+              SizedBox(
+                height: 160,
+                child: CoeloCreateAction(
+                  key: const Key('circular-pick-files'),
+                  onPressed: media != null && media.assetIds.length >= CircularLimits.files
+                      ? null
+                      : onPickFiles,
+                  icon: Icons.add_photo_alternate_outlined,
+                  label: 'Adicionar foto, vídeo ou PDF',
+                ),
               ),
               if (media != null)
                 for (final assetId in media.assetIds)

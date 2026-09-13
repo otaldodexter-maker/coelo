@@ -156,6 +156,12 @@ final class _ClampedTextScale extends StatelessWidget {
 }
 
 final class PrincipalGlobalNavigation extends StatelessWidget {
+  static double dockHeightFor(BuildContext context) =>
+      MediaQuery.textScalerOf(context).scale(1) > 1.5 ? 104 : 72;
+
+  static double launcherBottomInsetFor(BuildContext context) =>
+      dockHeightFor(context) + 27 + CoeloSpacing.space4;
+
   const PrincipalGlobalNavigation({
     required this.selected,
     required this.onHome,
@@ -165,6 +171,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
     required this.onSearch,
     required this.onMessages,
     this.canPublish = true,
+    this.showMessages = true,
     super.key,
   });
 
@@ -177,6 +184,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
 
   /// Responsavel e aluno nao publicam; o botao central some (P28).
   final bool canPublish;
+  final bool showMessages;
   final VoidCallback onMoments;
   final VoidCallback onSearch;
   final VoidCallback onMessages;
@@ -186,7 +194,7 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
     final bottom = MediaQuery.paddingOf(context).bottom + CoeloSpacing.space4;
     final scheme = Theme.of(context).colorScheme;
     final expandedText = MediaQuery.textScalerOf(context).scale(1) > 1.5;
-    final dockHeight = expandedText ? 104.0 : 72.0;
+    final dockHeight = dockHeightFor(context);
     Widget dockAction({
       required String tooltip,
       required IconData icon,
@@ -308,17 +316,18 @@ final class PrincipalGlobalNavigation extends StatelessWidget {
             ),
           ),
         ),
-        Positioned(
-          right: CoeloSpacing.space4,
-          bottom: bottom + dockHeight + CoeloSpacing.space3,
-          child: IconButton.filledTonal(
-            key: const Key('principal-global-messages'),
-            tooltip: 'Mensagens',
-            onPressed: onMessages,
-            icon: const Icon(Icons.chat_bubble_outline_rounded),
-            style: IconButton.styleFrom(minimumSize: const Size.square(CoeloSize.touchMin)),
+        if (showMessages)
+          Positioned(
+            right: CoeloSpacing.space4,
+            bottom: bottom + dockHeight + CoeloSpacing.space3,
+            child: IconButton.filledTonal(
+              key: const Key('principal-global-messages'),
+              tooltip: 'Mensagens',
+              onPressed: onMessages,
+              icon: const Icon(Icons.chat_bubble_outline_rounded),
+              style: IconButton.styleFrom(minimumSize: const Size.square(CoeloSize.touchMin)),
+            ),
           ),
-        ),
       ],
     );
   }

@@ -604,37 +604,13 @@ class _EmptyMomentMedia extends StatelessWidget {
   final bool busy;
 
   @override
-  Widget build(BuildContext context) => DecoratedBox(
+  Widget build(BuildContext context) => SizedBox.expand(
     key: const Key('moments-publication-empty-media'),
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surfaceContainerLow,
-      borderRadius: BorderRadius.circular(CoeloRadius.md),
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-    ),
-    child: Center(
-      child: Padding(
-        padding: const EdgeInsets.all(CoeloSpacing.space4),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              Icons.add_photo_alternate_outlined,
-              color: Theme.of(context).colorScheme.primary,
-              size: CoeloSize.iconLg,
-            ),
-            const SizedBox(height: CoeloSpacing.space2),
-            const Text('Adicione uma mídia para começar.', textAlign: TextAlign.center),
-            if (onPressed != null) ...[
-              const SizedBox(height: CoeloSpacing.space3),
-              FilledButton.tonal(
-                key: const Key('moments-publication-empty-add-media'),
-                onPressed: busy ? null : onPressed,
-                child: Text(busy ? 'Selecionando…' : 'Adicionar mídia'),
-              ),
-            ],
-          ],
-        ),
-      ),
+    child: CoeloCreateAction(
+      key: const Key('moments-publication-empty-add-media'),
+      label: busy ? 'Selecionando…' : 'Adicionar mídia',
+      icon: Icons.add_photo_alternate_outlined,
+      onPressed: busy ? null : onPressed,
     ),
   );
 }

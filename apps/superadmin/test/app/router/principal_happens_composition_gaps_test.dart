@@ -33,6 +33,53 @@ import 'package:flutter_test/flutter_test.dart';
 /// integração, então esta frente registra a evidência em vez de corrigir.
 /// Quando a correção entrar, estes testes devem ser INVERTIDOS, não apagados.
 void main() {
+  testWidgets('hosted Acontece keeps the shared frame and one standard chat launcher', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final session = SuperadminSession()..signInForTesting();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      principalRuntimeContextRepository: const _GroupScopedContext(),
+      principalHappensFeedRepository: _EmptyFeedRepository(),
+      principalMixedFeedRepository: _RecordingMixedFeedRepository(),
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    router.go(SuperadminRoutes.principalHappens);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('superadmin-floating-content')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-launcher-surface')), findsOneWidget);
+    expect(find.byKey(const Key('principal-global-messages')), findsNothing);
+    final page = tester.widget<PrincipalHappensPreviewPage>(
+      find.byType(PrincipalHappensPreviewPage),
+    );
+    expect(page.onOpenForYou, isNotNull);
+    expect(page.onOpenMoments, isNotNull);
+    expect(page.onOpenProfile, isNotNull);
+    final frame = tester.getRect(find.byKey(const Key('superadmin-floating-content')));
+    final sidebar = tester.getRect(find.byKey(const Key('superadmin-sidebar')));
+    expect(frame.left, greaterThan(sidebar.right));
+    for (final width in [1440.0, 375.0]) {
+      await tester.binding.setSurfaceSize(Size(width, 1000));
+      await tester.pumpAndSettle();
+      final launcher = tester.getRect(find.byKey(const Key('superadmin-chat-launcher-surface')));
+      final publish = tester.getRect(find.byKey(const Key('principal-global-publish-now')));
+      expect(launcher.bottom, lessThan(publish.top), reason: 'launcher above dock at $width');
+      expect(find.byKey(const Key('principal-global-messages')), findsNothing);
+      expect(tester.takeException(), isNull);
+    }
+    await tester.tap(find.byTooltip('Para você'));
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, SuperadminRoutes.principalForYou);
+  });
+
   testWidgets('READ: real route projects authorized Circular without administrative navigation', (
     tester,
   ) async {

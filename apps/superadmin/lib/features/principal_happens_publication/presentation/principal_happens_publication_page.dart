@@ -511,25 +511,10 @@ class _MediaStage extends StatelessWidget {
                 child: Container(
                   color: colors.surfaceContainerLow,
                   child: media == null
-                      ? TextButton(
+                      ? CoeloCreateAction(
+                          label: 'Adicionar fotos ou vídeos',
+                          icon: Icons.add_photo_alternate_outlined,
                           onPressed: onPick,
-                          child: Center(
-                            child: Column(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.add_photo_alternate_outlined,
-                                  size: 42,
-                                  color: colors.primary,
-                                ),
-                                const SizedBox(height: CoeloSpacing.space2),
-                                const Text(
-                                  'Adicionar fotos ou vídeos',
-                                  style: TextStyle(fontWeight: FontWeight.w700),
-                                ),
-                              ],
-                            ),
-                          ),
                         )
                       : Stack(
                           fit: StackFit.expand,
@@ -553,7 +538,10 @@ class _MediaStage extends StatelessWidget {
           height: CoeloSpacing.space16,
           child: Row(
             children: [
-              OutlinedButton(onPressed: onPick, child: const Icon(Icons.add)),
+              SizedBox.square(
+                dimension: CoeloSpacing.space16,
+                child: OutlinedButton(onPressed: onPick, child: const Icon(Icons.add)),
+              ),
               const SizedBox(width: CoeloSpacing.space2),
               Expanded(
                 child: ReorderableListView.builder(
@@ -577,6 +565,7 @@ class _MediaStage extends StatelessWidget {
                           children: [
                             SizedBox(
                               width: CoeloSpacing.space16,
+                              height: CoeloSpacing.space16,
                               child: ClipRRect(
                                 borderRadius: BorderRadius.circular(CoeloRadius.sm),
                                 child: _media(context, item),
