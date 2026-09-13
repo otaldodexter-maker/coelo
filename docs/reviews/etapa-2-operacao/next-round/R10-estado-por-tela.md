@@ -496,3 +496,7 @@ O action_id preserva o vínculo com as três matrizes e suas evidências. Respon
 ## Fonte e atualização
 
 Inventário e três rastreadores são a fonte de estados/certificações. Esta visão complementa os registros históricos com o primeiro gate conhecido; não apaga evidências antigas nem concede novo aceite. Sem alteração de denominadores.
+
+## Complemento posterior de13/09/2026
+
+Os ajustes autorizados após a consolidação estão em [Principal-pos-R10.md](Principal-pos-R10.md), com provas e pendências de cada tela/subtela. Este complemento não reabre a R10 nem altera suas métricas históricas. Consultar a tabela posterior antes de retomar Acontece/Agora/Momentos/Perfil/Circular.

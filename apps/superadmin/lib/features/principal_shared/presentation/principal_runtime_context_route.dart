@@ -1,4 +1,4 @@
-﻿import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
@@ -149,9 +149,14 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                   final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
                     context: context,
                     isScrollControlled: true,
-                    backgroundColor: Theme.of(context).colorScheme.surface,
-                    builder: (_) =>
-                        _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                    backgroundColor: Theme.of(context).brightness == Brightness.light
+                        ? CoeloPalette.neutral0
+                        : Theme.of(context).colorScheme.surface,
+                    elevation: 0,
+                    builder: (_) => _neutralContextInteraction(
+                      context,
+                      _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                    ),
                   );
                   if (chosen != null && chosen.isNotEmpty && mounted) {
                     setState(() {
@@ -163,14 +168,20 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                 }
                 final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
                   context: context,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  backgroundColor: Theme.of(context).brightness == Brightness.light
+                      ? CoeloPalette.neutral0
+                      : Theme.of(context).colorScheme.surface,
+                  elevation: 0,
                   showDragHandle: true,
-                  builder: (_) => _ContextSheet(
-                    contexts: contexts,
-                    selected: selected,
-                    hybrid:
-                        contexts.any((c) => c.isGuardianRole) &&
-                        contexts.any((c) => !c.isGuardianRole),
+                  builder: (_) => _neutralContextInteraction(
+                    context,
+                    _ContextSheet(
+                      contexts: contexts,
+                      selected: selected,
+                      hybrid:
+                          contexts.any((c) => c.isGuardianRole) &&
+                          contexts.any((c) => !c.isGuardianRole),
+                    ),
                   ),
                 );
                 if (chosen != null && mounted) _select(chosen);
@@ -250,7 +261,10 @@ final class PrincipalContextSelectorBar extends StatelessWidget {
     final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
       context: context,
       showDragHandle: true,
-      backgroundColor: Theme.of(context).colorScheme.surface,
+      backgroundColor: Theme.of(context).brightness == Brightness.light
+          ? CoeloPalette.neutral0
+          : Theme.of(context).colorScheme.surface,
+      elevation: 0,
       builder: (sheetContext) =>
           _ContextSheet(contexts: contexts, selected: selected, hybrid: _hybrid),
     );
@@ -442,3 +456,12 @@ class _MultipleContextSheetState extends State<_MultipleContextSheet> {
   );
 }
 
+Widget _neutralContextInteraction(BuildContext context, Widget child) => Theme(
+  data: Theme.of(context).copyWith(
+    hoverColor: Colors.transparent,
+    highlightColor: Colors.transparent,
+    splashColor: Colors.transparent,
+    splashFactory: NoSplash.splashFactory,
+  ),
+  child: child,
+);

@@ -340,5 +340,41 @@
     "camada": "integrated",
     "delta": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R09 C0: primeiro gate e permissao Allow access to file URLs da extensao para o seletor real; depois prepare/PUT/finalize/save/read/reload. Mock QA foi tornado opt-in, nenhum novo E2E, BE historico preservado.",
     "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "frontend",
+    "delta": "Pós-consolidação: PNG sintético publicado pelo compositor produtivo em127.0.0.1:3000; save/Edge/R2/publish200, feed e reload mantêm foto/legenda. Prova em Principal-pos-R10.md. Certificação histórica preservada; negativa cross-tenant não repetida neste corte. Anterior: publicador abre para o contexto de instituicao (unidade/turma opcionais, 1da47a1cc); legenda + publico + Publicar no Acontece pela tela real (02..05, 08, 09); R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/acontece-mobile-375.png e acontece-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "backend",
+    "delta": "Pós-consolidação: PNG sintético publicado pelo compositor produtivo em127.0.0.1:3000; save/Edge/R2/publish200, feed e reload mantêm foto/legenda. Prova em Principal-pos-R10.md. Certificação histórica preservada; negativa cross-tenant não repetida neste corte. Anterior: save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.publish",
+    "camada": "integrated",
+    "delta": "Pós-consolidação: PNG sintético publicado pelo compositor produtivo em127.0.0.1:3000; save/Edge/R2/publish200, feed e reload mantêm foto/legenda. Prova em Principal-pos-R10.md. Certificação histórica preservada; negativa cross-tenant não repetida neste corte. Anterior: publicado pela tela real, persistido em producao, aparece no feed apos reload (23), negativa cross-tenant pela RPC",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
   }
 ]

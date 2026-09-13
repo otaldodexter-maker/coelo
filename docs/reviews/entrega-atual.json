@@ -1122,7 +1122,8 @@
         "momentos.create",
         "circulars.create",
         "circulars.edit",
-        "circulars.attach"
+        "circulars.attach",
+        "acontece.publish"
       ],
       "fe": "implemented-with-ui-evidence-see-report",
       "be": "existing-contract-see-report",
