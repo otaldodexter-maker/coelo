@@ -17,7 +17,44 @@ void main() {
     byteSize: 100,
     downloadUrl: Uri.parse('https://legacy.invalid/never-follow'),
   );
-  testWidgets('binding read is explicit and discards its pending ticket after purge', (
+
+  testWidgets('ready image shows loading while its private ticket is pending', (tester) async {
+    final repository = _BindingReader();
+    await tester.pumpWidget(_inlineTile(repository: repository, session: MediaSession()));
+
+    expect(find.text('Carregando imagem…'), findsOneWidget);
+    await tester.pump();
+    expect(repository.requests, ['inline-image-1']);
+  });
+
+  testWidgets('denied inline read exposes a retry that reauthorises once', (tester) async {
+    final repository = _DeniedThenReadyReader();
+    await tester.pumpWidget(_inlineTile(repository: repository, session: MediaSession()));
+    await tester.pump();
+
+    expect(find.text('Não foi possível carregar a imagem. Tente novamente.'), findsOneWidget);
+    expect(repository.requests, hasLength(1));
+    await tester.tap(find.text('Carregar novamente'));
+    await tester.pump();
+    expect(repository.requests, hasLength(2));
+    expect(find.byKey(const Key('superadmin-chat-inline-image-inline-image-1')), findsOneWidget);
+  });
+
+  testWidgets('expired inline ticket waits for explicit reauthorisation', (tester) async {
+    final repository = _ExpiredThenReadyReader();
+    await tester.pumpWidget(_inlineTile(repository: repository, session: MediaSession()));
+    await tester.pump();
+
+    expect(find.text('A visualização expirou. Carregue novamente.'), findsOneWidget);
+    expect(repository.requests, hasLength(1));
+    await tester.pump();
+    expect(repository.requests, hasLength(1));
+    await tester.tap(find.text('Carregar novamente'));
+    await tester.pump();
+    expect(repository.requests, hasLength(2));
+    expect(find.byKey(const Key('superadmin-chat-inline-image-inline-image-1')), findsOneWidget);
+  });
+  testWidgets('binding read discards its pending inline ticket after purge', (
     tester,
   ) async {
     final repository = _BindingReader();
@@ -40,9 +77,7 @@ void main() {
         ),
       ),
     );
-    expect(repository.requests, isEmpty);
-    await tester.tap(find.text('Abrir imagem'));
-    await tester.pumpAndSettle();
+    await tester.pump();
     expect(repository.requests, ['binding-1']);
     await session.invalidate();
     repository.pending.complete(
@@ -53,7 +88,7 @@ void main() {
     );
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('chat-image-preview')), findsNothing);
-    expect(find.text('A imagem não está disponível neste contexto.'), findsOneWidget);
+    expect(find.text('Visualização indisponível neste contexto.'), findsOneWidget);
     expect(tester.takeException(), isNull);
   });
 
@@ -389,7 +424,7 @@ void main() {
       ),
     );
 
-    expect(find.text('Pronto para enviar'), findsOneWidget);
+    expect(find.text('Anexo disponível'), findsOneWidget);
     expect(find.byTooltip('Tentar novamente'), findsNothing);
   });
 }
@@ -415,3 +450,58 @@ final class _BindingReader implements ChatAttachmentRepository {
   @override
   Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
 }
+
+Widget _inlineTile({required ChatAttachmentRepository repository, required MediaSession session}) => MaterialApp(
+  theme: CoeloTheme.light,
+  home: Scaffold(
+    body: SuperadminChatAttachmentTile(
+      attachment: const ChatAttachment(
+        id: 'inline-image-1',
+        fileName: 'R08-G4-synthetic.png',
+        mediaType: 'image/png',
+        byteSize: 82,
+      ),
+      state: SuperadminChatAttachmentState.ready,
+      attachmentRepository: repository,
+      mediaSession: session,
+    ),
+  ),
+);
+
+final class _DeniedThenReadyReader implements ChatAttachmentRepository {
+  final requests = <String>[];
+
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
+    requests.add(attachmentId);
+    if (requests.length == 1) throw const ChatUnauthorizedException();
+    return _ticket();
+  }
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
+}
+
+final class _ExpiredThenReadyReader implements ChatAttachmentRepository {
+  final requests = <String>[];
+
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
+    requests.add(attachmentId);
+    if (requests.length == 1) {
+      return ChatAttachmentRead(
+        url: Uri.parse('https://private.invalid/expired'),
+        expiresAt: DateTime.now().toUtc().subtract(const Duration(seconds: 1)),
+      );
+    }
+    return _ticket();
+  }
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
+}
+
+ChatAttachmentRead _ticket() => ChatAttachmentRead(
+  url: Uri.parse('https://private.invalid/read'),
+  expiresAt: DateTime.now().toUtc().add(const Duration(minutes: 5)),
+);

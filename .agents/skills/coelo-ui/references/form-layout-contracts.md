@@ -56,6 +56,12 @@ podem virar API genérica após proposta e aprovação.
 
 ## Campos e seleções
 
+- Owner R10 (13/09/2026): em Configuração avaliativa, Periodicidade usa
+  gatilho em cápsula, com label persistente acima (`isFilter: true` no
+  seletor compartilhado). O estado vazio de períodos fica separado do botão
+  Adicionar período por `CoeloSpacing.space4`. Esta decisão focal não muda
+  automaticamente todos os campos de formulários.
+
 - Label é persistente; placeholder complementa, nunca substitui. Ícone deve
   representar o significado do campo, evitando repetição genérica.
 - Ação contextual pertence ao campo quando atua sobre seu valor, como

@@ -22,6 +22,7 @@ class ActivityReadDetailPage extends StatefulWidget {
     required this.contextRevision,
     this.onEdit,
     this.onAssessmentSettings,
+    this.onUnitAssessmentSettings,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     this.reservationBuilder,
@@ -36,6 +37,7 @@ class ActivityReadDetailPage extends StatefulWidget {
   final int contextRevision;
   final ValueChanged<ActivityReadDetail>? onEdit;
   final ValueChanged<ActivityReadDetail>? onAssessmentSettings;
+  final void Function(ActivityReadDetail, String unitId)? onUnitAssessmentSettings;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
   final Widget Function(BuildContext, ActivityReadDetail)? reservationBuilder;
@@ -222,13 +224,25 @@ class _ActivityReadDetailPageState extends State<ActivityReadDetailPage> {
                             _section(
                               context,
                               'Avalia\u00e7\u00f5es',
-                              Align(
-                                alignment: Alignment.centerLeft,
-                                child: OutlinedButton(
-                                  key: const Key('activity-read-assessment'),
-                                  onPressed: () => navigate(widget.onAssessmentSettings),
-                                  child: const Text('Configuração avaliativa'),
-                                ),
+                              Wrap(
+                                spacing: CoeloSpacing.space3,
+                                runSpacing: CoeloSpacing.space3,
+                                children: [
+                                  OutlinedButton(
+                                    key: const Key('activity-read-assessment'),
+                                    onPressed: () => navigate(widget.onAssessmentSettings),
+                                    child: const Text('Configuração avaliativa'),
+                                  ),
+                                  if (widget.onUnitAssessmentSettings != null)
+                                    for (final unit in detail.units)
+                                      OutlinedButton(
+                                        key: Key('activity-read-assessment-${unit.unitId}'),
+                                        onPressed: () => navigate((current) {
+                                          widget.onUnitAssessmentSettings!(current, unit.unitId);
+                                        }),
+                                        child: Text('Avaliação · ${unit.name}'),
+                                      ),
+                                ],
                               ),
                             ),
                           if (widget.reservationBuilder != null)
@@ -274,7 +288,7 @@ class _ActivityReadDetailPageState extends State<ActivityReadDetailPage> {
                           message: widget.onEdit == null
                               ? 'A edi\u00e7\u00e3o desta atividade est\u00e1 indispon\u00edvel no momento.'
                               : 'Editar atividade',
-                          child: OutlinedButton(
+                          child: FilledButton(
                             key: const Key('activity-read-edit'),
                             onPressed: widget.onEdit == null ? null : () => navigate(widget.onEdit),
                             child: const Text('Editar atividade'),

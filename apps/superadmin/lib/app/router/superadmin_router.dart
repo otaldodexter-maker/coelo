@@ -2537,6 +2537,11 @@ GoRouter createSuperadminRouter({
                   pathParameters: {'activityId': detail.id},
                   queryParameters: {'institutionId': detail.institutionId},
                 ),
+                onUnitAssessmentSettings: (detail, unitId) => context.goNamed(
+                  SuperadminRoutes.activityAssessmentSettingsName,
+                  pathParameters: {'activityId': detail.id},
+                  queryParameters: {'institutionId': detail.institutionId, 'unitId': unitId},
+                ),
                 reservationBuilder: (context, detail) => LocationConsumerReservations(
                   consumer: LocationReservationConsumer(
                     kind: LocationReservationConsumerKind.activity,

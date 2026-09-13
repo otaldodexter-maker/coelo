@@ -29,6 +29,8 @@ final class AuditPeriodFilter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => CoeloAdminSingleSelectField<_AuditPeriod>(
+    isFilter: true,
+    unselectedValue: _AuditPeriod.all,
     label: 'Período',
     value: _selectedPeriod(controller.query),
     options: _AuditPeriod.values,

@@ -4,10 +4,27 @@ import 'package:coelo_superadmin/features/assessments/assessment.dart';
 import 'package:coelo_superadmin/features/assessments/assessment_pages.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('periodicity has capsule trigger and empty periods have a token gap', (tester) async {
+    final repository = _DelayedSaveConfigurationRepository();
+    await tester.pumpWidget(_app(repository, 'activity-a'));
+    await tester.pumpAndSettle();
+    final field = find.byWidgetPredicate(
+      (w) => w is CoeloAdminSingleSelectField<String> && w.label == 'Periodicidade',
+    );
+    expect(tester.widget<CoeloAdminSingleSelectField<String>>(field).isFilter, isTrue);
+    final add = find.widgetWithText(OutlinedButton, 'Adicionar período');
+    final empty = find.byWidgetPredicate(
+      (w) => w is CoeloStatePanel && w.title == 'Nenhum período avaliativo',
+    );
+    expect(tester.getTopLeft(empty).dy - tester.getBottomLeft(add).dy, CoeloSpacing.space4);
+    expect(tester.takeException(), isNull);
+  });
   testWidgets('configuration reloads and ignores an older A response after swapping to B', (
     tester,
   ) async {
