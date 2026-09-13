@@ -1,6 +1,6 @@
 ---
 source: Owner 13/09/2026; R10 fechamento; inventário vigente
-status: em execução
+status: encerrado parcialmente; pendências explícitas no corte
 generated_at: 2026-09-13
 ---
 
@@ -64,3 +64,17 @@ Git: única worktree principal dev;27árvores encerradas arquivadas com ignorado
 ## Checkpoint visual final
 
 Build279fd9de1: desktop claro confirmou pílula acima do dock, publicação mantida, contêiner e identidade; mobile confirmou cabeçalho único. Seletor múltiplo aplicou dois contextos reais e ocultou o launcher enquanto aberto. Inspeção visual detectou tonalização rosada/efeito de toque cinza do Material apesar do hover transparente: ajustados elevation0, superfície neutral0 no claro e highlight/splash transparentes no seletor. Teste de contexto1PASS. Screenshots anteriores context-white-multiple-final.png e context-mobile.png mostram o estado anterior e não são evidência de aprovação de cor. Prova da correção será identificada como neutral-accepted.
+
+## Fechamento do recorte
+
+Código final 01833e90b, build web PASS (65,2s), main.dart.js SHA256 c9c94dbe88812c7c8e1792dfdf0000efd425d747ae4ca96ae6587d5129607d97. Prova final em `context-neutral-light-accepted.png` (branco, dois contextos selecionados), `context-neutral-light-pressed.png` (sem efeito cinza após clique) e `mobile-light-final.png` (um cabeçalho, círculo acima do dock, PNG publicado preservado). `context-neutral-accepted.png` é a variante escura. Imagens anteriores são checkpoints de diagnóstico, não aprovação final. No contexto aberto o launcher desaparece; reaparece ao aplicar/cancelar. Drawer mobile abriu pelo botão Coelo. O feed mantém a publicação após reload e após nova compilação; mídia foi lida do Cloudflare R2 privado.
+
+C0 fecha a fatia iniciada antes de atribuir novas correções, com margem do teto. Consumo real medido 86%; não estimado pela quantidade de mensagens. Abertura da extensão registrada às 02:58:31 BRT, execução desta extensão cerca de uma hora, abaixo da janela máxima. Nenhuma nova fatia delegada; nenhuma R11/Etapa 3. Chrome exclusivo 9426 encerrado, slot Flutter liberado, porta 3014 sem listener. Build/servidores locais 3000/3016, sessão sintética, fixture PNG, publicação e arquivos ignorados preservados para retomada. Não há WIP de código solto; pendências funcionais estão na tabela.
+
+Os três rastreadores foram atualizados via apply-tracker-delta.cjs para 13 action_ids, validados em conjunto. Certificações históricas foram preservadas: a prova produtiva do PNG não promove automaticamente outros fluxos, nem substitui a negativa de escopo restante para recertificar create. O gate de memória validou a projeção team da ADR0037 e o gate de entrega da ADR0036. Gate Git/documental passou DOCUMENTED_PARTIAL após push, com uma worktree, sem stash, sem alterações locais e sem divergência ativa. O gate será repetido após este registro final.
+
+Sete métricas do inventário permanecem as da R10: FE verified 177/231 (76,62%); FE local-green entre pendentes 13/54 (24,07%); aprovação visual formal 54/231 (23,38%); BE local-green entre pendentes 19/62 (30,65%); cobertura SQL 181/224 (80,80%); BE done 162/224 (72,32%); E2E 150/199 (75,38%). Nenhum denominador foi alterado e nenhum ganho foi atribuído à consolidação ou à mudança visual sem certificação completa. A aprovação visual formal pelo Owner não foi presumida durante sua ausência.
+
+Primeiro gate de retomada: C0 recertifica acontece.create com a negativa real pertinente e múltiplos anexos/MP4 na origem 3000 já autorizada, reutilizando o post/fixtures, antes dos fluxos Agora/Momentos/Circular. Busca e demais contextos têm pendências próprias na tabela; H02/H13 permanecem com Owner. Entrega parcial do produto, consolidação encerrada e preservada.
+
+Registro final UTC: 2026-09-13T06:52:43.456585+00:00
