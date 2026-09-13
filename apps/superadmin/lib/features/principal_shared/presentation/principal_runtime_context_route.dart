@@ -1,7 +1,8 @@
-import 'package:coelo_tokens/coelo_tokens.dart';
+﻿import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
+import '../../../app/shell/superadmin_shell.dart';
 import '../domain/principal_runtime_context.dart';
 import 'principal_global_navigation.dart';
 
@@ -142,35 +143,40 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
             ),
             onOpenProfile: () => widget.onOpenProfile?.call(context),
             onChooseContexts: () async {
-              if (widget.multipleBuilder != null) {
-                final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
-                  context: context,
-                  isScrollControlled: true,
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  builder: (_) =>
-                      _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
-                );
-                if (chosen != null && chosen.isNotEmpty && mounted) {
-                  setState(() {
-                    _selectedMembershipIds = chosen.map((c) => c.membershipId).toSet();
-                    _selectedMembershipId = chosen.first.membershipId;
-                  });
+              final restoreLauncher = SuperadminShell.suppressChatLauncher(context);
+              try {
+                if (widget.multipleBuilder != null) {
+                  final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
+                    context: context,
+                    isScrollControlled: true,
+                    backgroundColor: Theme.of(context).colorScheme.surface,
+                    builder: (_) =>
+                        _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                  );
+                  if (chosen != null && chosen.isNotEmpty && mounted) {
+                    setState(() {
+                      _selectedMembershipIds = chosen.map((c) => c.membershipId).toSet();
+                      _selectedMembershipId = chosen.first.membershipId;
+                    });
+                  }
+                  return;
                 }
-                return;
+                final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
+                  context: context,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  showDragHandle: true,
+                  builder: (_) => _ContextSheet(
+                    contexts: contexts,
+                    selected: selected,
+                    hybrid:
+                        contexts.any((c) => c.isGuardianRole) &&
+                        contexts.any((c) => !c.isGuardianRole),
+                  ),
+                );
+                if (chosen != null && mounted) _select(chosen);
+              } finally {
+                restoreLauncher?.call();
               }
-              final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
-                context: context,
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                showDragHandle: true,
-                builder: (_) => _ContextSheet(
-                  contexts: contexts,
-                  selected: selected,
-                  hybrid:
-                      contexts.any((c) => c.isGuardianRole) &&
-                      contexts.any((c) => !c.isGuardianRole),
-                ),
-              );
-              if (chosen != null && mounted) _select(chosen);
             },
           ),
           Expanded(
@@ -435,3 +441,4 @@ class _MultipleContextSheetState extends State<_MultipleContextSheet> {
     ),
   );
 }
+

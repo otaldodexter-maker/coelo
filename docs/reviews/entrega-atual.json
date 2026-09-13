@@ -1083,21 +1083,142 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md",
       "owner": "C0",
       "nextGate": "C0: follow each screen first gate recorded in the full report; R10 closed, no automatic R11"
+    },
+    {
+      "id": "owner.principal-host-header",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed",
+        "principal.for-you",
+        "principal.profile-view",
+        "principal.profile-edit"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Conferir host/cabeçalho em todas as subtelas após provas desktop/mobile do feed."
+    },
+    {
+      "id": "owner.principal-single-chat",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Provar abertura/reload da conversa pelo launcher padrão; círculo/pílula acima do dock corrigidos."
+    },
+    {
+      "id": "owner.principal-media-card",
+      "status": "open",
+      "actionIds": [
+        "acontece.create",
+        "agora.create",
+        "momentos.create",
+        "circulars.create",
+        "circulars.edit",
+        "circulars.attach"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Provar os demais compositores produtivos; Acontece PNG já publicado e recarregado."
+    },
+    {
+      "id": "owner.principal-thumbnails",
+      "status": "open",
+      "actionIds": [
+        "acontece.create"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Acontece PNG alinhado; verificar múltiplas mídias e MP4."
+    },
+    {
+      "id": "owner.principal-context-multiple",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed",
+        "agora.view",
+        "momentos.view",
+        "principal.for-you",
+        "principal.profile-view"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Seleção múltipla Acontece implementada; propagar somente a contratos compatíveis e persistir preferência por ator."
+    },
+    {
+      "id": "owner.principal-context-avatar",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed",
+        "principal.profile-edit"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Conferir seleção em todas as subtelas; header/avatar reais corrigidos."
+    },
+    {
+      "id": "owner.principal-feed-retention",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Foto/legenda mantidas após reload; completar prova de todos os contextos e negativa real."
+    },
+    {
+      "id": "owner.principal-heading-hover",
+      "status": "open",
+      "actionIds": [
+        "acontece.feed",
+        "agora.view"
+      ],
+      "fe": "implemented-with-ui-evidence-see-report",
+      "be": "existing-contract-see-report",
+      "e2e": "partial-see-report",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "owner": "C0",
+      "nextGate": "Comparar demais estados responsivos; título comum e hover cinza da marca corrigidos."
     }
   ],
   "evidenceFiles": [
     "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md",
     "docs/knowledge/team/delivery-reconciliation.md",
-    "decisions/0036-delivery-reconciliation-and-owner-commitments.md"
+    "decisions/0036-delivery-reconciliation-and-owner-commitments.md",
+    "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "decisions/0037-principal-host-context-and-media-controls.md",
+    "docs/knowledge/team/principal-host-context-media.md"
   ],
   "memory": {
     "status": "captured",
-    "reason": "Owner approved mandatory delivery reconciliation in ADR0036",
-    "evidence": "docs/knowledge/team/delivery-reconciliation.md"
+    "reason": "ADR0036 entrega e ADR0037 regras aprovadas de host/contexto/mídia capturadas para team; não certifica recurso ainda sem prova.",
+    "evidence": "docs/knowledge/team/principal-host-context-media.md"
   },
   "deployment": {
     "status": "not-requested",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md"
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
   }
 }
