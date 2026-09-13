@@ -1666,12 +1666,12 @@
       "actionIds": [
         "child-safety.create"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "local-green: stepper bloqueia salto para etapa futura e permite retorno às concluídas; testes do wizard cobrem o fluxo.",
+      "be": "Contrato preservado; nenhum SQL/RPC novo.",
+      "e2e": "pending-verification de rota normal e escopo.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-16, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Provar teclado/rota normal sem salto e sem perda de dados.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -1686,12 +1686,12 @@
         "child-safety.create",
         "child-safety.edit"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "Diagnóstico: campo atual ainda aceita identificador/UUID técnico; não existe contrato de busca autorizada por nome, CPF, e-mail ou celular.",
+      "be": "Sem alteração backend; não criar busca fake.",
+      "e2e": "Contract decision pending.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-17, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Aprovar reader/contrato de busca e vínculo real antes de implementar.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -1705,12 +1705,12 @@
       "actionIds": [
         "child-safety.create"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "Diagnóstico: pessoa global sem conta e campos mínimos/deduplicação não têm contrato definido.",
+      "be": "Nenhuma tabela/RPC criada.",
+      "e2e": "Contract decision pending.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Definir obrigatoriedade, identificação, deduplicação, auditoria e escopo.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -2629,6 +2629,7 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-child-safety-manage.json",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-child-safety-relationship.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-child-safety-status.json",
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
