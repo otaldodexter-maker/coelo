@@ -12,14 +12,16 @@ generated_at: "2026-09-13"
 
 O tile tratava `ready` como “Pronto para enviar” e somente oferecia o diálogo
 de imagem. A correção troca o estado por “Anexo disponível” e exibe imagem
-inline depois de `readAttachment(attachment_id)`. A URL curta fica somente em
-memória, é limpa no vencimento e no purge de `MediaSession`; o tile não segue
-`downloadUrl` nem cria acesso público.
+inline depois de `readAttachment(attachment_id)`. Loading, falha de leitura,
+ticket expirado e sessão invalidada são estados explícitos; falha e expiração
+oferecem uma única reautorização sob ação do operador. A URL curta fica somente
+em memória, é limpa no vencimento e no purge de `MediaSession`; o tile não
+segue `downloadUrl` nem cria acesso público.
 
 ## Provas locais
 
-- `flutter test test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: PASS, 17 testes.
-- `flutter analyze lib/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart lib/features/chat/presentation/widgets/superadmin_chat_inline_media.dart test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: 3 infos preexistentes em `superadmin_chat_attachment_tile.dart` (linhas 121, 127 e 144, `curly_braces_in_flow_control_structures`); sem erro novo no widget inline.
+- `flutter test test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: PASS, 19 testes, incluindo loading, read negado/retry, expiração sem loop e purge.
+- `flutter analyze lib/features/chat/presentation/widgets/superadmin_chat_attachment_tile.dart lib/features/chat/presentation/widgets/superadmin_chat_inline_media.dart test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: PASS, sem issues.
 - Sem build, Chrome, remoto, SQL ou alteração de inventário/rastreadores centrais.
 
 ## Gate de vídeo

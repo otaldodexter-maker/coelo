@@ -33,12 +33,10 @@ final class SuperadminChatAttachmentTile extends StatefulWidget {
   final ChatAttachmentRepository? attachmentRepository;
 
   @override
-  State<SuperadminChatAttachmentTile> createState() =>
-      _SuperadminChatAttachmentTileState();
+  State<SuperadminChatAttachmentTile> createState() => _SuperadminChatAttachmentTileState();
 }
 
-final class _SuperadminChatAttachmentTileState
-    extends State<SuperadminChatAttachmentTile> {
+final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttachmentTile> {
   final _openFocus = FocusNode(debugLabel: 'chat-open-image');
   DialogRoute<void>? _imageRoute;
   int _openingGeneration = 0;
@@ -117,31 +115,24 @@ final class _SuperadminChatAttachmentTileState
   Future<void> _openDocument() async {
     final repository = widget.attachmentRepository;
     final session = widget.mediaSession;
-    if (repository == null || !_canOpen || _openingDocument || session == null)
-      return;
+    if (repository == null || !_canOpen || _openingDocument || session == null) return;
     final generation = _openingGeneration;
     setState(() => _openingDocument = true);
     try {
       final ticket = await repository.readAttachment(attachment.id);
-      if (!mounted || generation != _openingGeneration || session.isInvalidated)
-        return;
+      if (!mounted || generation != _openingGeneration || session.isInvalidated) return;
       if (!ticket.expiresAt.isAfter(DateTime.now().toUtc()) ||
           !await openDownloadUrl(ticket.url.toString())) {
         throw const ChatFailureException();
       }
     } catch (_) {
-      if (mounted &&
-          generation == _openingGeneration &&
-          !session.isInvalidated) {
+      if (mounted && generation == _openingGeneration && !session.isInvalidated) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(
-            content: Text('Não foi possível abrir o PDF. Tente novamente.'),
-          ),
+          const SnackBar(content: Text('Não foi possível abrir o PDF. Tente novamente.')),
         );
       }
     } finally {
-      if (mounted && generation == _openingGeneration)
-        setState(() => _openingDocument = false);
+      if (mounted && generation == _openingGeneration) setState(() => _openingDocument = false);
     }
   }
 
@@ -156,9 +147,7 @@ final class _SuperadminChatAttachmentTileState
     final navigator = Navigator.of(context);
     final route = DialogRoute<void>(
       context: context,
-      animationStyle: MediaQuery.disableAnimationsOf(context)
-          ? AnimationStyle.noAnimation
-          : null,
+      animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
       themes: InheritedTheme.capture(from: context, to: navigator.context),
       barrierColor:
           DialogTheme.of(context).barrierColor ??
@@ -172,15 +161,13 @@ final class _SuperadminChatAttachmentTileState
               attachmentId: bindingId,
               attachmentRepository: bindingRepository,
               session: session,
-              isContextCurrent: () =>
-                  mounted && generation == _openingGeneration,
+              isContextCurrent: () => mounted && generation == _openingGeneration,
             )
           : SuperadminChatImageDialog(
               assetId: assetId!,
               reader: reader!,
               session: session,
-              isContextCurrent: () =>
-                  mounted && generation == _openingGeneration,
+              isContextCurrent: () => mounted && generation == _openingGeneration,
             ),
     );
     _imageRoute = route;
@@ -203,8 +190,7 @@ final class _SuperadminChatAttachmentTileState
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final status = _AttachmentStatus.from(state, colors);
-    final canRetry =
-        state == SuperadminChatAttachmentState.failed && onRetry != null;
+    final canRetry = state == SuperadminChatAttachmentState.failed && onRetry != null;
     return Semantics(
       container: true,
       label:
@@ -226,10 +212,7 @@ final class _SuperadminChatAttachmentTileState
         ),
         child: Row(
           children: [
-            Icon(
-              _iconFor(attachment.mediaType),
-              color: colors.onSurfaceVariant,
-            ),
+            Icon(_iconFor(attachment.mediaType), color: colors.onSurfaceVariant),
             const SizedBox(width: CoeloSpacing.space2),
             Expanded(
               child: Tooltip(
@@ -249,22 +232,16 @@ final class _SuperadminChatAttachmentTileState
                       '${attachment.mediaType} \u00b7 ${_formatByteSize(attachment.byteSize)}',
                       maxLines: 1,
                       overflow: TextOverflow.ellipsis,
-                      style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                        color: colors.onSurfaceVariant,
-                      ),
+                      style: Theme.of(
+                        context,
+                      ).textTheme.labelSmall?.copyWith(color: colors.onSurfaceVariant),
                     ),
                     const SizedBox(height: CoeloSpacing.spaceHalf),
                     Text(
                       status.label,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelSmall?.copyWith(color: status.color),
+                      style: Theme.of(context).textTheme.labelSmall?.copyWith(color: status.color),
                     ),
-                    if (const {
-                          'image/jpeg',
-                          'image/png',
-                          'image/webp',
-                        }.contains(attachment.mediaType) &&
+                    if (const {'image/jpeg', 'image/png', 'image/webp'}.contains(attachment.mediaType) &&
                         state == SuperadminChatAttachmentState.ready &&
                         widget.attachmentRepository != null &&
                         widget.mediaSession != null)
@@ -277,14 +254,10 @@ final class _SuperadminChatAttachmentTileState
                         state == SuperadminChatAttachmentState.ready)
                       TextButton(
                         onPressed:
-                            _canOpen &&
-                                widget.attachmentRepository != null &&
-                                !_openingDocument
+                            _canOpen && widget.attachmentRepository != null && !_openingDocument
                             ? _openDocument
                             : null,
-                        child: Text(
-                          _openingDocument ? 'Abrindo…' : 'Abrir PDF',
-                        ),
+                        child: Text(_openingDocument ? 'Abrindo…' : 'Abrir PDF'),
                       ),
                     if (const {
                           'image/jpeg',
@@ -297,7 +270,8 @@ final class _SuperadminChatAttachmentTileState
                         onPressed: _canOpen ? _openImage : null,
                         child: const Text('Abrir imagem'),
                       ),
-                      if (!_canOpen)
+                      if (!_canOpen &&
+                          (widget.attachmentRepository == null || widget.mediaSession == null))
                         Text(
                           'Visualização indisponível neste contexto.',
                           style: Theme.of(context).textTheme.labelSmall,
@@ -313,16 +287,11 @@ final class _SuperadminChatAttachmentTileState
                 onPressed: onRetry,
                 color: colors.error,
                 style: ButtonStyle(
-                  minimumSize: const WidgetStatePropertyAll(
-                    Size.square(CoeloSize.touchMin),
-                  ),
-                  overlayColor: const WidgetStatePropertyAll(
-                    Colors.transparent,
-                  ),
+                  minimumSize: const WidgetStatePropertyAll(Size.square(CoeloSize.touchMin)),
+                  overlayColor: const WidgetStatePropertyAll(Colors.transparent),
                   backgroundColor: WidgetStateProperty.resolveWith(
                     (states) =>
-                        states.contains(WidgetState.hovered) ||
-                            states.contains(WidgetState.focused)
+                        states.contains(WidgetState.hovered) || states.contains(WidgetState.focused)
                         ? colors.errorContainer
                         : Colors.transparent,
                   ),
@@ -358,16 +327,9 @@ String _formatByteSize(int bytes) {
 }
 
 final class _AttachmentStatus {
-  const _AttachmentStatus({
-    required this.label,
-    required this.semanticsLabel,
-    required this.color,
-  });
+  const _AttachmentStatus({required this.label, required this.semanticsLabel, required this.color});
 
-  factory _AttachmentStatus.from(
-    SuperadminChatAttachmentState state,
-    ColorScheme colors,
-  ) {
+  factory _AttachmentStatus.from(SuperadminChatAttachmentState state, ColorScheme colors) {
     return switch (state) {
       SuperadminChatAttachmentState.pending => _AttachmentStatus(
         label: 'Envio pendente',
