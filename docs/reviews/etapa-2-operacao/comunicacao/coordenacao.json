@@ -4291,9 +4291,9 @@
     },
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
-      "chrome": "C0 abas829822503 groups e829822506 chat/upload bloqueado",
-      "heavy": "livre",
-      "sql": "livre; C0producao"
+      "chrome": "C0: turma draft preservado; atividade edit sem alteracoes; chat picker bloqueado",
+      "heavy": "C0 reserva build conjunto",
+      "sql": "livre; somente C0 remoto"
     },
     "auxiliary": {
       "id": "/root/terra_members",
@@ -4317,29 +4317,29 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:43:42.382907+00:00",
-    "base": "75f68ff58 integrado",
-    "quotaUsedPercent": 76,
+    "time": "2026-09-13T04:05:00Z",
+    "base": "174e8529d",
+    "quotaUsedPercent": 79,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
       "pid": 51176,
       "owner": "C0",
-      "build": "9a1986dd3 release PASS235.2s; sha256 A0F313899ACA29A0289B5F191014FA1BEF1EA3C06ABD0BECF72D590242E923F7"
+      "build": "174e8529d release58.1s PASS SHA256310B57A2C9B049F4B0072253836BDFA3EFB24D288663F3D4895CEF7DB069F292"
     },
     "helpers": {
-      "/root/dev_senior_fe_be": "groups a62f5eed5 entregue; account.profile header atribuido",
-      "/root/chat_inline": "slot Flutter exclusivo pub get/test/analyze video",
-      "/root/chat_upload": "assessment e15724340 entregue; SQL slot livre"
+      "/root/dev_senior_fe_be": "23514 turma, mesma fatia; SQL local exclusivo",
+      "/root/chat_upload": "3b32085d5 integrado; slot liberado",
+      "/root/chat_inline": "fixture b3ad72d7f integrada; idle"
     },
-    "wip": "Build55.5s PASS sha25686A97BBB227589C794C6066F1636629FF41C7C66EC564C213E0A28686ED6AEB1; groupform30PASS baseconjunta. UI criou child_context ativo viaPessoas e unidadepending, preservando contexto anterior; grupoR05 buscaaluno @crianca.qar04 emandamento. Negativas reais6checksPASS (semsegunda sessao tenantB), reutilizacao MVP porfamilia com paridade.",
-    "next": "Salvar/relervinculoaluno, unlink/relink UI; avaliar participanteatividade/diario; draftavaliacao porid. PickerMP4bloqueadoextensao, fixturevalida preservada.",
+    "wip": "Turma: UI confirmou23514 CHECK violation antes do link, auxiliar no mesmo gargalo. Atividade: cartao normal abre detalhe corrigido; avaliacao por unidade carrega ativo. Retomando draft b04 existente por deep link produtivo, sem criar configuracao.",
+    "next": "Corrigir CHECK turma com prova local; salvar/reler draft avaliativo existente. Sem novas fatias auxiliares a partir80%.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
-    "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60.",
+    "remote": "SQL lote61 aplicado version20260913032627, Edge chat-media MP4 implantada; R2 privado confirmado. Proximo lote62.",
     "childContextCreatedByUI": {
       "person": "d0c40000-0000-4000-8000-000000000003",
       "childContext": "b1520810-ca23-4632-8b53-cc36e558013c",

@@ -35,5 +35,10 @@
       "http": 204
     }
   ],
-  "pass": true
+  "pass": true,
+  "postflight": {
+    "denied_request_receipts": 0,
+    "source": "read-only production SQL app_private.student_link_command_receipts",
+    "at": "2026-09-13T04:00:00Z"
+  }
 }

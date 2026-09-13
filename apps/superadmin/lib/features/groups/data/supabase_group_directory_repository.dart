@@ -43,7 +43,7 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
   @override
   Future<GroupDirectorySaveResult> saveComposition(GroupDirectorySaveRequest request) async {
     try {
-      final response = _map(
+      final response = _saveResponse(
         await _client.rpc<Object?>(
           'superadmin_group_save',
           params: {
@@ -54,12 +54,12 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
           },
         ),
       );
-      final saved = _record(response);
+      final saved = _saveRecord(response);
       // Em atualizacao o recibo tem de corresponder a turma pedida; sem isto uma
       // resposta de outra turma entraria no cache como registro salvo. Na criacao
       // o identificador vem do servidor, entao nao ha o que comparar.
       if (request.record.managementVersion != 0 && saved.id != request.record.id) {
-        throw const GroupDirectoryUnavailableException();
+        throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_TARGET');
       }
       _cache[saved.id] = saved;
       final steps = <GroupDirectorySaveStepResult>[
@@ -138,9 +138,9 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
       }
       return GroupDirectorySaveResult(requestId: request.requestId, steps: steps);
     } on PostgrestException catch (error) {
-      throw _mapError(error);
+      throw _mapSaveError(error);
     } on ClientException {
-      throw const GroupDirectoryUnavailableException();
+      throw const GroupDirectoryUnavailableException(diagnosticCode: 'TRANSPORT');
     }
   }
 
@@ -444,6 +444,32 @@ Exception _mapError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
   _ => const GroupDirectoryUnavailableException(),
 };
+
+Exception _mapSaveError(PostgrestException error) => switch (error.code) {
+  '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
+  _ => GroupDirectoryUnavailableException(diagnosticCode: _safeDiagnosticCode(error.code)),
+};
+
+String _safeDiagnosticCode(String? code) =>
+    code != null && RegExp(r'^(?:[0-9A-Z]{5}|PGRST[0-9]{3})$').hasMatch(code)
+        ? code
+        : 'UNKNOWN';
+
+Map<String, dynamic> _saveResponse(Object? value) {
+  try {
+    return _map(value);
+  } on Object {
+    throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_SHAPE');
+  }
+}
+
+GroupRecord _saveRecord(Map<String, dynamic> response) {
+  try {
+    return _record(response);
+  } on Object {
+    throw const GroupDirectoryUnavailableException(diagnosticCode: 'RESPONSE_SHAPE');
+  }
+}
 
 String _requestUuid(String value) {
   if (_isUuid(value)) return value.toLowerCase();
