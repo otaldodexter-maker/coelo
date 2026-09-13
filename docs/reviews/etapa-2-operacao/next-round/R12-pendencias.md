@@ -10,7 +10,7 @@ generated_at: 2026-09-13
 
 | Item | action_ids | Estado / FE / BE / E2E | Prova preservada | Primeiro gate |
 |---|---|---|---|---|
-| owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-01 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência. |
 | owner.r12-02 | activities.list, daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
 | owner.r12-03 | activities.list | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
 | owner.r12-04 | daily-routine.list, attendance.dashboard | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
@@ -101,6 +101,16 @@ Não houve envio real nem alteração backend. O integrado segue
 `pending-verification`: falta convite expirado real na rota normal, recibo,
 reload e negativa cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md`.
+
+## Triagem do próximo gate R12-01
+
+Os goldens de Rotina diária foram executados, mas as diferenças isoladas
+ficaram somente no cabeçalho global do Superadmin (avatar/ícones/texto), fora
+da área de Modelos. Nenhum baseline foi regenerado e nenhum código foi
+alterado. O diagnóstico está em
+`docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md`;
+R12-01 permanece aberto até estabilizar essa referência e então comparar o
+card/rodapé/ações do recorte autorizado.
 
 ## Dívidas transversais preservadas
 

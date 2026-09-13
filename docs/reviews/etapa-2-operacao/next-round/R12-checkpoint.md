@@ -35,6 +35,14 @@ diálogo temporário. Detalhe 32 PASS, repositório 13 PASS e diretório 24 PASS
 O integrado segue pending-verification por falta de convite expirado real,
 recibo, reload e negativa cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md`.
+
+## Triagem do próximo gate R12-01
+
+Os goldens de Rotina diária falharam apenas com diferenças isoladas no
+ cabeçalho global (avatar/ícones/texto), fora do recorte de Modelos. Nenhum
+ baseline foi regenerado e nenhum código foi alterado. O bloqueio e a próxima
+ comparação autorizada estão registrados em
+`docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.
