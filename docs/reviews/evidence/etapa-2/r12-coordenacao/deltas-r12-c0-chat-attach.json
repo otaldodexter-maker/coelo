@@ -1,0 +1,15 @@
+[
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: composição atualizada para agrupar múltiplas mídias visuais da mesma mensagem em mosaico de até três itens com contador de adicionais; tile único e anexos não visuais preservados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
+      "revision": "8202d3bf8",
+      "environment": "Windows local; Flutter test/analyze; sem rota remota",
+      "recordedAt": "2026-09-13T19:11:29-03:00"
+    }
+  }
+]

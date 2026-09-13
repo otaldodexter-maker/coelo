@@ -129,6 +129,39 @@ void main() {
     expect(find.text('Atualizar'), findsOneWidget);
   });
 
+  testWidgets('groups visual attachments from one message into a cohesive mosaic', (tester) async {
+    _viewport(tester, 768);
+    final repository = _ChatRepository._(
+      inbox: _ChatRepository.standard().inbox,
+      thread: ChatThreadPage(
+        items: [
+          ChatMessage(
+            id: 'message-mosaic',
+            conversationId: 'conversation-1',
+            body: '',
+            authorName: 'Marina',
+            sentAt: DateTime.utc(2026, 8, 11, 11),
+            isMine: false,
+            kind: 'image',
+            attachments: const [
+              ChatAttachment(id: 'attachment-1', fileName: 'um.png', mediaType: 'image/png', byteSize: 8),
+              ChatAttachment(id: 'attachment-2', fileName: 'dois.png', mediaType: 'image/png', byteSize: 8),
+              ChatAttachment(id: 'attachment-3', fileName: 'tres.png', mediaType: 'image/png', byteSize: 8),
+              ChatAttachment(id: 'attachment-4', fileName: 'quatro.png', mediaType: 'image/png', byteSize: 8),
+            ],
+          ),
+        ],
+      ),
+    );
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('superadmin-chat-attachment-mosaic-message-mosaic')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-attachment-mosaic-count-message-mosaic')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-attachment-compact-attachment-1')), findsOneWidget);
+    expect(find.byKey(const Key('superadmin-chat-attachment-attachment-4')), findsNothing);
+  });
+
   testWidgets('marks the selected thread read and sends only through the repository', (
     tester,
   ) async {

@@ -11,7 +11,7 @@ metadata:
 
 ## Fonte operacional vigente — R12 consolidada, início manual
 
-Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md), [pendências por camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md) e [prompt Luna médio](../../../docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md). R12/R13 foram reunidas pelo Owner:53 compromissos,3 ajustes visuais entregues e50 abertos, com chat.attach parcialmente implementado. Preservar R01–R13, fontes e provas. A antiga divisão e o supervisor são históricos; não disparar outro processo.
+Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md), [pendências por camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md) e [prompt Luna médio](../../../docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md). R12/R13 foram reunidas pelo Owner:53 compromissos,3 ajustes visuais entregues e50 abertos; `chat.attach` tem consumidor FE com mosaico local-green, enquanto o contrato backend/R2 existente permanece sem nova mudança nesta fatia e E2E segue aberto. Preservar R01–R13, fontes e provas. A antiga divisão e o supervisor são históricos; não disparar outro processo.
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 
@@ -556,8 +556,9 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisão 13):
   `{ok, data, error{code, message, http_status, correlation_id}}`, códigos
   `CHAT_*`/`SAI_*`; outro tenant responde `CHAT_NOT_FOUND` (não enumera).
   Contrato completo em `comunicacao/realm-interno.json` → `contrato`.
-  `chat.attach` continua sem função de escrita em `chat_attachment_metadata`
-  e sem Edge Function `chat-media`: depende do gateway de mídia comum.
+  `chat.attach` usa o contrato existente de `chat-media` sobre R2 privado; esta
+  fatia não alterou funções, grants, RLS, ownership ou deploy. O E2E ainda
+  depende da prova pela rota normal e não deve ser promovido por teste local.
 - Reescrever migration histórica sobre a baseline exige, além dos labels
   `NOT NULL`: `app_private.audit_append_superadmin_internal` com 13
   argumentos (o histórico chamava com um 14º `jsonb` que produção não tem),

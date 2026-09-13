@@ -64,6 +64,16 @@ generated_at: 2026-09-13
 | owner.r12-52 | chat.attach | open / Avanço local em f8c209a17: imagens/vídeos sem cartão administrativo; mídia inline, play/retry e viewer preservados. Não é aceite integral. / Sem mudança backend; R2 privado, ownership e autorização existentes a preservar. / Não certificado; faltam rota normal, mosaico/compositor, reload e escopo conforme aceite. | docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md | Preservar delta f8c209a17 e29 testes únicos PASS (20 tile +9 goldens); construir código atual, verificar rota normal e completar primeiro aceite faltante da referência de mídia/compositor. Não refazer contorno R12-43. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema. |
 
+## R12-52 checkpoint de execução (C0)
+
+FE local-green nesta fatia: o consumidor agrupa múltiplas mídias visuais da
+mesma mensagem em mosaico de até três itens, com contador de adicionais;
+single-media e anexos não visuais permanecem no tile existente. Provas:
+32+21+4 testes PASS e `flutter analyze --no-fatal-infos` sem issues.
+Backend permanece inalterado e E2E não certificado; faltam rota normal, upload
+MP4 real, reload e negativa cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md`.
+
 ## Dívidas transversais preservadas
 
 Circulares:4 goldens falhos também na base; reconciliar referência/fixture na fatia correspondente. Validador visual:20 achados iguais à base, sem ampliar allowlist. Evidências em docs/reviews/evidence/etapa-2/r12-coordenacao/. Compromissos anteriores adicionais permanecem em entrega-atual.json e matrizes; não desaparecem do plano Etapa2.

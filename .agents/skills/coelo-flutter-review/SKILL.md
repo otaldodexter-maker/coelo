@@ -131,7 +131,9 @@ conclusão ampla exige leitura integral.
   Recibo só renderiza quando o servidor projeta `receipt`; bandeira
   desconhecida vira `none`. Pendências: `chat.create-group` pela UI não
   fechou na retomada da R04 (diálogo fechou sem grupo novo após reload);
-  `chat.attach` fica visível e inerte até o gateway de mídia comum.
+  `chat.attach` permanece dependente do gateway de mídia comum para E2E; a
+  composição local já agrupa múltiplas mídias em mosaico e mantém preview,
+  retry e viewer sem expor URLs permanentes.
 
 ## Progresso e limite de `verified`
 

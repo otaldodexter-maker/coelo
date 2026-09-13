@@ -1009,12 +1009,12 @@
     "actionIds": [
       "chat.attach"
     ],
-    "fe": "Avanço local em f8c209a17: imagens/vídeos sem cartão administrativo; mídia inline, play/retry e viewer preservados. Não é aceite integral.",
+    "fe": "FE local-green nesta fatia: mosaico por mensagem com até3 mídias visuais, contador de adicionais e tile único/anexos não visuais preservados; 32+21+4 testes e analyze PASS. Aceite integral ainda aberto.",
     "be": "Sem mudança backend; R2 privado, ownership e autorização existentes a preservar.",
-    "e2e": "Não certificado; faltam rota normal, mosaico/compositor, reload e escopo conforme aceite.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
+    "e2e": "Não certificado; faltam rota normal, upload MP4 real, reload e escopo.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Preservar delta f8c209a17 e29 testes únicos PASS (20 tile +9 goldens); construir código atual, verificar rota normal e completar primeiro aceite faltante da referência de mídia/compositor. Não refazer contorno R12-43.",
+    "nextGate": "Commit/push da fatia; depois provar rota normal com QA, mídia R2, reload e negativa cross-tenant. Não refazer contorno R12-43.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

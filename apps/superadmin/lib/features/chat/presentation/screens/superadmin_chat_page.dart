@@ -1195,7 +1195,21 @@ final class _MessageBubble extends StatelessWidget {
               ),
               const SizedBox(height: CoeloSpacing.space1),
               Text(message.body),
-              for (final attachment in message.attachments) ...[
+              if (_visualAttachments.length > 1) ...[
+                const SizedBox(height: CoeloSpacing.space2),
+                _ChatAttachmentMosaic(
+                  key: Key('superadmin-chat-attachment-mosaic-${message.id}'),
+                  messageId: message.id,
+                  attachments: _visualAttachments,
+                  mediaReader: mediaReader,
+                  mediaSession: mediaSession,
+                  attachmentRepository: attachmentRepository,
+                ),
+              ],
+              for (final attachment in [
+                ...message.attachments.where((attachment) => !_isVisualAttachment(attachment)),
+                if (_visualAttachments.length == 1) ..._visualAttachments,
+              ]) ...[
                 const SizedBox(height: CoeloSpacing.space2),
                 SuperadminChatAttachmentTile(
                   key: ValueKey(attachment.id),
@@ -1254,6 +1268,85 @@ final class _MessageBubble extends StatelessWidget {
       ),
     );
   }
+
+  List<ChatAttachment> get _visualAttachments =>
+      message.attachments.where(_isVisualAttachment).toList(growable: false);
+}
+
+bool _isVisualAttachment(ChatAttachment attachment) =>
+    const {'image/jpeg', 'image/png', 'image/webp', 'video/mp4'}.contains(attachment.mediaType);
+
+final class _ChatAttachmentMosaic extends StatelessWidget {
+  const _ChatAttachmentMosaic({
+    required this.messageId,
+    required this.attachments,
+    required this.mediaReader,
+    required this.mediaSession,
+    required this.attachmentRepository,
+    super.key,
+  });
+
+  final String messageId;
+  final List<ChatAttachment> attachments;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
+  final ChatAttachmentRepository? attachmentRepository;
+
+  @override
+  Widget build(BuildContext context) => LayoutBuilder(
+    builder: (context, constraints) {
+      final width = (constraints.maxWidth - CoeloSpacing.space1) / 2;
+      final visible = attachments.take(3).toList(growable: false);
+      return Wrap(
+        spacing: CoeloSpacing.space1,
+        runSpacing: CoeloSpacing.space1,
+        children: [
+          for (var index = 0; index < visible.length; index++)
+            SizedBox(
+              width: width,
+              child: Stack(
+                children: [
+                  SuperadminChatAttachmentTile(
+                    key: ValueKey(visible[index].id),
+                    attachment: visible[index],
+                    state: SuperadminChatAttachmentState.ready,
+                    compactVisual: true,
+                    mediaReader: mediaReader,
+                    mediaSession: mediaSession,
+                    attachmentRepository: attachmentRepository,
+                  ),
+                  if (index == visible.length - 1 && attachments.length > visible.length)
+                    Positioned(
+                      right: CoeloSpacing.space2,
+                      top: CoeloSpacing.space2,
+                      child: DecoratedBox(
+                        key: Key('superadmin-chat-attachment-mosaic-count-$messageId'),
+                        decoration: BoxDecoration(
+                          color: Theme.of(context).colorScheme.scrim.withValues(alpha: 0.72),
+                          borderRadius: BorderRadius.circular(CoeloRadius.md),
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: CoeloSpacing.space2,
+                            vertical: CoeloSpacing.space1,
+                          ),
+                          child: Text(
+                            '+${attachments.length - visible.length}',
+                            style: Theme.of(context).textTheme.labelMedium?.copyWith(
+                              color: Colors.white,
+                              fontWeight: FontWeight.w700,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                ],
+              ),
+            ),
+        ],
+      );
+    },
+  );
 }
 
 enum _MessageAction { edit, revoke }

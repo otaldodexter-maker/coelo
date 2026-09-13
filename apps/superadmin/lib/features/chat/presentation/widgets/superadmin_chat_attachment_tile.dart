@@ -23,6 +23,7 @@ final class SuperadminChatAttachmentTile extends StatefulWidget {
     this.mediaReader,
     this.mediaSession,
     this.attachmentRepository,
+    this.compactVisual = false,
     super.key,
   });
 
@@ -32,6 +33,7 @@ final class SuperadminChatAttachmentTile extends StatefulWidget {
   final MediaReader? mediaReader;
   final MediaSession? mediaSession;
   final ChatAttachmentRepository? attachmentRepository;
+  final bool compactVisual;
 
   @override
   State<SuperadminChatAttachmentTile> createState() => _SuperadminChatAttachmentTileState();
@@ -192,9 +194,22 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     final colors = Theme.of(context).colorScheme;
     final status = _AttachmentStatus.from(state, colors);
     final canRetry = state == SuperadminChatAttachmentState.failed && onRetry != null;
-    final isVisual = const {'image/jpeg', 'image/png', 'image/webp', 'video/mp4'}.contains(
-      attachment.mediaType,
-    );
+    final isVisual = const {
+      'image/jpeg',
+      'image/png',
+      'image/webp',
+      'video/mp4',
+    }.contains(attachment.mediaType);
+    if (widget.compactVisual && isVisual) {
+      return _CompactVisualAttachment(
+        attachment: attachment,
+        state: state,
+        mediaReader: widget.mediaReader,
+        mediaSession: widget.mediaSession,
+        attachmentRepository: widget.attachmentRepository,
+        onOpen: _canOpen && attachment.mediaType != 'video/mp4' ? _openImage : null,
+      );
+    }
     return Semantics(
       container: true,
       label:
@@ -249,7 +264,11 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                       status.label,
                       style: Theme.of(context).textTheme.labelSmall?.copyWith(color: status.color),
                     ),
-                    if (const {'image/jpeg', 'image/png', 'image/webp'}.contains(attachment.mediaType) &&
+                    if (const {
+                          'image/jpeg',
+                          'image/png',
+                          'image/webp',
+                        }.contains(attachment.mediaType) &&
                         state == SuperadminChatAttachmentState.ready &&
                         widget.attachmentRepository != null &&
                         widget.mediaSession != null)
@@ -316,6 +335,91 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                 icon: const Icon(Icons.refresh_rounded),
               ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+final class _CompactVisualAttachment extends StatelessWidget {
+  const _CompactVisualAttachment({
+    required this.attachment,
+    required this.state,
+    required this.mediaReader,
+    required this.mediaSession,
+    required this.attachmentRepository,
+    required this.onOpen,
+  });
+
+  final ChatAttachment attachment;
+  final SuperadminChatAttachmentState state;
+  final MediaReader? mediaReader;
+  final MediaSession? mediaSession;
+  final ChatAttachmentRepository? attachmentRepository;
+  final VoidCallback? onOpen;
+
+  @override
+  Widget build(BuildContext context) {
+    final preview =
+        attachment.mediaType == 'video/mp4' && attachmentRepository != null && mediaSession != null
+        ? SuperadminChatInlineVideo(
+            attachment: attachment,
+            attachmentRepository: attachmentRepository!,
+            session: mediaSession!,
+          )
+        : attachmentRepository != null && mediaSession != null
+        ? SuperadminChatInlineMedia(
+            attachment: attachment,
+            attachmentRepository: attachmentRepository!,
+            session: mediaSession!,
+          )
+        : Icon(
+            attachment.mediaType == 'video/mp4' ? Icons.play_circle_outline : Icons.image_outlined,
+            size: CoeloSize.iconLg,
+          );
+    return Semantics(
+      button: onOpen != null,
+      label: '${attachment.fileName}. ${attachment.mediaType}.',
+      child: InkWell(
+        key: Key('superadmin-chat-attachment-compact-${attachment.id}'),
+        onTap: state == SuperadminChatAttachmentState.ready ? onOpen : null,
+        borderRadius: BorderRadius.circular(CoeloRadius.md),
+        child: AspectRatio(
+          aspectRatio: 1,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(CoeloRadius.md),
+            child: ColoredBox(
+              color: Theme.of(context).colorScheme.surfaceContainerHighest,
+              child: Stack(
+                fit: StackFit.expand,
+                children: [
+                  Center(child: preview),
+                  Positioned(
+                    left: CoeloSpacing.space1,
+                    right: CoeloSpacing.space1,
+                    bottom: CoeloSpacing.space1,
+                    child: DecoratedBox(
+                      decoration: BoxDecoration(
+                        color: Colors.black54,
+                        borderRadius: BorderRadius.circular(CoeloRadius.sm),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space1),
+                        child: Text(
+                          attachment.fileName,
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
+                          style: Theme.of(
+                            context,
+                          ).textTheme.labelSmall?.copyWith(color: Colors.white),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
         ),
       ),
     );
