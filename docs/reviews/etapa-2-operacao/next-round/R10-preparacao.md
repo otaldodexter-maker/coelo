@@ -87,7 +87,7 @@ Nao executar import/export geral, senha ou Etapa3 para inflar os numeros.
 ## Estrategia e custo
 
 Uma conversa executora/integradora Astra medium. Evita a fila sem canal de
-mensagem observada na R09. No maximo um auxiliar da mesma arvore, por tarefa
+mensagem observada na R09. No maximo um auxiliar Terra medium da mesma arvore, por tarefa
 curta e independente, se a cota real e a ferramenta permitirem; padrao serial.
 Nao recriar nove conversas. Um Chrome e um flutter test globais.
 
@@ -115,3 +115,7 @@ Nao usar o teto75% da R09 encerrada para a nova R10, nem gastar todo saldo.
 Checkpoint curto commitado a cada10min/entrega e antes de compactacao,
 sem depender de lembranca/conversa longa. Sem garantia absoluta contra falha
 do host; Git remoto e o registro recuperavel. Nenhum loop/timer oculto.
+
+Ajuste do Owner: C0 Astra medium usa Chrome e integra; auxiliar Terra medium
+resolve gargalos FE/BE em worktree propria e responde pelo canal da mesma arvore.
+Contrato em R10-dev-senior.md; nao abrir conversa independente sem canal real.

@@ -55,8 +55,25 @@ um executor e checkpoints; nao inventar percentuais nem abrir trabalho amplo.
 
 EXECUCAO E PRESERVACAO
 Padrao: voce executa e integra em uma conversa. Nao abra nove conversas.
-No maximo um auxiliar Astra medium da mesma arvore, para tarefa delimitada
-independente e com canal comprovado, quando houver folga; a partir80%, so C0.
+No maximo um auxiliar gpt-5.6-terra, esforco medium, da mesma arvore, para
+tarefa delimitada independente e com canal comprovado; a partir80%, so C0.
+O Owner autorizou esse auxiliar como dev senior FE+BE. Leia R10-dev-senior.md
+e use seu contrato na delegacao. Se spawn_agent estiver disponivel, use
+model=gpt-5.6-terra, reasoning_effort=medium, fork_turns=none e passe o
+contrato mais o contexto focal explicitamente. Nao iniciar outra conversa
+independente esperando que ID/hostId criem um canal. Registre o ID real do
+auxiliar; cobre ACK real do pacote antes de depender dele. Se modelo/canal
+nao estiver disponivel, siga serialmente e relate, sem substituir modelo ocultamente.
+C0 mantem Chrome/UI/aceites; Terra corrige codigo/contratos e testa com slot
+nominal em worktree propria. C0 pode provar outro fluxo independente no build
+atual enquanto Terra trabalha; nunca certificar patch ainda nao integrado/buildado.
+Cada pacote informa SHA-base, worktree/branch, action_ids, reproducao, esperado/
+observado, caminhos de evidencia sem segredos, arquivos de autoria, dependencias,
+slot de teste e corte. Evite enviar historico integral e tarefas vagas de auditoria.
+Terra devolve causa, commits, testes e proximo gate. Integre e prove pela UI,
+depois reutilize o mesmo auxiliar para o proximo bloqueio, sem criar duplicatas.
+Build/analyze/teste pesados sao serializados; nao reconstruir o runtime sob uma
+prova UI em andamento. C0 nao edita os arquivos com autoria ativa do auxiliar.
 Nao depender de mensagens entre conversas independentes nem fingir entrega.
 Um Chrome e um flutter test globais, dono/PID/horario. Reutilize o runtime
 somente apos confirmar posse, SHA servido e ausencia de draft alheio.
