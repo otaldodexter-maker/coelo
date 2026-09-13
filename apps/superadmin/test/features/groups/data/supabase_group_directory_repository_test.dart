@@ -167,7 +167,38 @@ void main() {
           record: record,
         ),
       ),
-      throwsA(isA<GroupDirectoryUnavailableException>()),
+      throwsA(
+        isA<GroupDirectoryUnavailableException>().having(
+          (error) => error.diagnosticCode,
+          'diagnosticCode',
+          'RESPONSE_TARGET',
+        ),
+      ),
+    );
+  });
+
+  test('keeps an allowlisted save diagnostic code without the server message', () async {
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({'code': '40001', 'message': 'stale group version 7 for Pessoa privada'}),
+        409,
+        headers: {'content-type': 'application/json'},
+        request: request,
+      ),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseGroupDirectoryRepository(client).saveComposition(
+        GroupDirectorySaveRequest(requestId: 'group-save-diagnostic', record: _record()),
+      ),
+      throwsA(
+        isA<GroupDirectoryUnavailableException>().having(
+          (error) => error.diagnosticCode,
+          'diagnosticCode',
+          '40001',
+        ),
+      ),
     );
   });
 
@@ -435,6 +466,20 @@ Map<String, Object?> _groupRow() => {
   'updated_at': '2026-01-01T00:00:00Z',
   'management_version': 2,
 };
+
+GroupRecord _record() => GroupRecord(
+  id: '33333333-3333-4333-8333-333333333333',
+  institutionId: '11111111-1111-4111-8111-111111111111',
+  institutionName: 'Casa Nuvem',
+  unitId: '22222222-2222-4222-8222-222222222222',
+  unitName: 'Unidade Centro',
+  name: 'Turma Girassol',
+  groupType: 'class',
+  status: GroupStatus.active,
+  createdAt: DateTime.utc(2026, 1, 1),
+  updatedAt: DateTime.utc(2026, 1, 1),
+  managementVersion: 2,
+);
 
 SupabaseClient _client(Future<Response> Function(Request request) handler) =>
     SupabaseClient(
