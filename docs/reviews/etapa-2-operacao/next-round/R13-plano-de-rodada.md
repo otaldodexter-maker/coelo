@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13 — cota aproximada de8% e divisão R12/R13; R13-owner-items.json; R11-fechamento.md
-status: planejamento aprovado pelo pedido de divisão; execução não iniciada
+status: encerrada parcialmente em 2026-09-13; ver R13-fechamento.md
 generated_at: 2026-09-13
 ---
 

@@ -2267,6 +2267,19 @@
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md"
     }
   ],
+  "r13Closure": {
+    "round": "R13",
+    "status": "ended-document-partial",
+    "base": "4ded9c567ef8415d62421b503a7e38c27ba53fa4",
+    "target": "f8c209a1796389a7f6cf76799caa106320e32d5f",
+    "ownerItems": ["owner.r12-51", "owner.r12-52"],
+    "completedLocal": ["chat.attach visual surface without admin card"],
+    "openFirstGate": "Owner resolve PITR/backup/ordem serial before SQL-dependent R13 work",
+    "tests": "29P/0F/0B/0S/0U; no new E2E certificate",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
+    "memory": "no-op: existing canonical chat-media direction remains authoritative",
+    "deployment": "none"
+  },
   "evidenceFiles": [
     "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md",
@@ -2315,6 +2328,8 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/closure-metrics.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/ui-acceptance.json",
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
+    "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",
+    "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
     "docs/knowledge/team/r12-routine-attendance-direction.md"
   ],
   "memory": {
