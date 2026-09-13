@@ -1,0 +1,41 @@
+[
+  {
+    "action_id": "groups.members",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+      "revision": "R10 02cbacc2a / SQL63 20260913045039",
+      "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+    }
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+      "revision": "R10 02cbacc2a / SQL63 20260913045039",
+      "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+    }
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+      "revision": "R10 02cbacc2a / SQL63 20260913045039",
+      "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+    }
+  }
+]

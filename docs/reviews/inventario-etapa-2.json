@@ -1508,19 +1508,39 @@
       "family": "groups",
       "screen": "Turmas / Membros",
       "scope": "mvp",
-      "done": "R10 03:55Z: SQL61 aplicado. Contexto criado pela UI, unidade pending; salvar turma falha antes do link e esta em diagnostico. Draft preservado, sem aceite novo.",
-      "fe": "R10 03:55Z: SQL61 aplicado. Contexto criado pela UI, unidade pending; salvar turma falha antes do link e esta em diagnostico. Draft preservado, sem aceite novo.",
-      "be": "R10 03:55Z: SQL61 aplicado. Contexto criado pela UI, unidade pending; salvar turma falha antes do link e esta em diagnostico. Draft preservado, sem aceite novo.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md",
+      "done": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+      "fe": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+      "be": "R10 alunos: incluir/reload/remover/reload/reincluir pela UI normal PASS; link contextual persistido sem duplicacao; atividade preservada; SQL63 escopo real A/B e consumer negativo atual. Recorte MVP alunos; sem inferir guardian/professor.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/groups-members-vazio.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-estrutura-20260912-1542/location-ui-proof.md; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+          "revision": "R10 02cbacc2a / SQL63 20260913045039",
+          "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+          "revision": "R10 02cbacc2a / SQL63 20260913045039",
+          "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/groups-members-ui-proof.md",
+          "revision": "R10 02cbacc2a / SQL63 20260913045039",
+          "environment": "UI Chrome localhost3000 B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:59:07.695625+00:00"
+        }
+      }
     },
     {
       "id": "groups.import",
@@ -9114,7 +9134,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-13T04:49:31.391Z",
+  "updatedAt": "2026-09-13T04:59:07.760Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
