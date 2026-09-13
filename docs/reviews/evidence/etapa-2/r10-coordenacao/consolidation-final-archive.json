@@ -1,0 +1,24 @@
+{
+  "at": "2026-09-13T05:54:15.724122+00:00",
+  "destination": "C:\\Users\\adrie\\Documents\\Coelo",
+  "bundle": {
+    "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\coelo-final-refs.bundle",
+    "bytes": 1112087068,
+    "sha256": "fa84e6134986bcda5157e124f6dda5318f234a4d141bbba3f059f05ffe91365d",
+    "verified": true
+  },
+  "worktrees": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-coordenacao-20260912-2314",
+      "head": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "branch": "refs/heads/work/etapa2-r10-coordenacao-20260912-2314",
+      "ignoredCount": 191,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-coordenacao-20260912-2314-ignored.zip",
+      "archiveBytes": 407924125,
+      "archiveSHA256": "f376205ee558fdfb03d08d6195426928fac97e964cde47906dcc6ff56350b431",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-coordenacao-20260912-2314-manifest.json",
+      "verified": true,
+      "removal": "archived-and-removed"
+    }
+  ]
+}
