@@ -99,7 +99,7 @@ final class PublicationSurface extends StatelessWidget {
           return Column(
             children: [
               Expanded(child: content),
-              ?feedback,
+              if (feedback != null) Padding(padding: padding, child: feedback),
               Padding(
                 padding: padding.add(const EdgeInsets.only(top: CoeloSpacing.space3)),
                 child: SuperadminFormActionFooter(

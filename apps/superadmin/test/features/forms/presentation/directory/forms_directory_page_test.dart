@@ -8,9 +8,72 @@ import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final width in [375.0, 1440.0]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('R12 canonical filters apply clear and restore focus $width $scale', (
+        tester,
+      ) async {
+        await tester.binding.setSurfaceSize(Size(width, 1000));
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        final api = _FormsApi();
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: CoeloTheme.light,
+            builder: (context, child) => MediaQuery(
+              data: MediaQuery.of(context).copyWith(textScaler: TextScaler.linear(scale)),
+              child: child!,
+            ),
+            home: Scaffold(body: FormsDirectoryPage(api: api)),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final status = find.byKey(const Key('forms-status-filter'));
+        await tester.ensureVisible(status);
+        await tester.tap(status);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Rascunho').last);
+        await tester.pumpAndSettle();
+        await tester.ensureVisible(find.text('Ativo').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Ativo').last);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Aplicar'));
+        await tester.pumpAndSettle();
+        expect(api.queries.last.operationalStatuses, {
+          FormOperationalStatus.draft,
+          FormOperationalStatus.active,
+        });
+        expect(tester.takeException(), isNull);
+        await tester.tap(status);
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Limpar'));
+        await tester.pumpAndSettle();
+        await tester.tap(find.text('Aplicar'));
+        await tester.pumpAndSettle();
+        expect(api.queries.last.operationalStatuses, isEmpty);
+        final period = find.byKey(const Key('forms-period-filter'));
+        await tester.ensureVisible(period);
+        await tester.tap(period);
+        await tester.pumpAndSettle();
+        final range = DateTimeRange(start: DateTime(2026, 8, 1), end: DateTime(2026, 8, 31));
+        tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker)).onChanged(range);
+        await tester.pumpAndSettle();
+        expect(api.queries.last.startsOnOrAfter, range.start);
+        expect(api.queries.last.endsOnOrBefore, range.end);
+        await tester.tap(period);
+        await tester.pumpAndSettle();
+        await tester.sendKeyEvent(LogicalKeyboardKey.escape);
+        await tester.pumpAndSettle();
+        expect(api.queries.last.startsOnOrAfter, range.start);
+        expect(tester.widget<CoeloAdminFilterTrigger>(period).focusNode.hasFocus, isTrue);
+        expect(tester.takeException(), isNull);
+      });
+    }
+  }
   testWidgets('seeded development directory searches and paginates real fixtures', (tester) async {
     FormDirectoryItem? opened;
     final api = DevelopmentFormsApi.seeded();
@@ -265,12 +328,15 @@ void main() {
 
     await tester.enterText(find.byKey(const Key('forms-directory-search')), 'contexto A');
     tester
-        .widget<CoeloAdminMultiSelectField<FormOperationalStatus>>(
-          find.byType(CoeloAdminMultiSelectField<FormOperationalStatus>),
+        .widget<CoeloAdminMultiSelectFilter<FormOperationalStatus>>(
+          find.byType(CoeloAdminMultiSelectFilter<FormOperationalStatus>),
         )
         .onChanged({FormOperationalStatus.scheduled});
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-period-filter')));
+    await tester.pumpAndSettle();
     tester
-        .widget<CoeloDateRangeField>(find.byType(CoeloDateRangeField))
+        .widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker))
         .onChanged(DateTimeRange(start: DateTime(2026, 8, 1), end: DateTime(2026, 8, 31)));
     await tester.pump(const Duration(milliseconds: 100));
 

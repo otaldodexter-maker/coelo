@@ -968,6 +968,63 @@ void main() {
     expect(find.text('A chamada foi atualizada em outro acesso.'), findsNothing);
   });
 
+  for (final size in const [Size(375, 900), Size(1440, 900)]) {
+    for (final scale in [1.0, 2.0]) {
+      testWidgets('R12 error spacing and recovery at ${size.width} text $scale', (tester) async {
+        addTearDown(() => tester.binding.setSurfaceSize(null));
+        await tester.binding.setSurfaceSize(const Size(1440, 900));
+        final repository = FakeAttendanceRepository.seeded()
+          ..commandError = const AttendanceVersionConflictException();
+        addTearDown(repository.dispose);
+        await tester.pumpWidget(
+          _app(
+            AttendanceCallPage(
+              repository: repository,
+              callId: 'call-progress',
+              permissions: const AttendancePermissions.owner(),
+              logout: unavailableSuperadminLogout,
+              onBack: () {},
+            ),
+            textScaler: TextScaler.linear(scale),
+          ),
+        );
+        await tester.pumpAndSettle();
+        final action = find.widgetWithText(OutlinedButton, 'Presente').first;
+        await tester.ensureVisible(action);
+        await tester.tap(action);
+        final save = find.byKey(const Key('attendance-participant-save-participant-1'));
+        await tester.ensureVisible(save);
+        await tester.pump();
+        await tester.tap(save);
+        await tester.pumpAndSettle();
+        expect(
+          find.byKey(const Key('attendance-participant-pending-participant-1')),
+          findsOneWidget,
+        );
+        await tester.binding.setSurfaceSize(size);
+        await tester.pumpAndSettle();
+        final banner = find
+            .ancestor(
+              of: find.text('A chamada foi atualizada em outro acesso.'),
+              matching: find.byType(Container),
+            )
+            .first;
+        final viewport = tester.getRect(find.byKey(const Key('attendance-call-scroll')));
+        final bounds = tester.getRect(banner);
+        expect(bounds.left - viewport.left, greaterThanOrEqualTo(CoeloSpacing.space6));
+        expect(viewport.right - bounds.right, greaterThanOrEqualTo(CoeloSpacing.space6));
+        expect(tester.takeException(), isNull);
+        final reload = find.widgetWithText(OutlinedButton, 'Recarregar chamada');
+        expect(reload.hitTestable(), findsOneWidget);
+        expect(find.widgetWithText(TextButton, 'Voltar').hitTestable(), findsOneWidget);
+        repository.commandError = null;
+        await tester.tap(reload);
+        await tester.pumpAndSettle();
+        expect(find.text('A chamada foi atualizada em outro acesso.'), findsNothing);
+      });
+    }
+  }
+
   testWidgets('one in-flight command disables every mutation and prevents duplicate bulk', (
     tester,
   ) async {

@@ -1,6 +1,6 @@
 {
   "completion": "partial",
-  "baseReference": "1d2f95b5942f5aab23439151b57853dd3180b041",
+  "baseReference": "0fc6cb56128643b98de450ddabcd7f90c1255c23",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
@@ -1351,12 +1351,12 @@
       "actionIds": [
         "daily-routine.list"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-01 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-01 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1367,12 +1367,12 @@
         "activities.list",
         "daily-routine.list"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-02 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1382,12 +1382,12 @@
       "actionIds": [
         "activities.list"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-03 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1398,12 +1398,12 @@
         "daily-routine.list",
         "attendance.dashboard"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-04 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1413,12 +1413,12 @@
       "actionIds": [
         "attendance.create"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-05 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1429,29 +1429,29 @@
         "attendance.create",
         "daily-routine.apply"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-06 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
     {
       "id": "owner.r12-07",
-      "status": "deferred",
+      "status": "partial",
       "actionIds": [
         "attendance.mark",
         "attendance.correct",
         "attendance.finish"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "fe": "Respiro e overflow corrigidos; 4 regressões PASS; rota normal corrigida ainda a provar.",
+      "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+      "e2e": "Prova atual do ajuste pela rota normal pendente.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-07 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
     },
@@ -1464,12 +1464,12 @@
         "attendance.finish",
         "daily-routine.apply"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contratos a verificar; sem falha nova confirmada.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-08 no registro, reconciliar fontes e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1479,12 +1479,12 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-09, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1494,12 +1494,12 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-10, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1507,12 +1507,12 @@
       "id": "owner.r12-11",
       "status": "deferred",
       "actionIds": [],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-11, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-11, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1522,12 +1522,12 @@
       "actionIds": [
         "child-safety.child"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-12, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-12, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1538,12 +1538,12 @@
         "child-safety.create",
         "child-safety.edit"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-13, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-13, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1553,12 +1553,12 @@
       "actionIds": [
         "child-safety.child"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-14, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-14, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1570,12 +1570,12 @@
         "child-safety.edit",
         "child-safety.suspend"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-15, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-15, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1585,12 +1585,12 @@
       "actionIds": [
         "child-safety.create"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-16, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-16, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1601,12 +1601,12 @@
         "child-safety.create",
         "child-safety.edit"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-17, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-17, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1616,12 +1616,12 @@
       "actionIds": [
         "child-safety.create"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Contrato a verificar; sem diagnÃ³stico novo.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Ler R12-18, reconciliar decisÃ£o/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1629,7 +1629,7 @@
       "id": "owner.r12-19",
       "status": "deferred",
       "actionIds": [],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1642,7 +1642,7 @@
       "id": "owner.r12-20",
       "status": "deferred",
       "actionIds": [],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1657,7 +1657,7 @@
       "actionIds": [
         "access-profiles.detail"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1673,7 +1673,7 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1688,7 +1688,7 @@
       "actionIds": [
         "access-profiles.create"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1704,7 +1704,7 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1720,7 +1720,7 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1735,7 +1735,7 @@
       "actionIds": [
         "access-profiles.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1751,7 +1751,7 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
+      "fe": "Planejado R12, não implementado.",
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
@@ -1766,12 +1766,12 @@
       "actionIds": [
         "health-care.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-28, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-28, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1783,12 +1783,12 @@
         "health-care.edit",
         "health-care.detail"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-29, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-29, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1800,12 +1800,12 @@
         "health-care.edit",
         "health-care.detail"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-30, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-30, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1816,12 +1816,12 @@
         "medication.create",
         "medication.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-31, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-31, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1834,12 +1834,12 @@
         "medication.create",
         "medication.edit"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-32, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-32, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1851,12 +1851,12 @@
         "medication.edit",
         "medication.detail"
       ],
-      "fe": "Planejado R12, nÃ£o implementado.",
-      "be": "Contratos e persistÃªncia a verificar.",
-      "e2e": "NÃ£o executado para este apontamento.",
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal apÃ³s abertura R12.",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1867,12 +1867,12 @@
         "meal-plans.model-create",
         "meal-plans.model-edit"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar, sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-34 e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Reconciliar R12-34 e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1883,12 +1883,12 @@
         "meal-plans.model-create",
         "meal-plans.model-edit"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar, sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-35 e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Reconciliar R12-35 e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1900,12 +1900,12 @@
         "meal-plans.edit",
         "meal-plans.publish"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar, sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-36 e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Reconciliar R12-36 e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1916,12 +1916,12 @@
         "meal-plans.create",
         "meal-plans.edit"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar, sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-37 e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Reconciliar R12-37 e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1934,12 +1934,12 @@
         "meal-plans.publish",
         "meal-plans.model-edit"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
-      "be": "Contratos a verificar, sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
       "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-38 e reproduzir apÃ³s abertura explÃ­cita da R12.",
+      "nextGate": "Reconciliar R12-38 e reproduzir após abertura explícita da R12.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -1950,8 +1950,8 @@
         "forms.edit",
         "forms.create"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
       "e2e": "Sem prova nova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
       "owner": "C0 R13",
@@ -1966,8 +1966,8 @@
         "forms.edit",
         "forms.create"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
       "e2e": "Sem prova nova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
       "owner": "C0 R13",
@@ -1977,16 +1977,16 @@
     },
     {
       "id": "owner.r12-41",
-      "status": "deferred",
+      "status": "partial",
       "actionIds": [
         "forms.list"
       ],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Sem diagnÃ³stico novo.",
-      "e2e": "Sem prova nova.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "fe": "Filtros canônicos corrigidos; 4 regressões PASS; rota normal corrigida ainda a provar.",
+      "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+      "e2e": "Prova atual do ajuste pela rota normal pendente.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
       "owner": "C0 R12",
-      "nextGate": "Reconciliar R12-41, mapear e reproduzir na R12 autorizada.",
+      "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
     },
@@ -1994,8 +1994,8 @@
       "id": "owner.r12-42",
       "status": "deferred",
       "actionIds": [],
-      "fe": "Planejado R12; sem implementaÃ§Ã£o.",
-      "be": "Sem diagnÃ³stico novo.",
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
       "e2e": "Sem prova nova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
       "owner": "C0 R13",
@@ -2005,16 +2005,16 @@
     },
     {
       "id": "owner.r12-43",
-      "status": "deferred",
+      "status": "partial",
       "actionIds": [
         "chat.open"
       ],
-      "fe": "Contorno a revisar na R12.",
-      "be": "Sem mudanÃ§a prevista para o contorno.",
-      "e2e": "Sem nova prova.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+      "fe": "Borda foreground e clipping corrigidos; regressões Chat PASS; render novo ainda a provar.",
+      "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+      "e2e": "Prova atual do ajuste pela rota normal pendente.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
       "owner": "C0 R12",
-      "nextGate": "Reproduzir contorno no painel/lista/paginaÃ§Ã£o/compositor e comparar referÃªncia aprovada.",
+      "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
     },
@@ -2024,7 +2024,7 @@
       "actionIds": [
         "invites.list"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contrato preservado, reenvio a conferir.",
       "e2e": "Sem prova nova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
@@ -2039,7 +2039,7 @@
       "actionIds": [
         "invites.resend"
       ],
-      "fe": "Planejado R12; nÃ£o implementado.",
+      "fe": "Planejado R12; não implementado.",
       "be": "Contrato preservado, reenvio a conferir.",
       "e2e": "Sem prova nova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
@@ -2054,12 +2054,12 @@
       "actionIds": [
         "account.profile"
       ],
-      "fe": "Parcial: rodapÃ©/busca, nome, crop e confirmaÃ§Ã£o autoritativa testados.",
+      "fe": "Parcial: rodapé/busca, nome, crop e confirmação autoritativa testados.",
       "be": "Sigla/cor/metadados em candidato local; foto R2 ausente.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessÃ£o.",
+      "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2070,12 +2070,12 @@
         "auth.recover",
         "auth.reset"
       ],
-      "fe": "Verified histÃ³rico; pedido normal e endereÃ§o inexistente observados na R11.",
-      "be": "Sem mensagem real na caixa acessÃ­vel; SMTP prÃ³prio ausente e redirect local3000 fora da allowlist.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "fe": "Verified histórico; pedido normal e endereço inexistente observados na R11.",
+      "be": "Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Obter acesso/configuraÃ§Ã£o de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessÃ£o, expiraÃ§Ã£o/uso Ãºnico; preservar credencial QA privada. NÃ£o usar link Admin API como entrega SMTP.",
+      "nextGate": "Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2086,12 +2086,12 @@
         "activities.assessment",
         "activities.publish"
       ],
-      "fe": "UPDATE do rascunho retido falha; publicaÃ§Ã£o sem novo aceite.",
-      "be": "CorreÃ§Ã£o causal local8/8 pgTAP; publicaÃ§Ã£o BE done histÃ³rico.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "fe": "UPDATE do rascunho retido falha; publicação sem novo aceite.",
+      "be": "Correção causal local8/8 pgTAP; publicação BE done histórico.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Aplicar candidato apÃ³s gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuraÃ§Ã£o/publicaÃ§Ã£o. Atividade95b98978 jÃ¡ active: nÃ£o recriar ou alternar status para inflar avanÃ§o.",
+      "nextGate": "Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2107,10 +2107,10 @@
       ],
       "fe": "Aluno ausente reproduzido; prova remota pendente.",
       "be": "Candidato all/selected13/13 pgTAP; local-green preservado.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Aplicar candidato apÃ³s gate SQL; usar o mesmo diÃ¡rio d2c945d8, lanÃ§ar/reler nota, fechar/reabrir com versÃ£o e provar escopo real. NÃ£o duplicar participante, vÃ­nculo, configuraÃ§Ã£o ou diÃ¡rio.",
+      "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2121,11 +2121,11 @@
         "groups.list"
       ],
       "fe": "Zeros incorretos reproduzidos; UI/reload pendentes.",
-      "be": "Candidato10/10 pgTAP para contagens, heranÃ§a, status e isolamento.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "be": "Candidato10/10 pgTAP para contagens, herança, status e isolamento.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Aplicar projeÃ§Ã£o apÃ³s gate SQL e conferir contadores na turma4214106c com vÃ­nculos ativos e reload. Aceite antigo da listagem nÃ£o cobre contadores.",
+      "nextGate": "Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2133,12 +2133,12 @@
       "id": "owner.r12-51",
       "status": "deferred",
       "actionIds": [],
-      "fe": "NÃ£o aplicÃ¡vel.",
+      "fe": "Não aplicável.",
       "be": "Quatro candidatos locais; nenhum aplicado remotamente.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Owner resolve exigÃªncia PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuraÃ§Ã£o real, backup atualizado e ordem serial antes de aplicar. Transferir rodada nÃ£o concede exceÃ§Ã£o ou autorizaÃ§Ã£o nova.",
+      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2148,12 +2148,12 @@
       "actionIds": [
         "chat.attach"
       ],
-      "fe": "DireÃ§Ã£o visual registrada; nÃ£o Ã© render A nem implementaÃ§Ã£o.",
+      "fe": "Direção visual registrada; não é render A nem implementação.",
       "be": "Contrato existente a preservar e verificar no recorte.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Reutilizar chat-media-composer-owner-reference-20260913.md: foto inline maior, vÃ­deo com play/duraÃ§Ã£o, mosaico e escrita em cÃ¡psula. Coordenar com R12-43 (contorno), sem duplicar aceite nem alterar formulÃ¡rios administrativos globalmente.",
+      "nextGate": "Reutilizar chat-media-composer-owner-reference-20260913.md: foto inline maior, vídeo com play/duração, mosaico e escrita em cápsula. Coordenar com R12-43 (contorno), sem duplicar aceite nem alterar formulários administrativos globalmente.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2161,12 +2161,12 @@
       "id": "owner.r12-53",
       "status": "deferred",
       "actionIds": [],
-      "fe": "NÃ£o iniciada; condiÃ§Ã£o de abertura nÃ£o atendida.",
-      "be": "NÃ£o iniciado.",
-      "e2e": "Pendente; transferÃªncia documental nÃ£o certifica execuÃ§Ã£o.",
+      "fe": "Não iniciada; condição de abertura não atendida.",
+      "be": "Não iniciado.",
+      "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
       "owner": "C0 R13",
-      "nextGate": "Somente considerar institutions.status OU institutions.locations-map apÃ³s concluir Conta/Auth e os trÃªs blocos de Estrutura, com margem e escopo R12 autorizado. NÃ£o promover esta opÃ§Ã£o a tarefa obrigatÃ³ria nem abrir outro macrotema.",
+      "nextGate": "Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema.",
       "destinationRound": "R13",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md"
     },
@@ -2276,7 +2276,8 @@
     "docs/reviews/etapa-2-operacao/next-round/R13-owner-items.json",
     "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-disparo-luna.md",
-    "docs/reviews/etapa-2-operacao/next-round/R13-luna-continuacao.md"
+    "docs/reviews/etapa-2-operacao/next-round/R13-luna-continuacao.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md"
   ],
   "memory": {
     "status": "no-op",

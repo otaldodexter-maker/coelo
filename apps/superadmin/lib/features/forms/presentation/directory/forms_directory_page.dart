@@ -52,6 +52,8 @@ final class FormsDirectoryPage extends StatefulWidget {
 
 final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
   final _search = TextEditingController();
+  final _periodFocus = FocusNode();
+  bool _periodOpen = false;
   final _cursors = <String?>[null];
   Set<FormOperationalStatus> _operationalStatuses = {};
   DateTimeRange? _period;
@@ -136,6 +138,7 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     _contextGeneration++;
     _searchDebounce?.cancel();
     _search.dispose();
+    _periodFocus.dispose();
     super.dispose();
   }
 
@@ -223,6 +226,23 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
     unawaited(_load());
   }
 
+  Future<void> _choosePeriod() async {
+    final generation = _contextGeneration;
+    setState(() => _periodOpen = true);
+    final value = await showCoeloDateRangePicker(
+      context: context,
+      value: _period,
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100, 12, 31),
+    );
+    if (!mounted) return;
+    setState(() => _periodOpen = false);
+    _periodFocus.requestFocus();
+    if (generation != _contextGeneration || value == _period) return;
+    setState(() => _period = value);
+    _resetAndLoad();
+  }
+
   void _clearFilters() {
     _search.clear();
     setState(() {
@@ -301,7 +321,8 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
         onChanged: _onSearch,
       ),
       filters: [
-        CoeloAdminMultiSelectField<FormOperationalStatus>(
+        CoeloAdminMultiSelectFilter<FormOperationalStatus>(
+          key: const Key('forms-status-filter'),
           label: 'Situação',
           options: FormOperationalStatus.values,
           selectedValues: _operationalStatuses,
@@ -311,17 +332,12 @@ final class _FormsDirectoryPageState extends State<FormsDirectoryPage> {
             _resetAndLoad();
           },
         ),
-        SizedBox(
-          width: 240,
-          child: CoeloDateRangeField(
-            value: _period,
-            onChanged: (value) {
-              setState(() => _period = value);
-              _resetAndLoad();
-            },
-            firstDate: DateTime(2020),
-            lastDate: DateTime(2100, 12, 31),
-          ),
+        CoeloAdminFilterTrigger(
+          key: const Key('forms-period-filter'),
+          label: _period == null ? 'Período' : 'Período (1)',
+          menuOpen: _periodOpen,
+          focusNode: _periodFocus,
+          onPressed: _choosePeriod,
         ),
       ],
       display: _display,

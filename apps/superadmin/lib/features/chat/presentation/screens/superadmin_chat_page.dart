@@ -759,9 +759,14 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
                   const SizedBox(height: CoeloSpacing.space2),
                 ],
                 Expanded(
-                  child: DecoratedBox(
+                  child: Container(
+                    key: const Key('superadmin-chat-workspace'),
+                    clipBehavior: Clip.antiAlias,
                     decoration: BoxDecoration(
                       color: Theme.of(context).colorScheme.surface,
+                      borderRadius: BorderRadius.circular(CoeloRadius.lg),
+                    ),
+                    foregroundDecoration: BoxDecoration(
                       borderRadius: BorderRadius.circular(CoeloRadius.lg),
                       border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
                     ),

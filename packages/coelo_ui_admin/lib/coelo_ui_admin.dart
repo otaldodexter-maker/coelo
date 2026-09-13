@@ -6,6 +6,7 @@ export 'src/directory/coelo_admin_pagination_footer.dart';
 export 'src/directory/coelo_admin_underline_tabs.dart';
 export 'src/filter/coelo_admin_multi_select_field.dart';
 export 'src/filter/coelo_admin_multi_select_filter.dart';
+export 'src/filter/coelo_admin_filter_trigger.dart';
 export 'src/filter/coelo_admin_single_select_field.dart';
 export 'src/filter/coelo_admin_toggle_field.dart';
 export 'src/listing/coelo_admin_create_action.dart';

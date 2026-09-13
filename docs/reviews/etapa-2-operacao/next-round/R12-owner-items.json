@@ -94,18 +94,18 @@
   },
   {
     "id": "owner.r12-07",
-    "status": "deferred",
+    "status": "partial",
     "actionIds": [
       "attendance.mark",
       "attendance.correct",
       "attendance.finish"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "Respiro e overflow corrigidos; 4 regressões PASS; rota normal corrigida ainda a provar.",
+    "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+    "e2e": "Prova atual do ajuste pela rota normal pendente.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-07 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
   },
@@ -631,16 +631,16 @@
   },
   {
     "id": "owner.r12-41",
-    "status": "deferred",
+    "status": "partial",
     "actionIds": [
       "forms.list"
     ],
-    "fe": "Planejado R12; sem implementação.",
-    "be": "Sem diagnóstico novo.",
-    "e2e": "Sem prova nova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "fe": "Filtros canônicos corrigidos; 4 regressões PASS; rota normal corrigida ainda a provar.",
+    "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+    "e2e": "Prova atual do ajuste pela rota normal pendente.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-41, mapear e reproduzir na R12 autorizada.",
+    "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
   },
@@ -659,16 +659,16 @@
   },
   {
     "id": "owner.r12-43",
-    "status": "deferred",
+    "status": "partial",
     "actionIds": [
       "chat.open"
     ],
-    "fe": "Contorno a revisar na R12.",
-    "be": "Sem mudança prevista para o contorno.",
-    "e2e": "Sem nova prova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+    "fe": "Borda foreground e clipping corrigidos; regressões Chat PASS; render novo ainda a provar.",
+    "be": "Sem alteração backend nesta correção visual; certificações históricas preservadas.",
+    "e2e": "Prova atual do ajuste pela rota normal pendente.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
     "owner": "C0 R12",
-    "nextGate": "Reproduzir contorno no painel/lista/paginação/compositor e comparar referência aprovada.",
+    "nextGate": "Concluir goldens/analyze/build e provas focais na rota normal.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md"
   },

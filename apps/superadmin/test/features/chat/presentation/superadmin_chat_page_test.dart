@@ -109,6 +109,13 @@ void main() {
       expect(find.text('Turma Girassol'), findsWidgets);
       expect(find.text('Mensagem autorizada'), findsWidgets);
       expect(find.byKey(const Key('superadmin-chat-composer-field')), findsOneWidget);
+      final workspace = tester.widget<Container>(
+        find.byKey(const Key('superadmin-chat-workspace')),
+      );
+      expect(workspace.clipBehavior, Clip.antiAlias);
+      final outline = workspace.foregroundDecoration! as BoxDecoration;
+      expect(outline.borderRadius, BorderRadius.circular(CoeloRadius.lg));
+      expect(outline.border, isNotNull);
       expect(tester.takeException(), isNull);
     });
   }

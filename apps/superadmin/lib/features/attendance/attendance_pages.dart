@@ -1622,14 +1622,36 @@ class _AttendanceCommandErrorBanner extends StatelessWidget {
           borderRadius: BorderRadius.circular(CoeloRadius.lg),
           border: Border.all(color: colors.error),
         ),
-        child: Row(
-          children: [
-            Icon(Icons.error_outline_rounded, color: colors.error),
-            const SizedBox(width: CoeloSpacing.space3),
-            Expanded(child: Text(message)),
-            if (actionLabel != null && onAction != null)
-              OutlinedButton(onPressed: onAction, child: Text(actionLabel!)),
-          ],
+        child: LayoutBuilder(
+          builder: (context, constraints) {
+            final messageRow = Row(
+              children: [
+                Icon(Icons.error_outline_rounded, color: colors.error),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(child: Text(message)),
+              ],
+            );
+            if (actionLabel == null || onAction == null) return messageRow;
+            final action = OutlinedButton(onPressed: onAction, child: Text(actionLabel!));
+            if (constraints.maxWidth < CoeloBreakpoints.medium.minWidth ||
+                MediaQuery.textScalerOf(context).scale(1) >= 1.5) {
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  messageRow,
+                  const SizedBox(height: CoeloSpacing.space3),
+                  action,
+                ],
+              );
+            }
+            return Row(
+              children: [
+                Expanded(child: messageRow),
+                const SizedBox(width: CoeloSpacing.space3),
+                action,
+              ],
+            );
+          },
         ),
       ),
     );
