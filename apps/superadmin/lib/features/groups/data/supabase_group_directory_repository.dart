@@ -450,10 +450,10 @@ Exception _mapSaveError(PostgrestException error) => switch (error.code) {
   _ => GroupDirectoryUnavailableException(diagnosticCode: _safeDiagnosticCode(error.code)),
 };
 
-String _safeDiagnosticCode(String? code) => switch (code) {
-  '22023' || '23505' || '40001' || 'P0002' || '55000' => code!,
-  _ => 'UNKNOWN',
-};
+String _safeDiagnosticCode(String? code) =>
+    code != null && RegExp(r'^(?:[0-9A-Z]{5}|PGRST[0-9]{3})$').hasMatch(code)
+        ? code
+        : 'UNKNOWN';
 
 Map<String, dynamic> _saveResponse(Object? value) {
   try {
