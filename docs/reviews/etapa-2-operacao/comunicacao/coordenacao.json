@@ -1,12 +1,12 @@
 {
-  "revision": 122,
+  "revision": 123,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T02:16:40.869838+00:00",
+  "updatedAt": "2026-09-13T02:21:57.999485+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4285,18 +4285,35 @@
     "evidence": "rota normal, repository produtivo, Supabase real, reload e negativas vigentes por familia",
     "estimate": "delta depende de confirmar runtime e recursos retidos; janela maxima nao e estimativa de conclusao",
     "quota": {
-      "usedPercent": 69,
+      "usedPercent": 70,
       "windowDurationMins": 10080,
-      "measuredAt": "2026-09-13T02:16:40.869838+00:00"
+      "measuredAt": "2026-09-13T02:21:57.999485+00:00"
     },
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
-      "chrome": "C0; Chrome existente; PID a conferir; nenhuma prova iniciada",
-      "heavy": "livre, sem processo iniciado R10",
-      "sql": "C0; nenhum candidato/aplicacao R10"
+      "chrome": "C0 aba829822477; qa-r06-estrutura;3016;3014 encerrado por Owner",
+      "heavy": "Terra flutter test/analyze serial; nenhum build C0",
+      "sql": "espelho exclusivo Terra; producao somente C0"
     },
-    "auxiliary": null,
+    "auxiliary": {
+      "id": "/root/terra_members",
+      "model": "gpt-5.6-terra",
+      "reasoningEffort": "medium",
+      "ACK": "mensagem diagnostica pelo canal real recebida",
+      "branch": "work/etapa2-r10-terra-members",
+      "scope": "groups.members",
+      "sqlMirror": "supabase_db_coelo_baseline; exclusivo leitura/candidato/teste rollback; sem reset"
+    },
     "next": "concluir leitura dos rastreadores e conferir runtime servido/login",
     "WIP": "somente abertura documental; worktrees e sinteticos anteriores preservados"
+  },
+  "checkpointR10": {
+    "at": "2026-09-13T02:21:57.999485+00:00",
+    "base": "4f842711a",
+    "status": "runtime3016/login normal/Atividades lista; nenhum novo aceite",
+    "WIP": "Terra groups.members; C0 documentos de abertura",
+    "firstGate": "activities.publish/assessment UI e reload",
+    "serverPID": 45980,
+    "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   }
 }
