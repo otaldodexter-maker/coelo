@@ -67,6 +67,14 @@ de Histórico de chamadas. A remoção imediata quebraria testes e criação/
 publicação de lançamento; uma tela nova excederia o recorte sem decisão.
 Nenhum código/backend foi alterado. Diagnóstico:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md`.
+
+## R12-05 checkpoint de execução (C0)
+
+Nova chamada mantém a cascata de contexto e guards de elegibilidade já
+implementadas; `attendance_pages_test.dart` passou 58/58. Nenhum código ou
+backend foi alterado. E2E aguarda contexto real, persistência/reload e
+negativa cross-tenant. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.

@@ -83,12 +83,12 @@
     "actionIds": [
       "attendance.create"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "local-green: cascata Instituição/Unidade/Turma, Contexto Turma/Atividade, elegibilidade, data, foco e responsividade verificados.",
+    "be": "Contrato preservado; servidor continua revalidando escopo/capacidade.",
+    "e2e": "pending-verification: rota normal, persistência/reload e escopo real pendentes.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Reproduzir com contexto real autorizado, atividade elegível, persistência/reload e negativa cross-tenant.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
