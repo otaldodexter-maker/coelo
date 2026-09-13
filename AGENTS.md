@@ -276,3 +276,15 @@ audiencia correta, valide o conteudo e relate o que foi capturado. Quando nada
 reutilizavel mudar, nao crie arquivos apenas para registrar atividade.
 
 @RTK.md
+
+## Gate obrigatório de entrega (ADR 0036)
+
+Aplicar `.agents/skills/coelo-flutter-supabase-review/references/delivery-gate.md`
+antes de encerrar trabalho autorizado. Todos os pedidos ativos do Owner devem
+ter destino e estado explícitos, inclusive atualizações de MDs e consolidação
+Git/worktrees. Inventário e três rastreadores permanecem sincronizados por
+camada e tela/subtela. Conferir skills no checkout de destino e executar
+`docs/reviews/delivery_gate.py` após commit/push. FAIL bloqueia declaração de
+conclusão; PASS DOCUMENTED_PARTIAL exige comunicar o que falta. Não confundir
+backup, commit, merge, push e deploy. Nenhum histórico não revisado pode ser
+chamado integrado nem descartado para zerar contagens.

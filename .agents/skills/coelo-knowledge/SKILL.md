@@ -9,6 +9,17 @@ metadata:
 
 # Memória de conhecimento Coelo
 
+## Entrega: gate bloqueante obrigatório
+
+Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)
+(ADR 0036). Enumerar todos os pedidos do Owner, incluindo anexos, e conferir
+avanços/pendências por tela/subtela nas três camadas. Antes do fechamento,
+reconciliar commits exclusivos, worktrees, stash, ignorados e skills no
+checkout final. Rodar `docs/reviews/delivery_gate.py` após commit/push.
+`PASS DOCUMENTED_PARTIAL` não autoriza dizer que tudo foi concluído; `FAIL`
+bloqueia a declaração de conclusão. Não omitir pendência no corte nem integrar
+histórico indiscriminadamente para zerar ahead/behind.
+
 ## Escopo futuro não é comportamento disponível
 
 A Etapa 3 ainda faz parte do MVP, mas seu registro não inicia implementação.

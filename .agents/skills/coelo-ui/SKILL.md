@@ -13,6 +13,17 @@ metadata:
 Aplicar o Design System oficial sem transformar propostas em padrões
 silenciosamente.
 
+## Entrega: gate bloqueante obrigatório
+
+Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)
+(ADR 0036). Enumerar todos os pedidos do Owner, incluindo anexos, e conferir
+avanços/pendências por tela/subtela nas três camadas. Antes do fechamento,
+reconciliar commits exclusivos, worktrees, stash, ignorados e skills no
+checkout final. Rodar `docs/reviews/delivery_gate.py` após commit/push.
+`PASS DOCUMENTED_PARTIAL` não autoriza dizer que tudo foi concluído; `FAIL`
+bloqueia a declaração de conclusão. Não omitir pendência no corte nem integrar
+histórico indiscriminadamente para zerar ahead/behind.
+
 ## Escolher a família visual antes do componente
 
 Registrar separadamente o **app que hospeda a rota** e a **família visual**.

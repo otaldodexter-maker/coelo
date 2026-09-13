@@ -1,0 +1,430 @@
+{
+  "at": "2026-09-13T05:36:54.812004+00:00",
+  "destination": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-coordenacao-20260912-2314",
+  "bundle": {
+    "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\coelo-all-refs.bundle",
+    "bytes": 1112017487,
+    "sha256": "d410a98407a3a1dfab724a3cc69c112aeb89d237120b892255b86d6ed0a645cf",
+    "verified": true
+  },
+  "worktrees": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r07-coordenacao",
+      "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "branch": "refs/heads/work/etapa2-r07-coordenacao",
+      "ignoredCount": 353,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r07-coordenacao-ignored.zip",
+      "archiveBytes": 157232969,
+      "archiveSHA256": "61ccba826c585df87e25f30acb39e7beaf07b34d55908fcaf65ae512ed5bdfa9",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r07-coordenacao-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "branch": "refs/heads/work/etapa2-r08-acessos-pessoas",
+      "ignoredCount": 61,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-acessos-pessoas-ignored.zip",
+      "archiveBytes": 2585951,
+      "archiveSHA256": "5fa308a313195dbfcd2a9f4cfaf3593102e28dd9aaf91dbd7f27e79850999a88",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-acessos-pessoas-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-ambiente-runtime",
+      "head": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "branch": "refs/heads/work/etapa2-r08-ambiente-runtime",
+      "ignoredCount": 140,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-ambiente-runtime-ignored.zip",
+      "archiveBytes": 271957550,
+      "archiveSHA256": "d97319e2f540573243129e5d2c168ae88c02c8bde0de0e6c6952c2af2f3d7fbf",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-ambiente-runtime-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-coordenacao",
+      "head": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "branch": "refs/heads/work/etapa2-r08-coordenacao",
+      "ignoredCount": 115,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-coordenacao-ignored.zip",
+      "archiveBytes": 88757161,
+      "archiveSHA256": "baafa2a923c4dd2b2490822d3e40c1dd26b2b08bb87746167a4735889f95e8c6",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-coordenacao-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-estrutura",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-estrutura",
+      "ignoredCount": 182,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-estrutura-ignored.zip",
+      "archiveBytes": 13047932,
+      "archiveSHA256": "63318a42210642a9583bb13f511a72e58b83ab7a835365c1ac0990dabf0d0f28",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-estrutura-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "branch": "refs/heads/work/etapa2-r08-formularios-cuidado-rotina",
+      "ignoredCount": 17,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-formularios-cuidado-rotina-ignored.zip",
+      "archiveBytes": 818606,
+      "archiveSHA256": "2fcb9e97820790681ea7d24efd7394aee20ddef8d9001429188b1b8f3ccdcce0",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-formularios-cuidado-rotina-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "branch": "refs/heads/work/etapa2-r08-operacoes",
+      "ignoredCount": 9,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-operacoes-ignored.zip",
+      "archiveBytes": 437296,
+      "archiveSHA256": "6654d374ceca6e94f8a761bcff9503c519969555ed99e1af596815e0d696fc24",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-operacoes-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "branch": "refs/heads/work/etapa2-r08-principal-chat-sistema",
+      "ignoredCount": 3,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-principal-chat-sistema-ignored.zip",
+      "archiveBytes": 55535,
+      "archiveSHA256": "335c5f5f8f0b1860c20a160fa5600770b79cc8adb094a93bed59d4294627459d",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-principal-chat-sistema-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "branch": "refs/heads/work/etapa2-r08-publicacoes-agenda",
+      "ignoredCount": 39,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-publicacoes-agenda-ignored.zip",
+      "archiveBytes": 125259174,
+      "archiveSHA256": "a0d195351fe294bbb786e57d6f5043a7a77469c4034a921ce2b358ed8de98635",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-publicacoes-agenda-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-realm-interno",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r08-realm-interno",
+      "ignoredCount": 1,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-realm-interno-ignored.zip",
+      "archiveBytes": 204,
+      "archiveSHA256": "0129c56fa01f5a20fd5a60c7eda5efcdf2dbec0fa706d3807db05b1f74dc4c85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-realm-interno-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "branch": "refs/heads/work/etapa2-r08-suites",
+      "ignoredCount": 93,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-suites-ignored.zip",
+      "archiveBytes": 4169569,
+      "archiveSHA256": "cfba6d386701df7716f5eccbaf0b9d95bf5d3f9e8fa3f15f4f54ecd04a11f60e",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r08-suites-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-acessos-pessoas-20260912-1542",
+      "head": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "branch": "refs/heads/work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-acessos-pessoas-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-acessos-pessoas-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-ambiente-runtime-20260912-1542",
+      "head": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "branch": "refs/heads/work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "ignoredCount": 87,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-ambiente-runtime-20260912-1542-ignored.zip",
+      "archiveBytes": 141800160,
+      "archiveSHA256": "2ca7bc80caddcb8e7a39026a15b9c8aa7a802ab133a07b27f4346d103c17abd1",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-ambiente-runtime-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao-20260912-1534",
+      "head": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1534",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-20260912-1534-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-20260912-1534-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao-20260912-1542",
+      "head": "ff11b17980d1519849c1bf472b4bc74c05e2994d",
+      "branch": "refs/heads/work/etapa2-r09-coordenacao-20260912-1542",
+      "ignoredCount": 131,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-20260912-1542-ignored.zip",
+      "archiveBytes": 247053921,
+      "archiveSHA256": "e00553e7f4b61638ff92f585f5feeb0d2257e4aa99bfcd6dfb5821361f2362b9",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-coordenacao-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-estrutura-20260912-1542",
+      "head": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "branch": "refs/heads/work/etapa2-r09-estrutura-20260912-1542",
+      "ignoredCount": 122,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-estrutura-20260912-1542-ignored.zip",
+      "archiveBytes": 230212697,
+      "archiveSHA256": "d9b18e39e81ea72493db24c2684464730dde70a6d33964cafbfbd779ae1de4d3",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-estrutura-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "head": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "branch": "refs/heads/work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-formularios-cuidado-rotina-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-formularios-cuidado-rotina-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-operacoes-20260912-1542",
+      "head": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "branch": "refs/heads/work/etapa2-r09-operacoes-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-operacoes-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-operacoes-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-principal-chat-sistema-20260912-1542",
+      "head": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "branch": "refs/heads/work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-principal-chat-sistema-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-principal-chat-sistema-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-publicacoes-agenda-20260912-1542",
+      "head": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "branch": "refs/heads/work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-publicacoes-agenda-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-publicacoes-agenda-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-realm-interno-20260912-1542",
+      "head": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "branch": "refs/heads/work/etapa2-r09-realm-interno-20260912-1542",
+      "ignoredCount": 2,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-realm-interno-20260912-1542-ignored.zip",
+      "archiveBytes": 31379,
+      "archiveSHA256": "97b7d973e51689057ae5b24a1b08d773ad7e27f413110dfb4470b21a7f28fae6",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-realm-interno-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-suites-20260912-1542",
+      "head": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "branch": "refs/heads/work/etapa2-r09-suites-20260912-1542",
+      "ignoredCount": 0,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-suites-20260912-1542-ignored.zip",
+      "archiveBytes": 22,
+      "archiveSHA256": "8739c76e681f900923b900c9df0ef75cf421d39cabb54650c4b9ad19b6a76d85",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r09-suites-20260912-1542-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-chat-inline",
+      "head": "b3ad72d7f7fb4ff838556d1314911897c53cd2ac",
+      "branch": "refs/heads/work/etapa2-r10-chat-inline",
+      "ignoredCount": 39,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-chat-inline-ignored.zip",
+      "archiveBytes": 80423366,
+      "archiveSHA256": "06fa1baa7596fff9a6a720302df4aebdd80ae5b03922226ef80a302b60507e5c",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-chat-inline-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-chat-upload",
+      "head": "17168309f738582c1bcb63c98742e3b3cd84fb44",
+      "branch": "refs/heads/work/etapa2-r10-chat-upload",
+      "ignoredCount": 43,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-chat-upload-ignored.zip",
+      "archiveBytes": 83031620,
+      "archiveSHA256": "79b5a9e59012880b012bd5e63f4adc9cba51af47117db4929c1f9fe0081f762e",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-chat-upload-manifest.json",
+      "verified": true
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-terra-members",
+      "head": "9916ae76ba76e7b563e3f053fa7d293e0e9480ad",
+      "branch": "refs/heads/work/etapa2-r10-terra-members",
+      "ignoredCount": 39,
+      "archive": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-terra-members-ignored.zip",
+      "archiveBytes": 83041872,
+      "archiveSHA256": "8f4b1d52daa7ab5042277a04024e52f571a7aa03ba3cdfcb70b7a97e8767851b",
+      "manifest": "C:\\Users\\adrie\\Documents\\Coelo-backups\\consolidacao-20260913\\e2-r10-terra-members-manifest.json",
+      "verified": true
+    }
+  ],
+  "removals": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r07-coordenacao",
+      "head": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-acessos-pessoas",
+      "head": "942955410699007fd86515fd34fb804b6b96903d",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-ambiente-runtime",
+      "head": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-coordenacao",
+      "head": "35fd0d297e85835e7e36a7e82b0ddef9df9b2fd4",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-estrutura",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-formularios-cuidado-rotina",
+      "head": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-operacoes",
+      "head": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-principal-chat-sistema",
+      "head": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-publicacoes-agenda",
+      "head": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-realm-interno",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r08-suites",
+      "head": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-acessos-pessoas-20260912-1542",
+      "head": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-ambiente-runtime-20260912-1542",
+      "head": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao",
+      "head": "d262eef09a26d91c1c71b7cfaacbc7b3420f9c9c",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao-20260912-1534",
+      "head": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-coordenacao-20260912-1542",
+      "head": "ff11b17980d1519849c1bf472b4bc74c05e2994d",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-estrutura-20260912-1542",
+      "head": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-formularios-cuidado-rotina-20260912-1542",
+      "head": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-operacoes-20260912-1542",
+      "head": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-principal-chat-sistema-20260912-1542",
+      "head": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-publicacoes-agenda-20260912-1542",
+      "head": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-realm-interno-20260912-1542",
+      "head": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r09-suites-20260912-1542",
+      "head": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-chat-inline",
+      "head": "b3ad72d7f7fb4ff838556d1314911897c53cd2ac",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-chat-upload",
+      "head": "17168309f738582c1bcb63c98742e3b3cd84fb44",
+      "status": "archived-and-removed"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\e2-r10-terra-members",
+      "head": "9916ae76ba76e7b563e3f053fa7d293e0e9480ad",
+      "status": "archived-and-removed"
+    }
+  ]
+}

@@ -9,15 +9,26 @@ metadata:
 
 # Coelo Front-end + Back-end
 
+## Entrega: gate bloqueante obrigatório
+
+Aplicar o [gate de compromissos, rastreadores, Git e destino](references/delivery-gate.md)
+(ADR 0036). Enumerar todos os pedidos do Owner, incluindo anexos, e conferir
+avanços/pendências por tela/subtela nas três camadas. Antes do fechamento,
+reconciliar commits exclusivos, worktrees, stash, ignorados e skills no
+checkout final. Rodar `docs/reviews/delivery_gate.py` após commit/push.
+`PASS DOCUMENTED_PARTIAL` não autoriza dizer que tudo foi concluído; `FAIL`
+bloqueia a declaração de conclusão. Não omitir pendência no corte nem integrar
+histórico indiscriminadamente para zerar ahead/behind.
+
 ## Estado documental atual
 
-A R10 foi encerrada. Para pend?ncias e avan?os vigentes, consultar
+A R10 foi encerrada. Para pendências e avanços vigentes, consultar
 [fechamento R10](../../../docs/reviews/etapa-2-operacao/next-round/R10-fechamento.md),
 [estado por tela e subtela](../../../docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md)
-e o invent?rio/tr?s rastreadores sincronizados em `docs/reviews/`.
-Notas de rodadas anteriores abaixo s?o hist?ricas; n?o trat?-las como falta
-atual de implementa??o ou autoriza??o sem conferir o registro mais recente.
-Uma consulta documental n?o reabre a rodada nem inicia R11 ou Etapa 3.
+e o inventário/três rastreadores sincronizados em `docs/reviews/`.
+Notas de rodadas anteriores abaixo são históricas; não tratá-las como falta
+atual de implementação ou autorização sem conferir o registro mais recente.
+Uma consulta documental não reabre a rodada nem inicia R11 ou Etapa 3.
 
 ## Entrega atual e limite da Etapa 3
 
@@ -342,7 +353,7 @@ correção local verificada. Não confundir isso com integração ou publicaçã
   bastam para leitura e marcação sem RPC nova (pendência de UI).
 - Detalhe por frente em `docs/reviews/evidence/etapa-2/r06-*/skills-deltas*.md`.
 
-## Pendências vigentes — Etapa 2 após R07
+## Histórico — pendências após R07
 
 Fontes: `docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md`,
 `R08-backlog.md` e `R07-decisoes-owner-20260912.md`; ADR0034 Decisão20.

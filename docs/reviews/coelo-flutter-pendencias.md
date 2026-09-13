@@ -21,10 +21,10 @@ tracker_sync_revisions: "R10 C0 fechamento; R09 historica preservada"
 
 ## Estado vigente ? R10, fechamento
 
-Revis?o documental p?s-R10: [todas as 231 a??es por tela/subtela, com FE,
+Revisão documental pós-R10: [todas as 231 ações por tela/subtela, com FE,
 BE e primeiro gate](etapa-2-operacao/next-round/R10-estado-por-tela.md).
-Estados preservados; nenhuma nova certifica??o por esta revis?o. Consolida??o
-Git/worktrees registrada separadamente; hist?ricos n?o s?o tarefas atuais.
+Estados preservados; nenhuma nova certificação por esta revisão. Consolidação
+Git/worktrees registrada separadamente; históricos não são tarefas atuais.
 
 
 FE177/231 (76,62%); BE162/224 (72,32%); E2E150/199 (75,38%).
