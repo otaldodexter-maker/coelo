@@ -17,8 +17,6 @@ declare
   before_state jsonb;
   response jsonb;
 begin
-  response := app_private.student_link_receipt(p_request_id, actor, 'unlink');
-  if response is not null then return response; end if;
   if p_group_id is null or p_child_context_id is null then
     raise invalid_parameter_value using message='group student unlink requires request, child context, and group';
   end if;
@@ -33,6 +31,16 @@ begin
   institution := app_private.student_link_require_scope(
     p_child_context_id, group_row.unit_id, group_row.id
   );
+  -- Um replay precisa passar pela autorizacao atual. O recibo tambem e preso
+  -- ao contexto e turma, para que o mesmo request id nao aceite outro alvo.
+  response := app_private.student_link_receipt(p_request_id, actor, 'unlink');
+  if response is not null then
+    if response->>'child_context_id' is distinct from p_child_context_id::text
+      or response->>'group_id' is distinct from p_group_id::text then
+      raise invalid_parameter_value using message='request id reused for another unlink target';
+    end if;
+    return response;
+  end if;
   perform pg_catalog.pg_advisory_xact_lock(
     pg_catalog.hashtextextended(p_child_context_id::text, 0)
   );

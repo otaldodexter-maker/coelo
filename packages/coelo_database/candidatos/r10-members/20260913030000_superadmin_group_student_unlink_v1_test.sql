@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(10);
+select plan(14);
 
 select has_function(
   'public', 'superadmin_group_student_unlink', array['uuid','uuid','uuid'],
@@ -85,6 +85,37 @@ select ok(exists(
 ), 'group-only unlink writes its audit record');
 
 set local role authenticated;
+select lives_ok(
+  $$select public.superadmin_group_student_unlink(
+    'f6980000-0000-4000-8000-000000000001',
+    'f6950000-0000-4000-8000-000000000001',
+    'f6940000-0000-4000-8000-000000000001')$$,
+  'lost response retry returns the receipt for the same unlink target'
+);
+reset role;
+select is(
+  (select count(*)::integer from audit.audit_logs
+   where action_code='student.unlink' and object_id='f6970000-0000-4000-8000-000000000001'),
+  1, 'receipt retry does not duplicate the unlink audit record'
+);
+
+set local role authenticated;
+select throws_ok(
+  $$select public.superadmin_group_student_unlink(
+    'f6980000-0000-4000-8000-000000000001',
+    'f6950000-0000-4000-8000-000000000001',
+    'f6940000-0000-4000-8000-000000000002')$$,
+  '22023','request id reused for another unlink target','receipt cannot be replayed for group B'
+);
+select set_config('test.r10_unlink_allow','false',true);
+select throws_ok(
+  $$select public.superadmin_group_student_unlink(
+    'f6980000-0000-4000-8000-000000000001',
+    'f6950000-0000-4000-8000-000000000001',
+    'f6940000-0000-4000-8000-000000000001')$$,
+  '42501','people.assign_children required','receipt replay requires current capability'
+);
+select set_config('test.r10_unlink_allow','true',true);
 select throws_ok(
   $$select public.superadmin_group_student_unlink(
     'f6980000-0000-4000-8000-000000000002',

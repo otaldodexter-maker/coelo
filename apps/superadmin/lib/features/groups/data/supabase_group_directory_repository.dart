@@ -75,7 +75,11 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
           await _client.rpc<Object?>(
             'superadmin_group_student_unlink',
             params: {
-              'p_request_id': _uuidV4(),
+              'p_request_id': _studentOperationRequestId(
+                request.requestId,
+                'unlink',
+                '${student.childContextId}:${saved.id}',
+              ),
               'p_child_context_id': student.childContextId,
               'p_group_id': saved.id,
             },
@@ -102,7 +106,15 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
         try {
           await _client.rpc<Object?>(
             'superadmin_group_student_link',
-            params: {'p_request_id': _uuidV4(), 'p_person_id': personId, 'p_group_id': saved.id},
+            params: {
+              'p_request_id': _studentOperationRequestId(
+                request.requestId,
+                'link',
+                '$personId:${saved.id}',
+              ),
+              'p_person_id': personId,
+              'p_group_id': saved.id,
+            },
           );
           steps.add(GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people));
         } on PostgrestException {
@@ -439,6 +451,9 @@ String _requestUuid(String value) {
   return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-4${hex.substring(13, 16)}-'
       '8${hex.substring(17, 20)}-${hex.substring(20, 32)}';
 }
+
+String _studentOperationRequestId(String requestId, String operation, String target) =>
+    _requestUuid('$requestId:$operation:$target');
 
 bool _isUuid(String value) => RegExp(
   r'^[0-9a-fA-F]{8}-[0-9a-fA-F]{4}-[1-5][0-9a-fA-F]{3}-[89abAB][0-9a-fA-F]{3}-[0-9a-fA-F]{12}$',

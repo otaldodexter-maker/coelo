@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(13);
+select plan(15);
 
 select has_function(
   'public','superadmin_group_student_link',array['uuid','uuid','uuid'],
@@ -118,7 +118,21 @@ select throws_ok(
     'f6600000-0000-4000-8000-000000000004',
     'f6100000-0000-4000-8000-000000000002',
     'f6400000-0000-4000-8000-000000000001')$$,
-  '42501','people.assign_children required','missing capability cannot create another child link'
+  'P0002','student link unavailable','missing capability receives the same opaque denial'
+);
+select throws_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000005',
+    'f6100000-0000-4000-8000-000000000002',
+    'f6400000-0000-4000-8000-000000000099')$$,
+  'P0002','student link unavailable','missing capability cannot distinguish a nonexistent group'
+);
+select throws_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000006',
+    'f6100000-0000-4000-8000-000000000003',
+    'f6400000-0000-4000-8000-000000000001')$$,
+  'P0002','student link unavailable','missing capability cannot distinguish a cross-tenant child'
 );
 reset role;
 select is((select count(*)::integer from public.child_group_links),1,

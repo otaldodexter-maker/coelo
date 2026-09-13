@@ -190,3 +190,27 @@ nega contexto de outro tenant e ator sem `people.assign_children`. A verificacao
 posterior confirmou que a funcao candidata nao permaneceu no espelho. O teste
 focal Flutter de reconciliacao foi preparado, mas nao executado porque C0
 reservou o slot Flutter. Sem aplicacao remota, migration, deploy ou integracao.
+
+## Revisao de recibos e oraculo de autorizacao
+
+O consumidor agora deriva o `request_id` de cada link/unlink de
+`requestId + operacao + alvo`, preservando-o numa repeticao depois de resposta
+perdida. O teste focal cobre retry de link e unlink com o mesmo id.
+
+O unlink revalida `student_link_require_scope` antes de consultar um recibo e
+confere que `child_context_id` e `group_id` no recibo correspondem ao alvo
+atual. Portanto, um replay apos revogacao de capacidade falha e o mesmo request
+id nao pode confirmar outra turma.
+
+O adaptador de link devolve a mesma negativa opaca `student link unavailable`
+para alvo valido sem capacidade, turma inexistente e crianca de outro tenant;
+ele ainda delega a escrita ao comando canonico. Isso remove o oraculo de
+existencia para sessao sem `people.assign_children`.
+
+Provas SQL locais atualizadas: link 15 PASS / 0 FAIL e unlink 14 PASS / 0
+FAIL, ambas em transacao/rollback. A prova de unlink cobre recibo repetido sem
+segunda auditoria, alvo trocado e capacidade revogada. Flutter repository 9/9
+PASS, fake repository 5/5 PASS e `dart analyze` focal sem issues.
+`group_form_page_test.dart` falhou antes do save: o teste tenta tocar uma etapa
+fora do hit target e nao encontra `group-form-save`; nao foi alterado neste
+pacote. Nenhum build, deploy, SQL remoto ou integracao foi executado.
