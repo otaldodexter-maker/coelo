@@ -1532,12 +1532,12 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo.",
+      "be": "Contrato preservado; nenhum SQL/RPC novo.",
+      "e2e": "Owner decision pending antes de alterar composição ou dados.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -2621,6 +2621,7 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-attendance-routine.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
     "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
