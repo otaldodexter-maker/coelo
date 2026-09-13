@@ -70,15 +70,15 @@ Fonte: R12-apontamentos-owner.md, anexo7. Código:
 Já existe padding interno; reproduzir a falta de margem externa antes de
 alterar tokens. Não transformar R12-08 (persistência/sentimento) em escopo oculto.
 
-- [ ] Abrir chamada normal e reproduzir estado de falha sintético; separar
+- [x] Abrir chamada normal e reproduzir estado de falha sintético; separar
   falha de salvar da apresentação do banner.
-- [ ] Corrigir somente o encaixe/respiro causal no contêiner canônico;
+- [x] Corrigir somente o encaixe/respiro causal no contêiner canônico;
   preservar rascunho, mensagem, ação de recuperação e rodapé.
-- [ ] Executar os casos afetados de
+- [x] Executar os casos afetados de
   `test/features/attendance/attendance_pages_test.dart` e, se necessário,
   `attendance_touch_target_test.dart` a partir de apps/superadmin com
   `rtk proxy flutter test <arquivo> --plain-name <caso afetado> --no-pub`.
-- [ ] Provar desktop/mobile, texto200%, erro sem conteúdo colado/encoberto,
+- [x] Provar desktop/mobile, texto200%, erro sem conteúdo colado/encoberto,
   edição preservada e teclado. Falha funcional de gravação fica no item R12-08, destinado à R13,
   com causa/prova, sem alegar CRUD corrigido por ajuste visual.
 
@@ -89,14 +89,14 @@ Fonte: R12-formularios-agenda-owner.md, anexos2–3. Código:
 Há seletor Situação e largura240 no trecho de filtros; comparar com componentes
 canônicos e preservar seleção múltipla. Não incluir editor/renomeação/drag.
 
-- [ ] Reproduzir popup aberto/fechado e quebra Limpar/Aplicar na rota normal.
-- [ ] Ajustar composição/largura e gatilhos canônicos dos dois filtros, sem
+- [x] Reproduzir popup aberto/fechado e quebra Limpar/Aplicar na rota normal.
+- [x] Ajustar composição/largura e gatilhos canônicos dos dois filtros, sem
   alterar semântica dos parâmetros enviados ao repository.
-- [ ] Cobrir selecionar múltiplos estados, aplicar, limpar, período, foco e
+- [x] Cobrir selecionar múltiplos estados, aplicar, limpar, período, foco e
   compacto/texto ampliado nos testes existentes
   `test/features/forms/presentation/directory/forms_directory_page_test.dart`;
   revisar goldens afetados de `forms_directory_golden_test.dart` por imagem.
-- [ ] Provar resultado filtrado correto na UI, ausência de truncamento e
+- [x] Provar resultado filtrado correto na UI, ausência de truncamento e
   rodapé do popup em uma composição acessível. Não inventar aprovação A.
 
 ### 3. R12-43 — Conversas: contorno do contêiner
@@ -107,29 +107,33 @@ Existe borda em um bloco, mas outra decoração não a declara: localizar o
 contêiner visto no anexo antes de atribuir causa. R12-52 (mosaico/compositor)
 segue R13, sem redesenho oportunista.
 
-- [ ] Reproduzir lista/conversa/paginação/compositor em desktop/compacto,
+- [x] Reproduzir lista/conversa/paginação/compositor em desktop/compacto,
   claro/escuro, vazio e scroll; preservar limites e cantos da referência.
-- [ ] Corrigir borda/clipping causal por tokens existentes, sem envolver
+- [x] Corrigir borda/clipping causal por tokens existentes, sem envolver
   tudo em contêiner redundante e sem bordas novas nas bolhas por inferência.
-- [ ] Testar casos afetados em
+- [x] Testar casos afetados em
   `test/features/chat/presentation/superadmin_chat_page_test.dart` e revisar
   renders pertinentes de `superadmin_chat_page_golden_test.dart`.
-- [ ] Confirmar navegação e leitura da conversa normal; não enviar mensagens
+- [x] Confirmar navegação e leitura da conversa normal; não enviar mensagens
   a terceiros nem declarar anexos/entrega/backend concluídos por contorno.
 
 ## Fechamento obrigatório e transferência
 
-- [ ] Registrar por item FE/BE/E2E, evidência, testes únicos P/F/B/S/U, cota,
+- [x] Registrar por item FE/BE/E2E, evidência, testes únicos P/F/B/S/U, cota,
   SHA, runtime/build/deploy e primeiro gate; atualizar inventário/matrizes juntos.
-- [ ] Criar R12-fechamento.md com status encerrada e os resultados reais.
+- [x] Criar R12-fechamento.md com status encerrada e os resultados reais.
   Atualizar ownerItems vigentes antes de decidir quais foram concluídos.
-- [ ] Executar `rtk proxy python docs/reviews/etapa-2-operacao/next-round/transferir-abertos-r12-r13.py --preview`.
-- [ ] Executar o mesmo comando com `--apply`: transfere cada item selecionado
+- [x] Executar `rtk proxy python docs/reviews/etapa-2-operacao/next-round/transferir-abertos-r12-r13.py --preview`.
+- [x] Executar o mesmo comando com `--apply`: transfere cada item selecionado
   ainda aberto para R13, mantendo ID, provas, candidato, camadas e bloqueio.
   Não transferir item concluído nem abrir R13 automaticamente.
-- [ ] Commit/push dev sem force; executar delivery_gate.py após push,
+- [ ] Gate final após publicação: commit/push dev sem force; executar delivery_gate.py após push,
   reconciliar remoto/WIP e reportar a lista transferida. PASS parcial não é
   conclusão do produto. Falta de cota não autoriza omitir o fechamento.
 
 Sem ganho funcional nesta divisão: FE175/231, BE159/224, E2E148/199. A cobertura
 dos três apontamentos é separada desses denominadores de produto.
+
+## Execução e fechamento
+
+Plano executado no recorte07/41/43. Resultados, controles que permaneceram falhos e recibo formal em R12-fechamento.md; não interpretar o checklist preparatório como prova de execução ou reabrir esta rodada. R13 seguirá somente pelo release supervisionado.

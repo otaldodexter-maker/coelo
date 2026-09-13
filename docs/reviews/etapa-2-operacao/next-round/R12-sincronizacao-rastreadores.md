@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13; R12-owner-items.json; R12-apontamentos-owner.md
-status: sincronização documental; execução R12 não iniciada
+status: sincronização reconciliada com fechamento focal R12
 generated_at: 2026-09-13
 ---
 
@@ -79,3 +79,7 @@ Destino: [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md). R12-4
 ## Divisão por cota — Owner 2026-09-13
 
 O catálogo53 permanece histórico e íntegro. Destino vigente: [R12-plano-de-rodada.md](R12-plano-de-rodada.md) seleciona somente R12-07/41/43; os outros50 seguem [R13-plano-de-rodada.md](R13-plano-de-rodada.md) e [R13-pendencias.md](R13-pendencias.md). destinationRound em R12-owner-items.json prevalece sobre referências antigas à rodada. Ao encerrar R12, transferir qualquer selecionado ainda aberto pelo procedimento do plano. Execução de ambas não iniciada; sem mudança de estado/percentual.
+
+## Fechamento focal vigente
+
+R12-07/41/43 entregues no recorte visual; demais50 em R13. Tabela acima é captura histórica, substituída operacionalmente pelos catálogos atuais e R12-fechamento.md. closure-delta.json foi aplicado às três camadas preservando certificações/IDs. Nenhum delta antigo deve ser reaplicado.

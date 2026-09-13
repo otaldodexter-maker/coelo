@@ -115,3 +115,7 @@ As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R1
 ## Divisão por cota — Owner 2026-09-13
 
 O catálogo53 permanece histórico e íntegro. Destino vigente: [R12-plano-de-rodada.md](R12-plano-de-rodada.md) seleciona somente R12-07/41/43; os outros50 seguem [R13-plano-de-rodada.md](R13-plano-de-rodada.md) e [R13-pendencias.md](R13-pendencias.md). destinationRound em R12-owner-items.json prevalece sobre referências antigas à rodada. Ao encerrar R12, transferir qualquer selecionado ainda aberto pelo procedimento do plano. Execução de ambas não iniciada; sem mudança de estado/percentual.
+
+## Resultado da execução focal — 13/09/2026
+
+Somente R12-07: respiro do alerta entregue; R12-01–06/08 continuam R13. Ver [fechamento](R12-fechamento.md), provas e limites de FE/BE/E2E. Nenhuma aprovação A do Owner ou certificação funcional inteira nova.

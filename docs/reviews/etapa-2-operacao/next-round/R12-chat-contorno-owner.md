@@ -27,3 +27,7 @@ Atualização dos três rastreadores ainda pendente, pois R11 mantém escritor c
 ## Destino das pendências R11 — decisão Owner 2026-09-13
 
 As pendências remanescentes foram transferidas para [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md), itens R12-46 a53, com responsável C0 R12, estados e primeiro gate preservados. R11 permanece encerrada parcialmente; esta atualização não inicia R12, não aplica SQL e não altera percentuais. O compositor de chat R12-52 deve ser coordenado com o contorno R12-43.
+
+## Resultado da execução focal — 13/09/2026
+
+R12-43: contorno entregue; mídia/compositor R12-52 continuam R13. Ver [fechamento](R12-fechamento.md), provas e limites de FE/BE/E2E. Nenhuma aprovação A do Owner ou certificação funcional inteira nova.

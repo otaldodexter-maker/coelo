@@ -41,3 +41,7 @@ agenda.request ou agenda.permissions não são assumidos como equivalentes.
 Não criar action_id ou mudar denominador por contagem de anexos.
 WIP R11 e seus rastreadores centrais preservados; integração documental central
 permanece pendente do integrador. Sem código, build, SQL, deploy ou execução R12.
+
+## Resultado da execução focal — 13/09/2026
+
+Somente R12-41: filtros Situação/Período entregues; editor/Agenda continuam R13. Ver [fechamento](R12-fechamento.md), provas e limites de FE/BE/E2E. Nenhuma aprovação A do Owner ou certificação funcional inteira nova.

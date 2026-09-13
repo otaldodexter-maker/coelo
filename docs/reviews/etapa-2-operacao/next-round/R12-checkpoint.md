@@ -1,6 +1,6 @@
 ---
 source: R12-prompt-unico.md; execução C0 autorizada pelo Owner
-status: em execução
+status: encerrada; consultar R12-fechamento.md
 generated_at: 2026-09-13
 ---
 
@@ -24,3 +24,12 @@ Próximo: goldens por imagem, analyze, build conjunto, provas normais. Estimativ
 Analyze focal PASS. Comparação de goldens na base0fc6cb561 reproduziu os mesmos17 testes falhos; em Circulares os percentuais correspondentes ficaram idênticos, sem delta visual R12. Forms/Chat têm diferença causal R12 adicional; regravar somente essas duas superfícies após revisão. WIP restaurado byte a byte; cópia privada em Coelo-backups/r12-wip-before-baseline.
 
 Goldens Forms/Chat regravados após revisão de renders desktop/compacto e claro/escuro; comparação final13 PASS (24 imagens, não24 testes). Cabeçalho de fixture atual reconciliado com base R11; nenhuma aprovação Owner A fabricada. Circulares: quatro testes falhos já na base, percentuais idênticos preservados sem regravar. Validador visual aponta20 ocorrências/entradas antigas fora do delta; nenhum widget proibido introduzido por R12, allowlist intacta.
+
+## Prova de runtime
+Build ba5cfd2d,59.9s exit0; hash HTTP confere com arquivo local. Runtime3540/3000; wrapper de saída falhou apenas ao imprimir símbolo Unicode após build concluído e foi corrigido (não houve rebuild desnecessário). R12-07: erro visual antes/depois na rota normal,375/1440; recuperação por botão e releitura conferida. Duas tentativas antigas do driver liberaram conclusão sintética (versões2 e4); ambas reabertas pela RPC existente com motivo QA. Estado final reopened/version5 preservado após interceptação Fetch explícita (1RPC abortada) e reload. Não certificar aquelas tentativas como ausência de escrita; nenhuma pessoa/vínculo criado. R12-08 funcional permanece R13.
+
+## Checkpoint de fechamento — 14:28 BRT
+
+Cota95%; três ajustes provados na rota normal. Formulários: 3 resultados iniciais,2 com Rascunho+Ativo,1 com período Este mês; limpar devolve3. Conversas: borda contínua em375/1440, claro/escuro, painel/lista/vazio; leitura sintética, sem envio. Teclado Enter no botão de recuperação: quatro variantes PASS, substituindo os mesmos casos, sem somar rerun. Validador visual comparado novamente com os quatro fontes originais: mesmos20 achados, saída idêntica ignorando números de linha, código restaurado byte a byte.
+
+Runtime3540 encerrado e sessão de comando68878 drenada antes da troca de posse. Novo runtime37204/3000 iniciado realmente destacado, hash HTTP igual ao build ba5cfd2d; QAChrome26252/9427 mantido, Owner18924 preservado. Nenhum comando pesado pendente. Próximo: fontes/catálogos, transferência formal, commit/push e gate; só então sinal final ao supervisor11180.

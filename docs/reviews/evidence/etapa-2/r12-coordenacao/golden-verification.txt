@@ -1,0 +1,21 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: (setUpAll)
+00:00 +0: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: matches the approved responsive directory contract
+00:02 +1: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: matches the approved flyout and content-height schedule dialog
+00:03 +2: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: captures the honest unavailable schedule state from the directory
+00:03 +3: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: captures empty, no-results, failure and unauthorized directory states
+00:04 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/forms/presentation/directory/forms_directory_golden_test.dart: (tearDownAll)
+00:04 +4: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart
+00:05 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: (setUpAll)
+00:05 +4: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 375 in light
+00:06 +5: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 768 in light
+00:06 +6: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 1024 in light
+00:06 +7: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 1440 in light
+00:06 +8: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 375 in dark
+00:06 +9: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 768 in dark
+00:07 +10: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 1024 in dark
+00:07 +11: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data at 1440 in dark
+00:07 +12: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: renders authorised chat data with reduced motion
+00:07 +13: C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/chat/presentation/superadmin_chat_page_golden_test.dart: (tearDownAll)
+00:07 +13: All tests passed!

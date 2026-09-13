@@ -1018,7 +1018,9 @@ void main() {
         expect(reload.hitTestable(), findsOneWidget);
         expect(find.widgetWithText(TextButton, 'Voltar').hitTestable(), findsOneWidget);
         repository.commandError = null;
-        await tester.tap(reload);
+        Focus.of(tester.element(find.text('Recarregar chamada'))).requestFocus();
+        await tester.pump();
+        await tester.sendKeyEvent(LogicalKeyboardKey.enter);
         await tester.pumpAndSettle();
         expect(find.text('A chamada foi atualizada em outro acesso.'), findsNothing);
       });

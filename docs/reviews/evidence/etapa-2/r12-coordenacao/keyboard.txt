@@ -1,0 +1,7 @@
+[rtk] /!\ No hook installed — run `rtk init -g` for automatic token savings
+00:00 +0: loading C:/Users/adrie/Documents/Coelo/apps/superadmin/test/features/attendance/attendance_pages_test.dart
+00:00 +0: R12 error spacing and recovery at 375.0 text 1.0
+00:01 +1: R12 error spacing and recovery at 375.0 text 2.0
+00:01 +2: R12 error spacing and recovery at 1440.0 text 1.0
+00:02 +3: R12 error spacing and recovery at 1440.0 text 2.0
+00:02 +4: All tests passed!

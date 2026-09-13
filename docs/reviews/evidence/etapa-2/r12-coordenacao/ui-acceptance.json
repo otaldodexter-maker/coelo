@@ -1,0 +1,72 @@
+{
+  "campaign_id": "R12-visual-normal-route",
+  "revision": "ba5cfd2d08e3a7577e6e296fe9870b1b30c783bf",
+  "environment": "Supabase production; retained synthetic QA; test_driver/qa_main.dart",
+  "at": "2026-09-13T14:26:43.538287-03:00",
+  "scope": "Ajustes visuais; não é campanha funcional E2E/cross-tenant",
+  "counts": {
+    "P": 8,
+    "F": 0,
+    "B": 0,
+    "S": 0,
+    "U": 0
+  },
+  "cases": [
+    {
+      "test_id": "r12.07.margin",
+      "ownerItem": "owner.r12-07",
+      "result": "P",
+      "criterion": "375/1440; margem24px e rodapé acessível",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/error-after-mobile.png"
+    },
+    {
+      "test_id": "r12.07.recovery",
+      "ownerItem": "owner.r12-07",
+      "result": "P",
+      "criterion": "Erro interceptado; Recarregar chamada; versão5 inalterada",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/error-after-recovered.png"
+    },
+    {
+      "test_id": "r12.41.status",
+      "ownerItem": "owner.r12-41",
+      "result": "P",
+      "criterion": "Multisseleção real3→2; aberto/fechado desktop/compacto",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/forms-filtered-desktop.png"
+    },
+    {
+      "test_id": "r12.41.period",
+      "ownerItem": "owner.r12-41",
+      "result": "P",
+      "criterion": "Este mês combinado2→1 resultado",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/forms-period-applied-desktop.png"
+    },
+    {
+      "test_id": "r12.41.clear",
+      "ownerItem": "owner.r12-41",
+      "result": "P",
+      "criterion": "Limpar período/situação restaura3 resultados",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/forms-cleared-desktop.png"
+    },
+    {
+      "test_id": "r12.43.desktop",
+      "ownerItem": "owner.r12-43",
+      "result": "P",
+      "criterion": "Lista/paginação/painel/compositor; dois temas; leitura sintética",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/chat-light-desktop.png"
+    },
+    {
+      "test_id": "r12.43.compact",
+      "ownerItem": "owner.r12-43",
+      "result": "P",
+      "criterion": "375; lista/conversa; dois temas e navegação",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/chat-dark-mobile-text.png"
+    },
+    {
+      "test_id": "r12.43.empty",
+      "ownerItem": "owner.r12-43",
+      "result": "P",
+      "criterion": "Buscar sem resultado; cantos/contorno e Limpar busca",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/runtime/chat-empty-mobile.png"
+    }
+  ]
+}

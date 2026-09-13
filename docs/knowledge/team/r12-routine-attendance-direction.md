@@ -1,5 +1,5 @@
 ---
-title: "Direção futura R12 para modelos, rotina e chamada"
+title: "Direção de modelos, rotina e chamada"
 knowledge_id: r12-routine-attendance-direction
 source: docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md
 status: validated
@@ -10,7 +10,7 @@ visibility: internal
 review_owner: Coelo Owner
 ---
 
-Direção aprovada para futura R12, ainda não implementada: modelos de rotina e
+Direção aprovada, com modelos e fluxo destinados à R13 e ainda não implementados: modelos de rotina e
 atividade usam como referência visual o card de modelo de atividade, com ações
 Duplicar e Arquivar padronizadas conforme capacidade e origem. Abas ficam abaixo
 dos filtros: Modelos de atividade / Atividades e Modelos de rotina / Rotinas.
@@ -27,4 +27,4 @@ Funcionários veem somente contextos permitidos por seus vínculos reais.
 Menus distinguem visualmente seus níveis; alertas mantêm respiro dentro do contêiner.
 Arquivamento de modelos imutáveis, comportamento sem rotina e regras de sentimento
 continuam sujeitos à reconciliação de fontes/decisão, sem ampliar permissões.
-Estes requisitos não devem ser apresentados como recursos já disponíveis.
+O respiro do alerta da chamada foi implementado e provado na execução focal R12-07. Os demais requisitos acima continuam futuros e não devem ser apresentados como recursos já disponíveis.

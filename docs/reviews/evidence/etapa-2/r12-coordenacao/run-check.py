@@ -2,6 +2,7 @@
 from pathlib import Path
 import subprocess
 import sys
+sys.stdout.reconfigure(encoding='utf-8')
 
 name, cwd, *command = sys.argv[1:]
 log = Path('C:/Users/adrie/Documents/Coelo-backups') / ('r12-' + name + '.log')
