@@ -31,6 +31,10 @@ void main() {
     await tester.ensureVisible(find.text('Gerenciar').first);
     await tester.tap(find.text('Gerenciar').first);
     await tester.pumpAndSettle();
+    expect(find.text('Criança: Ana Criança'), findsOneWidget);
+    expect(find.text('Relação: Mãe'), findsOneWidget);
+    expect(find.text('Capacidades: Retirada'), findsOneWidget);
+    expect(find.text('Motivo: Solicitação familiar'), findsOneWidget);
     expect(
       tester
           .widget<OutlinedButton>(find.byKey(const Key('safety-suspend-authorization')))

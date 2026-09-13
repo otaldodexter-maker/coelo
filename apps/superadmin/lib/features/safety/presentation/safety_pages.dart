@@ -1686,6 +1686,12 @@ String _relationshipLabel(String value) => switch (value.trim().toLowerCase()) {
   _ => value,
 };
 
+String _capabilityLabel(String value) => switch (value.trim().toLowerCase()) {
+  'pickup' => 'Retirada',
+  'emergency_contact' => 'Contato de emergência',
+  _ => value,
+};
+
 Future<void> _manage(
   BuildContext context,
   ChildSafetyRecord record,
@@ -1699,6 +1705,14 @@ Future<void> _manage(
     body: Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        Text('Criança: ${record.childName}'),
+        Text('Contexto: ${record.institutionName} · ${record.unitName}'),
+        Text('Relação: ${_relationshipLabel(authorization.relationship)}'),
+        if (authorization.capabilityCodes.isNotEmpty)
+          Text('Capacidades: ${authorization.capabilityCodes.map(_capabilityLabel).join(', ')}'),
+        if (authorization.requestReason?.trim().isNotEmpty == true)
+          Text('Motivo: ${authorization.requestReason}'),
+        const SizedBox(height: CoeloSpacing.space3),
         _Status(status: authorization.status),
         if (authorization.status == PickupAuthorizationStatus.approved) ...[
           const SizedBox(height: CoeloSpacing.space2),

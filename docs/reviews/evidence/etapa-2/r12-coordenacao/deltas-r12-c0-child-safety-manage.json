@@ -1,0 +1,30 @@
+[
+  {
+    "action_id": "child-safety.child",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: diálogo de gerenciamento mostra identidade, contexto, relação, capacidades, motivo, decisão, ciclo de vida e validade.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: Editar continua condicionado a solicitação pendente e capacidade; diálogo recebe contexto operacional.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  },
+  {
+    "action_id": "child-safety.suspend",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: Suspender continua exclusivo de autorização aprovada e ativa, com contexto e status explícitos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "O diálogo mudou; rota normal, auditoria/retry, reload e negativa cross-tenant precisam de prova integrada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  }
+]
