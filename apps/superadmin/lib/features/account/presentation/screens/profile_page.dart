@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import '../../../../app/shell/superadmin_shell.dart';
 import '../../../../app/widgets/superadmin_advanced_color_picker_dialog.dart';
 import '../../../../shared/presentation/widgets/avatar_crop_dialog.dart';
+import '../../../../shared/presentation/widgets/superadmin_form_action_footer.dart';
+import '../../../../shared/presentation/widgets/superadmin_form_frame.dart';
 import '../../../auth/domain/logout_action.dart';
 import '../../domain/account_profile.dart';
 import '../account_controller.dart';
@@ -286,6 +288,10 @@ class _ProfilePageState extends State<ProfilePage> {
           final confirmed = controller.profile;
           if (confirmed != null &&
               controller.state.profileRevision > submittedBaseRevision &&
+              confirmed.firstName == submittedFirstName.trim() &&
+              confirmed.lastName == submittedLastName.trim() &&
+              confirmed.mobilePhone == submittedMobilePhone.trim() &&
+              _sameAvatar(confirmed.avatar, submittedAvatar) &&
               _matchesDraft(
                 firstName: submittedFirstName,
                 lastName: submittedLastName,
@@ -329,149 +335,155 @@ class _ProfilePageState extends State<ProfilePage> {
   Widget build(BuildContext context) => ListenableBuilder(
     listenable: widget.controller,
     builder: (context, child) => SuperadminShell(
-    logout: widget.logout,
-    title: 'Meu perfil',
-    subtitle: 'Gerencie seus dados pessoais, acesso e segurança.',
-    currentDestination: 'profile',
-    onDestinationSelected: widget.onDestinationSelected,
-    activityController: widget.controller.activities,
-    headerProfile: _headerProfile(widget.controller.profile),
-    // Decisao 7 do Owner: formulario de edicao sem o balao Mensagens (ele
-    // cobria Salvar alteracoes em 1440x1000 na rota real, R04).
-    showChatLauncher: false,
-    child: ListenableBuilder(
-      listenable: widget.controller,
-      builder: (context, child) {
-        final profile = widget.controller.profile;
-        _hydrateConfirmedState(widget.controller.state);
-        if (profile == null || _avatar == null) {
-          if (widget.controller.state.phase == AccountControllerPhase.failure) {
-            return Center(
-              child: Padding(
-                padding: const EdgeInsets.all(CoeloSpacing.space5),
-                child: CoeloStatePanel(
-                  title: 'Não foi possível carregar o perfil',
-                  message: 'Tente novamente.',
-                  icon: Icons.cloud_off_outlined,
-                  actionLabel: 'Tentar novamente',
-                  onAction: widget.controller.load,
+      logout: widget.logout,
+      title: 'Meu perfil',
+      subtitle: 'Gerencie seus dados pessoais, acesso e segurança.',
+      currentDestination: 'profile',
+      onDestinationSelected: widget.onDestinationSelected,
+      activityController: widget.controller.activities,
+      headerProfile: _headerProfile(widget.controller.profile),
+      // Decisao 7 do Owner: formulario de edicao sem o balao Mensagens (ele
+      // cobria Salvar alteracoes em 1440x1000 na rota real, R04).
+      showChatLauncher: false,
+      child: ListenableBuilder(
+        listenable: widget.controller,
+        builder: (context, child) {
+          final profile = widget.controller.profile;
+          _hydrateConfirmedState(widget.controller.state);
+          if (profile == null || _avatar == null) {
+            if (widget.controller.state.phase == AccountControllerPhase.failure) {
+              return Center(
+                child: Padding(
+                  padding: const EdgeInsets.all(CoeloSpacing.space5),
+                  child: CoeloStatePanel(
+                    title: 'Não foi possível carregar o perfil',
+                    message: 'Tente novamente.',
+                    icon: Icons.cloud_off_outlined,
+                    actionLabel: 'Tentar novamente',
+                    onAction: widget.controller.load,
+                  ),
                 ),
-              ),
-            );
+              );
+            }
+            return const Center(child: CircularProgressIndicator());
           }
-          return const Center(child: CircularProgressIndicator());
-        }
-        final dirty = _isDirty(profile);
-        return ExcludeFocus(
-          excluding: widget.controller.busy,
-          child: AbsorbPointer(
-            absorbing: widget.controller.busy,
-            child: Form(
-              key: _formKey,
-              child: SingleChildScrollView(
-                padding: const EdgeInsets.all(CoeloSpacing.space5),
-                child: Align(
-                  alignment: Alignment.topCenter,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(maxWidth: 1120),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
-                      children: [
-                        if (widget.controller.message ?? _saveError case final message?)
-                          Padding(
-                            padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
-                            child: MaterialBanner(
-                              content: Text(message),
-                              actions: const [SizedBox.shrink()],
-                            ),
+          final dirty = _isDirty(profile);
+          return ExcludeFocus(
+            excluding: widget.controller.busy,
+            child: AbsorbPointer(
+              absorbing: widget.controller.busy,
+              child: Form(
+                key: _formKey,
+                child: SuperadminFormFrame(
+                  navigation: const SizedBox.shrink(),
+                  viewportWidth: MediaQuery.sizeOf(context).width,
+                  bodyMaxWidth: 1120,
+                  scrollKey: const Key('account-profile-scroll'),
+                  footer: SuperadminFormActionFooter(
+                    tertiaryAction: TextButton.icon(
+                      key: const Key('account-reset-profile'),
+                      onPressed: widget.controller.busy || !dirty ? null : _reset,
+                      icon: const Icon(Icons.undo_rounded),
+                      label: const Text('Cancelar alterações'),
+                    ),
+                    continuationActions: [
+                      FilledButton.icon(
+                        key: const Key('account-save-profile'),
+                        onPressed: widget.controller.busy || !dirty ? null : _save,
+                        icon: const Icon(Icons.save_outlined),
+                        label: const Text('Salvar alterações'),
+                      ),
+                    ],
+                  ),
+                  body: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      if (widget.controller.message ?? _saveError case final message?)
+                        Padding(
+                          padding: const EdgeInsets.only(bottom: CoeloSpacing.space4),
+                          child: MaterialBanner(
+                            content: Text(message),
+                            actions: const [SizedBox.shrink()],
                           ),
-                        LayoutBuilder(
-                          builder: (context, constraints) {
-                            final wide =
-                                constraints.maxWidth >= 840 &&
-                                MediaQuery.textScalerOf(context).scale(1) < 1.5;
-                            final personal = _SectionCard(
-                              cardKey: const Key('account-personal-card'),
-                              title: 'Dados pessoais',
-                              description: 'Sua identidade exibida no Superadmin.',
-                              child: _PersonalDataForm(
-                                firstName: _firstName,
-                                lastName: _lastName,
-                                email: _email,
-                                mobilePhone: _mobilePhone,
-                                initials: _initials,
-                                avatar: _avatar!,
-                                imageError: _imageError,
-                                emailChange: profile.emailChange,
-                                onPickPhoto: _pickPhoto,
-                                onRemovePhoto: () => setState(
-                                  () => _avatar = _avatar!.copyWith(
-                                    mode: AccountAvatarMode.initials,
-                                    clearPhoto: true,
-                                  ),
+                        ),
+                      LayoutBuilder(
+                        builder: (context, constraints) {
+                          final wide =
+                              constraints.maxWidth >= 840 &&
+                              MediaQuery.textScalerOf(context).scale(1) < 1.5;
+                          final personal = _SectionCard(
+                            cardKey: const Key('account-personal-card'),
+                            title: 'Dados pessoais',
+                            description: 'Sua identidade exibida no Superadmin.',
+                            child: _PersonalDataForm(
+                              firstName: _firstName,
+                              lastName: _lastName,
+                              email: _email,
+                              mobilePhone: _mobilePhone,
+                              initials: _initials,
+                              avatar: _avatar!,
+                              imageError: _imageError,
+                              emailChange: profile.emailChange,
+                              onPickPhoto: _pickPhoto,
+                              onRemovePhoto: () => setState(
+                                () => _avatar = _avatar!.copyWith(
+                                  mode: AccountAvatarMode.initials,
+                                  clearPhoto: true,
                                 ),
-                                onChooseColor: _chooseColor,
-                                onCancelEmailChange: widget.controller.cancelEmailChange,
                               ),
-                            );
-                            final access = _AccessCard(
-                              cardKey: const Key('account-access-card'),
-                              access: profile.access,
-                            );
-                            final security = _SecurityCard(
-                              cardKey: const Key('account-security-card'),
-                            );
-                            return wide
-                                ? Row(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      Expanded(flex: 3, child: personal),
-                                      const SizedBox(width: CoeloSpacing.space5),
-                                      Expanded(
-                                        flex: 2,
-                                        child: Container(
-                                          key: const Key('account-profile-side-column'),
-                                          child: Column(
-                                            crossAxisAlignment: CrossAxisAlignment.stretch,
-                                            children: [
-                                              access,
-                                              const SizedBox(height: CoeloSpacing.space5),
-                                              security,
-                                            ],
-                                          ),
+                              onChooseColor: _chooseColor,
+                              onCancelEmailChange: widget.controller.cancelEmailChange,
+                            ),
+                          );
+                          final access = _AccessCard(
+                            cardKey: const Key('account-access-card'),
+                            access: profile.access,
+                          );
+                          final security = _SecurityCard(
+                            cardKey: const Key('account-security-card'),
+                          );
+                          return wide
+                              ? Row(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Expanded(flex: 3, child: personal),
+                                    const SizedBox(width: CoeloSpacing.space5),
+                                    Expanded(
+                                      flex: 2,
+                                      child: Container(
+                                        key: const Key('account-profile-side-column'),
+                                        child: Column(
+                                          crossAxisAlignment: CrossAxisAlignment.stretch,
+                                          children: [
+                                            access,
+                                            const SizedBox(height: CoeloSpacing.space5),
+                                            security,
+                                          ],
                                         ),
                                       ),
-                                    ],
-                                  )
-                                : Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
-                                    children: [
-                                      personal,
-                                      const SizedBox(height: CoeloSpacing.space5),
-                                      access,
-                                      const SizedBox(height: CoeloSpacing.space5),
-                                      security,
-                                    ],
-                                  );
-                          },
-                        ),
-                        const SizedBox(height: CoeloSpacing.space5),
-                        _FormFooter(
-                          busy: widget.controller.busy,
-                          dirty: dirty,
-                          onReset: _reset,
-                          onSave: _save,
-                        ),
-                      ],
-                    ),
+                                    ),
+                                  ],
+                                )
+                              : Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    personal,
+                                    const SizedBox(height: CoeloSpacing.space5),
+                                    access,
+                                    const SizedBox(height: CoeloSpacing.space5),
+                                    security,
+                                  ],
+                                );
+                        },
+                      ),
+                    ],
                   ),
                 ),
               ),
             ),
-          ),
-        );
-      },
-    ),
+          );
+        },
+      ),
     ),
   );
 }
@@ -691,42 +703,87 @@ class _AvatarPreview extends StatelessWidget {
   );
 }
 
-class _AccessCard extends StatelessWidget {
+class _AccessCard extends StatefulWidget {
   const _AccessCard({required this.access, required this.cardKey});
   final AccountAccessSummary access;
   final Key cardKey;
 
   @override
-  Widget build(BuildContext context) => _SectionCard(
-    cardKey: cardKey,
-    title: 'Meu acesso',
-    description: 'Somente leitura. Permissões são administradas por governança.',
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        Material(
-          color: Colors.transparent,
-          child: ListTile(
-            contentPadding: EdgeInsets.zero,
-            leading: const Icon(Icons.admin_panel_settings_outlined),
-            title: Text(access.role),
-            // MFA fora do MVP (ADR 0034, Decisao 12): nenhuma tela exige segundo fator.
-            subtitle: Text(access.mfaEnabled ? 'MFA configurada' : 'MFA fora do MVP'),
+  State<_AccessCard> createState() => _AccessCardState();
+}
+
+class _AccessCardState extends State<_AccessCard> {
+  final _search = TextEditingController();
+  final _scroll = ScrollController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    _scroll.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final query = _search.text.trim().toLowerCase();
+    final capabilities = widget.access.capabilities
+        .where((item) => item.toLowerCase().contains(query))
+        .toSet()
+        .toList();
+    return _SectionCard(
+      cardKey: widget.cardKey,
+      title: 'Meu acesso',
+      description: 'Somente leitura. Permissões são administradas por governança.',
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Text(widget.access.role, style: Theme.of(context).textTheme.titleMedium),
+          Text(widget.access.mfaEnabled ? 'MFA configurada' : 'MFA fora do MVP'),
+          const SizedBox(height: CoeloSpacing.space3),
+          CoeloSearchField(
+            key: const Key('account-access-search'),
+            controller: _search,
+            semanticLabel: 'Buscar em Meu acesso',
+            hintText: 'Buscar permissão',
+            onChanged: (_) => setState(() {}),
           ),
-        ),
-        for (final capability in access.capabilities)
-          Material(
-            color: Colors.transparent,
-            child: ListTile(
-              dense: true,
-              contentPadding: EdgeInsets.zero,
-              leading: const Icon(Icons.check_circle_outline_rounded),
-              title: Text(capability),
+          const SizedBox(height: CoeloSpacing.space3),
+          const Text('O servidor ainda não detalha módulo e escopo destas permissões.'),
+          const SizedBox(height: CoeloSpacing.space2),
+          ConstrainedBox(
+            constraints: const BoxConstraints(maxHeight: CoeloSpacing.space10 * 10),
+            child: Scrollbar(
+              controller: _scroll,
+              thumbVisibility: true,
+              child: SingleChildScrollView(
+                key: const Key('account-access-scroll'),
+                controller: _scroll,
+                primary: false,
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    if (capabilities.isEmpty) const Text('Nenhuma permissão encontrada.'),
+                    for (final capability in capabilities)
+                      Padding(
+                        padding: const EdgeInsets.only(
+                          bottom: CoeloSpacing.space3,
+                          right: CoeloSpacing.space3,
+                        ),
+                        child: Text(capability),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
-      ],
-    ),
-  );
+          const SizedBox(height: CoeloSpacing.space3),
+          const Text(
+            'Uma permissão não indica que a função já está disponível. Importações e exportações gerais seguem adiadas; respostas de formulários podem ser exportadas em XLSX.',
+          ),
+        ],
+      ),
+    );
+  }
 }
 
 class _SecurityCard extends StatelessWidget {
@@ -786,62 +843,6 @@ class _SectionCard extends StatelessWidget {
           const SizedBox(height: CoeloSpacing.space5),
           child,
         ],
-      ),
-    ),
-  );
-}
-
-class _FormFooter extends StatelessWidget {
-  const _FormFooter({
-    required this.busy,
-    required this.dirty,
-    required this.onReset,
-    required this.onSave,
-  });
-  final bool busy;
-  final bool dirty;
-  final VoidCallback onReset;
-  final VoidCallback onSave;
-
-  @override
-  Widget build(BuildContext context) => DecoratedBox(
-    decoration: BoxDecoration(
-      color: Theme.of(context).colorScheme.surface,
-      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
-      borderRadius: BorderRadius.circular(CoeloRadius.lg),
-    ),
-    child: Padding(
-      padding: const EdgeInsets.all(CoeloSpacing.space3),
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final resetButton = OutlinedButton.icon(
-            key: const Key('account-reset-profile'),
-            onPressed: busy || !dirty ? null : onReset,
-            icon: const Icon(Icons.undo_rounded),
-            label: const Text('Cancelar alterações'),
-          );
-          final saveButton = FilledButton.icon(
-            key: const Key('account-save-profile'),
-            onPressed: busy || !dirty ? null : onSave,
-            icon: const Icon(Icons.save_outlined),
-            label: const Text('Salvar alterações'),
-          );
-          final stacked =
-              constraints.maxWidth < 480 || MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-          return stacked
-              ? Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    resetButton,
-                    const SizedBox(height: CoeloSpacing.space3),
-                    saveButton,
-                  ],
-                )
-              : Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [resetButton, saveButton],
-                );
-        },
       ),
     ),
   );

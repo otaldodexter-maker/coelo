@@ -1,7 +1,12 @@
 const fs = require('node:fs');
 (async () => {
+  const args = process.argv.slice(2);
+  const auth = args[0] === 'auth';
+  if (auth) args.shift();
   const pages = await (await fetch('http://127.0.0.1:9427/json')).json();
-  const page = pages.find(p => p.type === 'page' && p.url.startsWith('http://127.0.0.1:3000'));
+  const authTargetFile='C:/Users/adrie/Documents/Coelo-backups/r11-auth-target.txt';
+  const authPath = p => /^\/(login|forgot-password|reset-password|recover)/.test(new URL(p.url).pathname);
+  const page = pages.find(p => p.type === 'page' && p.url.startsWith('http://127.0.0.1:3000') && (auth ? authPath(p) : !authPath(p)));
   const ws = new WebSocket(page.webSocketDebuggerUrl);
   await new Promise(r => ws.onopen = r);
   let id = 0; const pending = new Map();
@@ -17,12 +22,16 @@ const fs = require('node:fs');
     }
     throw Error(`Driver timed out: ${command.command}`);
   };
-  const args = process.argv.slice(2);
   try {
     await send('Page.bringToFront');
     await send('Emulation.setFocusEmulationEnabled',{enabled:true});
     const browserWindow=await send('Browser.getWindowForTarget');
     await send('Browser.setWindowBounds',{windowId:browserWindow.windowId,bounds:{windowState:'normal'}});
+    if (args[0] === 'auth-context') {
+      const context=await send('Target.createBrowserContext');
+      const target=await send('Target.createTarget',{url:'http://127.0.0.1:3000/login',browserContextId:context.browserContextId});
+      fs.writeFileSync(authTargetFile,target.targetId); console.log('Isolated Auth QA tab created; shared session preserved');
+    }
     if (args[0] === 'shot') { const r = await send('Page.captureScreenshot',{format:'png'}); fs.writeFileSync(args[1],Buffer.from(r.data,'base64')); console.log('Screenshot saved'); }
     if (args[0] === 'viewport') await send('Emulation.setDeviceMetricsOverride',{width:+args[1],height:+args[2],deviceScaleFactor:1,mobile:false});
     if (args[0] === 'click') { const x=+args[1],y=+args[2]; await send('Input.dispatchMouseEvent',{type:'mouseMoved',x,y}); await new Promise(r=>setTimeout(r,300)); for(const type of ['mousePressed','mouseReleased']) {await send('Input.dispatchMouseEvent',{type,x,y,button:'left',clickCount:1}); await new Promise(r=>setTimeout(r,250));} }

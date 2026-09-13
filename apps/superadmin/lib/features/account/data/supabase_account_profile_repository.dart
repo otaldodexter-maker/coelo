@@ -16,15 +16,17 @@ final class SupabaseAccountProfileRepository
   Future<AccountProfile> load() async => _profile(await _rpc('superadmin_account_profile_get'));
 
   @override
-  Future<void> save(AccountProfile profile) async {
-    await _rpc('superadmin_account_profile_save', {
-      'p_request_id': _uuidV4(),
-      'p_first_name': profile.firstName.trim(),
-      'p_last_name': profile.lastName.trim(),
-      'p_mobile_phone': profile.mobilePhone.trim(),
-      'p_requested_email': profile.emailChange?.requestedEmail,
-      'p_avatar_initials': profile.avatar.initials.trim(),
-    });
+  Future<AccountProfile> save(AccountProfile profile) async {
+    return _profile(
+      await _rpc('superadmin_account_profile_save', {
+        'p_request_id': _uuidV4(),
+        'p_first_name': profile.firstName.trim(),
+        'p_last_name': profile.lastName.trim(),
+        'p_mobile_phone': profile.mobilePhone.trim(),
+        'p_requested_email': profile.emailChange?.requestedEmail,
+        'p_avatar_initials': profile.avatar.initials.trim(),
+      }),
+    );
   }
 
   @override

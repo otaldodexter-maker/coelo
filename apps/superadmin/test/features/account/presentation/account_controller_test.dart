@@ -14,12 +14,12 @@ final class _FailsOnceAccountProfileRepository implements AccountProfileReposito
   Future<AccountProfile> load() async => _profile;
 
   @override
-  Future<void> save(AccountProfile profile) async {
+  Future<AccountProfile> save(AccountProfile profile) async {
     if (_failsNextSave) {
       _failsNextSave = false;
       throw StateError('save failed');
     }
-    _profile = profile;
+    return _profile = profile;
   }
 }
 
@@ -31,12 +31,12 @@ final class _FailOnDemandAccountProfileRepository implements AccountProfileRepos
   Future<AccountProfile> load() async => _profile;
 
   @override
-  Future<void> save(AccountProfile profile) async {
+  Future<AccountProfile> save(AccountProfile profile) async {
     if (failNextSave) {
       failNextSave = false;
       throw StateError('save failed');
     }
-    _profile = profile;
+    return _profile = profile;
   }
 }
 
@@ -59,7 +59,7 @@ final class _DeferredAccountProfileRepository implements AccountProfileRepositor
   }
 
   @override
-  Future<void> save(AccountProfile next) {
+  Future<AccountProfile> save(AccountProfile next) {
     savedProfiles.add(next);
     final completer = Completer<void>();
     saveCompleters.add(completer);

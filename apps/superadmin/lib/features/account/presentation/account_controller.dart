@@ -104,9 +104,9 @@ final class AccountController extends ChangeNotifier {
       next = next.requestEmailChange(normalizedEmail);
     }
     try {
-      await repository.save(next);
+      final confirmed = await repository.save(next);
       if (!_isCurrentCommand(generation)) return;
-      _profile = next;
+      _profile = confirmed;
       _profileRevision += 1;
       if (requestsEmailChange) {
         if (_emailActivityId != null) activities.removeActivity(_emailActivityId!);
@@ -115,9 +115,19 @@ final class AccountController extends ChangeNotifier {
       } else {
         _message = 'Perfil atualizado.';
       }
+      if (confirmed.firstName != next.firstName ||
+          confirmed.lastName != next.lastName ||
+          confirmed.mobilePhone != next.mobilePhone ||
+          confirmed.avatar.mode != next.avatar.mode ||
+          confirmed.avatar.initials != next.avatar.initials ||
+          confirmed.avatar.backgroundColor != next.avatar.backgroundColor ||
+          !listEquals(confirmed.avatar.photoBytes, next.avatar.photoBytes)) {
+        _message =
+            'O servidor não confirmou todas as alterações. Confira os dados e tente novamente.';
+      }
       _state = AccountControllerState(
         phase: AccountControllerPhase.ready,
-        profile: next,
+        profile: confirmed,
         busy: true,
         message: _message,
         profileRevision: _profileRevision,

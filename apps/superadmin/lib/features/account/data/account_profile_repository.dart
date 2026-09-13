@@ -2,7 +2,7 @@ import '../domain/account_profile.dart';
 
 abstract interface class AccountProfileRepository {
   Future<AccountProfile> load();
-  Future<void> save(AccountProfile profile);
+  Future<AccountProfile> save(AccountProfile profile);
 }
 
 abstract interface class AccountEmailChangeCancellation {
@@ -27,7 +27,7 @@ final class UnavailableAccountProfileRepository implements AccountProfileReposit
   );
 
   @override
-  Future<void> save(AccountProfile profile) => Future<void>.error(
+  Future<AccountProfile> save(AccountProfile profile) => Future<AccountProfile>.error(
     const AccountProfileRepositoryException('Perfil indisponível nesta versão.'),
   );
 }
@@ -42,5 +42,5 @@ final class InMemoryAccountProfileRepository implements AccountProfileRepository
   Future<AccountProfile> load() async => _profile;
 
   @override
-  Future<void> save(AccountProfile profile) async => _profile = profile;
+  Future<AccountProfile> save(AccountProfile profile) async => _profile = profile;
 }

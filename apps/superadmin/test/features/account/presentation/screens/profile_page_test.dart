@@ -21,12 +21,12 @@ final class _FailsOnceProfileRepository implements AccountProfileRepository {
   Future<AccountProfile> load() async => _profile;
 
   @override
-  Future<void> save(AccountProfile profile) async {
+  Future<AccountProfile> save(AccountProfile profile) async {
     if (_failsNextSave) {
       _failsNextSave = false;
       throw StateError('save failed');
     }
-    _profile = profile;
+    return _profile = profile;
   }
 }
 
@@ -39,7 +39,7 @@ final class _DeferredProfileRepository implements AccountProfileRepository {
   Future<AccountProfile> load() => _load.future;
 
   @override
-  Future<void> save(AccountProfile profile) async {}
+  Future<AccountProfile> save(AccountProfile profile) async => profile;
 }
 
 final class _QueuedProfileRepository implements AccountProfileRepository {
@@ -53,7 +53,7 @@ final class _QueuedProfileRepository implements AccountProfileRepository {
   }
 
   @override
-  Future<void> save(AccountProfile profile) async {}
+  Future<AccountProfile> save(AccountProfile profile) async => profile;
 }
 
 void main() {
@@ -287,7 +287,7 @@ void main() {
     expect(beforeSave.avatar.mode, AccountAvatarMode.photo);
     expect(beforeSave.avatar.backgroundColor, Colors.black);
     expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
+      tester.widget<TextButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
       isNull,
     );
   });
@@ -496,7 +496,7 @@ void main() {
     expect(_fieldValue(tester, const Key('account-email-field')), 'owner@coelo.me');
     expect(find.textContaining('Aguardando aprovação'), findsNothing);
     expect(
-      tester.widget<OutlinedButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
+      tester.widget<TextButton>(find.byKey(const Key('account-reset-profile'))).onPressed,
       isNull,
     );
   });
@@ -519,11 +519,10 @@ void main() {
 
     await _pumpProfilePage(tester, controller);
 
-    final personalBottom = tester.getBottomLeft(find.byKey(const Key('account-personal-card'))).dy;
-    final sideBottom = tester
-        .getBottomLeft(find.byKey(const Key('account-profile-side-column')))
-        .dy;
-    expect((personalBottom - sideBottom).abs(), lessThanOrEqualTo(CoeloSpacing.space5));
+    // Meu acesso now has bounded scrolling and search; content heights are independent.
+    final personalTop = tester.getTopLeft(find.byKey(const Key('account-personal-card'))).dy;
+    final sideTop = tester.getTopLeft(find.byKey(const Key('account-profile-side-column'))).dy;
+    expect(personalTop, sideTop);
   });
 
   testWidgets('keeps personal, access and security cards in sequence on compact screens', (
