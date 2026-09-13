@@ -4,6 +4,29 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  for (final chooseContexts in [false, true]) {
+    testWidgets('uses account avatar colors with context menu $chooseContexts', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            appBar: PrincipalGlobalHeader(
+              onOpenMenu: () {},
+              onOpenNotifications: () {},
+              onOpenProfile: () {},
+              onChooseContexts: chooseContexts ? () {} : null,
+              avatarInitials: 'QA',
+              avatarBackgroundColor: const Color(0xFF336699),
+              avatarForegroundColor: Colors.white,
+            ),
+          ),
+        ),
+      );
+      final avatar = tester.widget<CircleAvatar>(find.byType(CircleAvatar));
+      expect(avatar.backgroundColor, const Color(0xFF336699));
+      expect(avatar.foregroundColor, Colors.white);
+      expect(find.text('QA'), findsOneWidget);
+    });
+  }
   Future<void> pump(
     WidgetTester tester, {
     Size size = const Size(375, 900),

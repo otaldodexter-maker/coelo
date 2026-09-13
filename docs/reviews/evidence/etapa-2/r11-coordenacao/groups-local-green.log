@@ -1,6 +1,6 @@
 BEGIN
 CREATE EXTENSION
- plan  
+ plan
 -------
  1..10
 (1 row)
@@ -17,12 +17,12 @@ INSERT 0 2
 INSERT 0 2
 INSERT 0 1
 INSERT 0 3
-                                                                  set_config                                                                   
+                                                                  set_config
 -----------------------------------------------------------------------------------------------------------------------------------------------
  {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
 (1 row)
 
-                                                                                                                                                                                                                  set_config                                                                                                                                                                                                                  
+                                                                                                                                                                                                                  set_config
 ----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
  {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "492e5398-5e08-4914-a0e6-c5c06c3ea920", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
 (1 row)
@@ -35,12 +35,12 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
- set_config 
+ set_config
 ------------
- 
+
 (1 row)
 
-                                                                  set_config                                                                   
+                                                                  set_config
 -----------------------------------------------------------------------------------------------------------------------------------------------
  {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
 (1 row)
@@ -48,75 +48,75 @@ INSERT 0 1
 INSERT 0 1
 INSERT 0 1
 INSERT 0 1
-                                                                  set_config                                                                   
+                                                                  set_config
 -----------------------------------------------------------------------------------------------------------------------------------------------
  {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000203"}
 (1 row)
 
 SET
-                             is                             
+                             is
 ------------------------------------------------------------
  ok 1 - scoped actor sees no other tenant group or counters
 (1 row)
 
-                  is                  
+                  is
 --------------------------------------
  ok 2 - active eligible child counted
 (1 row)
 
-                  is                   
+                  is
 ---------------------------------------
  ok 3 - active unit activity inherited
 (1 row)
 
-                        is                         
+                        is
 ---------------------------------------------------
  ok 4 - foreign institution filter returns no data
 (1 row)
 
 RESET
 UPDATE 1
-                    is                    
+                    is
 ------------------------------------------
  ok 5 - inactive unit membership excluded
 (1 row)
 
 UPDATE 1
 UPDATE 1
-                           is                            
+                           is
 ---------------------------------------------------------
  ok 6 - inactive unit activity excluded from inheritance
 (1 row)
 
 UPDATE 1
-                                  is                                   
+                                  is
 -----------------------------------------------------------------------
  ok 7 - local active group activity selected when inheritance disabled
 (1 row)
 
 UPDATE 1
-                   is                    
+                   is
 -----------------------------------------
  ok 8 - inactive group activity excluded
 (1 row)
 
 UPDATE 1
-                    is                     
+                    is
 -------------------------------------------
  ok 9 - inactive group membership excluded
 (1 row)
 
- set_config 
+ set_config
 ------------
  {}
 (1 row)
 
-                   throws_ok                   
+                   throws_ok
 -----------------------------------------------
  ok 10 - anonymous actor receives no directory
 (1 row)
 
- finish 
+ finish
 --------
 (0 rows)
 

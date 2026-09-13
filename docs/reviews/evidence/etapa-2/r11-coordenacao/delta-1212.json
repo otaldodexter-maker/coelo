@@ -1,0 +1,107 @@
+[
+  {
+    "action_id": "assessments.entry",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.entry",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.gradebook",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.detail",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  }
+]

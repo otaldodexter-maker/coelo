@@ -1841,6 +1841,11 @@ class _ProfileSummary extends StatelessWidget {
                       CircleAvatar(
                         radius: 18,
                         backgroundColor: profile?.avatarBackgroundColor,
+                        foregroundColor: profile == null
+                            ? null
+                            : (profile.avatarBackgroundColor.computeLuminance() > 0.179
+                                  ? Colors.black
+                                  : Colors.white),
                         backgroundImage: profile?.avatarImage,
                         child: profile?.avatarImage == null
                             ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')

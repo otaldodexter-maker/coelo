@@ -1,0 +1,44 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  },
+  {
+    "action_id": "groups.list",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+  }
+]

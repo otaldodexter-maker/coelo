@@ -1,0 +1,153 @@
+BEGIN
+CREATE EXTENSION
+ plan
+-------
+ 1..13
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 3
+INSERT 0 4
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 1
+INSERT 0 3
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "ea46e3a0-9790-4848-9f58-44039cc4fa56", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+ set_config
+------------
+
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000101", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000201"}
+(1 row)
+
+SELECT 1
+DELETE 1
+                                  is
+----------------------------------------------------------------------
+ ok 1 - all mode includes eligible child without explicit participant
+(1 row)
+
+SELECT 1
+                                                                            superadmin_assessment_activate_configuration
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"ok": true, "data": {"id": "e40156a9-af44-48b8-8458-5db967b8a947", "status": "active", "version": 2, "replayed": false, "correlation_id": "71c7b70b-740e-475e-845b-3b9aea028499"}, "error": null}
+(1 row)
+
+SELECT 1
+UPDATE 1
+                                     is
+-----------------------------------------------------------------------------
+ ok 2 - retained empty draft projects eligible child without recreating book
+(1 row)
+
+SELECT 1
+SELECT 1
+                         is
+----------------------------------------------------
+ ok 3 - all-mode grade save succeeds on retained id
+(1 row)
+
+                      is
+----------------------------------------------
+ ok 4 - saved grade survives independent read
+(1 row)
+
+                     is
+---------------------------------------------
+ ok 5 - completed all-mode gradebook submits
+(1 row)
+
+                    is
+------------------------------------------
+ ok 6 - submitted gradebook closes review
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 7 - reviewed gradebook reopens with reason
+(1 row)
+
+                         is
+----------------------------------------------------
+ ok 8 - old version cannot close reopened gradebook
+(1 row)
+
+UPDATE 1
+                          is
+------------------------------------------------------
+ ok 9 - selected mode still excludes unselected child
+(1 row)
+
+                        throws_ok
+----------------------------------------------------------
+ ok 10 - selected mode rejects grade for unselected child
+(1 row)
+
+                                                                                                                                                                                                                  set_config
+----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+ {"session_id": "8d200000-0000-4000-8000-000000000201", "action_code": "create", "auth_user_id": "8d200000-0000-4000-8000-000000000101", "correlation_id": "281da554-3568-4f05-8c37-e67d9bb7f449", "permission_code": "activities.create", "internal_identity_id": "8d200000-0000-4000-8000-000000000301", "internal_auth_link_id": "8d200000-0000-4000-8000-000000000401", "internal_membership_id": "8d200000-0000-4000-8000-000000000501"}
+(1 row)
+
+INSERT 0 1
+                    is
+-------------------------------------------
+ ok 11 - selected active child is included
+(1 row)
+
+UPDATE 1
+                          is
+------------------------------------------------------
+ ok 12 - inactive hierarchy excluded in selected mode
+(1 row)
+
+UPDATE 1
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal2", "sub": "8d200000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "8d200000-0000-4000-8000-000000000202"}
+(1 row)
+
+                               ok
+-----------------------------------------------------------------
+ ok 13 - other tenant actor cannot read book or dynamic students
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
+NOTICE:  extension "pgtap" already exists, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  table "internal_actor_targets" does not exist, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping
+NOTICE:  relation "follow_links_expected" already exists, skipping

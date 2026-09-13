@@ -71,6 +71,8 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
     this.onChooseContexts,
     this.avatarInitials = '?',
     this.avatarImage,
+    this.avatarBackgroundColor,
+    this.avatarForegroundColor,
     this.notificationAction,
     this.keyPrefix = 'principal-happens',
     super.key,
@@ -83,6 +85,8 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
   final VoidCallback? onChooseContexts;
   final String avatarInitials;
   final ImageProvider? avatarImage;
+  final Color? avatarBackgroundColor;
+  final Color? avatarForegroundColor;
   final Widget? notificationAction;
   final String keyPrefix;
 
@@ -156,6 +160,8 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                     ],
                     icon: CircleAvatar(
                       radius: 18,
+                      backgroundColor: avatarBackgroundColor,
+                      foregroundColor: avatarForegroundColor,
                       backgroundImage: avatarImage,
                       child: avatarImage == null ? Text(avatarInitials) : null,
                     ),
@@ -168,8 +174,8 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                   onPressed: onOpenProfile,
                   icon: CircleAvatar(
                     radius: 18,
-                    backgroundColor: scheme.primaryContainer,
-                    foregroundColor: scheme.onPrimaryContainer,
+                    backgroundColor: avatarBackgroundColor ?? scheme.primaryContainer,
+                    foregroundColor: avatarForegroundColor ?? scheme.onPrimaryContainer,
                     backgroundImage: avatarImage,
                     child: avatarImage == null
                         ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))

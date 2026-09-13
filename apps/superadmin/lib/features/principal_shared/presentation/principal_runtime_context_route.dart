@@ -23,6 +23,8 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
     this.multipleBuilder,
     this.avatarInitials = '?',
     this.avatarImage,
+    this.avatarBackgroundColor,
+    this.avatarForegroundColor,
     this.onOpenProfile,
     this.onOpenHome,
     this.notificationAction,
@@ -35,6 +37,8 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
   final Widget Function(BuildContext, List<PrincipalRuntimeContext>)? multipleBuilder;
   final String avatarInitials;
   final ImageProvider? avatarImage;
+  final Color? avatarBackgroundColor;
+  final Color? avatarForegroundColor;
   final ValueChanged<BuildContext>? onOpenProfile;
   final ValueChanged<BuildContext>? onOpenHome;
   final Widget? notificationAction;
@@ -130,6 +134,8 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
             keyPrefix: 'principal-context-header',
             avatarInitials: widget.avatarInitials,
             avatarImage: widget.avatarImage,
+            avatarBackgroundColor: widget.avatarBackgroundColor,
+            avatarForegroundColor: widget.avatarForegroundColor,
             onOpenMenu: () {
               final host = Scaffold.maybeOf(context);
               if (host?.hasDrawer ?? false) {

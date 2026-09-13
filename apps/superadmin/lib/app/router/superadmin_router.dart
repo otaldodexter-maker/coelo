@@ -1112,6 +1112,10 @@ GoRouter createSuperadminRouter({
           builder: builder,
           multipleBuilder: multipleBuilder,
           avatarInitials: profile?.avatar.initials ?? '?',
+          avatarBackgroundColor: profile?.avatar.backgroundColor,
+          avatarForegroundColor: profile == null
+              ? null
+              : AccountAvatar.foregroundFor(profile.avatar.backgroundColor),
           notificationAction: SuperadminActivityCenter(controller: operationalActivities),
           onReportProblem: (context) => context.goNamed(SuperadminRoutes.supportName),
           avatarImage:

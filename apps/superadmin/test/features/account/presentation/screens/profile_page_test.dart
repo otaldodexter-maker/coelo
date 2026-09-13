@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:typed_data';
+import 'package:file_picker/file_picker.dart';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/account/data/account_profile_repository.dart';
@@ -57,6 +58,36 @@ final class _QueuedProfileRepository implements AccountProfileRepository {
 }
 
 void main() {
+  testWidgets('does not apply the crop transform twice to normalized photo bytes', (tester) async {
+    FilePicker.platform = _ProfilePhotoPicker();
+    final activities = SuperadminActivityController();
+    final controller = AccountController(
+      repository: InMemoryAccountProfileRepository(),
+      activities: activities,
+    );
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+    await tester.tap(find.byKey(const Key('account-avatar-picker')));
+    await tester.pumpAndSettle();
+    Navigator.of(tester.element(find.byType(AvatarCropDialog))).pop(
+      AvatarCropResult(
+        bytes: Uint8List.fromList(_transparentPng),
+        scale: 2,
+        offset: const Offset(12, 8),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+    expect(controller.profile!.avatar.photoScale, 1);
+    expect(controller.profile!.avatar.photoOffset, Offset.zero);
+    expect(controller.profile!.avatar.photoBytes, _transparentPng);
+  });
   testWidgets('hydrates the form once when a profile arrives after the page mounts', (
     tester,
   ) async {
@@ -692,6 +723,30 @@ Future<void> _pumpProfilePage(WidgetTester tester, AccountController controller)
     ),
   );
   await tester.pumpAndSettle();
+}
+
+final class _ProfilePhotoPicker extends FilePicker {
+  @override
+  Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    void Function(FilePickerStatus)? onFileLoading,
+    bool allowCompression = false,
+    int compressionQuality = 0,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+    bool lockParentWindow = false,
+    bool readSequential = false,
+  }) async => FilePickerResult([
+    PlatformFile(
+      name: 'qa.png',
+      size: _transparentPng.length,
+      bytes: Uint8List.fromList(_transparentPng),
+    ),
+  ]);
 }
 
 const _transparentPng = <int>[
