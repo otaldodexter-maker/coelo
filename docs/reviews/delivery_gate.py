@@ -14,6 +14,8 @@ def validate(report, facts):
     errors = []
     require = lambda condition, message: errors.append(message) if not condition else None
     require(report.get('completion') in ('complete', 'partial'), 'Declare complete or partial explicitly')
+    require(facts.get('root', report.get('target')) == report.get('target'), 'Audit root differs from declared destination')
+    require(facts.get('baseValid', True), 'Opening base must be an ancestor before delivered HEAD')
     require(not facts['dirty'], 'Destination has uncommitted files')
     require(facts['divergence'] == [0, 0], 'Destination differs from origin/dev; commit/push/fetch required')
     require(not facts['missingSkillFiles'], 'Skills are missing, outdated or differ from delivered HEAD')
@@ -33,6 +35,8 @@ def validate(report, facts):
         require(set(declared.get('exclusive', [])) == set(current['exclusive']), 'Unclassified exclusive commits: '+branch)
         require(declared.get('disposition') in ('patch-equivalent', 'superseded', 'retained-review'), 'Invalid disposition: '+branch)
         require(bool(declared.get('reason')) and declared.get('evidence') in evidence, 'Missing content-review evidence: '+branch)
+        if declared.get('disposition') in ('patch-equivalent', 'superseded'):
+            require(declared.get('successor') in facts.get('validSuccessors', []), 'Missing integrated successor: '+branch)
         if declared.get('disposition') == 'retained-review':
             require(bool(declared.get('owner')) and bool(declared.get('nextGate')), 'Retained review lacks owner/next gate: '+branch)
             require(report.get('completion') == 'partial', 'Unreviewed history forbids complete consolidation')
@@ -45,6 +49,10 @@ def validate(report, facts):
         require(item.get('status') in ('done', 'open', 'deferred'), 'Invalid Owner item status')
         require(item.get('evidence') in evidence, 'Owner item has no published evidence: '+str(item.get('id')))
         require(all(item.get(layer) for layer in ('fe', 'be', 'e2e')), 'Owner item omits FE/BE/E2E')
+        if item.get('status') == 'done' and item.get('actionIds'):
+            require(item.get('fe') == 'verified' and item.get('be') in ('done','not-applicable')
+                    and item.get('e2e') in ('verified-e2e','flutter-only'),
+                    'Done product item still has an open layer: '+str(item.get('id')))
         mapped.update(item.get('actionIds', []))
         if item.get('status') != 'done':
             require(bool(item.get('owner')) and bool(item.get('nextGate')), 'Open item lacks owner/next gate')
@@ -67,7 +75,11 @@ def validate(report, facts):
 def collect(root, report):
     def git(*args):
         return subprocess.check_output(['git', *args], cwd=root).decode('utf-8').strip()
-    facts = dict(dirty=git('status', '--porcelain').splitlines(),
+    subprocess.run(['git','fetch','origin','--prune'],cwd=root,check=True)
+    base=git('rev-parse',report['baseReference']);head=git('rev-parse','HEAD')
+    facts = dict(root=str(root), baseValid=base!=head and subprocess.run(
+                     ['git','merge-base','--is-ancestor',base,head],cwd=root).returncode==0,
+                 validSuccessors=[], dirty=git('status', '--porcelain').splitlines(),
                  divergence=[int(n) for n in git('rev-list','--left-right','--count','HEAD...origin/dev').split()],
                  stash=git('stash','list','--format=%gd').splitlines(), worktrees=[], branches={}, missingSkillFiles=[])
     for block in git('worktree','list','--porcelain').split('\n\n'):
@@ -76,11 +88,23 @@ def collect(root, report):
         dirty=git('-C',meta['worktree'],'status','--porcelain')
         if dirty:
             facts['dirty'].append('worktree:'+meta['worktree'])
-    for row in git('for-each-ref','--format=%(refname:short)|%(objectname)','refs/heads').splitlines():
+        if 'branch' not in meta:
+            exclusive=git('rev-list',meta['HEAD'],'--not','origin/dev').splitlines()
+            if exclusive:
+                facts['branches']['detached:'+meta['worktree']]={'sha':meta['HEAD'],'exclusive':exclusive}
+    for row in git('for-each-ref','--format=%(refname:short)|%(objectname)',
+                   'refs/heads','refs/remotes/origin').splitlines():
         branch, sha=row.split('|')
+        if branch=='origin/HEAD':
+            continue
         exclusive=git('rev-list',branch,'--not','origin/dev').splitlines()
         if exclusive:
             facts['branches'][branch]={'sha':sha,'exclusive':exclusive}
+    for residual in report.get('residualBranches', {}).values():
+        successor=residual.get('successor')
+        if successor and subprocess.run(['git','merge-base','--is-ancestor',successor,'HEAD'],
+                                        cwd=root,stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL).returncode==0:
+            facts['validSuccessors'].append(successor)
     for skill in SKILLS:
         relative=f'.agents/skills/{skill}/SKILL.md'
         path=root/relative
@@ -90,10 +114,18 @@ def collect(root, report):
                 facts['missingSkillFiles'].append(relative)
         except (OSError, subprocess.CalledProcessError):
             facts['missingSkillFiles'].append(relative)
+    reference='.agents/skills/coelo-flutter-supabase-review/references/delivery-gate.md'
+    try:
+        if (root/reference).read_text(encoding='utf-8').strip()!=git('show','HEAD:'+reference):
+            facts['missingSkillFiles'].append(reference)
+        git('ls-files','--error-unmatch',reference)
+    except (OSError,subprocess.CalledProcessError):
+        facts['missingSkillFiles'].append(reference)
     current=json.loads((root/'docs/reviews/inventario-etapa-2.json').read_text(encoding='utf-8'))
     before=json.loads(git('show',report['baseReference']+':docs/reviews/inventario-etapa-2.json'))
     old={a['id']:a for a in before['actions']}
-    facts['changedActions']=[a['id'] for a in current['actions'] if old.get(a['id'])!=a]
+    new={a['id']:a for a in current['actions']}
+    facts['changedActions']=[key for key in old.keys()|new.keys() if old.get(key)!=new.get(key)]
     matrices=[(root/'docs/reviews'/name).read_text(encoding='utf-8') for name in TRACKERS]
     report['trackerActionIds']=[a['id'] for a in current['actions'] if all(a['id'] in m for m in matrices)]
     for name in report.get('evidenceFiles', []):

@@ -6,6 +6,7 @@ import json
 import os
 import subprocess
 import zipfile
+import argparse
 
 ROOT = Path(__file__).resolve().parents[5]
 PARENT = Path('C:/Users/adrie/Documents/Coelo.worktrees').resolve()
@@ -21,7 +22,12 @@ def digest(path):
             h.update(chunk)
     return h.hexdigest()
 
-bundle = BACKUP / 'coelo-all-refs.bundle'
+parser = argparse.ArgumentParser(description=__doc__)
+parser.add_argument('--bundle', default='coelo-all-refs.bundle')
+parser.add_argument('--report', default='verified-worktrees.json')
+args = parser.parse_args()
+assert Path(args.bundle).name == args.bundle and Path(args.report).name == args.report
+bundle = BACKUP / args.bundle
 subprocess.run(['git','bundle','verify',str(bundle)],cwd=ROOT,check=True,
                stdout=subprocess.DEVNULL,stderr=subprocess.DEVNULL)
 report={'at':datetime.now(timezone.utc).isoformat(), 'destination':str(ROOT),
@@ -63,5 +69,5 @@ for block in git('worktree','list','--porcelain').split('\n\n'):
                               'ignoredCount':len(entries),'archive':str(archive),'archiveBytes':archive.stat().st_size,
                               'archiveSHA256':digest(archive),'manifest':str(manifest),'verified':True})
     print(path.name+': '+str(len(entries))+' ignored files archived and verified',flush=True)
-    (BACKUP/'verified-worktrees.json').write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
+    (BACKUP/args.report).write_text(json.dumps(report,indent=2)+'\n',encoding='utf-8')
 print('All backups verified; no worktree removed by this script.',flush=True)

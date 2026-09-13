@@ -1,4 +1,3 @@
-import copy
 import unittest
 from delivery_gate import validate
 
@@ -77,6 +76,33 @@ class DeliveryGateTests(unittest.TestCase):
         self.assertTrue(self.errors())
         self.report['protectedWorktrees']['main'] = 'Owner forbids editing main'
         self.assertEqual(self.errors(), [])
+
+    def test_wrong_root_and_head_as_opening_base_are_rejected(self):
+        self.assertTrue(self.errors(facts={**self.facts,'root':'other'}))
+        self.assertTrue(self.errors(facts={**self.facts,'baseValid':False}))
+
+    def test_remote_only_branch_is_not_omitted(self):
+        self.facts['branches']['origin/forgotten']={'sha':'def','exclusive':['def']}
+        self.assertTrue(self.errors())
+
+    def test_removed_action_still_requires_reconciliation(self):
+        self.facts['changedActions'].append('removed.action')
+        self.assertTrue(self.errors())
+
+    def test_done_with_open_product_layers_is_rejected(self):
+        self.report['ownerItems'][0]['status']='done'
+        self.assertTrue(self.errors())
+
+    def test_equivalence_requires_reachable_successor(self):
+        self.report['residualBranches']['old']['disposition']='superseded'
+        self.assertTrue(self.errors())
+        self.report['residualBranches']['old']['successor']='integrated'
+        self.facts['validSuccessors']=['integrated']
+        self.assertEqual(self.errors(), [])
+
+    def test_missing_reference_is_rejected(self):
+        self.facts['missingSkillFiles']=['references/delivery-gate.md']
+        self.assertTrue(self.errors())
 
 
 if __name__ == '__main__':
