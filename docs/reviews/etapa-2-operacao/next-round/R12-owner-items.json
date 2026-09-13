@@ -64,12 +64,12 @@
       "daily-routine.list",
       "attendance.dashboard"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe.",
+    "be": "Dashboard e contratos preservados; nenhum SQL/RPC novo.",
+    "e2e": "Pendente por definição de tela/rota canônica e mapeamento.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

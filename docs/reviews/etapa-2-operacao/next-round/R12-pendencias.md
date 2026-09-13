@@ -13,7 +13,7 @@ generated_at: 2026-09-13
 | owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência. |
 | owner.r12-02 | activities.list, daily-routine.list | open / FE parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório. / Sem RPC/RLS novo; arquivamento não executado. / Pendente por contrato de archive, confirmação, versão, auditoria e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md | Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake. |
 | owner.r12-03 | activities.list | open / FE local-green: aba `Modelos de atividade` corrigida; `Atividades`, filtros, modos, paginação e ações preservados. / Contrato preservado, sem mutação nova. / Pending-verification: superfície mudou; rota normal/reload/escopo pendentes. | docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md | Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant. |
-| owner.r12-04 | daily-routine.list, attendance.dashboard | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-04 | daily-routine.list, attendance.dashboard | open / Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe. / Dashboard e contratos preservados; nenhum SQL/RPC novo. / Pendente por definição de tela/rota canônica e mapeamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md | Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7. |
 | owner.r12-05 | attendance.create | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
 | owner.r12-06 | attendance.create, daily-routine.apply | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
 | owner.r12-07 | attendance.mark, attendance.correct, attendance.finish | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
@@ -128,6 +128,14 @@ Atividades. Arquivar não possui callback nem contrato de comando no diretório
 de Atividades; o status archived somente lido não autoriza inventar mutação.
 Nenhum código/backend foi alterado nesta triagem. Evidência e próximo gate:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md`.
+
+## R12-04 checkpoint de execução (C0)
+
+A aba `Lançamentos` ainda é dependência do fluxo D7 de criar/publicar o
+lançamento; não existe tela/rota separada de Histórico de chamadas no
+Superadmin. Remover ou inventar uma nova tela agora quebraria o fluxo ou
+criaria escopo não aprovado. Nenhum código/backend foi alterado. Diagnóstico:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md`.
 
 ## Dívidas transversais preservadas
 

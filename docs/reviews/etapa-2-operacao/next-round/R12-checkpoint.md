@@ -59,6 +59,14 @@ tem callback/contrato no diretório. O status archived lido não autoriza criar
 mutação fake. Nenhum código/backend foi alterado; item permanece pendente até
 contrato de archive, confirmação, versão, auditoria e reload. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md`.
+
+## R12-04 checkpoint de execução (C0)
+
+O fluxo D7 ainda depende da aba `Lançamentos`; não existe tela/rota separada
+de Histórico de chamadas. A remoção imediata quebraria testes e criação/
+publicação de lançamento; uma tela nova excederia o recorte sem decisão.
+Nenhum código/backend foi alterado. Diagnóstico:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.
