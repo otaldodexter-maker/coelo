@@ -226,6 +226,8 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
             SizedBox(
               width: 220,
               child: CoeloAdminSingleSelectField<_NoticeStatusFilter>(
+                isFilter: true,
+                unselectedValue: _NoticeStatusFilter.all,
                 value: _statusFilter,
                 label: 'Estado',
                 options: _NoticeStatusFilter.values,

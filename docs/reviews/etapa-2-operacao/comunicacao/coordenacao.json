@@ -1,12 +1,12 @@
 {
-  "revision": 123,
+  "revision": 125,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T02:21:57.999485+00:00",
+  "updatedAt": "2026-09-13T02:56:12.5982868Z",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4315,5 +4315,25 @@
     "firstGate": "activities.publish/assessment UI e reload",
     "serverPID": 45980,
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
+  },
+  "checkpointR10Atual": {
+    "time": "2026-09-13T02:56:12.5982868Z",
+    "base": "845ffe9b5",
+    "quotaUsedPercent": 73,
+    "quotaSource": "account/rateLimits/read",
+    "runtime": {
+      "port": 3000,
+      "pid": 51176,
+      "owner": "C0",
+      "build": "filters release qa_main.dart 66s PASS"
+    },
+    "helpers": {
+      "/root/dev_senior_fe_be": "ACK; groups.members 67b5dc967 entregue; revisao integracao",
+      "/root/chat_inline": "ACK; render inline; branch work/etapa2-r10-chat-inline",
+      "/root/chat_upload": "ACK; retry idempotente; branch work/etapa2-r10-chat-upload; slot Flutter"
+    },
+    "wip": "Chat upload+foto integrados por merge; teste conjunto53executados52PASS1FAIL de toque encoberto corrigido, suite afetada14PASS. Total unico53PASS final. Analyze em andamento C0. Activities escopo unidade+periodicidade/gap+Editar laranja prontos localmente; build/UI seguintes. SQL groups CRUDd22be6ce8 sob revisao.",
+    "next": "Terminar analyze e build conjunto sem prova UI em andamento; provar foto e avaliacao unidade pela rota normal. Revisar SQL grupos e preflight backup/lote real.",
+    "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos."
   }
 }

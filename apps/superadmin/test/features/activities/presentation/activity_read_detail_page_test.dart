@@ -51,6 +51,7 @@ void main() {
     int revision = 1,
     List<String>? consumers,
     List<String>? edits,
+    List<String>? assessmentUnits,
     bool dark = false,
     double scale = 1,
   }) => MaterialApp(
@@ -69,12 +70,43 @@ void main() {
       onBack: () {},
       onEdit: (detail) => edits?.add(detail.id),
       onAssessmentSettings: (detail) {},
+      onUnitAssessmentSettings: (detail, unit) => assessmentUnits?.add('${detail.id}/$unit'),
       reservationBuilder: (context, detail) {
         consumers?.add(detail.id);
         return Text('Reservas de ${detail.id}');
       },
     ),
   );
+
+  testWidgets('unit assessment opens the authorized unit without replacing institution scope', (
+    tester,
+  ) async {
+    final reader = _Reader();
+    final units = <String>[];
+    await tester.pumpWidget(app(reader, assessmentUnits: units));
+    reader.calls.single.result.complete(readDetail());
+    await tester.pumpAndSettle();
+    final action = find.byKey(const Key('activity-read-assessment-$unitId'));
+    await tester.scrollUntilVisible(
+      action,
+      200,
+      scrollable: find
+          .descendant(
+            of: find.byKey(const Key('activity-read-scroll')),
+            matching: find.byType(Scrollable),
+          )
+          .first,
+    );
+    await Scrollable.ensureVisible(tester.element(action), alignment: 0.5);
+    await tester.pumpAndSettle();
+    await tester.tap(action);
+    expect(units, ['$activityId/$unitId']);
+    expect(find.byKey(const Key('activity-read-assessment')), findsOneWidget);
+    await tester.pumpWidget(app(reader, assessmentUnits: units, canRead: false, revision: 2));
+    await tester.pumpAndSettle();
+    expect(action, findsNothing);
+    expect(tester.takeException(), isNull);
+  });
 
   testWidgets('authorized projection renders actual fields and passes persisted consumer', (
     tester,
@@ -126,7 +158,7 @@ void main() {
     reader.calls.single.result.complete(readDetail());
     await tester.pumpAndSettle();
     final oldEdit = tester
-        .widget<OutlinedButton>(find.byKey(const Key('activity-read-edit')))
+        .widget<FilledButton>(find.byKey(const Key('activity-read-edit')))
         .onPressed!;
     await tester.pumpWidget(app(reader, revision: 2, edits: edits));
     expect(find.text('Oficina autorizada'), findsNothing);

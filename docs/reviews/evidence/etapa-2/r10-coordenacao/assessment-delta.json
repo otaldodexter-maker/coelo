@@ -1,0 +1,8 @@
+[
+    {
+        "action_id":  "activities.assessment",
+        "camada":  "frontend",
+        "delta":  "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente. R10: rota normal sem unitId oculta configuracao retida da unidade; acesso por unidade e Periodicidade/espaco vazio corrigidos em WIP C0, testes preparados. Nenhum novo aceite.",
+        "evidencia":  "docs/reviews/evidence/etapa-2/r10-coordenacao/assessment-scope.md"
+    }
+]

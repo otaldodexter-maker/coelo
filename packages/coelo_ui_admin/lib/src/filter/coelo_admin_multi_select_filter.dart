@@ -1,5 +1,7 @@
 import 'dart:math' as math;
 
+import 'coelo_admin_filter_trigger.dart';
+
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -271,43 +273,11 @@ class _CoeloAdminMultiSelectFilterState<T> extends State<CoeloAdminMultiSelectFi
       ],
       builder: (context, controller, child) {
         final menuOpen = controller.isOpen;
-        return OutlinedButton(
+        return CoeloAdminFilterTrigger(
+          label: selectedLabel,
+          menuOpen: menuOpen,
           focusNode: _triggerFocusNode,
           onPressed: () => controller.isOpen ? controller.close() : controller.open(),
-          style:
-              OutlinedButton.styleFrom(
-                minimumSize: const Size.fromHeight(CoeloSize.touchMin),
-                padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space4),
-                shape: const StadiumBorder(),
-              ).copyWith(
-                backgroundColor: WidgetStateProperty.resolveWith(
-                  (states) => menuOpen ? colors.primaryContainer : Colors.transparent,
-                ),
-                foregroundColor: WidgetStateProperty.resolveWith((states) {
-                  final active =
-                      menuOpen ||
-                      states.contains(WidgetState.hovered) ||
-                      states.contains(WidgetState.focused) ||
-                      states.contains(WidgetState.pressed);
-                  return active ? colors.primary : colors.onSurfaceVariant;
-                }),
-                side: WidgetStateProperty.resolveWith((states) {
-                  final focused = menuOpen || states.contains(WidgetState.focused);
-                  return BorderSide(
-                    color: focused ? colors.primary : colors.outlineVariant,
-                    width: focused ? 2 : 1,
-                  );
-                }),
-                overlayColor: const WidgetStatePropertyAll(Colors.transparent),
-                splashFactory: NoSplash.splashFactory,
-              ),
-          child: Row(
-            children: [
-              Expanded(child: Text(selectedLabel, maxLines: 1, overflow: TextOverflow.ellipsis)),
-              const SizedBox(width: CoeloSpacing.space1),
-              const Icon(Icons.arrow_drop_down_rounded),
-            ],
-          ),
         );
       },
     );

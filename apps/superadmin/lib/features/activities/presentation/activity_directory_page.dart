@@ -742,6 +742,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
       filters: [
         CoeloAdminSingleSelectField<String>(
           key: const Key('activity-template-origin-filter'),
+          isFilter: true,
+          unselectedValue: 'Todas',
           label: 'Origem',
           value: _templateOrigin,
           options: const ['Todas', 'Coelo', 'Institucional'],
