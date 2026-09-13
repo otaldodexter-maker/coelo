@@ -175,6 +175,8 @@ final class _CircularDirectoryPageState extends State<CircularDirectoryPage> {
             SizedBox(
               width: 240,
               child: CoeloAdminSingleSelectField<String>(
+                isFilter: true,
+                unselectedValue: 'Todos',
                 value: _context,
                 label: 'Contexto',
                 options: contexts,

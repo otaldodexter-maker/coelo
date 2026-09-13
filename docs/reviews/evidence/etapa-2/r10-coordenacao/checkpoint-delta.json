@@ -1,0 +1,85 @@
+[
+  {
+    "action_id": "activities.list",
+    "camada": "frontend",
+    "delta": "R04 continuacao: /activities em producao lista os modelos Coelo (2 paginas) com filtros e card Criar modelo; reload mantem. R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+      "revision": "estrutura.json rev 33",
+      "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+      "recordedAt": "2026-09-11T09:41:00-03:00"
+    }
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "delta": "Retido pela plataforma comum de midia: faltam o catalog_kind de chat no catalogo privado e o contrato de emissao de ticket de upload e leitura pelo gateway, escritos por publicacoes-midia. superadmin_chat_send_message_v2 e text-only e o repositorio recusa comando com anexo em vez de enviar parcialmente e fingir sucesso. Placeholder honesto preservado; nenhum gateway ou bucket criado por tela. R08: consumidor real prepare/PUT isolado sem redirect/finalize/read por attachment_id integrado; autoria G4 fee190810. Base C0 238 testes PASS em11arquivos incluindo Chat e publicadores; UI/reload/negativa reais continuam pendentes. Nenhum assetId inferido. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/chat-owner.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "backend",
+    "delta": "R05 realm-interno: contrato de anexo do chat interno (20260911210200, lote 32): prepare/authorize_finalize/authorize_read (authenticated) e finalize/expire (service_role) sobre chat_attachment_metadata e R2 coelo-media-prod, sem Stream; thread ja devolve attachments[]. pgTAP 28/28 (limites, replay, mismatch, cross-tenant, expiracao). Gate: Edge Function chat-media + cron de expire; cliente do principal-chat. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/chat-owner.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "R08: consumidor Flutter e cadeia API prepare/PUT/finalize/read concluidos; proximo gate e UI/reload/negativa real na mesma composicao, sem recriar catalogo/Edge. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/chat-owner.md"
+  },
+  {
+    "action_id": "notices.list",
+    "camada": "frontend",
+    "delta": "front-end -> verified (R04 publicacoes-agenda) R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "revision": "3895238a5 (rev 30)",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)",
+      "recordedAt": "2026-09-11T04:00:00-03:00"
+    }
+  },
+  {
+    "action_id": "audit.filter",
+    "camada": "frontend",
+    "delta": "R05 (11/09 13:00, rota real com qa-r03): filtro Resultados=Falha devolve estado sem resultados com Limpar filtros (RPC 200, 0 itens), Resultados=Negado lista 3 paginas de eventos negados reais, busca 'invite' filtra no servidor (1 de 4 paginas); cada mudanca dispara audit_list_events_for_superadmin 200. R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+      "revision": "comunicacao/operacoes.json rev 23",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) da branch work/etapa2-r05-operacoes (3b6ef24d3) em 127.0.0.1:3008, sessao qa-r03@coelo.me, Chrome CDP 9408",
+      "recordedAt": "2026-09-11T13:05:00-03:00",
+      "evidenceList": [
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/32-audit-filter-falha.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/33-audit-filter-negado.png",
+        "docs/reviews/evidence/etapa-2/r05-operacoes/rota-real/36-audit-search.png"
+      ]
+    }
+  },
+  {
+    "action_id": "meal-plans.list",
+    "camada": "frontend",
+    "delta": "lista abre na rota real e mostra o modelo publicado com Status e Duplicar (07) R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "circulars.filter",
+    "camada": "frontend",
+    "delta": "front-end -> verified (R04 publicacoes-agenda) R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-publicacoes-agenda/handoff.md",
+      "revision": "3895238a5 (rev 30)",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03, rota real pela UI (52 capturas em ui/); aceite Front-end: rota normal sem fixture + CRUD pelo repositorio produtivo + reload (capturas ui/)",
+      "recordedAt": "2026-09-11T04:00:00-03:00"
+    }
+  }
+]

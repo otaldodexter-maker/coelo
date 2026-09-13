@@ -220,6 +220,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         SizedBox(
           width: 200,
           child: CoeloAdminSingleSelectField<MealPlanStatus?>(
+            isFilter: true,
             value: _statusFilter,
             label: 'Status',
             options: const [null, ...MealPlanStatus.values],
@@ -243,6 +244,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         SizedBox(
           width: 200,
           child: CoeloAdminSingleSelectField<MealPlanSourceType?>(
+            isFilter: true,
             value: _sourceFilter,
             label: 'Origem',
             options: const [null, ...MealPlanSourceType.values],
@@ -257,6 +259,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         SizedBox(
           width: 170,
           child: CoeloAdminSingleSelectField<bool?>(
+            isFilter: true,
             value: _hasConflictFilter,
             label: 'Conflito',
             options: const [null, true, false],
@@ -275,6 +278,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         SizedBox(
           width: 200,
           child: CoeloAdminSingleSelectField<bool?>(
+            isFilter: true,
             value: _requiresReviewFilter,
             label: 'Revis\u00e3o',
             options: const [null, true, false],

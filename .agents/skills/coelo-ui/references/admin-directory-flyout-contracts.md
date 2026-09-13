@@ -47,6 +47,11 @@ uma indicação explícita do usuário por outro padrão aprovado permite diverg
   borda `outlineVariant`; aberto/focado usa borda `primary` de 2 px.
 - Multi-select mantém rascunho até `Aplicar`; single-select aplica uma escolha e
   não usa checkbox. Reutilizar os componentes administrativos indexados.
+- Single-select em diretório usa `CoeloAdminSingleSelectField(isFilter: true)`:
+  o gatilho compartilha a cápsula do multi-select, sem label flutuante ou ícone
+  de campo. `unselectedValue` define o valor neutro que mostra o nome do filtro.
+  O construtor padrão continua sendo campo de formulário. Correção R10 do
+  apontamento do Owner sobre Origem, em 12/09/2026.
 - O toggle cards/tabela é um controle segmentado único: contêiner pill em
   `surface`, borda e divisória `outlineVariant`; selecionado, hover e foco usam
   a hierarquia `primaryContainer`/`primary`. Cada segmento mede 64 × 48 px e

@@ -1,6 +1,8 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 
+import 'coelo_admin_filter_trigger.dart';
+
 final class CoeloAdminSingleSelectField<T> extends StatefulWidget {
   const CoeloAdminSingleSelectField({
     required this.label,
@@ -14,6 +16,8 @@ final class CoeloAdminSingleSelectField<T> extends StatefulWidget {
     this.isLoading = false,
     this.searchable,
     this.searchHintText,
+    this.isFilter = false,
+    this.unselectedValue,
     super.key,
   });
 
@@ -31,6 +35,10 @@ final class CoeloAdminSingleSelectField<T> extends StatefulWidget {
   /// options.
   final bool? searchable;
   final String? searchHintText;
+
+  /// Directory filters use the same pill as multi-select filters.
+  final bool isFilter;
+  final T? unselectedValue;
 
   @override
   State<CoeloAdminSingleSelectField<T>> createState() => _CoeloAdminSingleSelectFieldState<T>();
@@ -214,37 +222,49 @@ final class _CoeloAdminSingleSelectFieldState<T> extends State<CoeloAdminSingleS
             label: widget.label,
             value: widget.optionLabel(widget.value),
             hint: widget.errorText,
-            child: InkWell(
-              focusNode: _triggerFocusNode,
-              borderRadius: BorderRadius.circular(CoeloRadius.md),
-              onTap: _canInteract ? () => menu.isOpen ? menu.close() : _openMenu(menu) : null,
-              child: InputDecorator(
-                key: _anchorKey,
-                isFocused: menu.isOpen,
-                isEmpty: widget.optionLabel(widget.value).isEmpty,
-                decoration: InputDecoration(
-                  enabled: _canInteract,
-                  errorText: widget.errorText,
-                  labelText: widget.label,
-                  prefixIcon: Icon(widget.prefixIcon),
-                  suffixIcon: widget.isLoading
-                      ? const Padding(
-                          padding: EdgeInsets.all(CoeloSpacing.space3),
-                          child: SizedBox.square(
-                            dimension: CoeloSize.iconSm,
-                            child: CircularProgressIndicator(strokeWidth: 2),
-                          ),
-                        )
-                      : Icon(
-                          menu.isOpen
-                              ? Icons.keyboard_arrow_up_rounded
-                              : Icons.keyboard_arrow_down_rounded,
-                        ),
-                  floatingLabelBehavior: FloatingLabelBehavior.always,
-                ),
-                child: Text(widget.optionLabel(widget.value)),
-              ),
-            ),
+            child: widget.isFilter
+                ? CoeloAdminFilterTrigger(
+                    key: _anchorKey,
+                    label: widget.value == widget.unselectedValue
+                        ? widget.label
+                        : widget.optionLabel(widget.value),
+                    menuOpen: menu.isOpen,
+                    focusNode: _triggerFocusNode,
+                    onPressed: _canInteract
+                        ? () => menu.isOpen ? menu.close() : _openMenu(menu)
+                        : null,
+                  )
+                : InkWell(
+                    focusNode: _triggerFocusNode,
+                    borderRadius: BorderRadius.circular(CoeloRadius.md),
+                    onTap: _canInteract ? () => menu.isOpen ? menu.close() : _openMenu(menu) : null,
+                    child: InputDecorator(
+                      key: _anchorKey,
+                      isFocused: menu.isOpen,
+                      isEmpty: widget.optionLabel(widget.value).isEmpty,
+                      decoration: InputDecoration(
+                        enabled: _canInteract,
+                        errorText: widget.errorText,
+                        labelText: widget.label,
+                        prefixIcon: Icon(widget.prefixIcon),
+                        suffixIcon: widget.isLoading
+                            ? const Padding(
+                                padding: EdgeInsets.all(CoeloSpacing.space3),
+                                child: SizedBox.square(
+                                  dimension: CoeloSize.iconSm,
+                                  child: CircularProgressIndicator(strokeWidth: 2),
+                                ),
+                              )
+                            : Icon(
+                                menu.isOpen
+                                    ? Icons.keyboard_arrow_up_rounded
+                                    : Icons.keyboard_arrow_down_rounded,
+                              ),
+                        floatingLabelBehavior: FloatingLabelBehavior.always,
+                      ),
+                      child: Text(widget.optionLabel(widget.value)),
+                    ),
+                  ),
           ),
         );
       },
