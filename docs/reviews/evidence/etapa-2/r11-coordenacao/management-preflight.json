@@ -1,0 +1,18 @@
+{
+  "at": "2026-09-13T14:04:42.506595+00:00",
+  "project": "evvbomzejfijozbtgvpt",
+  "backups": {
+    "pitr_enabled": false,
+    "physical_backup_data": {},
+    "region": "sa-east-1",
+    "backup_count": 0
+  },
+  "auth": {
+    "site_url": "http://localhost:3000",
+    "uri_allow_list": "http://127.0.0.1:8765/reset-password,https://superadmin.coelo.me/reset-password",
+    "mailer_otp_exp": 3600,
+    "mailer_autoconfirm": false,
+    "custom_smtp_configured": false,
+    "smtp_sender_configured": false
+  }
+}

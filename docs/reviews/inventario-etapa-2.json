@@ -7341,15 +7341,15 @@
       "family": "account",
       "screen": "Conta / Perfil",
       "scope": "mvp",
-      "done": "Complemento Owner: cor da sigla também não atualiza; conferir persistência e projeção de foto/nome/sigla/cor após salvar/reload, inclusive remoção de foto. Nova observação Owner pendente de reprodução na R11. Certificado histórico não certifica este novo apontamento; provar foto/nome no header, salvar/cancelar, busca/scroll e reload. Anterior: R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
-      "fe": "Complemento Owner: cor da sigla também não atualiza; conferir persistência e projeção de foto/nome/sigla/cor após salvar/reload, inclusive remoção de foto. Owner preparação R11: foto do editor não refletida no cabeçalho; nome é suspeita a reproduzir. Salvar ficou distante por Meu acesso longo. Solicita ações acessíveis, scroll interno, busca e grupos/hierarquia. Reproduzir depois de salvar, não confundir prévia com persistência. Anterior: R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
-      "be": "Complemento Owner: cor da sigla também não atualiza; conferir persistência e projeção de foto/nome/sigla/cor após salvar/reload, inclusive remoção de foto. Conferir persistência de foto/nome, leitura do perfil e ownership após Save/reload; agrupamento de capacidades é somente apresentação. Nenhuma falha backend confirmada ou mudança remota nesta preparação. Anterior: R10: cabe?alho real corrigido; duas identidades por logout/login normal, segunda com reload persistente, retorno ? primeira PASS. Nenhum novo incremento de a??o j? verificada.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.profile); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.profile); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png; docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md; docs/design/account-profile-owner-adjustments-20260913.md",
+      "done": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+      "fe": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+      "be": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.profile); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.profile); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png; docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md; docs/design/account-profile-owner-adjustments-20260913.md; docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "verified",
-      "backendStatus": "done",
-      "integratedStatus": "verified-e2e",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "ownerVisualApproval": {
@@ -9134,7 +9134,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-13T13:40:13.945Z",
+  "updatedAt": "2026-09-13T14:04:12.587Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

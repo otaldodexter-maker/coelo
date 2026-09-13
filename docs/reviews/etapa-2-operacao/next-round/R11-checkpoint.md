@@ -21,3 +21,9 @@ Conta: foto no editor/header com sigla relatados; nome suspeito e cor relatada, 
 Provas: rota normal, salvar e reload no mesmo recurso, negação RLS pertinente, testes focais causais; FE/BE/E2E separados. Nenhum aceite novo na abertura. Estimativa do delta ainda não calculável antes de reprodução; janela é limite, não estimativa. Primeiro gate C0: reproduzir Conta no build preservado, inspecionar controller/repository/header e catálogo de capacidades. WIP inicial nenhum; leituras e inventário focal em andamento.
 
 Fora: R12, Etapa3, auditoria231ações, redesign Chat. Preservar direção/anexos via docs/design/chat-media-composer-owner-reference-20260913.md; preservar Principal-pos-R10 e pendências próprias. SQL somente forward, pgTAP/ordem/PITR conforme pedido atual; nenhum remoto alterado na abertura.
+
+## Checkpoint 11:05 BRT
+
+Quota88% (última leitura), janela/reset iguais. QA Chrome PID31192/CDP9427, C0; runtime17204/3000 preservado, slot Flutter ocioso. Build preservado usado pela rota produtiva /profile após login normal. Harness corrigido para teclado nativo, foco emulado e janela QA normal; Chrome Owner preservado. Cor #336699 após Salvar/Perfil atualizado voltou a #FFF1EB após reload. Regression account.profile FE/BE/E2E pending-verification, histórico preservado. Três matrizes validadas176/231FE,161/224BE,149/199E2E. Nome ainda não reproduzido, foto sem transporte no repository/RPC; sigla validada mas não gravada no servidor.
+
+Preflight Management API14:04:42Z: pitr_enabled=false, backup_count0; SMTP próprio ausente. R11 exige PITR, diferente da exceção ADR0034D8 usada na R10; não aplicar SQL sem resolver esse requisito. Preparar correções locais e seguir partes independentes. WIP: harness/evidência, registro de compromissos e matrizes; nenhum código de produto alterado ainda. Próximo C0: rodapé/Meu acesso, confirmação autoritativa e contrato local; Auth inspeção curta sem repetir envio.

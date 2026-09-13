@@ -1,6 +1,6 @@
 {
   "completion": "partial",
-  "baseReference": "c8c38e28b",
+  "baseReference": "1d2f95b5942f5aab23439151b57853dd3180b041",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
@@ -1252,6 +1252,86 @@
       "evidence": "docs/design/account-profile-owner-adjustments-20260913.md",
       "owner": "C0 R11",
       "nextGate": "Reproduzir após salvar/reload foto, nome, sigla e COR no cabeçalho, inclusive remover foto; corrigir rodapé e Meu acesso na cota R11."
+    },
+    {
+      "id": "owner.r11-auth",
+      "status": "open",
+      "actionIds": [
+        "auth.recover",
+        "auth.reset"
+      ],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Inspecionar SMTP e caixa sintética; provar link real sem Admin API"
+    },
+    {
+      "id": "owner.r11-assessment",
+      "status": "open",
+      "actionIds": [
+        "activities.assessment",
+        "activities.publish"
+      ],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Reproduzir UPDATE b04c879e e obter SQLSTATE"
+    },
+    {
+      "id": "owner.r11-gradebook",
+      "status": "open",
+      "actionIds": [
+        "assessments.entry",
+        "assessments.gradebook",
+        "assessments.detail",
+        "assessments.close",
+        "assessments.reopen"
+      ],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Reconciliar participantes e snapshot d2c945d8"
+    },
+    {
+      "id": "owner.r11-group-counters",
+      "status": "open",
+      "actionIds": [
+        "groups.list"
+      ],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Comparar projeção e vínculos reais"
+    },
+    {
+      "id": "owner.r11-checkpoints-delivery",
+      "status": "open",
+      "actionIds": [],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Publicar fatias; sincronizar MDs, memória e gate após push"
+    },
+    {
+      "id": "owner.r11-optional-neighbor",
+      "status": "open",
+      "actionIds": [],
+      "fe": "pending-current-proof",
+      "be": "pending-current-proof",
+      "e2e": "pending-current-proof",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "owner": "C0 R11",
+      "nextGate": "Somente após A0/A/B/C/D concluídos com margem; institutions.status ou institutions.locations-map"
     }
   ],
   "evidenceFiles": [
@@ -1266,7 +1346,8 @@
     "docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md",
     "docs/knowledge/team/chat-media-composer-direction.md",
     "docs/design/account-profile-owner-adjustments-20260913.md",
-    "docs/knowledge/team/account-profile-header-access.md"
+    "docs/knowledge/team/account-profile-header-access.md",
+    "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
   ],
   "memory": {
     "status": "captured",

@@ -1,0 +1,23 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "R11: regressão reproduzida: cor azul após Salvar/Perfil atualizado volta a #FFF1EB no reload. Foto/cor ausentes no save; RPC não grava sigla. Corrigir confirmação autoritativa, persistência e rodapé/busca/grupos reais; nome/picker pendentes. C0; sem aceite novo.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md"
+  }
+]
