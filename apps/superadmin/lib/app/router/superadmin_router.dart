@@ -1,5 +1,6 @@
 import '../activity/context_notification_feed.dart';
 import 'dart:async';
+import '../../features/account/domain/account_profile.dart';
 import '../../features/groups/domain/group_detail.dart';
 import '../../features/groups/presentation/group_detail_page.dart';
 import '../../features/units/domain/unit_detail.dart';
@@ -578,13 +579,16 @@ GoRouter createSuperadminRouter({
   // Suporte e Perfil so consultam producao com sessao: antes do login as RPCs
   // respondiam 401 na propria pagina /login (medido na R05). Carrega na
   // criacao se ja houver sessao e de novo quando a sessao abrir.
+  String? accountLoadedSessionId;
   void loadProductionOperationalData() {
     if (!session.isAuthenticated) return;
     if (productionSupportController != null &&
         productionSupportController.loadState == SupportLoadState.idle) {
       unawaited(productionSupportController.loadFromRepository());
     }
-    if (productionAccountController.state.phase == AccountControllerPhase.idle) {
+    if (accountLoadedSessionId != session.sessionId ||
+        productionAccountController.state.phase == AccountControllerPhase.idle) {
+      accountLoadedSessionId = session.sessionId;
       unawaited(productionAccountController.load());
     }
   }
@@ -1235,36 +1239,60 @@ GoRouter createSuperadminRouter({
         builder: (context, state, child) {
           final location = state.matchedLocation;
           final developmentPreview = location.startsWith('/dev/');
+          final headerController = developmentPreview
+              ? developmentAccountController
+              : productionAccountController;
           final routedChild = _usesPersistentShell(location)
-              ? SuperadminShell.host(
-                  key: const Key('superadmin-persistent-shell'),
-                  logout: developmentPreview ? _previewLogout : logout,
-                  currentDestination: _destinationForLocation(location),
-                  onDestinationSelected: (destination) => developmentPreview
-                      ? _navigateFromDevelopmentShell(context, destination)
-                      : _navigateFromPersistentShell(context, destination),
-                  // Mesma regra do shell de produção: sem repositório
-                  // autorizado o launcher não afirma contagem alguma.
-                  chatUnreadCountLoader: developmentPreview
-                      ? developmentChatRepository.fetchUnreadTotal
-                      : chatRepository is UnavailableChatRepository
-                      ? null
-                      : chatRepository.fetchUnreadTotal,
-                  chatRecentConversationsLoader: developmentPreview
-                      ? () => _recentConversations(developmentChatRepository)
-                      : chatRepository is UnavailableChatRepository
-                      ? null
-                      : () => _recentConversations(chatRepository),
-                  onBugReportSubmitted: developmentPreview
-                      ? developmentSupportController.submitReport
-                      : productionSupportController?.submitReportToBackend,
-                  canAccessCapability: (capability) => switch (capability) {
-                    'attendance.create' =>
-                      developmentPreview || hasAuthoritativeMutationCapability('/attendance'),
-                    'activities.create' => developmentPreview,
-                    _ => developmentPreview,
+              ? ListenableBuilder(
+                  listenable: Listenable.merge([headerController, session]),
+                  builder: (context, _) {
+                    final profile = developmentPreview || session.isAuthenticated
+                        ? headerController.profile
+                        : null;
+                    return SuperadminShell.host(
+                      headerProfile: profile == null
+                          ? null
+                          : SuperadminHeaderProfile(
+                              name: '${profile.firstName} ${profile.lastName}'.trim(),
+                              role: profile.access.role,
+                              initials: profile.avatar.initials,
+                              avatarBackgroundColor: profile.avatar.backgroundColor,
+                              avatarImage:
+                                  profile.avatar.mode == AccountAvatarMode.photo &&
+                                      profile.avatar.photoBytes != null
+                                  ? MemoryImage(profile.avatar.photoBytes!)
+                                  : null,
+                            ),
+                      key: const Key('superadmin-persistent-shell'),
+                      logout: developmentPreview ? _previewLogout : logout,
+                      currentDestination: _destinationForLocation(location),
+                      onDestinationSelected: (destination) => developmentPreview
+                          ? _navigateFromDevelopmentShell(context, destination)
+                          : _navigateFromPersistentShell(context, destination),
+                      // Mesma regra do shell de produção: sem repositório
+                      // autorizado o launcher não afirma contagem alguma.
+                      chatUnreadCountLoader: developmentPreview
+                          ? developmentChatRepository.fetchUnreadTotal
+                          : chatRepository is UnavailableChatRepository
+                          ? null
+                          : chatRepository.fetchUnreadTotal,
+                      chatRecentConversationsLoader: developmentPreview
+                          ? () => _recentConversations(developmentChatRepository)
+                          : chatRepository is UnavailableChatRepository
+                          ? null
+                          : () => _recentConversations(chatRepository),
+                      onBugReportSubmitted: developmentPreview
+                          ? developmentSupportController.submitReport
+                          : productionSupportController?.submitReportToBackend,
+                      canAccessCapability: (capability) => switch (capability) {
+                        'attendance.create' =>
+                          developmentPreview || hasAuthoritativeMutationCapability('/attendance'),
+                        'activities.create' => developmentPreview,
+                        _ => developmentPreview,
+                      },
+                      child: child,
+                    );
                   },
-                  child: child,
                 )
               : child;
           return DevMenuOverlay(
@@ -2503,6 +2531,16 @@ GoRouter createSuperadminRouter({
                     activityId: state.pathParameters['activityId']!,
                     institutionId: state.uri.queryParameters['institutionId'] ?? '',
                     unitId: state.uri.queryParameters['unitId'],
+                    configurationId: state.uri.queryParameters['configurationId'],
+                    onSaved: (saved) => context.replaceNamed(
+                      SuperadminRoutes.activityAssessmentSettingsName,
+                      pathParameters: {'activityId': saved.activityId},
+                      queryParameters: {
+                        'institutionId': saved.institutionId,
+                        if (saved.unitId != null) 'unitId': saved.unitId!,
+                        'configurationId': saved.id,
+                      },
+                    ),
                     onCancel: () => context.goNamed(
                       SuperadminRoutes.activityDetailName,
                       pathParameters: {'activityId': state.pathParameters['activityId']!},

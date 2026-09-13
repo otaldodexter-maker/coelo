@@ -1,12 +1,12 @@
 {
-  "revision": 125,
+  "revision": 126,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T02:56:12.5982868Z",
+  "updatedAt": "2026-09-13T03:25:49.959978+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4340,5 +4340,33 @@
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
     "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60."
+  },
+  "filaSqlR10": {
+    "ultimoAplicado": 60,
+    "proximo": 61,
+    "dono": "C0",
+    "status": "preflight aprovado; aguardando aplicacao serial unica",
+    "backup": [
+      {
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-schema-20260913.sql",
+        "bytes": 4143028,
+        "sha256": "01fe84e018e308432dbde31646f3632619da8b65503571a77a36c6b2453652c5",
+        "exitCode": 0
+      },
+      {
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-data-20260913.sql",
+        "bytes": 4538939,
+        "sha256": "0be962c90be5102f240da7e4bfa6d1ac5ce66735e3a0fb1df42f88d984ea2d40",
+        "exitCode": 0
+      }
+    ],
+    "candidatos": [
+      "groups student link",
+      "groups students projection",
+      "groups student unlink",
+      "assessment read by id",
+      "chat MP4 limit/extension"
+    ],
+    "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas."
   }
 }

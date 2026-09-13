@@ -921,6 +921,8 @@ final class AssessmentConfigurationPage extends StatelessWidget {
     required this.institutionId,
     required this.onCancel,
     this.unitId,
+    this.configurationId,
+    this.onSaved,
     this.onDestinationSelected,
     super.key,
   });
@@ -929,6 +931,8 @@ final class AssessmentConfigurationPage extends StatelessWidget {
   final LogoutAction logout;
   final String activityId, institutionId;
   final String? unitId;
+  final String? configurationId;
+  final ValueChanged<AssessmentConfiguration>? onSaved;
   final VoidCallback onCancel;
   final ValueChanged<String>? onDestinationSelected;
 
@@ -939,6 +943,8 @@ final class AssessmentConfigurationPage extends StatelessWidget {
     activityId: activityId,
     institutionId: institutionId,
     unitId: unitId,
+    configurationId: configurationId,
+    onSaved: onSaved,
     onCancel: onCancel,
     onDestinationSelected: onDestinationSelected,
     key: key,
@@ -953,6 +959,8 @@ final class _LegacyAssessmentConfigurationPrototype extends StatefulWidget {
     required this.institutionId,
     required this.onCancel,
     required this.unitId,
+    required this.configurationId,
+    required this.onSaved,
     required this.onDestinationSelected,
     super.key,
   });
@@ -960,6 +968,8 @@ final class _LegacyAssessmentConfigurationPrototype extends StatefulWidget {
   final LogoutAction logout;
   final String activityId, institutionId;
   final String? unitId;
+  final String? configurationId;
+  final ValueChanged<AssessmentConfiguration>? onSaved;
   final VoidCallback onCancel;
   final ValueChanged<String>? onDestinationSelected;
   @override
@@ -1005,7 +1015,8 @@ final class _LegacyAssessmentConfigurationPrototypeState
     if (identical(oldWidget.repository, widget.repository) &&
         oldWidget.activityId == widget.activityId &&
         oldWidget.institutionId == widget.institutionId &&
-        oldWidget.unitId == widget.unitId) {
+        oldWidget.unitId == widget.unitId &&
+        oldWidget.configurationId == widget.configurationId) {
       return;
     }
     _loadGeneration++;
@@ -1035,7 +1046,20 @@ final class _LegacyAssessmentConfigurationPrototypeState
     final unitId = widget.unitId;
     setState(() => _error = null);
     try {
-      final value = await repository.fetchConfiguration(activityId, unitId: unitId);
+      final value = await repository.fetchConfiguration(
+        activityId,
+        unitId: unitId,
+        configurationId: widget.configurationId,
+      );
+      if (value != null &&
+          (value.activityId != activityId ||
+              value.institutionId != institutionId ||
+              value.unitId != unitId)) {
+        throw const AssessmentUnauthorizedException();
+      }
+      if (widget.configurationId != null && value == null) {
+        throw const AssessmentUnauthorizedException();
+      }
       if (_isCurrentLoad(generation, repository, activityId, institutionId, unitId)) {
         setState(() {
           _competencyOptions = value?.availableCompetencies ?? value?.competencies ?? const [];
@@ -1098,6 +1122,7 @@ final class _LegacyAssessmentConfigurationPrototypeState
       }
       if (_isCurrentCommand(generation, repository, activityId, value)) {
         setState(() => _configuration = saved);
+        widget.onSaved?.call(saved);
       }
     } on AssessmentVersionConflictException {
       if (mounted && _isCurrentCommand(generation, repository, activityId, value)) {
