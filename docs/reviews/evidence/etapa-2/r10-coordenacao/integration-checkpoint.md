@@ -21,3 +21,7 @@ Build68.9s PASS, SHA2565097C909D03E583B580FEFAE163C2BAF34E9DB2ED47F30C9B5813E845
 MP4 realH2641s2446bytes preparado/decodificado. Seletor normal abriu, mas fileChooser.setFiles recusou code-32000 Not allowed (permissao Allow access to file URLs da extensao). Sem arquivo injetado, semuploadMP4, semE2E.
 
 TurmaR054214106c-46a2-4bf4-84ba-9c6a619bd486 abre formulario normal. Instituicao190dd028-3125-452d-8502-612bfa1029de semchild_context ativo; preparar contexto pelaUI dePessoas. Dialogo aluno iniciaResponsavel: defeitoUX separado delegado com slot.
+
+## Checkpoint 03:55Z
+
+Consumo real 78%. SQL61 e Edge MP4 ja implantados, conforme fila. Build vigente86A97B; nenhuma promocao funcional. Contexto de Crianca QA R04 criado pela UI na Escola R04, unidade pending. Salvar turma falha antes do link; draft preservado e diagnostico focal em andamento. Card de atividade abria edit: corrigido por3b32085d5, 22 testes PASS, build conjunto pendente. Entrada textual na automacao exige pressSequentially e confirmacao visual: value da arvore isoladamente nao prova valor no controller Flutter.
