@@ -6,6 +6,14 @@ generated_at: 2026-09-13
 
 # R12 — Catálogo consolidado por camada
 
+## R12-19 a R12-53 checkpoint de triagem (C0)
+
+O catálogo completo foi percorrido até R12-53 e consolidado em
+`docs/reviews/evidence/etapa-2/r12-coordenacao/r12-19-53-triage.md`. Os itens
+continuam abertos quando o primeiro gate exige decisão do Owner, mapeamento,
+contrato de produção ou prova integrada; nenhum SQL/deploy foi aplicado por
+esta triagem.
+
 53 IDs preservados:5 ajustes visuais entregues e48 abertos. C0 R12 é o responsável pela execução; decisões externas continuam com Owner. Nenhuma promoção funcional por consolidação.
 
 | Item | action_ids | Estado / FE / BE / E2E | Prova preservada | Primeiro gate |
