@@ -183,6 +183,71 @@ void main() {
     },
   );
 
+  test(
+    'serializes a retained draft update with its id, version, and unchanged period metadata',
+    () async {
+      Map<String, dynamic>? saveBody;
+      final client = SupabaseClient(
+        'https://example.supabase.co',
+        'publishable-key',
+        httpClient: MockClient((request) async {
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_configuration_read_by_id')) {
+            return _json(_retainedDraftEnvelope(), request);
+          }
+          if (request.url.path.endsWith('/rpc/superadmin_assessment_save_configuration')) {
+            saveBody = Map<String, dynamic>.from(jsonDecode(request.body) as Map);
+            return _json({
+              'id': 'a0000000-0000-4000-8000-000000000004',
+              'version': 2,
+              'status': 'draft',
+            }, request);
+          }
+          return Response('not found', 404, request: request);
+        }),
+      );
+      addTearDown(client.dispose);
+      final repository = SupabaseAssessmentRepository(client);
+      final draft = (await repository.fetchConfiguration(
+        'a0000000-0000-4000-8000-000000000001',
+        configurationId: 'a0000000-0000-4000-8000-000000000004',
+      ))!;
+
+      await repository.saveConfiguration(
+        draft.copyWith(periods: [draft.periods.single.copyWith(name: 'Periodo R10 verificado')]),
+      );
+
+      expect(saveBody!['configuration_id'], 'a0000000-0000-4000-8000-000000000004');
+      expect(saveBody!['expected_version'], 1);
+      expect(saveBody!['payload'], {
+        'activity_id': 'a0000000-0000-4000-8000-000000000001',
+        'institution_id': 'a0000000-0000-4000-8000-000000000002',
+        'unit_id': 'a0000000-0000-4000-8000-000000000003',
+        'periodicity': 'annual',
+        'result_scale_kind': 'numeric_0_10',
+        'scale_options': {'step': 0.01},
+        'concepts': <Object?>[],
+        'periods': [
+          {
+            'name': 'Periodo R10 verificado',
+            'ordinal': 1,
+            'academic_year': 2026,
+            'starts_on': '2026-09-12',
+            'ends_on': '2026-12-31',
+            'entry_closes_at': '2026-12-31T23:00:00.000Z',
+            'family_release_at': '2026-12-31T23:00:00.000Z',
+            'timezone': 'America/Sao_Paulo',
+            'status': 'draft',
+          },
+        ],
+        'allow_final_override': false,
+        'instruments': [
+          {'name': 'Instrumento R10', 'weight': 100, 'sort_order': 0},
+        ],
+        'categories': <Object?>[],
+      });
+    },
+  );
+
   test('maps internal v2 envelopes without exposing backend details', () async {
     SupabaseAssessmentRepository repositoryFor(String code, int status) {
       final client = SupabaseClient(
@@ -302,6 +367,46 @@ Map<String, Object?> _configurationEnvelope(String id, String status, String per
       'family_release_at': '2027-01-02T08:00:00Z',
       'timezone': 'America/Sao_Paulo',
       'status': 'active',
+    },
+  ],
+};
+
+Map<String, Object?> _retainedDraftEnvelope() => {
+  'configuration': {
+    'id': 'a0000000-0000-4000-8000-000000000004',
+    'activity_id': 'a0000000-0000-4000-8000-000000000001',
+    'institution_id': 'a0000000-0000-4000-8000-000000000002',
+    'unit_id': 'a0000000-0000-4000-8000-000000000003',
+    'periodicity': 'annual',
+    'result_scale_kind': 'numeric_0_10',
+    'scale_options': {'step': 0.01},
+    'allow_final_override': false,
+    'management_version': 1,
+    'status': 'draft',
+  },
+  'instruments': [
+    {
+      'id': 'a0000000-0000-4000-8000-000000000005',
+      'name': 'Instrumento R10',
+      'weight': 100,
+      'sort_order': 0,
+    },
+  ],
+  'concepts': <Object?>[],
+  'competencies': <Object?>[],
+  'available_competencies': <Object?>[],
+  'periods': [
+    {
+      'id': 'a0000000-0000-4000-8000-000000000006',
+      'name': 'Periodo R10 original',
+      'ordinal': 1,
+      'academic_year': 2026,
+      'starts_on': '2026-09-12',
+      'ends_on': '2026-12-31',
+      'entry_closes_at': '2026-12-31T23:00:00+00:00',
+      'family_release_at': '2026-12-31T23:00:00+00:00',
+      'timezone': 'America/Sao_Paulo',
+      'status': 'draft',
     },
   ],
 };
