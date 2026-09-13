@@ -812,7 +812,7 @@
   },
   {
     "id": "owner.r12-42",
-    "status": "open",
+    "status": "partial",
     "actionIds": [],
     "fe": "Planejado R12; sem implementação.",
     "be": "Sem diagnóstico novo.",
@@ -849,7 +849,7 @@
   },
   {
     "id": "owner.r12-44",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "invites.list"
     ],
@@ -868,7 +868,7 @@
   },
   {
     "id": "owner.r12-45",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "invites.resend"
     ],
@@ -1005,7 +1005,7 @@
   },
   {
     "id": "owner.r12-52",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "chat.attach"
     ],

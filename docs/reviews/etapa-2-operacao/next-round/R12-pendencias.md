@@ -6,9 +6,11 @@ generated_at: 2026-09-13
 
 # R12 — Catálogo consolidado por camada
 
-## R12-19 a R12-53 checkpoint de triagem (C0)
+## R12-19 a R12-53 checkpoint de execução (C0)
 
-O catálogo completo foi percorrido até R12-53 e consolidado em
+O catálogo completo foi executado até R12-53. Itens viáveis foram corrigidos e
+testados; dependências externas ou contratos ausentes permanecem como
+pendências explícitas nos respectivos MDs. O catálogo foi consolidado em
 `docs/reviews/evidence/etapa-2/r12-coordenacao/r12-19-53-triage.md`. Os itens
 continuam abertos quando o primeiro gate exige decisão do Owner, mapeamento,
 contrato de produção ou prova integrada; nenhum SQL/deploy foi aplicado por

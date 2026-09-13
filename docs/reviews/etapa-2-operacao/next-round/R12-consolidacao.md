@@ -6,6 +6,17 @@ generated_at: 2026-09-13
 
 # R12 — Base única consolidada
 
+## Execução C0 em 13/09/2026
+
+O início manual foi executado até o item 53. Foram publicados commits de
+produto e documentação para chat.attach, convites, atividades, chamada,
+segurança infantil, perfis, saúde/medicação, cardápios e editor de formulários.
+Os aceites locais novos estão registrados nas evidências R12 correspondentes;
+qualquer superfície alterada permanece `pending-verification` no integrado até
+rota normal, persistência/reload e negativa cross-tenant. Itens externos que
+dependem de SMTP, PITR/backup, contrato server-side de notificação ou gateway R2
+foram mantidos como pendência explícita, sem simulação.
+
 Pedido vigente: reunir R12 e R13 sob o nome **R12**, preparar um prompt para
 **Luna médio**, publicar todos os ajustes de consolidação e deixar somente o
 checkout principal. Não iniciar execução de produto nem outro supervisor aqui.
