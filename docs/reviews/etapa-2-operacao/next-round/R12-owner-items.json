@@ -242,5 +242,122 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
     "owner": "C0 R12",
     "nextGate": "Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-19",
+    "status": "deferred",
+    "actionIds": [],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-20",
+    "status": "deferred",
+    "actionIds": [],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-20 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-21",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.detail"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-21 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-22",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.create",
+      "access-profiles.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-22 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-23",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.create"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-24",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.create",
+      "access-profiles.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-24 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-25",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.create",
+      "access-profiles.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-25 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-26",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-26 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-27",
+    "status": "deferred",
+    "actionIds": [
+      "access-profiles.create",
+      "access-profiles.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contrato a verificar; conflito Principal em R12-23.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-27 e fontes antes de executar na R12 autorizada."
   }
 ]

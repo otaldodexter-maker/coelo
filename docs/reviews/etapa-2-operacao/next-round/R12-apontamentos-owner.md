@@ -83,3 +83,7 @@ Não iniciar implementação, SQL, testes pesados, build, runtime ou R12 por est
 ## Segundo bloco — Segurança da criança e Perfis e permissões
 
 Ver [R12-seguranca-perfis-owner.md](R12-seguranca-perfis-owner.md): itens R12-09 a R12-18, dez anexos, busca/cadastro de pessoa e decisões pendentes. Fora da R11.
+
+## Terceiro bloco — Perfis, modelos e permissões
+
+Ver [R12-perfis-permissoes-owner.md](R12-perfis-permissoes-owner.md): R12-19 a R12-27, doze anexos, referência tabular aprovada e conflito explícito sobre perfis profissionais no Principal.

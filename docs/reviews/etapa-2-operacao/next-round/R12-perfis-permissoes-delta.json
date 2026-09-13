@@ -1,0 +1,200 @@
+[
+  {
+    "action_id": "access-profiles.list",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: rota real /profiles com a sessao qa-r03: aba Superadmin lista os 5 perfis de plataforma e a aba Admin os 4 modelos de sistema do lote 25 (Administrador da instituicao, Coordenacao, Professor(a), Secretaria) com Tipo Predefinido; busca, escopo, toggle grade/lista, Arquivos e card Criar; reload mantem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-admin-modelos-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:20:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.list",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R04 coordenacao (11/09): lote 25 (P31) em producao; a lista passa a expor os modelos de sistema.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
+      "revision": "comunicacao/coordenacao.json rev 33",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-11T10:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.list",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: rota normal abre com dados reais de producao (5 perfis de plataforma + 4 modelos de sistema), superadmin_access_profiles_list responde 200 pela sessao qa-r03 e o reload mantem; negativa por tenant coberta em pgTAP (access_profile_detail_v3_test 37/37, institution_role_system_templates_v1_test 7/7).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-admin-modelos-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:20:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05 (3b4aaa5b6, b64bd9bf9): rota real /profiles > Admin > Criar perfil abre o dialogo \"Como criar o perfil?\" (Do zero / A partir de: modelo, so modelos ativos); /profiles/new/institution?from=<uuid> carrega descricao, escopo e permissoes do modelo; identidade digitada; revisao lista as permissoes herdadas como adicionadas (comparacao com o rascunho em branco); Criar perfil enviou superadmin_access_profile_save 200. Defeito de cliente corrigido: o repositorio lia o envelope {domain, profile, version} como perfil e a UI mostrava erro apos gravar; agora desembrulha (teste do repositorio 13/13). Prova de navegacao pos-save pela UI depende de build novo.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-dialogo-do-zero-ou-modelo.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:23:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: 170300 em producao (lote 38-42): superadmin_access_profile_save no dominio institution criou o modelo do sistema 5afbe4a6 (is_system, 2 capacidades) pela sessao qa-r03; update (versao 2) e inativacao (versao 3) pela mesma RPC; delete_and_reassign de modelo do sistema continua protegido (42501, por desenho). Pela rota real: Secretaria QA R05 d6264c5d criada a partir do modelo Secretaria (12 capacidades, is_system).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "80a308394",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T14:23:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.create",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: rota normal (dialogo P31 + formulario a partir do modelo) criou em producao o perfil Secretaria QA R05 (d6264c5d, is_system, 12 capacidades) pela sessao qa-r03 e a lista/opcoes de convite o releem apos reload (aparece em \"A partir de:\" e nos perfis do convite); negativas em pgTAP institution_profile_system_model_create_v1_test 8/8 (instituicao inexistente, modelo de plataforma protegido) e access_profile_detail_v3_test 37/37.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-create-revisao-secretaria.png",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:35:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.detail",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05 (3b4aaa5b6): cards e linhas abrem o DETALHE /profiles/:domain/:id (fecha \"cards abrem EDIT\"); modelo de sistema mostra \"Modelo do sistema: nao editavel\" e \"Criar a partir deste modelo\" (P31), sem Editar/Excluir; perfil personalizado mantem Editar/Excluir. Rota real: detalhe de Professor(a) com resumo e permissoes configuradas. Testes access_profile_system_models_test 3/3.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-detail-modelo-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.detail",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R04: superadmin_access_profile_detail (v3, lote 18) devolve id/code/name/status/version/membership_count/memberships[]/permissions[] com selected/grantable para perfil existente e rascunho para id nulo; pgTAP 37/37 com negativas 42501/P0002.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "b6e6189fe",
+      "environment": "build web release contra producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 (lote 18 aplicado)",
+      "recordedAt": "2026-09-11T02:52:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.detail",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: rota normal abre o detalhe com superadmin_access_profile_detail v3 em producao (BE done desde o lote 18), reload mantem; negativa cross-tenant em pgTAP (access_profile_detail_v3_test).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-detail-modelo-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:22:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R05: modelo de sistema de Admin agora editavel pela plataforma (170300): detalhe de perfil personalizado mantem Editar/Excluir; pela UI o formulario de edicao abre com dados reais (R04) e o save desembrulha o envelope (b64bd9bf9). Edicao provada em producao por REST (5afbe4a6 versao 1->2->3).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "80a308394",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T14:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R04: apos o 172000 (lote 20), superadmin_access_profile_save (update) persistiu descricao e a concessao people.read no perfil sintetico (version 1->2) com o payload capabilities que o cliente passa a enviar (3682673da); detalhe v3 relido devolve selected=[people.read]. pgTAP do pacote 4/4 + governanca historica.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md"
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md"
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R04: a atribuicao de perfil no MVP e o profile_id do comando superadmin_internal_user_update (provado em internal-users.edit, version 1->2 com profile_id owner); nao existe RPC de atribuicao separada no cliente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "1522e6c28",
+      "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
+      "recordedAt": "2026-09-11T03:11:00-03:00"
+    }
+  },
+  {
+    "action_id": "access-profiles.assign",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md"
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "frontend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "backend",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "integrated",
+    "delta": "R12: referência e requisitos em R12-perfis-permissoes-owner.md; sem implementação. Rebase obrigatório antes de aplicar. Anterior: R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  }
+]
