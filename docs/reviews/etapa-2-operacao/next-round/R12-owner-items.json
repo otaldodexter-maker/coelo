@@ -110,5 +110,137 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
     "owner": "C0 R12",
     "nextGate": "Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-09",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.list"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-10",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.list"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-11",
+    "status": "deferred",
+    "actionIds": [],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-11, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-12",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.child"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-12, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-13",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.create",
+      "child-safety.edit"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-13, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-14",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.child"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-14, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-15",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.child",
+      "child-safety.edit",
+      "child-safety.suspend"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-15, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-16",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.create"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-16, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-17",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.create",
+      "child-safety.edit"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-17, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-18",
+    "status": "deferred",
+    "actionIds": [
+      "child-safety.create"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Contrato a verificar; sem diagnóstico novo.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
   }
 ]

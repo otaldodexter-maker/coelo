@@ -1,0 +1,182 @@
+[
+  {
+    "action_id": "child-safety.list",
+    "camada": "frontend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: R05: /safety lista a crianca sintetica com abas e contagens no build com criar/editar ligados; reload mantem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/12-child-safety-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+      "recordedAt": "2026-09-11T13:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.list",
+    "camada": "backend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: R04: superadmin_child_safety_directory (legado) responde 200 ao usuario interno com a ponte de ator; v2 (lote 4, pgTAP 43/43) tambem responde.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
+      "revision": "ce6f061cc",
+      "environment": "producao, sessao qa-r03 via PostgREST",
+      "recordedAt": "2026-09-11T00:20:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.list",
+    "camada": "integrated",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: /safety pela rota normal com qa-r06: superadmin_child_safety_directory 200, crianca sintetica com abas e contagens; reload mantem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/30-safety-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:32:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "frontend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: /safety/children/d0c4...03 abre pelo card, tabela de autorizacoes (2) com Gerenciar; reload direto na URL mantem. Pendencia herdada: Relacao em enum cru (mother/father).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:33:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "backend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: superadmin_child_safety_get 200 no reload; RLS/negativas no pgTAP v2 (43/43, lote 4) e decisao P32 (171800).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:33:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "integrated",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: contexto da crianca pela rota normal com dados de producao e reload.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:33:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.create",
+    "camada": "frontend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: R05 (13:40-13:48, rota real com qa-r03): card Criar seguranca em /safety (mutationsEnabled + guarda de mutacao), assistente de 4 etapas (crianca por busca server-side, pessoa por uuid, capacidades, revisao), rodape ancorado sem chat; Enviar para aprovacao volta ao diretorio com a contagem atualizada.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.create",
+    "camada": "backend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: child_safety_request_authorization 200 em producao (autorizacao 7fcb6761, pending/inactive, versao 1) com audit child_safety.authorization.request; superadmin_child_safety_search_children 200.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/30-child-safety-created.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.create",
+    "camada": "integrated",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: criada pela rota normal, listada no diretorio e no detalhe da crianca apos reload.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "frontend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: R05: Gerenciar -> Editar abre /safety/children/:id/authorizations/:aid/edit com o estado real carregado (pessoa, motivo, relacao); motivo alterado e enviado.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "backend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: child_safety_edit_pending_authorization 200 (versao 1->2, pending) com audit child_safety.authorization.edit_pending; decisao pelo Superadmin: child_safety_decide_authorization 200 (34d29829 approved/active, versao 3) com audit ...decide (P32 B, pacote 171800).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/38-child-safety-editada.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "integrated",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: edicao e aprovacao pela rota normal, persistidas e relidas no detalhe.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.suspend",
+    "camada": "frontend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: R05: Gerenciar -> Suspender autorizacao -> confirmacao -> child_safety_change_lifecycle 200. DEFEITO FE registrado: apos reload a linha suspensa continua com ponto verde e \"Status: Aprovado\" (coluna le decision_status, nao o ciclo de vida) e a coluna Relacao mostra o enum cru (mother/father).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.suspend",
+    "camada": "backend",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: authorized_person_authorizations 34d29829: status=suspended, suspended_at/by preenchidos, versao 4; audit child_safety.authorization.lifecycle.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.suspend",
+    "camada": "integrated",
+    "delta": "R12: novos apontamentos Owner em R12-seguranca-perfis-owner.md; UI/fluxo a revisar, busca e vínculo/cadastro a reconciliar, sem implementação ou diagnóstico backend novo. Rebase obrigatório antes de aplicar. Nota anterior: suspensao pela rota normal persistida em producao; a exibicao do estado suspenso fica como pendencia FE (nao bloqueia a regua do MVP).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
+      "recordedAt": "2026-09-11T14:55:00-03:00"
+    }
+  }
+]

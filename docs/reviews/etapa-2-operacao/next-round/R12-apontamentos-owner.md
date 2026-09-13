@@ -79,3 +79,7 @@ Atualizar docs/open-questions.md com as questões ainda relevantes acima ao assu
 posse central; não sobrescrever seu conteúdo concorrente.
 
 Não iniciar implementação, SQL, testes pesados, build, runtime ou R12 por este registro.
+
+## Segundo bloco — Segurança da criança e Perfis e permissões
+
+Ver [R12-seguranca-perfis-owner.md](R12-seguranca-perfis-owner.md): itens R12-09 a R12-18, dez anexos, busca/cadastro de pessoa e decisões pendentes. Fora da R11.
