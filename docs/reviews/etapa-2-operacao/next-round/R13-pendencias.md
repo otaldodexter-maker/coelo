@@ -1,0 +1,64 @@
+---
+source: Owner 2026-09-13 — cota aproximada de8% e divisão R12/R13; R12-owner-items.json; R11-fechamento.md
+status: planejamento aprovado pelo pedido de divisão; execução não iniciada
+generated_at: 2026-09-13
+---
+
+# R13 — Pendências planejadas
+
+50 compromissos destinados à R13; execução não iniciada. IDs de origem preservados. O plano R13 define a ordem por dependências; as fontes abaixo mantêm aceites e evidências.
+
+| ID de origem | action_ids | Fonte | Primeiro gate preservado |
+|---|---|---|---|
+| owner.r12-01 | daily-routine.list | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-01 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-02 | activities.list, daily-routine.list | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-03 | activities.list | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-04 | daily-routine.list, attendance.dashboard | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-05 | attendance.create | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-06 | attendance.create, daily-routine.apply | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | [R12-apontamentos-owner](R12-apontamentos-owner.md) | Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-09 | child-safety.list | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-10 | child-safety.list | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-11 | Gate/condição sem ID novo | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-11, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-12 | child-safety.child | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-12, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-13 | child-safety.create, child-safety.edit | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-13, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-14 | child-safety.child | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-14, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-15 | child-safety.child, child-safety.edit, child-safety.suspend | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-15, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-16 | child-safety.create | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-16, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-17 | child-safety.create, child-safety.edit | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-17, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-18 | child-safety.create | [R12-seguranca-perfis-owner](R12-seguranca-perfis-owner.md) | Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
+| owner.r12-19 | Gate/condição sem ID novo | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-19 e fontes antes de executar na R12 autorizada. |
+| owner.r12-20 | Gate/condição sem ID novo | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-20 e fontes antes de executar na R12 autorizada. |
+| owner.r12-21 | access-profiles.detail | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-21 e fontes antes de executar na R12 autorizada. |
+| owner.r12-22 | access-profiles.create, access-profiles.edit | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-22 e fontes antes de executar na R12 autorizada. |
+| owner.r12-23 | access-profiles.create | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-23 e fontes antes de executar na R12 autorizada. |
+| owner.r12-24 | access-profiles.create, access-profiles.edit | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-24 e fontes antes de executar na R12 autorizada. |
+| owner.r12-25 | access-profiles.create, access-profiles.edit | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-25 e fontes antes de executar na R12 autorizada. |
+| owner.r12-26 | access-profiles.edit | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-26 e fontes antes de executar na R12 autorizada. |
+| owner.r12-27 | access-profiles.create, access-profiles.edit | [R12-perfis-permissoes-owner](R12-perfis-permissoes-owner.md) | Reconciliar R12-27 e fontes antes de executar na R12 autorizada. |
+| owner.r12-28 | health-care.edit | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-28, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-29 | health-care.create, health-care.edit, health-care.detail | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-29, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-30 | health-care.create, health-care.edit, health-care.detail | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-30, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-31 | medication.create, medication.edit | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-31, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-32 | medication.list, medication.detail, medication.create, medication.edit | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-32, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-33 | medication.create, medication.edit, medication.detail | [R12-saude-cuidado-owner](R12-saude-cuidado-owner.md) | Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12. |
+| owner.r12-34 | meal-plans.model-create, meal-plans.model-edit | [R12-cardapios-owner](R12-cardapios-owner.md) | Reconciliar R12-34 e reproduzir após abertura explícita da R12. |
+| owner.r12-35 | meal-plans.model-create, meal-plans.model-edit | [R12-cardapios-owner](R12-cardapios-owner.md) | Reconciliar R12-35 e reproduzir após abertura explícita da R12. |
+| owner.r12-36 | meal-plans.create, meal-plans.edit, meal-plans.publish | [R12-cardapios-owner](R12-cardapios-owner.md) | Reconciliar R12-36 e reproduzir após abertura explícita da R12. |
+| owner.r12-37 | meal-plans.create, meal-plans.edit | [R12-cardapios-owner](R12-cardapios-owner.md) | Reconciliar R12-37 e reproduzir após abertura explícita da R12. |
+| owner.r12-38 | meal-plans.create, meal-plans.edit, meal-plans.publish, meal-plans.model-edit | [R12-cardapios-owner](R12-cardapios-owner.md) | Reconciliar R12-38 e reproduzir após abertura explícita da R12. |
+| owner.r12-39 | forms.edit, forms.create | [R12-formularios-agenda-owner](R12-formularios-agenda-owner.md) | Reconciliar R12-39, mapear e reproduzir na R12 autorizada. |
+| owner.r12-40 | forms.edit, forms.create | [R12-formularios-agenda-owner](R12-formularios-agenda-owner.md) | Reconciliar R12-40, mapear e reproduzir na R12 autorizada. |
+| owner.r12-42 | Gate/condição sem ID novo | [R12-formularios-agenda-owner](R12-formularios-agenda-owner.md) | Reconciliar R12-42, mapear e reproduzir na R12 autorizada. |
+| owner.r12-44 | invites.list | [R12-convites-owner](R12-convites-owner.md) | Reconciliar R12-44 e reproduzir na R12 autorizada. |
+| owner.r12-45 | invites.resend | [R12-convites-owner](R12-convites-owner.md) | Reconciliar R12-45 e reproduzir na R12 autorizada. |
+| owner.r12-46 | account.profile | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. |
+| owner.r12-47 | auth.recover, auth.reset | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP. |
+| owner.r12-48 | activities.assessment, activities.publish | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço. |
+| owner.r12-49 | assessments.entry, assessments.gradebook, assessments.detail, assessments.close, assessments.reopen | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário. |
+| owner.r12-50 | groups.list | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores. |
+| owner.r12-51 | Gate/condição sem ID novo | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova. |
+| owner.r12-52 | chat.attach | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Reutilizar chat-media-composer-owner-reference-20260913.md: foto inline maior, vídeo com play/duração, mosaico e escrita em cápsula. Coordenar com R12-43 (contorno), sem duplicar aceite nem alterar formulários administrativos globalmente. |
+| owner.r12-53 | Gate/condição sem ID novo | [R12-pendencias-herdadas-R11](R12-pendencias-herdadas-R11.md) | Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema. |
+
+Menções a R12 nos gates citados são históricas; destino atual C0 R13. Nenhum item marcado concluído nesta transferência.

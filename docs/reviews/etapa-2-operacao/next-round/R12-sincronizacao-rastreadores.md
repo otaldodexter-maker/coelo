@@ -75,3 +75,7 @@ Responsável funcional: C0 R12. Gate documental não certifica o produto. Pergun
 ## Transferência R11 autorizada pelo Owner
 
 Destino: [R12-pendencias-herdadas-R11.md](R12-pendencias-herdadas-R11.md). R12-46 a53 incorporam Conta, Auth, configuração/publicação, diário/notas, contadores, gate SQL/PITR, compositor de chat e opção vizinha condicional. Preservam estados FE/BE/E2E e evidências R11; execução não iniciada. A tabela original acima continua sendo o catálogo R12-01 a45.
+
+## Divisão por cota — Owner 2026-09-13
+
+O catálogo53 permanece histórico e íntegro. Destino vigente: [R12-plano-de-rodada.md](R12-plano-de-rodada.md) seleciona somente R12-07/41/43; os outros50 seguem [R13-plano-de-rodada.md](R13-plano-de-rodada.md) e [R13-pendencias.md](R13-pendencias.md). destinationRound em R12-owner-items.json prevalece sobre referências antigas à rodada. Ao encerrar R12, transferir qualquer selecionado ainda aberto pelo procedimento do plano. Execução de ambas não iniciada; sem mudança de estado/percentual.

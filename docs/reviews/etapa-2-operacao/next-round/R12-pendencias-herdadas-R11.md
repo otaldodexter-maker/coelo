@@ -67,3 +67,7 @@ sem chamar provas locais ou históricas de E2E atual.
 As20 ocorrências legadas do validador visual fora de Conta continuam nos
 rastreadores gerais; não se tornam escopo R12 integral por esta transferência.
 Decisões abertas de R12-01 a45 permanecem no catálogo e em docs/open-questions.md.
+
+## Divisão por cota — Owner 2026-09-13
+
+O catálogo53 permanece histórico e íntegro. Destino vigente: [R12-plano-de-rodada.md](R12-plano-de-rodada.md) seleciona somente R12-07/41/43; os outros50 seguem [R13-plano-de-rodada.md](R13-plano-de-rodada.md) e [R13-pendencias.md](R13-pendencias.md). destinationRound em R12-owner-items.json prevalece sobre referências antigas à rodada. Ao encerrar R12, transferir qualquer selecionado ainda aberto pelo procedimento do plano. Execução de ambas não iniciada; sem mudança de estado/percentual.
