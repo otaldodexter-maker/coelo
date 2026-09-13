@@ -17,7 +17,7 @@ generated_at: 2026-09-13
 | owner.r12-05 | attendance.create | open / FE local-green: cascata Instituição/Unidade/Turma, Contexto Turma/Atividade, elegibilidade, data, foco e responsividade verificados. / Contrato preservado; servidor continua revalidando escopo/capacidade. / Pending-verification: rota normal, persistência/reload e escopo real pendentes. | docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md | Reproduzir com contexto real autorizado, atividade elegível, persistência/reload e negativa cross-tenant. |
 | owner.r12-06 | attendance.create, daily-routine.apply | open / FE local-green: wizard reduzido a Contexto → Chamada; rotina vinculada resolvida pelo contexto autorizado e somente leitura. / Contrato server-side preservado; sem RPC/RLS novo. / Pending-verification: rota normal, rotina/versão, persistência/reload e negativa cross-tenant pendentes. | docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md | Reproduzir com contexto real autorizado, confirmar rotina efetiva/versionamento e snapshot no servidor, persistência/reload e negativa cross-tenant. |
 | owner.r12-07 | attendance.mark, attendance.correct, attendance.finish | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
-| owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | open / FE local-green: suíte local cobre save, edição, sentimento posterior, erro/retry, rotina pendente e conclusão. / Contratos preservados; nenhum SQL/RPC novo. / Pending-verification: rota normal, massa suficiente, persistência/reload e negativa cross-tenant pendentes. | docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md | Reproduzir pela rota normal com múltiplos alunos/turmas e rotina vinculada; registrar payload/versão, persistência/reload e negativa cross-tenant. |
 | owner.r12-09 | child-safety.list | open / Planejado R12; sem implementação. / Contrato a verificar; sem diagnóstico novo. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md | Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
 | owner.r12-10 | child-safety.list | open / Planejado R12; sem implementação. / Contrato a verificar; sem diagnóstico novo. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md | Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
 | owner.r12-11 | gate/mapeamento pendente | open / Planejado R12; sem implementação. / Contrato a verificar; sem diagnóstico novo. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md | Ler R12-11, reconciliar decisão/mapeamento e executar somente na R12 autorizada. |
@@ -157,6 +157,17 @@ passou 57/57 e `flutter analyze --no-fatal-infos` passou sem issues. E2E segue
 pending-verification para rota normal, persistência/reload e negativa
 cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md`.
+
+## R12-08 checkpoint de execução (C0)
+
+A suíte local existente cobre os relatos de comportamento com massa sintética:
+save explícito por participante, edição/correção, sentimento posterior,
+erro/retry, rotina pendente, conclusão e proteção contra respostas obsoletas.
+Passou 57/57 e a análise estática passou sem issues. Não houve reprodução
+remota pela rota normal nem mudança de SQL/RPC; o item permanece aberto para
+múltiplos alunos/turmas, persistência/reload e negativa cross-tenant.
+Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md`.
 
 ## Dívidas transversais preservadas
 
