@@ -1,0 +1,6 @@
+[
+  {"action_id":"meal-plans.create","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: formulário remove Prioridade e Datas excluídas da operação, preservando contrato de dados.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md"},
+  {"action_id":"meal-plans.edit","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: edição não altera exceções históricas por campo removido; prioridade deixa de ser manual.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md"},
+  {"action_id":"meal-plans.create","camada":"integrated","estado_proposto":"pending-verification","delta":"Mudança do formulário exige prova integrada de persistência/reload e exceções históricas.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md"},
+  {"action_id":"meal-plans.edit","camada":"integrated","estado_proposto":"pending-verification","delta":"Mudança do formulário exige prova integrada de persistência/reload e exceções históricas.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md"}
+]

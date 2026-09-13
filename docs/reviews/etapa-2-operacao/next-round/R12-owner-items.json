@@ -525,7 +525,7 @@
   },
   {
     "id": "owner.r12-28",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "health-care.edit"
     ],
@@ -544,7 +544,7 @@
   },
   {
     "id": "owner.r12-29",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "health-care.create",
       "health-care.edit",
@@ -565,7 +565,7 @@
   },
   {
     "id": "owner.r12-30",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "health-care.create",
       "health-care.edit",
@@ -586,7 +586,7 @@
   },
   {
     "id": "owner.r12-31",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "medication.create",
       "medication.edit"
@@ -606,7 +606,7 @@
   },
   {
     "id": "owner.r12-32",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "medication.list",
       "medication.detail",
@@ -689,7 +689,7 @@
   },
   {
     "id": "owner.r12-36",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit",
@@ -710,7 +710,7 @@
   },
   {
     "id": "owner.r12-37",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit"

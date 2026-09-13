@@ -584,34 +584,18 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           prefixIcon: Icons.event_available_outlined,
         ),
       ],
-      const SizedBox(height: CoeloSpacing.space4),
-      CoeloFormTextField(
-        controller: _excludedDates,
-        labelText: 'Datas excluídas (DD/MM/AAAA, separadas por vírgula)',
-        prefixIcon: Icons.event_busy_outlined,
-      ),
       const SizedBox(height: CoeloSpacing.space5),
-      _sectionHeading(
-        title: 'Publicação',
-        description: 'Escolha quando o cardápio fica visível e sua prioridade em caso de conflito.',
-      ),
+      _sectionHeading(title: 'Publicação', description: 'Escolha quando o cardápio fica visível.'),
       const SizedBox(height: CoeloSpacing.space4),
-      _responsivePair(
-        CoeloAdminSingleSelectField<MealPlanVisibilityMode>(
-          label: 'Início da exibição',
-          value: _visibility,
-          options: MealPlanVisibilityMode.values,
-          optionLabel: (value) => value == MealPlanVisibilityMode.immediate
-              ? 'Imediatamente após publicar'
-              : 'Em uma data programada',
-          onChanged: (value) => setState(() => _visibility = value),
-          prefixIcon: Icons.visibility_outlined,
-        ),
-        CoeloFormTextField(
-          controller: _priority,
-          labelText: 'Prioridade explícita',
-          prefixIcon: Icons.low_priority_outlined,
-        ),
+      CoeloAdminSingleSelectField<MealPlanVisibilityMode>(
+        label: 'Início da exibição',
+        value: _visibility,
+        options: MealPlanVisibilityMode.values,
+        optionLabel: (value) => value == MealPlanVisibilityMode.immediate
+            ? 'Imediatamente após publicar'
+            : 'Em uma data programada',
+        onChanged: (value) => setState(() => _visibility = value),
+        prefixIcon: Icons.visibility_outlined,
       ),
       if (_visibility == MealPlanVisibilityMode.scheduled) ...[
         const SizedBox(height: CoeloSpacing.space4),
