@@ -585,5 +585,31 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reproduzir contorno no painel/lista/paginação/compositor e comparar referência aprovada."
+  },
+  {
+    "id": "owner.r12-44",
+    "status": "deferred",
+    "actionIds": [
+      "invites.list"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contrato preservado, reenvio a conferir.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-44 e reproduzir na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-45",
+    "status": "deferred",
+    "actionIds": [
+      "invites.resend"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contrato preservado, reenvio a conferir.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-45 e reproduzir na R12 autorizada."
   }
 ]

@@ -103,3 +103,7 @@ Ver [R12-formularios-agenda-owner.md](R12-formularios-agenda-owner.md): R12-39 a
 ## Sétimo bloco — Contorno do Chat
 
 Ver [R12-chat-contorno-owner.md](R12-chat-contorno-owner.md): R12-43, contorno/continuidade do contêiner de Conversas.
+
+## Oitavo bloco — Convites
+
+Ver [R12-convites-owner.md](R12-convites-owner.md): R12-44 e R12-45, somente tabela e ação Reenviar convite não encontrada.
