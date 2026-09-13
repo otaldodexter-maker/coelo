@@ -231,6 +231,7 @@ comando canonico, toma o lock do contexto antes dessa consulta e confirma por
 join que o `group_link_id` recebido pertence a crianca, unidade e turma atuais.
 O unlink tambem toma o lock antes da consulta ao recibo. Os pgTAP novos para
 replay de link apos revogacao de capacidade e request id reutilizado para outra
-crianca estao preparados; a execucao local esta pendente porque o espelho SQL
-foi transferido para outro executor. `dart analyze` focal de formulario passou
+crianca passaram no espelho: link 17 PASS / 0 FAIL e unlink 14 PASS / 0 FAIL,
+ambos em transacao/rollback. A verificacao posterior confirmou que nenhuma das
+funcoes candidatas ficou no espelho. `dart analyze` focal de formulario passou
 sem issues.
