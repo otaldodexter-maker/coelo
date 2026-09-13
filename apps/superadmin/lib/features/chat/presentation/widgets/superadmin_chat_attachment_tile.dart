@@ -192,6 +192,9 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
     final colors = Theme.of(context).colorScheme;
     final status = _AttachmentStatus.from(state, colors);
     final canRetry = state == SuperadminChatAttachmentState.failed && onRetry != null;
+    final isVisual = const {'image/jpeg', 'image/png', 'image/webp', 'video/mp4'}.contains(
+      attachment.mediaType,
+    );
     return Semantics(
       container: true,
       label:
@@ -200,17 +203,21 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
       child: Container(
         key: Key('superadmin-chat-attachment-${attachment.id}'),
         constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-        padding: const EdgeInsetsDirectional.fromSTEB(
-          CoeloSpacing.space2,
-          CoeloSpacing.space1,
-          CoeloSpacing.space1,
-          CoeloSpacing.space1,
-        ),
-        decoration: BoxDecoration(
-          color: colors.surface,
-          border: Border.all(color: colors.outlineVariant),
-          borderRadius: BorderRadius.circular(CoeloRadius.md),
-        ),
+        padding: isVisual
+            ? EdgeInsets.zero
+            : const EdgeInsetsDirectional.fromSTEB(
+                CoeloSpacing.space2,
+                CoeloSpacing.space1,
+                CoeloSpacing.space1,
+                CoeloSpacing.space1,
+              ),
+        decoration: isVisual
+            ? null
+            : BoxDecoration(
+                color: colors.surface,
+                border: Border.all(color: colors.outlineVariant),
+                borderRadius: BorderRadius.circular(CoeloRadius.md),
+              ),
         child: Row(
           children: [
             Icon(_iconFor(attachment.mediaType), color: colors.onSurfaceVariant),

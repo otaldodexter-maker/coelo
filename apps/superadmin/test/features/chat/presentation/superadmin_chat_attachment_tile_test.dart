@@ -427,6 +427,28 @@ void main() {
     expect(find.text('Anexo disponível'), findsOneWidget);
     expect(find.byTooltip('Tentar novamente'), findsNothing);
   });
+
+  testWidgets('visual attachment uses the conversation surface instead of an admin card', (
+    tester,
+  ) async {
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: Scaffold(
+          body: SuperadminChatAttachmentTile(
+            attachment: canonicalImage,
+            state: SuperadminChatAttachmentState.ready,
+          ),
+        ),
+      ),
+    );
+
+    final tile = tester.widget<Container>(
+      find.byKey(const Key('superadmin-chat-attachment-metadata-1')),
+    );
+    expect(tile.decoration, isNull);
+    expect(tile.padding, EdgeInsets.zero);
+  });
 }
 
 final class _Reader implements MediaReader {

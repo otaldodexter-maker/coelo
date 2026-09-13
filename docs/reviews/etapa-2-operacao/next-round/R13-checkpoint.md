@@ -1,6 +1,6 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: passagem para reserva solicitada; nenhum produto alterado
+status: retomada em reserva; gate SQL/PITR bloqueado e primeiro trabalho independente em seleção
 generated_at: 2026-09-13
 ---
 
@@ -29,13 +29,15 @@ generated_at: 2026-09-13
 
 - medição inicial normal: `codex` em `95%`, janela 10080 min, reset `1789820315`, sem créditos;
 - reserva disponível medida separadamente: `gpt-reserve`/`gpt-5.6-luna` em `17%`, janela 10080 min, reset `1789460861`;
-- fase de reserva informada: `False`;
+- fase de reserva informada: `True`;
+- U0 específico do bucket `gpt-reserve`: `17%`; teto da fase: `min(17 + 8, 95) = 25%`; congelamento de novas fatias em `22%`, preservando 3 p.p. para entrega;
 - primeiro gate R13-51: bloqueado externamente pela exigência de PITR/backup atualizado e ordem serial; não há autorização para contornar, reaplicar ou fabricar prova;
-- decisão operacional: com apenas 1 p.p. até o congelamento normal de novas fatias (`96%`), não iniciar correção de produto que não caberia nesta janela; preparar passagem para a reserva conforme R13-luna-continuacao.md.
+- decisão operacional anterior: com apenas 1 p.p. até o congelamento normal de novas fatias (`96%`), nenhuma correção de produto foi iniciada; passagem registrada em `continuation.json`.
+- decisão desta retomada: reservar margem de entrega e trabalhar somente até o teto operacional de `22%`, medindo antes de cada comando caro.
 
 ## Estado e próximo passo
 
-- código/WIP: nenhum arquivo de produto alterado; checkpoint é o único WIP desta abertura;
-- itens R13: 50 preservados, nenhum estado FE/BE/E2E alterado;
-- próximo passo da reserva: registrar U0 específico do bucket `gpt-reserve`, recalcular teto `min(U0 + 8 p.p., 95%)`, manter margem de 3 p.p. para entrega e executar o primeiro gate viável;
+- código/WIP: ajuste local em `superadmin_chat_attachment_tile.dart` e teste focal; cartão administrativo removido apenas para imagens/vídeos, sem alteração de contrato ou estado de autorização;
+- itens R13: 50 preservados; `owner.r12-52` continua aberto, com avanço visual local documentado e FE/BE/E2E sem nova certificação;
+- próximo passo da reserva: manter R12-51 documentado como bloqueio e selecionar a primeira ação independente após validação focal de contrato/implementação;
 - não repetir suites verdes nem iniciar build caro antes de nova medição de cota.
