@@ -65,7 +65,40 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
       final steps = <GroupDirectorySaveStepResult>[
         GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group),
       ];
-      for (final personId in request.studentPersonIds) {
+      final desiredStudentIds = request.studentPersonIds.toSet();
+      final originalStudentIds = request.originalStudentLinks
+          .map((student) => student.personId)
+          .toSet();
+      for (final student in request.originalStudentLinks) {
+        if (desiredStudentIds.contains(student.personId)) continue;
+        try {
+          await _client.rpc<Object?>(
+            'superadmin_group_student_unlink',
+            params: {
+              'p_request_id': _uuidV4(),
+              'p_child_context_id': student.childContextId,
+              'p_group_id': saved.id,
+            },
+          );
+          steps.add(GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people));
+        } on PostgrestException {
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel desvincular este aluno da turma.',
+            ),
+          );
+        } on ClientException {
+          steps.add(
+            GroupDirectorySaveStepResult.failure(
+              stage: GroupDirectorySaveStage.people,
+              message: 'Nao foi possivel desvincular este aluno da turma.',
+            ),
+          );
+        }
+      }
+      for (final personId in desiredStudentIds) {
+        if (originalStudentIds.contains(personId)) continue;
         try {
           await _client.rpc<Object?>(
             'superadmin_group_student_link',

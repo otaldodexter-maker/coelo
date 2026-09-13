@@ -244,6 +244,80 @@ void main() {
   );
 
   test(
+    'reconciles original and desired students without relinking retained children',
+    () async {
+      final requests = <Request>[];
+      final client = _client((request) async {
+        requests.add(request);
+        return _json(
+          request.url.path.endsWith('/rpc/superadmin_group_save')
+              ? _groupRow()
+              : <String, Object?>{},
+          request,
+        );
+      });
+      addTearDown(client.dispose);
+      final record = GroupRecord(
+        id: '33333333-3333-4333-8333-333333333333',
+        institutionId: '11111111-1111-4111-8111-111111111111',
+        institutionName: 'Casa Nuvem',
+        unitId: '22222222-2222-4222-8222-222222222222',
+        unitName: 'Unidade Centro',
+        name: 'Turma Girassol',
+        groupType: 'class',
+        status: GroupStatus.active,
+        createdAt: DateTime.utc(2026, 1, 1),
+        updatedAt: DateTime.utc(2026, 1, 1),
+        managementVersion: 2,
+      );
+
+      final result = await SupabaseGroupDirectoryRepository(client)
+          .saveComposition(
+            GroupDirectorySaveRequest(
+              requestId: 'group-save-student-reconciliation',
+              record: record,
+              studentPersonIds: const [
+                '77777777-7777-4777-8777-777777777777',
+                '55555555-5555-4555-8555-555555555555',
+              ],
+              originalStudentLinks: const [
+                GroupDirectoryStudentBinding(
+                  childContextId: '66666666-6666-4666-8666-666666666666',
+                  personId: '44444444-4444-4444-8444-444444444444',
+                  displayName: 'Crianca anterior',
+                  status: 'active',
+                ),
+                GroupDirectoryStudentBinding(
+                  childContextId: '88888888-8888-4888-8888-888888888888',
+                  personId: '77777777-7777-4777-8777-777777777777',
+                  displayName: 'Crianca mantida',
+                  status: 'active',
+                ),
+              ],
+            ),
+          );
+
+      expect(result.isSuccess, isTrue);
+      expect(
+        requests.map((request) => request.url.path),
+        containsAllInOrder([
+          endsWith('/rpc/superadmin_group_save'),
+          endsWith('/rpc/superadmin_group_student_unlink'),
+          endsWith('/rpc/superadmin_group_student_link'),
+        ]),
+      );
+      final unlinkBody = jsonDecode(requests[1].body) as Map<String, dynamic>;
+      expect(
+        unlinkBody['p_child_context_id'],
+        '66666666-6666-4666-8666-666666666666',
+      );
+      expect(unlinkBody['p_group_id'], record.id);
+      final linkBody = jsonDecode(requests[2].body) as Map<String, dynamic>;
+      expect(linkBody['p_person_id'], '55555555-5555-4555-8555-555555555555');
+    },
+  );
+
+  test(
     'maps authorization denials without falling back to fake data',
     () async {
       final client = _client(

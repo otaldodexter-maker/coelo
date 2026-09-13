@@ -78,7 +78,6 @@ final class _GroupPersonBinding {
     required this.identifier,
     required this.role,
     this.note,
-    this.isPersistedStudent = false,
   });
 
   final String id;
@@ -86,7 +85,6 @@ final class _GroupPersonBinding {
   final String identifier;
   final _GroupRoleType role;
   final String? note;
-  final bool isPersistedStudent;
 
   _GroupPersonBinding copyWith({
     String? id,
@@ -94,14 +92,12 @@ final class _GroupPersonBinding {
     String? identifier,
     _GroupRoleType? role,
     String? note,
-    bool? isPersistedStudent,
   }) => _GroupPersonBinding(
     id: id ?? this.id,
     name: name ?? this.name,
     identifier: identifier ?? this.identifier,
     role: role ?? this.role,
     note: note ?? this.note,
-    isPersistedStudent: isPersistedStudent ?? this.isPersistedStudent,
   );
 }
 
@@ -200,6 +196,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final Set<String> _mandatoryActivities = {};
   final List<_GroupActivityBinding> _activityByStudentLinks = const [];
   final List<_GroupPersonBinding> _people = [];
+  List<GroupDirectoryStudentBinding> _originalStudentLinks = const [];
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
   CataloguedLocationSelection? _cataloguedLocationSelection;
@@ -385,6 +382,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
+    _originalStudentLinks = List.unmodifiable(record.students);
     for (final student in record.students) {
       _people.add(
         _GroupPersonBinding(
@@ -393,7 +391,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           identifier: student.personId,
           role: _GroupRoleType.aluno,
           note: 'Contexto infantil ativo',
-          isPersistedStudent: true,
         ),
       );
     }
@@ -710,6 +707,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           for (final person in _people)
             if (person.role == _GroupRoleType.aluno) person.id,
         ],
+        originalStudentLinks: _originalStudentLinks,
         professionals: [
           for (final professional in _professionals)
             GroupDirectoryPersonBinding(
@@ -1599,13 +1597,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       Text(sectionTitle, style: Theme.of(context).textTheme.titleMedium),
       const SizedBox(height: CoeloSpacing.space3),
       _entryTable(entries: entries, allowProfile: allowProfile, onEdit: onEdit, onRemove: onRemove),
-      if (!allowProfile && entries.any((entry) => entry.isPersistedStudent)) ...[
-        const SizedBox(height: CoeloSpacing.space2),
-        Text(
-          'Alunos já vinculados permanecem visíveis. A remoção por turma ainda não está disponível.',
-          style: Theme.of(context).textTheme.bodySmall,
-        ),
-      ],
       const SizedBox(height: CoeloSpacing.space4),
       Wrap(
         spacing: CoeloSpacing.space2,
@@ -1693,7 +1684,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                 ),
                 child: LayoutBuilder(
                   builder: (context, constraints) {
-                    final persistedStudent = entries[index].isPersistedStudent;
                     final compact = constraints.maxWidth < CoeloBreakpoints.medium.minWidth;
                     if (compact) {
                       return Column(
@@ -1719,13 +1709,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
                               IconButton(
-                                tooltip: persistedStudent ? 'Edição indisponível' : 'Editar',
-                                onPressed: persistedStudent ? null : () => onEdit(index),
+                                tooltip: 'Editar',
+                                onPressed: () => onEdit(index),
                                 icon: const Icon(Icons.edit_outlined),
                               ),
                               IconButton(
-                                tooltip: persistedStudent ? 'Remoção indisponível' : 'Remover',
-                                onPressed: persistedStudent ? null : () => onRemove(index),
+                                tooltip: 'Remover',
+                                onPressed: () => onRemove(index),
                                 style: IconButton.styleFrom(foregroundColor: colors.error),
                                 icon: const Icon(Icons.delete_outline_rounded),
                               ),
@@ -1766,13 +1756,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             child: Text(entries[index].note ?? 'Sem configuração', maxLines: 2),
                           ),
                         IconButton(
-                          tooltip: persistedStudent ? 'Edição indisponível' : 'Editar',
-                          onPressed: persistedStudent ? null : () => onEdit(index),
+                          tooltip: 'Editar',
+                          onPressed: () => onEdit(index),
                           icon: const Icon(Icons.edit_outlined),
                         ),
                         IconButton(
-                          tooltip: persistedStudent ? 'Remoção indisponível' : 'Remover',
-                          onPressed: persistedStudent ? null : () => onRemove(index),
+                          tooltip: 'Remover',
+                          onPressed: () => onRemove(index),
                           style: IconButton.styleFrom(foregroundColor: colors.error),
                           icon: const Icon(Icons.delete_outline_rounded),
                         ),
@@ -1961,13 +1951,6 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }
 
   void _removePerson(int index) {
-    final person = _people[index];
-    if (person.isPersistedStudent) {
-      setState(() {
-        _saveError = 'A remoção de aluno já vinculado ainda não está disponível para esta turma.';
-      });
-      return;
-    }
     setState(() {
       _people.removeAt(index);
       _markDirty();
@@ -2279,7 +2262,8 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
       setState(() {
         _candidates = candidates
             .where(
-              (candidate) => candidate.personType == 'child' &&
+              (candidate) =>
+                  candidate.personType == 'child' &&
                   (candidate.access == PersonIdentityResolutionAccess.editGlobal ||
                       candidate.access == PersonIdentityResolutionAccess.linkOnly),
             )
@@ -2325,7 +2309,9 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         children: [
           Text(dialogMessage),
           if (widget.mode == 'search')
-            const Text('Selecione uma crianca com contexto ativo. Responsaveis tem acesso derivado.'),
+            const Text(
+              'Selecione uma crianca com contexto ativo. Responsaveis tem acesso derivado.',
+            ),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget.mode == 'search') ...[
             CoeloAdminSingleSelectField<PersonIdentityLookupKind>(

@@ -167,3 +167,26 @@ uso por outro executor, portanto nenhum `flutter test`, build ou analyze foi
 executado neste delta. O teste focal de parsing e a prova normal de UI/reload
 seguem como gate de C0. O CRUD de remocao de aluno nao esta completo ate existir
 um comando canonico, autorizado e restrito a `child_group_link`.
+
+## Desvinculacao por turma autorizada
+
+O candidato `20260913030000_superadmin_group_student_unlink_v1.sql` cria
+`public.superadmin_group_student_unlink(request_id, child_context_id, group_id)`.
+Ele usa `student_link_require_scope`, bloqueio por contexto infantil, recibo
+idempotente e auditoria `student.unlink`, mas atualiza somente o
+`child_group_link` ativo da turma solicitada para `inactive`. O
+`child_unit_link` e links de outras turmas nao sao tocados.
+
+O consumidor guarda os `originalStudentLinks` carregados da resposta
+autoritativa. No save ele envia unlink apenas para os contextos originais que
+nao estao mais na selecao e link apenas para pessoas novas. Um aluno mantido
+na selecao nao recebe novo link. Com isso a interface volta a permitir remover
+um aluno persistido sem esconder uma associacao que seria preservada pelo
+servidor.
+
+Prova SQL local: 10 PASS / 0 FAIL no espelho, com transacao e rollback. A
+fixture desativa A, preserva B e o vinculo de unidade, registra auditoria e
+nega contexto de outro tenant e ator sem `people.assign_children`. A verificacao
+posterior confirmou que a funcao candidata nao permaneceu no espelho. O teste
+focal Flutter de reconciliacao foi preparado, mas nao executado porque C0
+reservou o slot Flutter. Sem aplicacao remota, migration, deploy ou integracao.
