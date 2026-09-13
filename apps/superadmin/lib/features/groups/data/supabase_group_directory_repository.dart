@@ -62,9 +62,23 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
         throw const GroupDirectoryUnavailableException();
       }
       _cache[saved.id] = saved;
+      for (final personId in request.studentPersonIds) {
+        await _client.rpc<Object?>(
+          'superadmin_group_student_link',
+          params: {
+            'p_request_id': _uuidV4(),
+            'p_person_id': personId,
+            'p_group_id': saved.id,
+          },
+        );
+      }
       return GroupDirectorySaveResult(
         requestId: request.requestId,
-        steps: [GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group)],
+        steps: [
+          GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.group),
+          for (final personId in request.studentPersonIds)
+            GroupDirectorySaveStepResult.success(stage: GroupDirectorySaveStage.people),
+        ],
       );
     } on PostgrestException catch (error) {
       throw _mapError(error);
@@ -229,7 +243,7 @@ Map<String, Object?> _savePayload(GroupDirectorySaveRequest request) => {
   'inherit_activities': request.record.inheritActivities,
   if (!request.record.inheritAppearance) 'branding': request.branding,
   'local_people': [
-    for (final person in [...request.people, ...request.professionals])
+    for (final person in request.professionals)
       {'person_id': person.id, 'role_code': person.role},
   ],
   'activity_ids': request.activityIds,

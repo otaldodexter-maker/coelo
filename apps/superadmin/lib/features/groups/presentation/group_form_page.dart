@@ -687,6 +687,10 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               profile: person.note,
             ),
         ],
+        studentPersonIds: [
+          for (final person in _people)
+            if (person.role == _GroupRoleType.aluno) person.id,
+        ],
         professionals: [
           for (final professional in _professionals)
             GroupDirectoryPersonBinding(
@@ -2239,9 +2243,9 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
       setState(() {
         _candidates = candidates
             .where(
-              (candidate) =>
-                  candidate.access == PersonIdentityResolutionAccess.editGlobal ||
-                  candidate.access == PersonIdentityResolutionAccess.linkOnly,
+              (candidate) => candidate.personType == 'child' &&
+                  (candidate.access == PersonIdentityResolutionAccess.editGlobal ||
+                      candidate.access == PersonIdentityResolutionAccess.linkOnly),
             )
             .toList();
         if (_candidates.isEmpty) _error = 'Nenhuma pessoa disponível para vincular.';
@@ -2284,6 +2288,8 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(dialogMessage),
+          if (widget.mode == 'search')
+            const Text('Selecione uma crianca com contexto ativo. Responsaveis tem acesso derivado.'),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget.mode == 'search') ...[
             CoeloAdminSingleSelectField<PersonIdentityLookupKind>(
@@ -2383,7 +2389,7 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
                       id: selected.personId,
                       name: selected.displayName,
                       identifier: selected.maskedMatch,
-                      role: _role,
+                      role: _GroupRoleType.aluno,
                     ),
                   );
                   return;

@@ -409,6 +409,7 @@ final class GroupDirectorySaveRequest {
     required this.record,
     required this.requestId,
     this.people = const [],
+    this.studentPersonIds = const [],
     this.professionals = const [],
     this.activityIds = const [],
     this.invites = const [],
@@ -420,6 +421,7 @@ final class GroupDirectorySaveRequest {
   final GroupRecord record;
   final String requestId;
   final List<GroupDirectoryPersonBinding> people;
+  final List<String> studentPersonIds;
   final List<GroupDirectoryPersonBinding> professionals;
   final List<String> activityIds;
   final List<GroupDirectoryInviteBinding> invites;

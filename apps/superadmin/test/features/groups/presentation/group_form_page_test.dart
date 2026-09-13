@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('group member search saves the resolved identity in its hierarchy', (tester) async {
+  testWidgets('group member search saves a resolved child through its hierarchy', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _PendingGroupRepository(
@@ -61,9 +61,8 @@ void main() {
     await tester.pump();
 
     final request = repository.requests.single;
-    expect(request.people.single.id, _GroupIdentityRepository.personId);
-    expect(request.people.single.name, 'Pessoa sintética');
-    expect(request.people.single.identifier, '@pessoa-sintetica');
+    expect(request.people, isEmpty);
+    expect(request.studentPersonIds, [_GroupIdentityRepository.personId]);
     expect(identity.query, '@pessoa-sintetica');
     expect(identity.institutionId, request.record.institutionId);
     expect(identity.unitId, request.record.unitId);
@@ -1237,7 +1236,7 @@ final class _GroupIdentityRepository implements PersonIdentityRepository {
       PersonIdentityCandidate(
         personId: personId,
         displayName: 'Pessoa sintética',
-        personType: 'adult',
+        personType: 'child',
         matchedBy: kind,
         maskedMatch: '@pessoa-sintetica',
         access: PersonIdentityResolutionAccess.linkOnly,
