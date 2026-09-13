@@ -518,6 +518,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   Widget _hostedContent(Widget child, {required bool isDesktop}) {
     return _SuperadminShellHostScope(
       isDesktop: isDesktop,
+      headerProfile: widget.headerProfile,
       onDestinationSelected: widget.onDestinationSelected!,
       chatLauncherPositionController: _chatLauncherPositionController,
       onChatLauncherBottomInsetChanged: _handleEmbeddedChatLauncherBottomInset,
@@ -542,7 +543,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                   onLogout: _handleLogout,
                   onDestinationSelected: hostScope.onDestinationSelected,
                   activityController: _activityController,
-                  headerProfile: widget.headerProfile,
+                  headerProfile: widget.headerProfile ?? hostScope.headerProfile,
                   onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
                 const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -560,7 +561,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 onLogout: _handleLogout,
                 onDestinationSelected: hostScope.onDestinationSelected,
                 activityController: _activityController,
-                headerProfile: widget.headerProfile,
+                headerProfile: widget.headerProfile ?? hostScope.headerProfile,
                 compact: true,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
@@ -619,6 +620,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 class _SuperadminShellHostScope extends InheritedWidget {
   const _SuperadminShellHostScope({
     required this.isDesktop,
+    required this.headerProfile,
     required this.onDestinationSelected,
     required this.chatLauncherPositionController,
     required this.onChatLauncherBottomInsetChanged,
@@ -628,6 +630,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
   });
 
   final bool isDesktop;
+  final SuperadminHeaderProfile? headerProfile;
   final ValueChanged<String> onDestinationSelected;
   final SuperadminChatLauncherPositionController chatLauncherPositionController;
   final ValueChanged<double> onChatLauncherBottomInsetChanged;
@@ -641,6 +644,7 @@ class _SuperadminShellHostScope extends InheritedWidget {
   @override
   bool updateShouldNotify(_SuperadminShellHostScope oldWidget) {
     return isDesktop != oldWidget.isDesktop ||
+        headerProfile != oldWidget.headerProfile ||
         onDestinationSelected != oldWidget.onDestinationSelected ||
         chatLauncherPositionController != oldWidget.chatLauncherPositionController ||
         onChatLauncherBottomInsetChanged != oldWidget.onChatLauncherBottomInsetChanged ||

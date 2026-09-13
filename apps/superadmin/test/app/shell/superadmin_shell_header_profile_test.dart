@@ -22,6 +22,22 @@ void main() {
     ),
   );
 
+  Widget hostedShell(SuperadminHeaderProfile? profile) => MaterialApp(
+    theme: CoeloTheme.light,
+    home: SuperadminShell.host(
+      logout: () async => const LogoutResult.success(),
+      currentDestination: 'institutions',
+      onDestinationSelected: (_) {},
+      headerProfile: profile,
+      child: SuperadminShell(
+        logout: () async => const LogoutResult.success(),
+        currentDestination: 'institutions',
+        showChatLauncher: false,
+        child: const SizedBox.expand(),
+      ),
+    ),
+  );
+
   testWidgets('uses the current profile and refreshes it after save', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1200, 900));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -52,5 +68,26 @@ void main() {
     await tester.pumpWidget(shell(maria));
     expect(find.text('MO'), findsOneWidget);
     expect(find.text('Owner Coelo'), findsNothing);
+  });
+
+  testWidgets('inherits and refreshes the host session profile for child pages', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(hostedShell(maria));
+    expect(find.text('Maria Operadora'), findsOneWidget);
+
+    await tester.pumpWidget(
+      hostedShell(
+        SuperadminHeaderProfile(
+          name: 'Maria Recarregada',
+          role: 'Operador interno',
+          initials: 'MR',
+          avatarBackgroundColor: CoeloPalette.orange50,
+        ),
+      ),
+    );
+    expect(find.text('Maria Recarregada'), findsOneWidget);
+    expect(find.text('MR'), findsOneWidget);
   });
 }
