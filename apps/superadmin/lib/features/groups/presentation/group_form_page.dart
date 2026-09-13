@@ -196,6 +196,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   final Set<String> _mandatoryActivities = {};
   final List<_GroupActivityBinding> _activityByStudentLinks = const [];
   final List<_GroupPersonBinding> _people = [];
+  List<GroupDirectoryStudentBinding> _originalStudentLinks = const [];
   final List<_GroupPersonBinding> _professionals = [];
   final List<_GroupInviteBinding> _invites = [];
   CataloguedLocationSelection? _cataloguedLocationSelection;
@@ -381,6 +382,18 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
+    _originalStudentLinks = List.unmodifiable(record.students);
+    for (final student in record.students) {
+      _people.add(
+        _GroupPersonBinding(
+          id: student.personId,
+          name: student.displayName,
+          identifier: student.personId,
+          role: _GroupRoleType.aluno,
+          note: 'Contexto infantil ativo',
+        ),
+      );
+    }
     for (final access in record.effectiveAccess.where((entry) => !entry.inherited)) {
       final role = switch (access.profileCode) {
         'student' => _GroupRoleType.aluno,
@@ -397,6 +410,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         role: role,
         note: access.profileName,
       );
+      if (role == _GroupRoleType.aluno && _people.any((person) => person.id == access.personId)) {
+        continue;
+      }
       if (role == _GroupRoleType.profissional || role == _GroupRoleType.administrador) {
         _professionals.add(binding);
       } else {
@@ -677,16 +693,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           'secondary_color': _secondaryColorController.text.trim(),
           'surface_color': _surfaceColorController.text.trim(),
         },
-        people: [
+        people: const [],
+        studentPersonIds: [
           for (final person in _people)
-            GroupDirectoryPersonBinding(
-              id: person.id,
-              name: person.name,
-              identifier: person.identifier,
-              role: _GroupRoleLabel.label(person.role),
-              profile: person.note,
-            ),
+            if (person.role == _GroupRoleType.aluno) person.id,
         ],
+        originalStudentLinks: _originalStudentLinks,
         professionals: [
           for (final professional in _professionals)
             GroupDirectoryPersonBinding(
@@ -890,18 +902,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       _GroupFormStep.people => _formSection(
         key: const Key('group-people-section'),
         title: 'Pessoas da turma',
-        description: 'Pessoas, perfis e vínculos da turma.',
+        description: 'Vincule alunos com contexto ativo na instituição e unidade da turma.',
         child: _peopleSection(
           entries: _people,
-          sectionTitle: 'Pessoas associadas',
-          onAdd: () => _editPerson(),
-          onEdit: (index) => _editPerson(index: index),
-          onRemove: (index) {
-            setState(() {
-              _people.removeAt(index);
-              _markDirty();
-            });
-          },
+          sectionTitle: 'Alunos associados',
+          onAdd: _searchAndInvitePerson,
+          onEdit: null,
+          onRemove: _removePerson,
         ),
       ),
       _GroupFormStep.professionals => _formSection(
@@ -1571,7 +1578,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     required List<_GroupPersonBinding> entries,
     required String sectionTitle,
     required VoidCallback onAdd,
-    required ValueChanged<int> onEdit,
+    required ValueChanged<int>? onEdit,
     required ValueChanged<int> onRemove,
     bool allowProfile = false,
   }) => Column(
@@ -1587,18 +1594,13 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         runSpacing: CoeloSpacing.space2,
         children: [
           FilledButton.icon(
-            key: allowProfile ? const Key('group-add-professional') : const Key('group-add-person'),
+            key: allowProfile ? const Key('group-add-professional') : const Key('group-search-person'),
             onPressed: onAdd,
             icon: const Icon(Icons.person_add_alt_rounded),
-            label: Text(allowProfile ? 'Adicionar profissional ou admin' : 'Cadastrar pessoa'),
-          ),
-          if (!allowProfile)
-            OutlinedButton.icon(
-              key: const Key('group-search-person'),
-              onPressed: () => _searchAndInvitePerson(),
-              icon: const Icon(Icons.person_search_rounded),
-              label: const Text('Buscar por @, CPF, e-mail ou celular'),
+            label: Text(
+              allowProfile ? 'Adicionar profissional ou admin' : 'Buscar por @, CPF, e-mail ou celular',
             ),
+          ),
         ],
       ),
     ],
@@ -1606,7 +1608,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   Widget _entryTable({
     required List<_GroupPersonBinding> entries,
-    required ValueChanged<int> onEdit,
+    required ValueChanged<int>? onEdit,
     required ValueChanged<int> onRemove,
     required bool allowProfile,
   }) {
@@ -1692,11 +1694,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.end,
                             children: [
-                              IconButton(
-                                tooltip: 'Editar',
-                                onPressed: () => onEdit(index),
-                                icon: const Icon(Icons.edit_outlined),
-                              ),
+                              if (onEdit != null)
+                                IconButton(
+                                  tooltip: 'Editar',
+                                  onPressed: () => onEdit(index),
+                                  icon: const Icon(Icons.edit_outlined),
+                                ),
                               IconButton(
                                 tooltip: 'Remover',
                                 onPressed: () => onRemove(index),
@@ -1739,11 +1742,12 @@ final class _GroupFormPageState extends State<GroupFormPage> {
                             flex: 2,
                             child: Text(entries[index].note ?? 'Sem configuração', maxLines: 2),
                           ),
-                        IconButton(
-                          tooltip: 'Editar',
-                          onPressed: () => onEdit(index),
-                          icon: const Icon(Icons.edit_outlined),
-                        ),
+                        if (onEdit != null)
+                          IconButton(
+                            tooltip: 'Editar',
+                            onPressed: () => onEdit(index),
+                            icon: const Icon(Icons.edit_outlined),
+                          ),
                         IconButton(
                           tooltip: 'Remover',
                           onPressed: () => onRemove(index),
@@ -1902,34 +1906,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     );
   }
 
-  Future<void> _editPerson({int? index}) async {
-    final person = index == null ? null : _people[index];
-    final result = await _showPersonDialog(
-      title: person == null ? 'Cadastrar pessoa' : 'Editar pessoa',
-      initialName: person?.name,
-      initialIdentifier: person?.id,
-      initialRole: person?.role,
-    );
-    if (result == null) return;
+  void _removePerson(int index) {
     setState(() {
-      if (person == null) {
-        _people.add(
-          _GroupPersonBinding(
-            id: result.id,
-            name: result.name,
-            identifier: result.identifier,
-            role: result.role,
-          ),
-        );
-      } else {
-        _people[index!] = _GroupPersonBinding(
-          id: person.id,
-          name: result.name,
-          identifier: result.identifier,
-          role: result.role,
-          note: person.note,
-        );
-      }
+      _people.removeAt(index);
       _markDirty();
     });
   }
@@ -2240,8 +2219,9 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         _candidates = candidates
             .where(
               (candidate) =>
-                  candidate.access == PersonIdentityResolutionAccess.editGlobal ||
-                  candidate.access == PersonIdentityResolutionAccess.linkOnly,
+                  candidate.personType == 'child' &&
+                  (candidate.access == PersonIdentityResolutionAccess.editGlobal ||
+                      candidate.access == PersonIdentityResolutionAccess.linkOnly),
             )
             .toList();
         if (_candidates.isEmpty) _error = 'Nenhuma pessoa disponível para vincular.';
@@ -2260,7 +2240,9 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
     super.initState();
     _nameController = TextEditingController(text: widget.initialName);
     _identifierController = TextEditingController(text: widget.initialIdentifier);
-    _role = widget.initialRole ?? _GroupRoleType.responsavel;
+    _role = widget.mode == 'search'
+        ? _GroupRoleType.aluno
+        : widget.initialRole ?? _GroupRoleType.responsavel;
     _profile = widget.initialProfile ?? 'Observador';
   }
 
@@ -2284,6 +2266,10 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
         crossAxisAlignment: CrossAxisAlignment.stretch,
         children: [
           Text(dialogMessage),
+          if (widget.mode == 'search')
+            const Text(
+              'Selecione uma crianca com contexto ativo. Responsaveis tem acesso derivado.',
+            ),
           const SizedBox(height: CoeloSpacing.space4),
           if (widget.mode == 'search') ...[
             CoeloAdminSingleSelectField<PersonIdentityLookupKind>(
@@ -2341,14 +2327,22 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
               prefixIcon: Icons.badge_outlined,
             ),
           const SizedBox(height: CoeloSpacing.space4),
-          CoeloAdminSingleSelectField<_GroupRoleType>(
-            label: 'Papel',
-            value: _role,
-            options: _GroupRoleType.values,
-            optionLabel: _GroupRoleLabel.visualLabel,
-            prefixIcon: Icons.manage_accounts_rounded,
-            onChanged: (value) => setState(() => _role = value),
-          ),
+          if (widget.mode == 'search')
+            const ListTile(
+              key: Key('group-person-contextual-role'),
+              leading: Icon(Icons.child_care_rounded),
+              title: Text('Aluno contextual'),
+              subtitle: Text('O vínculo é criado para o aluno selecionado.'),
+            )
+          else
+            CoeloAdminSingleSelectField<_GroupRoleType>(
+              label: 'Papel',
+              value: _role,
+              options: _GroupRoleType.values,
+              optionLabel: _GroupRoleLabel.visualLabel,
+              prefixIcon: Icons.manage_accounts_rounded,
+              onChanged: (value) => setState(() => _role = value),
+            ),
           if (widget.showProfile) ...[
             const SizedBox(height: CoeloSpacing.space4),
             CoeloAdminSingleSelectField<String>(
@@ -2383,7 +2377,7 @@ final class _GroupPersonDialogState extends State<_GroupPersonDialog> {
                       id: selected.personId,
                       name: selected.displayName,
                       identifier: selected.maskedMatch,
-                      role: _role,
+                      role: _GroupRoleType.aluno,
                     ),
                   );
                   return;

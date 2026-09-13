@@ -311,14 +311,31 @@ class _ProfilePageState extends State<ProfilePage> {
     setState(() => _restoreConfirmed(profile, revision: widget.controller.state.profileRevision));
   }
 
+  SuperadminHeaderProfile? _headerProfile(AccountProfile? profile) {
+    if (profile == null) return null;
+    final avatar = profile.avatar;
+    return SuperadminHeaderProfile(
+      name: '${profile.firstName} ${profile.lastName}'.trim(),
+      role: profile.access.role,
+      initials: avatar.initials,
+      avatarBackgroundColor: avatar.backgroundColor,
+      avatarImage: avatar.mode == AccountAvatarMode.photo && avatar.photoBytes != null
+          ? MemoryImage(avatar.photoBytes!)
+          : null,
+    );
+  }
+
   @override
-  Widget build(BuildContext context) => SuperadminShell(
+  Widget build(BuildContext context) => ListenableBuilder(
+    listenable: widget.controller,
+    builder: (context, child) => SuperadminShell(
     logout: widget.logout,
     title: 'Meu perfil',
     subtitle: 'Gerencie seus dados pessoais, acesso e segurança.',
     currentDestination: 'profile',
     onDestinationSelected: widget.onDestinationSelected,
     activityController: widget.controller.activities,
+    headerProfile: _headerProfile(widget.controller.profile),
     // Decisao 7 do Owner: formulario de edicao sem o balao Mensagens (ele
     // cobria Salvar alteracoes em 1440x1000 na rota real, R04).
     showChatLauncher: false,
@@ -454,6 +471,7 @@ class _ProfilePageState extends State<ProfilePage> {
           ),
         );
       },
+    ),
     ),
   );
 }

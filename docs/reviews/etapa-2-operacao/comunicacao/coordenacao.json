@@ -1,12 +1,12 @@
 {
-  "revision": 125,
+  "revision": 128,
   "round": "E2-R10-20260912-2314",
   "role": "C0 executor e integrador R10",
   "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T02:56:12.5982868Z",
+  "updatedAt": "2026-09-13T03:43:42.382907+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4291,9 +4291,9 @@
     },
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
-      "chrome": "C0;3000 principal;3016 preservado para Owner",
-      "heavy": "chat_inline exclusivo",
-      "sql": "livre; producao C0"
+      "chrome": "C0 abas829822503 groups e829822506 chat/upload bloqueado",
+      "heavy": "livre",
+      "sql": "livre; C0producao"
     },
     "auxiliary": {
       "id": "/root/terra_members",
@@ -4317,9 +4317,9 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:15:30.268494+00:00",
-    "base": "9a1986dd3",
-    "quotaUsedPercent": 75,
+    "time": "2026-09-13T03:43:42.382907+00:00",
+    "base": "75f68ff58 integrado",
+    "quotaUsedPercent": 76,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
@@ -4332,13 +4332,51 @@
       "/root/chat_inline": "slot Flutter exclusivo pub get/test/analyze video",
       "/root/chat_upload": "assessment e15724340 entregue; SQL slot livre"
     },
-    "wip": "Groups a62f5eed5 pgTAP link17/unlink14 PASS aguardando integracao/backup/aplicacao; assessment read-by-id e15724340 SQL5PASS aguardando integracao e wiring C0; video inline7e58c5de0 em teste auxiliar. Header OC/Owner fixo confirmado; nova fatia account.profile. Dois drafts de avaliacao preservados apos bug reload ativo.",
-    "next": "Integrar assessment por id e groups; backup remoto, SQL serial, build conjunto e prova normal. Avatar delegado.",
+    "wip": "Build55.5s PASS sha25686A97BBB227589C794C6066F1636629FF41C7C66EC564C213E0A28686ED6AEB1; groupform30PASS baseconjunta. UI criou child_context ativo viaPessoas e unidadepending, preservando contexto anterior; grupoR05 buscaaluno @crianca.qar04 emandamento. Negativas reais6checksPASS (semsegunda sessao tenantB), reutilizacao MVP porfamilia com paridade.",
+    "next": "Salvar/relervinculoaluno, unlink/relink UI; avaliar participanteatividade/diario; draftavaliacao porid. PickerMP4bloqueadoextensao, fixturevalida preservada.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
-    "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60."
+    "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60.",
+    "childContextCreatedByUI": {
+      "person": "d0c40000-0000-4000-8000-000000000003",
+      "childContext": "b1520810-ca23-4632-8b53-cc36e558013c",
+      "unitLink": "6427c9a4-27c7-4048-a7ad-4ebe08a58a0d",
+      "institution": "190dd028-3125-452d-8502-612bfa1029de",
+      "unit": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3"
+    }
+  },
+  "filaSqlR10": {
+    "ultimoAplicado": 61,
+    "proximo": 62,
+    "dono": "C0",
+    "status": "lote61 aplicado uma vez; consumidor UI pendente",
+    "backup": [
+      {
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-schema-20260913.sql",
+        "bytes": 4143028,
+        "sha256": "01fe84e018e308432dbde31646f3632619da8b65503571a77a36c6b2453652c5",
+        "exitCode": 0
+      },
+      {
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-data-20260913.sql",
+        "bytes": 4538939,
+        "sha256": "0be962c90be5102f240da7e4bfa6d1ac5ce66735e3a0fb1df42f88d984ea2d40",
+        "exitCode": 0
+      }
+    ],
+    "candidatos": [
+      "groups student link",
+      "groups students projection",
+      "groups student unlink",
+      "assessment read by id",
+      "chat MP4 limit/extension"
+    ],
+    "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas.",
+    "version": "20260913032627",
+    "name": "r10_group_students_assessment_selected_chat_mp4_v1",
+    "postflight": "link/unlink/read-by-id existem; limite MP4=10485760"
   }
 }

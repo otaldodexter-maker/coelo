@@ -10,6 +10,34 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('selected configuration id is reloaded and saved id reaches route callback', (
+    tester,
+  ) async {
+    final repository = _DelayedSaveConfigurationRepository();
+    String? savedId;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: AssessmentConfigurationPage(
+          repository: repository,
+          logout: unavailableSuperadminLogout,
+          activityId: 'activity-a',
+          institutionId: 'institution-1',
+          configurationId: 'selected-draft',
+          onCancel: () {},
+          onSaved: (saved) => savedId = saved.id,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(repository.requestedConfigurationId, 'selected-draft');
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pump();
+    repository.pendingSave.complete(_configuration('activity-a', version: 2));
+    await tester.pumpAndSettle();
+    expect(savedId, 'configuration-activity-a');
+  });
+
   testWidgets('periodicity has capsule trigger and empty periods have a token gap', (tester) async {
     final repository = _DelayedSaveConfigurationRepository();
     await tester.pumpWidget(_app(repository, 'activity-a'));
@@ -147,13 +175,17 @@ final class _DelayedConfigurationRepository implements AssessmentRepository {
 
 final class _DelayedSaveConfigurationRepository implements AssessmentRepository {
   final pendingSave = Completer<AssessmentConfiguration>();
+  String? requestedConfigurationId;
 
   @override
   Future<AssessmentConfiguration?> fetchConfiguration(
     String activityId, {
     String? unitId,
     String? configurationId,
-  }) async => _configuration(activityId);
+  }) async {
+    requestedConfigurationId = configurationId;
+    return _configuration(activityId);
+  }
 
   @override
   Future<AssessmentConfiguration> saveConfiguration(AssessmentConfiguration value) =>

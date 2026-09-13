@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import '../../domain/chat_repository.dart';
 import '../../../../core/platform/open_download.dart';
 import 'superadmin_chat_inline_media.dart';
+import 'superadmin_chat_inline_video.dart';
 import 'superadmin_chat_image_dialog.dart';
 
 enum SuperadminChatAttachmentState { pending, ready, failed, deleted }
@@ -246,6 +247,15 @@ final class _SuperadminChatAttachmentTileState extends State<SuperadminChatAttac
                         widget.attachmentRepository != null &&
                         widget.mediaSession != null)
                       SuperadminChatInlineMedia(
+                        attachment: attachment,
+                        attachmentRepository: widget.attachmentRepository!,
+                        session: widget.mediaSession!,
+                      ),
+                    if (attachment.mediaType == 'video/mp4' &&
+                        state == SuperadminChatAttachmentState.ready &&
+                        widget.attachmentRepository != null &&
+                        widget.mediaSession != null)
+                      SuperadminChatInlineVideo(
                         attachment: attachment,
                         attachmentRepository: widget.attachmentRepository!,
                         session: widget.mediaSession!,

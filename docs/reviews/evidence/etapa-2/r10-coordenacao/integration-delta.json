@@ -1,0 +1,98 @@
+[
+  {
+    "action_id": "groups.members",
+    "camada": "frontend",
+    "delta": "R05: etapa \"Pessoas da turma\" abre na rota real com estado vazio honesto, Cadastrar pessoa e Buscar por @, CPF, e-mail ou celular; inclusao de pessoa nao provada (a instituicao sintetica da turma nao tem pessoa vinculada alem da criada em institutions.edit, que pertence a outra instituicao). Gate: provar cadastro/busca de pessoa da propria instituicao. R10: aluno via child_contexts/group_links, profissionais separados, replay autorizado e unlink da turma preserva unidade; pacote local verde integrado, SQL/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "backend",
+    "delta": "R04: superadmin_group_detail_v2 (180310) em producao devolve membros; escrita por superadmin_group_save via ponte. R10: aluno via child_contexts/group_links, profissionais separados, replay autorizado e unlink da turma preserva unidade; pacote local verde integrado, SQL/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "groups.members",
+    "camada": "integrated",
+    "delta": "R09: consumidor UUID/parser corrigidos e35 testes unicos verdes. UI resolveu pessoa draft (recusada) e depois QA R04 Responsavel9f04...0062 ativo existente; segunda inclusao tambem recusada, grupo1043c165 permanecev2/zero membros. Causa group_save/role guardian pendente C0/G5, sem retry cego/SQL G1; nao E2E. R10: aluno via child_contexts/group_links, profissionais separados, replay autorizado e unlink da turma preserva unidade; pacote local verde integrado, SQL/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "frontend",
+    "delta": "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente. R10: rota normal sem unitId oculta configuracao retida da unidade; acesso por unidade e Periodicidade/espaco vazio corrigidos em WIP C0, testes preparados. Nenhum novo aceite. R10: read-by-id integrado para preservar draft salvo e reload por configurationId; SQL8PASS adapter, testeUI e aplicacao pendentes; dois drafts de prova retidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "backend",
+    "delta": "R09 G5: save/activate/releituras reais R08 + pgTAP52/52 mesma familia (cross-tenant caso48) reutilizados; anon401 e nao enumeracao de atividade/unidade por API normal R09, controle autorizado200. Regua MVP combinada; sem segunda sessao real escopada e sem promover FE/E2E. R10: read-by-id integrado para preservar draft salvo e reload por configurationId; SQL8PASS adapter, testeUI e aplicacao pendentes; dois drafts de prova retidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+      "revision": "G5-R09-r80",
+      "environment": "Supabase producao; pgTAP R08 G0 reutilizado",
+      "recordedAt": "2026-09-12T19:11:01.449001+00:00"
+    }
+  },
+  {
+    "action_id": "activities.assessment",
+    "camada": "integrated",
+    "delta": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao. R10: read-by-id integrado para preservar draft salvo e reload por configurationId; SQL8PASS adapter, testeUI e aplicacao pendentes; dois drafts de prova retidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "frontend",
+    "delta": "Retido pela plataforma comum de midia: faltam o catalog_kind de chat no catalogo privado e o contrato de emissao de ticket de upload e leitura pelo gateway, escritos por publicacoes-midia. superadmin_chat_send_message_v2 e text-only e o repositorio recusa comando com anexo em vez de enviar parcialmente e fingir sucesso. Placeholder honesto preservado; nenhum gateway ou bucket criado por tela. R08: consumidor real prepare/PUT isolado sem redirect/finalize/read por attachment_id integrado; autoria G4 fee190810. Base C0 238 testes PASS em11arquivos incluindo Chat e publicadores; UI/reload/negativa reais continuam pendentes. Nenhum assetId inferido. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo. R10: foto531KB confirmada em R2privado e render inline pela rota normal; MP4 ate10MiB integrado com player e validacao container, ainda sem deploy/backend/UI MP4.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "backend",
+    "delta": "R05 realm-interno: contrato de anexo do chat interno (20260911210200, lote 32): prepare/authorize_finalize/authorize_read (authenticated) e finalize/expire (service_role) sobre chat_attachment_metadata e R2 coelo-media-prod, sem Stream; thread ja devolve attachments[]. pgTAP 28/28 (limites, replay, mismatch, cross-tenant, expiracao). Gate: Edge Function chat-media + cron de expire; cliente do principal-chat. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo. R10: foto531KB confirmada em R2privado e render inline pela rota normal; MP4 ate10MiB integrado com player e validacao container, ainda sem deploy/backend/UI MP4.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "chat.attach",
+    "camada": "integrated",
+    "delta": "R08: consumidor Flutter e cadeia API prepare/PUT/finalize/read concluidos; proximo gate e UI/reload/negativa real na mesma composicao, sem recriar catalogo/Edge. R10 Owner: upload PNG531KB falha na origem3016; OPTIONS chat-media403, origem3000/3014 permite200. Runtime transferido3000. Foto inline/video play pedidos, ainda pendentes; retry sob investigacao. Sem aceite UI novo. R10: foto531KB confirmada em R2privado e render inline pela rota normal; MP4 ate10MiB integrado com player e validacao container, ainda sem deploy/backend/UI MP4.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md"
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e. R10 Owner: header OC/Owner fixo corrigido e integrado; shell herda perfil da sessao. Testes locais verdes, wiring C0 e build/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "backend",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e. R10 Owner: header OC/Owner fixo corrigido e integrado; shell herda perfil da sessao. Testes locais verdes, wiring C0 e build/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "account.profile",
+    "camada": "integrated",
+    "delta": "R06 (11/09 21:05, rota real com qa-r06-operacoes): Meu perfil mostra o e-mail qa-r06-operacoes@coelo.me da pessoa de servico (pacote 20260911200300 aplicado no lote 53; pgTAP 3/3 nao vaza e-mail para outra pessoa). Pendencia \"e-mail vazio da pessoa de servico\" fechada; recertificacao, estado ja verified-e2e. R10 Owner: header OC/Owner fixo corrigido e integrado; shell herda perfil da sessao. Testes locais verdes, wiring C0 e build/UI pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
+      "revision": "comunicacao/operacoes.json rev 48",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  }
+]

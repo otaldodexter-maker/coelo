@@ -21,7 +21,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('group member search saves the resolved identity in its hierarchy', (tester) async {
+  testWidgets('group member search saves a resolved child through its hierarchy', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1100));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final repository = _PendingGroupRepository(
@@ -41,29 +41,35 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.ensureVisible(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-search-person')));
     await tester.pumpAndSettle();
+    expect(find.byKey(const Key('group-person-contextual-role')), findsOneWidget);
+    expect(find.text('Responsável'), findsNothing);
     await tester.enterText(find.byKey(const Key('group-person-name-field')), '@pessoa-sintetica');
     await tester.tap(find.byKey(const Key('group-person-save')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Selecionar'));
     await tester.tap(find.text('Selecionar'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-person-save')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('step-convites')));
     await tester.tap(find.byKey(const Key('step-convites')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-save')));
     await tester.tap(find.byKey(const Key('group-form-save')));
     await tester.pump();
 
     final request = repository.requests.single;
-    expect(request.people.single.id, _GroupIdentityRepository.personId);
-    expect(request.people.single.name, 'Pessoa sintética');
-    expect(request.people.single.identifier, '@pessoa-sintetica');
+    expect(request.people, isEmpty);
+    expect(request.studentPersonIds, [_GroupIdentityRepository.personId]);
     expect(identity.query, '@pessoa-sintetica');
     expect(identity.institutionId, request.record.institutionId);
     expect(identity.unitId, request.record.unitId);
@@ -92,9 +98,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.ensureVisible(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-search-person')));
@@ -1237,7 +1245,7 @@ final class _GroupIdentityRepository implements PersonIdentityRepository {
       PersonIdentityCandidate(
         personId: personId,
         displayName: 'Pessoa sintética',
-        personType: 'adult',
+        personType: 'child',
         matchedBy: kind,
         maskedMatch: '@pessoa-sintetica',
         access: PersonIdentityResolutionAccess.linkOnly,
