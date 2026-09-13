@@ -9,7 +9,7 @@ Deno.test("chat gateway autentica o usuario, nunca usa Supabase Storage nem Stre
   assertEquals(source.includes("superadmin_chat_attachment_authorize_read_v1"), true);
   assertEquals(source.includes(".storage.from("), false);
   assertEquals(source.includes("COELO_STREAM_API_TOKEN"), false);
-  assertEquals(source.includes("video/mp4"), false);
+  assertEquals(source.includes("video/mp4"), true);
   assertEquals(source.includes("presignPut"), true);
   assertEquals(source.includes("r2.head("), true);
 });

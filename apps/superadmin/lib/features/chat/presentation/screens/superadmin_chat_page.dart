@@ -319,7 +319,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
     try {
       final files = await FilePicker.platform.pickFiles(
         type: FileType.custom,
-        allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+        allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'mp4'],
         withData: true,
       );
       if (!mounted || !isCurrent() || files == null || files.files.isEmpty) return;
@@ -331,6 +331,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         'png' => 'image/png',
         'webp' => 'image/webp',
         'pdf' => 'application/pdf',
+        'mp4' => 'video/mp4',
         _ => '',
       };
       final command = ChatAttachmentUpload(
@@ -362,7 +363,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       setState(() => _thread = thread);
       unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatAttachmentInvalidException {
-      if (isCurrent()) _showNotice('Use uma imagem de até 4 MB ou um PDF de até 10 MB.');
+      if (isCurrent()) _showNotice('Use uma imagem de até 4 MB, PDF ou vídeo MP4 de até 10 MB.');
     } on ChatUnauthorizedException catch (error) {
       if (isCurrent()) _denyAccess(error);
     } catch (_) {

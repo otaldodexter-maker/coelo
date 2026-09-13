@@ -496,8 +496,12 @@ final class ChatAttachmentUpload {
   final Uint8List bytes;
 
   void validate() {
-    final limit = contentType == 'application/pdf' ? 10 * 1024 * 1024 : 4 * 1024 * 1024;
-    if (!const {'image/jpeg', 'image/png', 'image/webp', 'application/pdf'}.contains(contentType) ||
+    final limit = switch (contentType) {
+      'application/pdf' || 'video/mp4' => 10 * 1024 * 1024,
+      _ => 4 * 1024 * 1024,
+    };
+    if (!const {'image/jpeg', 'image/png', 'image/webp', 'application/pdf', 'video/mp4'}
+            .contains(contentType) ||
         bytes.isEmpty ||
         bytes.length > limit ||
         fileName.isEmpty ||

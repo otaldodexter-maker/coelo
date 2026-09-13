@@ -1,0 +1,10 @@
+begin;
+create extension if not exists pgtap with schema extensions;
+select plan(5);
+select is(app_private.chat_attachment_limit_v1('video/mp4'),10485760::bigint,'MP4 uses the Chat 10 MiB ceiling');
+select is(app_private.chat_attachment_extension_v1('video/mp4'),'mp4','MP4 key suffix is server-owned');
+select is(app_private.chat_attachment_limit_v1('video/webm'),null::bigint,'WebM remains rejected');
+select is(app_private.chat_attachment_limit_v1('video/mp4') > 10485760::bigint,false,'MP4 cannot exceed the cap');
+select ok(not has_function_privilege('authenticated','app_private.chat_attachment_limit_v1(text)','execute') and not has_function_privilege('authenticated','app_private.chat_attachment_extension_v1(text)','execute'),'private MIME helpers remain non-callable');
+select * from finish();
+rollback;
