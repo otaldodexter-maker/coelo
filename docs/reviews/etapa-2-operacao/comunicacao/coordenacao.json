@@ -4317,8 +4317,8 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T04:47:00Z",
-    "base": "883ecaac7",
+    "time": "2026-09-13T04:56:52.333099+00:00",
+    "base": "f9d31fdfa",
     "quotaUsedPercent": 82,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
@@ -4332,8 +4332,8 @@
       "/root/chat_upload": "entrega integrada; sem nova fatia apos80%; slots livres",
       "/root/chat_inline": "entrega integrada; sem nova fatia apos80%; slots livres"
     },
-    "wip": "Perfil sintetico posSQL62 criado e excluido pela UI; banco confirma0perfil0membership. Grupo primarysave passou; studentlink aguardaSQL63. Assessmentdraftretido segueSAI_INTERNAL_ERROR.",
-    "next": "C0 validar helper scoped real para63, backup/apply/UI; fechar aceite perfil e rastreadores.",
+    "wip": "Grupo aluno incluido/reload e removido/UI+DB; activity_group_link preservado ativo; reinclusao pendente. Perfildelete FE/E2E aceito. Assessmentdraft SAI_INTERNAL_ERROR retido.",
+    "next": "reload remocao e reincluir aluno; aceitar groups.members; conferir diario retido se elegivel; corte05:14:46Z",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
@@ -4354,7 +4354,7 @@
     "ultimoAplicado": 63,
     "proximo": 64,
     "dono": "C0",
-    "status": "lote63 aplicado; aguarda UI",
+    "status": "lote63 aplicado; UI link e unlink persistem; reloadlink PASS, reloadunlink em curso",
     "backup": [
       {
         "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote63-schema-20260913.sql",
