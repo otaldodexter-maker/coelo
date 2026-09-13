@@ -9,6 +9,10 @@ metadata:
 
 # Coelo Front-end
 
+## Backlog R12 — fonte vigente dos apontamentos Owner
+
+Consultar [R12 — catálogo por tela/subtela e camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md) e as notas R12 no inventário/três rastreadores. Todos os 45 compromissos estão registrados, incluindo quatro itens com mapeamento pendente. Fontes de captura preservam anexos descritos, decisões e suspeitas; implementação não foi iniciada. Não reaplicar deltas antigos de captura nem substituir avanços R11. Esta referência não abre R12 ou Etapa 3 automaticamente.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)

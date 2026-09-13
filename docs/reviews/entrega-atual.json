@@ -1332,6 +1332,619 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
       "owner": "C0 R11",
       "nextGate": "Somente após A0/A/B/C/D concluídos com margem; institutions.status ou institutions.locations-map"
+    },
+    {
+      "id": "owner.r12-01",
+      "status": "deferred",
+      "actionIds": [
+        "daily-routine.list"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-01 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-02",
+      "status": "deferred",
+      "actionIds": [
+        "activities.list",
+        "daily-routine.list"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-03",
+      "status": "deferred",
+      "actionIds": [
+        "activities.list"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-04",
+      "status": "deferred",
+      "actionIds": [
+        "daily-routine.list",
+        "attendance.dashboard"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-05",
+      "status": "deferred",
+      "actionIds": [
+        "attendance.create"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-06",
+      "status": "deferred",
+      "actionIds": [
+        "attendance.create",
+        "daily-routine.apply"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-07",
+      "status": "deferred",
+      "actionIds": [
+        "attendance.mark",
+        "attendance.correct",
+        "attendance.finish"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-07 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-08",
+      "status": "deferred",
+      "actionIds": [
+        "attendance.mark",
+        "attendance.correct",
+        "attendance.finish",
+        "daily-routine.apply"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar; sem falha nova confirmada.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-09",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.list"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-09, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-10",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.list"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-11",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-11, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-12",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.child"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-12, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-13",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.create",
+        "child-safety.edit"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-13, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-14",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.child"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-14, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-15",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.child",
+        "child-safety.edit",
+        "child-safety.suspend"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-15, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-16",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.create"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-16, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-17",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.create",
+        "child-safety.edit"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-17, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-18",
+      "status": "deferred",
+      "actionIds": [
+        "child-safety.create"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Contrato a verificar; sem diagnóstico novo.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Ler R12-18, reconciliar decisão/mapeamento e executar somente na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-19",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-20",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-20 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-21",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.detail"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-21 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-22",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.create",
+        "access-profiles.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-22 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-23",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.create"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-24",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.create",
+        "access-profiles.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-24 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-25",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.create",
+        "access-profiles.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-25 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-26",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-26 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-27",
+      "status": "deferred",
+      "actionIds": [
+        "access-profiles.create",
+        "access-profiles.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contrato a verificar; conflito Principal em R12-23.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-27 e fontes antes de executar na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-28",
+      "status": "deferred",
+      "actionIds": [
+        "health-care.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-28, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-29",
+      "status": "deferred",
+      "actionIds": [
+        "health-care.create",
+        "health-care.edit",
+        "health-care.detail"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-29, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-30",
+      "status": "deferred",
+      "actionIds": [
+        "health-care.create",
+        "health-care.edit",
+        "health-care.detail"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-30, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-31",
+      "status": "deferred",
+      "actionIds": [
+        "medication.create",
+        "medication.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-31, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-32",
+      "status": "deferred",
+      "actionIds": [
+        "medication.list",
+        "medication.detail",
+        "medication.create",
+        "medication.edit"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-32, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-33",
+      "status": "deferred",
+      "actionIds": [
+        "medication.create",
+        "medication.edit",
+        "medication.detail"
+      ],
+      "fe": "Planejado R12, não implementado.",
+      "be": "Contratos e persistência a verificar.",
+      "e2e": "Não executado para este apontamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12."
+    },
+    {
+      "id": "owner.r12-34",
+      "status": "deferred",
+      "actionIds": [
+        "meal-plans.model-create",
+        "meal-plans.model-edit"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-34 e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-35",
+      "status": "deferred",
+      "actionIds": [
+        "meal-plans.model-create",
+        "meal-plans.model-edit"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-35 e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-36",
+      "status": "deferred",
+      "actionIds": [
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.publish"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-36 e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-37",
+      "status": "deferred",
+      "actionIds": [
+        "meal-plans.create",
+        "meal-plans.edit"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-37 e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-38",
+      "status": "deferred",
+      "actionIds": [
+        "meal-plans.create",
+        "meal-plans.edit",
+        "meal-plans.publish",
+        "meal-plans.model-edit"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contratos a verificar, sem diagnóstico novo.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-38 e reproduzir após abertura explícita da R12."
+    },
+    {
+      "id": "owner.r12-39",
+      "status": "deferred",
+      "actionIds": [
+        "forms.edit",
+        "forms.create"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-39, mapear e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-40",
+      "status": "deferred",
+      "actionIds": [
+        "forms.edit",
+        "forms.create"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-40, mapear e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-41",
+      "status": "deferred",
+      "actionIds": [
+        "forms.list"
+      ],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-41, mapear e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-42",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "Planejado R12; sem implementação.",
+      "be": "Sem diagnóstico novo.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-42, mapear e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-43",
+      "status": "deferred",
+      "actionIds": [
+        "chat.open"
+      ],
+      "fe": "Contorno a revisar na R12.",
+      "be": "Sem mudança prevista para o contorno.",
+      "e2e": "Sem nova prova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reproduzir contorno no painel/lista/paginação/compositor e comparar referência aprovada."
+    },
+    {
+      "id": "owner.r12-44",
+      "status": "deferred",
+      "actionIds": [
+        "invites.list"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contrato preservado, reenvio a conferir.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-44 e reproduzir na R12 autorizada."
+    },
+    {
+      "id": "owner.r12-45",
+      "status": "deferred",
+      "actionIds": [
+        "invites.resend"
+      ],
+      "fe": "Planejado R12; não implementado.",
+      "be": "Contrato preservado, reenvio a conferir.",
+      "e2e": "Sem prova nova.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+      "owner": "C0 R12",
+      "nextGate": "Reconciliar R12-45 e reproduzir na R12 autorizada."
     }
   ],
   "evidenceFiles": [
@@ -1347,7 +1960,16 @@
     "docs/knowledge/team/chat-media-composer-direction.md",
     "docs/design/account-profile-owner-adjustments-20260913.md",
     "docs/knowledge/team/account-profile-header-access.md",
-    "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md"
+    "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md"
   ],
   "memory": {
     "status": "captured",

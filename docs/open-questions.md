@@ -327,3 +327,13 @@ quais categorias são elegíveis (guardiões autorizados, equipe no escopo, amba
 e qual a semântica da atribuição? A seleção não concede automaticamente
 medication.record_evidence. Nenhum schema ou grant especulativo foi criado;
 a correção local preserva IDs ausentes sem lançar e não certifica persistência.
+
+## R12 — Decisões pendentes dos apontamentos Owner (2026-09-13)
+
+Fonte: [catálogo consolidado](reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md). Responsável: Owner decide; C0 R12 reconcilia antes de implementar. Não iniciar R12 por este registro.
+
+- R12-23: pedido de perfis profissionais para uso no Principal versus `specs/018-profiles-permissions-superadmin.md`, que restringe Principal a catálogo somente leitura. Delimitar alteração de contrato mantendo papéis contextuais/múltiplos vínculos, sem transformar app em nível hierárquico.
+- R12-02: arquivamento dos modelos originais Coelo versus imutabilidade da spec 021; confirmar atores e alcance, sem conceder mutação por padronização visual.
+- R12-18: quais campos são obrigatórios no cadastro de pessoa sem conta; expressão não obrigatórios pode se referir apenas a celular/e-mail.
+- R12-33: definir eventos, destinatários por capacidade e canal/antecedência das notificações de medicação.
+- R12-36/37: retirada de prioridade e datas excluídas da UX não define nova precedência nem elimina exceções históricas; conferir contrato antes de alterar persistência.
