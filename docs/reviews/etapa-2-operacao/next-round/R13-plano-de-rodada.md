@@ -1,8 +1,11 @@
 ---
 source: Owner 2026-09-13 — cota aproximada de8% e divisão R12/R13; R13-owner-items.json; R11-fechamento.md
-status: encerrada parcialmente em 2026-09-13; ver R13-fechamento.md
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # R13 — Continuidade reservada
 

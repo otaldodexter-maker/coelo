@@ -1,8 +1,11 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: retomada em reserva; gate SQL/PITR bloqueado e primeiro trabalho independente em seleção
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # R13 — checkpoint de abertura e passagem
 

@@ -1,8 +1,11 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R13-checkpoint.md; R13-pendencias.md; R13-owner-items.json; git/testes R13
-status: encerrada; entrega parcial documentada
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # R13 — Fechamento parcial
 

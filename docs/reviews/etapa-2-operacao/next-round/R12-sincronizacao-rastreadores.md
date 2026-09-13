@@ -1,8 +1,11 @@
 ---
 source: Owner 2026-09-13; R12-owner-items.json; R12-apontamentos-owner.md
-status: sincronização reconciliada com fechamento focal R12
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # R12 — Incorporação nos três rastreadores
 

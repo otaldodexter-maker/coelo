@@ -1,8 +1,11 @@
 ---
 source: Owner 2026-09-13 — normal99%, reserva Luna99%, concluir viável R13/Etapa2, manter skills e preparar R14 Claude Opus médio
-status: retomada R13 autorizada; substitui cortes antecipados anteriores
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # R13 — Retomada explícita no mesmo thread
 

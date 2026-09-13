@@ -1,8 +1,11 @@
 ---
 source: Owner 2026-09-13 — disparo independente e continuidade com Luna reserva médio; AGENTS.md; R13-plano-de-rodada.md
-status: execução autorizada somente após liberação explícita da R12; ainda não iniciada
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # Continuidade supervisionada da R13
 

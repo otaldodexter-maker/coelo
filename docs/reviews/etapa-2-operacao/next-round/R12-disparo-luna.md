@@ -1,8 +1,11 @@
 ---
 source: Owner 2026-09-13 — preparar disparo independente e supervisionar retomada em Luna reserva médio; CLI 0.154.0 e testes locais reais
-status: preparado e testado; R12 e R13 ainda não iniciadas
+status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
+
+> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+
 
 # Disparo independente R12 → R13 e reserva Luna
 
