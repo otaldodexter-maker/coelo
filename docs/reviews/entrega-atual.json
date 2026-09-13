@@ -1551,12 +1551,12 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "Golden local falha em 1440px com 0,34%/4.857 px; nenhum código ou baseline alterado.",
+      "be": "Contrato preservado; nenhum SQL/RPC novo.",
+      "e2e": "Bloqueado por reconciliação visual e decisão sobre referência.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-10, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Comparar aprovado/failure lado a lado, localizar diferença e corrigir ou obter decisão do Owner sem regenerar baseline por inferência.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -2622,6 +2622,7 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-attendance-routine.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
     "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
