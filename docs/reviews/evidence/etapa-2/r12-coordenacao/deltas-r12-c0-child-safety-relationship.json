@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "child-safety.child",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: códigos de relação são localizados apenas na apresentação, com fallback para valores desconhecidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md"
+  },
+  {
+    "action_id": "child-safety.child",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A apresentação de relação mudou; locale, rota normal, reload e escopo autorizado precisam ser reproduzidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md"
+  }
+]

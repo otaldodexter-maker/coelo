@@ -621,6 +621,42 @@ void main() {
       matchesGoldenFile('goldens/child_safety_directory_light_1440.png'),
     );
   });
+
+  testWidgets('relationship codes are localized in authorization cards', (tester) async {
+    final controller = ChildSafetyController(_Repository());
+    addTearDown(controller.dispose);
+    const authorization = PickupAuthorization(
+      id: 'auth-code',
+      name: 'Maria',
+      relationship: 'mother',
+      institutionName: 'Instituição Aurora',
+      unitName: 'Unidade Centro',
+      status: PickupAuthorizationStatus.approved,
+      origin: PickupAuthorizationOrigin.institution,
+    );
+    const record = ChildSafetyRecord(
+      childId: 'child-code',
+      childName: 'Ana Criança',
+      internalId: 'RA code',
+      institutionName: 'Instituição Aurora',
+      unitName: 'Unidade Centro',
+      authorizations: [authorization],
+    );
+    await tester.pumpWidget(
+      _app(
+        Scaffold(
+          body: AuthorizedPersonCard(
+            record: record,
+            authorization: authorization,
+            controller: controller,
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(find.text('Mãe'), findsOneWidget);
+    expect(find.text('mother'), findsNothing);
+  });
 }
 
 Widget _app(

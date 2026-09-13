@@ -5962,10 +5962,10 @@
       "family": "child_safety",
       "screen": "Segurança infantil / Criança",
       "scope": "mvp",
-      "done": "A composição da tabela mudou; golden, rota normal, reload e escopo autorizado precisam ser reproduzidos.",
-      "fe": "R12 C0: tabela de autorizações distingue decisão e ciclo de vida em texto, preservando validade e indicador dos cards.",
+      "done": "A apresentação de relação mudou; locale, rota normal, reload e escopo autorizado precisam ser reproduzidos.",
+      "fe": "R12 C0: códigos de relação são localizados apenas na apresentação, com fallback para valores desconhecidos.",
       "be": "superadmin_child_safety_get 200 no reload; RLS/negativas no pgTAP v2 (43/43, lote 4) e decisao P32 (171800). | Backlog R12 (registro 2026-09-13): R12-12, R12-14, R12-15. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-12 -> R13, R12-14 -> R13, R12-15 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.child); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.child) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/adapter-shape.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; capturas 9411-b2-safety-child (scratchpad; copiar na evidencia); docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.child); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.child) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md;8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/adapter-shape.md; fa3caddd2/8414ac9ab;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-sql/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; capturas 9411-b2-safety-child (scratchpad; copiar na evidencia); docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/32-safety-child-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
       "frontendStatus": "local-green",
@@ -9134,7 +9134,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-13T23:21:16.186Z",
+  "updatedAt": "2026-09-13T23:25:26.532Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

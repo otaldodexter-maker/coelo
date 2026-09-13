@@ -1626,12 +1626,12 @@
       "actionIds": [
         "child-safety.child"
       ],
-      "fe": "Planejado R12; sem implementação.",
-      "be": "Contrato a verificar; sem diagnóstico novo.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "fe": "local-green: códigos mother/father/grandparent/other localizados somente na apresentação, com fallback.",
+      "be": "Contrato preservado; nenhum SQL/RPC novo.",
+      "e2e": "pending-verification: locale, rota normal, reload e escopo autorizado.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
       "owner": "C0 R12",
-      "nextGate": "Ler R12-14, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+      "nextGate": "Confirmar idioma suportado e provar rótulos na rota normal com dados autorizados.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -2626,6 +2626,8 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-child-safety-relationship.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/deltas-r12-c0-child-safety-status.json",
     "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
     "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",

@@ -278,8 +278,7 @@ final class _SafetyLandingPageState extends State<SafetyLandingPage> {
                   : box.maxWidth >= 720
                   ? 2
                   : 1;
-              final cardWidth =
-                  (box.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
+              final cardWidth = (box.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
               final cards = <Widget>[
                 if (c.canCreate && widget.onCreate != null)
                   ConstrainedBox(
@@ -656,11 +655,7 @@ final class _ChildSecurityPageState extends State<ChildSecurityPage> {
                   onAction: widget.controller.canCreate ? widget.onCreate : null,
                 )
               else if (constraints.maxWidth >= 768)
-                _AuthorizedRows(
-                  record: child,
-                  controller: widget.controller,
-                  onEdit: widget.onEdit,
-                )
+                _AuthorizedRows(record: child, controller: widget.controller, onEdit: widget.onEdit)
               else
                 Column(
                   children: [
@@ -718,7 +713,7 @@ final class _AuthorizedRows extends StatelessWidget {
     rowHeight: 72,
     pinnedColumn: _column('name', 'Nome', (a) => a.name, 220),
     columns: [
-      _column('relationship', 'Relação', (a) => a.relationship, 180),
+      _column('relationship', 'Relação', (a) => _relationshipLabel(a.relationship), 180),
       _column('validity', 'Validade', _period, 220),
       CoeloAdminTableColumn(
         id: 'status',
@@ -726,11 +721,8 @@ final class _AuthorizedRows extends StatelessWidget {
         initialWidth: 150,
         minWidth: 140,
         maxWidth: 220,
-        cellBuilder: (_, item) => Text(
-          _statusSummary(item),
-          maxLines: 2,
-          overflow: TextOverflow.ellipsis,
-        ),
+        cellBuilder: (_, item) =>
+            Text(_statusSummary(item), maxLines: 2, overflow: TextOverflow.ellipsis),
       ),
       CoeloAdminTableColumn(
         id: 'actions',
@@ -800,7 +792,7 @@ final class AuthorizedPersonCard extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Text(authorization.name, style: Theme.of(context).textTheme.titleMedium),
-                    Text(authorization.relationship),
+                    Text(_relationshipLabel(authorization.relationship)),
                   ],
                 ),
               ),
@@ -1685,6 +1677,14 @@ String _statusSummary(PickupAuthorization value) {
   if (value.status != PickupAuthorizationStatus.approved) return decision;
   return '$decision · ${value.lifecycleStatus.label}';
 }
+
+String _relationshipLabel(String value) => switch (value.trim().toLowerCase()) {
+  'mother' => 'Mãe',
+  'father' => 'Pai',
+  'grandparent' => 'Avó/Avô',
+  'other' => 'Outro',
+  _ => value,
+};
 
 Future<void> _manage(
   BuildContext context,
