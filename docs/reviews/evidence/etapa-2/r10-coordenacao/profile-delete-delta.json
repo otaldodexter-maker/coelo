@@ -1,0 +1,41 @@
+[
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  },
+  {
+    "action_id": "access-profiles.delete",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+      "revision": "R10 7c089fc15 / SQL62 20260913043053",
+      "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+      "recordedAt": "2026-09-13T04:52:00Z"
+    }
+  }
+]

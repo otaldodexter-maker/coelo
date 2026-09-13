@@ -2037,24 +2037,36 @@
       "family": "access_profiles",
       "screen": "Perfis de acesso / Excluir",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
-      "fe": "Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
-      "be": "R04: superadmin_access_profile_delete_and_reassign apagou o perfil sintetico reatribuindo ao owner (reassigned_count 0); detalhe devolve P0002 e a lista nao o traz mais. Guarda de autoridade plena passou (172000).",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+      "fe": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+      "be": "R10: criar/detalhe/excluir perfil sintetico sem atribuicoes pela UI normal e reload posSQL62 PASS; DB0perfil0vinculos; negativas pertinentes plataforma vigentes. Realocacao com atribuicoes nao exercitada.",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
       "certifications": {
         "backend": {
-          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
-          "revision": "1522e6c28",
-          "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
-          "recordedAt": "2026-09-11T03:11:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+          "revision": "R10 7c089fc15 / SQL62 20260913043053",
+          "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:52:00Z"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+          "revision": "R10 7c089fc15 / SQL62 20260913043053",
+          "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:52:00Z"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r10-coordenacao/profile-delete-ui-proof.md",
+          "revision": "R10 7c089fc15 / SQL62 20260913043053",
+          "environment": "UI Chrome localhost3000 build B3F3C8C8; Supabase producao evvbomzejfijozbtgvpt",
+          "recordedAt": "2026-09-13T04:52:00Z"
         }
       }
     },
@@ -9102,7 +9114,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-13T03:55:50.537Z",
+  "updatedAt": "2026-09-13T04:49:31.391Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
