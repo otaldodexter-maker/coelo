@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "activities.list",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12 C0: aba de modelos do diretório alinhada para 'Modelos de atividade'; aba 'Atividades', filtros, modos de exibição, paginação e ações preservados.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md"
+  },
+  {
+    "action_id": "activities.list",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A alteração de label/composição reabre a prova integrada da superfície; rota normal, reload e escopo precisam ser reproduzidos. Backend inalterado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md"
+  }
+]

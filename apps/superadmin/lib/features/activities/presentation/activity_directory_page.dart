@@ -462,7 +462,10 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
             key: const Key('activity-type-tabs'),
             selected: _content,
             tabs: const [
-              CoeloAdminUnderlineTab(value: _ActivityContentKind.templates, label: 'Modelos'),
+              CoeloAdminUnderlineTab(
+                value: _ActivityContentKind.templates,
+                label: 'Modelos de atividade',
+              ),
               CoeloAdminUnderlineTab(value: _ActivityContentKind.activities, label: 'Atividades'),
             ],
             onSelected: (value) => setState(() => _content = value),

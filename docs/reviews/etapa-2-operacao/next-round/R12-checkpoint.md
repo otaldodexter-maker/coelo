@@ -43,6 +43,14 @@ Os goldens de Rotina diária falharam apenas com diferenças isoladas no
  baseline foi regenerado e nenhum código foi alterado. O bloqueio e a próxima
  comparação autorizada estão registrados em
 `docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md`.
+
+## R12-03 checkpoint de execução (C0)
+
+FE local-green: aba `Modelos de atividade` corrigida no diretório de
+Atividades; a aba `Atividades` e os controles existentes permanecem. TDD e
+suíte da tela 23/23 PASS. Backend inalterado; integrado pending-verification
+até rota normal, reload e escopo. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.

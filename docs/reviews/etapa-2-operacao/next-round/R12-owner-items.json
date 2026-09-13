@@ -44,12 +44,12 @@
     "actionIds": [
       "activities.list"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "local-green: aba Modelos de atividade corrigida; Atividades, filtros, modos, paginação e ações preservados.",
+    "be": "Contrato preservado; nenhuma mutação nova.",
+    "e2e": "pending-verification: superfície mudou; rota normal, reload e escopo pendentes.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

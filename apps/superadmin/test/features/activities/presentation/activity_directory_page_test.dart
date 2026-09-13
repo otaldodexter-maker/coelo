@@ -473,7 +473,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.byKey(const Key('activity-type-tabs')), findsOneWidget);
     expect(find.byKey(const Key('activity-card-activity-10')), findsNothing);
-    expect(find.text('Modelos de atividades'), findsNothing);
+    expect(find.text('Modelos de atividade'), findsOneWidget);
     expect(find.byKey(const Key('create-activity-template-tile')), findsOneWidget);
     expect(find.text('Modelo Coelo'), findsNWidgets(2));
     expect(find.byKey(const Key('activity-template-template-1')), findsOneWidget);
