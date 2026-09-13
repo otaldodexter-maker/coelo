@@ -9,7 +9,8 @@ generated_at: 2026-09-13
 Você é C0, executor e integrador da R12 da Etapa2 do Coelo. Use GPT-6 Astra,
 esforço medium, execução serial. Este prompt, quando enviado para execução,
 autoriza implementar, testar e publicar as fatias deste recorte em dev até o
-corte. Não iniciar R13 ou Etapa3 automaticamente. Não pedir confirmação do
+corte. Após fechamento e liberação de posse, acionar R13 pelo supervisor Luna
+descrito abaixo, conforme autorização posterior do Owner. Não iniciar Etapa3. Não pedir confirmação do
 recorte já definido nem encerrar apenas com plano enquanto houver trabalho
 independente executável dentro da cota.
 
@@ -45,6 +46,18 @@ R12-41 e R12-43**; destinationRound identifica a divisão vigente. Os outros50
 já estão na R13. Notas antigas que atribuíam tudo à R12 são históricas.
 
 ## Primeiro gate: orçamento e posse
+
+Antes do trabalho de produto, confirme o disparo independente já preparado:
+
+```text
+rtk proxy python docs/reviews/etapa-2-operacao/next-round/r12-luna-dispatch.py status
+```
+
+Leia R12-disparo-luna.md. Se expirado/cancelado, execute `arm` para uma nova
+espera e confira `status`; não reaproveite sinal antigo. Se houver execução
+running, não assuma a posse. O teste já documentado dispensa nova chamada
+de modelo sem mudança material. O processo espera até 12h, sem consumir
+modelo. Sua criação não inicia R12/R13 nem muda estados de produto.
 
 Registre T0 real, base/SHA, escritor C0, PID/porta do runtime e dono dos slots em
 `R12-checkpoint.md`. Meça consumo real:
@@ -165,4 +178,16 @@ rtk proxy python -X utf8 docs/reviews/delivery_gate.py docs/reviews/entrega-atua
 
 FAIL bloqueia conclusão; PASS DOCUMENTED_PARTIAL exige informar o que falta.
 Conferir HEAD/origin-dev no final. Push não é deploy. Encerrar a R12 com a
-lista transferida para R13; não iniciar a R13 automaticamente.
+lista transferida para R13. Como ÚLTIMO comando de escrita/coordenação desta
+rodada, após encerrar seus comandos de runtime/testes e conferir o gate, execute:
+
+```text
+rtk proxy python docs/reviews/etapa-2-operacao/next-round/r12-luna-dispatch.py release --release-writer
+```
+
+Esse comando valida fechamento real, transferência, checkout dev limpo,
+HEAD=origin/dev e delivery gate antes de emitir sinal atômico. Após sucesso,
+não escreva mais no checkout; envie somente a resposta final. O supervisor
+iniciará uma sessão exclusiva conforme R13-luna-continuacao.md, acompanhará
+sua saída e poderá retomá-la uma vez na reserva Luna médio. Não lançar outro
+CLI manualmente. Não sinalizar fechamento por timer, silêncio ou cota esgotada.

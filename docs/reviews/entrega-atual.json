@@ -2213,6 +2213,28 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md",
       "owner": "C0",
       "nextGate": ""
+    },
+    {
+      "id": "owner.r12-independent-luna-dispatch",
+      "status": "done",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-disparo-luna.md",
+      "owner": "C0",
+      "nextGate": ""
+    },
+    {
+      "id": "owner.r13-supervised-luna-reserve",
+      "status": "deferred",
+      "actionIds": [],
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-disparo-luna.md",
+      "owner": "C0",
+      "nextGate": "C0 R12: fechar, publicar e liberar posse; supervisor inicia Luna e retoma uma vez na reserva se necessário. Execução de produto ainda não iniciada."
     }
   ],
   "evidenceFiles": [
@@ -2252,7 +2274,9 @@
     "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-owner-items.json",
-    "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md"
+    "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md",
+    "docs/reviews/etapa-2-operacao/next-round/R12-disparo-luna.md",
+    "docs/reviews/etapa-2-operacao/next-round/R13-luna-continuacao.md"
   ],
   "memory": {
     "status": "no-op",

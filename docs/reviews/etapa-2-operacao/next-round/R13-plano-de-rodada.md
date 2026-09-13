@@ -6,6 +6,12 @@ generated_at: 2026-09-13
 
 # R13 — Continuidade reservada
 
+Atualização do Owner: a execução após fechamento da R12 está autorizada pelo
+disparo independente documentado em R12-disparo-luna.md. O executor segue
+R13-luna-continuacao.md, inicialmente Luna médio e, quando necessário e
+disponível, uma retomada na reserva gpt-reserve médio. A rodada ainda não
+iniciou; confirmação de posse/cota e todos os gates abaixo permanecem exigidos.
+
 Destino inicial de50 compromissos do catálogo original, preservados com seus
 IDs R12 para rastreabilidade. Ver R13-owner-items.json e R13-pendencias.md.
 R12 fica com07/41/43; seus eventuais abertos serão adicionados automaticamente

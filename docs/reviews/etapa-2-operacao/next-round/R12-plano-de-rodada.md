@@ -6,6 +6,11 @@ generated_at: 2026-09-13
 
 # R12 — Correções focais com reserva de fechamento
 
+Atualização operacional posterior: R12-prompt-unico.md inclui o disparo
+independente preparado em R12-disparo-luna.md. O Owner autorizou que o fechamento
+publicado da R12 libere a execução R13 em Luna médio, com passagem supervisionada
+para a reserva disponível. Esta preparação não iniciou nenhuma rodada.
+
 ## Objetivo e limite
 
 O backlog total contém53 compromissos de vários domínios, com lacunas de
