@@ -3,6 +3,7 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../domain/principal_runtime_context.dart';
+import 'principal_global_navigation.dart';
 
 typedef PrincipalRuntimeContextBuilder =
     Widget Function(BuildContext context, PrincipalRuntimeContext runtimeContext);
@@ -15,10 +16,26 @@ typedef PrincipalRuntimeContextBuilder =
 /// (Owner, 11/09/2026): até 5 perfis inline, "Ver todos" em popup e, para o
 /// usuário híbrido, ver como Responsável, Funcionário ou ambos.
 final class PrincipalRuntimeContextRoute extends StatefulWidget {
-  const PrincipalRuntimeContextRoute({required this.repository, required this.builder, super.key});
+  const PrincipalRuntimeContextRoute({
+    required this.repository,
+    this.builder,
+    this.multipleBuilder,
+    this.avatarInitials = '?',
+    this.avatarImage,
+    this.onOpenProfile,
+    this.notificationAction,
+    this.onReportProblem,
+    super.key,
+  });
 
   final PrincipalRuntimeContextRepository repository;
-  final PrincipalRuntimeContextBuilder builder;
+  final PrincipalRuntimeContextBuilder? builder;
+  final Widget Function(BuildContext, List<PrincipalRuntimeContext>)? multipleBuilder;
+  final String avatarInitials;
+  final ImageProvider? avatarImage;
+  final ValueChanged<BuildContext>? onOpenProfile;
+  final Widget? notificationAction;
+  final ValueChanged<BuildContext>? onReportProblem;
 
   @override
   State<PrincipalRuntimeContextRoute> createState() => _PrincipalRuntimeContextRouteState();
@@ -27,6 +44,7 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
 /// A escolha de perfil sobrevive à navegação entre as telas do Principal
 /// dentro da mesma sessão; não é autorização, só preferência de filtro.
 String? _selectedMembershipId;
+Set<String> _selectedMembershipIds = {};
 
 final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeContextRoute> {
   late Future<List<PrincipalRuntimeContext>> _load;
@@ -92,15 +110,65 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
           ),
         );
       }
-      if (contexts.length == 1) return widget.builder(context, contexts.first);
+
       final selected = contexts.firstWhere(
         (item) => item.membershipId == _selectedMembershipId,
         orElse: () => contexts.first,
       );
+      final chosenContexts = contexts
+          .where((item) => _selectedMembershipIds.contains(item.membershipId))
+          .toList();
+      final selectedContexts = chosenContexts.isEmpty ? [selected] : chosenContexts;
       return Column(
         children: [
-          PrincipalContextSelectorBar(contexts: contexts, selected: selected, onSelect: _select),
-          Expanded(child: widget.builder(context, selected)),
+          PrincipalGlobalHeader(
+            notificationAction: widget.notificationAction,
+            onReportProblem: () => widget.onReportProblem?.call(context),
+            keyPrefix: 'principal-context-header',
+            avatarInitials: widget.avatarInitials,
+            avatarImage: widget.avatarImage,
+            onOpenMenu: () => widget.onOpenProfile?.call(context),
+            onOpenNotifications: () => ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Consulte as notificações pelo sino do Superadmin.')),
+            ),
+            onOpenProfile: () => widget.onOpenProfile?.call(context),
+            onChooseContexts: () async {
+              if (widget.multipleBuilder != null) {
+                final chosen = await showModalBottomSheet<List<PrincipalRuntimeContext>>(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  builder: (_) =>
+                      _MultipleContextSheet(contexts: contexts, selected: selectedContexts),
+                );
+                if (chosen != null && chosen.isNotEmpty && mounted) {
+                  setState(() {
+                    _selectedMembershipIds = chosen.map((c) => c.membershipId).toSet();
+                    _selectedMembershipId = chosen.first.membershipId;
+                  });
+                }
+                return;
+              }
+              final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
+                context: context,
+                backgroundColor: Theme.of(context).colorScheme.surface,
+                showDragHandle: true,
+                builder: (_) => _ContextSheet(
+                  contexts: contexts,
+                  selected: selected,
+                  hybrid:
+                      contexts.any((c) => c.isGuardianRole) &&
+                      contexts.any((c) => !c.isGuardianRole),
+                ),
+              );
+              if (chosen != null && mounted) _select(chosen);
+            },
+          ),
+          Expanded(
+            child:
+                widget.multipleBuilder?.call(context, selectedContexts) ??
+                widget.builder!(context, selected),
+          ),
         ],
       );
     },
@@ -167,6 +235,7 @@ final class PrincipalContextSelectorBar extends StatelessWidget {
     final chosen = await showModalBottomSheet<PrincipalRuntimeContext>(
       context: context,
       showDragHandle: true,
+      backgroundColor: Theme.of(context).colorScheme.surface,
       builder: (sheetContext) =>
           _ContextSheet(contexts: contexts, selected: selected, hybrid: _hybrid),
     );
@@ -268,7 +337,9 @@ final class _ContextTile extends StatelessWidget {
     ].whereType<String>().join(' · ');
     return ListTile(
       key: ValueKey('principal-context-${item.membershipId}'),
-      selected: isSelected,
+      selected: false,
+      hoverColor: Colors.transparent,
+      focusColor: Theme.of(context).colorScheme.primaryContainer,
       leading: CircleAvatar(child: Text(_initials(item.label))),
       title: Text(item.label),
       subtitle: Text(
@@ -285,4 +356,72 @@ String _initials(String value) {
   if (parts.isEmpty) return '?';
   if (parts.length == 1) return parts.first.substring(0, 1).toUpperCase();
   return (parts.first.substring(0, 1) + parts.last.substring(0, 1)).toUpperCase();
+}
+
+class _MultipleContextSheet extends StatefulWidget {
+  const _MultipleContextSheet({required this.contexts, required this.selected});
+  final List<PrincipalRuntimeContext> contexts;
+  final List<PrincipalRuntimeContext> selected;
+  @override
+  State<_MultipleContextSheet> createState() => _MultipleContextSheetState();
+}
+
+class _MultipleContextSheetState extends State<_MultipleContextSheet> {
+  late final Set<String> selected = widget.selected.map((c) => c.membershipId).toSet();
+  @override
+  Widget build(BuildContext context) => SafeArea(
+    child: SizedBox(
+      height: MediaQuery.sizeOf(context).height * .65,
+      child: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Text('Ver como', style: Theme.of(context).textTheme.titleLarge),
+          ),
+          Expanded(
+            child: ListView(
+              children: [
+                for (final item in widget.contexts)
+                  CheckboxListTile(
+                    key: ValueKey('principal-context-${item.membershipId}'),
+                    title: Text(item.label),
+                    subtitle: Text(item.handle == null ? item.institutionName : '@${item.handle}'),
+                    value: selected.contains(item.membershipId),
+                    hoverColor: Colors.transparent,
+                    controlAffinity: ListTileControlAffinity.leading,
+                    onChanged: (value) => setState(() {
+                      if (value == true)
+                        selected.add(item.membershipId);
+                      else
+                        selected.remove(item.membershipId);
+                    }),
+                  ),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.end,
+              children: [
+                TextButton(onPressed: () => Navigator.pop(context), child: const Text('Cancelar')),
+                const SizedBox(width: CoeloSpacing.space3),
+                FilledButton(
+                  onPressed: selected.isEmpty
+                      ? null
+                      : () => Navigator.pop(
+                          context,
+                          widget.contexts
+                              .where((item) => selected.contains(item.membershipId))
+                              .toList(),
+                        ),
+                  child: const Text('Aplicar'),
+                ),
+              ],
+            ),
+          ),
+        ],
+      ),
+    ),
+  );
 }

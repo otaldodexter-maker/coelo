@@ -43,6 +43,7 @@ final class PrincipalBrandButton extends StatelessWidget {
         key: ValueKey('$keyPrefix-menu'),
         style: TextButton.styleFrom(
           foregroundColor: scheme.onSurface,
+          overlayColor: scheme.primaryContainer,
           padding: EdgeInsets.zero,
           shape: const RoundedRectangleBorder(),
         ),
@@ -59,6 +60,10 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
     required this.onOpenNotifications,
     required this.onOpenProfile,
     this.onReportProblem,
+    this.onChooseContexts,
+    this.avatarInitials = '?',
+    this.avatarImage,
+    this.notificationAction,
     this.keyPrefix = 'principal-happens',
     super.key,
   });
@@ -67,6 +72,10 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
   final VoidCallback onOpenNotifications;
   final VoidCallback onOpenProfile;
   final VoidCallback? onReportProblem;
+  final VoidCallback? onChooseContexts;
+  final String avatarInitials;
+  final ImageProvider? avatarImage;
+  final Widget? notificationAction;
   final String keyPrefix;
 
   @override
@@ -112,23 +121,48 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                     ),
                 icon: const Icon(Icons.bug_report_outlined, size: 22),
               ),
-              IconButton(
-                key: ValueKey('$keyPrefix-notifications'),
-                tooltip: 'Notificações',
-                onPressed: onOpenNotifications,
-                icon: const Icon(Icons.notifications_none_rounded, size: 22),
-              ),
-              IconButton(
-                key: ValueKey('$keyPrefix-context-avatar'),
-                tooltip: 'Abrir perfil',
-                onPressed: onOpenProfile,
-                icon: CircleAvatar(
-                  radius: 18,
-                  backgroundColor: scheme.primaryContainer,
-                  foregroundColor: scheme.onPrimaryContainer,
-                  child: const _ClampedTextScale(maxScaleFactor: 1.3, child: Text('AM')),
+              if (notificationAction != null)
+                notificationAction!
+              else
+                IconButton(
+                  key: ValueKey('$keyPrefix-notifications'),
+                  tooltip: 'Notificações',
+                  onPressed: onOpenNotifications,
+                  icon: const Icon(Icons.notifications_none_rounded, size: 22),
                 ),
-              ),
+              if (onChooseContexts != null)
+                PopupMenuButton<String>(
+                  key: ValueKey('$keyPrefix-context-avatar'),
+                  tooltip: 'Abrir menu do perfil',
+                  color: scheme.surface,
+                  surfaceTintColor: Colors.transparent,
+                  onSelected: (value) =>
+                      value == 'contexts' ? onChooseContexts!() : onOpenProfile(),
+                  itemBuilder: (_) => const [
+                    PopupMenuItem(value: 'profile', child: Text('Abrir perfil')),
+                    PopupMenuItem(value: 'contexts', child: Text('Ver como')),
+                  ],
+                  icon: CircleAvatar(
+                    radius: 18,
+                    backgroundImage: avatarImage,
+                    child: avatarImage == null ? Text(avatarInitials) : null,
+                  ),
+                )
+              else
+                IconButton(
+                  key: ValueKey('$keyPrefix-context-avatar'),
+                  tooltip: 'Abrir perfil',
+                  onPressed: onOpenProfile,
+                  icon: CircleAvatar(
+                    radius: 18,
+                    backgroundColor: scheme.primaryContainer,
+                    foregroundColor: scheme.onPrimaryContainer,
+                    backgroundImage: avatarImage,
+                    child: avatarImage == null
+                        ? _ClampedTextScale(maxScaleFactor: 1.3, child: Text(avatarInitials))
+                        : null,
+                  ),
+                ),
             ],
           ),
         ),

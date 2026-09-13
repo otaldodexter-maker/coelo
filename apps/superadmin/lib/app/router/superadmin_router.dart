@@ -1,3 +1,4 @@
+import '../../features/principal_circulars/data/contextual_principal_mixed_feed_repository.dart';
 import '../activity/context_notification_feed.dart';
 import 'dart:async';
 import '../../features/account/domain/account_profile.dart';
@@ -75,6 +76,7 @@ import '../../features/principal_profile/presentation/principal_profile_route_pa
 import '../../features/principal_shared/domain/principal_runtime_context.dart';
 import '../../features/principal_shared/presentation/principal_runtime_context_route.dart';
 import '../../features/principal_shared/presentation/principal_global_navigation.dart';
+import '../shell/superadmin_activity_center.dart';
 import '../../features/account/presentation/screens/settings_page.dart';
 import '../../features/account/presentation/user_preferences_controller.dart';
 import '../../features/imports/domain/import_job.dart';
@@ -1094,6 +1096,29 @@ GoRouter createSuperadminRouter({
     builder: (context, child) => session.isAuthenticated ? build() : const SizedBox.shrink(),
   );
 
+  Widget principalRuntimeRoute({
+    Key? key,
+    required PrincipalRuntimeContextRepository repository,
+    PrincipalRuntimeContextBuilder? builder,
+    Widget Function(BuildContext, List<PrincipalRuntimeContext>)? multipleBuilder,
+  }) {
+    final profile = productionAccountController.profile;
+    return PrincipalRuntimeContextRoute(
+      key: key,
+      repository: repository,
+      builder: builder,
+      multipleBuilder: multipleBuilder,
+      avatarInitials: profile?.avatar.initials ?? '?',
+      notificationAction: SuperadminActivityCenter(controller: operationalActivities),
+      onReportProblem: (context) => context.goNamed(SuperadminRoutes.supportName),
+      avatarImage:
+          profile?.avatar.mode == AccountAvatarMode.photo && profile?.avatar.photoBytes != null
+          ? MemoryImage(profile!.avatar.photoBytes!)
+          : null,
+      onOpenProfile: (context) => context.goNamed(SuperadminRoutes.principalProfileName),
+    );
+  }
+
   return GoRouter(
     initialLocation: SuperadminRoutes.login,
     refreshListenable: formsAuthorization,
@@ -1317,12 +1342,24 @@ GoRouter createSuperadminRouter({
               listenable: session,
               builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
                   ? _unavailableCompositionRootRoute(context)
-                  : PrincipalRuntimeContextRoute(
+                  : principalRuntimeRoute(
                       key: ValueKey('mixed-feed-${session.authorizationInvalidationRevision}'),
                       repository: principalRuntimeContextRepository,
-                      builder: (context, runtimeContext) {
+                      multipleBuilder: (context, selectedContexts) {
+                        final runtimeContext = selectedContexts.first;
                         final repository = principalHappensFeedRepository;
-                        final mixedRepository = principalMixedFeedRepository;
+                        final sourceRepository = principalMixedFeedRepository;
+                        final mixedRepository =
+                            sourceRepository == null || selectedContexts.length == 1
+                            ? sourceRepository
+                            : ContextualPrincipalMixedFeedRepository(sourceRepository, [
+                                for (final c in selectedContexts)
+                                  CircularScope(
+                                    institutionId: c.institutionId,
+                                    unitId: c.unitId,
+                                    groupId: c.groupId,
+                                  ),
+                              ]);
                         if (repository == null || mixedRepository == null) {
                           return _unavailableCompositionRootRoute(context);
                         }
@@ -1411,7 +1448,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalHappensPublish,
             name: SuperadminRoutes.principalHappensPublishName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = happensPublicationRepository;
@@ -1446,7 +1483,7 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.principalNowName,
             builder: (context, state) => ListenableBuilder(
               listenable: session,
-              builder: (context, _) => PrincipalRuntimeContextRoute(
+              builder: (context, _) => principalRuntimeRoute(
                 // Uma leitura obtida sob a autorizacao anterior nao pode
                 // sobreviver a revisao dela: o Agora rele como Acontece e
                 // Momentos ja fazem.
@@ -1474,7 +1511,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalNowPublication,
             name: SuperadminRoutes.principalNowPublicationName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = nowPublicationRepository;
@@ -1511,7 +1548,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalMomentsPublish,
             name: SuperadminRoutes.principalMomentsPublishName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = momentsPublicationRepository;
@@ -1547,7 +1584,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalForYou,
             name: SuperadminRoutes.principalForYouName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 if (noticeRepository is UnavailableNoticeRepository) {
@@ -1589,7 +1626,7 @@ GoRouter createSuperadminRouter({
               listenable: session,
               builder: (context, _) => !session.isAuthenticated || session.isPasswordRecovery
                   ? _unavailableCompositionRootRoute(context)
-                  : PrincipalRuntimeContextRoute(
+                  : principalRuntimeRoute(
                       key: ValueKey(
                         'principal-moments-${session.authorizationInvalidationRevision}',
                       ),
@@ -1623,7 +1660,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalProfile,
             name: SuperadminRoutes.principalProfileName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) => PrincipalProfileRoutePage(
                 embedded: true,
@@ -1663,7 +1700,7 @@ GoRouter createSuperadminRouter({
           GoRoute(
             path: SuperadminRoutes.principalProfileEdit,
             name: SuperadminRoutes.principalProfileEditName,
-            builder: (context, state) => PrincipalRuntimeContextRoute(
+            builder: (context, state) => principalRuntimeRoute(
               repository: principalRuntimeContextRepository,
               builder: (context, runtimeContext) {
                 final repository = profileAboutRepository;

@@ -1,0 +1,248 @@
+[
+  {
+    "action_id": "acontece.feed",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: V-3 parcial: foto do feed e dos cards do Agora sem esticar (_SpriteImage cobre a caixa com escala uniforme e recorte); goldens principal_happens regravados 91/91; conteiner mobile, separacoes e fontes/cores ficam abertos",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/20-acontece-feed-web.png",
+      "revision": "principal-chat-sistema r36",
+      "environment": "golden local + rota real com qa-r06-principal (build anterior a esta correcao)",
+      "recordedAt": "2026-09-11T21:19-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.feed",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: 130000 (ponte de ator) + 130200 (owner ve tudo) em producao; feed devolve os posts para qa-r03; tenant inexistente/alheio nega 42501 happens_permission_denied (prova RPC 12:5x)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.feed",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: rota normal + feed de producao + negativa cross-tenant + reload mantem",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/05-acontece-revisao.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: save_happens_draft {id, version 1} e publish_happens_post {status published} 200 na rota real (net-publish.log); 3 posts sinteticos persistidos em producao; outro tenant 42501",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/09-acontece-apos-publicar.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "acontece.create",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar acontece.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/23-acontece-feed-reload.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: rota normal abre com o contexto real e estado vazio honesto 'Nada novo no Agora' (12)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: 130000 em producao: now_actor reconhece a sessao interna; load_now_draft 200 para qa-r03 e outro tenant 42501 (prova RPC)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "agora.view",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar agora.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: R04 (10/09, lote 9): fundacao do Agora e mídia em R2 APLICADAS EM PRODUCAO (190300..190600). Gate para done: deploy de now-media e rota normal com sessao.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "agora.create",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar agora.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: rota normal abre apos 130300 com estado vazio honesto (22); antes respondia 'Nao foi possivel carregar' com Tentar novamente (11)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: 130300 (list_visible_moments + withdraw_moment) em producao; list_visible_moments 200 [] para qa-r03",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/22-momentos-apos-130300.png",
+      "revision": "principal-chat-sistema r25",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
+      "recordedAt": "2026-09-11T14:53-03:00"
+    }
+  },
+  {
+    "action_id": "momentos.view",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar momentos.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: R03 (10/09 noite): fundacao em producao (lote 6); moments-media le COELO_R2_* e grava em coelo-media-prod (testes 26/26). Gate para done: deploy da funcao, upload real com sessao e reload.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "momentos.create",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar momentos.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: rota real abre com o contexto real (19); V-2 aplicado: faixa do texto dos cards quase opaca (.98 ate 50%) e clique do card informa 'ainda nao esta disponivel' sem navegar; goldens for_you regravados 97/97",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/19-para-voce-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T21:02-03:00"
+    }
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: R04 (11/09 03:50, lote 22): public.list_my_principal_contexts (20260910191000 principal_runtime_contexts_baseline, recarimbo da historica 20260901161700 nunca aplicada) APLICADA EM PRODUCAO; pgTAP 13/13. Gate para done: contexto institucional da pessoa de servico de qa-r03 (P35) e rota normal com sessao.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "principal.for-you",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08 G4 — primeiro gate: Provar leitura/escopo da ponte já aplicada; conciliar CTA de Comunicação H13, não repetir P17/P35.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: rota real abre (18); V-1 parcial: botao Acompanhar de volta (acao honesta) e sombra do avatar igual a do menu flutuante; goldens principal_profile 137/137; avatar->Agora e contorno degrade ficam abertos",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/18-perfil-web.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T21:02-03:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+      "revision": "R09-C0-r117",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T22:00:48.866961+00:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-view",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R09 C0: Perfil institucional pela UI normal, dois contextos autorizados, reload e retorno ao shell;49SQL7API PASS,14corpos equivalentes. Somente leitura; sem aceite de edicao/foto/capa.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/principal-profile-acceptance.md",
+      "revision": "R09-C0-r117",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T22:00:48.866961+00:00"
+    }
+  },
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "frontend",
+    "delta": "Pós-R10: correções ADR0037 de contêiner/cabeçalho/launcher/card de mídia/contexto em teste local; prova UI no novo build pendente. Anterior: botao Editar perfil disponivel na rota real (17); edicao nao exercitada R08: parser Sobre plano/key/type com subject_type/id exatos, save confirma apenas apos reload aceito e editor/view invalidam por roleCode/scopeKind. C0 Perfil integrado verde, sem recertificacao UI.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "backend",
+    "delta": "Pós-R10: Contrato remoto preservado, nenhum SQL/deploy novo; seleção múltipla Acontece reautoriza cada escopo via repository produtivo, prova real pendente. Anterior: R04 (lote 12): follow_links (171100) em producao para Acompanhar; leitura do Sobre para membros (D9) segue com o grupo principal-chat. Gate: ponte de ator ja ativa; rota normal com sessao.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  },
+  {
+    "action_id": "principal.profile-edit",
+    "camada": "integrated",
+    "delta": "Pós-R10: Correções do Owner em Principal-pos-R10.md; nenhum novo aceite E2E neste checkpoint. Gates funcionais anteriores permanecem. Anterior: R08: H03 quatro abas ja atendidas; nao reabrir. H02 atualizacao de dado oficial permanece decisao nominal. Primeiro gate executavel: Sobre save/reload real no sujeito/contexto autorizado; correcoes parser/reload locais ja integradas.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+  }
+]

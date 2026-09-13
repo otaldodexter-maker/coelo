@@ -503,7 +503,9 @@ class _MediaStage extends StatelessWidget {
           builder: (context, constraints) => ConstrainedBox(
             constraints: const BoxConstraints(maxHeight: 300),
             child: AspectRatio(
-              aspectRatio: constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
+              aspectRatio: media == null && MediaQuery.textScalerOf(context).scale(1) > 1.5
+                  ? 1
+                  : constraints.maxWidth >= CoeloBreakpoints.medium.minWidth
                   ? 16 / 7
                   : 16 / 9,
               child: ClipRRect(

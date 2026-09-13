@@ -444,11 +444,13 @@ final class _PrincipalHappensPreviewPageState extends State<PrincipalHappensPrev
       final large = constraints.maxWidth >= CoeloBreakpoints.large.minWidth;
       return Scaffold(
         backgroundColor: Theme.of(context).colorScheme.surface,
-        appBar: PrincipalGlobalHeader(
-          onOpenMenu: () => widget.onOpenMenu?.call(),
-          onOpenNotifications: () => widget.onOpenNotifications?.call(),
-          onOpenProfile: () => widget.onOpenProfile?.call(),
-        ),
+        appBar: widget.embedded
+            ? null
+            : PrincipalGlobalHeader(
+                onOpenMenu: () => widget.onOpenMenu?.call(),
+                onOpenNotifications: () => widget.onOpenNotifications?.call(),
+                onOpenProfile: () => widget.onOpenProfile?.call(),
+              ),
         body: Stack(
           children: [
             Row(
@@ -813,7 +815,7 @@ final class _NowSection extends StatelessWidget {
       children: [
         Text(
           'Agora',
-          style: Theme.of(context).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w800),
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w800),
         ),
         const SizedBox(height: CoeloSpacing.space2),
         SizedBox(

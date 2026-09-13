@@ -189,3 +189,7 @@ O limite de4.000 mostrado na proposta acima diverge dos10.000 da spec037:
 contrato. Separar o compositor de teste do host de produção nas aprovações.
 Chamada compacta: revisar tamanho do título e abreviar retorno conforme os
 dois comentários de375; um comentário sem rádio não é A incondicional.
+
+## Atualização do Owner — 13/09/2026
+
+Aplicar ADR0037: contêiner do host e cabeçalho preservados, launcher único padrão acima do dock (pílula desktop/círculo mobile), Ver como no menu do avatar, seleção múltipla na leitura com superfície branca e sem hover cinza, publicações vistas continuam no Acontece. Seletores de mídia vazios usam `CoeloCreateAction` de `coelo_ui_core`, o mesmo componente de Criar instituição. Agora/Acontece mantêm títulos de seção iguais e miniaturas uniformes. Aprovação não substitui prova por ação.
