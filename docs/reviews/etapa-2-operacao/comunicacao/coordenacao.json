@@ -4317,23 +4317,23 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:55:00Z",
-    "base": "5ce32479f + 3b32085d5 integrado",
-    "quotaUsedPercent": 78,
+    "time": "2026-09-13T04:05:00Z",
+    "base": "174e8529d",
+    "quotaUsedPercent": 79,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
       "pid": 51176,
       "owner": "C0",
-      "build": "86A97BBB227589C794C6066F1636629FF41C7C66EC564C213E0A28686ED6AEB1 release55.5s PASS"
+      "build": "174e8529d release58.1s PASS SHA256310B57A2C9B049F4B0072253836BDFA3EFB24D288663F3D4895CEF7DB069F292"
     },
     "helpers": {
-      "/root/dev_senior_fe_be": "diagnostico save turma; mesma fatia",
+      "/root/dev_senior_fe_be": "23514 turma, mesma fatia; SQL local exclusivo",
       "/root/chat_upload": "3b32085d5 integrado; slot liberado",
       "/root/chat_inline": "fixture b3ad72d7f integrada; idle"
     },
-    "wip": "UI normal criou contexto de aluno. Salvar turma falha antes do link: diagnostico focal em andamento. Listagem de atividades abria edit em vez de detalhe: dispatch corrigido, 22 testes PASS; build integrado pendente.",
-    "next": "Integrar diagnostico QA release, pausar prova UI, build conjunto; repetir uma vez save da turma e seguir avaliacao pela rota normal.",
+    "wip": "Turma: UI confirmou23514 CHECK violation antes do link, auxiliar no mesmo gargalo. Atividade: cartao normal abre detalhe corrigido; avaliacao por unidade carrega ativo. Retomando draft b04 existente por deep link produtivo, sem criar configuracao.",
+    "next": "Corrigir CHECK turma com prova local; salvar/reler draft avaliativo existente. Sem novas fatias auxiliares a partir80%.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",

@@ -25,3 +25,7 @@ TurmaR054214106c-46a2-4bf4-84ba-9c6a619bd486 abre formulario normal. Instituicao
 ## Checkpoint 03:55Z
 
 Consumo real 78%. SQL61 e Edge MP4 ja implantados, conforme fila. Build vigente86A97B; nenhuma promocao funcional. Contexto de Crianca QA R04 criado pela UI na Escola R04, unidade pending. Salvar turma falha antes do link; draft preservado e diagnostico focal em andamento. Card de atividade abria edit: corrigido por3b32085d5, 22 testes PASS, build conjunto pendente. Entrada textual na automacao exige pressSequentially e confirmacao visual: value da arvore isoladamente nao prova valor no controller Flutter.
+
+## Checkpoint 04:05Z
+
+Consumo real79%. Base174e8529d publicada; build58.1s PASS, SHA310B57A2C9B049F4B0072253836BDFA3EFB24D288663F3D4895CEF7DB069F292. Base conjunta:36testes diretorio/detalhe e10repositoryturma PASS. Cartao normal abre detalhe; avaliacao da unidade carrega ativo real. Save turma confirmou23514 CHECK violation, sem link; mesma fatia em diagnostico. Draft avaliativo b04 sera retomado por deep link produtivo para nao criar outro recurso; selecao de rascunhos pelo menu ainda nao existe e sera relatada como limite.
