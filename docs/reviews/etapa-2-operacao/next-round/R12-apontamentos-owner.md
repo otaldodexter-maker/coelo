@@ -91,3 +91,7 @@ Ver [R12-perfis-permissoes-owner.md](R12-perfis-permissoes-owner.md): R12-19 a R
 ## Quarto bloco — Saúde e Cuidado
 
 Ver [R12-saude-cuidado-owner.md](R12-saude-cuidado-owner.md): R12-28 a R12-33, seis anexos, múltiplos registros de cuidado e medicação por período/contexto com notificações.
+
+## Quinto bloco — Cardápios
+
+Ver [R12-cardapios-owner.md](R12-cardapios-owner.md): R12-34 a R12-38, cinco anexos, nome de refeição, datas, publicação programada e imagem indisponível.

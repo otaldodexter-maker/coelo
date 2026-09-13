@@ -1,0 +1,182 @@
+[
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: P47 A: fail-closed de tenant removido (e689033ff); assistente abre na rota real, cria e edita o modelo pela tela; meal_plan_template_list mostra id d132698c published version 2 apos reload (07, 08)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: Coordenacao R06 (regua do MVP, ADR 0034): RPCs de modelo de cardapio (meal_plan_template_* dos lotes 4 e 5) em producao; a G4 provou na rota real com qa-r06-principal: modelo d132698c criado (v1) e editado (v2) persistem no Supabase real, reload carrega do servidor, lista autorizada so com as instituicoes do ator. Com a prova de CRUD real, o backend deixa de ser local-green.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "coordenacao r57",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal (prova da G4)",
+      "recordedAt": "2026-09-11T21:30-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: rota normal abre; modelo criado (v1) e editado (v2) persistem no Supabase real; reload da edicao carrega do servidor; RLS: lista autorizada so com as instituicoes do ator",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: P47 A: fail-closed de tenant removido (e689033ff); assistente abre na rota real, cria e edita o modelo pela tela; meal_plan_template_list mostra id d132698c published version 2 apos reload (07, 08)",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: Coordenacao R06 (regua do MVP, ADR 0034): RPCs de modelo de cardapio (meal_plan_template_* dos lotes 4 e 5) em producao; a G4 provou na rota real com qa-r06-principal: modelo d132698c criado (v1) e editado (v2) persistem no Supabase real, reload carrega do servidor, lista autorizada so com as instituicoes do ator. Com a prova de CRUD real, o backend deixa de ser local-green.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "coordenacao r57",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal (prova da G4)",
+      "recordedAt": "2026-09-11T21:30-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: rota normal abre; modelo criado (v1) e editado (v2) persistem no Supabase real; reload da edicao carrega do servidor; RLS: lista autorizada so com as instituicoes do ator",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-principal-chat-sistema/rota-real/11-cardapio-publicado.png",
+      "revision": "principal-chat-sistema r32",
+      "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r06-principal; build release de qa_main (branch work/etapa2-r06-principal-chat-sistema) servido em 127.0.0.1:3010 e 127.0.0.1:3009; Chrome CDP 9410 com --user-data-dir proprio",
+      "recordedAt": "2026-09-11T20:37-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-cardapios-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R09 C0: UI normal criar/editar/publicar, reload e consumidor real do cardapio57ab05c3v4.16pgTAP PASS com ator B autorizado em B e negado em A; paridade40funcoes/4policies;6checks API PASS. Sem prova de upload de imagem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/meal-plans-acceptance.md",
+      "revision": "R09-C0-r112",
+      "environment": "Supabase evvbomzejfijozbtgvpt; UI normal QA release3014 Chrome22592; espelho paridade40funcoes/4policies RLS forced",
+      "recordedAt": "2026-09-12T20:55:38.833794+00:00"
+    }
+  }
+]

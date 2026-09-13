@@ -447,5 +447,78 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-34",
+    "status": "deferred",
+    "actionIds": [
+      "meal-plans.model-create",
+      "meal-plans.model-edit"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar, sem diagnóstico novo.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-34 e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-35",
+    "status": "deferred",
+    "actionIds": [
+      "meal-plans.model-create",
+      "meal-plans.model-edit"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar, sem diagnóstico novo.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-35 e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-36",
+    "status": "deferred",
+    "actionIds": [
+      "meal-plans.create",
+      "meal-plans.edit",
+      "meal-plans.publish"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar, sem diagnóstico novo.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-36 e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-37",
+    "status": "deferred",
+    "actionIds": [
+      "meal-plans.create",
+      "meal-plans.edit"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar, sem diagnóstico novo.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-37 e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-38",
+    "status": "deferred",
+    "actionIds": [
+      "meal-plans.create",
+      "meal-plans.edit",
+      "meal-plans.publish",
+      "meal-plans.model-edit"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar, sem diagnóstico novo.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-38 e reproduzir após abertura explícita da R12."
   }
 ]
