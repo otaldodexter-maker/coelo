@@ -3,6 +3,7 @@ import argparse
 import json
 import os
 import queue
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -141,10 +142,17 @@ def execute_model(state, cfg, resume_id=None, reserve=False):
     env.pop('OPENAI_API_KEY', None)
     env.pop('CODEX_API_KEY', None)
     process = subprocess.Popen(args, cwd=cwd, env=env, stdin=subprocess.PIPE,
-                               stdout=subprocess.PIPE, stderr=subprocess.DEVNULL,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
                                text=True, encoding='utf-8', errors='replace',
                                creationflags=child_flags())
     write(state / 'child.json', {'pid': process.pid, 'model': model, 'effort': 'medium'})
+    stderr_tail = []
+    def read_stderr():
+        for line in process.stderr:
+            stderr_tail.append(line)
+            del stderr_tail[:-4]
+    stderr_reader = threading.Thread(target=read_stderr, daemon=True)
+    stderr_reader.start()
     process.stdin.write(prompt)
     process.stdin.close()
     confirmed = False
@@ -194,7 +202,16 @@ def execute_model(state, cfg, resume_id=None, reserve=False):
             log.write(json.dumps(safe) + '\n')
             log.flush()
     code = process.wait()
-    return {'exitCode': code, 'turnCompleted': completed, 'failure': failure, 'threadId': thread_id,
+    stderr_reader.join(timeout=2)
+    startup_error = None
+    if code and not thread_id:
+        # Keep only a small, redacted startup diagnostic; never raw stderr or model output.
+        diagnostic = ''.join(stderr_tail)
+        diagnostic = re.sub(r'https?://\S+|eyJ[\w.-]+|(?:sk-|sb_secret_)[\w-]+|Bearer\s+\S+', '[redacted]', diagnostic)
+        startup_error = diagnostic[-1200:]
+        failure = failure or 'startup'
+    return {'exitCode': code, 'turnCompleted': completed, 'failure': failure, 'threadId': thread_id or resume_id,
+            'startupError': startup_error,
             'testPassed': confirmed and completed and code == 0 if test else None}
 
 
