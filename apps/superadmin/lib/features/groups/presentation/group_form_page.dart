@@ -709,7 +709,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
               profile: professional.note,
             ),
         ],
-        activityIds: _inheritActivities ? const [] : _selectedActivities.toList(growable: false),
+        activityIds: _selectedActivities.toList(growable: false),
         typeRequestLabel: _typeController.text == 'other' ? _typeOtherController.text.trim() : null,
         typeRequestJustification: _typeController.text == 'other'
             ? 'Solicitado no formulário de Turma'
