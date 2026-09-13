@@ -1,6 +1,6 @@
 ---
 source: apontamento e dois anexos do Owner durante preparação R11; docs/design/design-system.md
-status: ajustes solicitados; reprodução e implementação pendentes
+status: ajustes parcialmente implementados; aceite integral pendente
 generated_at: 2026-09-13
 ---
 
@@ -39,3 +39,19 @@ foi exposto. Registro textual sem nomes, e-mails ou conteúdo pessoal das imagen
 ## Complemento Owner — cor da sigla
 
 O Owner também informou que a cor escolhida do avatar sem foto não muda no cabeçalho. Reproduzir após salvar; validar sigla e cor persistidas no editor, header e navegação/reload. Remover foto deve recuperar a sigla/cor corretas da mesma conta, sem cor fixa ou estado de outra sessão. Preservar contraste e o fallback aprovado.
+
+## Limite de confirmação e estado da R11
+
+O cabeçalho consome a identidade confirmada pelo backend. A prévia local não
+substitui a resposta persistida: se o servidor não confirmar algum campo, a UI
+expõe essa ausência de confirmação e preserva o rascunho para revisão/cancelamento.
+O agrupamento de Meu acesso usa metadados reais de módulo e escopo; contratos
+antigos sem esses metadados mantêm a lista pesquisável, sem hierarquia inventada.
+
+Na R11, rodapé/busca, confirmação do perfil, contraste e propagação da cor no
+Principal hospedado têm código e provas focais. A suspeita do nome não se
+reproduziu no save/reload real. Sigla/cor e metadados possuem candidato SQL local;
+foto R2 ainda não possui transporte persistente. O estado por camada e os gates
+remotos estão em `docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md`.
+Este registro não converte render automatizado em aprovação visual A nem
+certifica a ação inteira.

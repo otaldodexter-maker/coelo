@@ -1,0 +1,171 @@
+{
+  "at": "2026-09-13T15:35:25.210633+00:00",
+  "environment": "normal UI, local QA build, Supabase production, synthetic data",
+  "counts": {
+    "P": 11,
+    "F": 5,
+    "B": 14,
+    "S": 0,
+    "U": 1
+  },
+  "planned": 31,
+  "executed": 16,
+  "cases": [
+    {
+      "id": "profile.name-save-reload",
+      "status": "P",
+      "evidence": "account-name-reload.png"
+    },
+    {
+      "id": "profile.cancel",
+      "status": "P",
+      "evidence": "account-v3-cancel-after.png"
+    },
+    {
+      "id": "profile.footer-desktop",
+      "status": "P",
+      "evidence": "account-v3-profile.png"
+    },
+    {
+      "id": "profile.footer-mobile",
+      "status": "P",
+      "evidence": "account-v3-mobile.png"
+    },
+    {
+      "id": "profile.access-search",
+      "status": "P",
+      "evidence": "account-access-search.png"
+    },
+    {
+      "id": "profile.access-scroll",
+      "status": "P",
+      "evidence": "account-v3-mobile-access.png"
+    },
+    {
+      "id": "profile.crop-preview",
+      "status": "P",
+      "evidence": "account-photo-crop-adjusted.png"
+    },
+    {
+      "id": "profile.unconfirmed-save-message",
+      "status": "P",
+      "evidence": "account-photo-unconfirmed.png"
+    },
+    {
+      "id": "profile.principal-current-fallback",
+      "status": "P",
+      "evidence": "account-v3-principal.png"
+    },
+    {
+      "id": "profile.photo-persist",
+      "status": "F",
+      "evidence": "account-photo-reload.png"
+    },
+    {
+      "id": "profile.color-persist",
+      "status": "F",
+      "evidence": "account-color-reload.png"
+    },
+    {
+      "id": "profile.initials-persist",
+      "status": "B",
+      "evidence": "pending SQL"
+    },
+    {
+      "id": "profile.remove-persisted-photo",
+      "status": "B",
+      "evidence": "no persisted avatar transport"
+    },
+    {
+      "id": "profile.access-metadata-groups",
+      "status": "B",
+      "evidence": "pending SQL"
+    },
+    {
+      "id": "profile.switch-session-current-round",
+      "status": "U",
+      "evidence": "R10 evidence is historical, not rerun"
+    },
+    {
+      "id": "auth.normal-request",
+      "status": "P",
+      "evidence": "checkpoint-1136.md"
+    },
+    {
+      "id": "auth.nonexistent-generic",
+      "status": "P",
+      "evidence": "auth-nonexistent.png"
+    },
+    {
+      "id": "auth.real-mailbox-delivery",
+      "status": "B",
+      "evidence": "no message in accessible inbox"
+    },
+    {
+      "id": "auth.real-reset-link",
+      "status": "B",
+      "evidence": "mail and redirect configuration"
+    },
+    {
+      "id": "auth.new-session",
+      "status": "B",
+      "evidence": "no authorized real reset completed"
+    },
+    {
+      "id": "auth.expired-link",
+      "status": "B",
+      "evidence": "no real link"
+    },
+    {
+      "id": "auth.single-use",
+      "status": "B",
+      "evidence": "no real link"
+    },
+    {
+      "id": "activities.assessment-update",
+      "status": "F",
+      "evidence": "assessment-update-red.json"
+    },
+    {
+      "id": "activities.publish-configuration",
+      "status": "B",
+      "evidence": "pending SQL; activity already active"
+    },
+    {
+      "id": "assessments.eligible-student",
+      "status": "F",
+      "evidence": "gradebook-empty-retained.png"
+    },
+    {
+      "id": "assessments.grade-save",
+      "status": "B",
+      "evidence": "pending SQL"
+    },
+    {
+      "id": "assessments.detail-reload",
+      "status": "B",
+      "evidence": "pending grade"
+    },
+    {
+      "id": "assessments.close",
+      "status": "B",
+      "evidence": "pending grade"
+    },
+    {
+      "id": "assessments.reopen",
+      "status": "B",
+      "evidence": "pending close"
+    },
+    {
+      "id": "assessments.real-cross-tenant",
+      "status": "B",
+      "evidence": "local denial tested; remote proof pending"
+    },
+    {
+      "id": "groups.counters-reload",
+      "status": "F",
+      "evidence": "checkpoint-1136.md"
+    }
+  ],
+  "note": "Subchecks of the explicit R11 plan; P is not a whole-action E2E certificate. Flutter cases and pgTAP assertions are reported separately."
+}

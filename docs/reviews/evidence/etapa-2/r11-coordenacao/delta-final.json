@@ -1,0 +1,9 @@
+[
+  {
+    "action_id": "account.profile",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "R11 parcial:59 casos Flutter focais PASS, teclado mobile/Tab com rodape acima do teclado, texto200%, crop e confirmacao autoritativa; nome/cancelar/reload/header observados. Foto R2 ausente e sigla/cor/metadados SQL nao aplicados; E2E pendente.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md"
+  }
+]

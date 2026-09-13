@@ -18,5 +18,11 @@ limitada, busca e grupos baseados no módulo e escopo reais. A área continua
 somente leitura e não muda permissões. Funções adiadas não são apresentadas
 como operações disponíveis apenas por constarem no catálogo de capacidades.
 
-Implementação/reprodução estão pendentes na preparação R11. A orientação se
-refere à Conta administrativa, distinta do Sobre do Principal.
+O cabeçalho usa a identidade confirmada pelo backend; uma resposta que não
+confirma todos os campos não autoriza promover a prévia local a perfil salvo.
+O rascunho permanece revisável/cancelável. Quando o contrato ainda não informa
+módulo/escopo, manter a lista pesquisável sem inventar hierarquia.
+
+A orientação se refere à Conta administrativa, distinta do Sobre do Principal.
+Os estados de implementação e as provas atuais pertencem aos rastreadores;
+esta projeção de regras não certifica o aceite integral da ação.

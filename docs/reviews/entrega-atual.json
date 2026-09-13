@@ -1246,12 +1246,12 @@
       "actionIds": [
         "account.profile"
       ],
-      "fe": "reported-pending-reproduction",
-      "be": "not-diagnosed",
-      "e2e": "new-observation-not-certified",
-      "evidence": "docs/design/account-profile-owner-adjustments-20260913.md",
-      "owner": "C0 R11",
-      "nextGate": "Reproduzir após salvar/reload foto, nome, sigla e COR no cabeçalho, inclusive remover foto; corrigir rodapé e Meu acesso na cota R11."
+      "fe": "partial-tested",
+      "be": "partial-local-candidate",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "Aplicar sigla/cor/metadados apos requisito PITR e implementar/provar foto privada R2; headers/reload/remocao/outra sessao"
     },
     {
       "id": "owner.r11-auth",
@@ -1260,12 +1260,12 @@
         "auth.recover",
         "auth.reset"
       ],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Inspecionar SMTP e caixa sintética; provar link real sem Admin API"
+      "fe": "historical-verified-current-request-only",
+      "be": "blocked-mailbox-smtp-redirect",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "Owner: caixa/SMTP e redirect; C0: mensagem real, reset/nova sessao/expiracao/uso unico"
     },
     {
       "id": "owner.r11-assessment",
@@ -1274,12 +1274,12 @@
         "activities.assessment",
         "activities.publish"
       ],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Reproduzir UPDATE b04c879e e obter SQLSTATE"
+      "fe": "pending-verification",
+      "be": "local-green-assessment-historical-done-publish",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "C0 aplica candidato apos requisito PITR, salva mesmo b04c879e e fecha cadeia normal; atividade retida ja active"
     },
     {
       "id": "owner.r11-gradebook",
@@ -1291,12 +1291,12 @@
         "assessments.close",
         "assessments.reopen"
       ],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Reconciliar participantes e snapshot d2c945d8"
+      "fe": "pending-verification",
+      "be": "local-green",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "C0 aplica all/selected apos requisito PITR; nota/detalhe/fechar/reabrir/escopo no mesmo d2c945d8"
     },
     {
       "id": "owner.r11-group-counters",
@@ -1304,34 +1304,34 @@
       "actionIds": [
         "groups.list"
       ],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Comparar projeção e vínculos reais"
+      "fe": "pending-verification",
+      "be": "local-green",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "C0 aplica contadores apos requisito PITR e prova turma UI/reload"
     },
     {
       "id": "owner.r11-checkpoints-delivery",
-      "status": "open",
+      "status": "done",
       "actionIds": [],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Publicar fatias; sincronizar MDs, memória e gate após push"
+      "fe": "not-applicable",
+      "be": "not-applicable",
+      "e2e": "not-applicable",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": ""
     },
     {
       "id": "owner.r11-optional-neighbor",
-      "status": "open",
+      "status": "deferred",
       "actionIds": [],
-      "fe": "pending-current-proof",
-      "be": "pending-current-proof",
-      "e2e": "pending-current-proof",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
-      "owner": "C0 R11",
-      "nextGate": "Somente após A0/A/B/C/D concluídos com margem; institutions.status ou institutions.locations-map"
+      "fe": "not-started",
+      "be": "not-started",
+      "e2e": "not-started",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "owner": "C0 integrador; Owner nos gates de decisao/acesso",
+      "nextGate": "Condicao de abertura nao satisfeita: concluir A0/A/B/C/D e reavaliar somente em retomada autorizada"
     },
     {
       "id": "owner.r12-01",
@@ -1969,15 +1969,24 @@
     "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
-    "docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md"
+    "docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md",
+    "docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md",
+    "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+    "docs/reviews/evidence/etapa-2/r11-coordenacao/closure-metrics.json",
+    "docs/reviews/evidence/etapa-2/r11-coordenacao/backup-manifest.json",
+    "docs/reviews/evidence/etapa-2/r11-coordenacao/build-manifest.json",
+    "docs/reviews/evidence/etapa-2/r11-coordenacao/ui-acceptance-plan.json",
+    "docs/reviews/evidence/etapa-2/r11-coordenacao/git-checkpoint.json",
+    "docs/open-questions.md"
   ],
   "memory": {
     "status": "captured",
-    "reason": "Direção visual aprovada pelo Owner registrada na fonte canônica e projetada para team, explicitamente sem render/implementação concluídos. Também capturada orientação de Meu perfil/header/Meu acesso com fonte canônica, sem alegar implementação.",
-    "evidence": "docs/knowledge/team/chat-media-composer-direction.md"
+    "reason": "Fonte canonica de Conta atualizada primeiro; projecao team preserva confirmacao autoritativa e metadados reais sem certificar disponibilidade. Validacao77artigos; suite12P/1S. Referencias chat e R12 preservadas.",
+    "evidence": "docs/knowledge/team/account-profile-header-access.md"
   },
   "deployment": {
-    "status": "not-requested",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md"
+    "status": "pending",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md",
+    "reason": "Quatro candidatos SQL locais aguardam requisito PITR. Build QA local servido; nenhum SQL/Edge/Cloudflare remoto ou deploy web publico R11."
   }
 }

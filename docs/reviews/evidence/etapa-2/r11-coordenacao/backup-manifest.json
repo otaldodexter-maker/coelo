@@ -1,0 +1,19 @@
+{
+  "at": "2026-09-13T15:35:25.210633+00:00",
+  "files": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r11-candidates-schema.sql",
+      "bytes": 4154444,
+      "sha256": "778d4f37ec443a5fe16f068e8ed5e682ed2f389289e12ec51a7d61b03d82c777"
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r11-candidates-data.sql",
+      "bytes": 4767603,
+      "sha256": "75095577482b1fc7feb2d6bf260019c6ebb52f63090fdf46db17ca51f6b9674a"
+    }
+  ],
+  "commandsExit": 0,
+  "pitrReplacement": false,
+  "restoreTested": false,
+  "limitations": "Schema and data are separate logical snapshots. Circular foreign keys require an appropriate restore procedure. Not a PITR backup, not proof of restore, and must be refreshed/revalidated before a later remote batch."
+}

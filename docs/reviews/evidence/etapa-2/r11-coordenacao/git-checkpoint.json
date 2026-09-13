@@ -1,0 +1,35 @@
+{
+  "at": "2026-09-13T15:35:25.210633+00:00",
+  "head": "fe9bef6bdebcecd39e88f352dca3bca2db352e2c",
+  "originDev": "fe9bef6bdebcecd39e88f352dca3bca2db352e2c",
+  "divergence": "0\t0",
+  "stash": "",
+  "worktrees": "worktree C:/Users/adrie/Documents/Coelo\nHEAD fe9bef6bdebcecd39e88f352dca3bca2db352e2c\nbranch refs/heads/dev",
+  "commits": [
+    "fe9bef6bdebcecd39e88f352dca3bca2db352e2c test(r11): verify profile rendering and preserve local SQL diagnosis",
+    "d20bcfcf277d91be541776007804215b93548beb fix(r11): preserve all-participant gradebooks and account avatar rendering",
+    "23e86c55f4642f1997f3d1ca8ad024123d3dc0da docs(r12): reconcile all owner feedback across skills and three trackers",
+    "5f0ddc127958391c82be33a54f4e99adb639640a docs(r12): record table-only invites and resend discoverability",
+    "d0142ff049f324f297fccfebd050508bcb0244ac docs(r12): preserve forms agenda table and chat border feedback",
+    "380326b85efe0e4d2aef9eb241fb6906a888e56c docs(r12): record meal naming scheduling and media feedback",
+    "c17ca4cb7157718367f79de3fd35fc64fddb0077 fix(account): support persisted initials colors and scoped access groups",
+    "a2170b6ceca1b1d6970be349f318f6528d33eb6a docs(r12): record care collections and contextual medication requirements",
+    "cf1b7ee709ac00f86b74ed628b34582e81011f81 fix(assessments): isolate draft child updates in tested SQL candidate",
+    "14a89cc41fef5da1d9ead9da8c7dd82ac65417e7 docs(r12): record profile models permissions and Principal contract",
+    "ebf7f23e2e75aca3ec754a36fb3a8d615daf3419 fix(account): retain server confirmation and accessible profile actions",
+    "a6bc5bb4c26ecfcce7c1a00718a6964c8eb17097 docs(r12): record child safety and authorized person feedback",
+    "eaa8e9af609d2ee08e32cac79508e971ff2125d6 docs(r12): preserve owner routine models and attendance feedback",
+    "e4d9ffcc807d0e7229c461dc3ed21dc6f3706b44 docs(r11): record reproduced avatar regression and remote preflight",
+    "ed4e19b25fff65e741c565f45668cfd1ffec6b0f docs(r11): register base ownership quota and focal scope"
+  ],
+  "retainedIgnored": [
+    "apps/superadmin/.env.local",
+    "apps/superadmin/build/principal-pos-r10",
+    "apps/superadmin/build/r11-account",
+    "apps/superadmin/build/r11-account-v2",
+    "apps/superadmin/build/r11-account-v3",
+    "C:/Users/adrie/Documents/Coelo-backups/r11-local",
+    "C:/Users/adrie/Documents/Coelo-backups/r11-chrome",
+    "C:/Users/adrie/Documents/Coelo-backups/qa-r03.env"
+  ]
+}
