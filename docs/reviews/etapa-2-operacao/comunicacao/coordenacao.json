@@ -4317,23 +4317,23 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T04:05:00Z",
-    "base": "174e8529d",
+    "time": "2026-09-13T04:22:00Z",
+    "base": "75149a8de +35f959e6a integrado",
     "quotaUsedPercent": 79,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
       "port": 3000,
       "pid": 51176,
       "owner": "C0",
-      "build": "174e8529d release58.1s PASS SHA256310B57A2C9B049F4B0072253836BDFA3EFB24D288663F3D4895CEF7DB069F292"
+      "build": "release56.7s PASS SHA25682F73B881D07DB41967ADC8FB233C3207C13D68D8F27A1236F6A3F4DBEF849DC"
     },
     "helpers": {
       "/root/dev_senior_fe_be": "23514 turma, mesma fatia; SQL local exclusivo",
       "/root/chat_upload": "3b32085d5 integrado; slot liberado",
       "/root/chat_inline": "fixture b3ad72d7f integrada; idle"
     },
-    "wip": "Turma: UI confirmou23514 CHECK violation antes do link, auxiliar no mesmo gargalo. Atividade: cartao normal abre detalhe corrigido; avaliacao por unidade carrega ativo. Retomando draft b04 existente por deep link produtivo, sem criar configuracao.",
-    "next": "Corrigir CHECK turma com prova local; salvar/reler draft avaliativo existente. Sem novas fatias auxiliares a partir80%.",
+    "wip": "Perfil QA R10 exclusao criado/reload/excluido/reload pela UI (424d4d15). Banco0perfil/0vinculos; consumidor anon401/detailP0002. pgTAP negativa6PASS1FAIL: tres tabelas privadas semRLS noespelho/prod, grantsdiretosnegados; hardening historico nao vigente. C0 avalia correcao focal. Grupos/avaliacao prontos para repeticao diagnostica no buildnovo.",
+    "next": "Ler codigo diagnostico dos dois saves; resolver RLSfocal com pgTAP/backup/SQLserial; fechar aceiteperfil sem esconder falha.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
@@ -4346,7 +4346,8 @@
       "unitLink": "6427c9a4-27c7-4048-a7ad-4ebe08a58a0d",
       "institution": "190dd028-3125-452d-8502-612bfa1029de",
       "unit": "f5284f2f-b487-4100-bc0b-ffbcbb7d3db3"
-    }
+    },
+    "profileDeletedByUI": "424d4d15-009f-4e32-911c-9ae37c056bd1"
   },
   "filaSqlR10": {
     "ultimoAplicado": 61,

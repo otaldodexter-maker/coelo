@@ -29,3 +29,7 @@ Consumo real 78%. SQL61 e Edge MP4 ja implantados, conforme fila. Build vigente8
 ## Checkpoint 04:05Z
 
 Consumo real79%. Base174e8529d publicada; build58.1s PASS, SHA310B57A2C9B049F4B0072253836BDFA3EFB24D288663F3D4895CEF7DB069F292. Base conjunta:36testes diretorio/detalhe e10repositoryturma PASS. Cartao normal abre detalhe; avaliacao da unidade carrega ativo real. Save turma confirmou23514 CHECK violation, sem link; mesma fatia em diagnostico. Draft avaliativo b04 sera retomado por deep link produtivo para nao criar outro recurso; selecao de rascunhos pelo menu ainda nao existe e sera relatada como limite.
+
+## Checkpoint 04:22Z
+
+Perfil QA R10 exclusao424d4d15 criado/reload/excluido/reload UI; zero perfil/vinculos no banco. Negativas consumidor anon401 e detalhe apagadoP0002 (HTTP500 legado), logout204. pgTAP atual de negativa:6PASS1FAIL, falhaRLS privado historico nao aplicado nas3tabelas (grantsdiretosnegados). Sem certificado novo antes da reconciliacao. Build conjunto56.7s PASS82F73B; repositories15PASS +pagina6PASS. Um caminho de teste digitado errado causou loadFAIL e foi corrigido; nao e falha deproduto nem rerun somado. Grupos eavaliacao aguardam leitura de diagnostico no novo build.

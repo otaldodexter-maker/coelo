@@ -1,0 +1,30 @@
+{
+  "at": "2026-09-13T04:19:23.907177+00:00",
+  "profile": "424d4d15-009f-4e32-911c-9ae37c056bd1",
+  "domain": "platform",
+  "crossTenantSession": false,
+  "checks": [
+    {
+      "name": "anonymous_delete_denied",
+      "pass": true,
+      "http": 401
+    },
+    {
+      "name": "normal_auth",
+      "pass": true,
+      "http": 200
+    },
+    {
+      "name": "deleted_profile_unavailable",
+      "pass": true,
+      "http": 500,
+      "error_code": "P0002"
+    },
+    {
+      "name": "own_session_logout",
+      "pass": true,
+      "http": 204
+    }
+  ],
+  "pass": true
+}
