@@ -1,0 +1,290 @@
+[
+  {
+    "action_id": "activities.list",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R04 continuacao: /activities em producao lista os modelos Coelo (2 paginas) com filtros e card Criar modelo; reload mantem. R10 Owner: filtro single-select em capsula compartilhada corrigido;15testes PASS, analyze0, buildPASS. Prova UI do delta pendente; preservado aceite historico sem novo incremento.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+      "revision": "estrutura.json rev 33",
+      "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
+      "recordedAt": "2026-09-11T09:41:00-03:00"
+    }
+  },
+  {
+    "action_id": "activities.list",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: lista real de3atividades, filtro instituicao/unidade e reload;125pgTAP e5checksAPI,95corpos equivalentes. Leitura certificada; nenhum novo destinatario ou avaliacao.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
+      "revision": "R09-C0-r116",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T21:48:26.086847+00:00"
+    }
+  },
+  {
+    "action_id": "activities.list",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: lista real de3atividades, filtro instituicao/unidade e reload;125pgTAP e5checksAPI,95corpos equivalentes. Leitura certificada; nenhum novo destinatario ou avaliacao.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
+      "revision": "R09-C0-r116",
+      "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
+      "recordedAt": "2026-09-12T21:48:26.086847+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.dashboard",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R05 (14:42): /attendance abre o painel com periodo/granularidade, indicadores (\"Dados insuficientes\" honesto, 0 pendentes/faltas/revisao) e Arquivos; sem fixture. Pendencia herdada: painel fora do composto CoeloAdminDirectory.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.dashboard",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): attendance_dashboard_access e attendance_dashboard_read (220100) em producao; leitura autorizada pelo escopo de plataforma; pgTAP 141/141.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.dashboard",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): painel real lido pela rota normal; reload mantem.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/60-attendance-dashboard.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.create",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R05 (14:44): /attendance/new com contexto real (instituicao/unidade/turma sinteticas via superadmin_attendance_context_options), Lancar chamada -> /attendance/calls/:id com o participante da turma. DEFEITO registrado: o balao de chat cobre \"Lancar chamada\"/\"Concluir chamada\" no rodape (Decisao 7).; R05 17:19: familia visual Publicacao aprovada pelo Owner; reconstruir a tela sobre a familia na R06 (G3) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png e lancar-chamada-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.create",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): attendance_reserve_idempotency_key + superadmin_attendance_create_call 200 (chamada d3821901, open, versao 1), instituicao derivada da turma.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.create",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): chamada criada pela rota normal e reaberta por URL apos reload.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): superadmin_attendance_set_participant 200 (versao 2) com chave reservada no servidor (D11).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/63-attendance-marked.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.mark",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): superadmin_attendance_correct_participant 200 (status corrected, versao 4; motivo em attendance_record_revisions).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/68-attendance-corrected.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.correct",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): superadmin_attendance_complete_call 200 (status closed, versao 3).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/64-attendance-finished.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
+      "recordedAt": "2026-09-11T15:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "attendance.finish",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R09 C0: UI normal, persistencia e reload da chamada0757355f; historico Present->Absent confirmado. Draft obsoleto e alinhamento corrigidos;53PASS, build e prova visual. BE/negativa da familia reaproveitados conforme evidencia.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/attendance-acceptance.md",
+      "revision": "R09-C0-r109",
+      "environment": "Supabase producao evvbomzejfijozbtgvpt; QA release normal localhost3014; Chrome22592; emulacoes false",
+      "recordedAt": "2026-09-12T20:26:37.649035+00:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.list",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): V-15 A+ aplicado (03ccdbf41): card Criar em Modelos/Rotinas/Lancamentos em cards e tabela mesmo com dados, acoes da tabela iguais ao card; rota normal lista modelo, rotina e lancamento reais; reload mantem. Golden da tabela regravado apos a observacao. Arquivar (fd8e675af): confirmacao e save com status archived; copia 8d219282 arquivada pela tabela na rota real (save_model 200, diretorio recarregado com status archived).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/64-routine-arquivado.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; 2164739b3; Arquivar em fd8e675af) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T21:05:00-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.list",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): superadmin_routine_directory 200 por kind (model/application/launch) com can_manage no topo (220000); pgTAP 15/15 + suites de rotina.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:37:00-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.list",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): diretorio pela rota normal nas tres abas com dados de producao e reload.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/28-routine-list-reload.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
+      "recordedAt": "2026-09-11T20:37:00-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "frontend",
+    "delta": "R12: registrar/aplicar direção visual e de navegação por tela; implementação não iniciada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): R05 (15:33): card do modelo -> Criar rotina por este modelo -> /daily-routine/new?applicationFrom=176882c5 (heranca, escopo instituicao, validade/horario) -> Salvar rotina; a aba Rotinas lista a aplicacao. Duas recusas corrigidas no cliente antes: model_version_id como rotulo id:vN (22P02, 518d15953) e visibility=institution (23514, 0b8ee7a75). Pendencias: rotulos crus (institution/inherited) no card; acoes do card invisiveis a tecnologia assistiva (ExcludeSemantics no composto).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+      "recordedAt": "2026-09-11T15:34:00-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "backend",
+    "delta": "R12: verificar contratos de arquivo/duplicação, elegibilidade/contexto, rotina efetiva e salvar sentimento; nenhuma causa backend confirmada. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): superadmin_routine_save_application 200 (aplicacao 3d9f0a32, revisao 1, revision_id ae32076c) ligada ao modelo 176882c5/versao 83c48a8e; escopo institution, herdada; RLS/negativas pelas suites de rotina (foundation, scope_closure, directory_can_manage).",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/76-routine-apply-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+      "recordedAt": "2026-09-11T15:34:00-03:00"
+    }
+  },
+  {
+    "action_id": "daily-routine.apply",
+    "camada": "integrated",
+    "delta": "R12: relato Owner pendente de reprodução normal com massa sintética, persistência/reload e RLS; sem novo aceite. Fonte: R12-apontamentos-owner.md. Nota anterior na captura (rebase obrigatório antes de aplicar): aplicacao criada pela rota normal a partir do modelo, persistida e listada apos recarga.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/77-routine-aplicacoes-com-item.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 43",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (0b8ee7a75) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9424 sob SwiftShader",
+      "recordedAt": "2026-09-11T15:34:00-03:00"
+    }
+  }
+]

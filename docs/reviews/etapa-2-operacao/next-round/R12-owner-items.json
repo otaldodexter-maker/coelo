@@ -1,0 +1,114 @@
+[
+  {
+    "id": "owner.r12-01",
+    "status": "deferred",
+    "actionIds": [
+      "daily-routine.list"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-01 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-02",
+    "status": "deferred",
+    "actionIds": [
+      "activities.list",
+      "daily-routine.list"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-03",
+    "status": "deferred",
+    "actionIds": [
+      "activities.list"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-03 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-04",
+    "status": "deferred",
+    "actionIds": [
+      "daily-routine.list",
+      "attendance.dashboard"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-05",
+    "status": "deferred",
+    "actionIds": [
+      "attendance.create"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-06",
+    "status": "deferred",
+    "actionIds": [
+      "attendance.create",
+      "daily-routine.apply"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-06 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-07",
+    "status": "deferred",
+    "actionIds": [
+      "attendance.mark",
+      "attendance.correct",
+      "attendance.finish"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-07 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-08",
+    "status": "deferred",
+    "actionIds": [
+      "attendance.mark",
+      "attendance.correct",
+      "attendance.finish",
+      "daily-routine.apply"
+    ],
+    "fe": "Planejado R12; não implementado.",
+    "be": "Contratos a verificar; sem falha nova confirmada.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Ler R12-08 no registro, reconciliar fontes e reproduzir após abertura explícita da R12."
+  }
+]
