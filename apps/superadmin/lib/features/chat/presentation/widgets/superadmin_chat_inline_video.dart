@@ -123,8 +123,9 @@ final class _SuperadminChatInlineVideoState extends State<SuperadminChatInlineVi
 
   Future<void> _toggle() async {
     final controller = _controller;
-    if (controller == null || !controller.value.isInitialized || widget.session.isInvalidated)
+    if (controller == null || !controller.value.isInitialized || widget.session.isInvalidated) {
       return;
+    }
     if (controller.value.isPlaying) {
       await controller.pause();
     } else {
