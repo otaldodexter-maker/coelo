@@ -78,3 +78,51 @@ exige perfil institucional ativo.
   negativa real. Sem aplicacao remota ou deploy.
 - Memoria: consulta de cadeia infantil/responsavel executada; no-op, pois nenhuma
   regra de produto aprovada mudou.
+
+## Revisao de integracao R10
+
+### Achado que bloqueia aceite
+
+O vinculo salvo sobrevive a uma atualizacao: `superadmin_group_save` somente
+altera `institution_role_assignments` recebidos em `local_people` e nao toca
+`child_group_links`. Isso preserva o aluno existente quando a tela e salva sem
+novo `studentPersonIds`.
+
+Mas `public.superadmin_group_get` delega a `group_management_payload`, cujo
+`effective_access` vem somente de `institution_memberships` e
+`institution_role_assignments`. Ele nao le `child_group_links`,
+`child_unit_links` ou `child_contexts`. `_hydrateLocalAccess` recebe assim zero
+alunos no reload: o vinculo permanece no banco, mas o formulario nao mostra o
+id/nome infantil e nao permite revisar essa associacao. `studentCount` tambem
+nao resolve a hidratacao, pois nao transporta identidade/contexto.
+
+Nao ha correcao local segura sem expandir o contrato de leitura do backend. C0
+precisa compor uma leitura autorizada por turma de `child_group_links` ->
+`child_unit_links` -> `child_contexts` -> `people`, expondo pelo menos
+`child_context_id`, `person_id`, `display_name` e estado. O consumidor deve
+hidratar somente essas entradas como `aluno`; responsavel continua derivado e
+profissional continua em perfil institucional.
+
+### Checklist para a prova UI normal de C0
+
+1. Entrar normalmente como ator com `people.assign_children`, abrir a Turma
+   ativa autorizada e selecionar uma crianca ativa da mesma instituicao/unidade.
+2. Salvar uma vez e confirmar pelo detalhe/leitor autorizado que existe um
+   `child_group_link` ativo para a mesma turma, com o contexto e pessoa certos.
+3. Recarregar a rota e reabrir a edicao: conferir o mesmo aluno por nome/ID
+   mascarado e contexto; salvar uma alteracao de nome ou profissional sem tocar
+   alunos e confirmar que o mesmo vinculo continua ativo apos outro reload.
+4. Tentar crianca de outro tenant ou turma/unidade fora da hierarquia: a UI deve
+   falhar sem enumerar dados e sem criar `child_unit_link`/`child_group_link`.
+5. Repetir com ator sem `people.assign_children`: erro honesto, nenhuma escrita
+   e nenhum profissional existente removido.
+
+### Riscos concretos antes da integracao
+
+- Sem a leitura acima, o aluno persistido fica invisivel no formulario apos
+  reload, apesar de continuar na turma.
+- A falha parcial por aluno nao recarrega o estado salvo; C0 deve confirmar que
+  a tela reabre o detalhe autoritativo antes de orientar nova tentativa.
+- Um payload de profissionais incompleto continua sendo autoritativo para
+  `local_people`; a prova deve manter profissionais existentes visiveis no
+  formulario antes de salvar a edicao.
