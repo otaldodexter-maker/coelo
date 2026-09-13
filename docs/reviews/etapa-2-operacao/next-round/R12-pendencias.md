@@ -11,7 +11,7 @@ generated_at: 2026-09-13
 | Item | action_ids | Estado / FE / BE / E2E | Prova preservada | Primeiro gate |
 |---|---|---|---|---|
 | owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência. |
-| owner.r12-02 | activities.list, daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
+| owner.r12-02 | activities.list, daily-routine.list | open / FE parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório. / Sem RPC/RLS novo; arquivamento não executado. / Pendente por contrato de archive, confirmação, versão, auditoria e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md | Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake. |
 | owner.r12-03 | activities.list | open / FE local-green: aba `Modelos de atividade` corrigida; `Atividades`, filtros, modos, paginação e ações preservados. / Contrato preservado, sem mutação nova. / Pending-verification: superfície mudou; rota normal/reload/escopo pendentes. | docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md | Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant. |
 | owner.r12-04 | daily-routine.list, attendance.dashboard | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-04 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
 | owner.r12-05 | attendance.create | open / Planejado R12; não implementado. / Contratos a verificar; sem falha nova confirmada. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Ler R12-05 no registro, reconciliar fontes e reproduzir após abertura explícita da R12. |
@@ -120,6 +120,14 @@ ações. TDD falhou com o label antigo e a suíte do diretório passou 23/23.
 Backend inalterado; integrado reaberto para pending-verification até rota
 normal, reload e negativa cross-tenant. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md`.
+
+## R12-02 checkpoint de execução (C0)
+
+Duplicar modelo está disponível em cards/tabela e coberto pela suíte de
+Atividades. Arquivar não possui callback nem contrato de comando no diretório
+de Atividades; o status archived somente lido não autoriza inventar mutação.
+Nenhum código/backend foi alterado nesta triagem. Evidência e próximo gate:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md`.
 
 ## Dívidas transversais preservadas
 

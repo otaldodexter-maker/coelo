@@ -25,12 +25,12 @@
       "activities.list",
       "daily-routine.list"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar; sem falha nova confirmada.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "fe": "Parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório.",
+    "be": "Sem RPC/RLS novo; arquivamento não executado.",
+    "e2e": "Pendente por contrato de archive, confirmação, versão, auditoria e reload.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-02 no registro, reconciliar fontes e reproduzir após abertura explícita da R12.",
+    "nextGate": "Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

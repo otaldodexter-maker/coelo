@@ -51,6 +51,14 @@ Atividades; a aba `Atividades` e os controles existentes permanecem. TDD e
 suíte da tela 23/23 PASS. Backend inalterado; integrado pending-verification
 até rota normal, reload e escopo. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md`.
+
+## R12-02 checkpoint de execução (C0)
+
+Duplicar modelo existe em Atividades e foi exercitado pela suíte; Arquivar não
+tem callback/contrato no diretório. O status archived lido não autoriza criar
+mutação fake. Nenhum código/backend foi alterado; item permanece pendente até
+contrato de archive, confirmação, versão, auditoria e reload. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md`.
 Não interpretar status de processo como avanço do produto.
 
 Feito: FE local-green na composição; 32+21+4 testes PASS e analyze PASS.
