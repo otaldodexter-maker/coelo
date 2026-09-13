@@ -122,6 +122,11 @@ def execute_model(state, cfg, resume_id=None, reserve=False):
                   '. Fase de reserva: ' + str(reserve) +
                   '. Prazo global UTC epoch: ' + str(cfg['executionDeadline']) + '.')
     if not test and cfg.get('normalThreshold'):
+        prompt = ('VOCÊ É O EXECUTOR C0 DE PRODUTO, NÃO O SUPERVISOR. Não há outro executor trabalhando. '
+                  'O status running e os eventos do diretório de controle são DESTA SUA EXECUÇÃO; '
+                  'child.json contém o PID do seu próprio Codex. Não monitore a si mesmo nem espere '
+                  'que outro escritor faça o trabalho. Execute código/provas/rastreadores concretamente. '
+                  'O coordenador anterior já liberou o checkout e ficará somente em leitura. ' + prompt)
         prompt += (' NOVA INSTRUÇÃO EXPLÍCITA DO OWNER: reabrir a mesma R13; ler primeiro '
                    + str(DOCS / 'R13-retomada-cota-owner.md') +
                    '. Este aditivo substitui os cortes históricos de95/96/98%. '

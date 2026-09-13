@@ -6,6 +6,29 @@ generated_at: 2026-09-13
 
 # R13 — Retomada explícita no mesmo thread
 
+## Papel do processo e falha da tentativa anterior
+
+**Você é o único executor C0 de produto.** O supervisor Python apenas inicia
+e acompanha o SEU processo Codex. `status=running`, heartbeat e eventos
+item.started/completed no diretório de controle referem-se a VOCÊ; não são
+outro agente entregando produto. `child.json.pid` é seu processo. Não passar
+a vez ao supervisor, não monitorar a si mesmo e não encerrar dizendo que
+outro escritor continuará. Não há outro escritor trabalhando nesta retomada.
+
+A tentativa387b9bdf leu/monitorou seus próprios eventos e saiu sem mudar código,
+checkpoint ou HEAD0c30407c. Não houve avanço de produto, apesar do processo vivo.
+Essa tentativa é falha operacional, não aceite nem cobertura de implementação.
+Executar trabalho concreto agora; ausência de ação/persistência/teste pertinente
+não pode ser substituída por contagem de eventos ou relato de PID ativo.
+
+Primeiro trabalho concreto: retomar o avanço parcial `chat.attach`/R12-52,
+inspecionar a referência aprovada e o delta f8c209a17, aproveitar os29 testes
+verdes válidos, construir o código atual e provar o ajuste pela rota normal
+quando pertinente. Corrigir o primeiro aceite viável ainda faltante sem enviar
+mensagens a terceiros. Se surgir bloqueio externo específico, registrar e
+implementar o próximo item independente do catálogo; não voltar à monitoração.
+Depois continuar os demais gates R13/Etapa2 até o corte autorizado.
+
 O Owner estará ausente e autorizou usar o computador e Chrome para executar o
 trabalho e manter esta conversa em andamento. Usar recursos existentes e
 supervisor serial; autorização de uso do computador não revoga gates remotos
