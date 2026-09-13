@@ -87,3 +87,7 @@ Ver [R12-seguranca-perfis-owner.md](R12-seguranca-perfis-owner.md): itens R12-09
 ## Terceiro bloco — Perfis, modelos e permissões
 
 Ver [R12-perfis-permissoes-owner.md](R12-perfis-permissoes-owner.md): R12-19 a R12-27, doze anexos, referência tabular aprovada e conflito explícito sobre perfis profissionais no Principal.
+
+## Quarto bloco — Saúde e Cuidado
+
+Ver [R12-saude-cuidado-owner.md](R12-saude-cuidado-owner.md): R12-28 a R12-33, seis anexos, múltiplos registros de cuidado e medicação por período/contexto com notificações.

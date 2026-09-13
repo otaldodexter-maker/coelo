@@ -359,5 +359,93 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-27 e fontes antes de executar na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-28",
+    "status": "deferred",
+    "actionIds": [
+      "health-care.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-28, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-29",
+    "status": "deferred",
+    "actionIds": [
+      "health-care.create",
+      "health-care.edit",
+      "health-care.detail"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-29, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-30",
+    "status": "deferred",
+    "actionIds": [
+      "health-care.create",
+      "health-care.edit",
+      "health-care.detail"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-30, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-31",
+    "status": "deferred",
+    "actionIds": [
+      "medication.create",
+      "medication.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-31, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-32",
+    "status": "deferred",
+    "actionIds": [
+      "medication.list",
+      "medication.detail",
+      "medication.create",
+      "medication.edit"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-32, reproduzir e desenhar contrato focal após abertura R12."
+  },
+  {
+    "id": "owner.r12-33",
+    "status": "deferred",
+    "actionIds": [
+      "medication.create",
+      "medication.edit",
+      "medication.detail"
+    ],
+    "fe": "Planejado R12, não implementado.",
+    "be": "Contratos e persistência a verificar.",
+    "e2e": "Não executado para este apontamento.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12."
   }
 ]
