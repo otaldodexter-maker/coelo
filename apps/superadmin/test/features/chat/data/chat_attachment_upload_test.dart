@@ -123,52 +123,74 @@ void main() {
     expect(calls, 2);
   });
 
-  for (final ready in [true, false]) {
-    test('replayed upload confirms ready=$ready by an authorized read without PUT', () async {
-      final actions = <String>[];
-      final client = SupabaseClient(
-        'https://example.supabase.co',
-        'publishable-key',
-        httpClient: MockClient((request) async {
-          final body = jsonDecode(request.body) as Map<String, dynamic>;
-          actions.add(body['action'] as String);
-          if (body['action'] == 'prepare') {
-            return _json({
-              'message_id': 'message-1',
-              'attachment_id': 'attachment-1',
-              'replayed': true,
-            });
-          }
-          if (!ready) {
-            return Response(
-              '{"error":"chat_attachment_not_ready"}',
-              403,
-              headers: {'content-type': 'application/json'},
-            );
-          }
+  test('replayed ready upload confirms by an authorized read without PUT', () async {
+    final actions = <String>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        actions.add(body['action'] as String);
+        if (body['action'] == 'prepare') {
           return _json({
+            'message_id': 'message-1',
             'attachment_id': 'attachment-1',
-            'signed_url': 'https://private.example/read',
-            'expires_in': 300,
+            'upload_status': 'ready',
+            'replayed': true,
           });
-        }),
-      );
-      addTearDown(client.dispose);
-      final repository = SupabaseChatRepository(
-        client,
-        uploadClient: MockClient((_) async => throw StateError('must not PUT again')),
-      );
-      if (ready) {
-        expect(await repository.uploadAttachment(command()), 'message-1');
-      } else {
-        await expectLater(
-          repository.uploadAttachment(command()),
-          throwsA(isA<ChatUnauthorizedException>()),
-        );
-      }
-      expect(actions, ['prepare', 'read']);
+        }
+        return _json({
+          'attachment_id': 'attachment-1',
+          'signed_url': 'https://private.example/read',
+          'expires_in': 300,
+        });
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseChatRepository(
+      client,
+      uploadClient: MockClient((_) async => throw StateError('must not PUT again')),
+    );
+    expect(await repository.uploadAttachment(command()), 'message-1');
+    expect(actions, ['prepare', 'read']);
+  });
+
+  test('replayed pending upload resumes the existing ticket without a duplicate message', () async {
+    final actions = <String>[];
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        actions.add(body['action'] as String);
+        if (body['action'] == 'prepare') {
+          return _json({
+            'message_id': 'message-1',
+            'attachment_id': 'attachment-1',
+            'upload_status': 'pending',
+            'upload_url': 'https://private.example/signed',
+            'required_headers': {'content-type': 'image/png'},
+            'expires_at': DateTime.now().toUtc().add(const Duration(minutes: 5)).toIso8601String(),
+            'replayed': true,
+          });
+        }
+        expect(body, {'action': 'finalize', 'attachment_id': 'attachment-1'});
+        return _json({'message_id': 'message-1', 'attachment_id': 'attachment-1'});
+      }),
+    );
+    addTearDown(client.dispose);
+    final upload = MockClient((request) async {
+      actions.add('PUT');
+      expect(request.bodyBytes, bytes);
+      return Response('', 200);
     });
-  }
+
+    expect(
+      await SupabaseChatRepository(client, uploadClient: upload).uploadAttachment(command()),
+      'message-1',
+    );
+    expect(actions, ['prepare', 'PUT', 'finalize']);
+  });
 
   for (final scenario in ['redirect', 'wrong-mime']) {
     test('signed upload refuses $scenario without finalize', () async {

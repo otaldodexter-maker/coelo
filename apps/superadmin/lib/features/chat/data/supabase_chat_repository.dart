@@ -34,9 +34,9 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
       });
       final attachmentId = _string(prepared, 'attachment_id');
       final messageId = _string(prepared, 'message_id');
-      if (prepared['replayed'] == true) {
-        // A consumed/failed ticket also reports replayed. Only an authorised
-        // read proves that the previous attempt reached the ready state.
+      if (prepared['replayed'] == true && prepared['upload_status'] == 'ready') {
+        // Only an authorised read confirms an existing ready attachment. A
+        // pending ticket must continue through PUT and finalize on retry.
         await readAttachment(attachmentId);
         return messageId;
       }

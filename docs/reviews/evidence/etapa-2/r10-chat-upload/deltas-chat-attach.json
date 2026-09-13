@@ -1,0 +1,13 @@
+{
+  "action_id": "chat.attach",
+  "camada": "frontend",
+  "estado_proposto": "local-green",
+  "delta": "Retry of a replayed pending attachment continues with the existing ticket through PUT and finalize; ready replays retain authorised read confirmation.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r10-chat-upload/handoff.md",
+  "certificacao": {
+    "evidence": "docs/reviews/evidence/etapa-2/r10-chat-upload/handoff.md",
+    "revision": "local-commit",
+    "environment": "Windows local",
+    "recordedAt": "2026-09-13T02:14:46Z"
+  }
+}
