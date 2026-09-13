@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(17);
+select plan(19);
 
 select has_function(
   'public','superadmin_group_student_link',array['uuid','uuid','uuid'],
@@ -65,6 +65,8 @@ insert into public.child_contexts(id,child_person_id,institution_id,status) valu
   ('f6500000-0000-4000-8000-000000000001','f6100000-0000-4000-8000-000000000002','f6200000-0000-4000-8000-000000000001','active'),
   ('f6500000-0000-4000-8000-000000000002','f6100000-0000-4000-8000-000000000003','f6200000-0000-4000-8000-000000000002','active'),
   ('f6500000-0000-4000-8000-000000000003','f6100000-0000-4000-8000-000000000004','f6200000-0000-4000-8000-000000000001','active');
+insert into public.child_unit_links(id,child_context_id,unit_id,status) values
+  ('f6550000-0000-4000-8000-000000000001','f6500000-0000-4000-8000-000000000001','f6300000-0000-4000-8000-000000000001','pending');
 
 -- Sobrescritas locais exercitam o comando autenticado com e sem a capacidade,
 -- sem enfraquecer helpers fora desta transacao.
@@ -98,6 +100,19 @@ select ok(exists(
     and group_link.status='active' and unit_link.status='active'
     and unit_link.child_context_id='f6500000-0000-4000-8000-000000000001'
 ), 'positive write persists active child_unit_link and child_group_link');
+select is(
+  (select status::text from public.child_unit_links
+   where id='f6550000-0000-4000-8000-000000000001'),
+  'active',
+  'canonical link activates the pending unit link before creating the group link'
+);
+select is(
+  (select count(*)::integer from public.child_unit_links
+   where child_context_id='f6500000-0000-4000-8000-000000000001'
+     and unit_id='f6300000-0000-4000-8000-000000000001'),
+  1,
+  'canonical link reuses the pending unit link without duplication'
+);
 
 set local role authenticated;
 select set_config('test.r10_members_allow','false',true);
