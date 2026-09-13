@@ -334,6 +334,16 @@ GroupRecord _record(Map<String, dynamic> row) {
       })
       .toList(growable: false);
   final activities = _strings(row['activity_ids']);
+  final students = _rows(row['students'])
+      .map(
+        (item) => GroupDirectoryStudentBinding(
+          childContextId: _string(item, 'child_context_id'),
+          personId: _string(item, 'person_id'),
+          displayName: _string(item, 'display_name'),
+          status: _string(item, 'status'),
+        ),
+      )
+      .toList(growable: false);
   return GroupRecord(
     id: _string(row, 'id'),
     institutionId: _string(row, 'institution_id'),
@@ -356,6 +366,7 @@ GroupRecord _record(Map<String, dynamic> row) {
       row['effective_appearance'],
     ).map((key, value) => MapEntry(key, value as String?)),
     effectiveAccess: access,
+    students: students,
     activityIds: activities,
     invites: [
       for (final invite in _rows(row['invites']))

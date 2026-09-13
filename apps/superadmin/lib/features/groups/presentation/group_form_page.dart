@@ -381,6 +381,17 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   void _hydrateLocalAccess(GroupRecord? record) {
     if (record == null) return;
+    for (final student in record.students) {
+      _people.add(
+        _GroupPersonBinding(
+          id: student.personId,
+          name: student.displayName,
+          identifier: student.personId,
+          role: _GroupRoleType.aluno,
+          note: 'Contexto infantil ativo',
+        ),
+      );
+    }
     for (final access in record.effectiveAccess.where((entry) => !entry.inherited)) {
       final role = switch (access.profileCode) {
         'student' => _GroupRoleType.aluno,
@@ -397,6 +408,9 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         role: role,
         note: access.profileName,
       );
+      if (role == _GroupRoleType.aluno && _people.any((person) => person.id == access.personId)) {
+        continue;
+      }
       if (role == _GroupRoleType.profissional || role == _GroupRoleType.administrador) {
         _professionals.add(binding);
       } else {

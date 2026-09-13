@@ -43,6 +43,32 @@ void main() {
     },
   );
 
+  test('reload maps the child context used to preserve student links', () async {
+    final client = _client(
+      (request) async => _json({
+        ..._groupRow(),
+        'students': [
+          {
+            'child_context_id': '66666666-6666-4666-8666-666666666666',
+            'person_id': '44444444-4444-4444-8444-444444444444',
+            'display_name': 'Crianca sintetica',
+            'status': 'active',
+          },
+        ],
+      }, request),
+    );
+    addTearDown(client.dispose);
+
+    final record = await SupabaseGroupDirectoryRepository(
+      client,
+    ).findById('33333333-3333-4333-8333-333333333333');
+
+    expect(record!.students, hasLength(1));
+    expect(record.students.single.childContextId, '66666666-6666-4666-8666-666666666666');
+    expect(record.students.single.personId, '44444444-4444-4444-8444-444444444444');
+    expect(record.students.single.displayName, 'Crianca sintetica');
+  });
+
   test(
     'uses the protected group directory RPC with real search and pagination',
     () async {

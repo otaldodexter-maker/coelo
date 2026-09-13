@@ -126,3 +126,24 @@ profissional continua em perfil institucional.
 - Um payload de profissionais incompleto continua sendo autoritativo para
   `local_people`; a prova deve manter profissionais existentes visiveis no
   formulario antes de salvar a edicao.
+
+## Correcao de leitura/reload autorizada por C0
+
+O candidato `20260913024500_superadmin_group_students_payload_v1.sql` adiciona
+`students` as respostas publicas de `superadmin_group_get` e
+`superadmin_group_save`. A projecao privada exige grupo, vinculo de turma,
+vinculo de unidade, contexto infantil e pessoa ativos, todos na unidade e
+instituicao da turma. Ela devolve somente `child_context_id`, `person_id`, nome
+e estado; nao mistura responsavel com aluno nem inclui perfil profissional.
+
+O consumidor mapeia a projecao para `GroupDirectoryStudentBinding` e hidrata a
+lista de Pessoas da turma apenas como aluno, usando `person_id` nas chamadas de
+vinculo posteriores. Profissionais permanecem em `local_people`. A remocao de
+aluno continua fora deste pacote: salvar sem um aluno nao encerra seu
+`child_group_link`, e editar com ele visivel reaplica o vinculo canonico ativo.
+
+Prova SQL local: candidato e pgTAP em transacao/rollback, 6 PASS / 0 FAIL:
+leitura positiva com ids de pessoa/contexto, exclusao de filho de outro tenant,
+funcao privada sem EXECUTE do cliente e negativa `groups.read`. O espelho ficou
+sem o candidato apos rollback. Foi preparado teste focal Flutter de parsing da
+projecao para reload; sua execucao esta pendente do slot exclusivo de C0.

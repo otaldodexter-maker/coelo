@@ -40,6 +40,7 @@ final class GroupRecord {
     this.appearanceOrigin = 'unit',
     this.effectiveAppearance = const {},
     this.effectiveAccess = const [],
+    this.students = const [],
     this.activityIds = const [],
     this.invites = const [],
     this.studentCount = 0,
@@ -66,6 +67,7 @@ final class GroupRecord {
   final String appearanceOrigin;
   final Map<String, String?> effectiveAppearance;
   final List<GroupEffectiveAccess> effectiveAccess;
+  final List<GroupDirectoryStudentBinding> students;
   final List<String> activityIds;
   final List<GroupDirectoryInviteBinding> invites;
   final int studentCount;
@@ -105,6 +107,7 @@ final class GroupRecord {
     String? appearanceOrigin,
     Map<String, String?>? effectiveAppearance,
     List<GroupEffectiveAccess>? effectiveAccess,
+    List<GroupDirectoryStudentBinding>? students,
     List<String>? activityIds,
     List<GroupDirectoryInviteBinding>? invites,
     int? studentCount,
@@ -137,6 +140,7 @@ final class GroupRecord {
       appearanceOrigin: appearanceOrigin ?? this.appearanceOrigin,
       effectiveAppearance: effectiveAppearance ?? this.effectiveAppearance,
       effectiveAccess: effectiveAccess ?? this.effectiveAccess,
+      students: students ?? this.students,
       activityIds: activityIds ?? this.activityIds,
       invites: invites ?? this.invites,
       studentCount: studentCount ?? this.studentCount,
@@ -144,6 +148,20 @@ final class GroupRecord {
       teacherOrResponsibleNames: teacherOrResponsibleNames ?? this.teacherOrResponsibleNames,
     );
   }
+}
+
+final class GroupDirectoryStudentBinding {
+  const GroupDirectoryStudentBinding({
+    required this.childContextId,
+    required this.personId,
+    required this.displayName,
+    required this.status,
+  });
+
+  final String childContextId;
+  final String personId;
+  final String displayName;
+  final String status;
 }
 
 final class GroupEffectiveAccess {
