@@ -61,3 +61,20 @@ Primeiro gate: C0 revisar/integrar o candidato; a tela seleciona uma criança
 elegível, usa o adaptador e relê o `child_group_link` depois do reload. A UI
 deve explicar que responsável tem acesso derivado da criança e que profissional
 exige perfil institucional ativo.
+
+## Atualizacao R10-dev-senior
+
+- Resultado SQL: candidato e pgTAP em transacao/rollback, 13 PASS e 0 FAIL.
+  A fixture comprova criacao de `child_unit_link` e `child_group_link` ativos;
+  tambem nega cross-tenant, hierarquia invalida pelo comando canonico e
+  `people.assign_children` ausente.
+- Resultado Flutter: `flutter test test/features/groups/data/supabase_group_directory_repository_test.dart`
+  passou 6/6; `dart analyze` dos dois arquivos ficou sem issues.
+- Consumidor: uma falha de aluno agora retorna etapa parcial de Pessoas e tenta
+  os demais. Alunos seguem fora de `local_people`; profissionais continuam no
+  comando de turma e seus perfis reais nao sao descartados.
+- Estado: candidato nao integrado e `verified-e2e` continua aberto para C0,
+  incluindo integracao, migration serializada, UI normal, persistencia/reload e
+  negativa real. Sem aplicacao remota ou deploy.
+- Memoria: consulta de cadeia infantil/responsavel executada; no-op, pois nenhuma
+  regra de produto aprovada mudou.
