@@ -26,5 +26,19 @@
     "estado_proposto": "pending-verification",
     "delta": "O diálogo mudou; rota normal, auditoria/retry, reload e negativa cross-tenant precisam de prova integrada.",
     "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A composição contextual do gerenciamento reabre a prova integrada de edição.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
+  },
+  {
+    "action_id": "child-safety.suspend",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "A composição contextual do gerenciamento reabre a prova integrada de suspensão.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md"
   }
 ]
