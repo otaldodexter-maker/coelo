@@ -1,0 +1,110 @@
+[
+  {
+    "action_id": "forms.list",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R05: card \"Criar formulario\" aparece em producao (F-R04-FCR-010a corrigido em f17c2fa15); diretorio com busca/filtros/toggle/Arquivos.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/06-forms-list-card-criar.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 37",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina em 7fe204565 (origin/dev 4bf0cfe51 mesclado) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9415 sob SwiftShader",
+      "recordedAt": "2026-09-11T13:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "forms.list",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.list",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms abre na rota normal com cabecalho, Situacao, Periodo, toggle e Arquivos; superadmin_forms_directory_v2 -> 200 vazio antes e, depois da criacao, lista \"[R04-QA] Formulario Local editado\" (management_version 2) apos carga completa. Pendencia: o card \"Criar formulario\" nunca aparece em producao porque FormsDirectoryPage so o exibe com reader == null (router passa formsDirectoryReader); /forms/new so por URL.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/11-forms-list.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.create",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (subagente do coordenador, rota real com qa-r03): frontend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/new: instituicao \"QA R04 Cuidado (sintetico)\" (superadmin_forms_context manage/publish true), titulo, contexto, pergunta Texto curto; form_save_draft -> 200 id 4555ba07-e4a4-4971-8ba7-d81a775169cd, \"Rascunho salvo.\"; reload em /forms/4555ba07.../edit -> form_get_editor 200 com o mesmo conteudo. Dois defeitos do cliente corrigidos nesta prova (f80d26909: id \"\" -> null, 22P02; ee4903912: status/management_version fora do payload, 22023 \"form draft contains unknown keys\").",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.create",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/new: instituicao \"QA R04 Cuidado (sintetico)\" (superadmin_forms_context manage/publish true), titulo, contexto, pergunta Texto curto; form_save_draft -> 200 id 4555ba07-e4a4-4971-8ba7-d81a775169cd, \"Rascunho salvo.\"; reload em /forms/4555ba07.../edit -> form_get_editor 200 com o mesmo conteudo. Dois defeitos do cliente corrigidos nesta prova (f80d26909: id \"\" -> null, 22P02; ee4903912: status/management_version fora do payload, 22023 \"form draft contains unknown keys\").",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.create",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/new: instituicao \"QA R04 Cuidado (sintetico)\" (superadmin_forms_context manage/publish true), titulo, contexto, pergunta Texto curto; form_save_draft -> 200 id 4555ba07-e4a4-4971-8ba7-d81a775169cd, \"Rascunho salvo.\"; reload em /forms/4555ba07.../edit -> form_get_editor 200 com o mesmo conteudo. Dois defeitos do cliente corrigidos nesta prova (f80d26909: id \"\" -> null, 22P02; ee4903912: status/management_version fora do payload, 22023 \"form draft contains unknown keys\").",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.edit",
+    "camada": "frontend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 coordenacao (11/09): G-FORM (A): quatro goldens claros 1440 do editor regravados; forms_editor_dark_1440 aguarda P38.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
+      "revision": "comunicacao/coordenacao.json rev 33",
+      "environment": "local, flutter test SDK 3.44.2",
+      "recordedAt": "2026-09-11T10:25:00-03:00"
+    }
+  },
+  {
+    "action_id": "forms.edit",
+    "camada": "backend",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/4555ba07.../edit: titulo alterado para \"[R04-QA] Formulario Local editado\"; form_save_draft (p_expected_version 1) -> 200 management_version 2; reload -> form_get_editor 200 mantem o titulo; /forms/4555ba07... form_get_overview -> 200.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  },
+  {
+    "action_id": "forms.edit",
+    "camada": "integrated",
+    "delta": "R12: requisitos em R12-formularios-agenda-owner.md; sem implementação/diagnóstico novo. Rebase obrigatório antes de aplicar. Anterior: R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/4555ba07.../edit: titulo alterado para \"[R04-QA] Formulario Local editado\"; form_save_draft (p_expected_version 1) -> 200 management_version 2; reload -> form_get_editor 200 mantem o titulo; /forms/4555ba07... form_get_overview -> 200.",
+    "evidencia": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
+      "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
+      "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
+      "recordedAt": "2026-09-11T03:40:53-03:00"
+    }
+  }
+]

@@ -520,5 +520,70 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-38 e reproduzir após abertura explícita da R12."
+  },
+  {
+    "id": "owner.r12-39",
+    "status": "deferred",
+    "actionIds": [
+      "forms.edit",
+      "forms.create"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Sem diagnóstico novo.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-39, mapear e reproduzir na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-40",
+    "status": "deferred",
+    "actionIds": [
+      "forms.edit",
+      "forms.create"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Sem diagnóstico novo.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-40, mapear e reproduzir na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-41",
+    "status": "deferred",
+    "actionIds": [
+      "forms.list"
+    ],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Sem diagnóstico novo.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-41, mapear e reproduzir na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-42",
+    "status": "deferred",
+    "actionIds": [],
+    "fe": "Planejado R12; sem implementação.",
+    "be": "Sem diagnóstico novo.",
+    "e2e": "Sem prova nova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reconciliar R12-42, mapear e reproduzir na R12 autorizada."
+  },
+  {
+    "id": "owner.r12-43",
+    "status": "deferred",
+    "actionIds": [
+      "chat.open"
+    ],
+    "fe": "Contorno a revisar na R12.",
+    "be": "Sem mudança prevista para o contorno.",
+    "e2e": "Sem nova prova.",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+    "owner": "C0 R12",
+    "nextGate": "Reproduzir contorno no painel/lista/paginação/compositor e comparar referência aprovada."
   }
 ]

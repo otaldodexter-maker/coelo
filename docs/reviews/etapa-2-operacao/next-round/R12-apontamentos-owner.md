@@ -95,3 +95,11 @@ Ver [R12-saude-cuidado-owner.md](R12-saude-cuidado-owner.md): R12-28 a R12-33, s
 ## Quinto bloco — Cardápios
 
 Ver [R12-cardapios-owner.md](R12-cardapios-owner.md): R12-34 a R12-38, cinco anexos, nome de refeição, datas, publicação programada e imagem indisponível.
+
+## Sexto bloco — Formulários e Agenda
+
+Ver [R12-formularios-agenda-owner.md](R12-formularios-agenda-owner.md): R12-39 a R12-42, quatro anexos, arraste, renomear seções, filtros e tabela de Aprovações da Agenda.
+
+## Sétimo bloco — Contorno do Chat
+
+Ver [R12-chat-contorno-owner.md](R12-chat-contorno-owner.md): R12-43, contorno/continuidade do contêiner de Conversas.
