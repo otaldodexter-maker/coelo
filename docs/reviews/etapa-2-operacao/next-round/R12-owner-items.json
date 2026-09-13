@@ -241,12 +241,12 @@
       "child-safety.create",
       "child-safety.edit"
     ],
-    "fe": "Planejado R12; sem implementação.",
-    "be": "Contrato a verificar; sem diagnóstico novo.",
-    "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+    "fe": "Wizard já usa FormFrame, painel único por etapa, grupos e rodapé canônicos; testes funcionais do wizard passam.",
+    "be": "Contrato preservado; nenhum SQL/RPC novo.",
+    "e2e": "Visual/E2E pendente para referência, rota normal, escopo e reload.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Ler R12-13, reconciliar decisão/mapeamento e executar somente na R12 autorizada.",
+    "nextGate": "Comparar referência e provar create/edit pela rota normal com ator/criança autorizados.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [
