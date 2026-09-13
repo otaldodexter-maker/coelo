@@ -4292,8 +4292,8 @@
     "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
     "slots": {
       "chrome": "C0;3000 principal;3016 preservado para Owner",
-      "heavy": "chat_inline exclusivo",
-      "sql": "livre; producao C0"
+      "heavy": "C0 build release",
+      "sql": "C0 lote61 aplicado; livre"
     },
     "auxiliary": {
       "id": "/root/terra_members",
@@ -4317,8 +4317,8 @@
     "next": "abrir atividade sintetica existente e avaliar estado/publicar; nao recriar diario"
   },
   "checkpointR10Atual": {
-    "time": "2026-09-13T03:15:30.268494+00:00",
-    "base": "9a1986dd3",
+    "time": "2026-09-13T03:27:35.611455+00:00",
+    "base": "171922209",
     "quotaUsedPercent": 75,
     "quotaSource": "account/rateLimits/read",
     "runtime": {
@@ -4332,8 +4332,8 @@
       "/root/chat_inline": "slot Flutter exclusivo pub get/test/analyze video",
       "/root/chat_upload": "assessment e15724340 entregue; SQL slot livre"
     },
-    "wip": "Groups a62f5eed5 pgTAP link17/unlink14 PASS aguardando integracao/backup/aplicacao; assessment read-by-id e15724340 SQL5PASS aguardando integracao e wiring C0; video inline7e58c5de0 em teste auxiliar. Header OC/Owner fixo confirmado; nova fatia account.profile. Dois drafts de avaliacao preservados apos bug reload ativo.",
-    "next": "Integrar assessment por id e groups; backup remoto, SQL serial, build conjunto e prova normal. Avatar delegado.",
+    "wip": "SQL61 aplicado; Edge chat-media deploy exit0. Primeira tentativa usou cwd errado400 e foi corrigida. Build integrado em andamento C0. Fixture MP4 real auxiliar; nenhum novo aceite.",
+    "next": "UI avatar, assessment draft/reload, groups.members CRUD e chat MP4.",
     "authorization": "Owner autorizou maximo auxiliares nesta arvore em13set; tres auxiliares, sem novos modelos.",
     "retainedAssessmentDrafts": [
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
@@ -4342,10 +4342,10 @@
     "remote": "Projeto correto evvbomzejfijozbtgvpt. chat-media deploy CLI concluido; nenhum SQL R10 aplicado. Versoes R08 altas nao significam lote posterior a60."
   },
   "filaSqlR10": {
-    "ultimoAplicado": 60,
-    "proximo": 61,
+    "ultimoAplicado": 61,
+    "proximo": 62,
     "dono": "C0",
-    "status": "preflight aprovado; aguardando aplicacao serial unica",
+    "status": "lote61 aplicado uma vez; consumidor UI pendente",
     "backup": [
       {
         "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote61-schema-20260913.sql",
@@ -4367,6 +4367,9 @@
       "assessment read by id",
       "chat MP4 limit/extension"
     ],
-    "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas."
+    "localProof": "groups link17+projection+unlink14 PASS; assessment8PASS (adapter contexto controlado); MP4helpers5PASS. Dependencias MD5 iguais espelho/producao. Negativas reais pela familia/UI ainda exigidas.",
+    "version": "20260913032627",
+    "name": "r10_group_students_assessment_selected_chat_mp4_v1",
+    "postflight": "link/unlink/read-by-id existem; limite MP4=10485760"
   }
 }
