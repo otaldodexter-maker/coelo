@@ -1,12 +1,12 @@
 {
-  "revision": 121,
-  "round": "E2-R09-20260912-1542",
-  "role": "C0 Coordenacao R09",
-  "writer": "C0 Codex",
+  "revision": 122,
+  "round": "E2-R10-20260912-2314",
+  "role": "C0 executor e integrador R10",
+  "writer": "C0 /root",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T02:09:27.895864+00:00",
+  "updatedAt": "2026-09-13T02:16:40.869838+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4269,5 +4269,34 @@
     "strategy": "C0 gpt-6-astra medium: UI/aceite/integracao; um auxiliar gpt-5.6-terra medium da mesma arvore: gargalos FE+BE; slots globais e cortes preservados",
     "currentDenominatorsUnchanged": true,
     "seniorPrompt": "docs/reviews/etapa-2-operacao/next-round/R10-dev-senior.md"
+  },
+  "posseR10": {
+    "round": "E2-R10-20260912-2314",
+    "T0": "2026-09-13T02:14:46+00:00",
+    "execucaoAte": "2026-09-13T05:14:46+00:00",
+    "fechamentoAte": "2026-09-13T05:44:46+00:00",
+    "base": "ff11b17980d1519849c1bf472b4bc74c05e2994d",
+    "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r10-coordenacao-20260912-2314",
+    "branch": "work/etapa2-r10-coordenacao-20260912-2314",
+    "writer": "C0 /root",
+    "status": "abertura-em-execucao",
+    "scope": "apps/superadmin; primeiro gate Estrutura > Atividades > Publicar/Avaliacao; activities.publish/activities.assessment",
+    "outside": "R11, Etapa3, outros apps, senhas, import/export adiado, limpeza geral",
+    "evidence": "rota normal, repository produtivo, Supabase real, reload e negativas vigentes por familia",
+    "estimate": "delta depende de confirmar runtime e recursos retidos; janela maxima nao e estimativa de conclusao",
+    "quota": {
+      "usedPercent": 69,
+      "windowDurationMins": 10080,
+      "measuredAt": "2026-09-13T02:16:40.869838+00:00"
+    },
+    "cuts": "80% sem nova fatia auxiliar; 84% congelar; fechar ate88%; teto90%; primeiro corte prevalece",
+    "slots": {
+      "chrome": "C0; Chrome existente; PID a conferir; nenhuma prova iniciada",
+      "heavy": "livre, sem processo iniciado R10",
+      "sql": "C0; nenhum candidato/aplicacao R10"
+    },
+    "auxiliary": null,
+    "next": "concluir leitura dos rastreadores e conferir runtime servido/login",
+    "WIP": "somente abertura documental; worktrees e sinteticos anteriores preservados"
   }
 }
