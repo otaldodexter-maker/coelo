@@ -2848,9 +2848,9 @@
       "screen": "Atividade / Avaliar",
       "scope": "mvp",
       "done": "R08 G1: cadeia API unica autorizada C0 concluida em35922525b/exit0: configuracao833a89d8 ativa v2, periodoc4e38ada aberto, diariod2c945d8 draft v1, replay e releituras confirmados. Nenhum lancamento de notas ou submit/review/return/publish; UI e negativa cross-tenant real continuam pendentes. Reutilizar os recursos retidos, nao repetir criacao.",
-      "fe": "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente.",
+      "fe": "R16 confirma rota de configuracao avaliativa e transporte de configuracao preenchida, expectedVersion 7 e justificativa. Mutacao produtiva continua sujeita ao gate existente. R10: rota normal sem unitId oculta configuracao retida da unidade; acesso por unidade e Periodicidade/espaco vazio corrigidos em WIP C0, testes preparados. Nenhum novo aceite.",
       "be": "R09 G5: save/activate/releituras reais R08 + pgTAP52/52 mesma familia (cross-tenant caso48) reutilizados; anon401 e nao enumeracao de atividade/unidade por API normal R09, controle autorizado200. Regua MVP combinada; sem segunda sessao real escopada e sem promover FE/E2E.",
-      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; ef751c33b activity-composition-r16-manifest.json; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md",
+      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; ef751c33b activity-composition-r16-manifest.json; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md; docs/reviews/evidence/etapa-2/r10-coordenacao/assessment-scope.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
       "frontendStatus": "pending-verification",
@@ -9102,7 +9102,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-13T02:39:53.926Z",
+  "updatedAt": "2026-09-13T02:51:22.570Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

@@ -1230,8 +1230,11 @@ final class _LegacyAssessmentConfigurationPrototypeState
           children: [
             _ReviewFact(label: 'Atividade', value: value.activityId),
             _ReviewFact(label: 'Escopo', value: value.unitId == null ? 'Instituição' : 'Unidade'),
+            Text('Periodicidade', style: Theme.of(context).textTheme.labelMedium),
+            const SizedBox(height: CoeloSpacing.space2),
             CoeloAdminSingleSelectField<String>(
               label: 'Periodicidade',
+              isFilter: true,
               value: value.periodicity,
               options: const ['bimonthly', 'trimester', 'semester', 'annual'],
               optionLabel: (item) => switch (item) {
@@ -1282,12 +1285,14 @@ final class _LegacyAssessmentConfigurationPrototypeState
               icon: const Icon(Icons.add_rounded),
               label: const Text('Adicionar período'),
             ),
-            if (value.periods.isEmpty)
+            if (value.periods.isEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space4),
               const CoeloStatePanel(
                 title: 'Nenhum período avaliativo',
                 message: 'Adicione pelo menos um período antes de ativar.',
                 icon: Icons.calendar_month_outlined,
               ),
+            ],
           ],
         ),
       ),
