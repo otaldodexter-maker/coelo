@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'dart:math' as math;
 
 import 'package:crypto/crypto.dart';
+import 'package:flutter/foundation.dart' show debugPrint;
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -138,6 +139,7 @@ final class SupabaseGroupDirectoryRepository implements GroupDirectoryRepository
       }
       return GroupDirectorySaveResult(requestId: request.requestId, steps: steps);
     } on PostgrestException catch (error) {
+      _debugGroupSaveFailure(error);
       throw _mapError(error);
     } on ClientException {
       throw const GroupDirectoryUnavailableException();
@@ -444,6 +446,14 @@ Exception _mapError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' => const GroupDirectoryUnauthorizedException(),
   _ => const GroupDirectoryUnavailableException(),
 };
+
+void _debugGroupSaveFailure(PostgrestException error) {
+  assert(() {
+    debugPrint('groups.members superadmin_group_save failed: '
+        'code=${error.code}, message=${error.message}');
+    return true;
+  }());
+}
 
 String _requestUuid(String value) {
   if (_isUuid(value)) return value.toLowerCase();

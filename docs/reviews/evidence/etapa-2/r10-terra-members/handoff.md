@@ -280,3 +280,9 @@ Provas locais: `flutter test test/features/groups/presentation/group_form_page_t
 ### Prova de child_unit_link pendente
 
 O adaptador de Turmas delega para `app_private.superadmin_student_link`. O comando canÃ´nico faz `insert ... on conflict (child_context_id, unit_id) do update set status = 'active'`; portanto um `child_unit_link` pendente da mesma crianÃ§a/unidade Ã© reutilizado, ativado e recebe o `child_group_link` ativo, sem segunda linha. A prova pgTAP agora inclui a fixture pendente e confirma ambos os efeitos: 19 PASS / 0 FAIL no espelho, dentro de transaÃ§Ã£o com rollback. Depois do rollback, `public.superadmin_group_student_link` continuou ausente. Sem acesso ou escrita remota.
+
+### Diagnostico seguro do save produtivo
+
+Leitura remota sem escrita confirmou a Turma R05 ativa, na unidade esperada, com `management_version = 1`. O hash de `app_private.superadmin_group_save` e igual no espelho e producao; o wrapper publico produtivo agrega a projeÃ§Ã£o de alunos apÃ³s o save. A negativa generica acontece antes dos comandos link/unlink, pois uma falha desses comandos voltaria como etapa parcial de Pessoas.
+
+O repositÃ³rio agora emite somente em builds com `assert` o `code` e `message` de `PostgrestException` que escapar de `superadmin_group_save`; nao imprime request, payload, IDs de sessao ou token. C0 pode integrar e repetir apenas a rota normal para obter a causa do servidor. Teste repository 9 PASS e analyze focal PASS. O primeiro teste da instrumentaÃ§Ã£o falhou por import ausente de `debugPrint`; GREEN depois de importar `foundation.dart`.
