@@ -8,7 +8,7 @@
     "fe": "Planejado R12; não implementado.",
     "be": "Contratos a verificar; sem falha nova confirmada.",
     "e2e": "Não executado para este apontamento.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência.",
     "destinationRound": "R12",
