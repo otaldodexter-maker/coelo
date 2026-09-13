@@ -16,7 +16,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  testWidgets('renders canonical cards and opens edit when editing is available', (tester) async {
+  testWidgets('renders canonical cards and opens detail when editing is available', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
     String? viewedId;
@@ -97,9 +97,16 @@ void main() {
     await tester.tap(find.byKey(const Key('create-activity-tile')));
     expect(createCount, 1);
     await tester.tap(find.byKey(const Key('activity-card-activity-10')));
-    expect(editedId, 'activity-10');
-    expect(viewedId, isNull);
+    expect(viewedId, 'activity-10');
+    expect(editedId, isNull);
     expect(find.byKey(const Key('activity-card-edit-activity-10')), findsNothing);
+
+    viewedId = null;
+    await tester.tap(find.byKey(const Key('activity-view-table')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('activity-table-row-activity-10')));
+    expect(viewedId, 'activity-10');
+    expect(editedId, isNull);
   });
 
   testWidgets('switches between grouped, unit and group table views', (tester) async {

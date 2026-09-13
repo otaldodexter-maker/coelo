@@ -478,8 +478,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
     final viewModel = widget.viewModel;
     final options = viewModel.filterOptions;
     final onCreate = widget.onCreate;
-    final onView = widget.onEdit ?? widget.onView;
-    final opensEdit = widget.onEdit != null;
+    final onView = widget.onView;
+    const opensEdit = false;
     final hasFilters =
         viewModel.query.hasActiveFilters ||
         viewModel.selectedUnitIds.isNotEmpty ||
