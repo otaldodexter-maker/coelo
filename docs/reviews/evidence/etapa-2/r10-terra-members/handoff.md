@@ -214,3 +214,23 @@ PASS, fake repository 5/5 PASS e `dart analyze` focal sem issues.
 `group_form_page_test.dart` falhou antes do save: o teste tenta tocar uma etapa
 fora do hit target e nao encontra `group-form-save`; nao foi alterado neste
 pacote. Nenhum build, deploy, SQL remoto ou integracao foi executado.
+
+## Gate final de formulario e recibo de link
+
+O teste de formulario passou a usar `ensureVisible` antes de tocar os controles
+de navegacao, selecao e salvamento. RED: o controle fora da viewport impedia o
+fluxo de chegar ao save. GREEN: `group_form_page_test.dart` passou 30/30 pelo
+fluxo normal; nenhuma callback foi invocada diretamente.
+
+A descoberta apos o RED confirmou que a crianca ainda era colocada no campo
+auxiliar `people`. O formulario agora deixa esse campo vazio e envia a crianca
+somente por `studentPersonIds`; profissionais continuam no campo proprio.
+
+O wrapper de link agora revalida o escopo antes de consultar o recibo do
+comando canonico, toma o lock do contexto antes dessa consulta e confirma por
+join que o `group_link_id` recebido pertence a crianca, unidade e turma atuais.
+O unlink tambem toma o lock antes da consulta ao recibo. Os pgTAP novos para
+replay de link apos revogacao de capacidade e request id reutilizado para outra
+crianca estao preparados; a execucao local esta pendente porque o espelho SQL
+foi transferido para outro executor. `dart analyze` focal de formulario passou
+sem issues.

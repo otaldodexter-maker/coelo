@@ -693,16 +693,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
           'secondary_color': _secondaryColorController.text.trim(),
           'surface_color': _surfaceColorController.text.trim(),
         },
-        people: [
-          for (final person in _people)
-            GroupDirectoryPersonBinding(
-              id: person.id,
-              name: person.name,
-              identifier: person.identifier,
-              role: _GroupRoleLabel.label(person.role),
-              profile: person.note,
-            ),
-        ],
+        people: const [],
         studentPersonIds: [
           for (final person in _people)
             if (person.role == _GroupRoleType.aluno) person.id,

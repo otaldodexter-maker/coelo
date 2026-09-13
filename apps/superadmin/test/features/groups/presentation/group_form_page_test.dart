@@ -41,9 +41,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.ensureVisible(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-search-person')));
@@ -51,12 +53,15 @@ void main() {
     await tester.enterText(find.byKey(const Key('group-person-name-field')), '@pessoa-sintetica');
     await tester.tap(find.byKey(const Key('group-person-save')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Selecionar'));
     await tester.tap(find.text('Selecionar'));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-person-save')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('step-convites')));
     await tester.tap(find.byKey(const Key('step-convites')));
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-save')));
     await tester.tap(find.byKey(const Key('group-form-save')));
     await tester.pump();
 
@@ -91,9 +96,11 @@ void main() {
       ),
     );
     await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('group-form-continue')));
     await tester.tap(find.byKey(const Key('group-form-continue')));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('group-name-field')), 'Turma identidade');
+    await tester.ensureVisible(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.tap(find.byKey(const Key('step-pessoas-da-turma')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('group-search-person')));

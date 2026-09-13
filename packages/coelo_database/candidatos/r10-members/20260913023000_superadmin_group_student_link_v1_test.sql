@@ -1,6 +1,6 @@
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(15);
+select plan(17);
 
 select has_function(
   'public','superadmin_group_student_link',array['uuid','uuid','uuid'],
@@ -48,7 +48,8 @@ select ok(
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values
   ('f6100000-0000-4000-8000-000000000001','adult','R10','Actor','R10 actor','active'),
   ('f6100000-0000-4000-8000-000000000002','child','R10','Child','R10 child','active'),
-  ('f6100000-0000-4000-8000-000000000003','child','R10','Foreign','R10 foreign child','active');
+  ('f6100000-0000-4000-8000-000000000003','child','R10','Foreign','R10 foreign child','active'),
+  ('f6100000-0000-4000-8000-000000000004','child','R10','Other','R10 other child','active');
 insert into public.institutions(id,public_name,legal_name,slug,status) values
   ('f6200000-0000-4000-8000-000000000001','R10 Institution A','R10 Institution A','r10-members-a','active'),
   ('f6200000-0000-4000-8000-000000000002','R10 Institution B','R10 Institution B','r10-members-b','active');
@@ -62,7 +63,8 @@ insert into public.groups(id,institution_id,unit_id,name,handle,status) values
   ('f6400000-0000-4000-8000-000000000002','f6200000-0000-4000-8000-000000000002','f6300000-0000-4000-8000-000000000002','R10 Group B','r10.group.b','active');
 insert into public.child_contexts(id,child_person_id,institution_id,status) values
   ('f6500000-0000-4000-8000-000000000001','f6100000-0000-4000-8000-000000000002','f6200000-0000-4000-8000-000000000001','active'),
-  ('f6500000-0000-4000-8000-000000000002','f6100000-0000-4000-8000-000000000003','f6200000-0000-4000-8000-000000000002','active');
+  ('f6500000-0000-4000-8000-000000000002','f6100000-0000-4000-8000-000000000003','f6200000-0000-4000-8000-000000000002','active'),
+  ('f6500000-0000-4000-8000-000000000003','f6100000-0000-4000-8000-000000000004','f6200000-0000-4000-8000-000000000001','active');
 
 -- Sobrescritas locais exercitam o comando autenticado com e sem a capacidade,
 -- sem enfraquecer helpers fora desta transacao.
@@ -98,6 +100,22 @@ select ok(exists(
 ), 'positive write persists active child_unit_link and child_group_link');
 
 set local role authenticated;
+select set_config('test.r10_members_allow','false',true);
+select throws_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000001',
+    'f6100000-0000-4000-8000-000000000002',
+    'f6400000-0000-4000-8000-000000000001')$$,
+  'P0002','student link unavailable','link receipt replay requires current capability'
+);
+select set_config('test.r10_members_allow','true',true);
+select throws_ok(
+  $$select public.superadmin_group_student_link(
+    'f6600000-0000-4000-8000-000000000001',
+    'f6100000-0000-4000-8000-000000000004',
+    'f6400000-0000-4000-8000-000000000001')$$,
+  '22023','request id reused for another link target','link receipt cannot be replayed for another child'
+);
 select throws_ok(
   $$select public.superadmin_group_student_link(
     'f6600000-0000-4000-8000-000000000002',

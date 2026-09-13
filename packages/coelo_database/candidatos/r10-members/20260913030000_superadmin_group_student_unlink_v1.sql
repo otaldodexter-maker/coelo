@@ -31,6 +31,9 @@ begin
   institution := app_private.student_link_require_scope(
     p_child_context_id, group_row.unit_id, group_row.id
   );
+  perform pg_catalog.pg_advisory_xact_lock(
+    pg_catalog.hashtextextended(p_child_context_id::text, 0)
+  );
   -- Um replay precisa passar pela autorizacao atual. O recibo tambem e preso
   -- ao contexto e turma, para que o mesmo request id nao aceite outro alvo.
   response := app_private.student_link_receipt(p_request_id, actor, 'unlink');
@@ -41,10 +44,6 @@ begin
     end if;
     return response;
   end if;
-  perform pg_catalog.pg_advisory_xact_lock(
-    pg_catalog.hashtextextended(p_child_context_id::text, 0)
-  );
-
   select child_group_link_row.* into target_group_link
   from public.child_group_links child_group_link_row
   join public.child_unit_links unit_link on unit_link.id = child_group_link_row.child_unit_link_id
