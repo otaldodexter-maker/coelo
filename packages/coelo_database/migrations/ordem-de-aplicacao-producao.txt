@@ -240,3 +240,4 @@
 
 # lote 62 - reconciliado C0 R10 por ledger e estado real, sem reaplicacao
 20260913043053_r10_access_profile_private_rls_forward.sql
+20260913045039_r10_student_link_platform_scope_v1.sql

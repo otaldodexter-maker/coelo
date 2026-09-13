@@ -4339,7 +4339,7 @@
       "95c664ec-456f-4415-8c28-74e216c5c7e4",
       "b04c879e-bedd-4e45-9358-66c545215646"
     ],
-    "remote": "SQL61 e62 aplicados;63 apenas candidato integrado. Edge chat-media implantada.",
+    "remote": "SQL61/62/63 aplicados; Edge chat-media implantada; grupoUI a provar",
     "childContextCreatedByUI": {
       "person": "d0c40000-0000-4000-8000-000000000003",
       "childContext": "b1520810-ca23-4632-8b53-cc36e558013c",
@@ -4351,31 +4351,31 @@
     "profileDeletedPostRLSByUI": "80cf70c6-f2e3-4088-82eb-97df303e5aa2"
   },
   "filaSqlR10": {
-    "ultimoAplicado": 62,
-    "proximo": 63,
+    "ultimoAplicado": 63,
+    "proximo": 64,
     "dono": "C0",
-    "status": "lote62 aplicado; consumidor UI criar/excluir posRLS PASS;63 aguarda prova scoped helper real",
+    "status": "lote63 aplicado; aguarda UI",
     "backup": [
       {
-        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-schema-20260913.sql",
-        "bytes": 4154000,
-        "sha256": "d51abbfe4d097ae0f8a7473436bb443c1e77167b68805f04d63408f4b6716dc9",
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote63-schema-20260913.sql",
+        "bytes": 4154549,
+        "sha256": "5aca27dea52c36948fa4d15f815f34da02f6f16243c7e56535703e6668f1799a",
         "exitCode": 0
       },
       {
-        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-data-20260913.sql",
-        "bytes": 4564781,
-        "sha256": "2a3157dc724d9ae4e6839cb11eb6ce0a3da7e20b27e1cfd234d65d7e409d38f8",
+        "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote63-data-20260913.sql",
+        "bytes": 4572849,
+        "sha256": "3fdbc66b2a885ed6679c246a3c138917e2db434a65792432b7a0b05a39d76b4e",
         "exitCode": 0
       }
     ],
     "candidatos": [
-      "access profile private RLS forward"
+      "student_link scoped platform gate"
     ],
-    "localProof": "focal7PASS; regressao88:82PASS6falhas legadas vs67PASS21falhas baseline; nenhuma nova falha",
-    "version": "20260913043053",
-    "name": "r10_access_profile_private_rls_forward",
-    "postflight": "3tabelas RLS+FORCE true; authenticated SELECTfalse; ledgerconfirmado",
+    "localProof": "23PASS0FAIL real scoped helper rollback; contexto/person resolver controlado; MD5helper igualprod",
+    "version": "20260913045039",
+    "name": "r10_student_link_platform_scope_v1",
+    "postflight": "ledger confirmado; gate MD5 f0a5452062d3a4ca35a3030a5de32d78",
     "lote61Preservado": {
       "backup": [
         {
@@ -4402,6 +4402,33 @@
       "version": "20260913032627",
       "name": "r10_group_students_assessment_selected_chat_mp4_v1",
       "postflight": "link/unlink/read-by-id existem; limite MP4=10485760"
+    },
+    "lote62Preservado": {
+      "ultimoAplicado": 62,
+      "proximo": 63,
+      "dono": "C0",
+      "status": "lote62 aplicado; consumidor UI criar/excluir posRLS PASS;63 aguarda prova scoped helper real",
+      "backup": [
+        {
+          "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-schema-20260913.sql",
+          "bytes": 4154000,
+          "sha256": "d51abbfe4d097ae0f8a7473436bb443c1e77167b68805f04d63408f4b6716dc9",
+          "exitCode": 0
+        },
+        {
+          "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote62-data-20260913.sql",
+          "bytes": 4564781,
+          "sha256": "2a3157dc724d9ae4e6839cb11eb6ce0a3da7e20b27e1cfd234d65d7e409d38f8",
+          "exitCode": 0
+        }
+      ],
+      "candidatos": [
+        "access profile private RLS forward"
+      ],
+      "localProof": "focal7PASS; regressao88:82PASS6falhas legadas vs67PASS21falhas baseline; nenhuma nova falha",
+      "version": "20260913043053",
+      "name": "r10_access_profile_private_rls_forward",
+      "postflight": "3tabelas RLS+FORCE true; authenticated SELECTfalse; ledgerconfirmado"
     }
   }
 }

@@ -1,0 +1,21 @@
+{
+  "at": "2026-09-13T04:51:00Z",
+  "project": "evvbomzejfijozbtgvpt",
+  "candidate": "20260913035000_student_link_platform_scope_v1.sql",
+  "localProof": "23PASS0FAIL rollback; real scoped platform helper and institution membership; current_person/context resolver controlled. HelperMD5 local=remote168be6e9557e84828bd6c75d29b9f3a6",
+  "remoteGateBefore": "735c3d426ff223b18e2a21fd028d78bd",
+  "backup": [
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote63-schema-20260913.sql",
+      "bytes": 4154549,
+      "sha256": "5aca27dea52c36948fa4d15f815f34da02f6f16243c7e56535703e6668f1799a",
+      "exitCode": 0
+    },
+    {
+      "path": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r10-lote63-data-20260913.sql",
+      "bytes": 4572849,
+      "sha256": "3fdbc66b2a885ed6679c246a3c138917e2db434a65792432b7a0b05a39d76b4e",
+      "exitCode": 0
+    }
+  ]
+}
