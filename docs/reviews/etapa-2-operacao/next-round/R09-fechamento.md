@@ -153,7 +153,7 @@ frontend publico superadmin.coelo.me nesta R09.** Nao confundir QA3014 com
 esse deploy. Nenhum Worker, bucket ou chave de API criada.
 
 24worktrees e todas as branches preservadas. Nove heads G0–G8 integrados.
-Unico commit antigo fora de dev: d2ed31572, checkpoint da tentativa1534,
+Entre os heads das24worktrees, unico commit antigo fora de dev: d2ed31572, checkpoint da tentativa1534,
 mantido como historico sem reativacao. Sem stash, sem WIP de produto sujo.
 Configuracoes ignoradas, builds, caches e provas retidas preservados no
 [inventario de worktrees](../../evidence/etapa-2/r09-coordenacao/closure-worktrees.json).
@@ -204,3 +204,13 @@ Todas as entregas disponiveis foram consolidadas; isso nao significa que
 cada frente concluiu todas as suas fatias. Fila/bloqueios e autoria C0
 continuam explicitos. Nenhuma rodada reaberta.
 [Recibo da conferencia](../../evidence/etapa-2/r09-coordenacao/post-closure-audit.json).
+
+## Preparacao R10 ? ampliacao da conferencia historica
+
+Owner pediu agora R01?R09, alem das nove frentes R09.15branches historicas
+nao ancestrais foram inventariadas e todas estao preservadas no remoto;
+cinco sao totalmente patch-equivalentes. As demais exigem comparacao de
+conteudo/sucessor, nao merge automatico. A conferencia119 dos24worktrees
+e nove heads R09 permanece valida, mas nao era certificacao de integracao
+de todas as branches historicas. Ver [preparacao R10](R10-preparacao.md) e
+[manifest historico](R10-historical-refs.json). R10 ainda nao executada.

@@ -1,12 +1,12 @@
 {
-  "revision": 119,
+  "revision": 120,
   "round": "E2-R09-20260912-1542",
   "role": "C0 Coordenacao R09",
   "writer": "C0 Codex",
   "app": "Codex desktop",
   "model": "gpt-6-astra",
   "timezone": "America/Sao_Paulo",
-  "updatedAt": "2026-09-13T01:50:30.036549+00:00",
+  "updatedAt": "2026-09-13T02:04:42.625931+00:00",
   "relogio": "relogio da maquina",
   "posseR04": {
     "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-r04-coordenacao",
@@ -4259,5 +4259,14 @@
     "stash": 0,
     "retainedHistoricalCommit": "d2ed31572",
     "roundReopened": false
+  },
+  "r10Preparation": {
+    "status": "prompts-preparados; execucao-nao-iniciada",
+    "prompt": "docs/reviews/etapa-2-operacao/next-round/R10-prompt-unico.md",
+    "localGreenAndHistory": "docs/reviews/etapa-2-operacao/next-round/R10-preparacao.md",
+    "historicalRefs": "docs/reviews/etapa-2-operacao/next-round/R10-historical-refs.json",
+    "scopeMetricsProposal": "docs/reviews/etapa-2-operacao/next-round/R10-proposta-metricas-por-escopo.md",
+    "strategy": "C0 Astra medium serial; um auxiliar da mesma arvore somente se util e permitido por cota",
+    "currentDenominatorsUnchanged": true
   }
 }

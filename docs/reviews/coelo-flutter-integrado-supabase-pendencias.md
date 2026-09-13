@@ -65,6 +65,8 @@ R09 encerrada apos meta minima: FE+6,06p.p.; BE+5,36p.p.; E2E+8,54p.p. [Fechamen
 
 Conferencia posterior solicitada pelo Owner, C0r119: nove conversas relidas, nove heads locais/remotos integrados,24worktrees preservadas e sem WIP de produto; contagens inalteradas e validadores PASS. [Recibo](evidence/etapa-2/r09-coordenacao/post-closure-audit.json). A R09 permanece encerrada.
 
+Preparacao R10 C0r120: [fila14FE/20BE e historia](etapa-2-operacao/next-round/R10-preparacao.md), [prompt unico](etapa-2-operacao/next-round/R10-prompt-unico.md) e [proposta Etapa2/MVP/V1](etapa-2-operacao/next-round/R10-proposta-metricas-por-escopo.md). Nenhum estado/denominador alterado por planejamento.
+
 ## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
 
 C0 publicou a posse em dev às 10h52, com nove frentes G0–G8 identificadas.
