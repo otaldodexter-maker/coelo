@@ -32,7 +32,17 @@ de rota normal, persistência/reload e cross-tenant para os itens comuns;
 PITR/backup/ordem antes de R12-48/49/50; Media Gateway/R2 para R12-38/46/52;
 SMTP/redirect para R12-45/47; e condição formal para R12-53.
 
-## R12 — Apontamentos Owner incorporados (2026-09-13)
+## R13 — pendências transferidas da R12 (2026-09-14)
+
+Fila corrente integrada: os 50 Owner items `owner.r12-*` ainda `open`/`partial`
+foram transferidos para a R13, preservando os IDs de origem: `owner.r12-01–06`,
+`owner.r12-08–40`, `owner.r12-42` e `owner.r12-44–53`. Os itens `owner.r12-07`,
+`owner.r12-41` e `owner.r12-43` permanecem fora por já estarem `done`.
+O estado FE/BE/E2E por tela/subtela, evidência e próximo gate está em
+`R13-pendencias.md` e `R13-owner-items-atual.json`; não há fila operacional
+remanescente em R12.
+
+## R12 — Apontamentos Owner incorporados (histórico; transferidos para R13)
 
 Camada FE + BE / E2E: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.
 

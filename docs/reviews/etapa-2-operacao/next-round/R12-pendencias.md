@@ -4,7 +4,7 @@ status: execução em andamento; C0 fechou dois aceites FE locais e mantém E2E 
 generated_at: 2026-09-13
 ---
 
-# R12 — Catálogo consolidado por camada
+# R12 — Catálogo consolidado por camada (histórico; fila transferida para R13)
 
 ## R12-19 a R12-53 checkpoint de execução (C0)
 

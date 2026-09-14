@@ -37,7 +37,17 @@ local histórica, não um aceite E2E.
 Nenhum novo item FE foi marcado como done. O analyze Flutter foi interrompido
 por runtime externo ativo; não há resultado novo para promover.
 
-## R12 — Apontamentos Owner incorporados (2026-09-13)
+## R13 — pendências transferidas da R12 (2026-09-14)
+
+Fila corrente: os 50 Owner items `owner.r12-*` ainda `open`/`partial` foram
+transferidos para a R13, preservando os IDs de origem: `owner.r12-01–06`,
+`owner.r12-08–40`, `owner.r12-42` e `owner.r12-44–53`. Os itens `owner.r12-07`,
+`owner.r12-41` e `owner.r12-43` permanecem fora por já estarem `done`.
+O estado por tela/subtela, ação, evidência e próximo gate está em
+`R13-pendencias.md` e `R13-owner-items-atual.json`; não há fila operacional
+remanescente em R12.
+
+## R12 — Apontamentos Owner incorporados (histórico; transferidos para R13)
 
 Camada Front-end: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.
 
