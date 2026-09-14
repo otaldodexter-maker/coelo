@@ -241,3 +241,9 @@
 # lote 62 - reconciliado C0 R10 por ledger e estado real, sem reaplicacao
 20260913043053_r10_access_profile_private_rls_forward.sql
 20260913045039_r10_student_link_platform_scope_v1.sql
+
+# lote 63 (14/09 12:45) - R13/ADR0038 owner.r12-51: quatro candidatos R11 (48/49/50/46); espelho rebuild baseline+167 na ordem real, pgTAP 8/8+10/10+9/9+13/13, dump esquema+dados (SHA-256 778d4f37 / 63801fa3), ledger 283->287, md5 das funcoes producao==espelho
+20260913143441_r11_assessment_update_isolation_v1.sql
+20260913143659_r11_group_directory_counts_v1.sql
+20260913144142_r11_account_avatar_access_v2.sql
+20260913145023_r11_assessment_all_participants_v1.sql
