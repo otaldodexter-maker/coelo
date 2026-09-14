@@ -8,7 +8,7 @@
     "roundStatus": "active-paused",
     "nextRound": "R14 prepared-not-started",
     "branch": "dev",
-    "head": "e924acd520ddcd0d04ffaf8467b75f09aa528436",
+    "head": "046f8efd40d61b259424eae7afa29284f185f983",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -868,7 +868,7 @@
       "sourceRound": "R13"
     }
   ],
-  "baseReference": "e924acd520ddcd0d04ffaf8467b75f09aa528436",
+  "baseReference": "046f8efd40d61b259424eae7afa29284f185f983",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
@@ -1279,19 +1279,6 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
-    },
-    "dev": {
-      "sha": "e924acd520ddcd0d04ffaf8467b75f09aa528436",
-      "exclusive": [
-        "e924acd520ddcd0d04ffaf8467b75f09aa528436",
-        "da8232b92739b3c8c63a7c63a6a202868f4518a6",
-        "5704bbf22d34d9a5c5efde288a2f9f1dd0b76977"
-      ],
-      "disposition": "retained-review",
-      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
-      "owner": "C0",
-      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
