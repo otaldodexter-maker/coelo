@@ -43,10 +43,23 @@ formal depois do fechamento da R13, se os itens continuarem não terminais.
 
 ### O que permanece na cota R13
 
-Saúde/Cuidado e Cardápios na rota real; `owner.r12-36`/`owner.r12-37`; OQ-031
-de catálogos de tipo; `H08` Duplicar Aviso; `owner.r12-47` para localhost na
-allowlist de Auth; e Avisos (`H08`/`H23`/`H13`) se houver cota. A execução segue
-pela R13, sem disparar a R14.
+Saúde/Cuidado foi concluído na rota real em 14/09 (SHA 8ca0f9fcd): `health-care.create/
+detail/edit` e `medication.list/create/detail/edit` `verified-e2e`; `owner.r12-28/31/32`
+done; `owner.r12-29/30` parciais (múltiplos registros/orientações independentes
+não exercitados). A cota do Owner de 14/09 encerrou aqui.
+
+### Itens que ficaram sem cota em 14/09 e também seguem para a R14
+
+- Cardápios na rota real (`meal-plans.create/edit/model-create/model-edit/publish`)
+  e `owner.r12-36`/`owner.r12-37` (migration sem Prioridade/Datas excluídas +
+  bloqueio de sobreposição); `owner.r12-19` a `owner.r12-27` já listados acima.
+- OQ-031 catálogos globais de tipo (instituição/unidade/turma/atividade,
+  idempotentes por `code`, com Outros; listas na ADR 0038).
+- `H08` Duplicar Aviso (RPC + cliente) e Avisos na rota real (`H23`/`H13`).
+- `owner.r12-47` localhost na allowlist de redirect do Auth.
+- `owner.r12-29`/`owner.r12-30` (resíduo: CRUD individual de vários registros).
+- Cosmético sem `action_id`: placeholder de carregamento da edição de
+  medicação usa o subtítulo padrão do shell.
 
 ## Fontes na abertura
 

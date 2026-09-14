@@ -16,6 +16,11 @@ audience: "team"
 - R14 está preparada, mas não iniciada e não deve ser disparada automaticamente.
 - A próxima tarefa deve começar pelo primeiro gate executável da R13, não por
   uma rodada anterior.
+- Último delta de execução: 14/09 ~18:00, SHA `8ca0f9fcd` — Saúde/Cuidado provado
+  na rota real; contadores FE 164/231, BE 164/224, E2E 137/199, Owner 9/53.
+  Primeiro gate executável seguinte: Cardápios na rota real
+  (`meal-plans.create/edit/model-create/model-edit/publish`) + `owner.r12-36/37`.
+  Ver `R13-checkpoint-20260914-1800.md`.
 
 ## Fonte da fila atual
 
@@ -25,7 +30,7 @@ Use, nesta ordem:
 2. [Prompt de execução R13](../reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md),
    quando a tarefa for retomar a execução autorizada;
 3. [Pendências R13](../reviews/etapa-2-operacao/next-round/R13-pendencias.md);
-4. [Checkpoint mais recente disponível](../reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md),
+4. [Checkpoint mais recente disponível](../reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md),
    para o último delta de execução;
 5. [Projeção R13](../reviews/etapa-2-operacao/next-round/R13-projecao-atual.md),
    somente para contexto e histórico do corte;

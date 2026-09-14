@@ -201,3 +201,24 @@ forward-only serializada, recuperação e cleanup. Um bloqueio remoto retém
 somente o trabalho dependente. Não exigir commit/push, deploy ou worktree limpa
 como condição para relatar uma correção local testada; integração/publicação
 recebem declaração e evidências próprias quando fizerem parte do pedido.
+
+## Rota real medida em 14/09/2026 (R13)
+
+- Build: `flutter build web --release -t test_driver/qa_main.dart
+  --dart-define-from-file=.env.local --dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true`
+  (sem a flag o `login` do driver não digita); servidor `serve.py` em IPv4
+  explícito; Chrome com `--remote-debugging-port` e `--use-angle=swiftshader`.
+- Driver via `Runtime.evaluate` (`window.$flutterDriver(...)`, ler
+  `window.$flutterDriverResult`); enviar `set_frame_sync=false` após cada carga.
+  O processo `qa_drive.dart` trava em `get_diagnostics_tree`/`tap`; usar
+  `cdp_sem.dart clickxy` por coordenada e conferir por captura.
+- No Windows, `dart run` passa por `cmd` e corta URLs em `&`: montar a query em
+  JS (`String.fromCharCode(38)`). Textos com acento em argumentos também quebram.
+- Após trocar de etapa em wizard, `enter_text` só entra no campo clicado depois
+  de um `Input.insertText` vazio; o primeiro clique após abrir um popup (date
+  picker) pode não registrar — conferir antes de "Aplicar".
+- Prova de backend sem Chrome: `packages/coelo_database/scripts/r13-rpc-proof.mjs`
+  com o usuário sintético da frente (PostgREST, sem chave de serviço).
+- Espelho descartável: `config.toml` com `project_id` próprio e portas 613xx,
+  `supabase/migrations/` só com a baseline, `supabase start` sem studio/realtime/
+  storage, depois `psql` do container para a ordem real e os candidatos.
