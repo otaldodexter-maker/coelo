@@ -1,0 +1,6 @@
+[
+  {"action_id":"meal-plans.model-create","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: item do modelo possui nome da refeição separado do prato e round-trip JSON.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md"},
+  {"action_id":"meal-plans.model-edit","camada":"frontend","estado_proposto":"local-green","delta":"R12 C0: nome da refeição é hidratado e preservado em edição/duplicação/reordenação.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md"},
+  {"action_id":"meal-plans.model-create","camada":"integrated","estado_proposto":"pending-verification","delta":"Novo campo de modelo exige prova de persistência/reload e escopo real.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md"},
+  {"action_id":"meal-plans.model-edit","camada":"integrated","estado_proposto":"pending-verification","delta":"Novo campo de modelo exige prova de persistência/reload e escopo real.","evidencia":"docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md"}
+]

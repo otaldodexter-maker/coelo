@@ -649,7 +649,7 @@
   },
   {
     "id": "owner.r12-34",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"

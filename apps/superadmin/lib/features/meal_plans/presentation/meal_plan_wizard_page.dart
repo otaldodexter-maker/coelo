@@ -678,7 +678,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             children: [
               Expanded(
                 child: Text(
-                  'Refeição ${index + 1}',
+                  meal.mealName.text.trim().isEmpty ? 'Refeição ${index + 1}' : meal.mealName.text,
                   style: Theme.of(context).textTheme.titleMedium,
                 ),
               ),
@@ -733,6 +733,12 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
             controller: meal.dishName,
             labelText: 'Nome da refeição ou prato',
             prefixIcon: Icons.ramen_dining_outlined,
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          CoeloFormTextField(
+            controller: meal.mealName,
+            labelText: 'Nome da refeição',
+            prefixIcon: Icons.label_outline,
           ),
           if (meal.hasTime) ...[
             const SizedBox(height: CoeloSpacing.space3),
@@ -1808,6 +1814,7 @@ final class _MealEditor {
       image: entry.image,
     );
     editor.customType.text = entry.customMealType ?? '';
+    editor.mealName.text = entry.mealName;
     editor.startTime.text = entry.startTime ?? '';
     editor.endTime.text = entry.endTime ?? '';
     editor.dishName.text = entry.dishName;
@@ -1831,6 +1838,7 @@ final class _MealEditor {
   MealPlanAttachmentMeta? image;
   _PendingImage? pendingImage;
   final customType = TextEditingController();
+  final mealName = TextEditingController();
   final startTime = TextEditingController();
   final endTime = TextEditingController();
   final dishName = TextEditingController();
@@ -1867,6 +1875,7 @@ final class _MealEditor {
         .toList(growable: false);
     return MealPlanMenuEntry(
       mealType: type,
+      mealName: mealName.text.trim(),
       customMealType: type == 'other' ? customType.text.trim() : null,
       hasTime: hasTime,
       startTime: hasTime ? startTime.text.trim() : null,
@@ -1894,6 +1903,7 @@ final class _MealEditor {
   void dispose() {
     for (final controller in <TextEditingController>[
       customType,
+      mealName,
       startTime,
       endTime,
       dishName,

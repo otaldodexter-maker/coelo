@@ -130,6 +130,7 @@ final class MealPlanRecurrence {
 final class MealPlanMenuEntry {
   MealPlanMenuEntry({
     required this.mealType,
+    this.mealName = '',
     this.dayContents = const ['', '', '', '', '', '', ''],
     this.customMealType,
     this.hasTime = false,
@@ -152,6 +153,7 @@ final class MealPlanMenuEntry {
   factory MealPlanMenuEntry.empty() => MealPlanMenuEntry(mealType: 'lunch');
   factory MealPlanMenuEntry.fromJson(Map<String, Object?> j) => MealPlanMenuEntry(
     mealType: (j['mealType'] as String?) ?? '',
+    mealName: (j['mealName'] as String?) ?? '',
     dayContents: List<String>.generate(7, (i) {
       final values = j['dayContents'];
       return values is List && i < values.length ? values[i]?.toString() ?? '' : '';
@@ -178,7 +180,7 @@ final class MealPlanMenuEntry {
     weekdays: _list(j['weekdays']).map((v) => _int(v) ?? 1).toSet(),
     specificDates: _dateList(j['specificDates']),
   );
-  final String mealType, dishName;
+  final String mealType, mealName, dishName;
   final List<String> dayContents, restrictions;
   final String? customMealType, startTime, endTime, details;
   final bool hasTime, hasNutrition;
@@ -189,6 +191,7 @@ final class MealPlanMenuEntry {
   final List<DateTime> specificDates;
   Map<String, Object?> toJson() => {
     'mealType': mealType,
+    'mealName': mealName,
     'dayContents': dayContents,
     'customMealType': customMealType,
     'hasTime': hasTime,
@@ -756,6 +759,7 @@ final class UnavailableMealPlanRepository implements MealPlanRepository {
 
 T _enumByName<T extends Enum>(List<T> values, Object? raw, T fallback) =>
     values.firstWhere((v) => v.name == raw?.toString(), orElse: () => fallback);
+
 /// O banco grava `closed`; o enum do cliente chama o mesmo estado de `ended`.
 /// Os dois lados precisam atravessar esta conversao, senao a leitura cai no
 /// rascunho por omissao e o filtro pergunta por um valor que a coluna nao tem.

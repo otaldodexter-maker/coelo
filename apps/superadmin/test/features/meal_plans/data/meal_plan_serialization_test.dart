@@ -8,6 +8,17 @@ import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 void main() {
+  test('meal entry round-trips its user-defined name separately from dish', () {
+    final entry = MealPlanMenuEntry(
+      mealType: 'lunch',
+      mealName: 'Almoço',
+      dishName: 'Arroz e feijão',
+    );
+    final restored = MealPlanMenuEntry.fromJson(entry.toJson());
+    expect(restored.mealName, 'Almoço');
+    expect(restored.dishName, 'Arroz e feijão');
+  });
+
   test('template canonical camelCase metadata wins over conflicting legacy aliases', () {
     final template = MealPlanTemplate.fromJson({
       'id': 'template-1',
