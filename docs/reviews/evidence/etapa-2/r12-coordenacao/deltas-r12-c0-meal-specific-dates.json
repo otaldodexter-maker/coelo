@@ -1,0 +1,21 @@
+{
+  "round": "R12",
+  "ownerItems": ["R12-35"],
+  "generated": "2026-09-13",
+  "changes": [
+    {
+      "actionId": "meal-plans.model-create",
+      "frontend": "local-green",
+      "backend": "compatible-no-sql",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+    },
+    {
+      "actionId": "meal-plans.model-edit",
+      "frontend": "local-green",
+      "backend": "compatible-no-sql",
+      "e2e": "pending-verification",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+    }
+  ]
+}

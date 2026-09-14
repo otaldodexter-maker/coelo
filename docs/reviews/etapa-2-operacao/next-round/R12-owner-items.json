@@ -669,17 +669,17 @@
   },
   {
     "id": "owner.r12-35",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"
     ],
-    "fe": "Planejado R12; não implementado.",
-    "be": "Contratos a verificar, sem diagnóstico novo.",
-    "e2e": "Sem nova prova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "fe": "Local-green: seletor canônico de datas específicas com chips ordenados e remoção individual; payload specificDates legado preservado.",
+    "be": "Compatível sem mudança SQL.",
+    "e2e": "Pending-verification: rota real, persistência/reload, RLS cross-tenant e aprovação visual.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-35 e reproduzir após abertura explícita da R12.",
+    "nextGate": "Provar adicionar/editar/remover e reload pela rota real; RLS e aprovação visual permanecem pendentes.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

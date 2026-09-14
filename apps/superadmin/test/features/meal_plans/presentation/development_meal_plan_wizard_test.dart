@@ -24,6 +24,49 @@ void main() {
     expect(page.imageSelectionEnabled, isFalse);
   });
 
+  testWidgets('specific recurrence uses a canonical date selector instead of free text', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: DevelopmentMealPlanRepository(),
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            imageSelectionEnabled: false,
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byType(TextFormField).first, 'Cardápio selector');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+    await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pump();
+
+    final recurrence = find.byWidgetPredicate(
+      (widget) =>
+          widget is CoeloAdminSingleSelectField<MealPlanRecurrenceKind> &&
+          widget.label == 'Recorrência',
+    );
+    await tester.tap(find.descendant(of: recurrence, matching: find.text('Semanal')));
+    await tester.pumpAndSettle();
+    final specificOption = find.text('Datas específicas').last;
+    await tester.ensureVisible(specificOption);
+    await tester.tap(specificOption);
+    await tester.pumpAndSettle();
+
+    expect(find.byKey(const Key('meal-plan-specific-dates-selector')), findsOneWidget);
+    expect(find.text('Adicionar data'), findsOneWidget);
+    expect(find.textContaining('separadas por vírgula'), findsNothing);
+  });
+
   for (final destination in ['same', 'other', 'new']) {
     testWidgets('template editing preserves unknown fields only for $destination resource', (
       tester,
@@ -993,8 +1036,6 @@ class _OrderedMealPlanRepository implements MealPlanRepository {
   @override
   Future<void> delete(String mealPlanId, String requestId, int expectedRevision) async =>
       throw UnimplementedError('delete nao participa deste caso');
-
-
 
   @override
   Future<List<MealPlanConflict>> checkConflicts({
