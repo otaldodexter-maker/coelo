@@ -935,12 +935,12 @@
       "activities.assessment",
       "activities.publish"
     ],
-    "fe": "FE verified (rota real 14/09): rascunho b04c879e carregado e salvo pela tela.",
-    "be": "BE done (lote 63): UPDATE em produção (version 1→2 por RPC, 2→3 pela tela).",
-    "e2e": "verified-e2e: rota normal, persistência, reload e negativa por id inexistente; activities.publish já era done sem novo aceite.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço.",
+    "nextGate": "Concluído 14/09 (rota real): rascunho b04c879e carregado e salvo pela tela (version 2→3), reload relê, negativa por id inexistente; activities.publish já era done. Capturas em r13-coordenacao/capturas.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -977,12 +977,12 @@
     "actionIds": [
       "groups.list"
     ],
-    "fe": "FE verified (rota real 14/09): /groups com Alunos 1",
-    "be": "Atividades 3 na turma 4214106c e busca \"R05\"; reload mantém.",
-    "e2e": "BE done (lotes 63+64). / verified-e2e: rota normal, leitura de produção, negativa por instituição alheia, reload.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores.",
+    "nextGate": "Concluído 14/09 (rota real): /groups com Alunos 1 e Atividades 3 na turma 4214106c, busca \"R05\" (hotfix lote 64), reload mantém, negativa por instituição alheia. Capturas em r13-coordenacao/capturas.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
