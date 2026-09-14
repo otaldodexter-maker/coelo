@@ -8,6 +8,30 @@ updated_at: "2026-09-12"
 
 # Perguntas abertas e conflitos
 
+## Decisões do Owner de 14/09/2026 — ADR 0038
+
+O Owner respondeu em 14/09/2026 aos 37 pontos parados por decisão; a fonte
+canônica é `decisions/0038-owner-decisions-etapa2-backlog-20260914.md`.
+Ficam **resolvidas** por ela as seções abaixo deste arquivo: R07-CIRC-LIMITE
+(4.000 por bloco, leitura a confirmar) e R07-PLANO (assign fora do MVP);
+Contrato pendente da própria Conta (aprovado); Conflito de principal em
+Planos (transição para 039 confirmada); Local interno em Formulários (IDs
+fixados na publicação; revisão conserva valor histórico); Quantidade de
+anexos por mensagem Chat (10 por envio); R08 identidade de mídia do Chat
+(migrar envelope para `asset_id`); R08 responsáveis de planos de medicação
+(guardiões e equipe no escopo); R12 decisões pendentes (R12-23 aprovado,
+R12-02 modelos Coelo imutáveis, R12-18 nome+sobrenome+CPF, R12-33 eventos
+definidos, R12-36/37 só UX); R11/R12 requisito de PITR (Decisão 8 mantida
+até o primeiro cliente real ou Etapa 3); OQ-020 (legenda filtra), OQ-028
+(mapeamento A) e OQ-031 (catálogo global com Outros).
+
+O adendo de 14/09 (mesma ADR) fechou o restante: lembrete de dose 30 e 15
+min antes; Circular 4.000 no total; catálogos de tipo aprovados; SMTP como
+pendência final do MVP; R07-CIRC-RODAPE (seguir a referência inteira), R12-10
+(cabeçalho global), R12-36/37 (Prioridade e Datas excluídas saem do contrato),
+H23 (lista + barra fina, padrão geral), H27 (saudação por hora, ponto em
+Momentos) e P54/V-1 (avatar/Agora no MVP). Nada desta ADR aguarda o Owner.
+
 ## R07 — resíduos reconciliados e Circular (12/09/2026)
 
 Lista com fonte, estado medido, dono e primeiro gate em

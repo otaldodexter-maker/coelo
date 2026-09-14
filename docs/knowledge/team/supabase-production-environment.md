@@ -4,7 +4,7 @@ knowledge_id: supabase-production-environment
 source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
 generated_at: 2026-09-01
-updated_at: 2026-09-12
+updated_at: 2026-09-14
 audience: team
 surfaces: [supabase, database, auth, storage, edge-functions]
 visibility: internal
@@ -35,6 +35,10 @@ do projeto estava **desligado** (`pitr_enabled: false`). Pela Decisão 8 da
 ADR 0034 o PITR pago fica dispensado até existir cliente real: a condição
 passa a ser um `supabase db dump` lógico local (fora do Git), tirado pelo
 coordenador antes de cada lote SQL e registrado em `coordenacao.json`.
+Em 14/09/2026 o Owner reafirmou essa regra (ADR 0038): o dump lógico vale
+até o primeiro cliente real ou a abertura da Etapa 3, o que vier antes; a
+partir daí o PITR passa a ser obrigatório. Nenhum prompt de rodada pode exigir
+PITR antes desse marco.
 
 Na mesma decisão o versionamento do banco ganhou uma **baseline**: o dump
 schema-only de produção de 10/09/2026 é a migration inicial, o catálogo de

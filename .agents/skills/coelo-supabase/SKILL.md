@@ -21,6 +21,21 @@ Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R1
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 
+## Decisões do Owner de 14/09/2026 (ADR 0038)
+
+Fila SQL liberada: dump lógico antes de cada lote continua satisfazendo o
+item 3 da Decisão 1 até o primeiro cliente real ou a Etapa 3. Pacotes
+decididos e ainda não escritos: `revoke_message_v2` recusa `CHAT_READ_ONLY`;
+`asset_id` no envelope do `chat-media`; limite de 10 anexos por mensagem no
+`prepare`; `care_policies.manage` substitui o papel fixo em
+`superadmin_unit_care_policy_set_v1`; pessoa sem conta com nome, sobrenome e
+CPF (HMAC) obrigatórios; Duplicar Aviso; readers de Planos no principal 039;
+mapeamento de status de Suporte; catálogos globais de tipo (listas aprovadas
+no adendo, migration idempotente por `code`); remoção de prioridade/datas
+excluídas de Cardápios; lembrete de dose 30/15 min; limite de 4.000
+caracteres no total da Circular; redirect localhost no Auth autorizado.
+SMTP próprio fica para o fechamento do MVP. `plans.assign` fora do MVP.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)

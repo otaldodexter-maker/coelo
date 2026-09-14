@@ -253,6 +253,17 @@ temporal/afastamento por vínculo profissional (sem bloquear outros contextos),
 popups opcionais, Fazer tour, home IA funcional e páginas em Admin/Principal
 nos respectivos subdomínios, sem publicação nas lojas nesse momento.
 
+### Decisões do Owner de 14/09/2026 (ADR 0038)
+
+Seguir `decisions/0038-owner-decisions-etapa2-backlog-20260914.md`: 37 pontos
+da fila R13 decididos (perfis profissionais no Principal aprovados; pessoa sem
+conta exige nome, sobrenome e CPF; revogar proibido em chat somente leitura;
+Duplicar Aviso no MVP; 10 anexos por mensagem; Circular 4.000 no total; `asset_id` no envelope do
+chat-media; `plans.assign` fora do MVP; catálogo global de tipos com Outros;
+dump lógico vale até o primeiro cliente real ou Etapa 3; SMTP próprio no
+fechamento do MVP). O adendo de 14/09 fechou os visuais e textos restantes;
+nada dessa ADR aguarda o Owner.
+
 ### Encerramento R07 e aprovações (ADR 0034, Decisão 20)
 
 Aprovação visual usa arquivo, referência R, render A, diferença, decisão

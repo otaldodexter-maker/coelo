@@ -21,6 +21,20 @@ Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R1
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 
+## Decisões do Owner de 14/09/2026 (ADR 0038)
+
+Front-end decidido e ainda não implementado: compositor de Circular segue a
+referência inteira (shell, rodapé em card contornado, contador 4.000 no
+total, Opções com toggle) e regrava os seis goldens web; Avisos e todas as
+listas atualizam mantendo a lista visível com barra fina de progresso
+(padrão coelo-ui); Duplicar Aviso; CTA de notificação abre o detalhe do item;
+editor de Formulários preserva todas as regras de audiência e liga o autosave
+do autor; Cardápio sem Prioridade/Datas excluídas; Segurança infantil > lista
+não muda (diff é o cabeçalho global). Principal: saudação por hora do dia,
+ponto laranja na aba Momentos com novidade, avatar do Perfil com anel laranja
+que abre o Agora (V-1 volta ao MVP), Sobre conecta a atualização oficial.
+`plans.assign` e institutions.status/locations-map ficam fora da Etapa 2.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)

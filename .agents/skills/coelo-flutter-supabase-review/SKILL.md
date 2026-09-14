@@ -21,6 +21,17 @@ Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R1
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 
+## Decisões do Owner de 14/09/2026 (ADR 0038)
+
+O primeiro gate "decisão" de H02, H05, H06, H08, H10, H11, H13, H15, H17,
+H21, R12-02, R12-18, R12-23, R12-33, R12-36/37, R12-51 e R12-53 está fechado
+pela ADR 0038; o próximo gate de cada um é implementação ou prova. R12-53
+saiu da Etapa 2 (sem opcionais). Adendo visual de 14/09: Circular segue a
+referência inteira (shell, rodapé em card, 4.000 total); Avisos e todas as
+listas atualizam mantendo a lista + barra fina; saudação por hora do dia e
+ponto laranja em Momentos; avatar/Agora (V-1) volta ao MVP; R12-10 é só o
+cabeçalho global; Cardápio remove Prioridade/Datas excluídas do contrato.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](references/delivery-gate.md)

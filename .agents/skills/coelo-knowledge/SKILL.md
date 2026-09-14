@@ -21,6 +21,16 @@ Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R1
 
 Atualizar estado/referências desta skill e as fontes operacionais conforme aceites comprovados; manter detalhes nas matrizes/catálogos, sem transformar skill em log. Os gates remotos, conhecimento por audiência e distinção FE/BE/E2E permanecem. Preparação R14 Claude Opus médio ocorre no corte futuro, sem execução automática.
 
+## Decisões do Owner de 14/09/2026 (ADR 0038)
+
+As 37 respostas do artefato de decisões viraram a ADR 0038, refletidas em
+`AGENTS.md`, `docs/open-questions.md` e na projeção
+`supabase-production-environment`. Specs a revisar por ela: 018, 020, 028,
+037, 039/051, notices-mvp-design, locais-mapas-agendamentos e
+forms-end-to-end. O adendo de 14/09 já fechou lembrete (30/15 min), Circular
+4.000 total, catálogos de tipo, SMTP (fim do MVP) e os seis visuais; nada
+aguarda o Owner nessa ADR.
+
 ## Entrega: gate bloqueante obrigatório
 
 Aplicar o [gate de compromissos, rastreadores, Git e destino](../coelo-flutter-supabase-review/references/delivery-gate.md)
