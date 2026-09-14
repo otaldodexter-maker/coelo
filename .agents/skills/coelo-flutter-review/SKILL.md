@@ -9,6 +9,9 @@ metadata:
 
 # Coelo Front-end
 
+Artefatos de execução só entram quando a tarefa pedir evidência específica;
+para limpeza, siga `docs/agent/artifact-cleanup-backlog-20260914.md`.
+
 Esta é a porta de entrada curta da skill. Não contém logs de rodada, prompts,
 percentuais ou fila copiada. Estado e pendências ficam em
 `docs/agent/current-state.md` e nos rastreadores apontados por ele.

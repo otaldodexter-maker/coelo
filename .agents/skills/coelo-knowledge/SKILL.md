@@ -70,5 +70,9 @@ server-side nem atualidade da fonte.
 Em uma entrega formal, aplique também o gate central em
 `../coelo-flutter-supabase-review/references/delivery-gate.md`.
 
+Para retomar a limpeza de artefatos, leia
+`docs/agent/artifact-cleanup-backlog-20260914.md`; não coloque inventários ou
+backups dentro desta skill.
+
 Não instale dependências silenciosamente. Python 3.10+ e PyYAML são exigidos
 pelos scripts; consulte `scripts/requirements.txt` se o runtime faltar.

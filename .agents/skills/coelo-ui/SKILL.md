@@ -10,6 +10,10 @@ metadata:
 
 # Coelo UI
 
+Capturas, goldens, patches e logs são evidência somente quando o recorte pedir;
+não os trate como contexto atual. Limpeza segue
+`docs/agent/artifact-cleanup-backlog-20260914.md`.
+
 Aplicar o Design System oficial sem transformar propostas em padrões
 silenciosamente.
 

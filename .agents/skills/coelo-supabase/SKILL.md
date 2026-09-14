@@ -9,6 +9,10 @@ metadata:
 
 # Coelo Back-end
 
+Artefatos de execução, backups e snapshots não são contexto operacional;
+consulte `docs/agent/artifact-cleanup-backlog-20260914.md` somente em tarefa de
+limpeza autorizada.
+
 Esta é a porta de entrada curta da skill. Não contém logs de rodada, prompts,
 percentuais ou fila copiada. Estado e pendências ficam em
 `docs/agent/current-state.md` e nos rastreadores apontados por ele.

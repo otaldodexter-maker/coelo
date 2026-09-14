@@ -9,6 +9,10 @@ metadata:
 
 # Coelo Front-end + Back-end
 
+Artefatos de execução não são fonte de decisão; em limpeza, siga o backlog em
+`docs/agent/artifact-cleanup-backlog-20260914.md` e não carregue snapshots por
+inferência.
+
 Esta é a porta de entrada curta para aceites que cruzam camadas. Não contém
 logs de rodada, prompts, percentuais ou fila copiada. Estado e pendências ficam
 em `docs/agent/current-state.md` e nos rastreadores apontados por ele.
