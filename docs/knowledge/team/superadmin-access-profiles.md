@@ -3,6 +3,7 @@ title: Perfis e Permissões do Superadmin
 knowledge_id: superadmin-access-profiles
 source: specs/018-profiles-permissions-superadmin.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-05
 audience: team
 surfaces: [superadmin, admin, principal, authorization, database]

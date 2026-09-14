@@ -3,6 +3,7 @@ title: "Gatilhos de seleção única no Superadmin"
 knowledge_id: coelo-single-select-triggers
 source: .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, catalog]

@@ -3,6 +3,7 @@ title: Agenda institucional do Superadmin
 knowledge_id: superadmin-agenda
 source: specs/050-superadmin-agenda-backend.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-01
 updated_at: 2026-09-07
 audience: team

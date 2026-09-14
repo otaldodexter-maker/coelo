@@ -3,6 +3,7 @@ title: Dados determinísticos do preview Superadmin
 knowledge_id: superadmin-development-dataset
 source: apps/superadmin/lib/app/router/README.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-01
 updated_at: 2026-09-01
 audience: team

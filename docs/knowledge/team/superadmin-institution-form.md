@@ -3,6 +3,7 @@ title: Formulário de instituição do Superadmin
 knowledge_id: superadmin-institution-form
 source: docs/superpowers/specs/2026-07-28-superadmin-institution-form-feedback-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-29
 revised_at: 2026-08-04
 updated_at: 2026-09-03
@@ -92,7 +93,8 @@ tabela e criar/editar) permanecem como referência visual congelada e não devem
 receber mudanças estruturais sem decisão explícita.
 
 As ações de busca/estado devem preservar os estados aprovados de `loading`,
-`erro`, `retry`, `vazio`, `sem resultados`, `not-found` e `unauthorized`.
+`erro`, `retry`, `vazio`, `sem resultados`, 
+ot-found` e `unauthorized`.
 
 Durante o MVP, mídia institucional e privada usa Cloudflare R2 privado via
 Media Gateway, com metadados e autorização server-side no Postgres/Supabase,

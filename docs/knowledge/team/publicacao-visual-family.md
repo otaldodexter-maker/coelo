@@ -3,6 +3,7 @@ title: Família visual Publicação (Coelo Principal)
 knowledge_id: publicacao-visual-family
 source: .agents/skills/coelo-ui/references/principal-visual-surfaces.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-11
 audience: team
 surfaces:

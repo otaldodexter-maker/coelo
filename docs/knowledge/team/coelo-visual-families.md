@@ -3,6 +3,7 @@ title: "Famílias visuais do Coelo e app hospedeiro"
 knowledge_id: "coelo-visual-families"
 source: "docs/design/design-system.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-09-08"
 audience: "team"
 surfaces: [superadmin, admin, principal, site, design]

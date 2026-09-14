@@ -36,9 +36,10 @@ def unique_mapping(loader, node, deep=False):
 
 MetadataLoader.add_constructor("tag:yaml.org,2002:map", unique_mapping)
 AUDIENCES = {"team": "team", "admin": "admin", "users": "user"}
-REQUIRED = ("title", "knowledge_id", "source", "status", "generated_at",
+REQUIRED = ("title", "knowledge_id", "source", "status", "lifecycle", "generated_at",
             "audience", "surfaces", "visibility", "review_owner")
 STATUSES = ("draft", "validated", "deprecated")
+LIFECYCLES = ("current", "future", "historical", "superseded")
 SENSITIVE = {
     "possível CPF": r"\b(?:\d{11}|\d{3}\.\d{3}\.\d{3}-\d{2})\b",
     "atribuição de segredo": r"(?i)\b(?:service_role|secret|token|api[_-]?key)\s*[:=]\s*\S+",
@@ -90,6 +91,8 @@ def article_errors(root, path, folder, metadata, content):
             errors.append(f"campo obrigatório deve ser string não vazia: {field}")
     if metadata.get("status") not in STATUSES:
         errors.append("status inválido")
+    if metadata.get("lifecycle") not in LIFECYCLES:
+        errors.append("lifecycle inválido")
     if metadata.get("audience") != AUDIENCES[folder]:
         errors.append("audience diverge da pasta")
     for field in ("generated_at", "updated_at"):
@@ -155,11 +158,12 @@ def scan(root):
     return records, errors
 
 
-def search(records, query, audience="all", status="validated"):
+def search(records, query, audience="all", status="validated", lifecycle="current"):
     audience = "user" if audience == "users" else audience
     return [record for record in records
             if (audience == "all" or record["metadata"]["audience"] == audience)
             and (status == "all" or record["metadata"]["status"] == status)
+            and (lifecycle == "all" or record["metadata"]["lifecycle"] == lifecycle)
             and query.casefold() in record["content"].casefold()]
 
 
@@ -171,6 +175,7 @@ def main():
     parser.add_argument("--query")
     parser.add_argument("--audience", choices=("all", "team", "admin", "user", "users"), default="all")
     parser.add_argument("--status", choices=(*STATUSES, "all"), default="validated")
+    parser.add_argument("--lifecycle", choices=(*LIFECYCLES, "all"), default="current")
     parser.add_argument("--detailed", action="store_true")
     args = parser.parse_args()
     if args.mode == "search" and not (args.query and args.query.strip()):
@@ -185,7 +190,7 @@ def main():
         if not args.quiet:
             print(f"PASS: {len(records)} artigo(s) validado(s). Revisão humana de conteúdo continua necessária.")
     else:
-        matches = search(records, args.query, args.audience, args.status)
+        matches = search(records, args.query, args.audience, args.status, args.lifecycle)
         if args.detailed:
             print(json.dumps([{"path": r["path"], **r["metadata"]} for r in matches], ensure_ascii=False))
         else:

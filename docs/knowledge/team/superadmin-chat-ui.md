@@ -3,6 +3,7 @@ title: UI de Conversas do Superadmin
 knowledge_id: superadmin-chat-ui
 source: docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-06
 audience: team
 surfaces: [superadmin, conversations]

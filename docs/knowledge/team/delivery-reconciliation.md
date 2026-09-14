@@ -3,6 +3,7 @@ title: "Entrega e reconciliação dos compromissos do Owner"
 knowledge_id: delivery-reconciliation
 source: decisions/0036-delivery-reconciliation-and-owner-commitments.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, development, knowledge]

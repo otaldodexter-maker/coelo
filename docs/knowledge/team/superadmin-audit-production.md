@@ -3,6 +3,7 @@ title: Auditoria produtiva do Superadmin
 knowledge_id: superadmin-audit-production
 source: specs/027-superadmin-audit-production.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-11
 audience: team
 surfaces: [superadmin, audit]

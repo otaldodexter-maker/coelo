@@ -3,6 +3,7 @@ title: "Chat contextual do Coelo Principal no Superadmin"
 knowledge_id: "principal-chat-integration"
 source: "specs/050-principal-ui-ux-closure.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-09-01"
 audience: "team"
 surfaces: [superadmin, principal-preview, chat, conversations]

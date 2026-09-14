@@ -3,6 +3,7 @@ title: "Visualizador de Momentos do Principal"
 knowledge_id: "principal-moments-viewer"
 source: "docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-08-31"
 audience: "team"
 surfaces: [principal, momentos, media, navigation]

@@ -3,6 +3,7 @@ title: Diretório de instituições do Superadmin
 knowledge_id: superadmin-institution-directory
 source: docs/design/design-system.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-29
 revised_at: 2026-08-04
 updated_at: 2026-09-03
@@ -78,7 +79,8 @@ de criação/edição; integração de dados não pode redesenhar ou alterar com
 sem aprovação explícita.
 
 Na composição de diretório, estados de `loading`, `erro`, `retry`, `vazio`,
-`sem resultados`, `not-found` e `unauthorized` preservam a composição existente.
+`sem resultados`, 
+ot-found` e `unauthorized` preservam a composição existente.
 
 Durante o MVP, mídia privada mantém metadados e autorização no Postgres e
 objetos no Cloudflare R2 privado via Media Gateway, conforme ADR 0032.

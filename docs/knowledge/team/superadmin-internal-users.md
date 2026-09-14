@@ -3,6 +3,7 @@ title: Identidade e acesso de Usuários Internos do Superadmin
 knowledge_id: superadmin-internal-users
 source: decisions/0019-superadmin-internal-identity.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-27
 updated_at: 2026-09-09
 audience: team

@@ -3,6 +3,7 @@ title: Assiduidade e Rotina Diária produtivas no Superadmin
 knowledge_id: superadmin-attendance-daily-routine-production
 source: docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-11
 revised_at: 2026-08-25
 audience: team
@@ -14,7 +15,8 @@ review_owner: Coelo Product
 # Assiduidade e Rotina Diária produtivas no Superadmin
 
 Assiduidade usa somente dados reais e autorização recalculada no Supabase. A
-landing combina `Nova chamada` com dashboard analítico e operacional autorizado,
+landing combina 
+ova chamada` com dashboard analítico e operacional autorizado,
 sem avisos de demonstração. Métricas, rankings, série temporal e tabela são
 calculados no servidor dentro do escopo efetivo. Exportação real está fora do
 MVP pela ADR 0031; o botão permanece visível e informa disponibilidade futura.

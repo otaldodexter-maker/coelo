@@ -3,6 +3,7 @@ title: Etapa de conclusão visual do Coelo
 knowledge_id: coelo-visual-completion-stage
 source: docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
 status: validated
+lifecycle: "historical"
 generated_at: 2026-08-28
 updated_at: 2026-08-28
 audience: team
@@ -22,7 +23,8 @@ autoriza persistência, publicação, arquivo, mídia ou autorização remotos. 
 de importar, exportar e baixar permanecem visíveis quando pertencem à tarefa do
 usuário; sem backend, comunicam indisponibilidade e nunca simulam sucesso.
 
-Entradas genéricas `Criar ...` saem do menu lateral. Assiduidade mantém `Nova
+Entradas genéricas `Criar ...` saem do menu lateral. Assiduidade mantém 
+ova
 chamada`, e Acontece, Momentos e Agora mantêm suas entradas próprias de
 publicação. O dashboard de Assiduidade não repete esse CTA.
 

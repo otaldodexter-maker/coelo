@@ -3,6 +3,7 @@ title: Protótipos operacionais do Superadmin
 knowledge_id: superadmin-operational-prototypes
 source: docs/superpowers/specs/2026-08-03-superadmin-operational-surfaces-prototype-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-03
 updated_at: 2026-08-05
 audience: team

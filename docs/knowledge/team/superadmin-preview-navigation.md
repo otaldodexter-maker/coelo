@@ -3,6 +3,7 @@ title: Navegacao persistente das pre-visualizacoes do Superadmin
 knowledge_id: superadmin-preview-navigation
 source: docs/superpowers/specs/2026-08-04-superadmin-preview-navigation-correction-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-05
 audience: team
 surfaces: [superadmin, navigation, previews]

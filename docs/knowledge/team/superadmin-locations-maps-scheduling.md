@@ -3,6 +3,7 @@ title: Locais, mapas e agendamentos no Superadmin
 knowledge_id: superadmin-locations-maps-scheduling
 source: docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-02
 updated_at: 2026-09-07
 audience: team

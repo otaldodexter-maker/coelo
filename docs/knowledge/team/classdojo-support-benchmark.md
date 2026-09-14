@@ -3,6 +3,7 @@ title: Benchmark de suporte e stories do ClassDojo
 knowledge_id: classdojo-support-benchmark
 source: docs/product/competitive-map.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-03
 audience: team
 surfaces: [superadmin, support, help-center]

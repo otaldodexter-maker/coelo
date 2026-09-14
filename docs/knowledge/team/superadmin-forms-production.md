@@ -3,6 +3,7 @@ title: Formulários produtivos do Superadmin
 knowledge_id: superadmin-forms-production
 source: docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-13
 updated_at: 2026-09-12
 audience: team

@@ -3,6 +3,7 @@ title: Hierarquia de interação administrativa Coelo
 knowledge_id: coelo-admin-interaction-hierarchy
 source: docs/design/design-system.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-08
 audience: team
 surfaces: [admin, superadmin, catalog]

@@ -3,6 +3,7 @@ title: Diretório de unidades do Superadmin
 knowledge_id: superadmin-unit-directory
 source: decisions/0016-unit-type-and-plan-inheritance.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-29
 updated_at: 2026-08-05
 audience: team
@@ -39,7 +40,8 @@ preenchido.
 
 O schema agora possui `units.institution_type_id` obrigatório e
 `units.plan_override_id` opcional. O tipo usa `institution_types`; o override
-usa `plans`, e `NULL` mantém a herança do plano institucional. As duas colunas
+usa `plans`, e 
+ULL` mantém a herança do plano institucional. As duas colunas
 são filtráveis e não importáveis no catálogo atual.
 
 A tela ainda usa repositórios fake e estado em memória. Busca, convite, vínculos

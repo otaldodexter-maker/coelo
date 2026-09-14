@@ -3,6 +3,7 @@ title: "Etapa 3: escopo planejado do MVP"
 knowledge_id: etapa3-mvp-planned-scope
 source: decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md
 status: validated
+lifecycle: "future"
 generated_at: 2026-09-12
 audience: team
 surfaces: [superadmin, admin, principal, authorization, knowledge]

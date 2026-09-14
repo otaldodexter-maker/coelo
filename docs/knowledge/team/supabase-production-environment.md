@@ -3,6 +3,7 @@ title: Ambiente Supabase de produção
 knowledge_id: supabase-production-environment
 source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-01
 updated_at: 2026-09-14
 audience: team
@@ -65,7 +66,8 @@ Regras medidas na Rodada 4 (noite de 10→11/09/2026, ADR 0034 Decisões 12 e
   `ALTER TYPE ... ADD VALUE` precisa ir em arquivo próprio anterior, senão o
   valor novo não pode ser usado (erro 55P04). O ledger
   `supabase_migrations.schema_migrations` é preenchido à mão (`version`,
-  `name`) no mesmo lote.
+  
+ame`) no mesmo lote.
 - **Ator no realm de pessoas:** os usuários do Superadmin existem só no realm
   interno v2; as RPCs baseadas em `current_person_id()` só os alcançam pela
   ponte de ator (`20260910220400`: pessoa de serviço + membership espelhada +

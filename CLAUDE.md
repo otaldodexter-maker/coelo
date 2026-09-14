@@ -1,35 +1,19 @@
 ---
-source: "AGENTS.md; configuração local de skills compartilhadas"
+source: "AGENTS.md; docs/agent/*.md"
 status: "active"
-generated_at: "2026-09-09"
+generated_at: "2026-09-14"
 ---
 
-# Coelo - Claude Code
+# Coelo no Claude Code
 
 @AGENTS.md
 
-## Cadeia De Instrucoes
+## Ajustes do ambiente Claude
 
-`AGENTS.md` termina com `@RTK.md`, que resolve para `./RTK.md` na raiz do projeto.
-Esse arquivo e um superset de `C:\Users\adrie\.codex\RTK.md`: contem todo o conteudo
-do RTK global mais a secao "Coelo Decision". Por isso a cadeia canonica e
-`CLAUDE.md -> AGENTS.md -> RTK.md` (profundidade 2, limite de 4 hops), sem importar o
-RTK global separadamente, o que duplicaria conteudo e criaria um import externo.
-
-## Ambiente Local
-
-- Windows 11 + PowerShell. Comandos de shell devem usar sintaxe PowerShell.
-- Skills do projeto ficam em `.claude/skills/`, junctions para `.agents/skills/` e
-  para `.codex/skills/ui-ux-pro-max`. Editar sempre a origem, nunca o link.
-- Skills pessoais ficam em `~/.claude/skills/`, junctions para `~/.agents/skills/` e
-  para `~/.codex/skills/hatch-pet`.
-
-## Nomes Canonicos Das Skills De Revisao
-
-Os diretorios mantem nomes historicos, mas os nomes invocaveis sao os do frontmatter:
-
-| Diretorio                      | Nome invocavel           |
-| ------------------------------ | ------------------------ |
-| `coelo-flutter-review`         | `coelo-frontend`         |
-| `coelo-supabase`               | `coelo-backend`          |
-| `coelo-flutter-supabase-review`| `coelo-frontend-backend` |
+- Use PowerShell no Windows.
+- Skills compartilhadas ficam em `.agents/skills`; os diretórios em
+  `.claude/skills` são junctions. Edite sempre a origem compartilhada.
+- O estado do trabalho está em `docs/agent/current-state.md`; não trate
+  sessões, caches, backups, worktrees ou artefatos como fonte do produto.
+- Não abra uma nova rodada automaticamente: R13 está ativa e R14 requer
+  fechamento, transferência dos não terminais e abertura explícita do Owner.

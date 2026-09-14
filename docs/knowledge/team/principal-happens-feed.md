@@ -3,6 +3,7 @@ title: "Estrutura do Acontece no Principal"
 knowledge_id: principal-happens-feed
 source: "specs/050-principal-ui-ux-closure.md"
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-31
 updated_at: 2026-09-01
 audience: team

@@ -3,6 +3,7 @@ title: Diretório de atividades do Superadmin
 knowledge_id: superadmin-activity-directory
 source: decisions/0032-mvp-private-media-r2.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-31
 updated_at: 2026-09-03
 audience: team

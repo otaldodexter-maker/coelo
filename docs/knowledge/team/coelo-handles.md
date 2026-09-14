@@ -3,6 +3,7 @@ title: O @ é a identidade pública de toda entidade
 knowledge_id: coelo-handles
 source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-11
 updated_at: 2026-09-11
 audience: team
@@ -30,7 +31,8 @@ disponibilidade enquanto o usuário digita (RPCs
 `superadmin_structure_handle_availability_v1` e
 `superadmin_person_handle_availability`), no máximo uma vez a cada 30 dias por
 entidade (`handle_last_changed_at`; erro `SAI_HANDLE_COOLDOWN` com
-`next_allowed_at`). Unicidade é global entre pessoas, instituições, unidades,
+
+ext_allowed_at`). Unicidade é global entre pessoas, instituições, unidades,
 turmas e atividades.
 
 Quem edita o @ de quem não tem login: a instituição para funcionários; os

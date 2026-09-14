@@ -3,6 +3,7 @@ title: Composto de diretório administrativo (CoeloAdminDirectory)
 knowledge_id: coelo-admin-directory-composite
 source: docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-10
 updated_at: 2026-09-12
 audience: team
@@ -43,7 +44,8 @@ e mantém uma allowlist que só diminui.
   desabilitado.
 - Grade de 340 px com cards da mesma altura por linha; card mínimo de 216 px.
 - Rodapé de paginação fixo, compacto abaixo de 600 px (setas com rótulo).
-- Arquivos é configuração: a tela passa a lista de ações ou `null` para
+- Arquivos é configuração: a tela passa a lista de ações ou 
+ull` para
   esconder o botão (Conversas).
 - Estado com linha principal e linha secundária opcional (mensagem do serviço
   ou orientação), com Tentar novamente ou Limpar filtros.

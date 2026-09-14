@@ -3,6 +3,7 @@ title: Diretório de Pessoas do Superadmin
 knowledge_id: superadmin-people-directory
 source: specs/019-superadmin-people-directory.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-29
 updated_at: 2026-09-07
 audience: team

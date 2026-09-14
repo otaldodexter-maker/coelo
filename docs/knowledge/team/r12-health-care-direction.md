@@ -3,6 +3,7 @@ title: "Direção futura R12 para cuidado e medicação"
 knowledge_id: r12-health-care-direction
 source: docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md
 status: validated
+lifecycle: "historical"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, health-care]

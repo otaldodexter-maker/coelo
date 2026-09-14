@@ -3,6 +3,7 @@ title: "Principal hospedado: contexto, navegação e mídia"
 knowledge_id: principal-host-context-media
 source: decisions/0037-principal-host-context-and-media-controls.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, principal]

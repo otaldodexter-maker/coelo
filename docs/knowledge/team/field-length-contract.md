@@ -3,6 +3,7 @@ title: "Limite de tamanho de campo é contrato, e quando falta no cliente o erro
 knowledge_id: "field-length-contract"
 source: "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema.md"
 status: "draft"
+lifecycle: "current"
 generated_at: "2026-09-10"
 updated_at: "2026-09-10"
 audience: "team"
@@ -78,7 +79,8 @@ correspondente. Dois avisos de medição, aprendidos errando:
   do `create table`. Medir apenas a criação subconta — foi assim que uma varredura
   minha contou 82 colunas onde havia 93;
 - o nome da coluna por si não identifica a tela. `description` aparece com 2000,
-  4000 e 10000 em tabelas diferentes, e `name` com 120 e 160. Amarrar o limite à
+  4000 e 10000 em tabelas diferentes, e 
+ame` com 120 e 160. Amarrar o limite à
   tabela que aquele formulário escreve é parte da medição, não um detalhe.
 
 Tabela sem restrição de tamanho também é resultado: as tabelas de cardápios não

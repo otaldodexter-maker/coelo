@@ -20,7 +20,7 @@ class KnowledgeTests(unittest.TestCase):
         (self.root / "AGENTS.md").write_text("Fonte sintética.", encoding="utf-8")
         (self.parent / "external.md").write_text("Fonte externa sintética.", encoding="utf-8")
         self.metadata = dict(title="Exemplo", knowledge_id="example", source="AGENTS.md",
-                             status="validated", generated_at="2026-09-08", audience="team",
+                             status="validated", lifecycle="current", generated_at="2026-09-08", audience="team",
                              surfaces=["documentation"], visibility="internal", review_owner="Equipe")
 
     def tearDown(self):
@@ -62,7 +62,8 @@ class KnowledgeTests(unittest.TestCase):
         updates = [{"generated_at": "2026-99-99"}, {"generated_at": "2025-02-29"},
                    {"updated_at": "2026-13-01"}, {"surfaces": []}, {"surfaces": "superadmin"},
                    {"surfaces": [2]}, {"title": []}, {"source": {}}, {"audience": "user"},
-                   {"status": "approved"}, {"review_owner": ""}, {"knowledge_id": "Not valid"}]
+                   {"status": "approved"}, {"lifecycle": "unknown"}, {"review_owner": ""},
+                   {"knowledge_id": "Not valid"}]
         for update in updates:
             with self.subTest(update=update):
                 self.write(update)
@@ -118,6 +119,14 @@ class KnowledgeTests(unittest.TestCase):
             self.assertEqual(errors, [])
             self.assertEqual(bool(knowledge.search(records, "agulha")), status == "validated")
             self.assertEqual(len(knowledge.search(records, "AgUlHa", status="all")), 1)
+
+    def test_search_excludes_noncurrent_lifecycle_by_default(self):
+        for lifecycle in knowledge.LIFECYCLES:
+            self.write({"lifecycle": lifecycle})
+            records, errors = knowledge.scan(self.root)
+            self.assertEqual(errors, [])
+            self.assertEqual(bool(knowledge.search(records, "agulha")), lifecycle == "current")
+            self.assertEqual(len(knowledge.search(records, "AgUlHa", lifecycle="all")), 1)
 
     def test_search_filters_audience_and_accepts_users_alias(self):
         self.write()

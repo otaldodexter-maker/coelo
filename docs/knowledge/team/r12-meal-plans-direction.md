@@ -3,6 +3,7 @@ title: "Direção futura R12 para Cardápios"
 knowledge_id: r12-meal-plans-direction
 source: docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md
 status: validated
+lifecycle: "historical"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, meal-plans]

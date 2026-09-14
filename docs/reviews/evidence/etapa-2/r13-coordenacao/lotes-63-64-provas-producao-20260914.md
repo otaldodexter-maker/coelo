@@ -110,3 +110,22 @@ rota real no Chrome.
 - Cliente: `SupportTicket.closureReason` + `supportStatusLabel()`; chip do detalhe mostra
   “Concluído · Expirado/Revogado”; testes de Suporte verdes exceto o golden que já falhava
   (cabeçalho global, R12-10).
+
+## Rota real no Chrome (14/09, 15:00–15:30) — Estrutura e Conta
+
+Build `flutter build web --release -t test_driver/qa_main.dart --dart-define-from-file=.env.local
+--dart-define=COELO_QA_TEXT_ENTRY_EMULATION=true`, servido por `serve.py` em `127.0.0.1:3013`;
+Chrome CDP (porta 9413, SwiftShader, perfil próprio); login `qa-r06-estrutura` pelo `qa_drive.dart login`;
+comandos do driver por `Runtime.evaluate` (`set_frame_sync=false` após cada carga); cliques por
+coordenada. Nota de método: no Windows o `dart run` passa por `cmd`, que corta URLs em `&` —
+montar a query string em JS (`String.fromCharCode(38)`). Capturas em `capturas/`.
+
+| action_id | Rota normal | CRUD em produção | Reload | Negativa |
+|---|---|---|---|---|
+| groups.list | `/groups` lista turmas reais; "Turma R05 Estrutura" com Alunos 1 / Atividades 3 (antes zeros); busca "R05" filtra (hotfix do lote 64). | leitura | mantém lista e contadores | pgTAP 10/10 + RPC com instituição alheia vazia |
+| activities.assessment | `/activities/95b98978…/assessment-settings?institutionId&unitId&configurationId=b04c879e` carrega o rascunho retido (Anual, período "R08 sintético", instrumento). | "Salvar rascunho" após renomear o instrumento → `management_version` 2→3 em `activity_assessment_configurations`. | relê "Instrumento R08 (rota real R13)" | pgTAP 8/8 + `read_by_id` inexistente → `data: null` |
+| assessments.entry / gradebook / detail | `/assessments/gradebooks/d2c945d8…/edit` lista "Crianca QA R04" (antes ausente). | nota 8.5 + "Salvar rascunho" → `assessment_gradebooks.management_version` 1→2. | relê 8.5, média 8.50, situação Pendente | pgTAP 13/13 (escopo/tenant) |
+| account.profile | `/profile` mostra sigla/cor/celular gravados no lote 63. | sigla QE→QR + "Salvar alterações" → "Perfil atualizado"; `people.account_avatar_initials = QR`. | relê QR no avatar, cabeçalho e campo | `22023` sem celular; ator = self (`assert_account_actor`) |
+
+Não exercitado na rota real: `assessments.close/reopen` (fechamento/reabertura), foto R2 da Conta
+(sem persistência implementada — `account.profile` BE segue `remote-green`, E2E aberto).

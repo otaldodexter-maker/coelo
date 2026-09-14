@@ -3,6 +3,7 @@ title: Diretório de turmas do Superadmin
 knowledge_id: superadmin-group-directory
 source: docs/superpowers/specs/2026-07-29-superadmin-group-directory-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-03
 audience: team
 surfaces: [superadmin, groups]

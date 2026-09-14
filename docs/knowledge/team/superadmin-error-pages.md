@@ -4,6 +4,7 @@ title: Páginas de erro do Superadmin
 knowledge_id: superadmin-error-pages
 source: docs/design/design-system.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-28
 audience: team
 surfaces: [superadmin, error-pages]

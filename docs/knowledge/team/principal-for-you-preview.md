@@ -3,6 +3,7 @@ title: "Para você do Principal"
 knowledge_id: "principal-for-you-preview"
 source: "docs/superpowers/specs/2026-08-20-coelo-principal-for-you-preview-design.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-08-20"
 updated_at: "2026-08-31"
 audience: "team"
@@ -36,7 +37,8 @@ raios e gaps canônicos. Mobile, tablet e web usam o dock flutuante global do
 Principal; a ação laranja central de publicar no Agora é entre 10% e 25% maior
 que a proposta e cruza exatamente em 50/50 o limite superior do dock.
 
-O container de rota consulta `NoticeRepository` pelos tipos produtivos e status
+O container de rota consulta 
+oticeRepository` pelos tipos produtivos e status
 ativo, aplica a projeção e trata carregamento, ausência de comunicações e falha
 com retry. A ausência de conteúdo editorial não remove os atalhos e o contexto
 útil do hub.

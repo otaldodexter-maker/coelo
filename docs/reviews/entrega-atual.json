@@ -2294,9 +2294,9 @@
       "actionIds": [
         "account.profile"
       ],
-      "fe": "Parcial: rodapé/busca, nome, crop e confirmação autoritativa testados.",
-      "be": "BE remote-green (lote 63, 14/09): save_v2 sigla/cor/celular + get provados em produção; foto R2 ausente.",
-      "e2e": "E2E pendente na rota real.",
+      "fe": "FE verified (rota real 14/09): sigla QE→QR salva e relida após reload, celular e cor exibidos.",
+      "be": "BE remote-green (lote 63): sigla/cor/celular em produção; foto R2 ausente.",
+      "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "C0 R12",
       "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão.",
@@ -2329,14 +2329,14 @@
     },
     {
       "id": "owner.r12-48",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "activities.assessment",
         "activities.publish"
       ],
-      "fe": "FE pendente na rota real.",
-      "be": "BE done (lote 63, 14/09): UPDATE de b04c879e em produção version 1→2 e releitura.",
-      "e2e": "E2E pendente na rota real.",
+      "fe": "FE verified (rota real 14/09): rascunho b04c879e carregado e salvo pela tela.",
+      "be": "BE done (lote 63): UPDATE em produção (version 1→2 por RPC, 2→3 pela tela).",
+      "e2e": "verified-e2e: rota normal, persistência, reload e negativa por id inexistente; activities.publish já era done sem novo aceite.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "C0 R12",
       "nextGate": "Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço.",
@@ -2357,9 +2357,9 @@
         "assessments.close",
         "assessments.reopen"
       ],
-      "fe": "FE pendente na rota real.",
-      "be": "BE done em gradebook/detail (lote 63, 14/09): diário d2c945d8 lista a participante em produção; entry/close/reopen local-green.",
-      "e2e": "E2E pendente na rota real.",
+      "fe": "FE verified em entry/gradebook/detail (rota real 14/09): participante listada, nota 8.5 salva e relida.",
+      "be": "BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green.",
+      "e2e": "verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "C0 R12",
       "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
@@ -2372,13 +2372,13 @@
     },
     {
       "id": "owner.r12-50",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "groups.list"
       ],
-      "fe": "FE/UI reload pendente na rota real.",
-      "be": "BE done (lotes 63+64, 14/09): turma 4214106c com contadores reais em produção; hotfix do escape da busca.",
-      "e2e": "E2E pendente na rota real.",
+      "fe": "FE verified (rota real 14/09): /groups com Alunos 1",
+      "be": "Atividades 3 na turma 4214106c e busca \"R05\"; reload mantém.",
+      "e2e": "BE done (lotes 63+64). / verified-e2e: rota normal, leitura de produção, negativa por instituição alheia, reload.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "C0 R12",
       "nextGate": "Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores.",

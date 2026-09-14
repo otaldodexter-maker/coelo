@@ -3,6 +3,7 @@ title: Grupos e envios do chat do Superadmin
 knowledge_id: superadmin-chat-groups
 source: docs/superpowers/specs/2026-07-28-superadmin-chat-local-redesign-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-29
 audience: team
 surfaces: [superadmin, conversations]

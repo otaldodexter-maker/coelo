@@ -3,6 +3,7 @@ title: "Meu perfil: cabeçalho e organização de acesso"
 knowledge_id: account-profile-header-access
 source: docs/design/account-profile-owner-adjustments-20260913.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin]

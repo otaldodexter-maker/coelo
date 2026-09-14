@@ -32,6 +32,7 @@ title: "Artigo de teste"
 knowledge_id: "test-capability"
 source: "AGENTS.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-07-27"
 audience: "$Audience"
 surfaces: ["superadmin"]
@@ -89,6 +90,15 @@ try {
       throw "Cenário obrigatório ausente: $outcome"
     }
   }
+
+  Write-Article -RelativePath 'docs\knowledge\team\future.md' -Audience 'team'
+  (Get-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\future.md') -Raw).
+    Replace('lifecycle: "current"', 'lifecycle: "future"') |
+    Set-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\future.md')
+  $currentResults = @(& $searcher -Root $testRoot -Audience team -Query 'reutilizavel')
+  if ($currentResults.Count -ne 1) { throw "Consulta atual incluiu artigo futuro: $($currentResults -join ', ')" }
+  $allLifecycleResults = @(& $searcher -Root $testRoot -Audience team -Query 'reutilizavel' -Lifecycle all)
+  if ($allLifecycleResults.Count -ne 2) { throw "Consulta histórica não encontrou artigo futuro: $($allLifecycleResults -join ', ')" }
 
   & python -X utf8 (Join-Path $PSScriptRoot 'test_knowledge.py')
   if ($LASTEXITCODE -ne 0) { throw 'Regressões de validação/busca falharam.' }

@@ -3,6 +3,7 @@ title: Perfil e configurações do Superadmin
 knowledge_id: superadmin-profile-settings
 source: docs/superpowers/specs/2026-07-28-superadmin-profile-settings-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-28
 updated_at: 2026-08-28
 audience: team

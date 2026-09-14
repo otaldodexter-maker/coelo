@@ -3,6 +3,7 @@ title: "Publicação do Agora no MVP"
 knowledge_id: "now-publication-mvp"
 source: "decisions/0032-mvp-private-media-r2.md"
 status: "validated"
+lifecycle: "current"
 generated_at: "2026-08-20"
 updated_at: "2026-09-08"
 audience: "team"
@@ -44,7 +45,8 @@ retry preserva a operação original. Vídeo resolvido possui representação pr
 e não equivale a `Mídia indisponível`; fonte quebrada continua fail-closed, sem
 substituição por fixture demo.
 
-O preview de mídia do rascunho pertence ao autor e usa capability de criação com URL de 60 segundos. O consumo público é um contrato separado: `now.publications.read`, feed filtrado por tenant, instituição, unidade, grupo, papel, audiência, vínculo ativo e expiração; cada mídia retorna um ticket opaco, individual e descartável que a Edge Function troca por URL de 60 segundos após revalidar a pessoa autenticada.
+O preview de mídia do rascunho pertence ao autor e usa capability de criação com URL de 60 segundos. O consumo público é um contrato separado: 
+ow.publications.read`, feed filtrado por tenant, instituição, unidade, grupo, papel, audiência, vínculo ativo e expiração; cada mídia retorna um ticket opaco, individual e descartável que a Edge Function troca por URL de 60 segundos após revalidar a pessoa autenticada.
 
 
 A referência visual do Agora de31/08 está preservada em `docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png`, com hash e origem no README. O vínculo canônico está no item31 da spec de fechamento visual e na spec036. Ela mantém “Sua publicação” e preview desktop, sem trilho lateral ou barra segmentada; isso não remove funções ou validações e não aprova goldens. A redação geral sobre etapas tem conflito registrado em `docs/open-questions.md`, sem extensão automática a Acontece/Momentos.

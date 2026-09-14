@@ -3,6 +3,7 @@ title: Paginação numerada administrativa
 knowledge_id: coelo-admin-numbered-pagination
 source: docs/design/design-system.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-27
 audience: team
 surfaces: [admin, superadmin, catalog]

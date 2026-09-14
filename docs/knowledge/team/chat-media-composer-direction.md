@@ -3,6 +3,7 @@ title: "Chat: direção de mídia e campo de escrita"
 knowledge_id: chat-media-composer-direction
 source: docs/design/chat-media-composer-owner-reference-20260913.md
 status: validated
+lifecycle: "future"
 generated_at: 2026-09-13
 audience: team
 surfaces: [superadmin, principal]

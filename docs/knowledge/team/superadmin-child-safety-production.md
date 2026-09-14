@@ -3,6 +3,7 @@ title: Segurança da criança produtiva
 knowledge_id: superadmin-child-safety-production
 source: decisions/0032-mvp-private-media-r2.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-12
 updated_at: 2026-09-03
 audience: team

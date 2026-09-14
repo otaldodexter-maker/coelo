@@ -3,6 +3,7 @@ title: "O relatório de sincronização do Catálogo é a linha de base, não s�
 knowledge_id: "catalog-sync-report-baseline"
 source: "docs/reviews/etapa-2-operacao/reports/E2-noturna-catalog-sync-20260909.md"
 status: "draft"
+lifecycle: "current"
 generated_at: "2026-09-09"
 updated_at: "2026-09-09"
 audience: "team"

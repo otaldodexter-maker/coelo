@@ -1315,15 +1315,15 @@
       "family": "groups",
       "screen": "Turmas / Diretório",
       "scope": "mvp",
-      "done": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes. | Destino Owner: R12-50; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-50 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11: projeção de contadores/herança/status/tenant10/10 pgTAP locais PASS;candidato20260913143659;aplicação remota e UI/reload corrigidos pendentes. | Destino Owner: R12-50; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-50 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R13: rota normal + leitura de produção + negativa por instituição alheia + reload (capturas groups-list-*).",
+      "fe": "R13 rota real: /groups com contadores reais e busca; reload mantém.",
       "be": "R13 lote 63+64: projeção de contadores aplicada em produção (turma 4214106c student_count=1, 3 atividades) e hotfix do escape da busca (22025); pgTAP 10/10 + 4/4; negativa por instituição alheia vazia.",
       "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md R01/16h: C04r15–17;f147f6aa/621c2202/728feff9/d8741c60/84a05151;C04I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C04/r61; C04estado47/r61; não promover E como concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 0ce8e6b2a+10d69e38b group-detail-entry-manifest.json; 0ebae4394+36d3c6302 group-detail-read-preflight-manifest.json; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg; evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg; docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md; docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
@@ -1355,10 +1355,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
-          "revision": "estrutura.json rev 33",
-          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/groups-list-vazio.jpg; evidence/etapa-2/r04-estrutura/rota-real/groups-list-apos-reload.jpg",
-          "recordedAt": "2026-09-11T09:41:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
@@ -1367,10 +1367,10 @@
           "recordedAt": "2026-09-14T13:10:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-estrutura/rota-real/groups-list.jpg",
-          "revision": "estrutura.json rev 56",
-          "environment": "Chrome (CDP 9571, --user-data-dir proprio) contra o build release de test_driver/qa_main.dart (0434548b9 + merge fcdded416) servido em 127.0.0.1:3001 com .env.local de producao; usuario qa-r06-estrutura@coelo.me; login e taps pelo Flutter Driver web ($flutterDriver via CDP, set_frame_sync false)",
-          "recordedAt": "2026-09-11T20:40:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         }
       }
     },
@@ -2879,15 +2879,15 @@
       "family": "activities",
       "screen": "Atividade / Avaliar",
       "scope": "mvp",
-      "done": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-48 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11: UPDATE do mesmo draft reproduzido; candidato causal isola quatro DELETEs;8/8 pgTAP locais PASS; aplicação remota bloqueada por requisito PITR pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-48 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R13: UPDATE do rascunho retido pela UI em produção, reload relê, negativa por id inexistente.",
+      "fe": "R13 rota real: rascunho b04c879e carregado e salvo pela tela (version 2→3).",
       "be": "R13 lote 63: UPDATE da configuração retida b04c879e em produção (version 1→2) e releitura; pgTAP 8/8.",
       "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; ef751c33b activity-composition-r16-manifest.json; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r09-realm-interno-20260912-1542/assessment-read-proof.md; docs/reviews/evidence/etapa-2/r10-coordenacao/assessment-scope.md; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md; docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "certifications": {
@@ -2896,6 +2896,18 @@
           "revision": "8e33db805",
           "environment": "production",
           "recordedAt": "2026-09-14T13:10:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         }
       }
     },
@@ -2972,15 +2984,15 @@
       "family": "assessments",
       "screen": "Avaliações / Lançamento",
       "scope": "mvp",
-      "done": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "be": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R13: rota normal, nota persistida em produção, reload relê 8.5/8.50, escopo provado no pgTAP.",
+      "fe": "R13 rota real: nota 8.5 lançada e salva no diário d2c945d8.",
+      "be": "R13: save_gradebook em produção pela tela (management_version 1→2) sobre o lote 63; pgTAP 13/13.",
       "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; 32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json; flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev; coordenacao.json R04 rev 22 (lote11); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/assessments-entry.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
@@ -2990,6 +3002,26 @@
         "recordedAt": "2026-09-09T13:19:23.171934-03:00",
         "note": "R02 D02: dependência comum Configuração recupera Error e libera salvar;5d77b506→1c09cb7a,4 testes PASS na basee9fdd88d, contados uma vez. Não certifica esta ação integral.",
         "certifiesWholeAction": false
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        }
       }
     },
     {
@@ -2997,15 +3029,15 @@
       "family": "assessments",
       "screen": "Avaliações / Diário",
       "scope": "mvp",
-      "done": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R13: rota normal + gradebook_read de produção + reload; escopo no pgTAP 13/13.",
+      "fe": "R13 rota real: diário d2c945d8 lista a participante (antes ausente).",
       "be": "R13 lote 63: diário d2c945d8 lista todos os participantes ativos em produção (Crianca QA R04 antes ausente); pgTAP 13/13.",
       "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; R01/C00 2026-09-08T19:00:55-03:00 428e14b7: Gradebook rejeita identidade e escopo divergentes. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; 32be87ca2e2ee18ae27cd69f699773e19e3dc3cf; docs/reviews/evidence/etapa-2/noturna-estrutura/assessments-draft-error-manifest.json; flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev; coordenacao.json R04 rev 22 (lote11); evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-estrutura/assessments-api-execution-20260912.json; docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
@@ -3022,6 +3054,18 @@
           "revision": "8e33db805",
           "environment": "production",
           "recordedAt": "2026-09-14T13:10:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         }
       }
     },
@@ -3080,15 +3124,15 @@
       "family": "assessments",
       "screen": "Avaliação / Detalhe",
       "scope": "mvp",
-      "done": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11: all sem participante explícito e snapshot0 reproduzidos no diário retido; candidato local20260913145023 com13/13 pgTAP PASS (nota/read/close/reopen/versão/selected/tenant). Remoto não aplicado; PITR pendente. Sem recriar vínculo/diário. | Destino Owner: R12-49; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-49 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R13: rota normal + leitura de produção + reload.",
+      "fe": "R13 rota real: detalhe do diário com participantes, instrumento e média.",
       "be": "R13 lote 63: gradebook_read de d2c945d8 em produção com participantes, eventos e configuração ativa.",
       "evidence": "commit831fb5a8; commit8f9d5123; packages/coelo_database/migrations/20260901182838_superadmin_assessments_internal_v2.sql; Fechamento R01 C03/r33; C00 suíte conjunta74PASS; executor41AssessmentsPASS, não somados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-5908a330-e9fdd88d.json; flutter test test/features/assessments -> 42 PASS; ausencia de goldens confirmada por find e por git log --diff-filter em origin/dev; coordenacao.json R04 rev 22 (lote11); evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r10-coordenacao/closure-draft.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T13:19:23.171934-03:00",
@@ -3105,6 +3149,18 @@
           "revision": "8e33db805",
           "environment": "production",
           "recordedAt": "2026-09-14T13:10:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         }
       }
     },
@@ -7358,12 +7414,12 @@
       "screen": "Conta / Perfil",
       "scope": "mvp",
       "done": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-46 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R11 parcial:59 casos Flutter focais PASS, teclado mobile/Tab com rodape acima do teclado, texto200%, crop e confirmacao autoritativa; nome/cancelar/reload/header observados. Foto R2 ausente e sigla/cor/metadados SQL nao aplicados; E2E pendente. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-46 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "fe": "R13 rota real: /profile relê sigla/cor/celular, salva sigla QE→QR e relê após reload; foto R2 continua sem persistência (BE remote-green).",
       "be": "R13 lote 63: save_v2 sigla/cor/celular e get em produção (contrato avatar v2); foto R2 ainda não implementada, por isso não é done.",
       "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.profile); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.profile); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png; docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md; docs/design/account-profile-owner-adjustments-20260913.md; docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md; docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "remote-green",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": 51,
@@ -7380,10 +7436,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
-          "revision": "comunicacao/operacoes.json rev 48",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
-          "recordedAt": "2026-09-11T21:05:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8511514dc",
+          "environment": "production",
+          "recordedAt": "2026-09-14T15:30:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
@@ -9150,7 +9206,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-14T15:59:56.134Z",
+  "updatedAt": "2026-09-14T18:31:52.887Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

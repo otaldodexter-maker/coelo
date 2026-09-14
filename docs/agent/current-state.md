@@ -1,0 +1,50 @@
+---
+title: "Estado atual do trabalho do Coelo"
+source: "Owner em 2026-09-14; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R13-pendencias.md; RODADAS.md"
+status: "active"
+generated_at: "2026-09-14"
+updated_at: "2026-09-14"
+audience: "team"
+---
+
+# Estado atual
+
+## Agora
+
+- A Etapa 2 está na R13.
+- A R13 é a fila operacional corrente e está sendo trabalhada no Claude.
+- R14 está preparada, mas não iniciada e não deve ser disparada automaticamente.
+- A próxima tarefa deve começar pelo primeiro gate executável da R13, não por
+  uma rodada anterior.
+
+## Fonte da fila atual
+
+Use, nesta ordem:
+
+1. [Estado atual da Etapa 2](../reviews/etapa-2-operacao/ETAPA-2-estado-atual.md);
+2. [Pendências R13](../reviews/etapa-2-operacao/next-round/R13-pendencias.md);
+3. [Projeção R13](../reviews/etapa-2-operacao/next-round/R13-projecao-atual.md);
+4. [Itens atuais do Owner](../reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json);
+5. [Inventário por action_id](../reviews/inventario-etapa-2.json), somente para
+   o detalhe da ação.
+
+Os três rastreadores grandes são fontes de detalhe e auditoria. Não são a
+entrada inicial para uma tarefa.
+
+## Regra de passagem R13 → R14
+
+Quando a R13 for fechada formalmente:
+
+- itens `done` ou aceitos não são transferidos nem reabertos;
+- itens `open`, `partial`, bloqueados ou sem prova são levados para a R14 com o
+  mesmo `action_id`/Owner ID e nova referência de rodada;
+- não criar cópia concorrente em R12, R13 ou R14;
+- atualizar este arquivo, `RODADAS.md`, o catálogo corrente, o inventário e os
+  rastreadores no mesmo ciclo;
+- somente depois registrar que a R14 está aberta.
+
+## Fora do trabalho corrente
+
+Etapa 3, V1, V2, pós-MVP, históricos R01–R12 e artefatos de execução não são
+trabalho corrente. Consulte [backlog.md](backlog.md) apenas quando a tarefa
+explicitamente tratar desses horizontes.

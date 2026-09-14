@@ -3,6 +3,7 @@ title: Operação de Saúde e Cuidado
 knowledge_id: health-care
 source: specs/020-superadmin-health-care.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-04
 audience: admin
 surfaces: [admin, health-care, child-care]

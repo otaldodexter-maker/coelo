@@ -3,6 +3,7 @@ title: "Conversas produtivas do Superadmin"
 knowledge_id: superadmin-conversations-production
 source: specs/028-superadmin-conversations-production.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-11
 updated_at: 2026-09-12
 audience: team

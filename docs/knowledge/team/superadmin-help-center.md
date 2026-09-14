@@ -3,6 +3,7 @@ title: Central de ajuda do Superadmin
 knowledge_id: superadmin-help-center
 source: docs/superpowers/specs/2026-07-27-superadmin-help-center-home-design.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-07-27
 audience: team
 surfaces: [superadmin, home]

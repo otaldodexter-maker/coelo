@@ -3,6 +3,7 @@ title: Acontece como nome oficial do feed privado
 knowledge_id: happens-product-naming
 source: decisions/0018-happens-product-name.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-04
 audience: team
 surfaces: [product, app-principal, superadmin]

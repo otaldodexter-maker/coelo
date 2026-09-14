@@ -3,6 +3,7 @@ title: Saúde e Cuidado centrados na criança
 knowledge_id: health-care
 source: specs/020-superadmin-health-care.md
 status: validated
+lifecycle: "current"
 generated_at: 2026-08-04
 audience: team
 surfaces: [superadmin, health-care, permissions, database]
