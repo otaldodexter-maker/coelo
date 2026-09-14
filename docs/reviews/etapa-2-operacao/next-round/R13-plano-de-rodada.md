@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13 — cota aproximada de8% e divisão R12/R13; R13-owner-items.json; R11-fechamento.md
-status: histórico; substituído operacionalmente pela R12 consolidada
+status: plano operacional R13; execução não iniciada
 generated_at: 2026-09-13
 ---
 
@@ -8,6 +8,10 @@ generated_at: 2026-09-13
 
 
 # R13 — Continuidade reservada
+
+Fonte operacional atual: `R13-projecao-atual.md` e `R12-pendencias.md`.
+Escopo: 50 Owner items ainda abertos/parciais, sem renumerar IDs e sem repetir
+R12-07, R12-41 e R12-43, já concluídos.
 
 Atualização do Owner: a execução após fechamento da R12 está autorizada pelo
 disparo independente documentado em R12-disparo-luna.md. O executor segue

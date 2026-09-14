@@ -1,10 +1,10 @@
 ---
 source: Owner 2026-09-13; R13-owner-items.json; R12-fechamento.md
-status: histórico; substituído operacionalmente pela R12 consolidada
+status: histórico de origem; projeção operacional atual em R13-projecao-atual.md
 generated_at: 2026-09-13
 ---
 
-> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+> Projeção atual: a R13 recebe os 50 compromissos ainda abertos/parciais da R12. Use [R13-projecao-atual.md](R13-projecao-atual.md) e a fonte por item em [R12-pendencias.md](R12-pendencias.md). O detalhamento abaixo é histórico e não deve recalcular estados.
 
 
 # R13 — Pendências após fechamento R12
