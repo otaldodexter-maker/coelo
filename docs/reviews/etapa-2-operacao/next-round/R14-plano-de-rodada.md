@@ -1,27 +1,47 @@
 ---
-source: R12-prompt-unico.md; R12-pendencias.md
+source: R13-prompt-execucao-20260914.md; R13-pendencias.md; R14-catalogo.md
 status: preparado; execução não autorizada automaticamente
-generated_at: 2026-09-13
+generated_at: 2026-09-14
+updated_at: 2026-09-14
 ---
 
-# Ordem de continuidade
+# Plano de abertura R14
 
-1. Reconciliar base real, instruções, slots, cota e configuração; usar somente
-   checkout dev consolidado e sintéticos já retidos.
-2. R12-52: build atual e prova da rota normal, mídia privada/reload/escopo.
-   R12-44/45 exigem QA equivalente; reenvio só no convite sintético permitido.
-3. R12-34–37/42: provar correções locais recentes no runtime, corrigir regressões
-   encontradas. Wizard/serialização 58 PASS; aprovações 6 PASS; estados remotos
-   22 PASS/1 FAIL (golden loading dark 375). Não regravar referências sem revisão.
-4. R12-38 e 46: migrar mídia de cardápio e foto para contrato R2 com reuso do
-   gateway. SupabaseMealPlanImageRepository ainda usa Storage; UI desabilitada
-   é consequência conhecida, não solução. Preservar ownership/auditoria.
-5. Executar o restante do catálogo 01–45 por dependência, distinguindo pedidos
-   implementáveis e decisões de domínio: 23 (Principal profissional) e 33
-   (eventos/destinatários de medicação) têm contratos em aberto documentados.
-6. R12-51 libera aplicação SQL somente sob requisito vigente; 48–50 retomam os
-   mesmos recursos sintéticos após aplicação, sem duplicar dados. 47 precisa
-   prova por e-mail real/redirect permitido. 53 só abre após seus pré-requisitos.
-7. Atualizar catálogo/JSONs/inventário/três matrizes/skills, memória e Git;
-   executar gate após commit/push. Sem declaração de conclusão enquanto houver
-   item implementável ou prova obrigatória pendente. Estimar delta após inspeção.
+Este plano só pode ser usado depois do fechamento formal da R13 e da abertura
+explícita da R14 pelo Owner. Até lá, não iniciar agente, rodada, migration,
+QA, publicação ou nova fila.
+
+## Limite de transferência preparado pelo Owner
+
+Ao encerrar a cota da R13, registrar como destino preparado da R14 — sem
+executar e sem renumerar — Circular `H04`; Formulários `H10`/`H11`, readers de
+Planos/reader self da Conta e Local interno condicional; Principal `H27`/`P54`/
+`H02`; perfis `owner.r12-19`–`owner.r12-27`; Segurança infantil;
+`assessments.close/reopen`; foto R2 de `owner.r12-46`; SQL c de
+`owner.r12-18`, `owner.r12-33`, `asset_id`/Edge Function; e `H03`, `H07`, `H09`,
+`H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
+
+Ficam na R13 desta cota Saúde/Cuidado, Cardápios, `owner.r12-36`/`37`, OQ-031,
+H08 Duplicar Aviso, `owner.r12-47` e Avisos H08/H23/H13 se houver margem. A
+transferência só ocorre com fechamento e confirmação do estado não terminal.
+
+## Ordem de abertura
+
+1. Confirmar `dev`, worktrees, stash, evidências, estado remoto e a revisão do
+   fechamento da R13.
+2. Regenerar o catálogo com os itens não terminais reais; preservar os mesmos
+   `owner.r12-*`, `H*` e `action_id` e registrar origem, destino, estado,
+   evidência e primeiro gate.
+3. Reconciliar inventário e os três rastreadores antes de escolher a primeira
+   subtela. Não usar percentuais ou filas gravados em snapshots antigos.
+4. Declarar objetivo, incluído, fora de escopo, ordem, critério de parada e
+   evidências; então escolher a skill de FE, BE ou FE+BE.
+5. Resolver cada gate pela rota normal, persistência, isolamento por tenant,
+   reload e prova aplicável. Atualizar fonte canônica, estado e rastreadores no
+   mesmo ciclo.
+6. No fechamento, executar o gate de entrega apenas se houver integração,
+   publicação ou entrega formal.
+
+R14 não recebe automaticamente pendências concluídas, decisões já respondidas,
+artefatos de execução ou instruções de R12. Um bloqueio externo deve manter o
+item explícito e permitir avançar nos itens independentes.

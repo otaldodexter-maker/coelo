@@ -1,8 +1,12 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: pronto para início manual; execução não iniciada nesta consolidação
+status: histórico; não executar; substituído pela fila vigente R13
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
+
+> Plano histórico. Não usar como ordem atual nem reabrir a R12. Consulte
+> `docs/agent/current-state.md` e os documentos correntes da R13.
 
 # R12 — Plano único para Luna médio
 

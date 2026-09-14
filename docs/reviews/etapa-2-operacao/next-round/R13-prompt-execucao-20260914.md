@@ -10,6 +10,12 @@ Cole o bloco abaixo numa conversa nova (Claude Code, checkout `dev`
 consolidado). Ele abre a execução da fila R13 com as decisões da ADR 0038 já
 tomadas; não reabre perguntas respondidas.
 
+> Este prompt é a autorização/base de abertura, não um snapshot imutável da
+> fila. Antes de cada gate, prevalecem `R13-pendencias.md`, o checkpoint mais
+> recente e `docs/agent/current-state.md`. Não repetir nem reabrir itens já
+> concluídos em R13, incluindo `owner.r12-48`, `owner.r12-50`,
+> `owner.r12-51`, H06, H17, H21 e OQ-028/anexos ×10, salvo regressão material.
+
 ```text
 $coelo-frontend-backend
 
@@ -19,8 +25,8 @@ Ordem obrigatória:
 
 0. Abertura (1 checkpoint, sem perguntar tempo): git fetch/status, worktrees e stash; confirmar SHA de dev; ler ADR 0038, R13-pendencias.md, ETAPA-2-estado-atual.md e os cabeçalhos/linhas afetadas dos três rastreadores. Listar o recorte, ordem, critério de parada e primeiro gate de cada item. Usar somente sintéticos qa-r06-* já existentes.
 
-1. Backend primeiro — fila SQL liberada (ADR 0038: Decisão 8 mantida; dump lógico local fora do Git antes de cada lote, SHA-256 registrado). Aplicar em produção na ordem serial, com pgTAP verde no espelho reconstruído pela ordem real (ordem-de-aplicacao-producao.txt) e ledger preenchido:
-   a. os quatro candidatos locais retidos desde a R11 (owner.r12-51);
+1. Backend primeiro — fila SQL liberada (ADR 0038: Decisão 8 mantida; dump lógico local fora do Git antes de cada lote, SHA-256 registrado). Aplicar em produção na ordem serial, com pgTAP verde no espelho reconstruído pela ordem real (ordem-de-aplicacao-producao.txt) e ledger preenchido. Recalcular o próximo lote no checkpoint vigente; não reaplicar lotes já registrados:
+   a. candidatos ainda não aplicados e autorizados, somente depois do gate de produção;
    b. pacotes novos decididos, um por família, cada um com revoke explícito + grant mínimo e negativa cross-tenant no pgTAP:
       - chat: revoke_message_v2 recusa CHAT_READ_ONLY (H06); limite 10 anexos por mensagem no prepare (ADR 0038); asset_id aditivo no envelope de authorize_read + deploy da Edge Function chat-media (spec 028);
       - cuidado: capacidade care_policies.manage nos perfis de sistema Owner/Administrador da instituição e remoção do papel fixo em superadmin_unit_care_policy_set_v1 (H17);

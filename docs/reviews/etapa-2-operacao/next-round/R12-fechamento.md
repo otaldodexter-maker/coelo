@@ -1,8 +1,12 @@
 ---
 source: R12-prompt-unico.md; execução C0; provas R12
-status: encerrada
+status: encerrada; histórica; R13 é a fila vigente
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
+
+> Fechamento histórico. Os itens não terminais seguem somente na R13; não
+> usar este arquivo para reabrir a R12.
 
 # R12 — Fechamento focal e passagem supervisionada
 

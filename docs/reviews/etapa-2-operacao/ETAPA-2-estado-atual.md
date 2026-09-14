@@ -12,9 +12,10 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 # Etapa 2 — estado atual
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
-operacional vigente é a R13 e reúne os 50 `owner.r12-*` ainda
-`open`/`partial` recebidos da R12 e os resíduos H02–H28 herdados de R01–R07.
-H01 está resolvido e não volta para a fila. R01–R12 permanecem como fontes
+operacional vigente é a R13: 50 `owner.r12-*` foram transferidos da R12 e,
+após seis aceites `done` registrados em 14/09, 47 permanecem não terminais,
+além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e não volta
+para a fila. R01–R12 permanecem como fontes
 históricas; seus itens pendentes não devem continuar apontando para uma rodada
 anterior como destino executável.
 
@@ -23,9 +24,11 @@ o último estado canônico por `action_id`; os 231 action IDs não ganham novos
 IDs pela transferência. A separação abaixo distingue a fila R13 das fontes
 históricas e das 22 ações formalmente adiadas para pós-MVP.
 
-Detalhamento operacional: [`R13-pendencias.md`](next-round/R13-pendencias.md),
-catálogo Owner [`R13-owner-items-atual.json`](next-round/R13-owner-items-atual.json)
-e índice das rodadas [`RODADAS.md`](next-round/RODADAS.md).
+Detalhamento operacional: [`R13-prompt-execucao-20260914.md`](next-round/R13-prompt-execucao-20260914.md),
+[`R13-pendencias.md`](next-round/R13-pendencias.md), catálogo Owner derivado
+[`R13-owner-items-atual.json`](next-round/R13-owner-items-atual.json) e índice
+das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint mais recente
+define o primeiro gate da retomada.
 
 No snapshot por `action_id`, a R13 concentra 78 ações ativas com algum gate não
 terminal (64 FE, 43 BE e 77 integradas; números por camada, não somáveis). As

@@ -28,7 +28,7 @@ R14 não foi iniciada.
 | R10 | histórica, fora da fila vigente | preservar fechamento e métricas da época | `R10-fechamento.md` e `R10-estado-por-tela.md` |
 | R11 | histórica, fora da fila vigente | preservar herança e transferência | `R11-fechamento.md` e `R11-pendencias.md` |
 | R12 | histórica, origem dos 53 Owner IDs | os 3 concluídos não voltam; 50 foram para R13 | `R12-fechamento.md`, `R12-pendencias.md`, `R12-owner-items.json` |
-| R13 | vigente, execução parcial | 50 IDs + H02–H28; sem novo aceite terminal | `R13-fechamento.md`, `R13-pendencias.md`, `R13-owner-items-atual.json` |
+| R13 | vigente, execução parcial | fila R13 e resíduos H02–H28; conferir itens não terminais nas evidências mais recentes | `R13-prompt-execucao-20260914.md`, `R13-pendencias.md`, `ETAPA-2-estado-atual.md` |
 | R14 | preparada, não iniciada | não executar automaticamente | `R14-catalogo.md` e `R14-plano-de-rodada.md` |
 
 ## Regra de reconciliação
@@ -43,6 +43,8 @@ R14 não foi iniciada.
   action_id.
 - Nenhuma rodada é reaberta pela leitura de um arquivo histórico. Um novo
   trabalho exige abertura explícita, recorte e primeiro gate documentados.
+- R14 herda somente itens não terminais confirmados no fechamento da R13; seus
+  arquivos preparados não são fila nem autorização de execução.
 
 ## Navegação rápida
 

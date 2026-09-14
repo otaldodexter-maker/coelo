@@ -1,13 +1,18 @@
 ---
-title: "Retomada e renovação R01/R02"
+title: "Arquivo histórico de prompts e retomadas"
 source: "Owner R01; docs/reviews/coelo-etapa-2-coordenacao.md; docs/reviews/inventario-etapa-2.json; AGENTS.md"
-status: "active index; use ETAPA-2-estado-atual.md and RODADAS.md"
+status: "historical index; use ETAPA-2-estado-atual.md and RODADAS.md"
 generated_at: "2026-09-08T12:19:18-03:00"
 updated_at: "2026-09-14"
 timezone: "America/Sao_Paulo"
 ---
 
-# Prompts e retomada mínima
+# Arquivo histórico de prompts e retomadas
+
+> Este diretório preserva prompts e protocolos de rodadas anteriores. Ele não
+> é uma fila alternativa nem autoriza execução. Para o estado atual, use
+> `docs/agent/current-state.md`, `R13-prompt-execucao-20260914.md` e
+> `RODADAS.md`. R14 só será aberta por decisão explícita do Owner.
 
 ## Entrada vigente da Etapa 2
 

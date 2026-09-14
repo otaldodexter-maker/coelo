@@ -1,8 +1,13 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: pronto para início manual; execução não iniciada nesta consolidação
+status: histórico; não executar; substituído pela fila vigente R13
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
+
+> Prompt histórico. Não executar este arquivo nem iniciar Luna/C0 a partir
+> dele. A fila vigente e a autorização atual estão em
+> `R13-prompt-execucao-20260914.md` e `docs/agent/current-state.md`.
 
 # R12 consolidada — execução direta em Luna médio
 

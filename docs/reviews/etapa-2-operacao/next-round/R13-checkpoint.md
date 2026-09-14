@@ -1,11 +1,14 @@
 ---
-source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: active R13; PASS DOCUMENTED_PARTIAL; 50 Owner items + H02–H28 na fila vigente
+source: R13-prompt-execucao-20260914.md; R13-pendencias.md; ETAPA-2-estado-atual.md; histórico R12/R13
+status: histórico; superseded by R13-checkpoint-20260914-1620.md; não usar como fila
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
 
-> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+> Bloco histórico de uma instrução anterior. R13 é a rodada vigente conforme
+> confirmação do Owner em 14/09/2026. Não usar R12-consolidacao.md,
+> R12-prompt-unico.md ou instruções Luna como fila atual. A execução autorizada
+> deve seguir R13-prompt-execucao-20260914.md; este checkpoint não dispara nada.
 
 
 # R13 — checkpoint de execução e passagem

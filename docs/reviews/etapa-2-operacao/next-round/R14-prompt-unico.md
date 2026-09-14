@@ -1,49 +1,42 @@
 ---
-source: R12-prompt-unico.md; R12-pendencias.md; R12-checkpoint.md
+source: R13-prompt-execucao-20260914.md; R13-pendencias.md; R14-plano-de-rodada.md
 status: preparado; não iniciado; requer abertura explícita do Owner
-generated_at: 2026-09-13
+generated_at: 2026-09-14
+updated_at: 2026-09-14
 ---
 
-# Continuidade dos aceites abertos da R12
+# Prompt de abertura R14
 
-Executor solicitado: Claude Opus, esforço médio. Conferir disponibilidade real
-e uso na abertura; 12% era estimativa do Owner, não orçamento medido. Este
-arquivo não dispara agente, supervisor ou outra rodada.
+Este arquivo é um molde para a próxima rodada. Não dispara agente, supervisor,
+Claude, Codex, migration, QA ou publicação. A R13 continua vigente e sendo
+trabalhada no Claude.
 
-Trabalhar no checkout consolidado C:/Users/adrie/Documents/Coelo, branch dev.
-Fazer fetch e conferir HEAD/origin/dev, stash/worktrees e slots. Código da
-última fatia está em 63f6694e; commits documentais posteriores não alteram esse
-código. Não voltar a bases antigas. Preservar R01–R13, QA e ignorados privados.
+Ao abrir formalmente a R14, começar por `docs/agent/current-state.md`, pelo
+fechamento final da R13, por `R14-catalogo.md` e por
+`R14-plano-de-rodada.md`. Confirmar o recorte e o primeiro gate antes de ler
+qualquer rastreador grande.
 
-Ler AGENTS.md, RTK.md, as cinco skills pedidas pelo Owner (rtk, coelo-backend,
-coelo-frontend, coelo-frontend-backend, ponytail), coelo-ui e coelo-knowledge.
-Fontes: R12-pendencias.md, R12-owner-items.json, R12-checkpoint.md,
-entrega-atual.json, inventário e matrizes afetadas; usar R14-plano-de-rodada.md
-e R14-catalogo.md. A R12 permanece incompleta; catálogo visitado não é execução.
+A fila deve ser construída no momento da abertura, somente com itens não
+terminais confirmados. Preservar `owner.r12-*`, `H*` e `action_id`; não criar
+IDs de R14 nem reabrir itens concluídos. Cada item precisa indicar estado,
+fonte, evidência, camada (FE/BE/E2E), primeiro gate e critério de aceite.
 
-Primeiro gate: R12-52/chat.attach pela rota normal em build atual. O servidor
-retido em 127.0.0.1:3000 ainda aponta ao build r12-focal de ba5cfd2d; não
-certificar mudanças de 63f6694e contra esse runtime. Não tocar Chrome do Owner.
-Não repetir testes verdes de cardápio e agenda sem mudança ou motivo material.
-Se QA real estiver inacessível, registrar causa e implementar a próxima fatia
-independente: R12-38, adapter de imagem ainda em Supabase Storage, precisa
-reusar Media Gateway/R2 e contrato de vínculo autorizado antes de ligar a UI.
+O mapa preparado pelo Owner para a passagem de cota contém: Circular H04;
+Formulários H10/H11, readers de Planos/reader self da Conta e Local interno
+condicional; Principal H27/P54/H02; perfis `owner.r12-19`–`27`; Segurança
+infantil; `assessments.close/reopen`; foto R2 de `owner.r12-46`; SQL c de
+`owner.r12-18`, `owner.r12-33`, `asset_id`/Edge Function; H03, H07, H09, H12,
+H14, H16, H18–H20, H22, H24–H26 e H28. Na R13 permanecem Saúde/Cuidado,
+Cardápios, `owner.r12-36`/`37`, OQ-031, H08, `owner.r12-47` e Avisos H08/H23/H13
+se houver cota. Esse mapa é apenas transferência preparada e nunca autoriza
+execução antecipada.
 
-Resolver aceites e atualizar fontes no mesmo ciclo; não encerrar só com triagem.
-R12-34–36/42 têm novas correções locais, sem prova integrada: seletor no modelo,
-nome dinâmico, publicação com instante UTC e tabela/histórico da Agenda. Provar
-salvar/reload/escopo no repositório produtivo e o instante de publicação.
+Aplicar a skill correta e trabalhar em fatias pequenas: fonte canônica,
+implementação, teste, prova de rota normal/persistência/RLS/reload quando
+aplicável, atualização dos rastreadores e checkpoint. Não tratar histórico,
+artefato, backup, screenshot ou snapshot como instrução atual sem uma fonte
+corrente apontando-o.
 
-Preflight remoto de 13/09 21:27 -03 confirmou PITR=false, backup_count=0,
-SMTP próprio ausente e redirect local3000 fora da allowlist. Gates SQL do
-prompt e conflito documentado em open-questions continuam sem exceção nova.
-Não cobrar PITR, enviar mensagens a terceiros ou alterar credenciais sem a
-autoridade específica. R12-53 continua condicional aos gates 46–50; não
-iniciar Etapa 3 nem ampliar escopo para encerrar um número.
-
-Aplicar deltas com apply-tracker-delta.cjs. Sincronizar ownerItems e manifesto
-com sync-r12-owner-records.cjs após corrigir o catálogo; partial vira open no
-manifesto de entrega, preservando o detalhamento FE/BE/E2E. Commit/push de cada
-fatia e delivery_gate.py após publicação; resolver FAIL, relatar parcial com
-implementação faltante e prova faltante separadas. Nenhum outro executor está
-trabalhando automaticamente nesta continuidade.
+No fechamento, reconciliar Git/worktrees/skills no checkout de destino e
+executar o delivery gate somente quando o escopo incluir integração,
+publicação ou entrega formal. Declarar explicitamente o que ficou aberto.

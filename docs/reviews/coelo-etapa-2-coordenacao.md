@@ -1,12 +1,16 @@
 ---
 title: "Coelo — Coordenação da Etapa 2"
 source: "Conversa Coordenar Etapa 2 do Coelo; seis conversas delegadas; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md"
-status: "active"
+status: "historical coordination archive; use docs/agent/current-state.md"
 generated_at: "2026-09-01"
 updated_at: "2026-09-14"
 ---
 
-# Coelo — Coordenação da Etapa 2
+# Coelo — Coordenação da Etapa 2 (arquivo histórico)
+
+> Este documento preserva coordenações encerradas. Não é fonte da fila atual e
+> não deve reabrir R01/R02, worktrees, agentes ou agendas. Use
+> `docs/agent/current-state.md` e `docs/reviews/etapa-2-operacao/next-round/RODADAS.md`.
 
 ## Visão vigente — 2026-09-14
 

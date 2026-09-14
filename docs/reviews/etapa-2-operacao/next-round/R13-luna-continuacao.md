@@ -4,7 +4,10 @@ status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
 ---
 
-> Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
+> Registro histórico de uma instrução anterior. R13 é a rodada vigente conforme
+> confirmação do Owner em 14/09/2026. Não usar este documento nem prompts Luna
+> antigos como fila atual; a execução autorizada está em
+> `R13-prompt-execucao-20260914.md`.
 
 
 # Continuidade supervisionada da R13

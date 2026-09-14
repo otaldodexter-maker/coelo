@@ -9272,15 +9272,16 @@
   },
   "r13Execution": {
     "status": "PASS DOCUMENTED_PARTIAL",
-    "at": "2026-09-14T00:00:00-03:00",
-    "base": "0ef29b823",
-    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json",
-    "metrics": "231 action IDs; FE 151/231 (65.37%); BE 159/224 (70.98%); E2E 125/199 (62.81%); E2E+flutter-only 132/231 (57.14%); FE local-green 37/231 (16.02%); BE local-green 21/224 (9.38%); Owner done 3/53 (5.66%); open/partial 50/53 (94.34%)",
-    "currentQueue": "R13 vigente: 50 owner.r12-* open/partial + H02-H28 herdados de R01-R07; H01 resolved; R01-R12 históricos",
+    "at": "2026-09-14T16:20:00-03:00",
+    "base": "165d3df8c",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+    "historicalExecutionEvidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json",
+    "metrics": "231 action IDs; FE 157/231 (67.97%); BE 164/224 (73.21%); E2E 130/199 (65.33%); E2E+flutter-only 137/231 (59.31%); FE local-green 37/231 (16.02%); BE local-green 16/224 (7.14%); Owner done 6/53 (11.32%); não terminais 47/53 (88.68%)",
+    "currentQueue": "R13 vigente: 47 owner.r12-* não terminais + H02-H28 herdados de R01-R07; H01 resolvido; R01-R12 históricos; R14 não iniciada",
     "currentQueueEvidence": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
-    "newTerminalCertifications": 0,
-    "openFirstGate": "R12-51 PITR/backup/ordem serial e drift do ledger",
-    "localChecks": "R2 shared 20/20 PASS; meal-plan cleanup 3/3 PASS; Flutter analyze interrompido após 70s",
-    "deployment": "none; nenhum SQL, Edge Function, Cloudflare ou segredo alterado"
+    "newTerminalCertifications": 5,
+    "openFirstGate": "Saúde/Cuidado: provar health-care.create/detail/edit e medication.list/create/detail/edit na rota normal",
+    "localChecks": "Lotes SQL/pgTAP e provas de rota real registrados; FE/BE/E2E permanecem separados; validação documental não certifica runtime",
+    "deployment": "none; nenhum deploy web público, Edge Function ou Cloudflare nesta pausa; SQL remoto já registrado nos lotes 63–69"
   }
 }
