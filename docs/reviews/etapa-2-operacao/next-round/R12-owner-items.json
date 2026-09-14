@@ -900,7 +900,7 @@
     "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão.",
+    "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
