@@ -112,6 +112,20 @@ não muda de conteúdo: correção posterior nasce como pacote novo. Sessões da
 Conta são listadas por RPC própria e revogadas pelo GoTrue (`scope=others`),
 sem função de borda nem chave de serviço.
 
+Lotes 63 a 65 (14/09/2026, R13, ADR 0038): a fila SQL foi reaberta com o rito
+da Decisão 8. Regras medidas: um espelho descartável novo (`config.toml` com
+`project_id` próprio e portas 613xx, `supabase/migrations/` só com a baseline,
+`supabase start` sem studio/realtime/storage) mais `psql` do container para os
+167 arquivos da ordem real leva poucos minutos e reproduz produção (md5 de
+`pg_get_functiondef` igual nas seis funções do lote 63). A prova por RPC em
+produção usa `packages/coelo_database/scripts/r13-rpc-proof.mjs` com o usuário
+sintético da frente (PostgREST, sem chave de serviço). Defeito herdado da
+baseline: `ilike ... escape '\'` com `standard_conforming_strings` é um escape
+de dois caracteres e devolve `22025` em produção para qualquer busca não vazia
+(corrigido em `superadmin_group_directory` no lote 64); revisar outras funções
+com o mesmo padrão antes de reutilizá-las na rota real. `superadmin_account_profile_save_v2`
+exige celular com 7–40 caracteres; sigla/cor só gravam com o celular preenchido.
+
 Na execução coordenada (ADR0034 Decisão20), C0 publica os lotes integrados
 e mantém slots globais de um Chrome e um flutter test. Checkpoints agendados
 retomam trabalho executável até o corte, sem iniciar outra rodada. Deploy,
