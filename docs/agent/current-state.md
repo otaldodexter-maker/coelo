@@ -18,8 +18,12 @@ audience: "team"
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
 - Último delta de execução: 14/09 ~18:00 — Saúde/Cuidado provado na rota real;
   contadores FE 164/231, BE 164/224, E2E 137/199, Owner 9/53.
-- Próximo gate executável: Cardápios na rota real
-  (`meal-plans.create/edit/model-create/model-edit/publish`) + `owner.r12-36/37`.
+- Próximo gate executável (ordem ajustada pelo Owner em 14/09: mais fácil primeiro):
+  Bloco A de `R14-pendencias.md` — ações que só precisam de E2E e fecham a tela
+  (`circulars.attach`, `agenda.request`, `attendance.create`, `daily-routine.apply`,
+  `acontece.create`, …); Cardápios vem no Bloco C.
+- Ao abrir a R14, antes de executar, explicar ao Owner de forma visual os temas
+  listados em `docs/agent/backlog.md` (decisões de 14/09) e colher as respostas.
 
 ## Fonte da fila atual
 

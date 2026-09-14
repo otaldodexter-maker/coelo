@@ -20,17 +20,42 @@ audience: "team"
 Contadores certificados (inventário, 14/09/2026 18:00): FE 164/231 (71,00%),
 BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 
-## Ordem de execução (decisão do Owner de 14/09)
+## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
 
-1. Cardápios na rota real (`meal-plans.create/edit/model-create/model-edit/publish`) + `owner.r12-36/37` (SQL) + `owner.r12-19` a `27`.
-2. OQ-031 catálogos globais de tipo (SQL idempotente por `code`, com Outros).
-3. `H08` Duplicar Aviso (RPC + cliente) e Avisos na rota real (`H23`/`H13`).
-4. `owner.r12-47` localhost na allowlist de redirect do Auth.
-5. `owner.r12-29/30` (múltiplos registros/orientações independentes de cuidado).
-6. Circular `H04` (host conforme referência + regravar goldens), Formulários `H10/H11`, Principal `H27/P54/H02`.
-7. Segurança infantil (`owner.r12-09` a `18`), `assessments.close/reopen`, foto R2 da Conta (`owner.r12-46`).
-8. SQL "c": `owner.r12-18`, `owner.r12-33`, `asset_id` no chat-media + Edge Function.
-9. Gates de medição: `H03`, `H07`, `H09`, `H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
+**Bloco A — só falta E2E e fecha a tela inteira (FE local-green/verified + BE done; prova na rota real):**
+1. Circulares › Anexos (`circulars.attach`) → Circulares 11/11.
+2. Agenda › Solicitar (`agenda.request`) → Agenda 7/7.
+3. Assiduidade › Nova chamada (`attendance.create`) → Assiduidade 5/5.
+4. Rotina › Aplicar (`daily-routine.apply`) → Rotina 5/5.
+5. Acontece › Criar (`acontece.create`) → Acontece 4/4.
+6. Shell › Troca de contexto (`shell.switch-context`, flutter-only) → Shell 5/5.
+7. Atividades › Diretório + Publicar (`activities.list/publish`) → Atividades 7/7.
+8. Convites › Lista + Reenviar (`invites.list/resend`) → Convites 5/5.
+9. Chat › Criar grupo (`chat.create-group`).
+10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
+
+**Bloco B — reclassificação autorizada pelo Owner (sai do denominador ativo, sem código):**
+11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
+    → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
+    Fecha Planos 4/4 e Usuários internos 4/4.
+
+**Bloco C — uma tela com SQL pequeno + rota real:**
+12. Cardápios (`meal-plans.create/edit/model-create/model-edit/publish`) + `owner.r12-36/37` → Cardápios 6/6.
+13. Perfis de acesso (`access-profiles.create/edit/assign`) + `owner.r12-19` a `27`.
+14. Segurança infantil (`child-safety.child/edit/suspend`, BE done) — sem r12-18.
+15. Arquivos de Formulários › Upload + Resolver (só E2E); depois Expirar/Excluir (BE + FE).
+16. Avaliações › Fechar/Reabrir (`assessments.close/reopen`).
+
+**Bloco D — pacotes SQL/config decididos:**
+17. OQ-031 catálogos de tipo; `H08` Duplicar Aviso + Avisos H23/H13; `owner.r12-47` localhost no Auth;
+    readers de Planos (039) e reader self da Conta; `owner.r12-29/30`.
+
+**Bloco E — mais caros (contrato novo ou reconstrução):**
+18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`); Auth recuperar/redefinir (`auth.recover/reset`).
+19. Circular `H04` (host + goldens); Formulários `H10` (+ `H11` só se >60% pronto); Principal `H27/P54/H02`.
+20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real);
+    `owner.r12-33` medicação; `owner.r12-18` pessoa sem conta; páginas de erro (BE/E2E).
+21. Gates de medição: `H03`, `H07`, `H09`, `H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
 
 ## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9) — 6/6 decididas: 5 A, 1 A+
 
