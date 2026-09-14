@@ -23,6 +23,14 @@ preliminar por local, está em
 somente metadado: a lista de exclusão detalhada ainda depende de revisão e
 aprovação do Owner.
 
+O backlog operacional da limpeza está em
+[`artifact-cleanup-backlog-20260914.md`](artifact-cleanup-backlog-20260914.md).
+Ele separa o que já foi removido com aprovação do que permanece retido por
+WIP, recuperação, segurança ou proveniência.
+
+O Lote L2 removeu somente três arquivos scratch e uma árvore sem arquivos,
+registrados em `artifact-disposition-l2-20260914.json`.
+
 - `.codex/`: runtime local; contém previews, patches, logs, validações e um
   `AGENTS.md` legado em `activity-patch-tree`.
 - `.claude/`: configurações e junctions de skills do Claude; não é fonte de

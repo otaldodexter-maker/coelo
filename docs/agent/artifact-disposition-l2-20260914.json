@@ -1,0 +1,53 @@
+{
+  "batch": "L2",
+  "approved_by": "Owner, conversation 2026-09-14: faça tudo até o final",
+  "status": "completed",
+  "completed_at": "2026-09-14",
+  "scope": "Remove only Codex scratch files and a directory tree verified to contain no files.",
+  "root": "C:/Users/adrie/Documents/Coelo/.codex",
+  "candidates": [
+    {
+      "path": "C:/Users/adrie/Documents/Coelo/.codex/patch_probe.tmp",
+      "type": "file",
+      "bytes": 6,
+      "content_inspected": false,
+      "reason": "Scratch probe; no reference outside this manifest/backlog."
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo/.codex/temp.txt",
+      "type": "file",
+      "bytes": 5,
+      "content_inspected": false,
+      "reason": "Scratch file; no reference outside this manifest/backlog."
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo/.codex/stdin-write-test.txt",
+      "type": "file",
+      "bytes": 0,
+      "content_inspected": false,
+      "reason": "Empty write-test file; no reference outside this manifest/backlog."
+    },
+    {
+      "path": "C:/Users/adrie/Documents/Coelo/.codex/health-surface-validation",
+      "type": "directory_tree",
+      "files": 0,
+      "subdirectories": 2,
+      "content_inspected": false,
+      "reason": "Only empty directories; no files to preserve."
+    }
+  ],
+  "guardrails": [
+    "Do not touch active Codex/Claude configuration, skills, browser state, WIP trees, backups or evidence.",
+    "Do not use git add -A or git stash.",
+    "Verify paths are absent after the operation."
+  ],
+  "verification": {
+    "removed_files": 3,
+    "removed_file_bytes": 11,
+    "removed_directory_tree_files": 0,
+    "removed_directory_tree_subdirectories": 2,
+    "remaining_codex_files": 4592,
+    "remaining_codex_bytes": 538186817,
+    "all_candidates_absent": true
+  }
+}

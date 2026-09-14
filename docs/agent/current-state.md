@@ -21,6 +21,10 @@ audience: "team"
   Primeiro gate executável seguinte: Cardápios na rota real
   (`meal-plans.create/edit/model-create/model-edit/publish`) + `owner.r12-36/37`.
   Ver `R13-checkpoint-20260914-1800.md`.
+- A limpeza de artefatos concluiu os lotes L1 e L2; L3–L5 permanecem retidos
+  até inventário file-level, fechamento da R13 e decisão de segurança/Owner.
+- As capturas WIP atuais da R13 pertencem ao Claude e não devem ser movidas,
+  versionadas ou excluídas durante a retomada.
 
 ## Fonte da fila atual
 
@@ -60,3 +64,6 @@ Quando a R13 for fechada formalmente:
 Etapa 3, V1, V2, pós-MVP, históricos R01–R12 e artefatos de execução não são
 trabalho corrente. Consulte [backlog.md](backlog.md) apenas quando a tarefa
 explicitamente tratar desses horizontes.
+
+Para uma tarefa explícita de limpeza, use o
+[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R13.

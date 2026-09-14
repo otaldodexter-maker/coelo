@@ -41,6 +41,11 @@ aprovada e o estado atual a apontar.
 - [Specs](../../specs/README.md) guardam escopo e contratos, mas só specs
   marcadas como ativas/aprovadas para a tarefa autorizam implementação.
 
+## Limpeza de artefatos
+
+Não faz parte da fila de produto. Os lotes concluídos e os itens retidos estão
+em [artifact-cleanup-backlog-20260914.md](artifact-cleanup-backlog-20260914.md).
+
 ## Histórico
 
 R01–R12, checkpoints, prompts, handoffs e os arquivos em

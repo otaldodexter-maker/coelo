@@ -8,10 +8,10 @@
     {
       "id": "A01",
       "location": ".codex",
-      "files": 4595,
-      "bytes": 538186828,
+      "files": 4592,
+      "bytes": 538186817,
       "classification": "runtime-context/cache",
-      "preliminary_action": "retain_then_prune_cache_only",
+      "preliminary_action": "retain_then_prune_verified_scratch_only",
       "risk": "medium",
       "reason": "May contain active task state, harness metadata or useful recovery context; not a product source."
     },
@@ -100,6 +100,6 @@
     "Produce file-level records only for proposed deletion or movement candidates in A04, A05, A06 and A08.",
     "Check references from Git, active docs, skills, R13 evidence and Claude/Codex configuration.",
     "For sensitive-name files, record only path, type, size, hash and retention decision; never copy contents into the repository.",
-    "Present batches A01-A08 with an explicit Owner approval field before any further mutation."
+    "Present batches A01-A08 with an explicit Owner approval field before any further mutation. L2 completed for four verified scratch candidates; remaining A01 content is retained."
   ]
 }
