@@ -30,7 +30,9 @@ aprovação do Owner.
   arquivos a uma worktree externa e para executar Cloudflare; isso não é
   requisito do projeto e deve ser revisado antes de reutilizar.
 - `.superpowers/`: brainstorms, SDD, planos e diffs; histórico de processo.
-- `.preserved/` e `.recovery-archives/`: retenção local de recuperação.
+- `.recovery-archives/`: retenção local de recuperação. O antigo `.preserved/`
+  foi movido para `C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914/`
+  no Lote L1, com manifesto.
 - `C:/Users/adrie/Documents/Coelo.artifacts`: scripts e resultados de rodadas.
 - `C:/Users/adrie/Documents/Coelo.preserved`: evidências e worktrees retidos.
 - `C:/Users/adrie/Documents/Coelo-backups`: backups, dumps e capturas.
@@ -38,12 +40,12 @@ aprovação do Owner.
 Backups com `.env`, cookies, sessões, dumps ou bundles Git são potencialmente
 sensíveis. Não abrir, copiar, indexar, anexar ou executar seu conteúdo durante
 uma limpeza documental; antes de qualquer descarte, o Owner/ops deve avaliar
-rotação de segredos e invalidação de sessões. `.preserved/` está ignorado
-explicitamente para não entrar em `git add` por acidente.
+rotação de segredos e invalidação de sessões. O destino externo de preservação
+fica fora do workspace para não entrar em buscas ou `git add` por acidente.
 
 Esses diretórios permanecem preservados nesta fase. Nenhum arquivo será
-excluído, movido ou reclassificado sem manifesto e aprovação posterior do
-Owner. Antes da fase de exclusão, verificar também segredos, dados sintéticos,
+excluído, movido ou reclassificado sem manifesto e aprovação do Owner. Antes
+da próxima fase de exclusão, verificar também segredos, dados sintéticos,
 dependências de scripts e possibilidade de recuperação.
 
 ## Isolamento aplicado nesta fase
@@ -51,5 +53,6 @@ dependências de scripts e possibilidade de recuperação.
 Os `AGENTS.md` encontrados em snapshots gerados de `.codex` e
 `.recovery-archives` foram substituídos por avisos de quarentena para não serem
 herdados quando alguém abrir um artefato como diretório de trabalho. As versões
-anteriores foram preservadas em `.preserved/agent-context-audit-20260914/`.
+anteriores foram preservadas em
+`C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914/agent-context-audit-20260914/`.
 Isso é isolamento de contexto, não exclusão de evidência.

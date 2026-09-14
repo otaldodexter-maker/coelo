@@ -1,9 +1,9 @@
 {
   "generated_at": "2026-09-14",
-  "status": "inventory_only_no_mutation",
+  "status": "inventory_with_l1_completed",
   "scope": "Coelo, Codex, Claude, recovery, preserved, artifacts and backups",
   "method": "Metadata, names, sizes, dates and Git relations only. Potentially sensitive file contents were not opened or copied.",
-  "policy": "No file or directory may be deleted or moved until the Owner approves an itemized batch.",
+  "policy": "No further file or directory may be deleted or moved until the Owner approves an itemized batch.",
   "locations": [
     {
       "id": "A01",
@@ -27,13 +27,14 @@
     },
     {
       "id": "A03",
-      "location": ".preserved",
+      "location": "../Coelo.preserved/workspace-preserved-20260914",
       "files": 4075,
       "bytes": 563946226,
       "classification": "rollback-preservation",
-      "preliminary_action": "retain_until_document_reconciliation_then_compress",
+      "preliminary_action": "retain_then_compress_after_r13",
       "risk": "medium",
-      "reason": "Contains legacy skill/context copies preserved during this cleanup; not operational authority."
+      "reason": "Moved out of the workspace after Owner approval; contains legacy skill/context copies, not a product source.",
+      "included_in": "A06"
     },
     {
       "id": "A04",
@@ -58,22 +59,22 @@
     {
       "id": "A06",
       "location": "../Coelo.preserved",
-      "files": 35657,
-      "bytes": 6650542900,
+      "files": 39732,
+      "bytes": 7214489126,
       "classification": "external-preserved-snapshot",
       "preliminary_action": "retain_one_recoverable_snapshot_then_archive_or_remove_duplicates",
       "risk": "high",
-      "reason": "Large external preservation tree; cannot be deleted before provenance and recovery checks."
+      "reason": "Large external preservation tree, including the approved workspace-preserved subdirectory; cannot be deleted before provenance and recovery checks."
     },
     {
       "id": "A07",
       "location": "../Coelo.worktrees",
       "files": 0,
       "bytes": 0,
-      "classification": "empty-worktree-container",
-      "preliminary_action": "candidate_for_delete_after_process_and_reference_check",
+      "classification": "empty-worktree-container-removed",
+      "preliminary_action": "completed_owner_approved",
       "risk": "low",
-      "reason": "Currently empty, but deletion is deferred until no tool or automation points to it."
+      "reason": "Verified empty and removed after Owner approval; branches were preserved."
     },
     {
       "id": "A08",
@@ -96,9 +97,9 @@
     "branch_deletion": "not_authorized_in_this_phase"
   },
   "next_inventory_pass": [
-    "Produce file-level records only for proposed deletion or movement candidates.",
+    "Produce file-level records only for proposed deletion or movement candidates in A04, A05, A06 and A08.",
     "Check references from Git, active docs, skills, R13 evidence and Claude/Codex configuration.",
     "For sensitive-name files, record only path, type, size, hash and retention decision; never copy contents into the repository.",
-    "Present batches A01-A08 with an explicit Owner approval field before mutation."
+    "Present batches A01-A08 with an explicit Owner approval field before any further mutation."
   ]
 }

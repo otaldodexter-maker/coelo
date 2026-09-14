@@ -1,0 +1,45 @@
+{
+  "batch": "L1/L1b",
+  "approved_by": "Owner, conversation 2026-09-14",
+  "status": "completed",
+  "completed_at": "2026-09-14",
+  "scope": "Move ignored preservation material out of the workspace and remove the empty external worktree container.",
+  "source_root": "C:/Users/adrie/Documents/Coelo/.preserved",
+  "destination_root": "C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914",
+  "preservation": {
+    "files": 4075,
+    "bytes": 563946226,
+    "content_inspected": false,
+    "entries": [
+      {
+        "source": "C:/Users/adrie/Documents/Coelo/.preserved/agent-context-audit-20260914",
+        "destination": "C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914/agent-context-audit-20260914",
+        "files": 6,
+        "bytes": 129758
+      },
+      {
+        "source": "C:/Users/adrie/Documents/Coelo/.preserved/e2-r01-ignored-support-20260909",
+        "destination": "C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914/e2-r01-ignored-support-20260909",
+        "files": 4069,
+        "bytes": 563816468
+      }
+    ]
+  },
+  "empty_container": {
+    "path": "C:/Users/adrie/Documents/Coelo.worktrees",
+    "verified_items": 0,
+    "action": "removed_empty_directory_only",
+    "branches_preserved": true
+  },
+  "verification": {
+    "source_root": "removed_after_empty_check",
+    "destination_files": 4075,
+    "destination_bytes": 563946226,
+    "destination_content_inspected": false,
+    "worktree_container": "removed_after_empty_check",
+    "git_branches": "preserved",
+    "git_stash": "empty"
+  },
+  "rollback": "Move the two destination entries back to source_root and recreate the empty container only if a future tool explicitly requires those paths.",
+  "next_verification": "Confirm destination counts, source absence, empty-container absence, git status, and no active references before closing this batch."
+}
