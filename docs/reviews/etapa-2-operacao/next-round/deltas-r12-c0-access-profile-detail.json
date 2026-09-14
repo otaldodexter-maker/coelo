@@ -1,0 +1,14 @@
+[
+  {
+    "action_id": "access-profiles.detail",
+    "camada": "frontend",
+    "delta": "R12-21: detalhe traduz módulos, telas e ações para rótulos de produto e preserva ações próprias/todas sem expor código técnico como texto principal.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-detail-modelo-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:22:00-03:00"
+    }
+  }
+]

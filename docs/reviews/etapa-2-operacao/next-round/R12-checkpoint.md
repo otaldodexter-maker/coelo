@@ -58,6 +58,16 @@ FE local-green, BE inalterado; rota/reload, golden aprovado e negativa
 cross-tenant continuam pendentes. Evidência:
 `docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md`.
 
+## R12-21 checkpoint de execução (C0)
+
+No detalhe de Perfis e permissões, o resumo e a lista de permissões configuradas
+passaram a usar rótulos de produto para módulo, tela e ação, preservando códigos
+técnicos fora do texto principal e mantendo `próprias`/`todas` distintas. A
+suíte de páginas de Perfis passou 17/17 e analyze do detalhe ficou limpo; BE
+inalterado. Rota normal, reload, golden e negativa cross-tenant seguem como
+provas pendentes. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md`.
+
 ## Retomada final da continuidade — 2026-09-14
 
 Checkout consolidado confirmado em `dev`, sem WIP, stash ou worktree extra;

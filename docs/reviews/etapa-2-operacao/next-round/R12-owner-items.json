@@ -390,16 +390,16 @@
   },
   {
     "id": "owner.r12-21",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "access-profiles.detail"
     ],
-    "fe": "Planejado R12, não implementado.",
-    "be": "Contrato a verificar; conflito Principal em R12-23.",
-    "e2e": "Sem nova prova.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+    "fe": "FE local-green: detalhe traduz módulos, telas e ações para rótulos de produto, preservando código técnico fora do texto principal e ações próprias/todas.",
+    "be": "BE inalterado.",
+    "e2e": "E2E pending-verification.",
+    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-21 e fontes antes de executar na R12 autorizada.",
+    "nextGate": "Provar rota normal, catálogo real, golden aprovado, reload e negativa cross-tenant.",
     "destinationRound": "R12",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
     "sourceRounds": [

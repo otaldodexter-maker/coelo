@@ -431,14 +431,16 @@ final class _PermissionSummary extends StatelessWidget {
               for (final entry in modules.entries)
                 ExpansionTile(
                   initiallyExpanded: true,
-                  title: Text(entry.key),
+                  title: Text(_detailModuleLabel(entry.key)),
                   subtitle: Text('${entry.value.length} permissões'),
                   children: [
                     for (final permission in entry.value)
                       ListTile(
                         leading: const Icon(Icons.check_circle_outline),
                         title: Text(permission.name),
-                        subtitle: Text(permission.code),
+                        subtitle: Text(
+                          '${_detailScreenLabel(permission.screenCode)} · ${_detailActionLabel(permission.actionCode)}',
+                        ),
                         trailing: permission.requiresMfa
                             ? const Tooltip(
                                 message: 'MFA: gate formal do MVP no Superadmin',
@@ -453,6 +455,44 @@ final class _PermissionSummary extends StatelessWidget {
       ),
     );
   }
+}
+
+String _detailModuleLabel(String module) => switch (module) {
+  'structure' => 'Estrutura',
+  'management' => 'Gestão',
+  'directory' => 'Listagem',
+  'platform' => 'Plataforma',
+  _ => _detailHumanize(module),
+};
+
+String _detailScreenLabel(String screen) => switch (screen) {
+  'activities' => 'Atividades',
+  'institutions' => 'Instituições',
+  'units' => 'Unidades',
+  'groups' => 'Turmas',
+  'forms' => 'Formulários',
+  'access_profiles' => 'Perfis e permissões',
+  'people' => 'Pessoas',
+  'chat' => 'Conversas',
+  _ => _detailHumanize(screen),
+};
+
+String _detailActionLabel(String action) => switch (action) {
+  'read' || 'view' || 'list' => 'Ver',
+  'create' => 'Criar',
+  'update' || 'edit' => 'Editar',
+  'delete' => 'Excluir',
+  'manage' => 'Gerenciar',
+  'assign' => 'Atribuir',
+  'edit_own' => 'Editar próprias',
+  'edit_all' => 'Editar todas',
+  _ => _detailHumanize(action),
+};
+
+String _detailHumanize(String value) {
+  final words = value.replaceAll('_', ' ').replaceAll('.', ' ').trim();
+  if (words.isEmpty) return 'Geral';
+  return '${words[0].toUpperCase()}${words.substring(1)}';
 }
 
 final class _ImpactSummary extends StatelessWidget {
