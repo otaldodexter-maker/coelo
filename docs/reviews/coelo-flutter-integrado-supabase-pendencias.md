@@ -14,27 +14,28 @@ formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
 tracker_sync_at: "2026-09-14T01:54:49.556789Z"
-tracker_sync_revisions: "fila atual R01–R07; R08–R13 históricos; inventário revisado em 2026-09-14"
+tracker_sync_revisions: "fila atual R13; R01–R12 históricos; inventário revisado em 2026-09-14"
 ---
 
 # Pendências Coelo — Front-end + Back-end
 
-## Etapa 2 — fila vigente: resíduos R01–R07 (2026-09-14)
+## Etapa 2 — fila vigente: R13 (2026-09-14)
 
-A fila operacional desta visão é H02–H28, conforme o fechamento e a varredura
-R07; H01 (credencial QA) está resolvido. R08–R13 permanecem preservadas abaixo
-como histórico e não alteram a contagem da fila residual. O índice operacional,
-os 27 resíduos e a ordem de execução estão em
+A fila operacional desta visão é a R13: os 50 Owner items `owner.r12-*` ainda
+`open`/`partial` e H02–H28, resíduos herdados de R01–R07. H01 (credencial QA)
+está resolvido. R01–R12 permanecem preservadas abaixo como fontes históricas,
+sem duplicar ou renumerar pendências. O índice operacional e a ordem de
+execução estão em
 [`ETAPA-2-estado-atual.md`](etapa-2-operacao/ETAPA-2-estado-atual.md).
 
 Métricas canônicas do inventário, base `dev` em 2026-09-14, SHA
 `1f34b9dbfda5f94b98edbb154ce1841059df67bf`: E2E verificado **125/199
 (62,81%)**; E2E + flutter-only **132/231 (57,14%)**. A métrica combinada não
 é aceite E2E; `flutter-only` permanece separado. Owner: **3/53 done (5,66%)**
-e **50/53 abertos/parciais (94,34%)**. Não usar percentuais de R13 históricos
-deste arquivo como estado atual.
+e **50/53 abertos/parciais (94,34%)**. Este é o snapshot atual da fila R13;
+não somar percentuais de rodadas históricas nem camadas.
 
-## Histórico R13 — execução e gates (fora da fila atual; 2026-09-14)
+## R13 — execução e gates (fila vigente; 2026-09-14)
 
 Não houve nova certificação integrada. Todos os 50 IDs seguem com os estados
 canônicos de R12; os gates e a prova de execução estão em
@@ -47,7 +48,7 @@ de rota normal, persistência/reload e cross-tenant para os itens comuns;
 PITR/backup/ordem antes de R12-48/49/50; Media Gateway/R2 para R12-38/46/52;
 SMTP/redirect para R12-45/47; e condição formal para R12-53.
 
-## Histórico R13 — pendências transferidas da R12 (fora da fila atual; 2026-09-14)
+## R13 — pendências transferidas da R12 (fila vigente; 2026-09-14)
 
 Fila corrente integrada: os 50 Owner items `owner.r12-*` ainda `open`/`partial`
 foram transferidos para a R13, preservando os IDs de origem: `owner.r12-01–06`,
@@ -57,7 +58,7 @@ O estado FE/BE/E2E por tela/subtela, evidência e próximo gate está em
 `R13-pendencias.md` e `R13-owner-items-atual.json`; não há fila operacional
 remanescente em R12.
 
-## Histórico R12 — Apontamentos Owner incorporados (fora da fila atual; transferidos para R13)
+## Histórico R12 — origem dos Apontamentos Owner transferidos para R13
 
 Camada FE + BE / E2E: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.
 
@@ -202,7 +203,7 @@ etapa-2-operacao/next-round/R07-decisoes-owner-20260912.md.
 Relatório e limites: R07-fechamento.md e R07-varredura-r01-r07.md no mesmo
 diretório. R08 preparada em10prompts C0/G0–G8, não iniciada.
 
-### Resíduos R01–R07 com dono e primeiro gate
+### Pendências R13 incorporadas de R01–R07 com dono e primeiro gate
 
 | ID | Origem | Item | Dono | Estado medido / primeiro gate |
 | --- | --- | --- | --- | --- |

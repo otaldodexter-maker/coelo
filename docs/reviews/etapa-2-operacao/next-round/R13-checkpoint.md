@@ -1,6 +1,6 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: histórico R13; PASS DOCUMENTED_PARTIAL; 50 Owner items preservados; fora da fila atual
+status: active R13; PASS DOCUMENTED_PARTIAL; 50 Owner items + H02–H28 na fila vigente
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
@@ -10,11 +10,11 @@ updated_at: 2026-09-14
 
 # R13 — checkpoint de execução e passagem
 
-> Registro histórico da R13. A fila vigente da Etapa 2 é
-> [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md), com os resíduos
-> R01–R07 H02–H28. R08–R13 não entram na contagem dessa fila. O inventário
-> atual corrige a leitura dos denominadores: FE 151/231 (65,37%), BE 159/224
-> (70,98%), E2E 125/199 (62,81%) e E2E + flutter-only 132/231 (57,14%).
+> Este checkpoint registra o corte de execução da R13. A fila vigente da Etapa 2
+> é R13, conforme [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md),
+> reunindo os 50 Owner items e H02–H28 incorporados de R01–R07. O inventário
+> atual mantém os denominadores: FE 151/231 (65,37%), BE 159/224 (70,98%),
+> E2E 125/199 (62,81%) e E2E + flutter-only 132/231 (57,14%).
 
 ## Execução operacional atual — 2026-09-14
 
@@ -22,7 +22,7 @@ Base confirmada: `dev = origin/dev`, checkout único e limpo, commit
 `0ef29b823`. A R13 acompanha os 50 Owner
 items ainda abertos/parciais da R12, preservando os IDs originais. Projeção e
 percentuais: `R13-projecao-atual.md`; fonte canônica por item:
-`R12-pendencias.md` e `R12-owner-items.json`.
+`R13-pendencias.md` e `R13-owner-items-atual.json`.
 
 Snapshot canônico desta revisão por 231 action IDs: FE verificado 151/231
 (65,37%), BE concluído ou verificado 159/224 (70,98%), E2E verificado 125/199
@@ -50,7 +50,8 @@ remoto foi alterado.
 ## Contrato da rodada
 
 - objetivo: retomar os abertos da R12 no recorte R13, preservando os três ajustes visuais já entregues e sem iniciar Etapa 3;
-- incluído: 50 compromissos em `R13-owner-items.json`, com primeiro gate SQL/PITR e priorização independente posterior;
+- incluído: 50 compromissos em `R13-owner-items-atual.json` e H02–H28
+  incorporados de R01–R07, com primeiro gate SQL/PITR e priorização independente posterior;
 - fora de escopo: R12-07/41/43 já concluídos, Etapa 3, novos action_ids, deploy público, SQL/Cloudflare sem gate/autorização;
 - ordem: SQL/PITR R12-51; depois configuração/publicação/diário/contadores; Conta/Auth; demais blocos por dependência;
 - critério de parada: limite de uso/tempo, bloqueio externo ou fechamento formal R13; não iniciar R14;

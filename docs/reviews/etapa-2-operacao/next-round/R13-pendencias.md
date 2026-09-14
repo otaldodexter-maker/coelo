@@ -1,16 +1,73 @@
 ---
-source: Owner 2026-09-13; R13-owner-items.json; R12-fechamento.md
-status: histórico de origem; R13 parcial; fora da fila residual operacional atual
+source: Owner 2026-09-13; R13-owner-items-atual.json; R12-fechamento.md; R01–R07 resíduos incorporados; inventario-etapa-2.json
+status: active; fila vigente R13; execução documental parcial
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
 
-> R13 recebeu os 50 compromissos ainda abertos/parciais da R12, sem novo aceite terminal. Este detalhamento é histórico e não deve recalcular a fila atual. A fila operacional vigente é [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md), formada pelos resíduos R01–R07 H02–H28; R08–R13 ficam fora dessa visão.
+> R13 é a fila vigente da Etapa 2. Ela reúne os 50 compromissos ainda
+> abertos/parciais da R12 e os resíduos H02–H28 herdados de R01–R07, sem novo
+> aceite terminal. R01–R12 permanecem apenas como origem e histórico; R14 não
+> foi iniciada. O estado agregado está em
+> [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md).
 
 
-# R13 — Pendências após fechamento R12
+# R13 — Pendências vigentes após fechamento R12
 
-## Execução R13 — 2026-09-14
+## Fila R13 incorporada de R01–R07
+
+Os resíduos abaixo foram transferidos para a R13 como pendências herdadas. Os
+IDs H não são novos `action_id` nem Owner items; servem para preservar a
+proveniência e concentrar o próximo gate em uma única rodada.
+
+| ID | Origem | Escopo pendente | Próximo gate |
+|---|---|---|---|
+| H02 | noturna/R01 | Atualização oficial a partir do Sobre | Conciliar contrato e consumidor produtivo ou registrar adiamento formal. |
+| H03 | noturna/R01 | Composição das quatro abas de Perfil | Comparar referência vigente e decidir consumidor produtivo. |
+| H04 | R02/R07 | Compositor produtivo de Circular e blocos intercalados | Unificar host e provar na rota normal. |
+| H05 | noturna/R01 | Denominador histórico de recibos do Chat | Definir corte de destinatários históricos. |
+| H06 | noturna/R01 | Revogar em Chat somente leitura | Decidir semântica e alinhar cliente/RPC. |
+| H07 | noturna/R01 | Hash de edição/revogação sem `conversation_id` | Executar replay/contexto na revisão de segurança. |
+| H08 | R02 | Duplicar Aviso | Conciliar com o contrato de novo rascunho. |
+| H09 | R04/R06 | Disparo agendado de expiração Agora | Medir trigger real; leitura não basta. |
+| H10 | noturna/R01 | Múltiplas regras de audiência em Formulários | Testar preservação e definir autoria. |
+| H11 | noturna/R01 | Autosave de autoria de Formulários | Conciliar `authoringApi` com o host produtivo. |
+| H12 | noturna/R01 | Controles de mínimo/máximo de seleção | Localizar contrato e registrar aceite. |
+| H13 | noturna/R01 | Destino do CTA de Comunicação | Ratificar adiamento ou definir destino autorizado. |
+| H14 | R06 | Sino sem `action_id`/subaceite | Mapear ao action_id-pai sem novo denominador. |
+| H15 | R06 | Atribuição de Plano | Confirmar se `plans.assign` entra no MVP. |
+| H16 | R06 | Leitura people-based de cuidado | Provar escopo entre unidades. |
+| H17 | R06 | Papel fixo versus capacidade em cuidado | Conciliar autorização sem ampliação implícita. |
+| H18 | R06 | Unicidade global concorrente de `@` | Revisar concorrência entre tabelas. |
+| H19 | R06 | Responsável vazio em Medicação | Reproduzir com contexto e destinatário válidos. |
+| H20 | R06 | Imagem da dose sem gateway | Localizar consumidor e obter prova específica. |
+| H21 | R07 | Limite de texto/rodapé de Circular | Conciliar 10.000 versus 4.000 sem reduzir contrato. |
+| H22 | noturna/R01 | Descritor privado de Circular | Alinhar à ADR 0032 e provar ausência de bucket público. |
+| H23 | noturna/R01 | Continuidade visual de Avisos após refresh | Reproduzir e classificar com UX vigente. |
+| H24 | noturna/R01 | Rótulos do Sobre | Comparar com referência vigente. |
+| H25 | noturna/R01 | Alvo de redimensionamento de tabela | Medir teclado, semântica e toque. |
+| H26 | noturna/R01 | Opcional, escala legada e opções vazias | Reconciliar contrato atual por caso. |
+| H27 | noturna/R01 | Sinal de atualização de Momentos | Classificar com composição vigente. |
+| H28 | R01 | Filtros, avatar e buffers de Pessoas | Rever somente diferenças funcionais persistentes. |
+
+H01 (credencial QA) está resolvido e permanece fora da fila. O detalhe de
+responsável, evidência e primeiro gate também está nos três rastreadores, agora
+sob a seção **Pendências R13 incorporadas de R01–R07**.
+
+As linhas herdadas do catálogo abaixo preservam textos históricos que podem
+mencionar abertura ou autorização da R12. O destino operacional vigente desses
+itens é a R13; nenhuma retomada deve ser executada na R12.
+
+## Pendências por `action_id` do inventário
+
+Além dos H e dos 50 Owner items, a R13 é o destino operacional dos action IDs
+que permanecem não terminais no inventário: 78 ações ativas na união das
+camadas (64 FE, 43 BE e 77 integradas). Esses números não são somados entre si;
+as 22 ações `deferred-post-mvp` ficam rastreadas separadamente e não entram no
+trabalho corrente do MVP. O detalhe por tela/subtela está nos três rastreadores
+e em `docs/reviews/inventario-etapa-2.json`.
+
+## Corte executado da R13 — 2026-09-14
 
 Os 50 IDs abaixo foram reavaliados no checkout `dev` em `536b5afa1`, sem
 renumeração e sem repetir `owner.r12-07`, `owner.r12-41` ou `owner.r12-43`.

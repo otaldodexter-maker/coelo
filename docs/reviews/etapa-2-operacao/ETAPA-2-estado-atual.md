@@ -1,7 +1,7 @@
 ---
-title: "Etapa 2 — estado atual e fila residual R01–R07"
-source: "R07-fechamento.md; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
-status: "active; fila residual R01–R07; R08–R13 históricos"
+title: "Etapa 2 — estado atual e fila vigente R13"
+source: "R13-pendencias.md; R13-owner-items-atual.json; R01–R12 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
+status: "active; fila vigente R13; R01–R12 históricos"
 generated_at: "2026-09-14"
 updated_at: "2026-09-14"
 base: "dev"
@@ -12,16 +12,25 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 # Etapa 2 — estado atual
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
-operacional desta visão é formada pelos resíduos identificados em R01–R07:
-H02–H28. H01 está resolvido e não volta para a fila. Os arquivos e resultados
-de R08–R13 continuam preservados como histórico, mas não acrescentam nem
-retiram itens desta fila residual.
+operacional vigente é a R13 e reúne os 50 `owner.r12-*` ainda
+`open`/`partial` recebidos da R12 e os resíduos H02–H28 herdados de R01–R07.
+H01 está resolvido e não volta para a fila. R01–R12 permanecem como fontes
+históricas; seus itens pendentes não devem continuar apontando para uma rodada
+anterior como destino executável.
 
 Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
-o último estado canônico por `action_id`; a separação abaixo evita misturar
-rodadas históricas com o trabalho que ainda precisa ser organizado na Etapa 2.
-Os 50 `owner.r12-*` abertos/parciais também permanecem preservados nos
-registros R12/R13, fora desta visão residual R01–R07.
+o último estado canônico por `action_id`; os 231 action IDs não ganham novos
+IDs pela transferência. A separação abaixo distingue a fila R13 das fontes
+históricas e das 22 ações formalmente adiadas para pós-MVP.
+
+Detalhamento operacional: [`R13-pendencias.md`](next-round/R13-pendencias.md),
+catálogo Owner [`R13-owner-items-atual.json`](next-round/R13-owner-items-atual.json)
+e índice das rodadas [`RODADAS.md`](next-round/RODADAS.md).
+
+No snapshot por `action_id`, a R13 concentra 78 ações ativas com algum gate não
+terminal (64 FE, 43 BE e 77 integradas; números por camada, não somáveis). As
+22 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
+fora do trabalho corrente do MVP.
 
 ## Percentuais canônicos
 
@@ -44,10 +53,10 @@ O valor `159/231` não é percentual de BE válido: sete ações não são
 aplicáveis ao backend. Da mesma forma, `132/231` é somente a métrica combinada
 E2E + flutter-only; para aceite integrado a base correta é `125/199`.
 
-## Fila residual R01–R07
+## Fila vigente R13 — pendências herdadas
 
-O detalhe completo permanece na seção **Resíduos R01–R07 com dono e primeiro
-gate** dos três rastreadores. A tabela abaixo é o índice operacional mínimo;
+O detalhe completo permanece na seção **Pendências R13 incorporadas de R01–R07**
+dos três rastreadores e no MD da R13. A tabela abaixo é o índice operacional mínimo;
 cada item continua `open`, `partial` ou dependente de decisão/prova até que o
 primeiro gate seja fechado.
 
@@ -101,8 +110,8 @@ não deve ser reaberto por esta organização documental.
 ## Rodadas preservadas
 
 O índice e o estado de cada rodada estão em
-[`next-round/RODADAS.md`](next-round/RODADAS.md). R01–R07 são a origem da fila
-residual acima. R08–R13 são anexos históricos nesta visão; R14 está apenas
+[`next-round/RODADAS.md`](next-round/RODADAS.md). R01–R12 são as origens
+históricas dos itens incorporados. R13 é a fila vigente; R14 está apenas
 preparada e não foi iniciada.
 
 ## Fechamento documental

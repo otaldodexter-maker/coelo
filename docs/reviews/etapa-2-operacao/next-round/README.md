@@ -11,11 +11,12 @@ timezone: "America/Sao_Paulo"
 
 ## Entrada vigente da Etapa 2
 
-Use [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md) para a fila
-residual R01–R07 e [`RODADAS.md`](RODADAS.md) para o estado das rodadas.
-R08–R13 são históricas nesta organização; R14 está apenas preparada e não foi
-iniciada. Os prompts e protocolos abaixo são preservados para proveniência e
-não autorizam reabrir uma rodada encerrada.
+Use [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md) e
+[`R13-pendencias.md`](R13-pendencias.md) para a fila vigente R13, que reúne os
+50 Owner items e H02–H28 incorporados de R01–R07. Use [`RODADAS.md`](RODADAS.md)
+para o estado das rodadas. R01–R12 permanecem como fontes históricas; R14 está
+apenas preparada e não foi iniciada. Os prompts e protocolos abaixo são
+preservados para proveniência e não autorizam execução automática.
 
 Os cinco `R01-CXX-prompt.md` são completos para abertura manual pelo Owner na worktree correspondente. Não criam conversas. A fonte viva permanece nas assignments C00.
 

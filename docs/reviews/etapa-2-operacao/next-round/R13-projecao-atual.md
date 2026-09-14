@@ -1,21 +1,22 @@
 ---
 source: R12-pendencias.md; R13-owner-items-atual.json; inventario-etapa-2.json; ETAPA-2-estado-atual.md
-status: histórico; R13 parcial; fora da fila residual operacional atual
+status: active; fila vigente R13; execução documental parcial
 generated_at: 2026-09-14
 updated_at: 2026-09-14
 ---
 
-# R13 — Projeção preservada (histórica)
+# R13 — Projeção vigente e histórico do corte
 
 A R13 recebeu documentalmente os 50 compromissos ainda não `done` da R12,
 preservando os IDs `owner.r12-*`; `owner.r12-07`, `owner.r12-41` e
 `owner.r12-43` ficaram fora por já estarem concluídos. A execução foi parcial,
-sem novo aceite terminal. Este arquivo permanece como origem histórica da
-transferência e não é a fila vigente da Etapa 2.
+sem novo aceite terminal. Este arquivo é a projeção vigente da fila R13 e
+preserva também o histórico da transferência.
 
 A fila operacional atual é [`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md),
-formada somente pelos resíduos R01–R07 H02–H28. R08–R13 são preservadas como
-histórico e não devem ser somadas novamente ou usadas para reabrir R12/R13.
+formada pelos 50 Owner items `owner.r12-*` e pelos resíduos H02–H28
+incorporados de R01–R07. R01–R12 são fontes históricas; não se somam itens
+duplicados nem se criam novos action IDs.
 
 ## Percentuais canônicos na revisão atual
 
@@ -39,7 +40,7 @@ Não somar camadas nem usar item de Owner como denominador de action ID.
 integrado `125/199`. Validação estrutural e checks locais não certificam
 runtime.
 
-## Ordem histórica registrada
+## Ordem vigente da R13
 
 1. R12-51: confirmar PITR, backup e ordem serial.
 2. R12-48–50: aplicar candidatos SQL aprovados e provar persistência, reload e isolamento.
@@ -48,5 +49,6 @@ runtime.
 5. R12-01–06, R12-08–40, R12-42, R12-44 e R12-52: concluir provas conforme cada gate.
 6. R12-53 somente após sua condição formal; não abrir macrotema novo.
 
-Os bloqueios externos permanecem registrados nos MDs de camada e no
-`R13-owner-items-atual.json`. Eles não são recontados como resíduos R01–R07.
+Os bloqueios externos permanecem registrados nos MDs de camada, neste arquivo
+e no `R13-owner-items-atual.json`. Eles pertencem à fila R13 e não devem ser
+recontados como itens independentes ou duplicados por origem histórica.

@@ -1,8 +1,14 @@
 {
   "completion": "partial",
   "currentQueue": {
-    "scope": "R01-R07 residuals H02-H28; H01 resolved",
-    "excludedHistoricalRounds": ["R08", "R09", "R10", "R11", "R12", "R13"],
+    "scope": "R13 vigente: 50 owner.r12-* open/partial + H02-H28 herdados de R01-R07; H01 resolved",
+    "excludedHistoricalRounds": ["R01", "R02", "R03", "R04", "R05", "R06", "R07", "R08", "R09", "R10", "R11", "R12"],
+    "ownerPendingCount": 50,
+    "inheritedResidualCount": 27,
+    "activeNonTerminalActionUnion": 78,
+    "nonTerminalByLayer": {"frontend": 64, "backend": 43, "integrated": 77},
+    "deferredPostMvpActionCount": 22,
+    "ownerCompletedExcluded": ["owner.r12-07", "owner.r12-41", "owner.r12-43"],
     "evidence": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md"
   },

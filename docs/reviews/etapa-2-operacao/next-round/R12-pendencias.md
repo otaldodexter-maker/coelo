@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: histórico de origem; 50 pendências transferidas para R13; fora da fila residual atual
+status: histórico de origem; 50 pendências transferidas para a fila vigente R13
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
@@ -9,9 +9,10 @@ updated_at: 2026-09-14
 
 > Este arquivo preserva a fonte de origem dos 53 `owner.r12-*`. Os 3 itens
 > concluídos (`07`, `41` e `43`) não retornam; os 50 abertos/parciais foram
-> transferidos para o registro R13. Nenhum deles compõe a fila residual R01–R07
-> da Etapa 2 atual. Consulte [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md)
-> e [RODADAS.md](RODADAS.md) para a visão operacional e o histórico.
+> transferidos para o registro R13. Nenhum deles compõe uma fila executável da
+> R12. Consulte [R13-pendencias.md](R13-pendencias.md),
+> [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md) e
+> [RODADAS.md](RODADAS.md) para a visão operacional e o histórico.
 
 ## R12-19 a R12-53 checkpoint de execução (C0)
 
