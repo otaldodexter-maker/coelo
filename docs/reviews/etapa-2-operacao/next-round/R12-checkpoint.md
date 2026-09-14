@@ -37,6 +37,26 @@ módulo/tela/ação, preserva próprias/todas e esclarece acesso efetivo.
 17 testes de regressão + 1 teste focal PASS; analyze sem issues. Catálogo
 produtivo/traduções e rota real continuam pendentes; nenhum grant alterado.
 
+## Retomada final da continuidade — 2026-09-14
+
+Checkout consolidado confirmado em `dev`, sem WIP, stash ou worktree extra;
+`dev = origin/dev` em `a019736fbe1cfead7fd1548bd173095e3ddc0886`. A execução
+percorreu os 53 registros do catálogo R12: aceites locais implementáveis foram
+corrigidos e publicados com evidência; os demais ficaram em seus MDs com
+próximo gate, sem simular rota, RLS, SMTP, R2 ou aprovação visual.
+
+Validações de fechamento: `docs/reviews/validate-trackers.cjs` PASS
+(`231 actions`, `39 families`, `151 FE`, `159 BE`, `125 E2E`, `199 active E2E`)
+e `docs/reviews/delivery_gate.py` PASS DOCUMENTED_PARTIAL. Esses resultados
+são reconciliação estrutural/documental, não certificação de runtime.
+
+Gates externos continuam explicitamente abertos: R12-38 requer Media Gateway
+R2; R12-46 depende de SQL/contrato de mídia; R12-47 depende de SMTP e redirect
+real; R12-48–50 dependem de pgTAP, PITR, backup e ordem; R12-51 confirmou
+PITR/backup ausentes; R12-52 aguarda runtime atualizado e prova E2E; R12-53
+permanece condicional e não foi declarado. R14 está apenas preparada, sem
+execução automática.
+
 ## Corte do bucket normal — 13/09/2026 21:32 -03
 
 Uso medido: normal 99%, reserva Luna 17%. Código publicado em 4b74dc67f;
