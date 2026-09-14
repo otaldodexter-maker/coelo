@@ -372,7 +372,9 @@
   {
     "id": "owner.r12-20",
     "status": "partial",
-    "actionIds": [],
+    "actionIds": [
+      "access-profiles.list"
+    ],
     "fe": "FE local-green: cards distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem inventar métrica.",
     "be": "BE inalterado.",
     "e2e": "E2E pending-verification.",
