@@ -43,3 +43,15 @@ Base Git antes das provas: 8e33db805.
 Não exercitado: `assessments.entry/close/reopen` (save/submit/publish do diário),
 `activities.publish` (já `done`). FE e E2E dessas telas continuam pendentes de
 rota real no Chrome.
+
+## Lote 65 (13:35) — H06: revogar proibido em conversa somente leitura
+
+- `20260914133000_r13_chat_revoke_read_only_v1.sql`: `superadmin_chat_revoke_message_v2`
+  lê `is_read_only` e devolve `CHAT_READ_ONLY` antes de qualquer alteração; revoke
+  explícito de `public`/`anon` e grant só a `authenticated`.
+- pgTAP vermelho→verde: `supabase/tests/r13/chat-revoke-read-only-test.sql` 14/14;
+  suíte base `superadmin_internal_chat_receipts_edit_revoke_baseline_test.sql` 36/36.
+- Dump `schema-producao-20260914-r13-lote65.sql` (SHA-256 d3c7e00a444bd8c8…); ledger 289;
+  `pg_get_functiondef` em produção contém o guard. Produção não tem conversa
+  somente leitura (0 linhas), por isso a negativa de runtime foi por id inexistente
+  (`CHAT_NOT_FOUND`, sessão `qa-r06-principal`). `chat.revoke` já era `verified-e2e`.

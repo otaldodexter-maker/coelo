@@ -32,7 +32,7 @@ Métricas canônicas do inventário, base `dev` em 2026-09-14, SHA
 `1f34b9dbfda5f94b98edbb154ce1841059df67bf`: FE verificado **151/231
 (65,37%)**; FE local-green **37/231 (16,02%)**. Local-green é avanço local e
 não aceite integrado. Owner: **4/53 done (7,55%)** e **49/53 abertos/parciais
-(94,34%)**. Este é o snapshot atual da fila R13; não somar percentuais de
+(92,45%)**. Este é o snapshot atual da fila R13; não somar percentuais de
 rodadas históricas nem camadas.
 
 ## R13 — execução e gates (fila vigente; 2026-09-14)

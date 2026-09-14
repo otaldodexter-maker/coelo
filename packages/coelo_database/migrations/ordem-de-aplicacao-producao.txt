@@ -250,3 +250,6 @@
 
 # lote 64 (14/09 13:05) - R13 hotfix groups.list: escape de um caractere na busca por nome (22025 pre-existente desde a baseline); pgTAP 4/4 + 10/10 no espelho; dump esquema (SHA-256 dc9c43bc); ledger 288
 20260914130000_r13_group_directory_search_escape_v1.sql
+
+# lote 65 (14/09 13:35) - R13/ADR0038 H06: revoke_message_v2 recusa CHAT_READ_ONLY; pgTAP 14/14 + base 36/36 no espelho; dump esquema (SHA-256 d3c7e00a); ledger 289
+20260914133000_r13_chat_revoke_read_only_v1.sql
