@@ -32,7 +32,7 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 8. SQL "c": `owner.r12-18`, `owner.r12-33`, `asset_id` no chat-media + Edge Function.
 9. Gates de medição: `H03`, `H07`, `H09`, `H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
 
-## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9)
+## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9) — 6/6 decididas: 5 A, 1 A+
 
 | Tela | action_ids | Decisão | Observação / gate |
 |---|---|---|---|
@@ -40,8 +40,8 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 | Atividades › Lançar avaliações | assessments.entry/gradebook/detail | **A** | — |
 | Saúde e Cuidado › Planos de medicação | medication.list/create/detail/edit | **A** | — |
 | Cabeçalho › Meu perfil | account.profile | **A+** | Owner: "o contêiner do Meu Acesso pode ficar na mesma linha que Dados pessoais e ter a rolagem para ir descendo" → correção de layout obrigatória (coelo-ui), entra em `owner.r12-46`. |
-| Atividades › Configuração avaliativa | activities.assessment | pendente | sem decisão registrada no artefato |
-| Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | pendente | sem decisão registrada no artefato |
+| Atividades › Configuração avaliativa | activities.assessment | **A** | — |
+| Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | **A** | — |
 
 ## Owner items — abertos/parciais (44)
 
