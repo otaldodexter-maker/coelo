@@ -1,15 +1,18 @@
 ---
 source: Owner 2026-09-13 — cota aproximada de8% e divisão R12/R13; R13-owner-items.json; R11-fechamento.md
-status: plano operacional R13; execução não iniciada
+status: histórico; plano R13 parcial; fora da fila residual operacional atual
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
 
 > Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
 
 
-# R13 — Continuidade reservada
+# R13 — Continuidade reservada (histórico)
 
-Fonte operacional atual: `R13-projecao-atual.md` e `R12-pendencias.md`.
+Fonte histórica: `R13-projecao-atual.md` e `R12-pendencias.md`. A fonte
+operacional atual da Etapa 2 é
+[`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md), com os resíduos R01–R07.
 Escopo: 50 Owner items ainda abertos/parciais, sem renumerar IDs e sem repetir
 R12-07, R12-41 e R12-43, já concluídos.
 
@@ -24,9 +27,9 @@ IDs R12 para rastreabilidade. Ver R13-owner-items.json e R13-pendencias.md.
 R12 fica com07/41/43; seus eventuais abertos serão adicionados automaticamente
 pelo procedimento de fechamento autorizado, sem renumerar nem apagar histórico.
 
-R13 não está iniciada e não tem promessa de conclusão integral. Confirmar cota
-real, escopo/tempo e priorização em sua abertura; não pressupor que50 itens
-caibam no saldo desta janela. Etapa3 permanece fora.
+R13 foi encerrada como execução parcial e não tem conclusão integral. Não
+reabrir a rodada por este plano, não pressupor que os 50 itens estejam
+certificados e manter a Etapa 3 fora.
 
 Ordem proposta para a abertura:
 

@@ -1,12 +1,20 @@
 ---
 title: "Etapa 2 — trabalho atual, coordenação Claude e prompts"
 source: "Owner em 09/09/2026; AGENTS.md; inventario-etapa-2.json; fechamento e reconciliação R01/R02"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "histórico operacional; usar ETAPA-2-estado-atual.md e RODADAS.md"
 generated_at: "2026-09-09"
+updated_at: "2026-09-14"
 timezone: "America/Sao_Paulo"
 ---
 
 # Etapa 2 — trabalho atual
+
+> Este documento preserva o protocolo e as instruções da coordenação histórica
+> de 09–10/09. A entrada operacional vigente é
+> [`ETAPA-2-estado-atual.md`](ETAPA-2-estado-atual.md), com a fila residual
+> R01–R07 H02–H28, e o índice de rodadas é
+> [`next-round/RODADAS.md`](next-round/RODADAS.md). R08–R13 não devem ser
+> reabertas por este arquivo.
 
 Este é o único ponto de entrada operacional da passagem de 09 para 10/09/2026.
 Usar conversas NOVAS, preservando código, branches e evidências anteriores.

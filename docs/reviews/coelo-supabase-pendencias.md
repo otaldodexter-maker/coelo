@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-14T00:00:00-03:00"
+updated_at: "2026-09-14"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -14,12 +14,27 @@ formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
 tracker_sync_at: "2026-09-14T01:54:49.556789Z"
-tracker_sync_revisions: "R13 execução parcial; evidência r13-execution-audit-20260914.json"
+tracker_sync_revisions: "fila atual R01–R07; R08–R13 históricos; inventário revisado em 2026-09-14"
 ---
 
 # Pendências Coelo — Back-end
 
-## R13 — execução e gates (2026-09-14)
+## Etapa 2 — fila vigente: resíduos R01–R07 (2026-09-14)
+
+A fila operacional desta visão é H02–H28, conforme o fechamento e a varredura
+R07; H01 (credencial QA) está resolvido. R08–R13 permanecem preservadas abaixo
+como histórico e não alteram a contagem da fila residual. O índice operacional,
+os 27 resíduos e a ordem de execução estão em
+[`ETAPA-2-estado-atual.md`](etapa-2-operacao/ETAPA-2-estado-atual.md).
+
+Métricas canônicas do inventário, base `dev` em 2026-09-14, SHA
+`1f34b9dbfda5f94b98edbb154ce1841059df67bf`: BE concluído/verificado
+**159/224 (70,98%)**; BE local-green **21/224 (9,38%)**. Local-green é avanço
+local e não prova remota. Owner: **3/53 done (5,66%)** e **50/53
+abertos/parciais (94,34%)**. Não usar percentuais de R13 históricos deste
+arquivo como estado atual.
+
+## Histórico R13 — execução e gates (fora da fila atual; 2026-09-14)
 
 Nenhuma migration, RPC, Edge Function, segredo, bucket ou deploy foi alterado.
 R12-51 permanece bloqueado por PITR/backup/ordem e drift do ledger; R12-48/49/50
@@ -35,7 +50,7 @@ PITR/backup/ordem serial/ledger; R12-48/49/50 seguem dependentes. Cardápios e
 conta continuam aguardando Gateway R2 privado real, e Convites/Auth aguardam
 SMTP/redirect reais.
 
-## R13 — pendências transferidas da R12 (2026-09-14)
+## Histórico R13 — pendências transferidas da R12 (fora da fila atual; 2026-09-14)
 
 Fila corrente: os 50 Owner items `owner.r12-*` ainda `open`/`partial` foram
 transferidos para a R13, preservando os IDs de origem: `owner.r12-01–06`,
@@ -45,7 +60,7 @@ O estado por contrato, migration/RPC, evidência e próximo gate está em
 `R13-pendencias.md` e `R13-owner-items-atual.json`; não há fila operacional
 remanescente em R12.
 
-## R12 — Apontamentos Owner incorporados (histórico; transferidos para R13)
+## Histórico R12 — Apontamentos Owner incorporados (fora da fila atual; transferidos para R13)
 
 Camada Back-end: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.
 
@@ -53,7 +68,7 @@ Recortes: rotina/chamada/modelos; Segurança da criança; Perfis/permissões; cu
 
 Mapeamento ainda pendente: R12-11, R12-19 e R12-20 (diretório Perfis/modelos) e R12-42 (Agenda/Aprovações). Responsável C0 R12: localizar rota e contrato e reconciliar com inventário sem inventar denominador. Requisitos detalhados dos demais itens estão na fonte vinculada de cada linha do catálogo.
 
-## Estado vigente ? R10, fechamento
+## Histórico R10 — fechamento
 
 Revisão documental pós-R10: [todas as 231 ações por tela/subtela, com FE,
 BE e primeiro gate](etapa-2-operacao/next-round/R10-estado-por-tela.md).
@@ -69,7 +84,7 @@ participantes permanecemabertos. [Entrega](etapa-2-operacao/next-round/R10-fecha
 e [primeiros gates](etapa-2-operacao/next-round/R10-pendencias.md).
 
 
-## Historico ? R09 E2-R09-20260912-1542, C0 revisao118
+## Histórico R09 — E2-R09-20260912-1542, C0 revisão118
 
 T0 12/09/2026 15:42:18 BRT preservado; corte de execucao19:42:18 e
 fechamento20:12:18, ou antes por consumo. Nove IDs/ACKs conferidos; posse
@@ -117,7 +132,7 @@ Conferencia posterior solicitada pelo Owner, C0r119: nove conversas relidas, nov
 
 Preparacao R10 C0r120: [fila14FE/20BE e historia](etapa-2-operacao/next-round/R10-preparacao.md), [prompt unico](etapa-2-operacao/next-round/R10-prompt-unico.md) e [proposta Etapa2/MVP/V1](etapa-2-operacao/next-round/R10-proposta-metricas-por-escopo.md). Nenhum estado/denominador alterado por planejamento. C0r121: auxiliar [Terra medium](etapa-2-operacao/next-round/R10-dev-senior.md) na mesma arvore; C0 Astra mantem UI/aceites/integracao.
 
-## Historico — Rodada 8 (E2-R08-20260912), checkpoint 11h14
+## Histórico R08 — E2-R08-20260912, checkpoint 11h14
 
 C0 publicou a posse em dev às 10h52, com nove frentes G0–G8 identificadas.
 Execução até 14h52:16; revisão até 15h02:16 e fechamento até 15h22:16.
@@ -1046,7 +1061,7 @@ Back-end: a coluna de pendência e o estado avaliam contratos e provedores; PASS
 G1 rodape, G3 frame/Chamada e G7 Catalogo integrados; Flutter121PASS/0FAIL/0SKIP e analyze global exit0. Lote56 Agora aplicado/ledger, cron ativo5min; sem nova certificacao E2E. Evidencia: [ciclo30](evidence/etapa-2/r08-coordenacao/ciclo30.md). Estados oficiais preservados; avanços locais separados dos aceites.
 
 <!-- R08-C0-CLOSURE -->
-## R08 — avanços e pendências consolidados em 12/09/2026
+## Histórico R08 — avanços e pendências consolidados em 12/09/2026
 
 Fonte central: [R08-fechamento](etapa-2-operacao/next-round/R08-fechamento.md).
 Revisão C0; base integrada e provas identificadas no fechamento. Escopo:

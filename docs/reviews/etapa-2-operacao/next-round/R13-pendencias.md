@@ -1,10 +1,11 @@
 ---
 source: Owner 2026-09-13; R13-owner-items.json; R12-fechamento.md
-status: histórico de origem; projeção operacional atual em R13-projecao-atual.md
+status: histórico de origem; R13 parcial; fora da fila residual operacional atual
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
 
-> Projeção atual: a R13 recebe os 50 compromissos ainda abertos/parciais da R12. Use [R13-projecao-atual.md](R13-projecao-atual.md) e a fonte por item em [R12-pendencias.md](R12-pendencias.md). O detalhamento abaixo é histórico e não deve recalcular estados.
+> R13 recebeu os 50 compromissos ainda abertos/parciais da R12, sem novo aceite terminal. Este detalhamento é histórico e não deve recalcular a fila atual. A fila operacional vigente é [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md), formada pelos resíduos R01–R07 H02–H28; R08–R13 ficam fora dessa visão.
 
 
 # R13 — Pendências após fechamento R12

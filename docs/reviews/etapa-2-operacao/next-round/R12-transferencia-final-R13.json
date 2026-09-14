@@ -1,5 +1,15 @@
 {
-  "transferred": [],
+  "transferred": [
+    "owner.r12-01", "owner.r12-02", "owner.r12-03", "owner.r12-04", "owner.r12-05", "owner.r12-06",
+    "owner.r12-08", "owner.r12-09", "owner.r12-10", "owner.r12-11", "owner.r12-12", "owner.r12-13",
+    "owner.r12-14", "owner.r12-15", "owner.r12-16", "owner.r12-17", "owner.r12-18", "owner.r12-19",
+    "owner.r12-20", "owner.r12-21", "owner.r12-22", "owner.r12-23", "owner.r12-24", "owner.r12-25",
+    "owner.r12-26", "owner.r12-27", "owner.r12-28", "owner.r12-29", "owner.r12-30", "owner.r12-31",
+    "owner.r12-32", "owner.r12-33", "owner.r12-34", "owner.r12-35", "owner.r12-36", "owner.r12-37",
+    "owner.r12-38", "owner.r12-39", "owner.r12-40", "owner.r12-42", "owner.r12-44", "owner.r12-45",
+    "owner.r12-46", "owner.r12-47", "owner.r12-48", "owner.r12-49", "owner.r12-50", "owner.r12-51",
+    "owner.r12-52", "owner.r12-53"
+  ],
   "notTransferredCompleted": [
     "owner.r12-07",
     "owner.r12-41",

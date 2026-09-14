@@ -1,0 +1,114 @@
+---
+title: "Etapa 2 — estado atual e fila residual R01–R07"
+source: "R07-fechamento.md; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
+status: "active; fila residual R01–R07; R08–R13 históricos"
+generated_at: "2026-09-14"
+updated_at: "2026-09-14"
+base: "dev"
+revision: "1f34b9dbfda5f94b98edbb154ce1841059df67bf"
+environment: "checkout consolidado local; sem deploy ou mutação remota"
+---
+
+# Etapa 2 — estado atual
+
+Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
+operacional desta visão é formada pelos resíduos identificados em R01–R07:
+H02–H28. H01 está resolvido e não volta para a fila. Os arquivos e resultados
+de R08–R13 continuam preservados como histórico, mas não acrescentam nem
+retiram itens desta fila residual.
+
+Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
+o último estado canônico por `action_id`; a separação abaixo evita misturar
+rodadas históricas com o trabalho que ainda precisa ser organizado na Etapa 2.
+Os 50 `owner.r12-*` abertos/parciais também permanecem preservados nos
+registros R12/R13, fora desta visão residual R01–R07.
+
+## Percentuais canônicos
+
+Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
+2026-09-14, no checkout `dev`, SHA `1f34b9dbfda5f94b98edbb154ce1841059df67bf`.
+Os denominadores são por camada e não devem ser somados entre si.
+
+| Indicador | Resultado | Percentual | Leitura |
+|---|---:|---:|---|
+| FE verificado | 151 / 231 | 65,37% | terminal FE da base inteira |
+| FE local-green | 37 / 231 | 16,02% | avanço local; não é aceite E2E |
+| BE concluído/verificado | 159 / 224 | 70,98% | somente ações aplicáveis ao BE |
+| BE local-green | 21 / 224 | 9,38% | avanço local; não é prova remota |
+| E2E verificado | 125 / 199 | 62,81% | base integrada ativa |
+| E2E + flutter-only | 132 / 231 | 57,14% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
+| Owner items done | 3 / 53 | 5,66% | IDs de Owner, não action IDs |
+| Owner items abertos/parciais | 50 / 53 | 94,34% | complemento dos 3 concluídos |
+
+O valor `159/231` não é percentual de BE válido: sete ações não são
+aplicáveis ao backend. Da mesma forma, `132/231` é somente a métrica combinada
+E2E + flutter-only; para aceite integrado a base correta é `125/199`.
+
+## Fila residual R01–R07
+
+O detalhe completo permanece na seção **Resíduos R01–R07 com dono e primeiro
+gate** dos três rastreadores. A tabela abaixo é o índice operacional mínimo;
+cada item continua `open`, `partial` ou dependente de decisão/prova até que o
+primeiro gate seja fechado.
+
+| ID | Origem | Dono / gate | Trabalho que falta |
+|---|---|---|---|
+| H02 | noturna/R01 | G4 + Owner | Conciliar e conectar o contrato de atualização oficial do Sobre, ou registrar adiamento formal. |
+| H03 | noturna/R01 | G4 | Reconciliar a composição de quatro abas de Perfil com a referência vigente e decidir o consumidor produtivo. |
+| H04 | R02/R07 | G6 | Unificar o compositor de Circular e blocos intercalados no host produtivo, com rota normal. |
+| H05 | noturna/R01 | G4 + G5 + Owner | Definir o corte de destinatários históricos do Chat; manter o aceite vigente até decisão. |
+| H06 | noturna/R01 | G4 + Owner | Decidir a semântica de revogação no Chat somente leitura e alinhar cliente/RPC. |
+| H07 | noturna/R01 | G5 | Fazer teste de replay/contexto para hash de edição/revogação com `conversation_id` na revisão profunda. |
+| H08 | R02 | G6 + Owner | Conciliar a ação Duplicar Aviso com o contrato de novo rascunho antes de implementar ou adiar. |
+| H09 | R04/R06 | C0 + G4 + G5 | Medir o disparo agendado real de expiração do Agora; filtro de leitura não basta. |
+| H10 | noturna/R01 | G3 + Owner | Testar e definir preservação/autoria de múltiplas regras de audiência em Formulários. |
+| H11 | noturna/R01 | G3 + Owner | Corrigir o contrato de autosave de autoria, distinguindo `authoringApi` da resposta. |
+| H12 | noturna/R01 | G3 | Localizar/definir controles de mínimo e máximo de seleção e registrar o aceite. |
+| H13 | noturna/R01 | G4 + G6 + Owner | Ratificar o adiamento do CTA de Comunicação ou definir destino autorizado. |
+| H14 | R06 | C0 + G6 | Mapear `action_id` e subaceite do sino sem criar denominador novo. |
+| H15 | R06 | G7 + Owner | Confirmar se `plans.assign` entra no MVP; não confundir `activate` com atribuição. |
+| H16 | R06 | G5 | Provar o escopo institucional de leitura people-based entre unidades. |
+| H17 | R06 | G5 + Owner | Conciliar papel fixo e capacidade no cuidado sem ampliar autorização implicitamente. |
+| H18 | R06 | G5 + G1 | Revisar concorrência e unicidade global de `@` com teste entre tabelas. |
+| H19 | R06 | G3 | Reproduzir o responsável vazio em Medicação com contexto e destinatário válidos. |
+| H20 | R06 | G3 | Localizar o consumidor/gateway da imagem da dose e obter prova específica de mídia. |
+| H21 | R07 | G6 + Owner | Conciliar limite de texto/rodapé da Circular (10.000 versus 4.000) sem reduzir contrato por inferência. |
+| H22 | noturna/R01 | G6 + G5 | Alinhar descritor privado da Circular à ADR 0032 e provar que não há bucket público. |
+| H23 | noturna/R01 | G6 | Reproduzir e classificar a continuidade visual de Avisos após refresh. |
+| H24 | noturna/R01 | G4 | Comparar rótulos do Sobre com a referência vigente, sem misturar famílias visuais. |
+| H25 | noturna/R01 | C0 + G3 | Medir o alvo de redimensionamento de tabela com teclado, semântica e toque. |
+| H26 | noturna/R01 | G3 | Reconciliar opcional omitida, escala legada invertida e opções vazias por contrato atual. |
+| H27 | noturna/R01 | G4 | Classificar sinal de atualização de Momentos e saudação fixa com a composição vigente. |
+| H28 | R01 | G2 + G4 | Reconciliar filtros de Pessoas/atividade/localidade, avatar e buffers de upload apenas nas diferenças funcionais persistentes. |
+
+H01 (credencial QA exposta) foi resolvido por rotação registrada em 12/09 e
+não deve ser reaberto por esta organização documental.
+
+## Ordem de execução da Etapa 2
+
+1. Fechar decisões e contratos que destravam mais de um item: H02–H06, H08,
+   H10–H13, H15, H17, H21, H22, H24, H26 e H27.
+2. Em paralelo, reproduzir gates independentes: H07, H09, H14, H16, H18,
+   H19, H20, H23, H25 e H28.
+3. Para cada correção executável: teste pertinente antes do código novo,
+   menor implementação, teste direcionado, analyze/lint aplicável, evidência
+   por `apps/superadmin → menu → tela → subtela/estado → action_id` e atualização
+   da fonte canônica, inventário e três matrizes.
+4. Só promover um aceite quando houver a prova adequada à camada. Rota aberta,
+   mock, `/dev`, fail-closed, screenshot isolado e teste local não certificam
+   E2E.
+
+## Rodadas preservadas
+
+O índice e o estado de cada rodada estão em
+[`next-round/RODADAS.md`](next-round/RODADAS.md). R01–R07 são a origem da fila
+residual acima. R08–R13 são anexos históricos nesta visão; R14 está apenas
+preparada e não foi iniciada.
+
+## Fechamento documental
+
+Após qualquer mudança, executar `rtk node docs/reviews/validate-trackers.cjs`.
+No fechamento autorizado, executar também
+`rtk proxy python -X utf8 docs/reviews/delivery_gate.py docs/reviews/entrega-atual.json`.
+O estado final deve distinguir `PASS COMPLETE` de
+`PASS DOCUMENTED_PARTIAL` e listar cada bloqueio externo verificável.

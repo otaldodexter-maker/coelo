@@ -11,8 +11,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -31,8 +31,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -50,8 +50,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
     "owner": "C0 R12",
     "nextGate": "Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -70,8 +70,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -89,8 +89,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
     "owner": "C0 R12",
     "nextGate": "Reproduzir com contexto real autorizado, atividade elegível, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -109,8 +109,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
     "owner": "C0 R12",
     "nextGate": "Reproduzir com contexto real autorizado, confirmar rotina efetiva/versionamento e snapshot no servidor, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -153,8 +153,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Reproduzir pela rota normal com múltiplos alunos/turmas e rotina vinculada; registrar payload/versão, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -172,8 +172,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -191,8 +191,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Comparar aprovado/failure lado a lado, localizar diferença e corrigir ou obter decisão do Owner sem regenerar baseline por inferência.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -208,8 +208,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Comparar goldens aprovado/failure e confirmar com Owner se a composição 2×2 atende antes de alterar.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -227,8 +227,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
     "owner": "C0 R12",
     "nextGate": "Revisar golden aprovado/failure e provar rota normal, reload e escopo autorizado da criança.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -247,8 +247,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
     "owner": "C0 R12",
     "nextGate": "Comparar referência e provar create/edit pela rota normal com ator/criança autorizados.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -266,8 +266,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
     "owner": "C0 R12",
     "nextGate": "Confirmar idioma suportado e provar rótulos na rota normal com dados autorizados.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -287,8 +287,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
     "owner": "C0 R12",
     "nextGate": "Provar estados pendente/aprovado ativo/suspenso pela rota normal e escopo do ator.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -306,8 +306,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
     "nextGate": "Provar teclado/rota normal sem salto e sem perda de dados.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -326,8 +326,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
     "nextGate": "Aprovar reader/contrato de busca e vínculo real antes de implementar.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -345,8 +345,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
     "nextGate": "Definir obrigatoriedade, identificação, deduplicação, auditoria e escopo.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -362,8 +362,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -381,8 +381,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota normal, quantidade arbitrária de registros, golden aprovado, reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -400,8 +400,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota normal, catálogo real, golden aprovado, reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -420,8 +420,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
     "owner": "C0 R12",
     "nextGate": "Provar criação/edição pela rota normal, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -439,8 +439,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -459,8 +459,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
     "owner": "C0 R12",
     "nextGate": "Provar catálogo real, rota normal, foco/toque, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -479,8 +479,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
     "owner": "C0 R12",
     "nextGate": "Provar catálogo real, rota normal, responsividade, persistência/reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -498,8 +498,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota normal e persistência da edição; aprovação visual do Owner permanece separada.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -518,8 +518,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md",
     "owner": "C0 R12",
     "nextGate": "Conferir catálogo real/traduções, alcance, ações adiadas e salvar/reload sem perder próprias/todas.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -537,8 +537,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota real, reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -558,8 +558,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "owner": "C0 R12",
     "nextGate": "Provar persistência/reload, autorização e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -579,8 +579,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "owner": "C0 R12",
     "nextGate": "Provar persistência/reload, autorização e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -599,8 +599,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota real, persistência/reload e autorização.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -621,8 +621,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "owner": "C0 R12",
     "nextGate": "Provar vínculos reais, vigência, reload e negativa cross-tenant.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -642,8 +642,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
     "owner": "C0 R12",
     "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -662,8 +662,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md",
     "owner": "C0 R12",
     "nextGate": "Provar adicionar/renomear/duplicar/reordenar e reload pela rota real.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -682,8 +682,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "owner": "C0 R12",
     "nextGate": "Provar adicionar/editar/remover e reload pela rota real; RLS e aprovação visual permanecem pendentes.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -703,8 +703,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "owner": "C0 R12",
     "nextGate": "Provar instante no Supabase real e visibilidade antes/depois da publicação agendada.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -723,8 +723,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
     "owner": "C0 R12",
     "nextGate": "Provar edição sem apagar exceções históricas e reload real.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -745,8 +745,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
     "owner": "C0 R12",
     "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -765,8 +765,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
     "owner": "C0 R12",
     "nextGate": "Provar save/reload e posição final pela rota normal.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -785,8 +785,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
     "owner": "C0 R12",
     "nextGate": "Provar persistência/reload e nome na prévia pela rota normal.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -824,8 +824,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
     "owner": "C0 R12",
     "nextGate": "Provar rota normal, decisão/reload e revisar goldens da tabela; investigar golden de calendário loading dark 375.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -863,8 +863,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
     "owner": "C0 R12",
     "nextGate": "Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -882,8 +882,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
     "owner": "C0 R12",
     "nextGate": "Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez, provar recibo/link de uso único, reload e negativa cross-tenant; não simular SMTP/Admin API.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -901,8 +901,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -921,8 +921,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -941,8 +941,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Aplicar candidato após gate SQL; salvar/reler o mesmo b04c879e e fechar a cadeia de configuração/publicação. Atividade95b98978 já active: não recriar ou alternar status para inflar avanço.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -964,8 +964,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -983,8 +983,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Aplicar projeção após gate SQL e conferir contadores na turma4214106c com vínculos ativos e reload. Aceite antigo da listagem não cobre contadores.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -1000,8 +1000,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -1019,8 +1019,8 @@
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"
@@ -1036,8 +1036,8 @@
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
     "nextGate": "Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema.",
-    "destinationRound": "R12",
-    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
+    "destinationRound": "R13",
+    "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
       "R12",
       "R13"

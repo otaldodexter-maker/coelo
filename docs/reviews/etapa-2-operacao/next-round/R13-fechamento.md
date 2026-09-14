@@ -10,6 +10,11 @@ execution_status: PASS DOCUMENTED_PARTIAL em 2026-09-14; nenhum aceite terminal 
 
 # R13 — Fechamento parcial
 
+> Este fechamento é histórico e não é a fila atual. A organização vigente da
+> Etapa 2 está em [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md) e
+> [`RODADAS.md`](RODADAS.md): resíduos R01–R07 H02–H28; R08–R13 preservadas;
+> R14 não iniciada.
+
 R13 foi encerrada dentro da fase de reserva, sem iniciar Etapa 3 e sem alterar
 Supabase, SQL, R2, Stream, Edge Functions ou deploy público. A posse veio da
 R12 no SHA `4ded9c567ef8415d62421b503a7e38c27ba53fa4`; a base entregue desta

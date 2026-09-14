@@ -1,10 +1,17 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: execução em andamento; C0 fechou dois aceites FE locais e mantém E2E aberto
+status: histórico de origem; 50 pendências transferidas para R13; fora da fila residual atual
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
 
 # R12 — Catálogo consolidado por camada (histórico; fila transferida para R13)
+
+> Este arquivo preserva a fonte de origem dos 53 `owner.r12-*`. Os 3 itens
+> concluídos (`07`, `41` e `43`) não retornam; os 50 abertos/parciais foram
+> transferidos para o registro R13. Nenhum deles compõe a fila residual R01–R07
+> da Etapa 2 atual. Consulte [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md)
+> e [RODADAS.md](RODADAS.md) para a visão operacional e o histórico.
 
 ## R12-19 a R12-53 checkpoint de execução (C0)
 

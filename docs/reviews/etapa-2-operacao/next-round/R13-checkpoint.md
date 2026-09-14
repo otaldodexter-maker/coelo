@@ -1,13 +1,20 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: execução R13; PASS DOCUMENTED_PARTIAL; 50 Owner items preservados
+status: histórico R13; PASS DOCUMENTED_PARTIAL; 50 Owner items preservados; fora da fila atual
 generated_at: 2026-09-13
+updated_at: 2026-09-14
 ---
 
 > Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
 
 
 # R13 — checkpoint de execução e passagem
+
+> Registro histórico da R13. A fila vigente da Etapa 2 é
+> [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md), com os resíduos
+> R01–R07 H02–H28. R08–R13 não entram na contagem dessa fila. O inventário
+> atual corrige a leitura dos denominadores: FE 151/231 (65,37%), BE 159/224
+> (70,98%), E2E 125/199 (62,81%) e E2E + flutter-only 132/231 (57,14%).
 
 ## Execução operacional atual — 2026-09-14
 

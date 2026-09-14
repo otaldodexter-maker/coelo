@@ -3,10 +3,24 @@ title: "Coelo — Coordenação da Etapa 2"
 source: "Conversa Coordenar Etapa 2 do Coelo; seis conversas delegadas; docs/reviews/coelo-flutter-pendencias.md; docs/reviews/coelo-supabase-pendencias.md; docs/reviews/coelo-flutter-integrado-supabase-pendencias.md"
 status: "active"
 generated_at: "2026-09-01"
-updated_at: "2026-09-09"
+updated_at: "2026-09-14"
 ---
 
 # Coelo — Coordenação da Etapa 2
+
+## Visão vigente — 2026-09-14
+
+Para a fila atual, use [`etapa-2-operacao/ETAPA-2-estado-atual.md`](etapa-2-operacao/ETAPA-2-estado-atual.md)
+e o [`índice de rodadas`](etapa-2-operacao/next-round/RODADAS.md). A fila
+residual é R01–R07 H02–H28; H01 está resolvido. R08–R13 permanecem como
+histórico preservado e R14 não foi iniciada. Os blocos abaixo descrevem
+coordenações encerradas e não reabrem conversas, worktrees ou rodadas.
+
+Métricas atuais por IDs únicos: FE 151/231 (65,37%), BE 159/224 (70,98%),
+E2E 125/199 (62,81%), E2E + flutter-only 132/231 (57,14%), FE local-green
+37/231 (16,02%), BE local-green 21/224 (9,38%). Owner: 3/53 done (5,66%) e
+50/53 abertos/parciais (94,34%). Base `dev`, revisão 2026-09-14, SHA
+`1f34b9dbfda5f94b98edbb154ce1841059df67bf`.
 
 ## R02 iniciada — D00 vigente em 09/09/2026
 
