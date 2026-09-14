@@ -200,6 +200,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
 
   void _applyDraft(HealthCareProfileDraft draft) {
     _childId = draft.childId;
+    _loadedChildLabel = draft.childLabel;
     _allergyType = draft.allergyType;
     _allergyStatus = draft.allergyStatus;
     _severity = draft.severity;
@@ -325,7 +326,11 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       widget.childOptions.isNotEmpty &&
       widget.childOptions.any((option) => option.id == _childId);
 
+  String? _loadedChildLabel;
+
   String _childLabel(String value) {
+    final loaded = _loadedChildLabel;
+    if (value == _childId && loaded != null) return loaded;
     for (final option in widget.childOptions) {
       if (option.id == value) return option.label;
     }

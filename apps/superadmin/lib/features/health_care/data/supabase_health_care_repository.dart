@@ -228,6 +228,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     final lastEpisode = allergy?['last_episode_at'] as String?;
     return HealthCareProfileDraft(
       childId: profileId,
+      childLabel: detail['display_name'] as String?,
       careItemIds: {for (final row in _rows(detail['items'])) row['catalog_item_id']! as String},
       importantSigns: detail['important_signs'] as String? ?? '',
       adaptations: detail['adaptations'] as String? ?? '',

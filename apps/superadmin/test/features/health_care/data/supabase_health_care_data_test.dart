@@ -172,6 +172,16 @@ void main() {
       expect(allergy['episode_severity'], isNull);
     });
 
+    test('o rascunho de edição carrega o nome da criança do detalhe', () async {
+      final backend = _Backend({'superadmin_health_care_profile_detail': _profileDetail});
+      final client = _clientFor(backend);
+      addTearDown(client.dispose);
+
+      final draft = await SupabaseHealthCareRepository(client).loadCareProfileDraft('profile-1');
+      expect(draft?.childId, 'profile-1');
+      expect(draft?.childLabel, 'Criança Um');
+    });
+
     test('perfil fora do escopo volta como ausente, sem confirmar existência', () async {
       final backend = _Backend({})
         ..errors['superadmin_health_care_profile_detail'] = (status: 403, code: '42501');

@@ -151,6 +151,28 @@ void main() {
     expect(saved?.justification, initial.justification);
   });
 
+  testWidgets('profile edit shows the child name carried by the loaded draft', (tester) async {
+    // Host produtivo: a rota só conhece o id; o nome vem do detalhe (display_name).
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthCareProfileFormPage(
+          logout: unavailableSuperadminLogout,
+          childOptions: const [HealthCareProfileChildOption(id: 'p-1', label: 'Perfil de cuidado')],
+          childId: 'p-1',
+          onCancel: () {},
+          loadDraft: (childId) async =>
+              HealthCareProfileDraft(childId: childId, childLabel: 'Crianca QA R04'),
+          onSaved: (_) async {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    expect(find.text('Crianca QA R04'), findsWidgets);
+    expect(find.text('Perfil de cuidado'), findsNothing);
+  });
+
   testWidgets('profile edit ignores stale child response after A to B route swap', (tester) async {
     final a = Completer<HealthCareProfileDraft?>();
     final b = Completer<HealthCareProfileDraft?>();

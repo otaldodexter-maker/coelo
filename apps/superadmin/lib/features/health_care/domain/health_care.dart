@@ -783,6 +783,7 @@ final class HealthCareProfileItem {
 final class HealthCareProfileDraft {
   HealthCareProfileDraft({
     required this.childId,
+    this.childLabel,
     this.allergyType = HealthCareAllergyType.food,
     this.allergyStatus = HealthCareAllergyStatus.active,
     this.lastEpisode = '',
@@ -797,6 +798,9 @@ final class HealthCareProfileDraft {
   }) : careItemIds = Set.unmodifiable(careItemIds);
 
   final String childId;
+
+  /// Nome exibido da criança quando o host só conhece o id (detalhe produtivo).
+  final String? childLabel;
   final HealthCareAllergyType allergyType;
   final HealthCareAllergyStatus allergyStatus;
   final String lastEpisode;
