@@ -38,7 +38,7 @@ proveniência e concentrar o próximo gate em uma única rodada.
 | H14 | R06 | Sino sem `action_id`/subaceite | Mapear ao action_id-pai sem novo denominador. |
 | H15 | R06 | Atribuição de Plano | Decidido (ADR 0038): `plans.assign` fora do MVP. Fechado: botão honestamente indisponível. |
 | H16 | R06 | Leitura people-based de cuidado | Provar escopo entre unidades. |
-| H17 | R06 | Papel fixo versus capacidade em cuidado | Decidido (ADR 0038): só capacidade. Próximo gate: capacidade `care_policies.manage` + remover papel fixo em `superadmin_unit_care_policy_set_v1` + pgTAP. |
+| H17 | R06 | Papel fixo versus capacidade em cuidado | **Concluído em 14/09 (lote 66)**: capacidade `care_policies.manage` nos catálogos Superadmin (Owner) e Admin (Administrador da instituição); `superadmin_unit_care_policy_set_v1` exige só a capacidade; pgTAP 15/15 + base 20/20; get/set/reload em produção na unidade f5284f2f e negativa por unidade alheia. Sem action_id próprio no inventário (sem tela no cliente); sem delta de estado. |
 | H18 | R06 | Unicidade global concorrente de `@` | Revisar concorrência entre tabelas. |
 | H19 | R06 | Responsável vazio em Medicação | Reproduzir com contexto e destinatário válidos. |
 | H20 | R06 | Imagem da dose sem gateway | Localizar consumidor e obter prova específica. |

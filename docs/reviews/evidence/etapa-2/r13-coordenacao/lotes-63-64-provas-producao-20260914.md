@@ -55,3 +55,16 @@ rota real no Chrome.
   `pg_get_functiondef` em produção contém o guard. Produção não tem conversa
   somente leitura (0 linhas), por isso a negativa de runtime foi por id inexistente
   (`CHAT_NOT_FOUND`, sessão `qa-r06-principal`). `chat.revoke` já era `verified-e2e`.
+
+## Lote 66 (14:25) — H17: políticas de cuidado só por capacidade
+
+- `20260914140000_r13_care_policies_manage_capability_v1.sql`: `care_policies.manage` em
+  `platform_permissions` (Owner) e `institution_permissions` (Administrador da instituição,
+  `application_code = admin`); `superadmin_unit_care_policy_set_v1` troca `units.update` +
+  papel owner/operations pela capacidade; revoke `public/anon/service_role`, grant `authenticated`.
+- pgTAP vermelho→verde `supabase/tests/r13/care-policies-manage-capability-test.sql` 15/15
+  (papel sem a capacidade negado mesmo com `units.update`; conceder só a capacidade libera);
+  suíte base `unit_care_policies_notifications_v1_test.sql` 20/20.
+- Produção (sessão `qa-r06-operacoes`, Owner): get → set `notify_unit` (management_version 0→2)
+  → get relê; unidade inexistente → `SAI_PERMISSION_DENIED`. Dump lote66 SHA-256 8464db0497191447…; ledger 290.
+- Nenhum cliente Flutter consome esta RPC ainda; não há `action_id` próprio.

@@ -253,3 +253,6 @@
 
 # lote 65 (14/09 13:35) - R13/ADR0038 H06: revoke_message_v2 recusa CHAT_READ_ONLY; pgTAP 14/14 + base 36/36 no espelho; dump esquema (SHA-256 d3c7e00a); ledger 289
 20260914133000_r13_chat_revoke_read_only_v1.sql
+
+# lote 66 (14/09 14:25) - R13/ADR0038 H17: care_policies.manage (Owner + institution_admin) e set_v1 so por capacidade; pgTAP 15/15 + base 20/20; dump esquema (SHA-256 8464db04); ledger 290
+20260914140000_r13_care_policies_manage_capability_v1.sql
