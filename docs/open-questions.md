@@ -17,6 +17,26 @@ reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038
 
 # Perguntas abertas e conflitos
 
+## OQ-032 — Perfis oficiais do Coelo seguidos automaticamente (2026-09-14)
+
+Owner: para dar movimento de rede social e notificações, todos os usuários do
+Principal seguem automaticamente de 3 a 7 perfis oficiais do Coelo, somando 1 a 4
+publicações por dia. Decidir a lista **antes de fechar o MVP** (não é Etapa 3).
+Já existe o perfil `coelo` reservado (ADR 0034, P35). Proposta inicial do Claude
+para o Owner escolher:
+
+1. **Coelo** — novidades do app, dicas de uso, avisos de versão (já existe).
+2. **Coelo Alimentação** — lanches, cardápios, alergias, rotina alimentar infantil.
+3. **Coelo Educa** — desenvolvimento infantil, limites, rotina de sono, telas.
+4. **Coelo Escola** — comunicação escola–família, calendário, reuniões, adaptação.
+5. **Coelo Cuidado** — saúde e segurança infantil, primeiros socorros, medicação.
+6. **Coelo Brincar** — atividades, brincadeiras e passeios por faixa etária.
+7. **Coelo Famílias** — histórias, rotina dos responsáveis, bem-estar dos pais.
+
+Pontos a decidir: quem publica (equipe Coelo pelo Superadmin), se o usuário pode
+deixar de seguir, frequência por perfil, e se conteúdo entra como Acontece,
+Momentos ou tipo próprio. Impacta spec do Principal e ADR de contas de serviço.
+
 ## Decisões do Owner de 14/09/2026 — ADR 0038
 
 O Owner respondeu em 14/09/2026 aos 37 pontos parados por decisão; a fonte

@@ -9,16 +9,44 @@ audience: "team"
 
 # Horizontes de trabalho
 
-## Trabalho atual — Etapa 2 / R13
+## Trabalho atual — Etapa 2 / R14
 
 É a única fila executável neste momento. Use [current-state.md](current-state.md)
-e os documentos R13 apontados nele.
+e a fila única `R14-pendencias.md` apontada nele.
 
 ## Pendências do MVP
 
 Use os itens não terminais do estado R13 e o inventário por `action_id`. Itens
 explicitamente `deferred-post-mvp` continuam registrados, mas não bloqueiam o
 MVP e não devem ser implementados por inferência.
+
+## Decisões do Owner de 14/09/2026 sobre escopo (fora da fila R14)
+
+Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
+
+- **Fora do MVP:** `plans.assign` (Planos › Atribuir), qualquer módulo
+  **Financeiro**, `institutions.status`, `institutions.locations-map`,
+  `auth/account/internal-users.mfa` (gate formal). Só precisam ser marcados
+  como tal no inventário (reclassificação a autorizar na abertura da R14).
+- **V1 ou Etapa 3 (a definir):** Catálogo de UI (`catalog.list/validate/sync/
+  publish`) — tela do catálogo `coelo-ui`; não é MVP.
+- **Formulários autosave (H11):** se der muito trabalho, vai para V1; se já
+  estiver mais de 60% em andamento, manter no MVP. H10 (regras de audiência)
+  continua no MVP.
+- **Chat › Anexar (`chat.attach`):** continua no MVP (asset_id + Edge Function),
+  explicar ao Owner na abertura da R14.
+- **Etapa 3:** 3 instituições fictícias com pessoas e hierarquia completa
+  (unidades, turmas, responsáveis, crianças) para o Owner verificar a tela
+  "Para você" do Principal; avaliar outro nome para "Para você" (já usado por
+  concorrentes/TikTok) — nome atual é bom, decisão pendente.
+- **Perfis oficiais do Coelo** (seguidos automaticamente por todos, 3 a 7
+  perfis, 1 a 4 publicações/dia no total, para dar movimento e notificações
+  na rede): decidir a lista antes de fechar o MVP (não é Etapa 3). Proposta
+  inicial em `docs/open-questions.md` (OQ-032).
+- **Ao abrir a R14:** perguntar ao Owner e explicar, de forma simples e
+  visual, os temas: telas de erro/acesso negado/arquivos/mapa de Instituições e
+  Unidades; Catálogo de UI; Chat › Anexar; Formulários H10/H11; e as decisões
+  acima.
 
 ## V1 e V2
 

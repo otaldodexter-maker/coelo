@@ -192,6 +192,14 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 | shell | 1 | `shell.switch-context` (pending-verification/not-applicable/flutter-only) |
 | units | 2 | `units.error` (pending-verification/local-green/pending-verification), `units.access-denied` (pending-verification/local-green/pending-verification) |
 
+## Decisões de escopo do Owner (14/09, ver `docs/agent/backlog.md`)
+
+Fora do MVP: `plans.assign`, Financeiro, `institutions.status`, `institutions.locations-map`, MFA ×3.
+V1/Etapa 3: Catálogo de UI. Formulários autosave (H11): V1 se for caro, salvo se >60% pronto.
+Etapa 3: 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
+Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). Na abertura da R14, explicar esses temas
+ao Owner de forma visual antes de executar.
+
 ## Como atualizar
 
 - Estado por `action_id`: só via `apply-tracker-delta.cjs` com evidência certificada (inventário → três rastreadores).
