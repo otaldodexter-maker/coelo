@@ -31,7 +31,7 @@ execução estão em
 Métricas canônicas do inventário, base `dev` em 2026-09-14, SHA
 `1f34b9dbfda5f94b98edbb154ce1841059df67bf`: FE verificado **151/231
 (65,37%)**; FE local-green **37/231 (16,02%)**. Local-green é avanço local e
-não aceite integrado. Owner: **3/53 done (5,66%)** e **50/53 abertos/parciais
+não aceite integrado. Owner: **4/53 done (7,55%)** e **49/53 abertos/parciais
 (94,34%)**. Este é o snapshot atual da fila R13; não somar percentuais de
 rodadas históricas nem camadas.
 
@@ -730,7 +730,7 @@ esses blocos são "sem autorização para verificar", não "ausentes".
 Reconciliação documental em **2026-09-09T17:13:51-03:00**, sobre `dev` documental `09aa3861e` e base funcional `d019c109a`.
 Objetivo: atualizar entregas, pendências e evidências das duas rodadas no inventário e nas três camadas. Inclui as 230 ações conhecidas; não reabre tarefas nem executa/deploya produto. Critério de parada: matrizes idênticas ao inventário nos campos de cada camada, fontes reconciliadas e publicação verificada. Trabalho documental realizado neste turno; ETA do produto continua desconhecida.
 
-Conclusão certificada no inventário: Front-end 151/231, backend 159/224 ações aplicáveis e integração 125/199 ativas (também 125/202 incluindo o gate formal).
+Conclusão certificada no inventário: Front-end 151/231, backend 163/224 ações aplicáveis e integração 125/199 ativas (também 125/202 incluindo o gate formal).
 São 39 famílias; 205 ações ativas considerando cinco de shell, 22 adiadas e três gates MFA. A contagem `scope=mvp` é 200 (198 com backend/E2E e duas preferências locais); shell é separado. Sete ações não se aplicam ao backend. FE ativo: 4/205; três certificados são de indisponibilidade de ações adiadas. Não é percentual de código implementado.
 
 Os sete certificados FE são `auth.login`, `auth.recover`, `auth.reset`, `auth.logout`, `attendance.export` informativo e `profile-files.import/export` históricos. R02 acrescentou cinco certificados; nenhuma promoção nesta manutenção. `account.logout` permanece ID distinto, sem herdar o aceite de Auth.

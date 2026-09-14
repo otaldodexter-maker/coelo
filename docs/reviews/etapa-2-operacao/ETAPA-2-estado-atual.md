@@ -35,21 +35,21 @@ fora do trabalho corrente do MVP.
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-14, no checkout `dev`, SHA `1f34b9dbfda5f94b98edbb154ce1841059df67bf`.
+2026-09-14 (13:15, após os lotes SQL 63 e 64), no checkout `dev`, SHA `8e33db805eee7f34bd5b8a5c8493c4f6822d87b0`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
 | FE verificado | 151 / 231 | 65,37% | terminal FE da base inteira |
 | FE local-green | 37 / 231 | 16,02% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 159 / 224 | 70,98% | somente ações aplicáveis ao BE |
-| BE local-green | 21 / 224 | 9,38% | avanço local; não é prova remota |
+| BE concluído/verificado | 163 / 224 | 72,77% | somente ações aplicáveis ao BE |
+| BE local-green | 17 / 224 | 7,59% | avanço local; não é prova remota |
 | E2E verificado | 125 / 199 | 62,81% | base integrada ativa |
 | E2E + flutter-only | 132 / 231 | 57,14% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
-| Owner items done | 3 / 53 | 5,66% | IDs de Owner, não action IDs |
-| Owner items abertos/parciais | 50 / 53 | 94,34% | complemento dos 3 concluídos |
+| Owner items done | 4 / 53 | 7,55% | IDs de Owner, não action IDs |
+| Owner items abertos/parciais | 49 / 53 | 92,45% | complemento dos 4 concluídos |
 
-O valor `159/231` não é percentual de BE válido: sete ações não são
+O valor `163/231` não é percentual de BE válido: sete ações não são
 aplicáveis ao backend. Da mesma forma, `132/231` é somente a métrica combinada
 E2E + flutter-only; para aceite integrado a base correta é `125/199`.
 

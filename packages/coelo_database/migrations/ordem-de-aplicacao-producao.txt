@@ -247,3 +247,6 @@
 20260913143659_r11_group_directory_counts_v1.sql
 20260913144142_r11_account_avatar_access_v2.sql
 20260913145023_r11_assessment_all_participants_v1.sql
+
+# lote 64 (14/09 13:05) - R13 hotfix groups.list: escape de um caractere na busca por nome (22025 pre-existente desde a baseline); pgTAP 4/4 + 10/10 no espelho; dump esquema (SHA-256 dc9c43bc); ledger 288
+20260914130000_r13_group_directory_search_escape_v1.sql

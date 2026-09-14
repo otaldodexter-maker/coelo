@@ -1,0 +1,45 @@
+---
+source: sessao Claude R13 de 14/09/2026; ADR 0038 (R12-51); packages/coelo_database/migrations/ordem-de-aplicacao-producao.txt
+status: evidence
+generated_at: 2026-09-14
+---
+
+# Lotes 63 e 64 — aplicação em produção e provas por RPC (14/09/2026)
+
+Ambiente: Supabase de produção (`evvbomzejfijozbtgvpt`), sessão `qa-r06-estrutura@coelo.me`
+via `packages/coelo_database/scripts/r13-rpc-proof.mjs` (PostgREST, sem chave de serviço).
+Espelho: projeto descartável `coelo_mirror_r13` (portas 613xx) = baseline + seed +
+167 arquivos da ordem real por psql, depois os candidatos.
+Base Git antes das provas: 8e33db805.
+
+## Lote 63 (12:45) — owner.r12-51: quatro candidatos R11
+
+- Dump lógico fora do Git: `Coelo-backups/schema-producao-20260914-r13-lote63.sql`
+  (SHA-256 778d4f37ec443a5fe16f068e8ed5e682ed2f389289e12ec51a7d61b03d82c777) e
+  `dados-producao-20260914-r13-lote63.sql` (63801fa3231166afce5e73efe404aafe0484655e263aa188eb76cf33d738de6d).
+- pgTAP no espelho: assessment-update-isolation 8/8, group-directory-counts 10/10,
+  account-avatar-access 9/9, gradebook-all-participants 13/13.
+- Ledger 283 → 287 (20260913143441, 143659, 144142, 145023). md5 de
+  `pg_get_functiondef` das seis funções: produção == espelho.
+- ACL: funções `app_private` só `postgres`; wrappers públicos `authenticated`
+  (+`service_role` nos legados). Sem grant novo a `anon`.
+
+## Lote 64 (13:05) — hotfix groups.list busca
+
+- Defeito pré-existente na baseline: `escape '\'` (dois caracteres) devolvia
+  `22025 invalid escape string` em produção para qualquer `p_search` não vazio.
+- Teste vermelho antes (4/4 com `not ok 1`), verde depois; counts 10/10 preservado.
+- Dump `schema-producao-20260914-r13-lote64.sql` (SHA-256 dc9c43bc554654e0…); ledger 288.
+
+## Provas por action_id em produção (Back-end)
+
+| action_id | Prova | Negativa |
+|---|---|---|
+| groups.list | `superadmin_group_directory` devolve turma 4214106c com `student_count=1` e 3 `activity_ids` (antes zeros); busca `R05` encontra a turma. | `p_institution_ids=[0000…]` → `items: []`; id inexistente não enumerável. |
+| activities.assessment | `superadmin_assessment_save_configuration` UPDATE da configuração retida b04c879e (expected_version 1) → `version: 2`; `configuration_read_by_id` relê instrumento "Instrumento R08 (R13 update)". | `read_by_id` de id inexistente → `data: null`. |
+| assessments.gradebook / assessments.detail | `superadmin_assessment_gradebook_read` do diário d2c945d8 lista a participante "Crianca QA R04" (antes ausente), eventos e configuração ativa. | Escopo por `has_platform_permission` provado no pgTAP 13/13. |
+| account.profile | `superadmin_account_profile_save_v2` grava sigla `QE` + cor `#D63C00` + celular; `superadmin_account_profile_get` relê os mesmos valores (`avatar_contract_version: 2`). | Celular vazio → `22023 invalid_account_profile`. Foto R2 continua não implementada → BE `remote-green`, não `done`. |
+
+Não exercitado: `assessments.entry/close/reopen` (save/submit/publish do diário),
+`activities.publish` (já `done`). FE e E2E dessas telas continuam pendentes de
+rota real no Chrome.
