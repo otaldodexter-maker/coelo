@@ -22,10 +22,17 @@ audience: "team"
 Use, nesta ordem:
 
 1. [Estado atual da Etapa 2](../reviews/etapa-2-operacao/ETAPA-2-estado-atual.md);
-2. [Pendências R13](../reviews/etapa-2-operacao/next-round/R13-pendencias.md);
-3. [Projeção R13](../reviews/etapa-2-operacao/next-round/R13-projecao-atual.md);
-4. [Itens atuais do Owner](../reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json);
-5. [Inventário por action_id](../reviews/inventario-etapa-2.json), somente para
+2. [Prompt de execução R13](../reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md),
+   quando a tarefa for retomar a execução autorizada;
+3. [Pendências R13](../reviews/etapa-2-operacao/next-round/R13-pendencias.md);
+4. [Checkpoint mais recente disponível](../reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md),
+   para o último delta de execução;
+5. [Projeção R13](../reviews/etapa-2-operacao/next-round/R13-projecao-atual.md),
+   somente para contexto e histórico do corte;
+6. [Itens atuais do Owner](../reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json),
+   somente como catálogo derivado: confirmar o estado contra R13-pendencias e
+   evidências mais recentes antes de contar ou transferir itens;
+7. [Inventário por action_id](../reviews/inventario-etapa-2.json), somente para
    o detalhe da ação.
 
 Os três rastreadores grandes são fontes de detalhe e auditoria. Não são a

@@ -26,4 +26,5 @@ rastreadores em `docs/reviews` são detalhe de auditoria; os arquivos em
 Ao alterar estado, sincronize inventário e matrizes no mesmo ciclo. Separe
 avanço local, FE, BE, E2E, testes executados e testes aprovados. O delivery gate
 é obrigatório somente quando o escopo inclui integração/publicação ou entrega
-formal; rode `python docs/reviews/delivery_gate.py` após commit/push.
+formal; rode `python docs/reviews/delivery_gate.py docs/reviews/entrega-atual.json`
+após commit/push.

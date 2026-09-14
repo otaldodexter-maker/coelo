@@ -1,3 +1,44 @@
-# Decisions
+# Catálogo de decisões
 
-ADRs da fundacao Coelo. Arquivos com status `Accepted for planning` orientam specs futuras, mas nao autorizam implementacao sem spec aprovada. Arquivos `Proposed - spike required` exigem validacao tecnica antes de virar decisao final de execucao.
+As ADRs registram decisões persistentes. O README é um roteador, não substitui
+o texto da ADR. `accepted`/`approved` descreve a decisão editorial; não prova
+que a implementação, RLS ou E2E exista. Para o trabalho atual, comece por
+`docs/agent/current-state.md`.
+
+## Overlays vigentes por tema
+
+| Tema | ADR que deve ser conferida primeiro | Regra de leitura |
+| --- | --- | --- |
+| Aplicação remota e aceite do MVP | `0034-mvp-remote-application-and-acceptance-bar.md` | Régua de aceite, ambiente remoto e limites do MVP. |
+| Mídia privada | `0032-mvp-private-media-r2.md` | R2 privado como master; catálogo e permissões no Postgres; Stream só quando aplicável. |
+| Importação e exportação | `0031-mvp-import-export-buttons-only.md` | Controles podem aparecer; execução geral fica adiada, com a exceção de `forms.responses.export`. |
+| Principal, host e controles de mídia | `0037-principal-host-context-and-media-controls.md` | Conferir junto da ADR 0032 e da spec da superfície. |
+| Decisões do Owner da R13 | `0038-owner-decisions-etapa2-backlog-20260914.md` | Fechamentos de produto da fila R13; não reabrir o que ela decidiu. |
+| Etapa 3 reservada | `0035-etapa3-mvp-contextual-access-and-app-delivery.md` | Planejamento aprovado; não iniciar automaticamente. |
+
+## Base arquitetural
+
+As ADRs `0001`–`0009` registram a base de monorepo, superfícies, tenancy,
+permissões, dados, arquitetura Flutter/Astro e design. `0011`–`0019` registram
+decisões de implementação e domínio que continuam sendo consultadas conforme
+a spec da superfície. Não tratar a presença de uma ADR antiga como fila atual.
+
+## Decisões substituídas ou com substituição parcial
+
+`0010-private-media-r2.md`, `0026-happens-mvp-private-supabase-storage.md` e
+`0030-mvp-private-media-supabase-storage.md` não devem orientar armazenamento
+novo do MVP quando contradisserem a ADR 0032. ADRs `0022`, `0024`, `0025` e
+`0027` podem conservar regras de domínio ou exceções; conferir a parte
+específica antes de classificá-las como totalmente substituídas.
+
+## Governança
+
+- Em conflito, registrar as fontes em `docs/open-questions.md` e seguir a ADR
+  explicitamente mais recente para o escopo afetado.
+- Uma decisão do Owner que altera comportamento deve atualizar ADR, spec,
+  estado corrente e projeção de conhecimento quando houver conhecimento
+  durável.
+- IDs ausentes no diretório são referências quebradas, não autorização para
+  criar um documento com o mesmo número.
+- Preservar histórico e proveniência; não deixar um histórico ser descoberto
+  como instrução atual por falta de indicação de lifecycle.

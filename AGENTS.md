@@ -62,8 +62,9 @@ Use os rastreadores atuais apenas pelo índice; os arquivos em `archive/` são
 proveniência.
 
 Antes de concluir uma alteração, rode os testes pertinentes, confira o diff e
-separe avanço local de aceite FE/BE/E2E. Quando o escopo incluir integração ou
-publicação, execute `docs/reviews/delivery_gate.py` após commit/push.
+separe avanço local de aceite FE/BE/E2E. Quando o escopo incluir integração,
+publicação ou entrega formal, execute `python docs/reviews/delivery_gate.py
+docs/reviews/entrega-atual.json` após commit/push.
 
 Para conhecimento do produto, use `.agents/skills/coelo-knowledge/SKILL.md`.
 Para saída de terminal muito grande, use `RTK.md` explicitamente quando isso

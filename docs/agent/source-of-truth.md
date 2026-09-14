@@ -25,6 +25,34 @@ Uma fonte posterior não deve ser “combinada” silenciosamente com uma anteri
 Se houver conflito, registrar os caminhos em `docs/open-questions.md` e seguir
 o documento explicitamente marcado como corrente para a fila de trabalho.
 
+## Mapa canônico por tema
+
+Estes arquivos são baselines de produto e arquitetura. Antes de transformar uma
+seção em requisito executável, conferir as ADRs atuais e a spec da superfície;
+um baseline pode conter uma proposta antiga dentro de uma seção “MVP”.
+
+- Produto: `docs/product/product-vision.md`, `prd-master.md`,
+  `prd-superadmin.md`, `prd-admin.md`, `prd-app.md`.
+- Arquitetura: `docs/architecture/macro-architecture.md`, `domain-map.md` e
+  `activity-domain-addendum.md`.
+- Dados: `docs/data/data-model.md`.
+- Segurança: `docs/security/auth-multitenant-permissions.md`,
+  `lgpd-security-media.md` e `environment-and-secrets.md`.
+- Design: `docs/design/design-system.md`; referências de owner e evidências
+  visuais só valem quando houver aceite explícito apontado pela fonte atual.
+- Originais: `docs/source/originals/`; preservam proveniência e não substituem
+  overlays aprovados.
+
+Overlays operacionais prioritários nesta fase: ADR 0031 (importação/exportação),
+ADR 0032 (mídia privada), ADR 0034 (aplicação remota e régua de aceite), ADR
+0037 (host/contexto do Principal e mídia) e ADR 0038 (decisões do Owner da
+R13). `docs/knowledge` é índice projetado e não sobe nessa precedência.
+
+Os baselines canônicos agora exibem um overlay datado no topo; esse overlay
+reconcilia a leitura operacional sem apagar o texto derivado do DOCX. O
+relatório de entrega corrente é regenerado por
+`docs/reviews/generate-delivery-report.py` e não deve virar uma segunda fila.
+
 ## Ciclo de vida
 
 - `current`: pode orientar o trabalho atual.

@@ -1,0 +1,104 @@
+{
+  "generated_at": "2026-09-14",
+  "status": "inventory_only_no_mutation",
+  "scope": "Coelo, Codex, Claude, recovery, preserved, artifacts and backups",
+  "method": "Metadata, names, sizes, dates and Git relations only. Potentially sensitive file contents were not opened or copied.",
+  "policy": "No file or directory may be deleted or moved until the Owner approves an itemized batch.",
+  "locations": [
+    {
+      "id": "A01",
+      "location": ".codex",
+      "files": 4595,
+      "bytes": 538186828,
+      "classification": "runtime-context/cache",
+      "preliminary_action": "retain_then_prune_cache_only",
+      "risk": "medium",
+      "reason": "May contain active task state, harness metadata or useful recovery context; not a product source."
+    },
+    {
+      "id": "A02",
+      "location": ".claude",
+      "files": 3,
+      "bytes": 1477,
+      "classification": "Claude-configuration",
+      "preliminary_action": "retain_and_review_permissions",
+      "risk": "medium",
+      "reason": "Small configuration layer used by Claude; settings include historical command permissions."
+    },
+    {
+      "id": "A03",
+      "location": ".preserved",
+      "files": 4075,
+      "bytes": 563946226,
+      "classification": "rollback-preservation",
+      "preliminary_action": "retain_until_document_reconciliation_then_compress",
+      "risk": "medium",
+      "reason": "Contains legacy skill/context copies preserved during this cleanup; not operational authority."
+    },
+    {
+      "id": "A04",
+      "location": ".recovery-archives",
+      "files": 5733,
+      "bytes": 5769496356,
+      "classification": "recovery-archive",
+      "preliminary_action": "deduplicate_or_compress_after_reference_check",
+      "risk": "high",
+      "reason": "Large historical recovery area; may include WIP, credentials or snapshots."
+    },
+    {
+      "id": "A05",
+      "location": "../Coelo.artifacts",
+      "files": 38,
+      "bytes": 499232,
+      "classification": "review-artifacts",
+      "preliminary_action": "classify_references_then_keep_or_remove_duplicates",
+      "risk": "low_to_medium",
+      "reason": "Likely screenshots, renders or handoff evidence; some may still be referenced by reviews."
+    },
+    {
+      "id": "A06",
+      "location": "../Coelo.preserved",
+      "files": 35657,
+      "bytes": 6650542900,
+      "classification": "external-preserved-snapshot",
+      "preliminary_action": "retain_one_recoverable_snapshot_then_archive_or_remove_duplicates",
+      "risk": "high",
+      "reason": "Large external preservation tree; cannot be deleted before provenance and recovery checks."
+    },
+    {
+      "id": "A07",
+      "location": "../Coelo.worktrees",
+      "files": 0,
+      "bytes": 0,
+      "classification": "empty-worktree-container",
+      "preliminary_action": "candidate_for_delete_after_process_and_reference_check",
+      "risk": "low",
+      "reason": "Currently empty, but deletion is deferred until no tool or automation points to it."
+    },
+    {
+      "id": "A08",
+      "location": "../Coelo-backups",
+      "files": 3812,
+      "bytes": 5263288435,
+      "classification": "backup-and-potentially-sensitive",
+      "preliminary_action": "hold_securely_then_review_retention_and_duplicates",
+      "risk": "critical",
+      "suspicious_filename_count": 135,
+      "content_inspected": false,
+      "reason": "Names indicate environment files, production SQL/schema/data, session/cookie or token material. Do not index, copy, attach or delete blindly."
+    }
+  ],
+  "git_snapshot": {
+    "registered_worktrees": 1,
+    "registered_worktree": "C:/Users/adrie/Documents/Coelo",
+    "residual_branches_with_exclusive_commits": 30,
+    "all_branches_including_remotes": 176,
+    "branch_deletion": "not_authorized_in_this_phase"
+  },
+  "next_inventory_pass": [
+    "Produce file-level records only for proposed deletion or movement candidates.",
+    "Check references from Git, active docs, skills, R13 evidence and Claude/Codex configuration.",
+    "For sensitive-name files, record only path, type, size, hash and retention decision; never copy contents into the repository.",
+    "Present batches A01-A08 with an explicit Owner approval field before mutation."
+  ]
+}

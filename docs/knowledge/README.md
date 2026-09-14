@@ -3,6 +3,7 @@ title: Governança da base de conhecimento Coelo
 knowledge_id: knowledge-governance
 source: AGENTS.md
 status: validated
+lifecycle: current
 generated_at: 2026-07-27
 audience: team
 surfaces:
@@ -34,19 +35,26 @@ apresentadas como fatos.
 ## Contrato de validação e busca — 2026-09-08
 
 Cada artigo exige strings não vazias para `title`, `knowledge_id`, `source`,
-`status`, `generated_at`, `audience`, `visibility` e `review_owner`; `surfaces`
+`status`, `lifecycle`, `generated_at`, `audience`, `visibility` e `review_owner`; `surfaces`
 é lista YAML não vazia de strings (inline ou bloco). Datas são datas reais em
 YYYY-MM-DD, incluindo `updated_at` quando presente. Chaves YAML duplicadas são
 inválidas. `knowledge_id` usa kebab-case e é único dentro de cada audiência;
 a mesma identidade pode relacionar artigos de team, admin e users.
+
+`status` mede qualidade editorial (`draft`, `validated`, `deprecated`).
+`lifecycle` mede aplicabilidade (`current`, `future`, `historical`,
+`superseded`). São dimensões diferentes: um artigo futuro ou histórico pode ser
+`validated` como registro, mas não descreve comportamento atual.
 
 `source` é um caminho relativo com / para arquivo existente dentro do
 repositório; não pode escapar por `..`, link simbólico ou apontar para
 `docs/knowledge`. Existência não comprova aprovação: conferir status e conteúdo
 na fonte canônica. Campos e texto continuam sujeitos à revisão humana.
 
-A busca literal retorna `validated` por padrão, com opção explícita de status
-para inspeção histórica/rascunhos e `-Detailed` para conferir fonte e audiência.
+A busca literal retorna `status=validated` e `lifecycle=current` por padrão, com
+opção explícita de status e ciclo de vida para inspeção histórica/planejada e
+`-Detailed` para conferir fonte e audiência. `-Lifecycle all` é somente
+auditoria interna; não transforma conteúdo futuro/histórico em regra vigente.
 A pasta `users` corresponde a `audience: user`; a CLI aceita `user` e `users`.
 A descoberta interna `all` não autoriza entregar orientação interna a usuários.
 Falha de validação impede tratar a busca como evidência de conteúdo confiável.

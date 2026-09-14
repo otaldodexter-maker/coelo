@@ -32,6 +32,7 @@
 .claude/
 supabase/.temp/
 .worktrees/
+.preserved/
 .recovery-archives/
 
 # Environment and secrets
