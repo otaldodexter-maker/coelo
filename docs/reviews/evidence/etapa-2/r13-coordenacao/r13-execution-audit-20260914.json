@@ -1,0 +1,35 @@
+{
+  "round": "R13",
+  "recordedAt": "2026-09-13T22:54:49-03:00",
+  "checkout": "C:\\Users\\adrie\\Documents\\Coelo",
+  "branch": "dev",
+  "sourceSha": "0ef29b823",
+  "environment": "Supabase produção; checkout consolidado; runtime externo não exclusivo",
+  "result": "PASS DOCUMENTED_PARTIAL",
+  "metrics": {
+    "actionIds": 231,
+    "frontendVerified": {"done": 151, "total": 231, "percent": 65.4},
+    "backendVerified": {"done": 159, "total": 231, "percent": 68.8},
+    "e2eOrFlutterOnly": {"done": 132, "total": 231, "percent": 57.1},
+    "frontendLocalGreen": {"done": 37, "total": 231, "percent": 16.0},
+    "ownerDone": {"done": 3, "total": 53, "percent": 5.7},
+    "ownerOpenOrPartial": {"done": 50, "total": 53, "percent": 94.3}
+  },
+  "localChecks": [
+    {"command": "deno test --no-check packages/coelo_database/supabase/functions/_shared/r2_s3_test.ts", "result": "20/20 PASS"},
+    {"command": "deno test --no-check packages/coelo_database/supabase/functions/meal-plan-image-cleanup/worker_test.ts", "result": "3/3 PASS"},
+    {"command": "flutter analyze apps/superadmin", "result": "INTERRUPTED_AFTER_70S", "reason": "Dart/Chrome runtimes already active; no external process terminated"},
+    {"command": "deno test ... now/happens r2 branch suites", "result": "BLOCKED_DEPENDENCY", "reason": "@supabase/supabase-js unavailable in the current Deno dependency context"}
+  ],
+  "gates": {
+    "owner.r12-51": {"status": "blocked-environment", "dependency": "PITR/backup atualizado e ordem serial confirmados pelo Owner/integrador", "evidence": "supabase migration list --linked; docs/open-questions.md"},
+    "owner.r12-48/49/50": {"status": "blocked-by-r12-51", "dependency": "candidatos SQL locais não podem ser aplicados nem certificados sem o gate de produção"},
+    "owner.r12-38/46": {"status": "blocked-environment", "dependency": "R2/Cloudflare e contrato Gateway de Cardápios não estão certificados; repository atual ainda chama Supabase Storage"},
+    "owner.r12-45/47": {"status": "blocked-environment", "dependency": "SMTP próprio, caixa QA e redirect allowlist para entrega real ausentes"},
+    "remainingOwnerItems": {"status": "pending-verification", "dependency": "rota normal, persistência/reload no Supabase real, ownership e negativa cross-tenant; runtime QA não exclusivo nesta execução"},
+    "owner.r12-53": {"status": "deferred", "dependency": "condição formal de Conta/Auth e três blocos de Estrutura não comprovada"}
+  },
+  "ownerIds": ["owner.r12-01","owner.r12-02","owner.r12-03","owner.r12-04","owner.r12-05","owner.r12-06","owner.r12-08","owner.r12-09","owner.r12-10","owner.r12-11","owner.r12-12","owner.r12-13","owner.r12-14","owner.r12-15","owner.r12-16","owner.r12-17","owner.r12-18","owner.r12-19","owner.r12-20","owner.r12-21","owner.r12-22","owner.r12-23","owner.r12-24","owner.r12-25","owner.r12-26","owner.r12-27","owner.r12-28","owner.r12-29","owner.r12-30","owner.r12-31","owner.r12-32","owner.r12-33","owner.r12-34","owner.r12-35","owner.r12-36","owner.r12-37","owner.r12-38","owner.r12-39","owner.r12-40","owner.r12-42","owner.r12-44","owner.r12-45","owner.r12-46","owner.r12-47","owner.r12-48","owner.r12-49","owner.r12-50","owner.r12-51","owner.r12-52","owner.r12-53"],
+  "security": ["nenhuma migration, RPC, Edge Function, segredo, bucket público ou deploy remoto alterado", "nenhum segredo/token/URL privada registrado", "nenhum aceite E2E promovido por teste local, mock, screenshot ou fail-closed"],
+  "nextGate": "Owner/integrador medir PITR e backup por ponto no tempo, reconciliar ledger/ordem real e liberar o primeiro candidato; depois retomar R12-48/49/50."
+}

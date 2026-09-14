@@ -9,7 +9,34 @@ generated_at: 2026-09-13
 
 # R13 — Pendências após fechamento R12
 
-50 compromissos preservados. IDs de origem mantidos, sem novo action_id ou ganho funcional. Fontes e estados atualizados abaixo; R13 não iniciada.
+## Execução R13 — 2026-09-14
+
+Os 50 IDs abaixo foram reavaliados no checkout `dev` em `0ef29b823`, sem
+renumeração e sem repetir `owner.r12-07`, `owner.r12-41` ou `owner.r12-43`.
+Nenhum recebeu `done`: a prova exigida é rota normal + persistência/reload real
++ ownership + negativa cross-tenant, e não foi seguro executá-la enquanto havia
+runtime externo ativo e o primeiro gate de produção permanecia aberto.
+
+- `owner.r12-51`: `blocked-environment`; PITR/backup/ordem serial e drift do
+  ledger precisam ser reconciliados pelo Owner/integrador.
+- `owner.r12-48`, `owner.r12-49`, `owner.r12-50`: `blocked-by-r12-51`; quatro
+  candidatos SQL locais não foram aplicados nem simulados como produção.
+- `owner.r12-38`, `owner.r12-46`, `owner.r12-52`: `blocked-environment` ou
+  `pending-verification`; R2 privado/Gateway e prova de mídia real permanecem
+  sem certificado para essas rotas. Cardápios ainda usam Storage no adapter.
+- `owner.r12-45`, `owner.r12-47`: `blocked-environment`; SMTP próprio, caixa QA
+  e redirect allowlist reais não estão disponíveis.
+- `owner.r12-53`: `deferred`; sua condição formal ainda não foi atendida.
+- Os 41 IDs restantes permanecem no estado anterior (`open`/`partial`) com
+  primeiro gate preservado; a evidência de execução por ID é o JSON da rodada:
+  [r13-execution-audit-20260914.json](../../../evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
+
+Checks proporcionais: `r2_s3_test` 20/20 PASS e cleanup de Cardápios 3/3 PASS.
+O analyze Flutter foi interrompido após 70 s por runtimes externos ativos; uma
+suite Deno completa também ficou bloqueada por dependência ausente. Estes
+checks locais não alteram os estados FE/BE/E2E nem certificam produção.
+
+50 compromissos preservados. IDs de origem mantidos, sem novo action_id ou ganho funcional. Fontes e estados atualizados abaixo; execução R13 registrada como parcial.
 
 | Item | Ações | FE / BE / E2E | Evidência | Primeiro gate |
 |---|---|---|---|---|

@@ -1,18 +1,18 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R12-fechamento.md; R12-transferencia-final-R13.json; supervisor 32e2492208434a1dac9aa6adeae1ca04
-status: abertura operacional R13; execução ainda não iniciada
+status: execução R13; PASS DOCUMENTED_PARTIAL; 50 Owner items preservados
 generated_at: 2026-09-13
 ---
 
 > Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
 
 
-# R13 — checkpoint de abertura e passagem
+# R13 — checkpoint de execução e passagem
 
-## Abertura operacional atual — 2026-09-14
+## Execução operacional atual — 2026-09-14
 
 Base confirmada: `dev = origin/dev`, checkout único e limpo, commit
-`4ca959d9b6d9552735da6b9d5ae3ca82a4ce76c9`. A R13 acompanha os 50 Owner
+`0ef29b823`. A R13 acompanha os 50 Owner
 items ainda abertos/parciais da R12, preservando os IDs originais. Projeção e
 percentuais: `R13-projecao-atual.md`; fonte canônica por item:
 `R12-pendencias.md` e `R12-owner-items.json`.
@@ -20,7 +20,24 @@ percentuais: `R13-projecao-atual.md`; fonte canônica por item:
 Baseline por 231 action IDs: FE verificado 151/231 (65,4%), BE concluído ou
 verificado 159/231 (68,8%), E2E/flutter-only 132/231 (57,1%) e FE local-green
 37/231 (16,0%). Por Owner items: 3/53 done (5,7%) e 50/53 abertos/parciais
-(94,3%). Estes números são baseline de abertura; R13 ainda não tem aceite novo.
+(94,3%). Esta execução não promoveu aceite terminal novo.
+
+## Resultado da execução
+
+R12-51 continua bloqueado: a listagem remota confirmou drift de migrations
+local/remoto, mas não substitui PITR/backup nem autoriza aplicar candidatos.
+R12-48/49/50 permanecem retidos por esse gate. R12-38/46 não foram fabricados:
+o repository de Cardápios ainda chama Supabase Storage e não há Gateway R2
+certificado para essa família. R12-45/47 continuam sem SMTP/caixa QA/redirect
+real. Os demais itens permanecem `open`/`partial`/`pending-verification`; há
+Chrome e Dart externos ativos, portanto não houve prova de rota normal nesta
+execução. Evidência: [r13-execution-audit-20260914.json](../../../evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
+
+Checks locais: R2 compartilhado 20/20 PASS e cleanup de imagem 3/3 PASS.
+`flutter analyze apps/superadmin` foi interrompido após 70 s, sem encerrar
+processos externos; suites Deno completas ficaram bloqueadas por dependência
+ausente. Nenhum SQL, Edge Function, Cloudflare, segredo, bucket ou deploy
+remoto foi alterado.
 
 ## Contrato da rodada
 

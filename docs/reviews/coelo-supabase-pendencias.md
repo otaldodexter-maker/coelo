@@ -3,7 +3,7 @@ title: "Pendências Coelo — Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-13T05:11:32.728751+00:00"
+updated_at: "2026-09-14T00:00:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,11 +13,19 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-13T05:11:32.728751+00:00"
-tracker_sync_revisions: "R10 C0 fechamento; R09 historica preservada"
+tracker_sync_at: "2026-09-14T01:54:49.556789Z"
+tracker_sync_revisions: "R13 execução parcial; evidência r13-execution-audit-20260914.json"
 ---
 
 # Pendências Coelo — Back-end
+
+## R13 — execução e gates (2026-09-14)
+
+Nenhuma migration, RPC, Edge Function, segredo, bucket ou deploy foi alterado.
+R12-51 permanece bloqueado por PITR/backup/ordem e drift do ledger; R12-48/49/50
+não podem ser aplicados. R12-38/46 dependem de Gateway R2 certificado e
+R12-45/47 de SMTP/redirect reais. Evidência:
+[r13-execution-audit-20260914.json](evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
 ## R12 — Apontamentos Owner incorporados (2026-09-13)
 

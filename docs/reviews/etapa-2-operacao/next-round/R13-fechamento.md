@@ -2,6 +2,7 @@
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R13-checkpoint.md; R13-pendencias.md; R13-owner-items.json; git/testes R13
 status: histórico; substituído operacionalmente pela R12 consolidada
 generated_at: 2026-09-13
+execution_status: PASS DOCUMENTED_PARTIAL em 2026-09-14; nenhum aceite terminal novo
 ---
 
 > Pedido posterior do Owner: R12/R13 agora são uma R12 única, com início manual em Luna médio. Usar [R12-consolidacao.md](R12-consolidacao.md) e [R12-prompt-unico.md](R12-prompt-unico.md). O conteúdo abaixo é histórico; não autoriza disparo automático.
@@ -16,6 +17,19 @@ rodada é `495a5deb720c018a341889270a9342ced937e178` em `dev` e `origin/dev`.
 
 ## Compromissos e resultado
 
+## Execução corrente no checkout consolidado — 2026-09-14
+
+O checkout atual é `dev` em `0ef29b823`, limpo após fetch e sem stash. Os 50
+IDs herdados permanecem preservados; R12-07, R12-41 e R12-43 não foram repetidos.
+R12-51 está bloqueado por PITR/backup/ordem serial e drift do ledger. R12-48/49/50
+dependem dele; R12-38/46/52 dependem de Gateway R2/Cloudflare e prova de mídia
+real; R12-45/47 dependem de SMTP/caixa QA/redirect. Os demais permanecem
+`open`/`partial`/`pending-verification` por falta de prova de rota normal,
+persistência/reload e cross-tenant nesta execução.
+
+Evidência por ID: [r13-execution-audit-20260914.json](../../../evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
+Não houve migration, RPC, Edge Function, segredo, bucket público ou deploy.
+
 | apps/superadmin → menu → tela → estado | item / action_id | FE | BE | E2E / primeiro gate |
 |---|---|---|---|---|
 | Comunicação → Conversas → lista/conversa → anexos visuais | owner.r12-52 / `chat.attach` | ajuste local parcial: imagem/vídeo não usam cartão administrativo; mídia inline, play/retry e viewer preservados | sem mudança; R2 privado, contrato e autorização permanecem | não certificado; falta prova pela rota normal, mosaico, envio/reload e escopo; C0 R13 |
@@ -28,6 +42,12 @@ Nenhum action_id recebeu certificação terminal nova. O ajuste de `chat.attach`
 de produção.
 
 ## Provas e testes
+
+Checks da execução corrente: R2 compartilhado 20/20 PASS; cleanup de imagem de
+Cardápios 3/3 PASS. `flutter analyze apps/superadmin` foi interrompido após 70 s
+por runtimes Dart/Chrome externos ativos, sem encerrar processos alheios. Uma
+suite Deno completa ficou bloqueada por dependência ausente. Checks locais não
+certificam produção.
 
 - `flutter test test/features/chat/presentation/superadmin_chat_attachment_tile_test.dart`: 20/20 PASS, incluindo a expectativa nova do contorno visual;
 - `flutter test test/features/chat/presentation/superadmin_chat_page_golden_test.dart`: 9/9 PASS;

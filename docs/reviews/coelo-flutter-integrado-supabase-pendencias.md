@@ -3,7 +3,7 @@ title: "Pendências Coelo — Front-end + Back-end"
 source: "AGENTS.md; ADR 0019; ADR 0032; tracker-corrections-2026-09-08.json; inventario-etapa-2.json"
 status: "open"
 generated_at: "2026-09-08"
-updated_at: "2026-09-13T05:11:32.728751+00:00"
+updated_at: "2026-09-14T00:00:00-03:00"
 action_count: 231
 family_count: 39
 active_mvp_action_count: 201
@@ -13,11 +13,17 @@ backend_applicable_action_count: 224
 formal_mvp_gate_action_count: 3
 deferred_post_mvp_action_count: 22
 flutter_only_action_count: 5
-tracker_sync_at: "2026-09-13T05:11:32.728751+00:00"
-tracker_sync_revisions: "R10 C0 fechamento; R09 historica preservada"
+tracker_sync_at: "2026-09-14T01:54:49.556789Z"
+tracker_sync_revisions: "R13 execução parcial; evidência r13-execution-audit-20260914.json"
 ---
 
 # Pendências Coelo — Front-end + Back-end
+
+## R13 — execução e gates (2026-09-14)
+
+Não houve nova certificação integrada. Todos os 50 IDs seguem com os estados
+canônicos de R12; os gates e a prova de execução estão em
+[r13-execution-audit-20260914.json](evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
 ## R12 — Apontamentos Owner incorporados (2026-09-13)
 

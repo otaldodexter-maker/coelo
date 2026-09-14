@@ -9197,5 +9197,16 @@
     },
     "scopeGain": 0,
     "quotaUsedPercent": 83
+  },
+  "r13Execution": {
+    "status": "PASS DOCUMENTED_PARTIAL",
+    "at": "2026-09-14T00:00:00-03:00",
+    "base": "0ef29b823",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json",
+    "metrics": "231 action IDs; FE 151/231; BE 159/231; E2E/flutter-only 132/231; FE local-green 37/231; Owner done 3/53; open/partial 50/53",
+    "newTerminalCertifications": 0,
+    "openFirstGate": "R12-51 PITR/backup/ordem serial e drift do ledger",
+    "localChecks": "R2 shared 20/20 PASS; meal-plan cleanup 3/3 PASS; Flutter analyze interrompido após 70s",
+    "deployment": "none; nenhum SQL, Edge Function, Cloudflare ou segredo alterado"
   }
 }
