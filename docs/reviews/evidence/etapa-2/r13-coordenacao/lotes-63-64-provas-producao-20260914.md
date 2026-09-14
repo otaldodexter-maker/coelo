@@ -95,3 +95,18 @@ rota real no Chrome.
 - Cliente: `CircularLimits.bodyCharacters = 4000` (o compositor já subtraía os outros blocos);
   teste de domínio atualizado. Os 18 goldens de Circular falhavam antes e depois desta
   mudança (H04 — regravação após o host seguir a referência).
+
+## Lote 69 (15:50) — OQ-028: status de Suporte, mapeamento A
+
+- `20260914153000_r13_support_status_mapping_v1.sql`: `superadmin_support_set_status` grava
+  Novo=`open`, Em andamento/Aguardando=`pending` (o `ticket_status` é a flag), Concluído=`resolved`;
+  trigger `support_session_ticket_status_sync` projeta `resolved/closed/expired/revoked` como
+  Concluído; `superadmin_support_get`/`_list` expõem `closure_reason` (`expired`/`revoked`).
+  Reconciliação idempotente dos registros existentes (1 chamado, já coerente).
+- pgTAP `supabase/tests/r13/support-status-mapping-test.sql` 13/13; bases 23/23, 28/28, 17/17.
+- Produção (sessão `qa-r06-operacoes`): chamado 6c5eb791 criado (open) → `waiting_requester`
+  (enum `pending`) → `completed` (enum `resolved`), `closure_reason` nulo. Dump esquema+dados
+  lote69 SHA-256 c95bcfa9e9931b85… / 655cd22296c6856f…; ledger 293.
+- Cliente: `SupportTicket.closureReason` + `supportStatusLabel()`; chip do detalhe mostra
+  “Concluído · Expirado/Revogado”; testes de Suporte verdes exceto o golden que já falhava
+  (cabeçalho global, R12-10).

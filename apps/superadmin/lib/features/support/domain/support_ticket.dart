@@ -2,6 +2,23 @@ import 'support_requester_context.dart';
 
 enum SupportTicketStatus { newRequest, inProgress, waitingRequester, completed }
 
+/// Rótulo de UX do status. `closureReason` vem do servidor (`expired`/`revoked`,
+/// OQ-028 / ADR 0038) e só enriquece o rótulo de Concluído.
+String supportStatusLabel(SupportTicketStatus status, {String? closureReason}) {
+  final base = switch (status) {
+    SupportTicketStatus.newRequest => 'Novo',
+    SupportTicketStatus.inProgress => 'Em andamento',
+    SupportTicketStatus.waitingRequester => 'Aguardando solicitante',
+    SupportTicketStatus.completed => 'Concluído',
+  };
+  if (status != SupportTicketStatus.completed) return base;
+  return switch (closureReason) {
+    'expired' => '$base · Expirado',
+    'revoked' => '$base · Revogado',
+    _ => base,
+  };
+}
+
 enum SupportMessageAuthor { support, requester }
 
 enum SupportMessageDeliveryState { sent, delivered, read }
@@ -67,6 +84,7 @@ final class SupportTicket {
     this.revision = 1,
     this.requesterContext,
     this.ownerId,
+    this.closureReason,
     Set<String> assigneeIds = const {},
     Set<String> collaboratorIds = const {},
     List<SupportAttachment> attachments = const [],
@@ -92,6 +110,9 @@ final class SupportTicket {
   final DateTime updatedAt;
   final SupportTicketStatus status;
   final int revision;
+
+  /// `expired`/`revoked` quando o servidor encerrou o chamado (OQ-028).
+  final String? closureReason;
   final List<SupportAttachment> attachments;
   final List<SupportMessage> messages;
   final List<SupportActivity> activities;
@@ -103,6 +124,8 @@ final class SupportTicket {
     SupportRequesterContext? requesterContext,
     String? ownerId,
     bool clearOwner = false,
+    String? closureReason,
+    bool clearClosureReason = false,
     Set<String>? assigneeIds,
     Set<String>? collaboratorIds,
     List<SupportAttachment>? attachments,
@@ -137,6 +160,7 @@ final class SupportTicket {
       updatedAt: updatedAt ?? this.updatedAt,
       status: status ?? this.status,
       revision: revision ?? this.revision,
+      closureReason: clearClosureReason ? null : closureReason ?? this.closureReason,
       attachments: attachments ?? this.attachments,
       messages: messages ?? this.messages,
       activities: activities ?? this.activities,

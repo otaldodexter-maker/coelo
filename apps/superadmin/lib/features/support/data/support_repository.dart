@@ -157,6 +157,7 @@ final class SupabaseSupportRepository implements SupportRepository {
       status: _ticketStatus(_string(json, 'status')),
       revision: _int(json, 'revision'),
       ownerId: json['assignee_membership_id']?.toString(),
+      closureReason: json['closure_reason']?.toString(),
       messages: json['unread'] == true
           ? [
               SupportMessage(
@@ -182,6 +183,7 @@ final class SupabaseSupportRepository implements SupportRepository {
     status: _ticketStatus(_string(json, 'status')),
     revision: _int(json, 'revision'),
     ownerId: json['assignee_membership_id']?.toString(),
+      closureReason: json['closure_reason']?.toString(),
     messages: _list(json['messages']).map(_message).toList(growable: false),
     activities: _list(json['activities']).map(_activity).toList(growable: false),
   );

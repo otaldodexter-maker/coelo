@@ -592,7 +592,7 @@ class _SupportPageState extends State<SupportPage> {
     );
   }
 
-  Widget _chip(SupportTicketStatus status) {
+  Widget _chip(SupportTicketStatus status, {String? closureReason}) {
     final c = Theme.of(context).extension<CoeloStatusColors>()!;
     final colors = switch (status) {
       SupportTicketStatus.newRequest => (c.infoContainer, c.onInfoContainer),
@@ -601,7 +601,7 @@ class _SupportPageState extends State<SupportPage> {
       SupportTicketStatus.completed => (c.successContainer, c.onSuccessContainer),
     };
     return CoeloStatusChip(
-      label: _statusLabel(status),
+      label: supportStatusLabel(status, closureReason: closureReason),
       backgroundColor: colors.$1,
       foregroundColor: colors.$2,
     );
@@ -652,7 +652,7 @@ class _SupportPageState extends State<SupportPage> {
               ),
               child: Tooltip(
                 message: 'Alterar status de ${ticket.id}',
-                child: _chip(ticket.status),
+                child: _chip(ticket.status, closureReason: ticket.closureReason),
               ),
             ),
           ),

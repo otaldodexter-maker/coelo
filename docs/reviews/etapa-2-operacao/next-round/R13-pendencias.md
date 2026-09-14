@@ -66,7 +66,7 @@ itens é a R13; nenhuma retomada deve ser executada na R12.
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
 | Catálogos globais de tipo (OQ-031) | Aberto | Migration idempotente por `code` com as quatro listas da ADR e "Outros"; entidade pode mudar de tipo. |
-| Status de Suporte (OQ-028) | Aberto | Mapeamento A na projeção/UI; enum preservado. |
+| Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Readers de Planos no principal 039 e reader self da Conta | Aberto | Readers somente leitura no principal interno; `units_with_override` só com cálculo comprovado. |
 | Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
 | Auth: localhost na allowlist de redirect (R12-47) | Aberto | Configurar pelo CLI/painel; sem custo. |
