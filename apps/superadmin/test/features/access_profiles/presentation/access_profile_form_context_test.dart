@@ -9,6 +9,38 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('critical permission explains its consequence through an accessible tooltip', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final profile = _profile('A').copyWith(
+      permissions: const [
+        AccessPermission(
+          code: 'platform.users.delete',
+          module: 'management',
+          screenCode: 'platform_users',
+          actionCode: 'delete',
+          name: 'Excluir usuário',
+          risk: 'critical',
+          requiresMfa: true,
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(_Repository('A', load: Future.value(profile))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    expect(
+      find.byTooltip(
+        'Ação sensível: altera ou remove dados e exige MFA e trilha de auditoria no servidor.',
+      ),
+      findsOneWidget,
+    );
+    expect(find.text('Crítico'), findsNothing);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('review describes permission path without replacing own and all semantics', (
     tester,
   ) async {

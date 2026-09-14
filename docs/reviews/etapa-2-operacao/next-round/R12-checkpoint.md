@@ -37,6 +37,17 @@ módulo/tela/ação, preserva próprias/todas e esclarece acesso efetivo.
 17 testes de regressão + 1 teste focal PASS; analyze sem issues. Catálogo
 produtivo/traduções e rota real continuam pendentes; nenhum grant alterado.
 
+## R12-24/25 checkpoint de execução (C0)
+
+Em Acessos > Perfis e permissões > Criar/Editar > Permissões, a matriz
+compartilhada preserva colunas alinhadas e ações próprias/todas, adaptando-se
+para telas estreitas sem recuperar a lista vertical rejeitada. O marcador
+repetido Crítico/MFA foi removido; ações sensíveis agora explicam consequência,
+MFA e trilha de auditoria por tooltip acessível a semântica, foco, hover e
+toque. TDD: teste focal falhou antes e passou depois; 1/1 PASS e analyze limpo.
+E2E, catálogo real, rota, reload e negativa cross-tenant continuam pendentes.
+Evidência: `docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md`.
+
 ## Retomada final da continuidade — 2026-09-14
 
 Checkout consolidado confirmado em `dev`, sem WIP, stash ou worktree extra;

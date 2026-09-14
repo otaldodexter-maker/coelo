@@ -1367,82 +1367,63 @@ final class _PermissionActionCellState extends State<_PermissionActionCell> {
       label:
           '${_actionLabel(permission.actionCode)} em ${_screenLabel(permission.screenCode, permission.module)}'
           '${reason == null ? '' : '. Indisponível. $reason'}',
-      child: FocusableActionDetector(
-        key: Key('permission-focus-${permission.code}'),
-        focusNode: _focusNode,
-        enabled: enabled,
-        shortcuts: const <ShortcutActivator, Intent>{
-          SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
-          SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
-        },
-        actions: <Type, Action<Intent>>{
-          ActivateIntent: CallbackAction<ActivateIntent>(
-            onInvoke: (_) {
-              widget.onToggle(permission, !permission.selected);
-              return null;
-            },
-          ),
-        },
-        onShowFocusHighlight: (value) => setState(() => _focused = value),
-        child: MouseRegion(
-          onEnter: enabled ? (_) => setState(() => _hovered = true) : null,
-          onExit: enabled ? (_) => setState(() => _hovered = false) : null,
-          child: GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: enabled ? () => widget.onToggle(permission, !permission.selected) : null,
-            child: AnimatedContainer(
-              duration: MediaQuery.disableAnimationsOf(context) ? Duration.zero : CoeloMotion.fast,
-              constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-              padding: const EdgeInsets.symmetric(
-                horizontal: CoeloSpacing.space1,
-                vertical: CoeloSpacing.space1,
-              ),
-              decoration: BoxDecoration(
-                color: _hovered || _focused ? colors.primaryContainer : Colors.transparent,
-                borderRadius: BorderRadius.circular(CoeloRadius.md),
-              ),
-              child: Row(
-                children: widget.showLabel
-                    ? [
-                        checkbox,
-                        const SizedBox(width: CoeloSpacing.space1),
-                        Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(_actionLabel(permission.actionCode)),
-                              if (permission.requiresMfa || permission.risk == 'critical')
-                                Text(
-                                  [
-                                    if (permission.requiresMfa) 'MFA',
-                                    if (permission.risk == 'critical') 'Crítico',
-                                  ].join(' · '),
-                                  style: Theme.of(context).textTheme.labelSmall,
-                                ),
-                            ],
+      child: Tooltip(
+        message: _permissionTooltip(permission),
+        child: FocusableActionDetector(
+          key: Key('permission-focus-${permission.code}'),
+          focusNode: _focusNode,
+          enabled: enabled,
+          shortcuts: const <ShortcutActivator, Intent>{
+            SingleActivator(LogicalKeyboardKey.enter): ActivateIntent(),
+            SingleActivator(LogicalKeyboardKey.space): ActivateIntent(),
+          },
+          actions: <Type, Action<Intent>>{
+            ActivateIntent: CallbackAction<ActivateIntent>(
+              onInvoke: (_) {
+                widget.onToggle(permission, !permission.selected);
+                return null;
+              },
+            ),
+          },
+          onShowFocusHighlight: (value) => setState(() => _focused = value),
+          child: MouseRegion(
+            onEnter: enabled ? (_) => setState(() => _hovered = true) : null,
+            onExit: enabled ? (_) => setState(() => _hovered = false) : null,
+            child: GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: enabled ? () => widget.onToggle(permission, !permission.selected) : null,
+              child: AnimatedContainer(
+                duration: MediaQuery.disableAnimationsOf(context)
+                    ? Duration.zero
+                    : CoeloMotion.fast,
+                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: CoeloSpacing.space1,
+                  vertical: CoeloSpacing.space1,
+                ),
+                decoration: BoxDecoration(
+                  color: _hovered || _focused ? colors.primaryContainer : Colors.transparent,
+                  borderRadius: BorderRadius.circular(CoeloRadius.md),
+                ),
+                child: Row(
+                  children: widget.showLabel
+                      ? [
+                          checkbox,
+                          const SizedBox(width: CoeloSpacing.space1),
+                          Expanded(
+                            child: Column(
+                              mainAxisSize: MainAxisSize.min,
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [Text(_actionLabel(permission.actionCode))],
+                            ),
                           ),
-                        ),
-                      ]
-                    : [
-                        Expanded(
-                          child: Column(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              checkbox,
-                              if (permission.requiresMfa || permission.risk == 'critical')
-                                Text(
-                                  [
-                                    if (permission.requiresMfa) 'MFA',
-                                    if (permission.risk == 'critical') 'Crítico',
-                                  ].join(' · '),
-                                  textAlign: TextAlign.center,
-                                  style: Theme.of(context).textTheme.labelSmall,
-                                ),
-                            ],
+                        ]
+                      : [
+                          Expanded(
+                            child: Column(mainAxisSize: MainAxisSize.min, children: [checkbox]),
                           ),
-                        ),
-                      ],
+                        ],
+                ),
               ),
             ),
           ),
@@ -1710,6 +1691,19 @@ final class _FormSurface extends StatelessWidget {
 String _unavailableReason(AccessPermission permission) {
   if (permission.inherited) return 'Herdada; não pode ser alterada neste perfil.';
   return permission.unavailableReason ?? 'Indisponível para concessão.';
+}
+
+String _permissionTooltip(AccessPermission permission) {
+  if (permission.risk == 'critical' && permission.requiresMfa) {
+    return 'Ação sensível: altera ou remove dados e exige MFA e trilha de auditoria no servidor.';
+  }
+  if (permission.risk == 'critical') {
+    return 'Ação sensível: altera ou remove dados e deixa trilha de auditoria no servidor.';
+  }
+  if (permission.requiresMfa) {
+    return 'Esta ação exige MFA e validação de autoridade no servidor.';
+  }
+  return 'Permissão ${_actionLabel(permission.actionCode)} em ${_screenLabel(permission.screenCode, permission.module)}.';
 }
 
 int _actionOrder(String action) => switch (action) {

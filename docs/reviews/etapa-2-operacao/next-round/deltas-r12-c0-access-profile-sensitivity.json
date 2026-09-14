@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "delta": "R12-24/25: matriz compartilhada preserva colunas e ações próprias/todas; sensibilidade crítica/MFA explicada por tooltip acessível, sem marcador visual repetido.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+    "estado_proposto": "local-green"
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "delta": "R12-24/25: matriz compartilhada preserva colunas e ações próprias/todas; sensibilidade crítica/MFA explicada por tooltip acessível, sem marcador visual repetido.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+    "estado_proposto": "local-green"
+  }
+]
