@@ -1739,12 +1739,12 @@
       "id": "owner.r12-20",
       "status": "open",
       "actionIds": [],
-      "fe": "Planejado R12, não implementado.",
-      "be": "Contrato a verificar; conflito Principal em R12-23.",
-      "e2e": "Sem nova prova.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "fe": "FE local-green: cards distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem inventar métrica.",
+      "be": "BE inalterado.",
+      "e2e": "E2E pending-verification.",
+      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
       "owner": "C0 R12",
-      "nextGate": "Reconciliar R12-20 e fontes antes de executar na R12 autorizada.",
+      "nextGate": "Provar rota normal, quantidade arbitrária de registros, golden aprovado, reload e negativa cross-tenant.",
       "destinationRound": "R12",
       "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.md",
       "sourceRounds": [
@@ -2654,7 +2654,8 @@
     "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao-git.json",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md"
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md"
   ],
   "memory": {
     "status": "no-op",

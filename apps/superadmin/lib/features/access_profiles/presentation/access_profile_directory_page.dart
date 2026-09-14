@@ -537,28 +537,53 @@ final class _AccessProfileCard extends StatelessWidget {
                     onPressed: onDuplicate,
                     icon: const Icon(Icons.copy_all_outlined),
                   ),
-                _ProfileExpandableStatus(status: item.status, itemId: item.id),
               ],
             ),
             const SizedBox(height: CoeloSpacing.space4),
             const Divider(height: 1),
             const SizedBox(height: CoeloSpacing.space4),
-            _ProfileMetricRow(
-              icon: Icons.layers_outlined,
-              label: 'Escopo máximo',
-              value: item.maxScope.label,
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            _ProfileMetricRow(
-              icon: Icons.link_outlined,
-              label: 'Vínculos',
-              value: '${item.membershipCount}',
-            ),
-            const SizedBox(height: CoeloSpacing.space3),
-            _ProfileMetricRow(
-              icon: Icons.verified_outlined,
-              label: 'Tipo',
-              value: item.isSystem ? 'Predefinido' : 'Personalizado',
+            LayoutBuilder(
+              builder: (context, constraints) {
+                final itemWidth = (constraints.maxWidth - CoeloSpacing.space3) / 2;
+                return Wrap(
+                  spacing: CoeloSpacing.space3,
+                  runSpacing: CoeloSpacing.space3,
+                  children: [
+                    SizedBox(
+                      width: itemWidth,
+                      child: _ProfileMetricRow(
+                        icon: Icons.circle_outlined,
+                        label: 'Status',
+                        value: item.status.label,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _ProfileMetricRow(
+                        icon: Icons.layers_outlined,
+                        label: 'Escopo máximo',
+                        value: item.maxScope.label,
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _ProfileMetricRow(
+                        icon: Icons.link_outlined,
+                        label: 'Vínculos',
+                        value: '${item.membershipCount}',
+                      ),
+                    ),
+                    SizedBox(
+                      width: itemWidth,
+                      child: _ProfileMetricRow(
+                        icon: Icons.verified_outlined,
+                        label: 'Tipo',
+                        value: item.isSystem ? 'Predefinido' : 'Personalizado',
+                      ),
+                    ),
+                  ],
+                );
+              },
             ),
           ],
         ),
@@ -778,37 +803,6 @@ final class _PrincipalCapabilities extends StatelessWidget {
       ],
     ],
   );
-}
-
-final class _ProfileExpandableStatus extends StatelessWidget {
-  const _ProfileExpandableStatus({required this.status, required this.itemId});
-
-  final AccessProfileStatus status;
-  final String itemId;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
-    final pair = switch (status) {
-      AccessProfileStatus.active => (
-        statusColors.successContainer,
-        statusColors.onSuccessContainer,
-      ),
-      AccessProfileStatus.inactive => (colors.surfaceContainer, colors.onSurfaceVariant),
-      AccessProfileStatus.archived => (colors.surfaceContainerHighest, colors.onSurfaceVariant),
-    };
-    return CoeloAdminExpandableStatusIndicator(
-      label: status.label,
-      semanticLabel: 'Status: ${status.label}',
-      surfaceKey: Key('access-profile-status-$itemId'),
-      backgroundColor: pair.$1,
-      foregroundColor: pair.$2,
-    );
-  }
 }
 
 final class _ProfileStatusChip extends StatelessWidget {

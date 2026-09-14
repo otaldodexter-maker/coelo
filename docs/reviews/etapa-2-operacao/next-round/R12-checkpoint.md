@@ -48,6 +48,16 @@ toque. TDD: teste focal falhou antes e passou depois; 1/1 PASS e analyze limpo.
 E2E, catálogo real, rota, reload e negativa cross-tenant continuam pendentes.
 Evidência: `docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md`.
 
+## R12-20 checkpoint de execução (C0)
+
+Os cards de Perfis/Modelos agora distribuem somente métricas existentes —
+Status, Escopo máximo, Vínculos e Tipo — em grade 2×2 responsiva. A quantidade
+de registros permanece livre e a composição não inventa uma quarta métrica.
+Testes de layout em 375/1440 px com escala 1/2: 4/4 PASS; analyze limpo.
+FE local-green, BE inalterado; rota/reload, golden aprovado e negativa
+cross-tenant continuam pendentes. Evidência:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md`.
+
 ## Retomada final da continuidade — 2026-09-14
 
 Checkout consolidado confirmado em `dev`, sem WIP, stash ou worktree extra;

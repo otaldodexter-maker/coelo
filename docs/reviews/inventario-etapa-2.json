@@ -1882,9 +1882,9 @@
       "screen": "Perfis de acesso / Lista",
       "scope": "mvp",
       "done": "R05: rota normal abre com dados reais de producao (5 perfis de plataforma + 4 modelos de sistema), superadmin_access_profiles_list responde 200 pela sessao qa-r03 e o reload mantem; negativa por tenant coberta em pgTAP (access_profile_detail_v3_test 37/37, institution_role_system_templates_v1_test 7/7).",
-      "fe": "R05: rota real /profiles com a sessao qa-r03: aba Superadmin lista os 5 perfis de plataforma e a aba Admin os 4 modelos de sistema do lote 25 (Administrador da instituicao, Coordenacao, Professor(a), Secretaria) com Tipo Predefinido; busca, escopo, toggle grade/lista, Arquivos e card Criar; reload mantem.",
+      "fe": "R12-20: cards de perfis distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem nova métrica.",
       "be": "R04 coordenacao (11/09): lote 25 (P31) em producao; a lista passa a expor os modelos de sistema.",
-      "evidence": "evidence/etapa-2/engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; f60b2c2fe;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-hover/handoff.md;7956dda48;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-directory-visual/handoff.md; evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list.png; comunicacao/acessos-pessoas.json r102; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-superadmin.png; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-admin-modelos-sistema.png",
+      "evidence": "evidence/etapa-2/engenheiro-1/auth47-loc-profiles-probe-2026-09-08.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; f60b2c2fe;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-hover/handoff.md;7956dda48;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/profile-directory-visual/handoff.md; evidence/etapa-2/r04-acessos-pessoas/capturas/access-profiles-list.png; comunicacao/acessos-pessoas.json r102; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-superadmin.png; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-admin-modelos-sistema.png; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
@@ -9134,7 +9134,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-14T00:59:07.374Z",
+  "updatedAt": "2026-09-14T01:13:50.662Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

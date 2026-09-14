@@ -55,6 +55,14 @@ void main() {
         final create = tester.getRect(find.byKey(const Key('create-access-profile-card')));
         final first = tester.getRect(find.byType(CoeloAdminInteractiveCard).first);
         expect(first.width, create.width);
+        final profileCard = find.byType(CoeloAdminInteractiveCard).first;
+        expect(find.descendant(of: profileCard, matching: find.text('Status')), findsOneWidget);
+        expect(
+          find.descendant(of: profileCard, matching: find.text('Escopo máximo')),
+          findsOneWidget,
+        );
+        expect(find.descendant(of: profileCard, matching: find.text('Vínculos')), findsOneWidget);
+        expect(find.descendant(of: profileCard, matching: find.text('Tipo')), findsOneWidget);
         if (width == 1440) {
           expect(first.top, create.top);
           expect(first.height, create.height);

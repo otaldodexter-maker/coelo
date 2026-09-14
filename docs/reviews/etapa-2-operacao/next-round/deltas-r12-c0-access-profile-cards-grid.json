@@ -1,0 +1,15 @@
+[
+  {
+    "action_id": "access-profiles.list",
+    "camada": "frontend",
+    "delta": "R12-20: cards de perfis distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem nova métrica.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
+    "estado_proposto": "verified",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/access-profiles-list-admin-modelos-sistema.png",
+      "revision": "bf9c2f186",
+      "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
+      "recordedAt": "2026-09-11T13:20:00-03:00"
+    }
+  }
+]
