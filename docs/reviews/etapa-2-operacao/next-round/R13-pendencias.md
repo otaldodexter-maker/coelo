@@ -27,7 +27,7 @@ runtime externo ativo e o primeiro gate de produção permanecia aberto.
 - `owner.r12-45`, `owner.r12-47`: `blocked-environment`; SMTP próprio, caixa QA
   e redirect allowlist reais não estão disponíveis.
 - `owner.r12-53`: `deferred`; sua condição formal ainda não foi atendida.
-- Os 41 IDs restantes permanecem no estado anterior (`open`/`partial`) com
+- Os 40 IDs restantes permanecem no estado anterior (`open`/`partial`) com
   primeiro gate preservado; a evidência de execução por ID é o JSON da rodada:
   [r13-execution-audit-20260914.json](../../../evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
