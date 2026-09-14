@@ -24,10 +24,11 @@ items ainda abertos/parciais da R12, preservando os IDs originais. Projeção e
 percentuais: `R13-projecao-atual.md`; fonte canônica por item:
 `R12-pendencias.md` e `R12-owner-items.json`.
 
-Baseline por 231 action IDs: FE verificado 151/231 (65,4%), BE concluído ou
-verificado 159/231 (68,8%), E2E/flutter-only 132/231 (57,1%) e FE local-green
-37/231 (16,0%). Por Owner items: 3/53 done (5,7%) e 50/53 abertos/parciais
-(94,3%). Esta execução não promoveu aceite terminal novo.
+Snapshot canônico desta revisão por 231 action IDs: FE verificado 151/231
+(65,37%), BE concluído ou verificado 159/224 (70,98%), E2E verificado 125/199
+(62,81%), E2E + flutter-only 132/231 (57,14%) e FE local-green 37/231
+(16,02%). Por Owner items: 3/53 done (5,66%) e 50/53 abertos/parciais
+(94,34%). Esta execução não promoveu aceite terminal novo.
 
 ## Resultado da execução
 

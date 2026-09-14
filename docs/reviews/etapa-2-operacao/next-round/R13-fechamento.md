@@ -22,7 +22,7 @@ rodada é `495a5deb720c018a341889270a9342ced937e178` em `dev` e `origin/dev`.
 
 ## Compromissos e resultado
 
-## Execução corrente no checkout consolidado — 2026-09-14
+## Registro histórico da execução no checkout consolidado — 2026-09-14
 
 O checkout atual é `dev` em `0ef29b823`, limpo após fetch e sem stash. Os 50
 IDs herdados permanecem preservados; R12-07, R12-41 e R12-43 não foram repetidos.
