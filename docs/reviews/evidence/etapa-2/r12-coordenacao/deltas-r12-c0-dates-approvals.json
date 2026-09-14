@@ -1,0 +1,86 @@
+[
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-34–37: nome de refeição separado do prato; seletor Coelo de datas por refeição/modelo e recorrência; publicação com data/hora local e UTC no draft; prioridade/datas excluídas removidas com legado preservado. Wizard e serialização 58 PASS; rota normal pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-34–37: nome de refeição separado do prato; seletor Coelo de datas por refeição/modelo e recorrência; publicação com data/hora local e UTC no draft; prioridade/datas excluídas removidas com legado preservado. Wizard e serialização 58 PASS; rota normal pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-34–37: nome de refeição separado do prato; seletor Coelo de datas por refeição/modelo e recorrência; publicação com data/hora local e UTC no draft; prioridade/datas excluídas removidas com legado preservado. Wizard e serialização 58 PASS; rota normal pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-34–37: nome de refeição separado do prato; seletor Coelo de datas por refeição/modelo e recorrência; publicação com data/hora local e UTC no draft; prioridade/datas excluídas removidas com legado preservado. Wizard e serialização 58 PASS; rota normal pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-34–37: nome de refeição separado do prato; seletor Coelo de datas por refeição/modelo e recorrência; publicação com data/hora local e UTC no draft; prioridade/datas excluídas removidas com legado preservado. Wizard e serialização 58 PASS; rota normal pendente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md"
+  },
+  {
+    "action_id": "agenda.request",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-42: linha canônica de 64px, alinhamento compartilhado e histórico completo em diálogo; testes funcionais 6/6. Revisão visual e rota normal pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md"
+  },
+  {
+    "action_id": "agenda.request",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md"
+  }
+]

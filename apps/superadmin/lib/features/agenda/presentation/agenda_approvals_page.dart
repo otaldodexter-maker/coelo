@@ -383,10 +383,7 @@ final class _ApprovalTable extends StatelessWidget {
   final List<_AgendaApproval> items;
   final ValueChanged<_AgendaApproval> onDecide;
 
-  Widget _cell(Widget child) => Padding(
-    padding: const EdgeInsets.symmetric(horizontal: CoeloSpacing.space3),
-    child: Align(alignment: Alignment.centerLeft, child: child),
-  );
+  Widget _cell(Widget child) => child;
 
   @override
   Widget build(BuildContext context) => CoeloAdminResizableTable<_AgendaApproval>(
@@ -394,7 +391,7 @@ final class _ApprovalTable extends StatelessWidget {
     items: items,
     rowKey: (item) => item.id,
     headerHeight: 56,
-    rowHeight: 136,
+    rowHeight: 64,
     pinnedColumn: CoeloAdminTableColumn<_AgendaApproval>(
       id: 'event',
       label: 'Evento',
@@ -406,8 +403,13 @@ final class _ApprovalTable extends StatelessWidget {
           mainAxisSize: MainAxisSize.min,
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Text(item.title, maxLines: 2, overflow: TextOverflow.ellipsis),
-            Text(item.context, style: Theme.of(context).textTheme.bodySmall),
+            Text(item.title, maxLines: 1, overflow: TextOverflow.ellipsis),
+            Text(
+              item.context,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: Theme.of(context).textTheme.bodySmall,
+            ),
           ],
         ),
       ),
@@ -424,7 +426,7 @@ final class _ApprovalTable extends StatelessWidget {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(item.requestedBy),
+              Text(item.requestedBy, maxLines: 1, overflow: TextOverflow.ellipsis),
               Text(_formatDateTime(item.requestedAt), style: Theme.of(context).textTheme.bodySmall),
             ],
           ),
@@ -432,11 +434,43 @@ final class _ApprovalTable extends StatelessWidget {
       ),
       CoeloAdminTableColumn<_AgendaApproval>(
         id: 'status',
-        label: 'Estado e histórico',
-        initialWidth: 360,
-        minWidth: 300,
-        maxWidth: 480,
-        cellBuilder: (context, item) => _cell(_StatusAndHistory(item: item)),
+        label: 'Estado',
+        initialWidth: 230,
+        minWidth: 210,
+        maxWidth: 300,
+        cellBuilder: (context, item) => _StatusChip(status: item.status),
+      ),
+      CoeloAdminTableColumn<_AgendaApproval>(
+        id: 'history',
+        label: 'Histórico',
+        initialWidth: 220,
+        minWidth: 180,
+        maxWidth: 300,
+        cellBuilder: (context, item) => item.history == null
+            ? const Text('Aguardando decisão')
+            : TextButton(
+                key: Key('agenda-approval-history-${item.id}'),
+                onPressed: () => showDialog<void>(
+                  context: context,
+                  builder: (context) => CoeloAdminDialogShell(
+                    title: 'Histórico da publicação',
+                    body: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(item.title),
+                        const SizedBox(height: CoeloSpacing.space3),
+                        _StatusAndHistory(item: item, expanded: true),
+                      ],
+                    ),
+                    primaryAction: FilledButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      child: const Text('Voltar'),
+                    ),
+                  ),
+                ),
+                child: const Text('Ver histórico'),
+              ),
       ),
       CoeloAdminTableColumn<_AgendaApproval>(
         id: 'action',
@@ -507,9 +541,10 @@ final class _ApprovalCardList extends StatelessWidget {
 }
 
 final class _StatusAndHistory extends StatelessWidget {
-  const _StatusAndHistory({required this.item});
+  const _StatusAndHistory({required this.item, this.expanded = false});
 
   final _AgendaApproval item;
+  final bool expanded;
 
   @override
   Widget build(BuildContext context) {
@@ -525,7 +560,11 @@ final class _StatusAndHistory extends StatelessWidget {
             'Decisão registrada por ${history.actor}.',
             style: Theme.of(context).textTheme.labelMedium,
           ),
-          Text(history.reason, maxLines: 2, overflow: TextOverflow.ellipsis),
+          Text(
+            history.reason,
+            maxLines: expanded ? null : 2,
+            overflow: expanded ? TextOverflow.visible : TextOverflow.ellipsis,
+          ),
           Text(_formatDateTime(history.decidedAt), style: Theme.of(context).textTheme.bodySmall),
         ],
       ],

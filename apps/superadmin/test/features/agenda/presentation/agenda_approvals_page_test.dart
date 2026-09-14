@@ -36,6 +36,8 @@ void main() {
     await tester.tap(find.byKey(const Key('agenda-approval-confirm-approve')));
     await tester.pumpAndSettle();
 
+    await tester.tap(find.byKey(const Key('agenda-approval-history-pending-1')));
+    await tester.pumpAndSettle();
     expect(find.text('Decisão registrada por Marina Oliveira.'), findsOneWidget);
     expect(find.text('Programação e audiência conferidas.'), findsOneWidget);
   });
@@ -53,6 +55,8 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.text('Recusado'), findsWidgets);
+    await tester.tap(find.byKey(const Key('agenda-approval-history-pending-1')));
+    await tester.pumpAndSettle();
     expect(find.text('Decisão registrada por Marina Oliveira.'), findsOneWidget);
     expect(find.text('Conflito com a reserva do auditório.'), findsOneWidget);
   });

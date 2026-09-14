@@ -9,7 +9,13 @@ metadata:
 
 # Coelo Back-end
 
-## Fonte operacional vigente — R12 consolidada, início manual
+## Fonte operacional vigente — R12 consolidada, execução parcial
+
+Retomadas conferem a subtela exata do pedido: o seletor de recorrência do
+cardápio não cobre automaticamente Modelo > Aplicar por. Usar o
+[checkpoint vigente](../../../docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md)
+e sincronizar os 53 registros Owner a partir de R12-pendencias.md com
+sync-r12-owner-records.cjs; a validação estrutural não confirma implementação.
 
 Consultar [R12 consolidada](../../../docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md), [pendências por camada](../../../docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md). R12/R13 foram reunidas pelo Owner: 53 compromissos. Os deltas desta execução são de apresentação/contrato cliente; nenhum SQL/RPC novo foi aplicado. Saúde, medicação, cardápio e formulários mantêm backend inalterado e seguem E2E aberto para prova real. `chat.attach` mantém R2 privado e ownership existentes. Preservar R01–R13, fontes e provas. A antiga divisão e o supervisor são históricos; não disparar outro processo.
 

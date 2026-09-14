@@ -86,9 +86,8 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
   MealPlanAudienceSegment _audience = MealPlanAudienceSegment.students;
   MealPlanVisibilityMode _visibility = MealPlanVisibilityMode.immediate;
   MealPlanRecurrenceKind _recurrence = MealPlanRecurrenceKind.weekly;
-  final _specificDateValues = <DateTime>[];
   DateTimeRange? _period;
-  DateTimeRange? _visibleDate;
+  DateTime? _visibleDate;
   String _templateId = '';
   int? _sourceTemplateVersion;
   String? _sourceTemplateName;
@@ -579,7 +578,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       ],
       if (_recurrence == MealPlanRecurrenceKind.specificDates) ...[
         const SizedBox(height: CoeloSpacing.space4),
-        _specificDateSelector(),
+        _specificDateSelector(_specificDates),
       ],
       const SizedBox(height: CoeloSpacing.space5),
       _sectionHeading(title: 'Publicação', description: 'Escolha quando o cardápio fica visível.'),
@@ -596,23 +595,18 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       ),
       if (_visibility == MealPlanVisibilityMode.scheduled) ...[
         const SizedBox(height: CoeloSpacing.space4),
-        CoeloDateRangeField(
+        CoeloDateTimeField(
           value: _visibleDate,
-          onChanged: (value) => setState(() {
-            _visibleDate = value == null
-                ? null
-                : DateTimeRange(start: value.start, end: value.start);
-          }),
+          onChanged: (value) => setState(() => _visibleDate = value),
           firstDate: DateUtils.dateOnly(DateTime.now()),
           lastDate: DateTime(2100),
-          showQuickRanges: false,
-          labelText: 'Data de início da exibição',
+          labelText: 'Data e hora da publicação',
         ),
       ],
     ],
   );
 
-  Widget _specificDateSelector() => InputDecorator(
+  Widget _specificDateSelector(TextEditingController controller) => InputDecorator(
     decoration: const InputDecoration(
       labelText: 'Datas específicas',
       prefixIcon: Icon(Icons.event_available_outlined),
@@ -621,17 +615,21 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     child: Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        if (_specificDateValues.isEmpty)
+        if (_parseDates(controller.text).isEmpty)
           const Text('Nenhuma data selecionada.')
         else
           Wrap(
             spacing: CoeloSpacing.space2,
             runSpacing: CoeloSpacing.space2,
-            children: _specificDateValues
+            children: (_parseDates(controller.text).toList()..sort())
                 .map(
                   (date) => InputChip(
                     label: Text(_date(date)),
-                    onDeleted: () => _removeSpecificDate(date),
+                    onDeleted: () => setState(() {
+                      controller.text = _parseDates(
+                        controller.text,
+                      ).where((value) => !DateUtils.isSameDay(value, date)).map(_date).join(', ');
+                    }),
                   ),
                 )
                 .toList(growable: false),
@@ -639,7 +637,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         const SizedBox(height: CoeloSpacing.space2),
         OutlinedButton.icon(
           key: const Key('meal-plan-specific-dates-selector'),
-          onPressed: _pickSpecificDate,
+          onPressed: () => _pickSpecificDate(controller),
           icon: const Icon(Icons.add),
           label: const Text('Adicionar data'),
         ),
@@ -647,36 +645,30 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     ),
   );
 
-  Future<void> _pickSpecificDate() async {
-    final initialDate = _specificDateValues.isEmpty
-        ? DateUtils.dateOnly(DateTime.now())
-        : _specificDateValues.last;
-    final picked = await showDatePicker(
+  Future<void> _pickSpecificDate(TextEditingController controller) async {
+    final dates = _parseDates(controller.text).toList()..sort();
+    final initialDate = dates.isEmpty ? DateUtils.dateOnly(DateTime.now()) : dates.last;
+    final picked = await showCoeloDateRangePicker(
       context: context,
-      initialDate: initialDate,
+      value: null,
+      currentDate: initialDate,
+      selectionMode: CoeloDateSelectionMode.single,
+      showQuickRanges: false,
       firstDate: DateTime(2020),
       lastDate: DateTime(2100),
     );
     if (picked == null || !mounted) return;
-    final date = DateUtils.dateOnly(picked);
-    if (_specificDateValues.any((value) => DateUtils.isSameDay(value, date))) return;
+    if (controller != _specificDates && !_meals.any((meal) => meal.specificDates == controller)) {
+      return;
+    }
+    final date = DateUtils.dateOnly(picked.start);
+    if (dates.any((value) => DateUtils.isSameDay(value, date))) return;
     setState(() {
-      _specificDateValues
+      dates
         ..add(date)
         ..sort();
-      _syncSpecificDateLegacyValue();
+      controller.text = dates.map(_date).join(', ');
     });
-  }
-
-  void _removeSpecificDate(DateTime date) {
-    setState(() {
-      _specificDateValues.removeWhere((value) => DateUtils.isSameDay(value, date));
-      _syncSpecificDateLegacyValue();
-    });
-  }
-
-  void _syncSpecificDateLegacyValue() {
-    _specificDates.text = _specificDateValues.map(_date).join(', ');
   }
 
   Widget _menu() => _isSimple ? _simpleContent() : _mealEditor();
@@ -795,13 +787,14 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           const SizedBox(height: CoeloSpacing.space3),
           CoeloFormTextField(
             controller: meal.dishName,
-            labelText: 'Nome da refeição ou prato',
+            labelText: 'Nome do prato',
             prefixIcon: Icons.ramen_dining_outlined,
           ),
           const SizedBox(height: CoeloSpacing.space3),
           CoeloFormTextField(
             controller: meal.mealName,
             labelText: 'Nome da refeição',
+            onChanged: (_) => setState(() {}),
             prefixIcon: Icons.label_outline,
           ),
           if (meal.hasTime) ...[
@@ -916,11 +909,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
           if (meal.scheduleKind == MealPlanMealScheduleKind.weekdays)
             _weekdayPicker(meal.weekdays)
           else
-            CoeloFormTextField(
-              controller: meal.specificDates,
-              labelText: 'Datas (DD/MM/AAAA, separadas por vírgula)',
-              prefixIcon: Icons.event_available_outlined,
-            ),
+            _specificDateSelector(meal.specificDates),
         ],
       ),
     ),
@@ -1215,7 +1204,6 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     _priority.text = '0';
     _cycleWeeks.text = '2';
     _specificDates.clear();
-    _specificDateValues.clear();
     _excludedDates.clear();
     _templateName.clear();
     for (final meal in _meals) {
@@ -1231,9 +1219,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
     _variant = plan.planVariant;
     _audience = plan.audienceSegment;
     _visibility = plan.visibilityMode;
-    _visibleDate = plan.visibleFrom == null
-        ? null
-        : DateTimeRange(start: plan.visibleFrom!, end: plan.visibleFrom!);
+    _visibleDate = plan.visibleFrom?.toLocal();
     _period = DateTimeRange(start: plan.startDate, end: plan.endDate);
     _recurrence = plan.recurrence.kind;
     _recurrenceWeekdays
@@ -1241,11 +1227,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       ..addAll(plan.recurrence.weekdays);
     _cycleWeeks.text = '${plan.recurrence.cycleWeeks ?? 2}';
     _excludedDates.text = plan.recurrence.excludedDates.map(_date).join(', ');
-    _specificDateValues
-      ..clear()
-      ..addAll(plan.recurrence.specificDates.map(DateUtils.dateOnly))
-      ..sort();
-    _syncSpecificDateLegacyValue();
+    _specificDates.text = plan.recurrence.specificDates.map(_date).join(', ');
     _priority.text = '${plan.priority}';
     _templateId = plan.sourceTemplateId ?? '';
     _sourceTemplateVersion = plan.sourceTemplateVersion;
@@ -1776,9 +1758,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
         kind: _recurrence,
         cycleWeeks: int.tryParse(_cycleWeeks.text),
         weekdays: _recurrenceWeekdays,
-        specificDates: _specificDateValues.isEmpty
-            ? _parseDates(_specificDates.text)
-            : List<DateTime>.unmodifiable(_specificDateValues),
+        specificDates: _parseDates(_specificDates.text),
         excludedDates: _parseDates(_excludedDates.text),
       ),
       menu: _isSimple ? const [] : _meals.map((meal) => meal.toEntry()).toList(growable: false),
@@ -1787,7 +1767,7 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       planVariant: _variant,
       audienceSegment: _audience,
       visibilityMode: _visibility,
-      visibleFrom: _visibleDate?.start,
+      visibleFrom: _visibleDate?.toUtc(),
       sourceTemplateId: _templateId.isEmpty ? null : _templateId,
       sourceTemplateVersion: _templateId.isEmpty ? null : _sourceTemplateVersion,
       scopeRules: {

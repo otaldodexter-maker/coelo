@@ -6,6 +6,25 @@ generated_at: 2026-09-13
 
 # R12 — Checkpoint inicial consolidado
 
+## Retomada 2026-09-13 21:24 -03:00
+
+Base 967c8a263 = origin/dev após fetch; checkout dev único, stash vazio.
+Sessão atual GPT-6 (troca do sistema); bucket normal observado 97%, reserva
+Luna 17%; nenhum controle de troca de modelo nesta sessão, sem reset/crédito.
+Etapa 2 > apps/superadmin > Cardápios > Modelo/recorrência/publicação:
+R12-34–36 corrigidos localmente; calendário Coelo no campo exato do modelo,
+cancelar/deduplicar/remover/salvar testados; data/hora enviada como UTC.
+Wizard/serialização 58 PASS e analyze limpo. Nome da refeição atualiza título.
+Operação > Agenda > Aprovações > agenda.request (R12-42): linha de 64 px,
+histórico integral em diálogo; 6 PASS. Estados remotos 22 PASS/1 FAIL,
+golden calendário loading dark 375 (194px), ainda sem causa isolada.
+Validador visual global: 21 ocorrências, nenhuma nos arquivos alterados.
+R12-38: adapter produtivo ainda usa Supabase Storage; migração R2 é trabalho
+de implementação pendente, não bloqueio externo presumido. Demais pendências
+continuam no catálogo; não foi concluída a R12 nem executado deploy nesta fatia.
+Memória: instruções duráveis de subtela/projeção atualizadas nas quatro skills;
+sem nova regra de domínio aprovada, sem adicionar documentação de usuário final.
+
 T0 2026-09-13 19:11 -03:00; modelo/bucket: gpt-5.6-luna, bucket reserva,
 17% usado; SHA/base integrada: 8202d3bf8 = origin/dev; sem worktrees extras e
 sem stash. Disparo36113ccf cancelado; nenhum executor automático autorizado.

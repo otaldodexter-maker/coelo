@@ -67,6 +67,75 @@ void main() {
     expect(find.textContaining('separadas por vírgula'), findsNothing);
   });
 
+  testWidgets('template meal dates support cancel duplicate removal and saved payload', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _TemplateUnknownFieldsRepository();
+    await tester.pumpWidget(
+      MaterialApp(
+        home: Scaffold(
+          body: MealPlanWizardPage(
+            repository: repository,
+            imageRepository: const UnavailableMealPlanImageRepository(),
+            isTemplate: true,
+            mealPlanModelId: 'model-a',
+            onSaved: () {},
+            onCancel: () {},
+          ),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await _selectAudienceOption(tester, 'Instituição do modelo', 'Colégio Coelo');
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pumpAndSettle();
+    final applyBy = find.byWidgetPredicate(
+      (w) => w is CoeloAdminSingleSelectField<MealPlanMealScheduleKind>,
+    );
+    await tester.ensureVisible(applyBy);
+    await tester.tap(find.descendant(of: applyBy, matching: find.text('Dias da semana')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.text('Datas específicas').last);
+    await tester.tap(find.text('Datas específicas').last);
+    await tester.pumpAndSettle();
+    Future<void> pick(DateTime? date) async {
+      await tester.ensureVisible(find.text('Adicionar data'));
+      await tester.tap(find.text('Adicionar data'));
+      await tester.pumpAndSettle();
+      final picker = tester.widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker));
+      expect(picker.selectionMode, CoeloDateSelectionMode.single);
+      if (date == null) {
+        picker.onDismiss!();
+      } else {
+        picker.onChanged(DateTimeRange(start: date, end: date));
+      }
+      await tester.pumpAndSettle();
+    }
+
+    await pick(null);
+    expect(find.byType(InputChip), findsNothing);
+    await pick(DateTime(2026, 9, 20));
+    await pick(DateTime(2026, 9, 18));
+    await pick(DateTime(2026, 9, 20));
+    expect(find.byType(InputChip), findsNWidgets(2));
+    tester.widget<InputChip>(find.byType(InputChip).first).onDeleted!();
+    await tester.pumpAndSettle();
+    expect(find.text('20/09/2026'), findsOneWidget);
+    await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(OutlinedButton, 'Salvar rascunho'));
+    await tester.pumpAndSettle();
+    final meal = MealPlanMenuEntry.fromJson(
+      Map<String, dynamic>.from(
+        (repository.savedDrafts.single.payload['menu'] as List).single as Map,
+      ),
+    );
+    expect(meal.specificDates, [DateTime(2026, 9, 20)]);
+    expect(tester.takeException(), isNull);
+  });
+
   for (final destination in ['same', 'other', 'new']) {
     testWidgets('template editing preserves unknown fields only for $destination resource', (
       tester,
@@ -549,7 +618,7 @@ void main() {
     });
   }
 
-  testWidgets('dev meal plan navigates back and persists review then publish locally', (
+  testWidgets('dev meal plan preserves scheduled publication instant when navigating and saving', (
     tester,
   ) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
@@ -578,6 +647,18 @@ void main() {
     await _selectAudienceOption(tester, 'Instituições', 'Colégio Coelo');
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
+    final visibility = tester.widget<CoeloAdminSingleSelectField<MealPlanVisibilityMode>>(
+      find.byWidgetPredicate((w) => w is CoeloAdminSingleSelectField<MealPlanVisibilityMode>),
+    );
+    visibility.onChanged(MealPlanVisibilityMode.scheduled);
+    await tester.pump();
+    final publication = DateTime.now().add(const Duration(days: 2));
+    tester.widget<CoeloDateTimeField>(find.byType(CoeloDateTimeField)).onChanged(publication);
+    await tester.pump();
+    expect(
+      tester.widget<CoeloDateTimeField>(find.byType(CoeloDateTimeField)).labelText,
+      'Data e hora da publicação',
+    );
     await tester.tap(find.widgetWithText(FilledButton, 'Continuar'));
     await tester.pump();
     await tester.enterText(find.byType(TextFormField).first, 'Arroz, feijão e salada');
@@ -597,6 +678,8 @@ void main() {
       const MealPlanListFilter(pageSize: 100),
     )).items.singleWhere((item) => item.name == 'Cardápio da primavera');
     expect(created.status, MealPlanStatus.published);
+    expect(created.visibleFrom, publication.toUtc());
+    expect(created.visibilityMode, MealPlanVisibilityMode.scheduled);
     expect(tester.takeException(), isNull);
   });
 
