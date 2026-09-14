@@ -35,6 +35,8 @@ terminal (64 FE, 43 BE e 77 integradas; números por camada, não somáveis). As
 22 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
+> Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
+
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em

@@ -7,6 +7,9 @@ updated_at: 2026-09-14
 
 # Catálogo de preparação R14
 
+> **Superado em 14/09/2026:** a fila consolidada e viva é `R14-pendencias.md`. Este
+> catálogo fica como proveniência da preparação.
+
 R14 ainda não foi aberta. Este arquivo é somente um mapa de preparação; não é
 fila executável, não cria `owner.r14-*`, não renumera `action_id` e não concede
 autorização nova.

@@ -1,7 +1,7 @@
 ---
 title: "Etapa 2 — índice das rodadas R01–R14"
 source: "ETAPA-2-estado-atual.md; R01–R13 fechamentos, planos e pendências; R14-catalogo.md; AGENTS.md"
-status: "active index; R13 vigente; R01–R12 históricos"
+status: "active index; R14 vigente (fila única consolidada); R01–R13 históricos"
 generated_at: "2026-09-14"
 updated_at: "2026-09-14"
 ---
@@ -12,7 +12,7 @@ Este índice separa a fila operacional das fontes históricas. A fila vigente é
 a R13, em [`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md), reunindo os
 50 Owner items `owner.r12-*` e H02–H28 incorporados de R01–R07. R01–R12
 continuam como fontes de proveniência; nenhum item é duplicado ou renumerado.
-R14 não foi iniciada.
+R14 foi aberta em 14/09/2026 por decisão do Owner como fila única consolidada (`R14-pendencias.md`); R13 encerrada e congelada.
 
 | Rodada | Estado documental | Uso atual | Fonte principal |
 |---|---|---|---|
@@ -28,8 +28,8 @@ R14 não foi iniciada.
 | R10 | histórica, fora da fila vigente | preservar fechamento e métricas da época | `R10-fechamento.md` e `R10-estado-por-tela.md` |
 | R11 | histórica, fora da fila vigente | preservar herança e transferência | `R11-fechamento.md` e `R11-pendencias.md` |
 | R12 | histórica, origem dos 53 Owner IDs | os 3 concluídos não voltam; 50 foram para R13 | `R12-fechamento.md`, `R12-pendencias.md`, `R12-owner-items.json` |
-| R13 | vigente, execução parcial | fila R13 e resíduos H02–H28; conferir itens não terminais nas evidências mais recentes | `R13-prompt-execucao-20260914.md`, `R13-pendencias.md`, `ETAPA-2-estado-atual.md` |
-| R14 | preparada, não iniciada | não executar automaticamente | `R14-catalogo.md` e `R14-plano-de-rodada.md` |
+| R13 | histórica (encerrada em 14/09/2026) | 9 Owner done, H06/H17/OQ-028 e anexos fechados; os não terminais foram consolidados na R14 | `R13-checkpoint-20260914-1800.md`, `R13-pendencias.md` (congelado) |
+| R14 | vigente — fila única consolidada | executar pela ordem de `R14-pendencias.md`; itens `done` não retornam | `R14-pendencias.md` (fonte), `R14-catalogo.md` (proveniência) |
 
 ## Regra de reconciliação
 

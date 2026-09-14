@@ -4,7 +4,11 @@ status: active; fila vigente R13; execução documental parcial
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 decisions: decisions/0038-owner-decisions-etapa2-backlog-20260914.md
+lifecycle: "historical"
 ---
+> **HISTÓRICO — congelado em 14/09/2026 por decisão do Owner.** A fila única viva da
+> Etapa 2 é `R14-pendencias.md`. Não editar este arquivo; ele permanece apenas como
+> proveniência dos IDs e das decisões da rodada.
 
 > R13 é a fila vigente da Etapa 2. Ela recebeu 50 compromissos transferidos e
 > os resíduos H02–H28 herdados de R01–R07. Após os aceites registrados em

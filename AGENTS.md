@@ -13,10 +13,10 @@ históricos.
    pós-MVP ou pendências gerais.
 4. Leia a spec, ADR, contrato ou skill específica apontada pelo índice.
 
-Em 2026-09-14, o Owner confirmou que a Etapa 2 está na R13, em trabalho no
-Claude. R14 está preparada, mas não começou. Ao fechar a R13, transfira apenas
-itens não terminais para a R14, preserve os IDs e atualize o estado atual antes
-de abrir a nova rodada. Itens concluídos não voltam para a fila.
+Em 2026-09-14, o Owner encerrou a R13 e abriu a R14 como fila única consolidada
+(`docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`): Owner items, H e
+itens da ADR 0038 num só arquivo, IDs preservados, itens concluídos fora da fila.
+R12/R13 são históricos congelados. Não crie pendências em outro arquivo.
 
 ## Produto e arquitetura
 
