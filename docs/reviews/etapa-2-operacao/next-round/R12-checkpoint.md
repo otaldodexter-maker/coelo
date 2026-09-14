@@ -37,6 +37,17 @@ módulo/tela/ação, preserva próprias/todas e esclarece acesso efetivo.
 17 testes de regressão + 1 teste focal PASS; analyze sem issues. Catálogo
 produtivo/traduções e rota real continuam pendentes; nenhum grant alterado.
 
+## Corte do bucket normal — 13/09/2026 21:32 -03
+
+Uso medido: normal 99%, reserva Luna 17%. Código publicado em 4b74dc67f;
+dev=origin/dev, sem WIP/stash/worktree extra, gate PASS DOCUMENTED_PARTIAL.
+Solicitação de continuidade/modelo gpt-5.6-luna, esforço médio, aceita pelo
+controle do app para esta mesma tarefa 01a09ccb-24e2-7820-9208-8338a980f81d.
+Não foi criada tarefa/CLI/supervisor. Confirmar o modelo/bucket no próximo
+turno; aceitação do comando não prova que a inferência atual já mudou.
+R12 permanece incompleta, com implementação local e provas reais pendentes
+nos 53 registros. R14 foi somente preparada, não iniciada.
+
 T0 2026-09-13 19:11 -03:00; modelo/bucket: gpt-5.6-luna, bucket reserva,
 17% usado; SHA/base integrada: 8202d3bf8 = origin/dev; sem worktrees extras e
 sem stash. Disparo36113ccf cancelado; nenhum executor automático autorizado.
