@@ -3,7 +3,14 @@ source: "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agor
 status: approved
 generated_at: 2026-08-20
 updated_at: 2026-08-31
+lifecycle: current
+reconciled_with: AGENTS.md; decisions/0032; decisions/0034; decisions/0037; decisions/0038
 ---
+
+> **Overlay vigente — 14/09/2026.** A composição pertence ao Principal no
+> contêiner definido pela ADR 0037. Mídia nova usa R2 privado; Supabase Storage
+> citado na baseline está superado pela ADR 0032. Esta spec não autoriza a
+> abertura automática do fluxo nem substitui os gates da R13.
 
 # Publicação do Agora no MVP
 

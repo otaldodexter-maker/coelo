@@ -1,8 +1,11 @@
 ---
 title: "Storage privado para evidências de segurança da criança"
-source: "decisão explícita do produto em 2026-08-12; decisions/0010-private-media-r2.md; decisions/0020-backend-authorization-application-security.md; specs/030-superadmin-child-safety-production.md"
+source: "decisão explícita do produto em 2026-08-12; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/030-superadmin-child-safety-production.md"
 status: approved
 generated_at: "2026-08-12"
+lifecycle: current
+updated_at: "2026-09-14"
+reconciled_with: "decisions/0032; decisions/0034"
 ---
 
 # ADR 0024 - Storage privado de evidências de segurança da criança

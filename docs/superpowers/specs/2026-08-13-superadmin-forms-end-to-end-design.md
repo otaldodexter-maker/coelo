@@ -1,5 +1,5 @@
 ---
-source: "docs/product/prd-superadmin.md; docs/product/prd-master.md; docs/design/design-system.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0020-backend-authorization-application-security.md; decisions/0021-operational-import-export-files.md; decisions/0022-superadmin-activities-and-identity-storage.md; specs/025-superadmin-daily-routine-models-applications-launches.md; aprovacoes do Owner Coelo em 2026-08-13"
+source: "docs/product/prd-superadmin.md; docs/product/prd-master.md; docs/design/design-system.md; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0031-mvp-import-export-buttons-only.md; decisions/0032-mvp-private-media-r2.md; decisions/0022-superadmin-activities-and-identity-storage.md; specs/025-superadmin-daily-routine-models-applications-launches.md; aprovacoes do Owner Coelo em 2026-08-13"
 status: "approved-design"
 generated_at: "2026-08-13"
 ---

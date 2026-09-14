@@ -1,8 +1,11 @@
 ---
 title: "Storage privado, anonimato e exportações multipart de Formulários"
-source: "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md; decisions/0020-backend-authorization-application-security.md; decisions/0021-operational-import-export-files.md; decisions/0022-superadmin-activities-and-identity-storage.md"
+source: "docs/superpowers/specs/2026-08-13-superadmin-forms-end-to-end-design.md; decisions/0031-mvp-import-export-buttons-only.md; decisions/0032-mvp-private-media-r2.md; decisions/0022-superadmin-activities-and-identity-storage.md"
 status: approved
 generated_at: "2026-08-13"
+lifecycle: current
+updated_at: "2026-09-14"
+reconciled_with: decisions/0031; decisions/0032; decisions/0034
 ---
 
 # ADR 0025 - Storage privado e exportações de Formulários

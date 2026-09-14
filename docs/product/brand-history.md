@@ -6,9 +6,12 @@ original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo Historia da Logo e Marca 
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-06-22"
+lifecycle: "historical"
+updated_at: "2026-09-14"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+> **Referência histórica de marca — não é contrato funcional.**
 | Coluna 1 | COELO<br>História da Logo e Marca Oficial v1<br>coelo.me · Documento base para identidade, narrativa e comunicação da marca |
 | --- | --- |
 

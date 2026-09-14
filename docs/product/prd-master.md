@@ -7,9 +7,21 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de implementação vigente — 14/09/2026.** Este PRD é uma baseline
+> derivada. Prevalecem `AGENTS.md` e as ADRs posteriores: R2 privado é o
+> armazenamento mestre de binários novos; Postgres mantém catálogo,
+> ownership, autorização, retenção e auditoria; Stream é seletivo e PDF nunca
+> usa Stream. Importação/exportação geral está fora do MVP, exceto
+> `forms.responses.export` em XLSX privado. O MVP não exige MFA/AAL2. Agenda
+> produtiva permanece no Superadmin. Crianças não recebem `@` público/global
+> pesquisável. Capacidades são contextuais por vínculo e tenant.
 | Coluna 1 | COELO<br>PRD Master Oficial v1<br>coelo.me · Produto completo + MVP/v1 + roadmap |
 | --- | --- |
 

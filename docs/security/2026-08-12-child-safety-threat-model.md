@@ -3,7 +3,17 @@ title: "Threat model - Segurança da criança"
 source: "specs/030-superadmin-child-safety-production.md; OWASP ASVS 5.0 níveis 2 e 3; Supabase RLS e Storage"
 status: implementation
 generated_at: "2026-08-12"
+lifecycle: current
+updated_at: "2026-09-14"
+reconciled_with: AGENTS.md; decisions/0032; decisions/0034; decisions/0038
 ---
+
+> **Overlay vigente — 14/09/2026.** Este modelo continua referência de
+> proteção infantil, RLS, capability, escopo exato, auditoria e melhor
+> interesse da criança. AAL2, exportação de titulares e Storage legado são
+> controles futuros/históricos até decisão nova; no MVP não há gate AAL2.
+> Binários privados novos usam R2 privado com catálogo Postgres e gateway
+> server-side, conforme ADR 0032.
 
 # Threat model - Segurança da criança
 

@@ -7,9 +7,20 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0033; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de segurança vigente — 14/09/2026.** Pessoa é global, mas toda
+> capacidade é contextual por vínculo, tenant e escopo real; cliente nunca
+> autoriza. RLS é deny-by-default, RPCs validam ator/recurso/tenant e nenhum
+> segredo chega ao cliente. O MVP opera sem requisito MFA/AAL2; qualquer
+> cláusula antiga de AAL2 é hardening futuro até nova decisão do Owner.
+> Recursos remotos são produção, e a mídia privada segue R2 + gateway
+> server-side conforme ADR 0032.
 | Coluna 1 | COELO<br>PRD Auth, Multi-tenant e Permissões Oficial v1<br>Identidade global · contexto ativo · RBAC + RLS |
 | --- | --- |
 

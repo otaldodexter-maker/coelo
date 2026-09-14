@@ -3,7 +3,16 @@ title: "Avisos: threat model e controles de produção"
 source: "OWASP ASVS; docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md; ADR 0020"
 status: "implementation"
 generated_at: "2026-08-11"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0038"
 ---
+
+> **Overlay vigente — 14/09/2026.** O threat model permanece referência de
+> controles server-side, RLS, capabilities e auditoria. AAL2/MFA, exportação
+> geral e qualquer bucket diferente da topologia R2 da ADR 0032 são hardening
+> futuro ou histórico, não requisito do MVP. `forms.responses.export` é a
+> única exceção de exportação real no MVP.
 
 # Avisos: threat model e controles de produção
 

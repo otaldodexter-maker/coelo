@@ -4,7 +4,16 @@ source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
 updated_at: "2026-09-12"
+lifecycle: "current"
+reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038"
 ---
+
+> **Overlay de conflitos vigente — 14/09/2026.** Itens marcados como
+> resolvidos pelas ADRs 0031/0032/0034/0038 não são perguntas operacionais.
+> Permanecem abertos somente conflitos que exigem decisão do Owner/jurídico,
+> como MFA/AAL2 no go-live, ambientes remotos adicionais, controlador/DPO/
+> retenção LGPD e contratos físicos ainda divergentes. Os blocos históricos
+> abaixo preservam proveniência e não reabrem a fila.
 
 # Perguntas abertas e conflitos
 

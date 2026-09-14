@@ -1,8 +1,16 @@
 ---
-source: "specs/027-superadmin-audit-production.md; decisions/0020-backend-authorization-application-security.md; decisions/0021-operational-import-export-files.md"
+source: "specs/027-superadmin-audit-production.md; decisions/0031-mvp-import-export-buttons-only.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md"
 status: "implementation-evidence"
 generated_at: "2026-08-12"
+lifecycle: "historical"
+updated_at: "2026-09-14"
+reconciled_with: "decisions/0031; decisions/0032; decisions/0034"
 ---
+
+> **Evidência histórica — não é certificado atual do MVP.** Este corte
+> preserva a análise de 12/08, inclusive referências a AAL2, exportação e
+> buckets que foram superadas pelas ADRs 0031/0032/0034. Use-o para auditoria
+> e proveniência; a política atual deve ser lida nas ADRs e no estado corrente.
 
 # Evidência de segurança — Auditoria produtiva do Superadmin
 

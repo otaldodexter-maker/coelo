@@ -3,7 +3,15 @@ title: Revisao de seguranca da gestao de Atividades
 source: ADR 0020; ADR 0022; plano de Atividades aprovado em 2026-08-11
 status: implementation-review
 generated_at: 2026-08-11
+lifecycle: future
+updated_at: 2026-09-14
+reconciled_with: AGENTS.md; decisions/0032; decisions/0034; decisions/0038
 ---
+
+> **Hardening futuro, não requisito atual do MVP.** As exigências de MFA/AAL2
+> e os fluxos de importação descritos abaixo devem ser tratados como revisão
+> pós-MVP. No MVP valem AAL1, capability contextual, RLS, validação
+> server-side, auditoria e a política R2 da ADR 0032.
 
 # Revisao de seguranca da gestao de Atividades
 

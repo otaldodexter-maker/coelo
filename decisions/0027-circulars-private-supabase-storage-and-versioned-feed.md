@@ -3,6 +3,9 @@ title: "Circulares versionadas e mídia privada no Supabase Storage"
 source: "specs/037-principal-circulars.md; decisão explícita do Owner em 2026-08-21; decisions/0010-private-media-r2.md; decisions/0022-superadmin-activities-and-identity-storage.md; decisions/0026-happens-mvp-private-supabase-storage.md"
 status: approved-exception
 generated_at: "2026-08-21"
+lifecycle: historical
+updated_at: "2026-09-14"
+superseded_by: decisions/0032
 ---
 
 # ADR 0027 — Circulares versionadas e mídia privada no Supabase Storage

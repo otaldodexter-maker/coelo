@@ -7,9 +7,20 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de implementação vigente — 14/09/2026.** O nome operacional da
+> aplicação privada é Principal. Acontece, Agora, Momentos e Perfil seguem o
+> contêiner/família visual do Principal conforme ADR 0037. Agenda produtiva não
+> está aberta neste app na Etapa 2. Mídia nova usa R2 privado; Chat admite até
+> 10 anexos por envio, com `asset_id` separado de `attachment_id`. Crianças não
+> recebem `@` público/global pesquisável. Exportações gerais e importação real
+> permanecem adiadas; MFA/AAL2 não é requisito do MVP.
 | Coluna 1 | COELO<br>PRD App Oficial v1<br>app.coelo.me + iOS/Android · Experiência diária |
 | --- | --- |
 

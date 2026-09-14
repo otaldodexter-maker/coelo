@@ -1,9 +1,18 @@
 ---
 title: "Segurança da criança produtiva"
-source: "decisão do produto em 2026-08-12; decisions/0015-contextual-people-authorizations-attendance.md; decisions/0020-backend-authorization-application-security.md; decisions/0024-child-safety-private-evidence-storage.md"
+source: "decisão do produto em 2026-08-12; decisions/0015-contextual-people-authorizations-attendance.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; decisions/0024-child-safety-private-evidence-storage.md"
 status: approved-for-implementation
 generated_at: "2026-08-12"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038"
 ---
+
+> **Overlay vigente — 14/09/2026.** O domínio mantém RLS, capability,
+> contexto exato, auditoria e proteção infantil. Exportação por job e AAL2
+> descritos na baseline ficam pós-MVP; evidência nova usa R2 privado e gateway
+> server-side. A abertura da implementação depende da fila R13/R14, não deste
+> status isolado.
 
 # Segurança da criança produtiva
 

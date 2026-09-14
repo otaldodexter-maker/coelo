@@ -1,6 +1,6 @@
 ---
 title: "Atividade Contextual"
-source: "conversa com usuario em 2026-07-23 e 2026-07-24; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+source: "conversa com usuario em 2026-07-23 e 2026-07-24; decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md; packages/coelo_database/migrations/20260910180110_superadmin_activity_save_v2.sql"
 status: "implemented-database-foundation"
 generated_at: "2026-07-24"
 ---

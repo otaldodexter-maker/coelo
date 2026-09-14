@@ -3,7 +3,15 @@ title: "Gestão produtiva de Planos no Superadmin"
 source: "ordens explícitas do Owner Coelo na conversa Finalização de Telas Operações em 2026-09-01; specs/022-superadmin-plans-ui.md; docs/product/prd-superadmin.md; decisions/0016-unit-type-and-plan-inheritance.md"
 status: approved
 generated_at: "2026-09-01"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0016; decisions/0034; decisions/0038"
 ---
+
+> **Overlay vigente — 14/09/2026.** Planos permanecem referência aprovada,
+> mas `plans.assign` fica fora do MVP; vínculos são leitura até decisão
+> posterior. AAL2 não é requisito do MVP. Não abrir este fluxo durante a cota
+> atual da R13 sem gate explícito.
 
 # Gestão produtiva de Planos no Superadmin
 

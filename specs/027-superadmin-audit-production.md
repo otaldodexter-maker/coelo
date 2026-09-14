@@ -1,8 +1,16 @@
 ---
-source: "Prompt Auditoria aprovado pelo Owner Coelo em 2026-08-11; AGENTS.md; specs/011-superadmin-database-rls.md; decisions/0020-backend-authorization-application-security.md; decisions/0021-operational-import-export-files.md; docs/design/design-system.md"
+source: "Prompt Auditoria aprovado pelo Owner Coelo em 2026-08-11; AGENTS.md; specs/011-superadmin-database-rls.md; decisions/0031-mvp-import-export-buttons-only.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; docs/design/design-system.md"
 status: "approved"
 generated_at: "2026-08-11"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "decisions/0031; decisions/0032; decisions/0034"
 ---
+
+> **Overlay vigente — 14/09/2026.** Auditoria é leitura server-side com
+> capability, escopo, RLS e auditoria. Exportação geral permanece pós-MVP;
+> `forms.responses.export` é a exceção atual. AAL2/MFA descrito em trechos de
+> hardening não é requisito do MVP.
 
 # Auditoria produtiva do Superadmin
 

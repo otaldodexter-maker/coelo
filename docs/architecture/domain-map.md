@@ -7,9 +7,20 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de domínio vigente — 14/09/2026.** Use os nomes de produto
+> `Acontece`, `Agora`, `Momentos` e `Principal`; nomes antigos podem existir
+> apenas como identificadores técnicos. Importação/exportação geral e jobs de
+> staging ficam pós-MVP, exceto `forms.responses.export`. O isolamento usa
+> pessoa global, `tenant_id`/instituição, vínculo/contexto e RLS server-side.
+> O mapa de domínio abaixo é baseline; decisões posteriores de mídia,
+> ambientes, permissões e MVP prevalecem.
 | Coluna 1 | COELO<br>Mapa de Domínios Oficial v1<br>Produto completo · MVP/v1 · roadmap · bounded contexts |
 | --- | --- |
 

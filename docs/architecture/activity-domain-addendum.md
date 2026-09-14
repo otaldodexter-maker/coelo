@@ -1,9 +1,17 @@
 ---
 title: "Addendum de Atividade Contextual"
-source: "conversa com usuario em 2026-07-23 e 2026-07-24; docs/architecture/domain-map.md; docs/data/data-model.md; docs/product/prd-master.md; decisions/0015-contextual-people-authorizations-attendance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+source: "conversa com usuario em 2026-07-23 e 2026-07-24; docs/architecture/domain-map.md; docs/data/data-model.md; docs/product/prd-master.md; decisions/0015-contextual-people-authorizations-attendance.md; packages/coelo_database/migrations/20260910180110_superadmin_activity_save_v2.sql"
 status: "implemented-database-addendum"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0015; decisions/0016; decisions/0034; current Supabase inventory"
 ---
+
+> **Overlay vigente — 14/09/2026.** O addendum descreve regras de domínio e
+> não autoriza migration nova por si só. Validar o nome físico e o estado real
+> no inventário/migrations atuais; aplicar mudanças somente forward-only e pelo
+> gate de backend autorizado.
 
 # Addendum De Atividade Contextual
 

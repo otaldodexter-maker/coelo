@@ -9,9 +9,17 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-29"
 updated_at: "2026-09-08"
+lifecycle: "current"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay visual vigente — 14/09/2026.** O Superadmin administrativo orienta
+> o Admin; Coelo (Principal), Site e superfícies públicas mantêm composições
+> próprias. R2, privacidade infantil, limites de anexos e estados do MVP não
+> devem ser inferidos apenas de renders. Goldens e anexos são evidência de
+> composição, não autorização funcional nem prova E2E.
 | DESIGN SYSTEM OFICIAL<br>Marca · Produto · Light & Dark · Acessibilidade · Componentes<br>Versão 1.0 \| 21/06/2026 \| coelo.me |
 | --- |
 

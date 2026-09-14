@@ -7,9 +7,21 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de implementação vigente — 14/09/2026.** O Superadmin é a
+> superfície produtiva conectada da Etapa 2. Importações reais e exportações
+> gerais ficam adiadas; a exceção é `forms.responses.export` em XLSX privado.
+> Mídia nova usa R2 privado com Media Gateway e catálogo Postgres. O MVP opera
+> sem gate MFA/AAL2; autorização é por capability, vínculo, tenant e RLS.
+> Agenda produtiva pertence ao Superadmin. Cláusulas antigas de CSV/XLSX,
+> Storage ou AAL2 devem ser lidas como baseline histórica quando conflitarem
+> com este overlay e as ADRs atuais.
 | Coluna 1 | COELO<br>PRD Superadmin Oficial v1<br>superadmin.coelo.me · Operação interna da plataforma |
 | --- | --- |
 

@@ -7,9 +7,19 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de implementação vigente — 14/09/2026.** O Admin permanece
+> superfície planejada/futura enquanto a Etapa 2 conecta o Superadmin. O fluxo
+> de importação CSV/XLSX não executa picker, parser, job, RPC ou persistência
+> no MVP. Exportações gerais também ficam adiadas, salvo a exceção de respostas
+> de Formulários definida em `decisions/0031`. Mídia privada nova segue R2 e
+> autorização server-side; não presumir ambiente remoto DEV/homologação.
 | Coluna 1 | COELO<br>PRD Admin Oficial v1<br>admin.coelo.me · Gestão da instituição |
 | --- | --- |
 

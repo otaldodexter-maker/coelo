@@ -3,15 +3,27 @@ title: "Coelo PRD Modelo de Dados Master Oficial v1"
 source_file: "Coelo PRD Modelo de Dados Master Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo PRD Modelo de Dados Master Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD Modelo de Dados Master Oficial v1.docx"
-supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0016-unit-type-and-plan-inheritance.md; packages/coelo_database/migrations/20260724120307_contextual_activities_foundation.sql"
+supplemental_source: "decisions/0014-contextual-activities-and-delegated-unit-creation.md; decisions/0016-unit-type-and-plan-inheritance.md; packages/coelo_database/migrations/20260910180110_superadmin_activity_save_v2.sql"
 contextual_access_source: "decisions/0015-contextual-people-authorizations-attendance.md; specs/015-contextual-people-access-attendance.md"
 people_contexts_decision: "decisions/0033-contextual-people-roles-and-family-contexts.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de dados vigente — 14/09/2026.** Este modelo é uma baseline
+> derivada. Binários privados novos vivem no R2 privado; Postgres armazena
+> catálogo, `media_bindings`, ownership, permissões, retenção e auditoria.
+> RLS protege metadados; acesso a objetos ocorre por gateway server-side.
+> Use `public.institution_memberships` como nome físico quando o contrato o
+> exigir. Importação real, staging/jobs e exportação geral ficam pós-MVP,
+> exceto `forms.responses.export`; não criar schema, migration ou tabela nova
+> somente por uma passagem desatualizada deste documento.
 | Coluna 1 | COELO<br>PRD Modelo de Dados Master Oficial v1<br>Supabase/Postgres · modelo conceitual e governança |
 | --- | --- |
 

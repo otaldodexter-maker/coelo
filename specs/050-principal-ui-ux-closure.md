@@ -3,6 +3,8 @@ source: "ajustes visuais e anexos aprovados pelo usuario em 2026-09-01; docs/sup
 status: approved
 generated_at: 2026-09-01
 updated_at: 2026-09-09
+lifecycle: current
+reconciled_with: AGENTS.md; decisions/0037; decisions/0038
 ---
 
 # Fechamento UI/UX do Coelo Principal

@@ -6,9 +6,21 @@ original_path: "C:/Users/adrie/Desktop/Coelo/PRD/Coelo PRD LGPD Seguranca e Midi
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-06-22"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de privacidade e mídia vigente — 14/09/2026.** Binários privados
+> novos usam R2 privado; Postgres guarda catálogo, permissões, ownership,
+> retenção e auditoria. PDF nunca usa Stream; Agora pode usar Stream por até
+> 24h e Momentos/Acontece somente após métrica e decisão. Exportação geral de
+> titulares permanece pós-MVP; a exceção do MVP é `forms.responses.export` em
+> XLSX privado, com expiração, reautorização server-side e auditoria. Bases
+> legais, controlador/operador, DPO e retenção jurídica continuam abertos e
+> não devem ser inventados.
 | Coluna 1 | COELO<br>PRD LGPD, Segurança e Mídia Oficial v1<br>Proteção infantil · privacidade por padrão · segurança verificável |
 | --- | --- |
 

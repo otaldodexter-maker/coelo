@@ -7,9 +7,21 @@ supplemental_source: "decisions/0015-contextual-people-authorizations-attendance
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de arquitetura vigente — 14/09/2026.** Este documento é uma
+> baseline derivada. O monorepo atual usa `apps/site` (Astro),
+> `apps/superadmin`, `apps/admin` e `apps/principal` (Flutter). Recursos
+> remotos do Coelo são produção; local/emulador não implica DEV remoto. Mídia
+> privada nova usa `coelo-media-prod`, `coelo-documents-prod` e
+> `coelo-transient-prod` no R2, com Postgres como catálogo e Media Gateway;
+> Stream é seletivo conforme ADR 0032. Ambientes remotos adicionais e
+> promoção Dev/Stage são futuro, não pressuposto do MVP.
 | Coluna 1 | COELO<br>Arquitetura Macro Oficial v1<br>C4 · monólito modular · Flutter · Supabase · Cloudflare · R2 |
 | --- | --- |
 

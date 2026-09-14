@@ -6,9 +6,21 @@ original_path: "C:/Users/adrie/Desktop/Coelo/Visão do Produto/Product Vision Of
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-06-22"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+
+> **Overlay de implementação vigente — 14/09/2026.** Este documento continua
+> sendo a visão/base derivada; quando o texto abaixo divergir de uma decisão
+> posterior, prevalecem `AGENTS.md` e as ADRs indicadas no frontmatter. No MVP,
+> importação real e exportações gerais permanecem adiadas; mídia privada nova
+> usa R2 privado com catálogo/autorização no Postgres. A superfície remota
+> conectada da Etapa 2 é o Superadmin; Principal, Admin, Site, publicação e
+> lojas só avançam por abertura explícita. Este overlay não altera a visão de
+> produto nem certifica runtime.
 | Coluna 1 | COELO<br>Product Vision Oficial v1<br>coelo.me · Documento base para PRD Master |
 | --- | --- |
 

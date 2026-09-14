@@ -1,7 +1,9 @@
 ---
 source: planos aprovados de Publicação do Acontece e Publicação do Agora
-status: superseded-by-adr-0030
+status: superseded-by-adr-0032
 generated_at: 2026-08-20
+lifecycle: historical
+updated_at: 2026-09-14
 ---
 
 # ADR 0026 — Exceção temporária de Storage privado para publicação no MVP

@@ -2,7 +2,15 @@
 source: apontamento e dois anexos do Owner durante preparação R11; docs/design/design-system.md
 status: ajustes parcialmente implementados; aceite integral pendente
 generated_at: 2026-09-13
+lifecycle: current
+updated_at: 2026-09-14
+reconciled_with: AGENTS.md; decisions/0032; decisions/0038; docs/design/design-system.md
 ---
+
+> **Overlay de estado — 14/09/2026.** Esta referência continua vinculada ao
+> item atual `owner.r12-46`; a sigla foi provada, mas a foto privada R2 e o
+> aceite integral permanecem pendentes. O anexo orienta composição, não
+> substitui contrato, permissão, persistência ou prova de rota normal.
 
 # Meu perfil — identidade, ações e Meu acesso
 

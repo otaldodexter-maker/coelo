@@ -2,7 +2,15 @@
 source: apontamento e sete anexos do Owner na preparação R11; ADR0032; docs/design/design-system.md
 status: direção de ajuste registrada para Etapa 2; implementação e render pendentes
 generated_at: 2026-09-13
+lifecycle: future
+updated_at: 2026-09-14
+reconciled_with: ADR0032; decisions/0038; docs/design/design-system.md
 ---
+
+> **Direção futura/pendente — não é aceite atual.** Este arquivo preserva a
+> referência do Owner para a fila R13/R14. Não autoriza implementação, não
+> substitui a política R2 e não deve ser tratado como golden aprovado ou prova
+> de `chat.attach`.
 
 # Chat — referência de mídia e campo de escrita
 

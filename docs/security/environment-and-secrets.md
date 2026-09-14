@@ -2,7 +2,16 @@
 source: "AGENTS.md; docs/architecture/macro-architecture.md; docs/security/lgpd-security-media.md; Supabase API Keys; Dart String.fromEnvironment"
 status: "planning-context"
 generated_at: "2026-07-02"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034"
 ---
+
+> **Overlay vigente — 14/09/2026.** Projeto, bucket, Worker ou recurso remoto
+> do Coelo deve ser tratado como produção; `localhost` e emuladores são apenas
+> locais. `service_role`, chaves R2, tokens e credenciais permanecem
+> server-side e fora de Git, bundle, URL, log e frontend. A topologia de mídia
+> é a ADR 0032; não presumir um ambiente remoto DEV/homologação.
 
 # Environment And Secrets
 

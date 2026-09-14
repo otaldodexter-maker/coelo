@@ -3,7 +3,15 @@ title: "Proposta futura de dados para Saúde e Cuidado"
 source: "specs/020-superadmin-health-care.md; docs/data/data-model.md; docs/security/lgpd-security-media.md; packages/coelo_database/migrations; decisions/0010-private-media-r2.md"
 status: "proposed"
 generated_at: "2026-08-04"
+lifecycle: "future"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038"
 ---
+
+> **Documento futuro — não é modelo produtivo atual.** Esta proposta não
+> autoriza tabela, migration, RLS, RPC, grant ou retenção. A política de mídia
+> vigente é a ADR 0032 (R2 privado e catálogo Postgres); a ADR 0010 permanece
+> apenas como histórico. Qualquer abertura exige spec e decisão próprias.
 
 # Proposta futura de dados para Saúde e Cuidado
 

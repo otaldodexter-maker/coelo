@@ -3,7 +3,15 @@ title: "Auth, sessão e contexto interno do Superadmin"
 source: "decisions/0019-superadmin-internal-identity.md; specs/011-superadmin-database-rls.md; specs/018-profiles-permissions-superadmin.md; specs/023-superadmin-internal-users-local-preview.md; docs/security/auth-multitenant-permissions.md; decisão aprovada pelo Owner Coelo em 2026-08-27"
 status: "approved-for-implementation"
 generated_at: "2026-08-27"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0019; decisions/0034; decisions/0038"
 ---
+
+> **Overlay vigente — 14/09/2026.** A identidade interna permanece separada
+> de People/Principal no mesmo projeto Supabase; autorização continua
+> server-side. O MVP não exige MFA/AAL2, e o aditivo de AAL deve ser lido como
+> regra de aceitação do MVP, não como autorização para ampliar escopo.
 
 # Auth, sessão e contexto interno do Superadmin
 

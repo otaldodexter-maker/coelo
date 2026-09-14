@@ -6,9 +6,15 @@ original_path: "C:/Users/adrie/Desktop/Coelo/Visão do Produto/Mapa competitivo 
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-06-22"
+lifecycle: "historical"
+updated_at: "2026-09-14"
+reconciled_with: "decisions/0031; decisions/0032; AGENTS.md"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
+> **Pesquisa histórica — não é fonte de requisitos.** Recomendações de
+> importação, storage ou escopo competitivo neste documento não superam ADRs
+> atuais nem definem o MVP. Use-o somente para contexto de mercado.
 # Mapa competitivo de apps de agenda e comunicação escolar no Brasil
 
 ## Executive summary

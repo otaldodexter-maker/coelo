@@ -3,7 +3,15 @@ title: "Perfis e Permissões no Superadmin"
 source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04, 2026-08-05 e 2026-09-01; docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md"
 status: "approved-for-implementation"
 generated_at: "2026-09-01"
+lifecycle: "current"
+updated_at: "2026-09-14"
+reconciled_with: "AGENTS.md; decisions/0034; decisions/0038"
 ---
+
+> **Overlay vigente — 14/09/2026.** Perfis profissionais para o Principal
+> foram aprovados, mas a implementação deve usar capabilities finas por
+> vínculo/contexto. Não presumir AAL2 no MVP; o item permanece na fila R13/R14
+> conforme o estado atual.
 
 # Perfis e Permissões no Superadmin
 
