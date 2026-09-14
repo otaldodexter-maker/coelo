@@ -129,3 +129,24 @@ montar a query string em JS (`String.fromCharCode(38)`). Capturas em `capturas/`
 
 Não exercitado na rota real: `assessments.close/reopen` (fechamento/reabertura), foto R2 da Conta
 (sem persistência implementada — `account.profile` BE segue `remote-green`, E2E aberto).
+
+## Rota real no Chrome (14/09, 17:00–17:40) — Saúde e Cuidado
+
+Mesmo método (build QA de `165d3df8c`+, `127.0.0.1:3013`, CDP 9413, sessão `qa-r06-estrutura`).
+Método medido: após trocar de etapa do wizard, o `enter_text` do driver só entra no campo
+clicado depois de um `Input.insertText` vazio (`cdp_sem type " "`); o primeiro clique após
+abrir um popup (date picker) pode não registrar — conferir por captura antes de "Aplicar".
+
+| action_id | Rota normal | CRUD em produção | Reload | Negativa |
+|---|---|---|---|---|
+| health-care.edit | `/health-care/profiles/5712371e…/edit` carrega o perfil com o nome real da criança (correção `165d3df8c`), alergia e orientações. | "Salvar alterações" com justificativa → `important_signs` = "Sinal editado R13 (rota real)", `management_version` 1→2. | relê o sinal editado | pgTAP `health_care_and_medication_plans_v1_test` + perfil fora do escopo → ausente (teste de dados) |
+| health-care.detail | `/health-care/profiles/:id` (redirect para o formulário em modo revisão) mostra criança, alergias e revisões. | leitura | — | idem |
+| health-care.create | `/health-care/profiles/new`: criança "Crianca QA R04 · Escola R04 Estrutura", alergia (Coceira leve, Evitar leite), sinais/adaptações/justificativa → "Criar perfil". | perfil 1179704e criado em `190dd028…`; lista mostra 2 perfis. | lista após criação | escopo por instituição (pgTAP) |
+| medication.list | `/health-care/medication-plans` lista Dipirona R06 e, após criação, Paracetamol R13. | leitura | mantém | idem |
+| medication.detail | card → `/health-care/medication-plans/12f816e8…/edit` hidratado (Dipirona R06, 5 ml, oral, 08:00, registro de dose). | leitura | — | idem |
+| medication.edit | dose 5→7 ml + "Salvar alterações" → nova `medication_plan_versions` (7 ml), `management_version` 3. | persistido | lista relê | idem |
+| medication.create | `/health-care/medication-plans/new`: Paracetamol R13, 10 ml, oral, 14/09–17/10/2026, 08:00, Seg/Qua → "Criar plano". | plano 85a11699 criado (10 ml) | lista relê | idem |
+
+Observações: "Responsável" segue "Nenhuma opção disponível" (owner.r12-33, R14); o placeholder
+de carregamento da edição de medicação usa o subtítulo padrão do shell ("Gerencie as
+instituições da plataforma.") por um instante — cosmético, sem `action_id` próprio.

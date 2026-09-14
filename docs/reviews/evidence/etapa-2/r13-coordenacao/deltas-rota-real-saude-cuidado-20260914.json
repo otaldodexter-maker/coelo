@@ -1,0 +1,170 @@
+[
+ {
+  "action_id": "health-care.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: perfil 1179704e criado pela tela em produção.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + INSERT em produção + lista relê; escopo no pgTAP.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.detail",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: detalhe (formulário em revisão) com criança, alergias e revisões.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.detail",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + leitura de produção; escopo no pgTAP.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: edição salva important_signs (version 1→2) e relê após reload; nome da criança corrigido (165d3df8c).",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "health-care.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + UPDATE em produção + reload; escopo no pgTAP.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: lista planos reais; relê após criação.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + leitura de produção + reload.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: plano 85a11699 (Paracetamol R13) criado pela tela.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + INSERT em produção + lista relê.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.detail",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: detalhe hidratado do plano 12f816e8.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.detail",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + leitura de produção.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R13 rota real: dose 5→7 ml salva (nova versão, management_version 3).",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ },
+ {
+  "action_id": "medication.edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R13: rota normal + UPDATE em produção + lista relê.",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+   "revision": "8cd8da38b",
+   "environment": "production",
+   "recordedAt": "2026-09-14T17:40:00-03:00"
+  }
+ }
+]

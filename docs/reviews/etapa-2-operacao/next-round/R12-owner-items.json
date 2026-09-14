@@ -527,16 +527,16 @@
   },
   {
     "id": "owner.r12-28",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "health-care.edit"
     ],
-    "fe": "FE local-green: criança real identificada e bloqueada na edição.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Provar rota real, reload e negativa cross-tenant.",
+    "nextGate": "Concluído 14/09 (rota real): edição com o nome real da criança (correção 165d3df8c), sinal salvo (version 1→2) e relido após reload.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -552,12 +552,12 @@
       "health-care.edit",
       "health-care.detail"
     ],
-    "fe": "FE local-green: múltiplas alergias/restrições independentes com CRUD individual.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "fe": "FE verified em create/edit/detail com um registro de alergia; múltiplos registros independentes não exercitados na rota real.",
+    "be": "BE done.",
+    "e2e": "verified-e2e das ações; o apontamento de CRUD individual por registro segue aberto.",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Provar persistência/reload, autorização e negativa cross-tenant.",
+    "nextGate": "Exercitar dois registros de alergia independentes na rota real (adicionar/remover) e reload.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -573,12 +573,12 @@
       "health-care.edit",
       "health-care.detail"
     ],
-    "fe": "FE local-green: múltiplas orientações independentes com CRUD individual.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "fe": "FE verified em create/edit/detail com uma orientação; múltiplas orientações independentes não exercitadas na rota real.",
+    "be": "BE done.",
+    "e2e": "verified-e2e das ações; o apontamento de CRUD individual por orientação segue aberto.",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Provar persistência/reload, autorização e negativa cross-tenant.",
+    "nextGate": "Exercitar duas orientações independentes na rota real e reload.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -588,17 +588,17 @@
   },
   {
     "id": "owner.r12-31",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "medication.create",
       "medication.edit"
     ],
-    "fe": "FE local-green: inputs canônicos de criança, vigência, horários, dias, via, dose/unidade e responsável.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Provar rota real, persistência/reload e autorização.",
+    "nextGate": "Concluído 14/09 (rota real): criação Paracetamol R13 (10 ml, oral, vigência, 08:00, Seg/Qua) e edição da dose 5→7 ml da Dipirona R06, persistidas e relidas. Responsável depende de owner.r12-33 (R14).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -608,19 +608,19 @@
   },
   {
     "id": "owner.r12-32",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "medication.list",
       "medication.detail",
       "medication.create",
       "medication.edit"
     ],
-    "fe": "FE local-green: diretório reúne planos autorizados por criança e explicita o contexto de consulta.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Provar vínculos reais, vigência, reload e negativa cross-tenant.",
+    "nextGate": "Concluído 14/09 (rota real): diretório lista os planos reais por criança com contexto explícito; detalhe/criação/edição provados e relidos.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

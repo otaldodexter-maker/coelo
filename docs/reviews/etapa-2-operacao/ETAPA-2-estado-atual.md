@@ -38,22 +38,22 @@ fora do trabalho corrente do MVP.
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-14 (15:40, após os lotes SQL 63–69 e a rota real de Estrutura/Conta), no checkout `dev`, SHA `8511514dcdf262b28d6bb713ee35f83648161647`.
+2026-09-14 (17:50, após os lotes SQL 63–69 e a rota real de Estrutura, Conta e Saúde/Cuidado), no checkout `dev`, SHA `8cd8da38bd02b4a8a3537084b4c4b6525b26978d`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 157 / 231 | 67,97% | terminal FE da base inteira |
-| FE local-green | 37 / 231 | 16,02% | avanço local; não é aceite E2E |
+| FE verificado | 164 / 231 | 71,00% | terminal FE da base inteira |
+| FE local-green | 30 / 231 | 12,99% | avanço local; não é aceite E2E |
 | BE concluído/verificado | 164 / 224 | 73,21% | somente ações aplicáveis ao BE |
 | BE local-green | 16 / 224 | 7,14% | avanço local; não é prova remota |
-| E2E verificado | 130 / 199 | 65,33% | base integrada ativa |
-| E2E + flutter-only | 137 / 231 | 59,31% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
-| Owner items done | 6 / 53 | 11,32% | IDs de Owner, não action IDs |
-| Owner items abertos/parciais | 47 / 53 | 88,68% | complemento dos 6 concluídos |
+| E2E verificado | 137 / 199 | 68,84% | base integrada ativa |
+| E2E + flutter-only | 144 / 231 | 62,34% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
+| Owner items done | 9 / 53 | 16,98% | IDs de Owner, não action IDs |
+| Owner items abertos/parciais | 44 / 53 | 83,02% | complemento dos 9 concluídos |
 
 O valor `164/231` não é percentual de BE válido: sete ações não são
-aplicáveis ao backend. Da mesma forma, `137/231` é somente a métrica combinada
+aplicáveis ao backend. Da mesma forma, `144/231` é somente a métrica combinada
 E2E + flutter-only; para aceite integrado a base correta é `125/199`.
 
 ## Fila vigente R13 — pendências herdadas

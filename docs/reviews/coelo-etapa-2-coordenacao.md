@@ -20,10 +20,10 @@ residual é R01–R07 H02–H28; H01 está resolvido. R08–R13 permanecem como
 histórico preservado e R14 não foi iniciada. Os blocos abaixo descrevem
 coordenações encerradas e não reabrem conversas, worktrees ou rodadas.
 
-Métricas atuais por IDs únicos: FE 157/231 (67,97%), BE 164/224 (73,21%),
-E2E 130/199 (65,33%), E2E + flutter-only 137/231 (59,31%), FE local-green
-37/231 (16,02%), BE local-green 16/224 (7,14%). Owner: 6/53 done (11,32%) e
-47/53 abertos/parciais (88,68%). Base `dev`, revisão 2026-09-14, SHA
+Métricas atuais por IDs únicos: FE 164/231 (71,00%), BE 164/224 (73,21%),
+E2E 137/199 (68,84%), E2E + flutter-only 144/231 (62,34%), FE local-green
+30/231 (12,99%), BE local-green 16/224 (7,14%). Owner: 9/53 done (16,98%) e
+44/53 abertos/parciais (83,02%). Base `dev`, revisão 2026-09-14, SHA
 `8511514dcdf262b28d6bb713ee35f83648161647`.
 
 ## R02 iniciada — D00 vigente em 09/09/2026

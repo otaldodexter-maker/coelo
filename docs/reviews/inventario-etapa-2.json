@@ -6243,15 +6243,15 @@
       "family": "health_care",
       "screen": "Criar perfil de cuidado",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em cuidado exigem prova de rota, reload e cross-tenant.",
-      "fe": "R12 C0: múltiplos registros de cuidado são tratados como itens independentes.",
+      "done": "R13: rota normal + INSERT em produção + lista relê; escopo no pgTAP.",
+      "fe": "R13 rota real: perfil 1179704e criado pela tela em produção.",
       "be": "superadmin_health_care_save_profile 200 (perfil 5712371e, revisao 1) e superadmin_health_care_directory listando o perfil; instituicao derivada do contexto infantil. | Backlog R12 (registro 2026-09-13): R12-29, R12-30. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-29 -> R13, R12-30 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-read-context-isolation.md; evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-care; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; health_care_golden_test com quatro casos; decisao de coordenacao de 2026-09-09; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/45-health-care-create-revisao.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
@@ -6268,10 +6268,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/45-health-care-create-revisao.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
@@ -6280,10 +6280,10 @@
           "recordedAt": "2026-09-11T14:55:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/46-health-care-list-com-perfil.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -6292,24 +6292,24 @@
       "family": "health_care",
       "screen": "Perfil de cuidado / Detalhe",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em cuidado exigem prova integrada.",
-      "fe": "R12 C0: detalhe mantém criança, registros e contexto de consulta.",
+      "done": "R13: rota normal + leitura de produção; escopo no pgTAP.",
+      "fe": "R13 rota real: detalhe (formulário em revisão) com criança, alergias e revisões.",
       "be": "superadmin_health_care_profile_detail 200 com alergias e revisoes. | Backlog R12 (registro 2026-09-13): R12-29, R12-30. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-29 -> R13, R12-30 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-read-context-isolation.md; evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; health_care_golden_test com quatro casos; decisao de coordenacao de 2026-09-09; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
@@ -6318,10 +6318,10 @@
           "recordedAt": "2026-09-11T14:55:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -6330,15 +6330,15 @@
       "family": "health_care",
       "screen": "Editar perfil de cuidado",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em cuidado exigem prova integrada.",
-      "fe": "R12 C0: criança identificada e bloqueada na edição; registros de cuidado preservam contexto.",
+      "done": "R13: rota normal + UPDATE em produção + reload; escopo no pgTAP.",
+      "fe": "R13 rota real: edição salva important_signs (version 1→2) e relê após reload; nome da criança corrigido (165d3df8c).",
       "be": "superadmin_health_care_save_profile 200 (revisao 2, management_version 1); health_care_profiles.important_signs persistido e 2 linhas em health_care_profile_revisions. | Backlog R12 (registro 2026-09-13): R12-28, R12-29, R12-30. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-28 -> R13, R12-29 -> R13, R12-30 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-read-context-isolation.md; evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-care; etapa-2-operacao/reports/R01-delta-1915.md (C02r40); Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; health_care_golden_test com quatro casos; decisao de coordenacao de 2026-09-09; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/02-health-care-create-step1.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r40",
       "lastHandoffRevision": 48,
@@ -6355,10 +6355,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/48-health-care-edit.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
@@ -6367,10 +6367,10 @@
           "recordedAt": "2026-09-11T14:55:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/49-health-care-edited.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -6379,15 +6379,15 @@
       "family": "medication",
       "screen": "Medicação / Lista",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em medicação exigem prova integrada.",
-      "fe": "R12 C0: diretório reúne planos autorizados por criança.",
+      "done": "R13: rota normal + leitura de produção + reload.",
+      "fe": "R13 rota real: lista planos reais; relê após criação.",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /health-care/medication-plans abre na rota normal; superadmin_medication_plan_directory -> 200 {\"items\":[],\"total\":0}; composto com busca, filtros Status do plano/Situacao da dose, toggle, Arquivos e card \"Criar plano de medicacao\"; vazio honesto. Sem abas de status (duvida ao Owner mantida da rev 30). | Backlog R12 (registro 2026-09-13): R12-32. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-32 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
@@ -6402,16 +6402,16 @@
       },
       "certifications": {
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/03-medication-list.png",
@@ -6426,15 +6426,15 @@
       "family": "medication",
       "screen": "Medicação / Criar",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em medicação exigem prova integrada.",
-      "fe": "R12 C0: formulário usa inputs canônicos de vigência, horário, via, dose e responsável.",
+      "done": "R13: rota normal + INSERT em produção + lista relê.",
+      "fe": "R13 rota real: plano 85a11699 (Paracetamol R13) criado pela tela.",
       "be": "superadmin_medication_plan_save 200 -> plano 12f816e8 (versao 1); superadmin_medication_plan_detail relido; id inexistente/alheio responde P0002 \"medication plan unavailable\" (negativa unificada); pgTAP 010400 30/30. | Backlog R12 (registro 2026-09-13): R12-31, R12-32, R12-33. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-31 -> R13, R12-32 -> R13, R12-33 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-medication,r39-medication-visual; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; suite de medication; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/52-medication-create-preenchido.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/51-medication-create-etapa1.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado-lista.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png; docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
@@ -6450,10 +6450,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado-lista.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:21:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/10-medication-criado.png",
@@ -6462,10 +6462,10 @@
           "recordedAt": "2026-09-11T20:21:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:24:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -6474,24 +6474,24 @@
       "family": "medication",
       "screen": "Medicação / Detalhe",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em medicação exigem prova integrada.",
-      "fe": "R12 C0: detalhe do plano exibe criança e dados de administração.",
+      "done": "R13: rota normal + leitura de produção.",
+      "fe": "R13 rota real: detalhe hidratado do plano 12f816e8.",
       "be": "superadmin_medication_plan_detail 200 com current_version, schedules e evidence; P0002 para id alheio. | Backlog R12 (registro 2026-09-13): R12-32, R12-33. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-32 -> R13, R12-33 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:22:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/11-medication-detail-editor.png",
@@ -6500,10 +6500,10 @@
           "recordedAt": "2026-09-11T20:22:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:24:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -6512,15 +6512,15 @@
       "family": "medication",
       "screen": "Medicação / Editar",
       "scope": "mvp",
-      "done": "Mudanças/aceites R12 em medicação exigem prova integrada.",
-      "fe": "R12 C0: edição hidrata e valida o plano sem perder a criança/contexto.",
+      "done": "R13: rota normal + UPDATE em produção + lista relê.",
+      "fe": "R13 rota real: dose 5→7 ml salva (nova versão, management_version 3).",
       "be": "superadmin_medication_plan_save com plan_id + expected_version 1 -> versao 2, management_version 2; conflito 40001 traduzido no cliente; negativa P0002. | Backlog R12 (registro 2026-09-13): R12-31, R12-32, R12-33. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-31 -> R13, R12-32 -> R13, R12-33 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
       "evidence": "evidence/etapa-2/formularios-cuidado/2026-09-08-care-disposed-command.md; docs/open-questions.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r37-medication,r39-medication-visual; Fechamento R01 C02/r48; 2fe678e8/f3a36273/34f62128/1ccddb53/3ada3522 são entregas locais históricas; r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; suite de medication; 2026-09-09; specs/049-superadmin-internal-care-profile-crud-v2.md; sem autorizacao nominal; 2026-09-09; comunicacao/formularios-cuidado-rotina.json r7; coordenacao.json R03 rev 7; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/04-medication-create-step1.png; docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png; docs\\reviews\\evidence\\etapa-2\\r08-coordenacao\\ciclo120.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
@@ -6536,10 +6536,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:24:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
@@ -6548,10 +6548,10 @@
           "recordedAt": "2026-09-11T20:24:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-formularios-cuidado-rotina/rota-real/15-medication-edit-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 49",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r06-formularios-cuidado-rotina (03ccdbf41; edicao de Rotina em 2164739b3) servido em 127.0.0.1:3018, sessao qa-r06-formularios@coelo.me, Chrome CDP 9418 com perfil proprio sob SwiftShader",
-          "recordedAt": "2026-09-11T20:24:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+          "revision": "8cd8da38b",
+          "environment": "production",
+          "recordedAt": "2026-09-14T17:40:00-03:00"
         }
       }
     },
@@ -9206,7 +9206,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-14T18:31:52.887Z",
+  "updatedAt": "2026-09-14T20:24:39.816Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
