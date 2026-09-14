@@ -182,3 +182,33 @@ Evidência:
 ## Dívidas transversais preservadas
 
 Circulares:4 goldens falhos também na base; reconciliar referência/fixture na fatia correspondente. Validador visual:20 achados iguais à base, sem ampliar allowlist. Evidências em docs/reviews/evidence/etapa-2/r12-coordenacao/. Compromissos anteriores adicionais permanecem em entrega-atual.json e matrizes; não desaparecem do plano Etapa2.
+
+## R13 — reconciliação do que foi executado (2026-09-14)
+
+Esta é a fonte canônica dos estados dos 50 itens recebidos pela R13. A
+retomada não criou IDs, não repetiu `owner.r12-07`, `owner.r12-41` ou
+`owner.r12-43` e não promoveu aceite integrado sem rota normal, persistência,
+reload, ownership e negativa cross-tenant.
+
+O que foi efetivamente feito ou preservado:
+
+- FE: os ajustes já entregues nos itens `owner.r12-03`, `05`, `06`, `08`,
+  `12–16`, `20–22`, `24–27`, `28–32`, `34–37`, `39–40`, `42`, `44` e `52`
+  continuam registrados como `local-green` nos respectivos checkpoints;
+  o mosaico de `chat.attach` mantém sua prova local anterior, sem novo aceite
+  E2E.
+- BE/local: `r2_s3_test` passou 20/20 e o worker de limpeza de Cardápios
+  passou 3/3. Esses resultados são checks de código local e não substituem
+  prova remota de produção.
+- Gate de produção: a listagem do ledger de migrations foi apenas leitura;
+  nenhum candidato R12-48/49/50, migration, RPC, Edge Function, segredo,
+  bucket ou deploy foi aplicado.
+
+Estados que permanecem sem promoção: `owner.r12-51` bloqueado por PITR,
+backup, ordem serial e reconciliação do ledger; `owner.r12-48/49/50`
+dependentes desse gate; `owner.r12-38/46` dependentes de Media Gateway/R2
+privado certificado; `owner.r12-45/47` dependentes de SMTP, caixa QA e
+redirect real; `owner.r12-53` deferred pela condição formal não atendida; e
+os demais itens `open`/`partial` aguardando a prova específica descrita na
+tabela acima. Evidência operacional por ID:
+`docs/reviews/evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json`.

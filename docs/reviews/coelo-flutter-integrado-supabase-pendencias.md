@@ -25,6 +25,13 @@ Não houve nova certificação integrada. Todos os 50 IDs seguem com os estados
 canônicos de R12; os gates e a prova de execução estão em
 [r13-execution-audit-20260914.json](evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
+Reconciliado sem novo aceite: os IDs FE já ajustados permanecem nos estados
+canônicos `open`/`partial`, o backend não recebeu alteração remota e nenhum
+item foi promovido a E2E. A fila independente continua após os gates: provas
+de rota normal, persistência/reload e cross-tenant para os itens comuns;
+PITR/backup/ordem antes de R12-48/49/50; Media Gateway/R2 para R12-38/46/52;
+SMTP/redirect para R12-45/47; e condição formal para R12-53.
+
 ## R12 — Apontamentos Owner incorporados (2026-09-13)
 
 Camada FE + BE / E2E: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.

@@ -27,6 +27,16 @@ dependem de mídia R2/Gateway e `owner.r12-45/47` de SMTP/redirect. O runtime
 externo não foi encerrado nem reutilizado. Evidência por ID:
 [r13-execution-audit-20260914.json](evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
+O trabalho local preservado na fonte R12 inclui os ajustes de composição e
+fluxo dos itens `owner.r12-03`, `05`, `06`, `08`, `12–16`, `20–22`, `24–27`,
+`28–32`, `34–37`, `39–40`, `42`, `44` e `52`; eles seguem `local-green` ou
+`partial`, conforme a linha canônica, porque a retomada não produziu prova
+nova de rota normal/reload/escopo. O mosaico do Chat permanece uma prova FE
+local histórica, não um aceite E2E.
+
+Nenhum novo item FE foi marcado como done. O analyze Flutter foi interrompido
+por runtime externo ativo; não há resultado novo para promover.
+
 ## R12 — Apontamentos Owner incorporados (2026-09-13)
 
 Camada Front-end: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.

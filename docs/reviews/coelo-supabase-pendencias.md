@@ -27,6 +27,14 @@ não podem ser aplicados. R12-38/46 dependem de Gateway R2 certificado e
 R12-45/47 de SMTP/redirect reais. Evidência:
 [r13-execution-audit-20260914.json](evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json).
 
+Checks locais executados na retomada: `r2_s3_test` 20/20 PASS e worker de
+limpeza de Cardápios 3/3 PASS. A migration list ligada foi consultada somente
+para reconciliação; não houve aplicação de candidato, migration, RPC, Edge
+Function, segredo, bucket ou deploy. R12-51 segue o primeiro gate externo por
+PITR/backup/ordem serial/ledger; R12-48/49/50 seguem dependentes. Cardápios e
+conta continuam aguardando Gateway R2 privado real, e Convites/Auth aguardam
+SMTP/redirect reais.
+
 ## R12 — Apontamentos Owner incorporados (2026-09-13)
 
 Camada Back-end: 45 compromissos no [catálogo completo por tela/subtela](etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md), com fonte, responsável e primeiro gate. Notas das ações mapeadas incorporadas à matriz vigente; itens sem ID permanecem explícitos no catálogo e manifesto.

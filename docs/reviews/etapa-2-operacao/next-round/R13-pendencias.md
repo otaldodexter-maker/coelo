@@ -11,7 +11,7 @@ generated_at: 2026-09-13
 
 ## Execução R13 — 2026-09-14
 
-Os 50 IDs abaixo foram reavaliados no checkout `dev` em `0ef29b823`, sem
+Os 50 IDs abaixo foram reavaliados no checkout `dev` em `536b5afa1`, sem
 renumeração e sem repetir `owner.r12-07`, `owner.r12-41` ou `owner.r12-43`.
 Nenhum recebeu `done`: a prova exigida é rota normal + persistência/reload real
 + ownership + negativa cross-tenant, e não foi seguro executá-la enquanto havia
