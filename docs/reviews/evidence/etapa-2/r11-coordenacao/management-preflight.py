@@ -2,6 +2,7 @@
 import ctypes
 from ctypes import wintypes
 import json
+import argparse
 from pathlib import Path
 from datetime import datetime, timezone
 from urllib.request import Request, urlopen
@@ -15,6 +16,9 @@ class Credential(ctypes.Structure):
                 ('TargetAlias', wintypes.LPWSTR), ('UserName', wintypes.LPWSTR)]
 
 def main():
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--output', type=Path, default=Path(__file__).with_name('management-preflight.json'))
+    args = parser.parse_args()
     pointer = ctypes.POINTER(Credential)()
     api = ctypes.WinDLL('Advapi32.dll')
     if not api.CredReadW('Supabase CLI:supabase', 1, 0, ctypes.byref(pointer)):
@@ -39,7 +43,7 @@ def main():
                 result[name]['smtp_sender_configured'] = bool(body.get('smtp_admin_email'))
         except Exception as error:
             result[name] = {'error':type(error).__name__, 'http':getattr(error,'code',None)}
-    Path(__file__).with_name('management-preflight.json').write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
+    args.output.write_text(json.dumps(result,indent=2)+'\n',encoding='utf-8')
     print(json.dumps(result))
 
 if __name__ == '__main__':

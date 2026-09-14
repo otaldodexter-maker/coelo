@@ -2519,15 +2519,15 @@
     },
     {
       "id": "owner.r14-claude-opus-medium-preparation",
-      "status": "deferred",
+      "status": "done",
       "actionIds": [],
       "fe": "not-applicable",
       "be": "not-applicable",
       "e2e": "not-applicable",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-prompt-unico.md",
       "owner": "C0 R12 na execução manual",
       "nextGate": "Antes do limite reserva preparar prompt/plano/pendências/catálogo R14 Claude Opus médio; estimativa Owner12% uso não verificada; sem disparar Claude.",
-      "result": "Antes do limite reserva preparar prompt/plano/pendências/catálogo R14 Claude Opus médio; estimativa Owner12% uso não verificada; sem disparar Claude.",
+      "result": "Prompt, plano e catálogo de continuidade preparados; R12 ainda parcial. Nenhum executor R14 disparado; estimativa de cota não verificada.",
       "destinationRound": "R12"
     },
     {
@@ -2562,6 +2562,10 @@
     "deployment": "none"
   },
   "evidenceFiles": [
+    "docs/reviews/etapa-2-operacao/next-round/R14-prompt-unico.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-plano-de-rodada.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/management-preflight-retomada.json",
     "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md",
     "docs/knowledge/team/delivery-reconciliation.md",
@@ -2648,7 +2652,6 @@
     "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao-git.json",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md"
   ],
   "memory": {
@@ -2658,6 +2661,6 @@
   "deployment": {
     "status": "pending",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/build-manifest.json",
-    "reason": "Build QA local ba5cfd2d servido em3000 com Supabase produção e sintéticos retidos; hash HTTP confere. Nenhum deploy web público/SQL/Edge/Cloudflare R12. Quatro candidatos SQL R11 e requisito PITR continuam R13."
+    "reason": "Runtime retido ba5cfd2d em3000 não contém a correção 63f6694e. Build/runtime atual e prova real pendentes. Nenhum deploy web público/SQL/Edge/Cloudflare nesta retomada. Quatro candidatos SQL R11 e requisito PITR continuam na R12 consolidada."
   }
 }

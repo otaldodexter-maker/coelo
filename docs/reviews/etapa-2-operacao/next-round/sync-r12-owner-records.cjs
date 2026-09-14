@@ -26,8 +26,12 @@ for (const row of rows) {
   Object.assign(owner, patch, {status});
   // Delivery schema intentionally keeps partially implemented requests open.
   Object.assign(item, patch, {status: status === 'partial' ? 'open' : status});
-  if (!delivery.evidenceFiles.includes(evidence)) delivery.evidenceFiles.push(evidence);
+  for (const source of evidence.split(';').map(value => value.trim()).filter(Boolean)) {
+    if (!delivery.evidenceFiles.includes(source)) delivery.evidenceFiles.push(source);
+  }
 }
+delivery.evidenceFiles = [...new Set(delivery.evidenceFiles.flatMap(value =>
+  value.split(';').map(source => source.trim()).filter(Boolean)))];
 fs.writeFileSync(ownerPath, JSON.stringify(owners, null, 2) + '\n');
 fs.writeFileSync(deliveryPath, JSON.stringify(delivery, null, 2) + '\n');
 console.log('53 owner rows projected; partial delivery commitments remain open.');

@@ -25,6 +25,13 @@ continuam no catálogo; não foi concluída a R12 nem executado deploy nesta fat
 Memória: instruções duráveis de subtela/projeção atualizadas nas quatro skills;
 sem nova regra de domínio aprovada, sem adicionar documentação de usuário final.
 
+Publicação de código desta retomada: 63f6694e em origin/dev. Preflight novo
+21:27 -03: PITR=false, SMTP próprio ausente; R12-47/51 mantêm gates abertos.
+Preparação R14 entregue como prompt/plano/catálogo de referência, sem disparo
+e sem transferência automática de responsabilidade. R12 continua parcial.
+Falha inicial de gate documental (duas fontes unidas em evidenceFiles) corrigida
+separando os caminhos na projeção; repetir gate após publicar essa correção.
+
 T0 2026-09-13 19:11 -03:00; modelo/bucket: gpt-5.6-luna, bucket reserva,
 17% usado; SHA/base integrada: 8202d3bf8 = origin/dev; sem worktrees extras e
 sem stash. Disparo36113ccf cancelado; nenhum executor automático autorizado.

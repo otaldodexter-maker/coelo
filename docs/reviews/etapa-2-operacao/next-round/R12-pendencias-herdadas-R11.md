@@ -6,6 +6,16 @@ generated_at: 2026-09-13
 
 # R12 — Pendências herdadas da R11
 
+## Retomada remota confirmada — 13/09/2026 21:27 -03
+
+Preflight somente leitura em produção: PITR=false, backup_count=0, SMTP
+próprio ausente, redirect local3000 fora da allowlist. Evidência sanitizada:
+`docs/reviews/evidence/etapa-2/r12-coordenacao/management-preflight-retomada.json`.
+R12-47/51 continuam abertos; candidatos 48–50 preservados sem aplicação nesta
+retomada. R12-53 não teve sua condição de abertura satisfeita. R12-46 ainda
+precisa implementação da foto R2 além do SQL. A transferência/planejamento
+histórico ao final deste documento foi substituída pela R12 consolidada.
+
 O Owner transferiu as pendências da R11 para a R12. Este é o destino operacional
 dos itens ainda abertos; os documentos R11 permanecem como evidência histórica.
 Inclui os 11 action_ids focais, a dependência de aplicação SQL, a referência de
