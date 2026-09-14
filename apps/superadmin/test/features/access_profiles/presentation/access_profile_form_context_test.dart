@@ -9,6 +9,40 @@ import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  testWidgets('review describes permission path without replacing own and all semantics', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final profile = _profile('A').copyWith(
+      permissions: const [
+        AccessPermission(
+          code: 'activities.edit_own',
+          module: 'structure',
+          screenCode: 'activities',
+          actionCode: 'edit_own',
+          name: 'Editar próprias atividades',
+        ),
+      ],
+    );
+    await tester.pumpWidget(_app(_Repository('A', load: Future.value(profile))));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('access-profile-continue')));
+    await tester.pumpAndSettle();
+    await tester.ensureVisible(find.byKey(const Key('permission-activities.edit_own')));
+    await tester.tap(find.byKey(const Key('permission-activities.edit_own')));
+    await tester.pumpAndSettle();
+    for (var step = 0; step < 2; step++) {
+      await tester.ensureVisible(find.byKey(const Key('access-profile-continue')));
+      await tester.tap(find.byKey(const Key('access-profile-continue')));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Estrutura → Atividades → Editar próprias atividades'), findsOneWidget);
+    expect(find.text('activities.edit_own'), findsNothing);
+    expect(find.textContaining('O acesso efetivo depende'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('context change removes only the form-owned exit dialog', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));

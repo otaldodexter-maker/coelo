@@ -21,7 +21,7 @@ for (const row of rows) {
   if (!owner || !item) throw new Error(`Missing record ${id}`);
   const patch = {
     actionIds: actions.includes('gate/') ? [] : actions.split(', '),
-    fe, be, e2e: e2e.join(' / '), evidence, nextGate,
+    fe, be, e2e: e2e.join(' / '), evidence: evidence.split(';')[0].trim(), nextGate,
   };
   Object.assign(owner, patch, {status});
   // Delivery schema intentionally keeps partially implemented requests open.

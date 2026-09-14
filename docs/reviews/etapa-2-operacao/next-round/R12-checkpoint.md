@@ -32,6 +32,11 @@ e sem transferência automática de responsabilidade. R12 continua parcial.
 Falha inicial de gate documental (duas fontes unidas em evidenceFiles) corrigida
 separando os caminhos na projeção; repetir gate após publicar essa correção.
 
+R12-27 adicional: revisão de perfil usa nomes do catálogo e hierarquia de
+módulo/tela/ação, preserva próprias/todas e esclarece acesso efetivo.
+17 testes de regressão + 1 teste focal PASS; analyze sem issues. Catálogo
+produtivo/traduções e rota real continuam pendentes; nenhum grant alterado.
+
 T0 2026-09-13 19:11 -03:00; modelo/bucket: gpt-5.6-luna, bucket reserva,
 17% usado; SHA/base integrada: 8202d3bf8 = origin/dev; sem worktrees extras e
 sem stash. Disparo36113ccf cancelado; nenhum executor automático autorizado.

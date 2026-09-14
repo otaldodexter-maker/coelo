@@ -1518,6 +1518,26 @@ final class _ReviewSection extends StatelessWidget {
   final AccessProfileReview review;
   final TextEditingController reasonController;
 
+  List<String> _describePermissions(List<String> codes) {
+    final catalog = {
+      for (final permission in [...original.permissions, ...draft.permissions])
+        permission.code: permission,
+    };
+    return codes
+        .map((code) {
+          final permission = catalog[code];
+          if (permission == null) return 'Permissão sem descrição no catálogo ($code)';
+          final module = _screenLabel(permission.module, permission.module);
+          final screen = _screenLabel(permission.screenCode, module);
+          final action = permission.name == permission.code
+              ? _actionLabel(permission.actionCode)
+              : permission.name;
+          final availability = permission.grantable ? '' : ' — ${_unavailableReason(permission)}';
+          return '$module → $screen → $action$availability';
+        })
+        .toList(growable: false);
+  }
+
   @override
   Widget build(BuildContext context) => _FormSurface(
     title: 'Revisão',
@@ -1527,14 +1547,14 @@ final class _ReviewSection extends StatelessWidget {
       children: [
         _ReviewGroup(
           title: 'Permissões adicionadas',
-          values: review.addedCodes,
+          values: _describePermissions(review.addedCodes),
           emptyLabel: 'Nenhuma permissão adicionada.',
           icon: Icons.add_circle_outline_rounded,
         ),
         const SizedBox(height: CoeloSpacing.space4),
         _ReviewGroup(
           title: 'Permissões removidas',
-          values: review.removedCodes,
+          values: _describePermissions(review.removedCodes),
           emptyLabel: 'Nenhuma permissão removida.',
           icon: Icons.remove_circle_outline_rounded,
         ),
@@ -1553,6 +1573,11 @@ final class _ReviewSection extends StatelessWidget {
           value: review.scopeChanged
               ? 'De ${original.maxScope.label} para ${draft.maxScope.label}.'
               : 'Sem alteração (${draft.maxScope.label}).',
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        const Text(
+          'Estas são as permissões configuradas no perfil. O acesso efetivo depende '
+          'do vínculo, do contexto e da autorização do servidor em cada ação.',
         ),
         const SizedBox(height: CoeloSpacing.space3),
         _ReviewFact(
@@ -1708,6 +1733,14 @@ String _actionLabel(String action) => switch (action) {
 
 String _screenLabel(String screen, String module) => switch (screen) {
   'general' => module,
+  'activities' => 'Atividades',
+  'institutions' => 'Instituições',
+  'units' => 'Unidades',
+  'groups' => 'Turmas',
+  'forms' => 'Formulários',
+  'structure' => 'Estrutura',
+  'management' => 'Gestão',
+  'directory' => 'Listagem',
   'platform' => 'Plataforma',
   'audit' => 'Auditoria',
   'access_profiles' => 'Perfis e permissões',

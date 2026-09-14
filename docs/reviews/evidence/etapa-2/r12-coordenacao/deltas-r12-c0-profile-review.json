@@ -1,0 +1,16 @@
+[
+  {
+    "action_id": "access-profiles.create",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-22/26/27: código interno fora do fluxo, Continuar preenchido; revisão descreve módulo/tela/ação, indisponibilidade e acesso efetivo. Regra próprias/todas preservada, cobertura do catálogo real e E2E pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md"
+  },
+  {
+    "action_id": "access-profiles.edit",
+    "camada": "frontend",
+    "estado_proposto": "local-green",
+    "delta": "R12-22/26/27: código interno fora do fluxo, Continuar preenchido; revisão descreve módulo/tela/ação, indisponibilidade e acesso efetivo. Regra próprias/todas preservada, cobertura do catálogo real e E2E pendentes.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md"
+  }
+]
