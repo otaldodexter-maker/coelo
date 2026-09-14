@@ -32,9 +32,9 @@ de teste é escrita à mão, com valores curtos.
 ## A implementação de referência
 
 Circulares resolve isso do jeito certo e serve de modelo. `CircularLimits` declara
-`titleCharacters = 120`, `bodyCharacters = 10000`, `questionCharacters = 240` e
+`titleCharacters = 120`, `bodyCharacters = 4000` (ADR 0038, total dos blocos de texto), `questionCharacters = 240` e
 `optionCharacters = 120`, e os campos consomem essas constantes. Do outro lado,
-`circular_revisions` restringe título entre 1 e 120, corpo a 10000, enunciado de
+`circular_revisions` restringe título entre 1 e 120, corpo a 4000 (lote 68, 14/09/2026), enunciado de
 pergunta a 240 e rótulo de opção a 120 — e a RPC de rascunho revalida as mesmas
 fronteiras. Os três lugares concordam, e existe **um nome** para cada limite em vez
 de um número solto repetido em cada campo.

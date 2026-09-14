@@ -6,7 +6,8 @@ abstract final class HappensContentLimits {
 
 abstract final class CircularLimits {
   static const titleCharacters = 120;
-  static const bodyCharacters = 10000;
+  // ADR 0038 (H21): 4.000 e o total da circular somando os blocos de texto.
+  static const bodyCharacters = 4000;
   static const files = 4;
   static const questions = 10;
   static const questionCharacters = 240;

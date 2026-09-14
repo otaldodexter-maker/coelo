@@ -42,7 +42,7 @@ proveniência e concentrar o próximo gate em uma única rodada.
 | H18 | R06 | Unicidade global concorrente de `@` | Revisar concorrência entre tabelas. |
 | H19 | R06 | Responsável vazio em Medicação | Reproduzir com contexto e destinatário válidos. |
 | H20 | R06 | Imagem da dose sem gateway | Localizar consumidor e obter prova específica. |
-| H21 | R07 | Limite de texto/rodapé de Circular | Decidido (ADR 0038): 4.000 no total da circular; compositor segue a referência inteira (shell, rodapé em card, Opções). Próximo gate: corrigir host, spec 037 e regravar os 6 goldens web. |
+| H21 | R07 | Limite de texto/rodapé de Circular | Parcial em 14/09: **backend concluído (lote 68)** — `save_draft_v2` e constraint de `circular_revisions` em 4.000 somando blocos de texto; pgTAP 10/10; produção recusa 4.001 (`CIRCULAR_INVALID_INPUT`). Cliente `CircularLimits.bodyCharacters = 4000` (contador já somava blocos). Falta H04: host/rodapé em card/Opções conforme referência e regravação dos goldens web (18 goldens de circular já falhavam antes desta mudança). |
 | H22 | noturna/R01 | Descritor privado de Circular | Alinhar à ADR 0032 e provar ausência de bucket público. |
 | H23 | noturna/R01 | Continuidade visual de Avisos após refresh | Decidido (ADR 0038): manter lista + barra fina de progresso, padrão para todas as listas. Próximo gate: implementar em Avisos e registrar o padrão em coelo-ui. |
 | H24 | noturna/R01 | Rótulos do Sobre | Comparar com referência vigente. |

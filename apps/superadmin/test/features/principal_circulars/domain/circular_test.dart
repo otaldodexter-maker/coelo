@@ -93,7 +93,7 @@ void main() {
 
   test('Acontece and Circular character limits stay independent', () {
     expect(HappensContentLimits.bodyCharacters, 2200);
-    expect(CircularLimits.bodyCharacters, 10000);
+    expect(CircularLimits.bodyCharacters, 4000);
   });
 
   test('supports all approved response policies', () {

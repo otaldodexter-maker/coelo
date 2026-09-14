@@ -83,3 +83,15 @@ rota real no Chrome.
 - Cliente Superadmin: `ChatAttachmentLimitException` mapeada de `chat_attachment_limit` na
   Edge Function `chat-media`, mensagem no diálogo de upload; `flutter test test/features/chat`
   243/243, `flutter analyze` limpo. Dump lote67 SHA-256 306de5fc649dac8c…; ledger 291.
+
+## Lote 68 (15:20) — H21: Circular 4.000 no total
+
+- `20260914150000_r13_circular_total_text_4000_v1.sql`: `superadmin_circular_save_draft_v2`
+  limita a soma dos blocos de texto a 4.000 (antes 10.000); constraint
+  `circular_revisions_body_length_check` acompanha (maior corpo em produção: 83).
+- pgTAP `supabase/tests/r13/circular-total-text-4000-test.sql` 10/10 (2.000+2.000 aceito;
+  2.000+2.001 recusado; só a revisão válida gravada). Produção (sessão `qa-r06-publicacoes`):
+  4.001 somados → `CIRCULAR_INVALID_INPUT` 422. Dump lote68 SHA-256 78572d65c3fff32e…; ledger 292.
+- Cliente: `CircularLimits.bodyCharacters = 4000` (o compositor já subtraía os outros blocos);
+  teste de domínio atualizado. Os 18 goldens de Circular falhavam antes e depois desta
+  mudança (H04 — regravação após o host seguir a referência).

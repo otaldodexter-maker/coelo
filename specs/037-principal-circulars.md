@@ -16,7 +16,7 @@ sem virar popup, formulário completo ou duplicação física de post.
 
 ## Escopo
 
-- título obrigatório de até 120 caracteres e texto total de até 10.000;
+- título obrigatório de até 120 caracteres e texto total de até 4.000, somando os blocos de texto (ADR 0038, 14/09/2026; antes 10.000);
 - blocos ordenados de texto, mídia e pergunta;
 - JPEG, PNG e WebP até 10 MiB, MP4 até 25 MiB e PDF até 5 MiB;
 - até quatro arquivos, dez perguntas e duas a dez alternativas por pergunta;

@@ -14,7 +14,7 @@ review_owner: "Coelo Product e Segurança"
 # Circulares privadas no Principal
 
 Circulares são comunicações institucionais privadas e versionadas. Possuem
-título de até 120 caracteres, texto total de até 10.000, quatro anexos e dez
+título de até 120 caracteres, texto total de até 4.000 (ADR 0038), quatro anexos e dez
 perguntas simples de escolha única ou múltipla. Não são posts comuns, popups ou
 formulários completos.
 

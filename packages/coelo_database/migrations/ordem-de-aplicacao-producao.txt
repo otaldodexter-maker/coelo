@@ -259,3 +259,6 @@
 
 # lote 67 (14/09 14:55) - R13/ADR0038 anexos: ate 10 por envio no prepare_v1 + CHAT_ATTACHMENT_LIMIT (422); pgTAP 9/9 + base 28/28; dump esquema (SHA-256 306de5fc); ledger 291; prova em producao 10 aceitos + 11o recusado, sinteticos arquivados
 20260914143000_r13_chat_attachment_limit_per_send_v1.sql
+
+# lote 68 (14/09 15:20) - R13/ADR0038 H21: circular 4.000 no total (save_draft_v2 + constraint); pgTAP 10/10; dump esquema (SHA-256 78572d65); ledger 292; producao recusa 4.001 somados
+20260914150000_r13_circular_total_text_4000_v1.sql
