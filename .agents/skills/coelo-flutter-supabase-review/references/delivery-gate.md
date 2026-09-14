@@ -8,7 +8,10 @@ generated_at: 2026-09-13
 
 Aplicar às cinco skills Coelo UI, Conhecimento, FE, BE e FE+BE. Este contrato
 prevalece sobre notas históricas de rodadas anteriores. Não amplia autorização
-de produto, SQL ou deploy. O pedido atual do Owner define o recorte.
+de produto, SQL ou deploy. O pedido atual do Owner define o recorte. Só
+acionar este gate quando o escopo incluir integração, publicação ou entrega
+formal; explicação, diagnóstico, revisão somente leitura e manutenção de
+documentação/skill não exigem a reconciliação de entrega.
 
 ## Abertura e atualizações
 

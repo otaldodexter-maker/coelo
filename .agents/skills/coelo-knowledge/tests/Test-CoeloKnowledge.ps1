@@ -93,12 +93,18 @@ try {
 
   Write-Article -RelativePath 'docs\knowledge\team\future.md' -Audience 'team'
   (Get-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\future.md') -Raw).
+    Replace('knowledge_id: "test-capability"', 'knowledge_id: "test-capability-future"').
     Replace('lifecycle: "current"', 'lifecycle: "future"') |
     Set-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\future.md')
+  Write-Article -RelativePath 'docs\knowledge\team\historical.md' -Audience 'team'
+  (Get-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\historical.md') -Raw).
+    Replace('knowledge_id: "test-capability"', 'knowledge_id: "test-capability-historical"').
+    Replace('lifecycle: "current"', 'lifecycle: "historical"') |
+    Set-Content -LiteralPath (Join-Path $testRoot 'docs\knowledge\team\historical.md')
   $currentResults = @(& $searcher -Root $testRoot -Audience team -Query 'reutilizavel')
   if ($currentResults.Count -ne 1) { throw "Consulta atual incluiu artigo futuro: $($currentResults -join ', ')" }
   $allLifecycleResults = @(& $searcher -Root $testRoot -Audience team -Query 'reutilizavel' -Lifecycle all)
-  if ($allLifecycleResults.Count -ne 2) { throw "Consulta histórica não encontrou artigo futuro: $($allLifecycleResults -join ', ')" }
+  if ($allLifecycleResults.Count -ne 3) { throw "Consulta de auditoria não encontrou futuros/históricos: $($allLifecycleResults -join ', ')" }
 
   & python -X utf8 (Join-Path $PSScriptRoot 'test_knowledge.py')
   if ($LASTEXITCODE -ne 0) { throw 'Regressões de validação/busca falharam.' }
