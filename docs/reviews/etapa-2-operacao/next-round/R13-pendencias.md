@@ -80,6 +80,15 @@ as 22 ações `deferred-post-mvp` ficam rastreadas separadamente e não entram n
 trabalho corrente do MVP. O detalhe por tela/subtela está nos três rastreadores
 e em `docs/reviews/inventario-etapa-2.json`.
 
+## Pausa autorizada pelo Owner — 2026-09-14 ~16:20
+
+Estado no SHA `165d3df8c` (dev, push feito). Números canônicos: FE 157/231,
+BE 164/224, E2E 130/199, Owner 6/53 (base da manhã: 151 / 159 / 125 / 3).
+Ver `R13-checkpoint-20260914-1620.md` para o que foi feito, o que falta e a
+fila exata da retomada. Em andamento no momento da pausa: Saúde/Cuidado —
+correção do nome da criança na edição já commitada (`165d3df8c`); prova na
+rota real de `health-care.create/detail/edit` e `medication.*` ainda não feita.
+
 ## Corte executado da R13 — 2026-09-14
 
 Os 50 IDs abaixo foram reavaliados no checkout `dev` em `536b5afa1`, sem
