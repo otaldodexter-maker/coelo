@@ -59,6 +59,18 @@ As linhas herdadas do catálogo abaixo preservam textos históricos que podem
 mencionar abertura ou autorização da R12. O destino operacional vigente desses
 itens é a R13; nenhuma retomada deve ser executada na R12.
 
+## Itens da ADR 0038 sem ID H nem Owner item
+
+| Item (ADR 0038) | Estado | Gate / evidência |
+|---|---|---|
+| Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
+| Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
+| Catálogos globais de tipo (OQ-031) | Aberto | Migration idempotente por `code` com as quatro listas da ADR e "Outros"; entidade pode mudar de tipo. |
+| Status de Suporte (OQ-028) | Aberto | Mapeamento A na projeção/UI; enum preservado. |
+| Readers de Planos no principal 039 e reader self da Conta | Aberto | Readers somente leitura no principal interno; `units_with_override` só com cálculo comprovado. |
+| Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
+| Auth: localhost na allowlist de redirect (R12-47) | Aberto | Configurar pelo CLI/painel; sem custo. |
+
 ## Pendências por `action_id` do inventário
 
 Além dos H e dos 50 Owner items, a R13 é o destino operacional dos action IDs

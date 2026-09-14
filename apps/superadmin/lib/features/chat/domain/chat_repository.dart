@@ -521,3 +521,8 @@ final class ChatAttachmentRead {
 final class ChatAttachmentInvalidException implements Exception {
   const ChatAttachmentInvalidException();
 }
+
+/// ADR 0038: o servidor aceita até 10 anexos pendentes por envio.
+final class ChatAttachmentLimitException implements Exception {
+  const ChatAttachmentLimitException();
+}

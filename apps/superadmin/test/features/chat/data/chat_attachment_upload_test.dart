@@ -383,6 +383,25 @@ void main() {
     });
   }
 
+  test('maps chat_attachment_limit to the per-send limit exception', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient(
+        (_) async => Response(
+          jsonEncode({'error': 'chat_attachment_limit'}),
+          422,
+          headers: {'content-type': 'application/json'},
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+    await expectLater(
+      SupabaseChatRepository(client).uploadAttachment(command()),
+      throwsA(isA<ChatAttachmentLimitException>()),
+    );
+  });
+
   for (final code in ['chat_read_only', 'sai_permission_denied']) {
     test('maps lowercase gateway refusal $code from status422', () async {
       final client = SupabaseClient(

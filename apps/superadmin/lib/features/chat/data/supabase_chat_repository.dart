@@ -113,6 +113,7 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
       final details = error.details;
       final code = details is Map ? details['error'] : null;
       if (code == 'chat_read_only') throw const ChatConflictException(ChatConflictReason.readOnly);
+      if (code == 'chat_attachment_limit') throw const ChatAttachmentLimitException();
       if (const {
         'sai_auth_required',
         'sai_session_invalid',
@@ -458,6 +459,7 @@ Exception _mapError(Object error) {
   if (error is ChatConflictException) return error;
   if (error is ChatFailureException) return error;
   if (error is ChatMemberInvalidException) return error;
+  if (error is ChatAttachmentLimitException) return error;
   if (error is PostgrestException &&
       (error.code == '42501' || error.code == 'PGRST301' || error.code == 'PGRST116')) {
     return const ChatUnauthorizedException();

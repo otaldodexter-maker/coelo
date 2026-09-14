@@ -45,6 +45,8 @@ final class _SuperadminChatUploadDialogState extends State<SuperadminChatUploadD
         _sending = false;
         _error = error is ChatAttachmentInvalidException
             ? 'Use uma imagem de até 4 MB ou um PDF de até 10 MB.'
+            : error is ChatAttachmentLimitException
+            ? 'Limite de 10 anexos por mensagem. Envie os arquivos pendentes antes de anexar outro.'
             : error is ChatUnauthorizedException
             ? 'Você não tem acesso para enviar este arquivo.'
             : error is ChatConflictException

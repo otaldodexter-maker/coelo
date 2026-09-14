@@ -68,3 +68,18 @@ rota real no Chrome.
 - Produção (sessão `qa-r06-operacoes`, Owner): get → set `notify_unit` (management_version 0→2)
   → get relê; unidade inexistente → `SAI_PERMISSION_DENIED`. Dump lote66 SHA-256 8464db0497191447…; ledger 290.
 - Nenhum cliente Flutter consome esta RPC ainda; não há `action_id` próprio.
+
+## Lote 67 (14:55) — 10 anexos por envio no Chat
+
+- `20260914143000_r13_chat_attachment_limit_per_send_v1.sql`: `prepare_v1` conta os anexos
+  pendentes do autor na conversa (ticket vivo, `upload_status = pending`) e recusa o 11º com
+  `CHAT_ATTACHMENT_LIMIT`; envelope ganha o código (422). Replay idempotente e ticket expirado
+  não contam. Revoke `public/anon/service_role`, grant `authenticated`.
+- pgTAP `supabase/tests/r13/chat-attachment-limit-per-send-test.sql` 9/9 (vermelho antes);
+  base `superadmin_internal_chat_attachments_v1_test.sql` 28/28.
+- Produção (sessão `qa-r06-principal`, conversa 355a3403): 10 `prepare` aceitos, 11º
+  `CHAT_ATTACHMENT_LIMIT`; os 10 rascunhos sintéticos foram arquivados com o mesmo efeito do
+  `expire_v1` (tickets usados, `upload_status = failed`, mensagens `archived`).
+- Cliente Superadmin: `ChatAttachmentLimitException` mapeada de `chat_attachment_limit` na
+  Edge Function `chat-media`, mensagem no diálogo de upload; `flutter test test/features/chat`
+  243/243, `flutter analyze` limpo. Dump lote67 SHA-256 306de5fc649dac8c…; ledger 291.
