@@ -37,7 +37,7 @@ Owner 10/53 (18,87%).
 
 **Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; FE 231 e BE 224 ficam):**
 O alvo ainda não foi aplicado ao inventário certificado neste corte; até o delta
-controlado, os contadores vigentes permanecem E2E 137/199.
+controlado, o contador vigente permanece E2E 142/199.
 11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
     → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
     Fecha Planos 4/4 e Usuários internos 4/4.
@@ -71,7 +71,7 @@ controlado, os contadores vigentes permanecem E2E 137/199.
 | Atividades › Configuração avaliativa | activities.assessment | **A** | — |
 | Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | **A** | — |
 
-## Owner items — abertos/parciais (44)
+## Owner items — abertos/parciais (43)
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|

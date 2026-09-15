@@ -32,7 +32,7 @@ Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
   `institutions.locations-map` e `catalog.*` (4) devem sair do ativo
   (`deferred-post-mvp`); o alvo é E2E ativo 199 → 192. Esta decisão ainda não foi
   aplicada ao inventário certificado neste SHA: até a execução controlada do
-  delta, o estado vigente continua E2E 137/199. FE e BE não mudam de denominador;
+  delta, o estado vigente neste corte continua E2E 142/199. FE e BE não mudam de denominador;
   MFA já era gate formal.
 - **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
 - **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou
