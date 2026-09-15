@@ -1,0 +1,44 @@
+[
+  {
+    "action_id": "assessments.close",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "Rebaixamento de certificação R14 S3: o alvo CDP não era a aba visível; repetir na mesma aba antes de certificar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "Retorno ao estado canônico anterior; prova de rota não aceita por divergência entre alvo CDP e aba visível.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Rebaixamento de certificação R14 S3: repetir fechamento no mesmo alvo visível/autorizado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "frontend",
+    "estado_proposto": "pending-verification",
+    "delta": "Rebaixamento de certificação R14 S3: o alvo CDP não era a aba visível; repetir na mesma aba antes de certificar.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "backend",
+    "estado_proposto": "local-green",
+    "delta": "Retorno ao estado canônico anterior; prova de rota não aceita por divergência entre alvo CDP e aba visível.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "estado_proposto": "pending-verification",
+    "delta": "Rebaixamento de certificação R14 S3: repetir reabertura no mesmo alvo visível/autorizado.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+  }
+]

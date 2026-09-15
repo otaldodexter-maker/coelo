@@ -69,6 +69,7 @@ void main() {
       await tester.tap(find.byKey(const Key('access-profile-continue')));
       await tester.pumpAndSettle();
     }
+    expect(find.byKey(const Key('access-profile-review-reason')), findsOneWidget);
     expect(find.text('Estrutura → Atividades → Editar próprias atividades'), findsOneWidget);
     expect(find.text('activities.edit_own'), findsNothing);
     expect(find.textContaining('O acesso efetivo depende'), findsOneWidget);

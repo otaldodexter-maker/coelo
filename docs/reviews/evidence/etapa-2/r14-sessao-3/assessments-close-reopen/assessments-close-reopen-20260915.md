@@ -1,5 +1,5 @@
 ---
-status: local-proof
+status: blocked-target
 lifecycle: current
 round: R14
 session: 3
@@ -26,7 +26,7 @@ recorded_at: 2026-09-15T12:46:00-03:00
   vínculo novo foi criado.
 - Servidor: `127.0.0.1:3016`; Chrome CDP: `9416`.
 
-## Sequência comprovada
+## Sequência observada no alvo CDP auxiliar
 
 1. A fila de fechamento listou o diário existente com a hierarquia da turma e
    período, sem duplicação.
@@ -42,6 +42,15 @@ recorded_at: 2026-09-15T12:46:00-03:00
 5. O deep-link com UUID inexistente exibiu “Diário indisponível — Recarregue ou
    verifique sua permissão”, sem expor ou criar dados.
 
+## Bloqueio de aceite
+
+O alvo CDP `9416` usado para essa observação era uma instância separada da aba
+visível do Chrome. A aba visível identificada como `829823611` permaneceu em
+`http://127.0.0.1:3016/login`, com E-mail e Senha vazios e mensagens de
+validação client-side. Por isso, esta captura não é promovida a prova de rota
+real aceite: precisa ser repetida no mesmo alvo visível/autorizado. O Chrome
+dedicado foi encerrado após a detecção; não houve nova tentativa de credencial.
+
 ## Evidências visuais
 
 - [Fila do diário](assessment-closing-queue.png)
@@ -55,7 +64,7 @@ recorded_at: 2026-09-15T12:46:00-03:00
 
 ## Testes e limites
 
-- Direcionado: `flutter test test/features/assessments/assessment_entry_page_test.dart test/features/assessments/data/supabase_assessment_repository_test.dart test/app/router/assessment_routes_test.dart` — PASS, 29 testes.
+- Direcionado: `flutter test test/features/assessments/assessment_entry_page_test.dart test/features/assessments/data/supabase_assessment_repository_test.dart test/app/router/assessment_routes_test.dart` — PASS, 29 testes; isto certifica apenas o código/teste local, não a rota visível.
 - O teste de rota foi corrigido para informar `institutionId=institution-1`, que
   é obrigatório para a configuração retornar dentro do escopo; a alteração é
   somente de teste.
@@ -66,4 +75,3 @@ recorded_at: 2026-09-15T12:46:00-03:00
   `c0e10000-0000-4000-8000-000000000001`. Não foi mascarada nem corrigida com
   fixture, e nenhum SQL foi executado em produção. O contrato BE já estava
   publicado como `done` no corte R14; esta sessão não altera essa classificação.
-

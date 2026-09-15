@@ -1579,6 +1579,7 @@ final class _ReviewSection extends StatelessWidget {
         ],
         const SizedBox(height: CoeloSpacing.space4),
         CoeloFormTextField(
+          fieldKey: const Key('access-profile-review-reason'),
           controller: reasonController,
           labelText: 'Motivo da alteração',
           prefixIcon: Icons.notes_rounded,
