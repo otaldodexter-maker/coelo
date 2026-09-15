@@ -158,7 +158,7 @@ function uploadEnvelope(body: Json, dependencies: NowMediaDependencies) {
     name: body.name,
     mimeType: body.mime_type,
     sizeBytes: body.size_bytes,
-    durationSeconds: body.duration_seconds,
+    durationSeconds: body.duration_seconds ?? null,
     rightsConfirmed: body.rights_confirmed === true,
   };
 }

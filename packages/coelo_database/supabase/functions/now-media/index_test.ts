@@ -37,3 +37,8 @@ Deno.test("CORS reflects only configured origins", async () => {
   assertEquals(code.includes('"Access-Control-Allow-Origin": "*"'), false);
   assertEquals(code.includes("origin_not_allowed"), true);
 });
+
+Deno.test("normalizes optional video duration before the RPC call", async () => {
+  const code = await source();
+  assertEquals(code.includes("durationSeconds: body.duration_seconds ?? null"), true);
+});
