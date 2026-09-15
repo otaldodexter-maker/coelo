@@ -1,0 +1,35 @@
+[
+ {
+  "action_id": "child-safety.child",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: tabela com decisao/ciclo (Aprovado - Suspensa), relacao localizada, validade e dialogo Gerenciar com dados reais; reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+   "revision": "3d1da743e",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.child",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: leitura real por superadmin_child_safety_get pela tela + reload + negativa P0002.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+   "revision": "3d1da743e",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:55:00-03:00"
+  }
+ },
+ {
+  "action_id": "child-safety.suspend",
+  "camada": "integrated",
+  "estado_proposto": "blocked-backend",
+  "delta": "R14 S1: child_safety_change_lifecycle responde 504 (timeout) em producao; Sessao 2 diagnostica no espelho.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md"
+ }
+]
