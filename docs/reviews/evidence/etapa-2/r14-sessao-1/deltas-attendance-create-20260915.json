@@ -1,0 +1,10 @@
+[
+ {"action_id":"attendance.create","camada":"frontend","estado_proposto":"verified",
+  "delta":"R14 S1 rota real: cascata Contexto -> Chamada com contexto real, chamada criada, presenca salva, reload e conclusao pela tela.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md","revision":"dd2c945f3","environment":"producao","recordedAt":"2026-09-15T10:15:00-03:00"}},
+ {"action_id":"attendance.create","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R14 S1: create_call em producao (cd60f2d8 v1 -> present v2 -> closed v3) pela tela + reload + negativa 42501 fora de escopo. Contexto Atividade e rotina vinculada dependem de RPC/massa (ver evidencia).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md","revision":"dd2c945f3","environment":"producao","recordedAt":"2026-09-15T10:15:00-03:00"}}
+]

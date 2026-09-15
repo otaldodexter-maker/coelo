@@ -177,12 +177,12 @@
       "actionIds": [
         "attendance.create"
       ],
-      "fe": "FE local-green: cascata Instituição/Unidade/Turma, Contexto Turma/Atividade, elegibilidade, data, foco e responsividade verificados.",
-      "be": "Contrato preservado; servidor continua revalidando escopo/capacidade.",
-      "e2e": "Pending-verification: rota normal, persistência/reload e escopo real pendentes.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
+      "fe": "FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida.",
+      "be": "BE done; superadmin_attendance_context_options devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa.",
+      "e2e": "verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável até corrigir a RPC/massa.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Reproduzir com contexto real autorizado, atividade elegível, persistência/reload e negativa cross-tenant.",
+      "nextGate": "Sessão 2/R15: alinhar o escopo de activities ao de groups em superadmin_attendance_context_options (ou massa elegível na QA R04) e provar contexto Atividade pela tela.",
       "sourceRound": "R14"
     },
     {
@@ -192,12 +192,12 @@
         "attendance.create",
         "daily-routine.apply"
       ],
-      "fe": "FE local-green: wizard reduzido a Contexto → Chamada; rotina vinculada resolvida pelo contexto autorizado e somente leitura.",
-      "be": "Contrato server-side preservado; sem RPC/RLS novo.",
-      "e2e": "Pending-verification: rota normal, rotina/versão, persistência/reload e negativa cross-tenant pendentes.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
+      "fe": "FE verified (rota real 15/09): wizard Contexto → Chamada sem etapa de rotina; texto \"rotina resolvida pelo contexto autorizado\".",
+      "be": "BE done; superadmin_attendance_call_detail não expõe rotina/aplicação/versão e a rota de produção não injeta rotina na chamada — o vínculo efetivo não é observável por contrato.",
+      "e2e": "verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Reproduzir com contexto real autorizado, confirmar rotina efetiva/versionamento e snapshot no servidor, persistência/reload e negativa cross-tenant.",
+      "nextGate": "R15: definir contrato de leitura da rotina efetiva na chamada (SQL) antes de provar rotina/versão/snapshot.",
       "sourceRound": "R14"
     },
     {
@@ -225,12 +225,12 @@
         "attendance.finish",
         "daily-routine.apply"
       ],
-      "fe": "FE local-green: suíte local cobre save, edição, sentimento posterior, erro/retry, rotina pendente e conclusão.",
-      "be": "Contratos preservados; nenhum SQL/RPC novo.",
-      "e2e": "Pending-verification: rota normal, massa suficiente, persistência/reload e negativa cross-tenant pendentes.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
+      "fe": "FE verified em mark/finish na rota real 15/09 (chamada cd60f2d8: presente salvo, reload, concluída).",
+      "be": "Contratos preservados; set_participant v2 e complete_call v3 em produção.",
+      "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Reproduzir pela rota normal com múltiplos alunos/turmas e rotina vinculada; registrar payload/versão, persistência/reload e negativa cross-tenant.",
+      "nextGate": "Criar vínculos criança↔turma adicionais (tela de Segurança infantil ou massa da Sessão 2) e repetir com ≥2 alunos; rotina vinculada depende de r12-06.",
       "sourceRound": "R14"
     },
     {
@@ -1980,7 +1980,8 @@
     "docs/reviews/inventario-etapa-2.json",
     "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md"
   ],
   "trackerActionIds": [
     "auth.login",

@@ -3416,15 +3416,15 @@
       "family": "attendance",
       "screen": "Assiduidade / Nova chamada",
       "scope": "mvp",
-      "done": "A composição do wizard mudou; rota normal, persistência/reload, rotina/versionamento e negativa cross-tenant ainda precisam de prova integrada.",
-      "fe": "R12 C0: wizard de Nova chamada reduzido a Contexto → Chamada; rotina diária vinculada é resolvida pelo contexto autorizado e permanece somente leitura, sem troca durante o lançamento.",
+      "done": "R14 S1: create_call em producao (cd60f2d8 v1 -> present v2 -> closed v3) pela tela + reload + negativa 42501 fora de escopo. Contexto Atividade e rotina vinculada dependem de RPC/massa (ver evidencia).",
+      "fe": "R14 S1 rota real: cascata Contexto -> Chamada com contexto real, chamada criada, presenca salva, reload e conclusao pela tela.",
       "be": "attendance_reserve_idempotency_key + superadmin_attendance_create_call 200 (chamada d3821901, open, versao 1), instituicao derivada da turma. | Backlog R12 (registro 2026-09-13): R12-05, R12-06. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-05 -> R13, R12-06 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; 063f19c35613556b24a6fc131b238ea005a24a40; supabase_attendance_repository.dart:142,162,196,208; relatorio 2f66e8838; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-ASSIDUIDADE-01); coordenacao.json R03 rev 7 (aplicadoEmProducao); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
+      "evidence": "commit0fbdef95; docs/open-questions.md; evidence/etapa-2/agenda-operacoes/2026-09-07-deferred-exports.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01/C00 2026-09-08T19:00:55-03:00 5f0163c1: Recibo de criação exige ID/contexto/data da chamada solicitada. Fonte etapa-2-operacao/reports/R01-delta-1855.md; sem promoção de conclusão.; evidence/etapa-2/r02-d00-integration-20260909/manifest-current-corrections.json; 063f19c35613556b24a6fc131b238ea005a24a40; supabase_attendance_repository.dart:142,162,196,208; relatorio 2f66e8838; comunicacao/formularios-cuidado-rotina.json r7 (PKG-R03-FCR-ASSIDUIDADE-01); coordenacao.json R03 rev 7 (aplicadoEmProducao); docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/08-attendance-create.png; coordenacao.json R04 rev 31 (lote23); docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/57-daily-routine-list-card-criar.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/lancar-chamada-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T14:08:34.021718-03:00",
@@ -3437,10 +3437,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/61-attendance-new.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
-          "recordedAt": "2026-09-11T15:05:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+          "revision": "dd2c945f3",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T10:15:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/62-attendance-call.png",
@@ -3449,10 +3449,10 @@
           "recordedAt": "2026-09-11T15:05:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/65-attendance-call-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 39",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release da branch work/etapa2-r05-formularios-cuidado-rotina (f5d1f0c91) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9419 sob SwiftShader; contrato 20260911220100 aplicado em producao (lote 28-42)",
-          "recordedAt": "2026-09-11T15:05:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+          "revision": "dd2c945f3",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T10:15:00-03:00"
         }
       }
     },
@@ -9218,7 +9218,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T12:59:38.906Z",
+  "updatedAt": "2026-09-15T13:06:16.658Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
