@@ -954,26 +954,6 @@ const _blankEditSaveCommand = ActivitySaveCommand(
   ),
 );
 
-const _publishCreateCommand = ActivitySaveCommand(
-  requestId: '8b200000-0000-4000-8000-000000000908',
-  intent: ActivityCommandIntent.publish,
-  name: 'Natação',
-  description: '',
-  taxonomyId: 'taxonomy-1',
-  taxonomyOtherDescription: '',
-  governance: ActivityGovernance.optional,
-  institutionId: 'institution-1',
-  unitIds: {'unit-1'},
-  groupIds: {},
-  assignments: [],
-  identity: ActivityCommandIdentity(
-    kind: ActivityIdentityKind.initials,
-    initials: 'NA',
-    color: '#D63C00',
-    icon: 'activity',
-  ),
-);
-
 const _publishSaveCommand = ActivitySaveCommand(
   requestId: '8b200000-0000-4000-8000-000000000904',
   intent: ActivityCommandIntent.publish,
