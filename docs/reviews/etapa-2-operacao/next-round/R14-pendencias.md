@@ -173,7 +173,7 @@ reexecutados sem nova abertura do Owner:
   na ordem da R14. Não abrir Planos comerciais, reader de Planos ou Auth
   recovery/reset; estes continuam fora da R14 conforme ADR 0039.
 
-## Resíduos H (herdados de R01–R07) — abertos (21)
+## Resíduos H (herdados de R01–R07) — abertos (20)
 
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
@@ -186,7 +186,6 @@ reexecutados sem nova abertura do Owner:
 | H11 | noturna/R01 | Autosave de autoria de Formulários | Decidido (ADR 0038): autosave do autor ligado. Próximo gate: host produtivo passa `authoringApi` + teste. |
 | H12 | noturna/R01 | Controles de mínimo/máximo de seleção | Localizar contrato e registrar aceite. |
 | H14 | R06 | Sino sem `action_id`/subaceite | Mapear ao action_id-pai sem novo denominador. |
-| H15 | R06 | Atribuição de Plano | Decidido (ADR 0038): `plans.assign` fora do MVP. Fechado: botão honestamente indisponível. |
 | H16 | R06 | Leitura people-based de cuidado | Provar escopo entre unidades. |
 | H18 | R06 | Unicidade global concorrente de `@` | Revisar concorrência entre tabelas. |
 | H19 | R06 | Responsável vazio em Medicação | Reproduzir com contexto e destinatário válidos. |
@@ -207,13 +206,14 @@ reexecutados sem nova abertura do Owner:
 | H13 | noturna/R01 | Autorizado pelo Owner em 15/09; falta referência produtiva de item relacionado e `action_id` para o CTA. |
 | H23 | noturna/R01 | Autorizado pelo Owner em 15/09; implementação visual depende do contrato de Avisos que será definido junto com H08/H13 na R15. |
 
-## Resíduos H — concluídos (3)
+## Resíduos H — concluídos (4)
 
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
 | H05 | noturna/R01 | Denominador histórico de recibos do Chat | Decidido (ADR 0038): recibos contam participantes ativos atuais. Fechado sem mudança; aceite MVP mantido. |
 | H06 | noturna/R01 | Revogar em Chat somente leitura | **Concluído em 14/09 (lote 65)**: `superadmin_chat_revoke_message_v2` recusa `CHAT_READ_ONLY` no servidor; pgTAP 14/14 + suíte base 36/36 no espelho; guard presente em produção; negativa `CHAT_NOT_FOUND` por RPC. `chat.revoke` já era verified-e2e; sem delta de estado. |
 | H17 | R06 | Papel fixo versus capacidade em cuidado | **Concluído em 14/09 (lote 66)**: capacidade `care_policies.manage` nos catálogos Superadmin (Owner) e Admin (Administrador da instituição); `superadmin_unit_care_policy_set_v1` exige só a capacidade; pgTAP 15/15 + base 20/20; get/set/reload em produção na unidade f5284f2f e negativa por unidade alheia. Sem action_id próprio no inventário (sem tela no cliente); sem delta de estado. |
+| H15 | R06 | Atribuição de Plano | **Concluído por decisão de escopo:** `plans.assign` fica fora do MVP; botão e operação permanecem honestamente indisponíveis. |
 
 ## Itens da ADR 0038 sem ID H nem Owner item — abertos (4) e transferidos (2)
 
