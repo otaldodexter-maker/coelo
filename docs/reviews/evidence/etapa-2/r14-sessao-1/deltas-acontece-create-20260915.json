@@ -1,0 +1,10 @@
+[
+ {"action_id":"acontece.create","camada":"frontend","estado_proposto":"verified",
+  "delta":"R14 S1 rota real: midia real pelo seletor nativo (CDP), legenda, publico, publicar; post no feed e relido apos reload.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/acontece-create-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/acontece-create-20260915.md","revision":"d09da7ead","environment":"producao","recordedAt":"2026-09-15T10:45:00-03:00"}},
+ {"action_id":"acontece.create","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R14 S1: save_happens_draft + happens-media (R2) + publish_happens_post em producao (post ce6426cd) pela tela + reload do feed + negativa 42501 happens_permission_denied.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/acontece-create-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/acontece-create-20260915.md","revision":"d09da7ead","environment":"producao","recordedAt":"2026-09-15T10:45:00-03:00"}}
+]
