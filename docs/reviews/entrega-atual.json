@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "b179a59bf76272cccf19b69c1ac70dc6b15c3cb2",
+    "head": "be4dffd97127085369ee5a223ccab3d205c08f38",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -890,9 +890,22 @@
       "sourceRound": "R14"
     }
   ],
-  "baseReference": "b179a59bf76272cccf19b69c1ac70dc6b15c3cb2",
+  "baseReference": "be4dffd97127085369ee5a223ccab3d205c08f38",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
-  "protectedWorktrees": {},
+  "protectedWorktrees": {
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-ab": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
+      "branch": "r14/bloco-ab",
+      "sha": "3321cef0757ff783370ee330a2d8ff756a97ac6f"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
+      "branch": "r14/bloco-cd",
+      "sha": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b"
+    }
+  },
   "preservedStash": {},
   "residualBranches": {
     "codex/e2-r02-d01-autenticacao": {
