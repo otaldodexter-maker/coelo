@@ -2,6 +2,7 @@
 title: "Índice operacional para agentes"
 source: "AGENTS.md; decisões do Owner de 2026-09-14"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-14"
 audience: "team"

@@ -2,6 +2,7 @@
 title: "Roteamento de revisões e aceites Coelo"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-supabase/SKILL.md; .agents/skills/coelo-flutter-supabase-review/SKILL.md"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 audience: "team"

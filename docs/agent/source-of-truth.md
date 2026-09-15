@@ -2,6 +2,7 @@
 title: "Autoridade e ciclo de vida dos documentos Coelo"
 source: "AGENTS.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; decisions/0038-owner-decisions-etapa2-backlog-20260914.md"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 audience: "team"

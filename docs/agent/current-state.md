@@ -2,6 +2,7 @@
 title: "Estado atual do trabalho do Coelo"
 source: "Owner em 2026-09-14; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 audience: "team"

@@ -2,6 +2,7 @@
 title: "Artefatos e isolamento do harness Coelo"
 source: "AGENTS.md; inspeção de diretórios em 2026-09-14"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-14"
 audience: "team"

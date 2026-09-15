@@ -2,6 +2,7 @@
 title: "Backlog de limpeza de artefatos Coelo"
 source: "Owner em 2026-09-14; docs/agent/artifact-inventory-20260914.json; auditoria paralela de artefatos"
 status: "active"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 audience: "team"

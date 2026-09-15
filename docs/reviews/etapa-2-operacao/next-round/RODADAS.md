@@ -2,6 +2,7 @@
 title: "Etapa 2 — índice das rodadas R01–R14"
 source: "ETAPA-2-estado-atual.md; R01–R13 fechamentos, planos e pendências; R14-catalogo.md; AGENTS.md"
 status: "active index; R14 vigente (fila única consolidada); R01–R13 históricos"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 ---

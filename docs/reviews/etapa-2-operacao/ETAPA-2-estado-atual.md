@@ -2,6 +2,7 @@
 title: "Etapa 2 — estado atual e fila vigente R14"
 source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; R14-pendencias.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
 status: "active; fila vigente R14; R01–R13 históricos"
+lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 base: "dev"
