@@ -1,0 +1,132 @@
+[
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 Sessão 2: rota real de criação de modelo, CRUD persistido e releitura após reload em produção.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 Sessão 2: modelo criado e publicado na rota real, com instituição autorizada e releitura do RPC em produção.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 Sessão 2: edição, duplicação, renomeação, ordenação e reload do modelo na rota real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 Sessão 2: revisão publicada e conteúdo reidratado no reload; RPC confirmou versão e conteúdo persistidos.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 Sessão 2: criação de cardápio a partir de modelo, escopo institucional, programação e reload na rota real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 Sessão 2: cardápio criado e publicado em produção, com card no diretório e releitura persistida.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 Sessão 2: edição de nome e recorrência, adição/remoção de datas específicas e reload na rota real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 Sessão 2: edição publicada e recorrência específica reidratada após reload, com data removida ausente.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 Sessão 2: revisão e publicação de modelo e cardápio concluídas na rota real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 Sessão 2: publicação agendada persistida em produção; visibleFrom UTC e status foram confirmados por RPC após o fluxo real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+      "revision": "b1ebb8983eadbccc8cbfc3ed890994b98169a69b",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T11:30:00-03:00"
+    }
+  }
+]

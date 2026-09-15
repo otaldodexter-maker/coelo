@@ -600,63 +600,63 @@
     },
     {
       "id": "owner.r12-34",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "meal-plans.model-create",
         "meal-plans.model-edit"
       ],
-      "fe": "FE local-green: nome da refeição separado do prato, hidratado e serializado.",
-      "be": "BE compatível sem mudança SQL.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md",
+      "fe": "FE verified: nome de refeição separado do prato, duplicação, renomeação, ordenação e reload provados na rota real.",
+      "be": "BE done, sem mudança SQL.",
+      "e2e": "E2E verified-e2e.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Provar adicionar/renomear/duplicar/reordenar e reload pela rota real.",
+      "nextGate": "Fechado na R14; imagem R2 segue em owner.r12-38.",
       "sourceRound": "R14"
     },
     {
       "id": "owner.r12-35",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "meal-plans.model-create",
         "meal-plans.model-edit"
       ],
-      "fe": "FE local-green: seletor canônico de datas específicas com chips ordenados e remoção individual; payload `specificDates` legado preservado.",
-      "be": "BE compatível sem mudança SQL.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
+      "fe": "FE verified: datas específicas adicionadas, ordenadas, removidas individualmente e reidratadas após reload na rota real.",
+      "be": "BE done, contrato existente sem mudança SQL.",
+      "e2e": "E2E verified-e2e.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Provar adicionar/editar/remover e reload pela rota real; RLS e aprovação visual permanecem pendentes.",
+      "nextGate": "Fechado na R14; RLS foi exercitado pelo catálogo autorizado no fluxo.",
       "sourceRound": "R14"
     },
     {
       "id": "owner.r12-36",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "meal-plans.create",
         "meal-plans.edit",
         "meal-plans.publish"
       ],
-      "fe": "FE local-green: Prioridade removida; CoeloDateTimeField preserva data/hora, hidrata em hora local e envia UTC.",
-      "be": "BE contrato existente, sem SQL novo.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
+      "fe": "FE verified: data/hora local preservada e enviada como UTC.",
+      "be": "BE done, contrato existente sem SQL novo.",
+      "e2e": "E2E verified-e2e.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Provar instante no Supabase real e visibilidade antes/depois da publicação agendada.",
+      "nextGate": "Fechado: `16/09/2026 08:00` local = `2026-09-16T11:00:00Z` no Supabase real; publicação agendada e reload provados.",
       "sourceRound": "R14"
     },
     {
       "id": "owner.r12-37",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "meal-plans.create",
         "meal-plans.edit"
       ],
-      "fe": "FE local-green: Datas excluídas removidas do fluxo; dados históricos preservados no domínio/payload.",
-      "be": "BE inalterado.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
+      "fe": "FE verified: edição de recorrência e remoção de data específica sem apagar o histórico do payload, com reload real.",
+      "be": "BE done, inalterado.",
+      "e2e": "E2E verified-e2e.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Provar edição sem apagar exceções históricas e reload real.",
+      "nextGate": "Fechado na R14; data 18/09 foi removida e não reapareceu após reload.",
       "sourceRound": "R14"
     },
     {
@@ -1984,7 +1984,8 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md"
   ],
   "trackerActionIds": [
     "auth.login",

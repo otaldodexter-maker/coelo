@@ -26,11 +26,11 @@ em produção e a atualizar a ordem de aplicação.
 
 | SHA | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|
-| — | — | — | — |
+| b1ebb8983 | meal-plans.model-create, meal-plans.model-edit, meal-plans.create, meal-plans.edit, meal-plans.publish → FE verified, BE done (contrato existente), E2E verified-e2e | owner.r12-34, owner.r12-35, owner.r12-36, owner.r12-37 done | r14-sessao-2/meal-plans-20260915.md |
 
 ## Avisos para a outra sessão
 
-- Nenhum lote ou fatia entregue ainda.
+- **Cardápios — 15/09/2026:** prova concluída em produção nos cinco action_ids. Sem SQL novo e sem lote/ledger nesta fatia; RPCs existentes persistiram modelo/cardápio e `meal_plan_get` confirmou `visibilityMode=scheduled`, `visibleFrom=2026-09-16T11:00:00Z`, status `published` e `specificDates=[2026-09-16]`. A outra sessão deve ler este handoff antes de reivindicar telas.
 
 ## Sobra para a R15
 
@@ -38,4 +38,4 @@ em produção e a atualizar a ordem de aplicação.
 
 ## Contadores
 
-FE 164/231, BE 164/224, E2E 137/199, Owner 9/53 (base `origin/dev 0c8add8a7`, sem delta desta sessão).
+FE 169/231, BE 164/224, E2E 142/199, Owner 13/53 (após Cardápios; base de runtime `b1ebb8983eadbccc8cbfc3ed890994b98169a69b`).
