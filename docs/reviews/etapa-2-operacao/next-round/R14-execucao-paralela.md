@@ -15,6 +15,15 @@ onde e como as sessões se comunicam** enquanto a R14 roda com duas sessões
 executoras em paralelo e a sessão do Codex como coordenadora. Não é fila nem
 histórico; vira `historical` quando a R14 fechar.
 
+## Estado verificável da infraestrutura
+
+Na publicação deste protocolo, em 15/09/2026, `git worktree list` contém somente
+`C:\Users\adrie\Documents\Coelo` na branch `dev`; as pastas
+`Coelo.worktrees\r14-ab` e `Coelo.worktrees\r14-cd` ainda não existem. Os
+caminhos e branches abaixo são reservas do plano, não prova de que as sessões
+estejam abertas. Só devem ser criados quando o Owner iniciar a execução
+paralela; os handoffs das sessões passam a existir nesse momento.
+
 ## Papéis
 
 | Papel | Sessão | Onde | Faz | Não faz |
