@@ -53,9 +53,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   var _currentStep = _HealthCareProfileFormStep.child;
   late String _childId =
       widget.childId ?? (widget.childOptions.isEmpty ? '' : widget.childOptions.first.id);
-  var _allergyType = HealthCareAllergyType.food;
-  var _allergyStatus = HealthCareAllergyStatus.active;
-  var _severity = HealthCareEpisodeSeverity.moderate;
+  var _allergies = <_AllergyEditor>[_AllergyEditor()];
   var _careItems = <String>{};
   var _saving = false;
   var _loadingDraft = false;
@@ -65,22 +63,15 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   String? _validationError;
   var _loadGeneration = 0;
   var _commandGeneration = 0;
-  final _lastEpisode = TextEditingController();
-  final _reaction = TextEditingController();
-  final _guidance = TextEditingController();
-  final _notes = TextEditingController();
   final _signs = TextEditingController();
   final _adaptations = TextEditingController();
   final _justification = TextEditingController();
 
   Iterable<TextEditingController> get _textControllers => [
-    _lastEpisode,
-    _reaction,
-    _guidance,
-    _notes,
     _signs,
     _adaptations,
     _justification,
+    for (final allergy in _allergies) ...allergy.controllers,
   ];
 
   @override
@@ -121,10 +112,9 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   void dispose() {
     _loadGeneration++;
     _commandGeneration++;
-    _lastEpisode.dispose();
-    _reaction.dispose();
-    _guidance.dispose();
-    _notes.dispose();
+    for (final allergy in _allergies) {
+      allergy.dispose();
+    }
     _signs.dispose();
     _adaptations.dispose();
     _justification.dispose();
@@ -201,14 +191,8 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   void _applyDraft(HealthCareProfileDraft draft) {
     _childId = draft.childId;
     _loadedChildLabel = draft.childLabel;
-    _allergyType = draft.allergyType;
-    _allergyStatus = draft.allergyStatus;
-    _severity = draft.severity;
+    _replaceAllergies(draft.allergies);
     _careItems = Set.of(draft.careItemIds);
-    _lastEpisode.text = draft.lastEpisode;
-    _reaction.text = draft.observedReaction;
-    _guidance.text = draft.allergyGuidance;
-    _notes.text = draft.allergyNotes;
     _signs.text = draft.importantSigns;
     _adaptations.text = draft.adaptations;
     _justification.text = draft.justification;
@@ -227,29 +211,32 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
   void _resetDraft() {
     _currentStep = _HealthCareProfileFormStep.child;
     _childId = widget.childId ?? (widget.childOptions.isEmpty ? '' : widget.childOptions.first.id);
-    _allergyType = HealthCareAllergyType.food;
-    _allergyStatus = HealthCareAllergyStatus.active;
-    _severity = HealthCareEpisodeSeverity.moderate;
+    _replaceAllergies(const []);
     _careItems = <String>{};
     for (final controller in _textControllers) {
       controller.clear();
     }
   }
 
-  HealthCareProfileDraft get _draft => HealthCareProfileDraft(
-    childId: _childId,
-    allergyType: _allergyType,
-    allergyStatus: _allergyStatus,
-    lastEpisode: _lastEpisode.text,
-    severity: _severity,
-    observedReaction: _reaction.text,
-    allergyGuidance: _guidance.text,
-    allergyNotes: _notes.text,
-    careItemIds: _careItems,
-    importantSigns: _signs.text,
-    adaptations: _adaptations.text,
-    justification: _justification.text,
-  );
+  HealthCareProfileDraft get _draft {
+    final allergies = [for (final allergy in _allergies) allergy.toDraft()];
+    final first = allergies.first;
+    return HealthCareProfileDraft(
+      childId: _childId,
+      allergyType: first.allergyType,
+      allergyStatus: first.allergyStatus,
+      lastEpisode: first.lastEpisode,
+      severity: first.severity,
+      observedReaction: first.observedReaction,
+      allergyGuidance: first.allergyGuidance,
+      allergyNotes: first.allergyNotes,
+      allergies: allergies,
+      careItemIds: _careItems,
+      importantSigns: _signs.text,
+      adaptations: _adaptations.text,
+      justification: _justification.text,
+    );
+  }
 
   void _markDirty() {
     if (_draftReady && !_dirty && mounted) setState(() => _dirty = true);
@@ -259,6 +246,34 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     change();
     _dirty = true;
   });
+
+  void _replaceAllergies(Iterable<HealthCareAllergyDraft> drafts) {
+    for (final allergy in _allergies) {
+      allergy.dispose();
+    }
+    _allergies = [for (final draft in drafts) _AllergyEditor(draft)];
+    if (_allergies.isEmpty) _allergies = [_AllergyEditor()];
+    for (final allergy in _allergies) {
+      for (final controller in allergy.controllers) {
+        controller.addListener(_markDirty);
+      }
+    }
+  }
+
+  void _addAllergy() => _change(() {
+    final allergy = _AllergyEditor();
+    for (final controller in allergy.controllers) {
+      controller.addListener(_markDirty);
+    }
+    _allergies = [..._allergies, allergy];
+  });
+
+  void _removeAllergy(int index) {
+    if (_allergies.length == 1) return;
+    _change(() {
+      _allergies.removeAt(index).dispose();
+    });
+  }
 
   Future<void> _requestCancel() async {
     if (!_dirty) {
@@ -412,62 +427,27 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   'A gravidade descreve somente o episódio registrado e não prevê reações futuras.',
               child: Column(
                 children: [
-                  _ResponsiveFields(
-                    children: [
-                      CoeloAdminSingleSelectField<HealthCareAllergyType>(
-                        label: 'Tipo',
-                        value: _allergyType,
-                        options: HealthCareAllergyType.values,
-                        optionLabel: _allergyTypeLabel,
-                        onChanged: (value) => _change(() => _allergyType = value),
-                        prefixIcon: Icons.health_and_safety_outlined,
-                      ),
-                      CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
-                        label: 'Status',
-                        value: _allergyStatus,
-                        options: HealthCareAllergyStatus.values,
-                        optionLabel: _allergyStatusLabel,
-                        onChanged: (value) => _change(() => _allergyStatus = value),
-                        prefixIcon: Icons.flag_outlined,
-                      ),
-                      CoeloFormTextField(
-                        controller: _lastEpisode,
-                        labelText: 'Último episódio registrado',
-                        prefixIcon: Icons.event_outlined,
-                      ),
-                      CoeloAdminSingleSelectField<HealthCareEpisodeSeverity>(
-                        label: 'Gravidade do episódio',
-                        value: _severity,
-                        options: HealthCareEpisodeSeverity.values,
-                        optionLabel: _severityLabel,
-                        onChanged: (value) => _change(() => _severity = value),
-                        prefixIcon: Icons.monitor_heart_outlined,
-                      ),
-                    ],
-                  ),
+                  for (final entry in _allergies.indexed) ...[
+                    _AllergyEditorCard(
+                      key: Key('health-care-allergy-card-${entry.$1}'),
+                      index: entry.$1,
+                      editor: entry.$2,
+                      canRemove: _allergies.length > 1,
+                      onChanged: _change,
+                      onRemove: () => _removeAllergy(entry.$1),
+                    ),
+                    if (entry.$1 < _allergies.length - 1)
+                      const SizedBox(height: CoeloSpacing.space4),
+                  ],
                   const SizedBox(height: CoeloSpacing.space4),
-                  _ResponsiveFields(
-                    children: [
-                      CoeloFormTextField(
-                        controller: _reaction,
-                        labelText: 'Reação observada',
-                        prefixIcon: Icons.visibility_outlined,
-                        maxLines: 3,
-                      ),
-                      CoeloFormTextField(
-                        controller: _guidance,
-                        labelText: 'Orientação de cuidado',
-                        prefixIcon: Icons.assignment_outlined,
-                        maxLines: 3,
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: CoeloSpacing.space4),
-                  CoeloFormTextField(
-                    controller: _notes,
-                    labelText: 'Observações',
-                    prefixIcon: Icons.notes_rounded,
-                    maxLines: 3,
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: TextButton.icon(
+                      key: const Key('health-care-profile-add-allergy'),
+                      onPressed: _addAllergy,
+                      icon: const Icon(Icons.add),
+                      label: const Text('Adicionar alergia ou restrição'),
+                    ),
                   ),
                 ],
               ),
@@ -510,6 +490,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   ),
                   const SizedBox(height: CoeloSpacing.space4),
                   CoeloFormTextField(
+                    key: Key('health-care-profile-justification'),
                     controller: _justification,
                     labelText: widget.childId == null
                         ? 'Justificativa do cadastro'
@@ -556,13 +537,15 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
                   title: 'Alergias e restrições',
                   onEdit: () => _selectStep(_HealthCareProfileFormStep.allergies.index),
                   rows: [
-                    ('Tipo', _allergyTypeLabel(_allergyType)),
-                    ('Status', _allergyStatusLabel(_allergyStatus)),
-                    ('Gravidade do episódio', _severityLabel(_severity)),
-                    ('Último episódio registrado', _lastEpisode.text),
-                    ('Reação observada', _reaction.text),
-                    ('Orientação de cuidado', _guidance.text),
-                    ('Observações', _notes.text),
+                    for (final entry in _allergies.indexed) ...[
+                      ('Registro ${entry.$1 + 1}', _allergyTypeLabel(entry.$2.allergyType)),
+                      ('Status', _allergyStatusLabel(entry.$2.allergyStatus)),
+                      ('Gravidade do episódio', _severityLabel(entry.$2.severity)),
+                      ('Último episódio registrado', entry.$2.lastEpisode.text),
+                      ('Reação observada', entry.$2.reaction.text),
+                      ('Orientação de cuidado', entry.$2.guidance.text),
+                      ('Observações', entry.$2.notes.text),
+                    ],
                   ],
                 ),
                 const SizedBox(height: CoeloSpacing.space4),
@@ -585,6 +568,153 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
       ),
     );
   }
+}
+
+final class _AllergyEditor {
+  _AllergyEditor([HealthCareAllergyDraft? draft])
+    : id = draft?.id,
+      allergyType = draft?.allergyType ?? HealthCareAllergyType.food,
+      allergyStatus = draft?.allergyStatus ?? HealthCareAllergyStatus.active,
+      severity = draft?.severity ?? HealthCareEpisodeSeverity.moderate,
+      lastEpisode = TextEditingController(text: draft?.lastEpisode ?? ''),
+      reaction = TextEditingController(text: draft?.observedReaction ?? ''),
+      guidance = TextEditingController(text: draft?.allergyGuidance ?? ''),
+      notes = TextEditingController(text: draft?.allergyNotes ?? '');
+
+  final String? id;
+  HealthCareAllergyType allergyType;
+  HealthCareAllergyStatus allergyStatus;
+  HealthCareEpisodeSeverity severity;
+  final TextEditingController lastEpisode;
+  final TextEditingController reaction;
+  final TextEditingController guidance;
+  final TextEditingController notes;
+
+  Iterable<TextEditingController> get controllers => [lastEpisode, reaction, guidance, notes];
+
+  HealthCareAllergyDraft toDraft() => HealthCareAllergyDraft(
+    id: id,
+    allergyType: allergyType,
+    allergyStatus: allergyStatus,
+    lastEpisode: lastEpisode.text,
+    severity: severity,
+    observedReaction: reaction.text,
+    allergyGuidance: guidance.text,
+    allergyNotes: notes.text,
+  );
+
+  void dispose() {
+    for (final controller in controllers) {
+      controller.dispose();
+    }
+  }
+}
+
+final class _AllergyEditorCard extends StatelessWidget {
+  const _AllergyEditorCard({
+    required this.index,
+    required this.editor,
+    required this.canRemove,
+    required this.onChanged,
+    required this.onRemove,
+    super.key,
+  });
+
+  final int index;
+  final _AllergyEditor editor;
+  final bool canRemove;
+  final ValueChanged<VoidCallback> onChanged;
+  final VoidCallback onRemove;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.all(CoeloSpacing.space4),
+    decoration: BoxDecoration(
+      border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
+      borderRadius: BorderRadius.circular(CoeloRadius.md),
+    ),
+    child: Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
+      children: [
+        Row(
+          children: [
+            Expanded(
+              child: Text(
+                'Registro ${index + 1}',
+                style: Theme.of(context).textTheme.titleMedium,
+              ),
+            ),
+            IconButton(
+              key: Key('health-care-profile-remove-allergy-$index'),
+              onPressed: canRemove ? onRemove : null,
+              tooltip: 'Remover registro ${index + 1}',
+              icon: const Icon(Icons.delete_outline),
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space3),
+        _ResponsiveFields(
+          children: [
+            CoeloAdminSingleSelectField<HealthCareAllergyType>(
+              label: 'Tipo',
+              value: editor.allergyType,
+              options: HealthCareAllergyType.values,
+              optionLabel: _allergyTypeLabel,
+              onChanged: (value) => onChanged(() => editor.allergyType = value),
+              prefixIcon: Icons.health_and_safety_outlined,
+            ),
+            CoeloAdminSingleSelectField<HealthCareAllergyStatus>(
+              label: 'Status',
+              value: editor.allergyStatus,
+              options: HealthCareAllergyStatus.values,
+              optionLabel: _allergyStatusLabel,
+              onChanged: (value) => onChanged(() => editor.allergyStatus = value),
+              prefixIcon: Icons.flag_outlined,
+            ),
+            CoeloFormTextField(
+              controller: editor.lastEpisode,
+              labelText: 'Último episódio registrado',
+              prefixIcon: Icons.event_outlined,
+            ),
+            CoeloAdminSingleSelectField<HealthCareEpisodeSeverity>(
+              label: 'Gravidade do episódio',
+              value: editor.severity,
+              options: HealthCareEpisodeSeverity.values,
+              optionLabel: _severityLabel,
+              onChanged: (value) => onChanged(() => editor.severity = value),
+              prefixIcon: Icons.monitor_heart_outlined,
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        _ResponsiveFields(
+          children: [
+            CoeloFormTextField(
+              key: Key('health-care-allergy-reaction-$index'),
+              controller: editor.reaction,
+              labelText: 'Reação observada',
+              prefixIcon: Icons.visibility_outlined,
+              maxLines: 3,
+            ),
+            CoeloFormTextField(
+              key: Key('health-care-allergy-guidance-$index'),
+              controller: editor.guidance,
+              labelText: 'Orientação de cuidado',
+              prefixIcon: Icons.assignment_outlined,
+              maxLines: 3,
+            ),
+          ],
+        ),
+        const SizedBox(height: CoeloSpacing.space4),
+        CoeloFormTextField(
+          controller: editor.notes,
+          labelText: 'Observações',
+          prefixIcon: Icons.notes_rounded,
+          maxLines: 3,
+        ),
+      ],
+    ),
+  );
 }
 
 final class _HealthCareFormFrame extends StatefulWidget {
