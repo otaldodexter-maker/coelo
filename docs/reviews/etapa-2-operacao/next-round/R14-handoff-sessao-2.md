@@ -29,6 +29,7 @@ em produção e a atualizar a ordem de aplicação.
 | 5fbee1774 | meal-plans.model-create, meal-plans.model-edit, meal-plans.create, meal-plans.edit, meal-plans.publish → FE verified, BE done (contrato existente), E2E verified-e2e | owner.r12-34, owner.r12-35, owner.r12-36, owner.r12-37 partial; aceite central do Owner ainda pendente | r14-sessao-2/meal-plans-20260915.md |
 | 0ab6abd8f | health-care.create/detail/edit; account.profile; assessments.close/reopen → FE/BE local comprovados; E2E/rota conforme evidências | owner.r12-29, owner.r12-30, owner.r12-49; owner.r12-46 permanece parcial e fora do escopo de foto R2 | r14-sessao-2/block-d-20260915.md; r14-sessao-2/assessments-close-reopen-20260915.md |
 | 7797a8cad | evidências e manifesto do espelho | mesmas fatias; sem promoção de contadores | r14-sessao-2/block-d-20260915.md |
+| 1f4ffe4c0f | aplicação produtiva autorizada do lote 70, pgTAP remoto e snapshot/manifesto; H08/H13/H23 transferidos para R15 | owner.r12-29, owner.r12-30, owner.r12-49 aguardam aceite central; owner.r12-34/35/36/37 permanecem partial | r14-sessao-2/block-d-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -47,4 +48,5 @@ em produção e a atualizar a ordem de aplicação.
 ## Contadores
 
 Não alterados por esta sessão; a coordenadora deve reconciliar após os commits
-`0ab6abd8f` e `7797a8cad` contra o `origin/dev` vigente (`5839a0ef2`).
+`0ab6abd8f`, `7797a8cad` e `1f4ffe4c0f` contra o `origin/dev` vigente
+(`5839a0ef2`).
