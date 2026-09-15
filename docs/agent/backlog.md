@@ -39,7 +39,10 @@ Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
 - **OQ-034:** Locais com mapa por imagem inteira na R15.
 - **Bloco C** na ordem Cardápios → Segurança infantil → Arquivos de Formulários →
   Fechar/Reabrir → Perfis de acesso; **Bloco D** segue com
-  reader self da Conta e owner.r12-29/30. Recuperação/reset de Auth e sua
+  reader self da Conta e owner.r12-29/30. Para alergias e orientações, o produto
+  aceita vários registros independentes; a prova não fica limitada a dois e o
+  backend deve impor apenas um limite defensivo alto de 100 registros por
+  coleção/entidade. Recuperação/reset de Auth e sua
   allowlist ficam na Etapa 3.
 
 ## Decisões do Owner de 14/09 e 15/09/2026 sobre escopo (fora da fila R14)
@@ -65,6 +68,10 @@ Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
   continua no MVP.
 - **Chat › Anexar (`chat.attach`):** continua no MVP (asset_id + Edge Function),
   explicar ao Owner na abertura da R14.
+- **Saúde e Cuidado — múltiplos registros (15/09):** owner.r12-29/30 cobre
+  coleções de alergias e orientações independentes, com adicionar/remover/reload
+  na rota real. O limite defensivo de 100 por coleção/entidade é proteção de
+  integridade, não uma meta de uso nem motivo para reduzir a capacidade a dois.
 - **Etapa 3:** 3 instituições fictícias com pessoas e hierarquia completa
   (unidades, turmas, responsáveis, crianças) para o Owner verificar a tela
   "Para você" do Principal; avaliar outro nome para "Para você" (já usado por

@@ -17,26 +17,32 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último delta de execução: 15/09 ~11:12 — Sessões 1 e 2 publicaram fatias de
-  Atividades, Chat, Segurança infantil e Formulários; contadores FE 177/231,
-  BE 166/224, E2E 150/199 (ativo 192), Owner 13/53.
-- Próximo gate executável (ordem ajustada pelo Owner em 14/09: mais fácil primeiro):
-  no Bloco A, somente Convites › Lista/Reenviar ainda aguardam prova E2E; as
-  demais fatias publicadas de A estão certificadas. Cardápios continua
-  reivindicado pela Sessão 2 no Bloco C.
-- 15/09: temas de abertura explicados e decididos pelo Owner (artefato
-  89AVWHKEnq5hrvYN6SFv6M; `docs/agent/backlog.md`, seção de 15/09). A R14 executa em
-  **paralelo**: o protocolo está registrado para Sessão 1 (Blocos A–B) e Sessão 2
-  (Blocos C–D) em worktrees próprias, com coordenadora Codex na pasta principal —
-  papéis, portas, fluxo git e handoffs em
-  `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`. As worktrees
-  `r14-ab` e `r14-cd` estão ativas e protegidas até o fechamento da R14.
-  Não reabrir decisões já registradas na ADR 0038.
+- Último corte publicado: 15/09/2026, após as fatias das Sessões 1 e 2 — FE
+  184/231, BE 166/224, E2E 157/192 ativo. O Bloco A está 10/10 certificado;
+  o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
+  prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
+  Owner: 15/53 concluídos e 38 abertos/parciais.
+- Próximo gate executável: Sessão 2 continua em Avaliações › Fechar/Reabrir,
+  usando a hierarquia autorizada e o mesmo diário já preparado. Depois seguem
+  Perfis de acesso, Segurança infantil e Formulários conforme a fila R14. O
+  contexto de Atividade da Assiduidade, a rotina observável e o 504 de
+  `child_safety_change_lifecycle` ficam registrados para a sobra da R15.
+- 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B), a
+  Sessão 2 ativa (C/D), e novas sessões C e E previstas em worktrees próprias;
+  a coordenadora Codex atualiza os MDs na pasta principal. Papéis, portas, fluxo
+  git e handoffs estão em `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
+  As worktrees R14 existentes permanecem protegidas até o fechamento da rodada.
+  Não reabrir decisões já registradas nas ADRs atuais.
 - Decisão adicional do Owner em 15/09
   (`decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md`): Planos comerciais
   não entram no MVP; o reader de Planos fica para V1/V2, o reader self da Conta
   permanece no MVP/R14 e `auth.recover`/`auth.reset` ficam reservados à Etapa 3.
   Planos de medicação não são afetados.
+- Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
+  registros independentes de alergias e orientações. A validação da rota real
+  deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o
+  backend deve aplicar limite defensivo de 100 registros por coleção/entidade,
+  rejeitando o excesso sem deixar a proteção apenas no cliente.
 
 ## Fonte da fila atual
 
@@ -48,8 +54,8 @@ Use, nesta ordem:
    percentuais canônicos;
 3. [Inventário por action_id](../reviews/inventario-etapa-2.json) — detalhe e
    certificação por ação (estados só mudam por `apply-tracker-delta.cjs`);
-4. [Último checkpoint](../reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md)
-   — apenas para o delta da última execução.
+4. [Checkpoint corrente da R14](../reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md)
+   — apenas para o delta do corte atual; checkpoints anteriores são históricos.
 
 Os três rastreadores grandes são projeções do inventário para auditoria; não são a
 entrada inicial. `R12-pendencias.md`, `R13-pendencias.md`, `R14-catalogo.md`,

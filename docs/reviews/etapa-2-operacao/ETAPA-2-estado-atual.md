@@ -6,7 +6,7 @@ lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 base: "dev"
-revision: "1f34b9dbfda5f94b98edbb154ce1841059df67bf"
+revision: "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -14,7 +14,7 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
 operacional vigente é a R14: os itens não terminais foram consolidados a partir
-da R13 e, após dez aceites `done` registrados até 15/09, 43 permanecem não
+da R13 e, após quinze aceites `done` registrados até 15/09, 38 permanecem não
 terminais, além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e
 não volta para a fila. R01–R13 permanecem como fontes
 históricas; seus itens pendentes não devem continuar apontando para uma rodada
@@ -23,7 +23,7 @@ anterior como destino executável.
 Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
 o último estado canônico por `action_id`; os 231 action IDs não ganham novos
 IDs pela transferência. A separação abaixo distingue a fila R14 das fontes
-históricas e das 22 ações formalmente adiadas para pós-MVP.
+históricas e das 29 ações formalmente adiadas para pós-MVP.
 
 Detalhamento operacional: [`R14-pendencias.md`](next-round/R14-pendencias.md) e
 índice das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint final da
@@ -31,7 +31,7 @@ R13 permanece apenas como proveniência do corte que abriu a R14.
 
 O relatório de entrega corrente enumera a distribuição de estados por camada a
 partir do inventário; não replique aqui uma união manual de ações não terminais.
-As 22 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
+As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
@@ -39,24 +39,24 @@ fora do trabalho corrente do MVP.
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-15 (10:25, após seis fatias da Sessão 1 na rota real), no checkout
-`dev`, SHA `8b99d9a06fbfce2ef12a999d4aef9d16f6052918`.
+2026-09-15 após as fatias publicadas das Sessões 1 e 2, no checkout `dev`,
+SHA `a85ac01c45dac2a615dab3fcffd64eaedcb9ff02`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 170 / 231 | 73,59% | terminal FE da base inteira |
-| FE local-green | 25 / 231 | 10,82% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 164 / 224 | 73,21% | somente ações aplicáveis ao BE |
-| BE local-green | 16 / 224 | 7,14% | avanço local; não é prova remota |
-| E2E verificado | 142 / 199 | 71,36% | base integrada ativa |
-| E2E + flutter-only | 149 / 231 | 64,50% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
-| Owner items done | 10 / 53 | 18,87% | IDs de Owner, não action IDs |
-| Owner items abertos/parciais | 43 / 53 | 81,13% | complemento dos 10 concluídos |
+| FE verificado | 184 / 231 | 79,65% | terminal FE da base inteira |
+| FE local-green | 13 / 231 | 5,63% | avanço local; não é aceite E2E |
+| BE concluído/verificado | 166 / 224 | 74,11% | somente ações aplicáveis ao BE |
+| BE local-green | 13 / 224 | 5,80% | avanço local; não é prova remota |
+| E2E verificado | 157 / 192 | 81,77% | base integrada ativa após o Bloco B |
+| E2E + flutter-only | 164 / 231 | 71,00% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
+| Owner items done | 15 / 53 | 28,30% | IDs de Owner, não action IDs |
+| Owner items abertos/parciais | 38 / 53 | 71,70% | complemento dos 15 concluídos |
 
 O denominador de BE é 224 porque sete ações não são aplicáveis ao backend. Da
-mesma forma, `149/231` é somente a métrica combinada E2E + flutter-only; para
-aceite integrado, a base correta continua sendo `142/199`.
+mesma forma, `164/231` é somente a métrica combinada E2E + flutter-only; para
+aceite integrado, a base correta continua sendo `157/192`.
 
 ## Fila vigente R14 — pendências herdadas
 
