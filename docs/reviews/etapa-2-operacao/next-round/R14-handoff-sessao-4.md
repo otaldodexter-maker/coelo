@@ -57,6 +57,9 @@ Branch: `r14/bloco-e`
 - `dart analyze lib/features/account lib/features/chat`: **No issues found**.
 - `git diff --check`: limpo antes dos commits.
 - `supabase db lint --local --workdir packages/coelo_database --fail-on error`: sem erros no schema disponível; o banco local não contém as migrations R14 novas e, portanto, isso não é prova de aplicação dessas migrations.
+- Espelho `supabase_db_coelo_mirror_r14`: dump schema-only salvo fora do Git em `C:\Users\adrie\Documents\Coelo-backups\r14-e-before-block-e.dump`; migrations Conta e Chat aplicadas em ordem, com `COMMIT`.
+- Contratos pgTAP no espelho: Conta **13/13** e Chat **2/2**.
+- Fluxo SQL sintético descartável, fora do Git, em `C:\Users\adrie\Documents\Coelo-backups\r14-e-avatar-behavior.sql`: **9/9**, cobrindo prepare, catálogo/tenant, finalize, read autorizado, negativas cross-tenant, remove e read após revogação; fixtures dentro de transação com `ROLLBACK`.
 
 ## Bloqueios e separação de aceite
 
@@ -77,6 +80,6 @@ Branch: `r14/bloco-e`
 
 ## Estado ao handoff
 
-- HEAD antes deste ajuste do handoff: `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd`.
-- Commits desta sessão: `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat), `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd` (teste de remoção).
+- HEAD antes deste ajuste do handoff: `5535634632a5d6907a70fb587f37d5197f45c805`.
+- Commits desta sessão: `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat), `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd` (teste de remoção), `5535634632a5d6907a70fb587f37d5197f45c805` (enum do catálogo).
 - Este handoff é o único novo registro desta sessão. Handoffs de outras sessões não foram editados.
