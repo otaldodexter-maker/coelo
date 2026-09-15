@@ -145,16 +145,16 @@
     },
     {
       "id": "owner.r12-03",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "activities.list"
       ],
-      "fe": "FE local-green: aba `Modelos de atividade` corrigida; `Atividades`, filtros, modos, paginação e ações preservados.",
-      "be": "Contrato preservado, sem mutação nova.",
-      "e2e": "Pending-verification: superfície mudou; rota normal/reload/escopo pendentes.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant.",
+      "nextGate": "Concluído 15/09 (rota real, Sessão 1): abas \"Modelos de atividade\"/\"Atividades\", busca, filtros, cards/tabela, status, paginação e reload com dados reais; negativa por id inexistente e escopo pgTAP.",
       "sourceRound": "R14"
     },
     {
@@ -385,7 +385,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-19 e fontes antes de executar na cota R14 autorizada.",
+      "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -442,7 +442,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-23 e fontes antes de executar na cota R14 autorizada.",
+      "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -595,7 +595,7 @@
       "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura explícita da R14.",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
       "sourceRound": "R14"
     },
     {
@@ -1976,7 +1976,14 @@
     "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
-    "docs/reviews/inventario-etapa-2.json"
+    "docs/reviews/inventario-etapa-2.json",
+    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md"
   ],
   "trackerActionIds": [
     "auth.login",

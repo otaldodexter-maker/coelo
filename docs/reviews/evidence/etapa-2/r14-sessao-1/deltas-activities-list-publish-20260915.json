@@ -1,0 +1,54 @@
+[
+ {
+  "action_id": "activities.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: abas Modelos de atividade/Atividades, busca, filtros, cards/tabela, status, paginacao e reload com dados reais.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+   "revision": "8b99d9a06",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: diretorio real (directory_v2/filter_options_v2/template_options) pela tela + reload; negativa ACTIVITY_NOT_FOUND e escopo pgTAP.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+   "revision": "8b99d9a06",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: Salvar alteracoes publica o rascunho pela tela (cliente deixou de bloquear p_publish; teste vermelho->verde 47/47).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+   "revision": "8b99d9a06",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "activities.publish",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: save_v2 p_publish=true em producao (085da87e draft v5 -> active v12) pela tela + reload + negativas ACTIVITY_INVALID_STATE/SAI_CONCURRENT_CHANGE.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+   "revision": "8b99d9a06",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:05:00-03:00"
+  }
+ }
+]

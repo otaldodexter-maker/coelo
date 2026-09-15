@@ -108,7 +108,7 @@ void main() {
       );
       expect(calls, 0);
     });
-    test('open gate still rejects orphan reservation edit and publish before HTTP', () async {
+    test('open gate still rejects orphan reservation and edit before HTTP', () async {
       var calls = 0;
       final repo = _atomicRepository((_) async {
         calls++;
@@ -117,7 +117,6 @@ void main() {
       for (final command in [
         _atomicCommand(select: false, reserve: true),
         _atomicCommand(activityId: _activityId),
-        _atomicCommand(intent: ActivityCommandIntent.publish),
       ]) {
         await expectLater(repo.save(command), throwsA(isA<ActivityCommandUnavailableException>()));
       }
@@ -558,7 +557,7 @@ void main() {
     );
   });
 
-  test('edits without a current version and publishes fail closed before HTTP', () async {
+  test('edits without a current version fail closed before HTTP', () async {
     var requestCount = 0;
     final client = SupabaseClient(
       'https://example.supabase.co',
@@ -580,17 +579,46 @@ void main() {
       repository.save(_blankEditSaveCommand),
       throwsA(isA<ActivityCommandUnavailableException>()),
     );
-    // Publicar segue fora do recorte do cliente: publish_v2 exige rascunho e
-    // o formulario de edicao nao sabe o status corrente ao escolher p_publish.
-    await expectLater(
-      repository.save(_publishSaveCommand),
-      throwsA(isA<ActivityCommandUnavailableException>()),
-    );
-    await expectLater(
-      repository.save(_publishCreateCommand),
-      throwsA(isA<ActivityCommandUnavailableException>()),
-    );
     expect(requestCount, 0);
+  });
+
+  test('publishes a draft through the aggregate v2 RPC with p_publish true', () async {
+    // R14 (rota real 15/09): o cliente apenas solicita; quem recusa publicar
+    // uma atividade que nao esta em rascunho e superadmin_activity_publish_v2.
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': _editActivityId,
+              'management_version': 7,
+              'status': 'active',
+              'correlation_id': 'correlation-publish',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).save(_publishSaveCommand);
+
+    expect(captured!.url.path, endsWith('/rpc/superadmin_activity_save_v2'));
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body['p_activity_id'], _editActivityId);
+    expect(body['p_publish'], isTrue);
+    expect(result.status, ActivityStatus.active);
+    expect(result.managementVersion, 7);
   });
 
   test('rejects a non-positive aggregate management version', () async {

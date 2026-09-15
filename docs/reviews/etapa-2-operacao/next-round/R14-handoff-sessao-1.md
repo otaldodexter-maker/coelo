@@ -18,7 +18,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Atividades › Diretório + Publicar | activities.list, activities.publish | 2026-09-15 |
+| Convites › Lista + Reenviar | invites.list, invites.resend | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -29,7 +29,8 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | a3fd542b7 | attendance.create FE verified, E2E verified-e2e (Assiduidade 5/5) | r12-05, r12-06, r12-08 → partial com achados | r14-sessao-1/attendance-create-20260915.md |
 | d09da7ead | daily-routine.apply FE verified, E2E verified-e2e (Rotina 5/5); correção FE em supabase_routine_repository.dart (HH:MM) | — | r14-sessao-1/daily-routine-apply-20260915.md |
 | 821e18b11 | acontece.create FE verified, E2E verified-e2e (Acontece 4/4) | — | r14-sessao-1/acontece-create-20260915.md |
-| (próximo) | shell.switch-context FE verified (flutter-only; Shell 5/5) | — | r14-sessao-1/shell-switch-context-20260915.md |
+| 8b99d9a06 | shell.switch-context FE verified (flutter-only; Shell 5/5) | — | r14-sessao-1/shell-switch-context-20260915.md |
+| (próximo) | activities.list + activities.publish FE verified, E2E verified-e2e (Atividades 7/7); correção FE em supabase_activity_command_repository.dart (publish chega ao servidor) | owner.r12-03 done | r14-sessao-1/activities-list-publish-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -45,4 +46,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 170/231, BE 164/224, E2E 142/199, Owner 10/53 (após shell.switch-context).
+FE 172/231, BE 164/224, E2E 144/199, Owner 11/53 (após activities.list/publish).

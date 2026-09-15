@@ -40,16 +40,16 @@
   },
   {
     "id": "owner.r12-03",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "activities.list"
     ],
-    "fe": "FE local-green: aba `Modelos de atividade` corrigida; `Atividades`, filtros, modos, paginação e ações preservados.",
-    "be": "Contrato preservado, sem mutação nova.",
-    "e2e": "Pending-verification: superfície mudou; rota normal/reload/escopo pendentes.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant.",
+    "nextGate": "Concluído 15/09 (rota real, Sessão 1): abas \"Modelos de atividade\"/\"Atividades\", busca, filtros, cards/tabela, status, paginação e reload com dados reais; negativa por id inexistente e escopo pgTAP.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

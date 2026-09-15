@@ -281,17 +281,16 @@ Never _invalidAtomic() => throw const ActivityCommandUnavailableException();
 /// a versao corrente (>= 1), que o servidor compara e rejeita com
 /// `SAI_CONCURRENT_CHANGE` quando obsoleta. A instituicao viaja no mesmo
 /// payload nos dois casos e o servidor recusa troca-la numa edicao
-/// (`ACTIVITY_INVALID_REFERENCE`). Publicar fica fechado:
-/// `superadmin_activity_publish_v2` exige status `draft` e o formulario de
-/// edicao envia `publish` sem saber o status corrente.
+/// (`ACTIVITY_INVALID_REFERENCE`). Publicar viaja como `p_publish`: quem
+/// recusa uma atividade fora de `draft` e `superadmin_activity_publish_v2`, nao
+/// o cliente (R14, rota real 15/09).
 bool _supportsAggregateSave(ActivitySaveCommand command) {
   final pedagogical = command.pedagogicalConfiguration;
   final activityId = command.activityId;
   final versionMatchesTarget = activityId == null
       ? command.expectedVersion == 0
       : activityId.trim().isNotEmpty && command.expectedVersion >= 1;
-  return command.intent == ActivityCommandIntent.saveDraft &&
-      versionMatchesTarget &&
+  return versionMatchesTarget &&
       command.governance == ActivityGovernance.optional &&
       command.templateId == null &&
       command.unitId == null &&

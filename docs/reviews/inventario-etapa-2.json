@@ -2569,15 +2569,15 @@
       "family": "activities",
       "screen": "Atividades / Diretório",
       "scope": "mvp",
-      "done": "A alteração de label/composição reabre a prova integrada da superfície; rota normal, reload e escopo precisam ser reproduzidos. Backend inalterado.",
-      "fe": "R12 C0: aba de modelos do diretório alinhada para 'Modelos de atividade'; aba 'Atividades', filtros, modos de exibição, paginação e ações preservados.",
+      "done": "R14 S1: diretorio real (directory_v2/filter_options_v2/template_options) pela tela + reload; negativa ACTIVITY_NOT_FOUND e escopo pgTAP.",
+      "fe": "R14 S1 rota real: abas Modelos de atividade/Atividades, busca, filtros, cards/tabela, status, paginacao e reload com dados reais.",
       "be": "R09 C0: lista real de3atividades, filtro instituicao/unidade e reload;125pgTAP e5checksAPI,95corpos equivalentes. Leitura certificada; nenhum novo destinatario ou avaliacao. | Backlog R12 (registro 2026-09-13): R12-02, R12-03. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-02 -> R13, R12-03 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md; docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
+      "evidence": "evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; commit51c02b75; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r23–25:7b097502 catálogo/modelos, e76dca91 escopo de resposta; e76dca91 integrado40edad7f, teste C00 em andamento neste recibo. d2ea1f36 já na fila, sem promoção.; Recibo18:23:40edad7f C00adapter4PASS/análise2PASS; savefd791a81 continua retido comdependênciaSQL.; Fechamento R01 C03/r33; C00288PASS; C03r33 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; ef751c33b activity-composition-r16-manifest.json; commit f30cc20c2; suite de Atividades 162 PASS com 9 falhas golden; goldens-claro-decisoes-2026-09-10.md; R03-fase0-handoff.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md; docs/reviews/evidence/etapa-2/r10-coordenacao/filters.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -2618,10 +2618,10 @@
       },
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
-          "revision": "estrutura.json rev 33",
-          "environment": "producao pelo build release de qa_main com qa-r03@coelo.me | provas: evidence/etapa-2/r04-estrutura/rota-real/activities-list-modelos.jpg",
-          "recordedAt": "2026-09-11T09:41:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+          "revision": "8b99d9a06",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:05:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
@@ -2630,10 +2630,10 @@
           "recordedAt": "2026-09-12T21:48:26.086847+00:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r09-coordenacao/activities-list-acceptance.md",
-          "revision": "R09-C0-r116",
-          "environment": "Supabase evvbomzejfijozbtgvpt; Chrome22592 release3014; UI normal base9713bbdeb",
-          "recordedAt": "2026-09-12T21:48:26.086847+00:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+          "revision": "8b99d9a06",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:05:00-03:00"
         }
       },
       "ownerVisualApprovalHistory": [
@@ -2860,15 +2860,15 @@
       "family": "activities",
       "screen": "Atividade / Publicar",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-48 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "fe": "R05: o botao \"Salvar alteracoes\" (publish) da edicao fecha antes do HTTP com \"Nao foi possivel salvar a atividade\" (a rota de edicao nao conhece o status corrente e publish_v2 exige draft; pendencia da rev 40) e, depois da falha, o coordenador de tentativas congela tambem o Salvar rascunho ate recarregar. Gate: decidir p_publish pelo status do detalhe (draft -> publish; active -> so save) e nao congelar o rascunho apos falha local. | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-48 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R14 S1: save_v2 p_publish=true em producao (085da87e draft v5 -> active v12) pela tela + reload + negativas ACTIVITY_INVALID_STATE/SAI_CONCURRENT_CHANGE.",
+      "fe": "R14 S1 rota real: Salvar alteracoes publica o rascunho pela tela (cliente deixou de bloquear p_publish; teste vermelho->verde 47/47).",
       "be": "R05 (14:55): superadmin_activity_save_v2 com p_publish=true e a turma 4214106c vinculada (P36, lote 35) publicou a atividade 95b98978 em producao (status active, management_version 24); o detalhe recarregado na rota real mostra Ativa com 1 turma. Chamada feita pela sessao do app (token do proprio Chrome via CDP, sem imprimir). Negativas: superadmin_activity_save_v2_test 46/46 e permissions_publish 18/18 no espelho (R04/R05). | Destino Owner: R12-48; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-48 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 fd791a81 rejeita save result divergente. Revisão estática C00 sem defeito novo, mas retido: depende0dbdba5e e candidatoSQLb9a58002 ainda não revisados/integrados. Testeadapter8PASS relatado pelo C03 inclui escopoModelo, não nova certificação.; Fechamento R01 C03/r33; C03r32/r33; 46assertivasnominais, source/hash no histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg; evidence/etapa-2/r05-estrutura/rota-real/activities-publish-fechado-no-cliente.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
+      "evidence": "commit32516e63; evidence/etapa-2/engenheiro-1/a01-directory-audit-green-2026-09-08.md; R01/17:40 r14–22:62→64Attendance,17ActivityForm,3Detail,35Plans,30Assessment,51Rotina,94MealPlans,21Directory,56Support,16Audit,24People; sobrepostos. Corrigenda91748191 integrada com6213f4c4;DailyRoutine2a01c785 aguarda revisão;6504610a retido perde draft,corretivo posterior b592dc4b aguarda revisão. d2ea1f36/722dd5ed/25837636 na fila. AgendaWIPb049b163 separado;FEprofile-files certificado só import/export adiados.; R01-delta-1815: C03r25 fd791a81 rejeita save result divergente. Revisão estática C00 sem defeito novo, mas retido: depende0dbdba5e e candidatoSQLb9a58002 ainda não revisados/integrados. Testeadapter8PASS relatado pelo C03 inclui escopoModelo, não nova certificação.; Fechamento R01 C03/r33; C03r32/r33; 46assertivasnominais, source/hash no histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 21 (lote10); evidence/etapa-2/r04-estrutura/handoff.md; evidence/etapa-2/r05-estrutura/rota-real/activities-detail-publicada-por-rpc.jpg; evidence/etapa-2/r05-estrutura/rota-real/activities-publish-fechado-no-cliente.jpg; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -2879,6 +2879,18 @@
           "revision": "estrutura.json rev 46",
           "environment": "producao coelo; RPC superadmin_activity_save_v2 p_publish=true ok=true status active management_version 24 | pgTAP activity_save_v2 46/46, permissions_publish 18/18",
           "recordedAt": "2026-09-11T15:03:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+          "revision": "8b99d9a06",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
+          "revision": "8b99d9a06",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:05:00-03:00"
         }
       }
     },
@@ -9226,7 +9238,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T13:25:21.764Z",
+  "updatedAt": "2026-09-15T13:37:09.624Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
