@@ -50,9 +50,11 @@ self têm pgTAP remoto 6/6, 11/11 e 6/6. O dump produtivo foi preservado fora do
 Git com manifesto. A prova técnica não altera contadores sem delta oficial.
 
 A Sessão E foi integrada em `b023b4ccb`/`382c3b975`, com Agora/R2/Edge e
-`agora.remove` tecnicamente provados. Permanecem para R16 a negativa
-cross-tenant específica do Agora, Stream sem contrato, residual produtivo de
-`owner.r12-46`, H10/H11 remoto e gates sem `action_id`/contrato/evidência.
+`agora.remove` tecnicamente provados. A negativa cross-tenant específica foi
+tentada, mas o helper/fixture remoto não existe no schema vinculado; a evidência
+está bloqueada em `8ac946b3a`. Permanecem para R16 Stream sem contrato,
+residual produtivo de `owner.r12-46`, H10/H11 remoto e gates sem
+`action_id`/contrato/evidência.
 Qualquer prova local precisa ser seguida de rota real, commit, sincronização dos
 rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
 

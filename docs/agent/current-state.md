@@ -51,7 +51,8 @@ audience: "team"
   a expiração automática do Agora continua em 24 horas, mas a remoção explícita
   passa a ser imediata. O `action_id` oficial `agora.remove` já tem pacote
   migration/Edge e prova produtiva integrado; a negativa cross-tenant específica
-  ainda não foi certificada e o inventário permanece sem promoção.
+  foi tentada e bloqueada por fixture/helper ausente no schema remoto, com
+  identidades temporárias removidas. O inventário permanece sem promoção.
 - Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
   registros independentes de alergias e orientações. A validação da rota real
   deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o

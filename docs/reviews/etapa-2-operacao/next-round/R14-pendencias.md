@@ -185,10 +185,12 @@ reexecutados sem nova abertura do Owner:
 Registro de bloqueios e itens sem certificação após a Sessão E. R16 não está
 aberta, não cria `action_id` e não autoriza novas provas.
 
-- `agora.remove`: falta a negativa cross-tenant específica; a prova produtiva
-  existente usou apenas ator autorizado. Stream genérico permanece sem
-  contrato, Edge, segredo, fixture e critério de aceite; o pacote atual comprova
-  R2 privado e `stream_status=not_applicable`.
+- `agora.remove`: a negativa cross-tenant foi tentada e bloqueada porque o
+  helper remoto de fixture não existe no schema vinculado e a preparação SQL
+  falhou antes da publicação; identidades temporárias foram removidas. Evidência
+  em `agora-remove-cross-tenant-blocked-20260915.md`, commit `8ac946b3a`.
+  Stream genérico permanece sem contrato, Edge, segredo, fixture e critério de
+  aceite; o pacote atual comprova R2 privado e `stream_status=not_applicable`.
 - `owner.r12-46`: pacote técnico e prova local existem, mas falta captura
   produtiva explícita do cabeçalho/avatar em nova sessão, com reload e save
   confirmado.
