@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "ee179b1e1474eef594a131b95f762df0dc41d647",
+    "head": "acb8411222b8a5d9113d5aa14b80f3bc4158656c",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -910,19 +910,19 @@
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-c",
-      "sha": "ee179b1e1474eef594a131b95f762df0dc41d647"
+      "sha": "3e0f61ffd72298597b076e935df036f09bcf5f67"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-cd",
-      "sha": "ee179b1e1474eef594a131b95f762df0dc41d647"
+      "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-e": {
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-e",
-      "sha": "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02"
+      "sha": "b31561325c3f57683f9ea755d653b059395a60d2"
     }
   },
   "preservedStash": {},
@@ -1333,6 +1333,45 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
+    },
+    "r14/bloco-cd": {
+      "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22",
+      "exclusive": [
+        "b135c8f20b15323473c9e13b83469aee92f1ea22",
+        "1f4ffe4c0f41a1cc5d73c8d11819fa140b3430be",
+        "2cd0da7c2ee5f0f9713a5c5da201a0abb1fe2167",
+        "7797a8cadb41acb813d8c21863421323e9322310",
+        "0ab6abd8f7dfcf754774fc6d42248f111275de8e"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "r14/bloco-e": {
+      "sha": "b31561325c3f57683f9ea755d653b059395a60d2",
+      "exclusive": [
+        "b31561325c3f57683f9ea755d653b059395a60d2",
+        "622d2fc5a16e19592a99d691ff045c01cd5fb05a",
+        "e8096df191794696e9e381eead4b09bbd889a15d",
+        "eee8cb19f091970b88c8ab57c7ad0383806596f5",
+        "370ef842f1eb03fdbf91e8024cbef1c4421026b2",
+        "9117da7ca2c14073f3bb5906e14cba69234fdb76",
+        "5535634632a5d6907a70fb587f37d5197f45c805",
+        "2c883deffb9fcae540a05ee03cf8e7571216b1e1",
+        "a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd",
+        "d16357ef9d3742a931c84d9a01b006e186f970cd",
+        "762dc148e61af21cfb33b66d4bdcceefcb0951cb",
+        "dc64976ee1aef584b185890e5fbf9df903bc9b69",
+        "4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a",
+        "7e6af350512988492fc8ac56c5e5ef1bfe09f200"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -1844,6 +1883,21 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
+    },
+    "origin/r14/bloco-cd": {
+      "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22",
+      "exclusive": [
+        "b135c8f20b15323473c9e13b83469aee92f1ea22",
+        "1f4ffe4c0f41a1cc5d73c8d11819fa140b3430be",
+        "2cd0da7c2ee5f0f9713a5c5da201a0abb1fe2167",
+        "7797a8cadb41acb813d8c21863421323e9322310",
+        "0ab6abd8f7dfcf754774fc6d42248f111275de8e"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
