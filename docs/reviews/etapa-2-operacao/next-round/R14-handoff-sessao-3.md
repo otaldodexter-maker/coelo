@@ -177,6 +177,28 @@ Nenhuma ação da Sessão C foi certificada adicionalmente nesta retomada; os
 inventado. O SHA deste registro será o commit explícito da sessão; push deverá
 ser fast-forward e sem force.
 
+## Follow-up Forms — 2026-09-15
+
+No recorte exclusivo de `forms.expire-file` e `forms.delete-file`, sem repetir
+`forms.upload` ou `forms.resolve-file`, a suíte direcionada do cliente passou
+89/89: ações condicionadas à capacidade, wiring de lifecycle, autoridade do
+backend, contexto/cursor de file jobs, entradas inválidas e negativas
+cross-scope. A migration `20260915203000_forms_question_media_expire_audit_v1`
+e o teste autoritativo correspondente foram revisados; a expiração continua
+restrita a `service_role`, usa `FOR UPDATE SKIP LOCKED`, cleanup idempotente e
+auditoria com instituição, asset, origem `edge_function` e estado `deleted`.
+
+Não houve certificação E2E: a rota normal permaneceu sem sessão autenticada
+compartilhada, Docker não estava disponível e a worktree não estava linkada a
+um projeto Supabase. Não foram feitas mutações reais, não foram alterados
+trackers/contadores e não foi promovido nenhum dos dois action_ids. Ambos ficam
+liberados para redistribuição em R15, condicionados à prova de worker/rota,
+persistência, reload, ownership e negativa cross-tenant.
+
+Ao registrar este follow-up, `HEAD` e `origin/dev` estavam em `2707086cf` e a
+worktree estava limpa. O coordenador foi avisado com os testes, commits,
+worktrees preservadas e o bloqueio reproduzido.
+
 ## Contadores e arquivos não alterados
 
 Na validação final após o avanço externo de `origin/dev`,
