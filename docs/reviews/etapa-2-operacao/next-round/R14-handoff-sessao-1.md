@@ -18,7 +18,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Shell › Troca de contexto | shell.switch-context | 2026-09-15 |
+| Atividades › Diretório + Publicar | activities.list, activities.publish | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -28,7 +28,8 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | dd2c945f3 | agenda.request FE verified, E2E verified-e2e (Agenda 7/7); correção FE em supabase_agenda_repository.dart | owner.r12-42 done | r14-sessao-1/agenda-request-20260915.md |
 | a3fd542b7 | attendance.create FE verified, E2E verified-e2e (Assiduidade 5/5) | r12-05, r12-06, r12-08 → partial com achados | r14-sessao-1/attendance-create-20260915.md |
 | d09da7ead | daily-routine.apply FE verified, E2E verified-e2e (Rotina 5/5); correção FE em supabase_routine_repository.dart (HH:MM) | — | r14-sessao-1/daily-routine-apply-20260915.md |
-| (próximo) | acontece.create FE verified, E2E verified-e2e (Acontece 4/4) | — | r14-sessao-1/acontece-create-20260915.md |
+| 821e18b11 | acontece.create FE verified, E2E verified-e2e (Acontece 4/4) | — | r14-sessao-1/acontece-create-20260915.md |
+| (próximo) | shell.switch-context FE verified (flutter-only; Shell 5/5) | — | r14-sessao-1/shell-switch-context-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -39,8 +40,9 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 ## Sobra para a R15
 
 - Rotina: `superadmin_routine_application_detail` não expõe o número da versão do modelo; o rótulo "Modelo vinculado · versão N" mostra a revisão da aplicação após o reload (ver `daily-routine-apply-20260915.md`). Contrato antes de mexer no rótulo.
+- Principal: após "Ver como", o cabeçalho não indica o contexto ativo (UX; decisão de design). Ver `shell-switch-context-20260915.md`.
 - owner.r12-05 (contexto Atividade), r12-06 (rotina vinculada na chamada — contrato), r12-08 (massa com ≥2 alunos) — ver avisos acima.
 
 ## Contadores
 
-FE 169/231, BE 164/224, E2E 142/199, Owner 10/53 (após acontece.create).
+FE 170/231, BE 164/224, E2E 142/199, Owner 10/53 (após shell.switch-context).

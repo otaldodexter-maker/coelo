@@ -270,16 +270,24 @@
       "screen": "Shell / Troca de contexto",
       "scope": "flutter-only",
       "done": "Aceite integral não certificado. Consultar evidência anterior antes de implementar ou repetir testes.",
-      "fe": "R03: caso nominal em rota real (shell_action_ids_test.dart), integrado em dev 3f5934fb5. Gate: rota normal contra producao (P4).",
+      "fe": "R14 S1 rota real: Ver como A->B pela tela com dois contextos reais, feed remontado sem dado residual (RPC de B vazia); reload volta a A (preferencia em memoria, documentado).",
       "be": "Sem endpoint ou tabela próprios exigidos; depende transversalmente da sessão/contexto.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.switch-context); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.switch-context); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar shell.switch-context); archive/2026-09-08/coelo-supabase-pendencias.md (buscar shell.switch-context); flutter test test/app/navigation test/app/shell -> 134 PASS; commit ef4b423a8 -> 15 PASS em persistent_shell_routes_test; comunicacao/principal-chat-sistema.json r7; docs/reviews/evidence/etapa-2/r14-sessao-1/shell-switch-context-20260915.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/shell-switch-context-20260915.md",
+          "revision": "821e18b11",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T10:55:00-03:00"
+        }
+      }
     },
     {
       "id": "shell.unauthorized",
@@ -9218,7 +9226,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T13:21:12.521Z",
+  "updatedAt": "2026-09-15T13:25:21.764Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

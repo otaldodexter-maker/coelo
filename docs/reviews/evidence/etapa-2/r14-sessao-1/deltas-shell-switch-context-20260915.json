@@ -1,0 +1,6 @@
+[
+ {"action_id":"shell.switch-context","camada":"frontend","estado_proposto":"verified",
+  "delta":"R14 S1 rota real: Ver como A->B pela tela com dois contextos reais, feed remontado sem dado residual (RPC de B vazia); reload volta a A (preferencia em memoria, documentado).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/shell-switch-context-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/shell-switch-context-20260915.md","revision":"821e18b11","environment":"producao","recordedAt":"2026-09-15T10:55:00-03:00"}}
+]
