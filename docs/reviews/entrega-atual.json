@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "6b40421a26b8e8a8fa7618326ea224ea5e227d28",
+    "head": "18b4925d0e19a4d49cbc116509e1e14101425608",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -64,7 +64,7 @@
     "actionStatusCounts": {
       "frontend": {
         "local-green": 13,
-        "pending-verification": 34,
+        "pending-verification": 35,
         "verified": 184
       },
       "backend": {
@@ -74,7 +74,7 @@
         "gate-formal-mvp": 3,
         "local-green": 13,
         "not-applicable": 7,
-        "pending-verification": 10,
+        "pending-verification": 11,
         "remote-green": 1
       },
       "integrated": {
@@ -83,7 +83,7 @@
         "deferred-post-mvp": 29,
         "flutter-only": 7,
         "gate-formal-mvp": 3,
-        "pending-verification": 33,
+        "pending-verification": 34,
         "verified-e2e": 157
       }
     },
@@ -109,12 +109,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "184/231 (79.65%)",
-    "frontendLocalGreen": "13/231 (5.63%)",
-    "backendDone": "166/224 (74.11%)",
-    "backendLocalGreen": "13/224 (5.80%)",
-    "e2eVerified": "157/192 (81.77%)",
-    "e2ePlusFlutterOnly": "164/231 (71.00%)",
+    "frontendVerified": "184/232 (79.31%)",
+    "frontendLocalGreen": "13/232 (5.60%)",
+    "backendDone": "166/225 (73.78%)",
+    "backendLocalGreen": "13/225 (5.78%)",
+    "e2eVerified": "157/193 (81.35%)",
+    "e2ePlusFlutterOnly": "164/232 (70.69%)",
     "ownerDone": "15/53 (28.30%)",
     "ownerNonTerminal": "38/53 (71.70%)"
   },
@@ -897,6 +897,15 @@
       "sourceRound": "R14"
     }
   ],
+  "formalActions": [
+    {
+      "id": "agora.remove",
+      "status": "open",
+      "owner": "Owner/C0/E",
+      "evidence": "decisions/0040-agora-immediate-removal.md",
+      "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
+    }
+  ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {
@@ -910,7 +919,7 @@
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-c",
-      "sha": "3e0f61ffd72298597b076e935df036f09bcf5f67"
+      "sha": "d1025286d358abb114deb81ff6802dc6c051dbb5"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
       "disposition": "retained-active-r14",
@@ -922,7 +931,7 @@
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-e",
-      "sha": "b31561325c3f57683f9ea755d653b059395a60d2"
+      "sha": "3b089f6f5dc24b33cf3421651ec63b8e0771eafd"
     }
   },
   "preservedStash": {},
@@ -1350,8 +1359,10 @@
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "r14/bloco-e": {
-      "sha": "b31561325c3f57683f9ea755d653b059395a60d2",
+      "sha": "3b089f6f5dc24b33cf3421651ec63b8e0771eafd",
       "exclusive": [
+        "3b089f6f5dc24b33cf3421651ec63b8e0771eafd",
+        "dc5f0aaa790246a26634fdb5837e9385c5802227",
         "b31561325c3f57683f9ea755d653b059395a60d2",
         "622d2fc5a16e19592a99d691ff045c01cd5fb05a",
         "e8096df191794696e9e381eead4b09bbd889a15d",
@@ -2005,6 +2016,7 @@
     }
   },
   "evidenceFiles": [
+    "decisions/0040-agora-immediate-removal.md",
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
@@ -2186,6 +2198,7 @@
     "agora.create",
     "agora.publish",
     "agora.expire",
+    "agora.remove",
     "momentos.view",
     "momentos.create",
     "momentos.publish",
@@ -2360,12 +2373,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "184/231 (79.65%)",
-      "frontendLocalGreen": "13/231 (5.63%)",
-      "backendDone": "166/224 (74.11%)",
-      "backendLocalGreen": "13/224 (5.80%)",
-      "e2eVerified": "157/192 (81.77%)",
-      "e2ePlusFlutterOnly": "164/231 (71.00%)",
+      "frontendVerified": "184/232 (79.31%)",
+      "frontendLocalGreen": "13/232 (5.60%)",
+      "backendDone": "166/225 (73.78%)",
+      "backendLocalGreen": "13/225 (5.78%)",
+      "e2eVerified": "157/193 (81.35%)",
+      "e2ePlusFlutterOnly": "164/232 (70.69%)",
       "ownerDone": "15/53 (28.30%)",
       "ownerNonTerminal": "38/53 (71.70%)"
     },
