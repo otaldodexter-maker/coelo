@@ -7,6 +7,31 @@ Servidor preparado: `127.0.0.1:3016`
 Base publicada confirmada antes da execução: `origin/dev 5839a0ef2`  
 Banco usado nas provas SQL: espelho Docker `supabase_db_coelo_mirror_r14`.
 
+Após a execução paralela, a worktree foi atualizada por fast-forward para o
+`origin/dev` publicado `e592063d6`.
+
+## Apoio de acesso QA remoto
+
+Action ID: `superadmin.internal-users.create`.
+Usuário sintético criado no Auth remoto pelo fluxo oficial
+`internal-user-create`: `qa-r14-c-owner-20260915@coelo.me`, UID
+`edb2c331-8b64-4779-a084-d32646eb415d`, criado em 2026-09-15 16:23:20 conforme
+o dashboard Auth Users. A rota de detalhe confirmou nome `QA R14BlocoC`, cargo
+`QA-Owner-R14-C`, perfil `Owner`, alcance `Global à plataforma`, convite
+`Pendente` e credencial `Sem acesso`.
+
+O link seguro de definição de senha apareceu somente no diálogo da aplicação;
+não foi copiado, persistido ou exposto. A UI não expôs um correlation/action
+UUID individual, portanto nenhum UUID foi inventado. O cadastro é massa de
+apoio e não é prova dos action_ids `access-profiles.*`.
+
+O servidor solicitado `127.0.0.1:3016` foi diagnosticado sem alteração de
+produção: o preflight do Edge Function retornou 204 sem
+`Access-Control-Allow-Origin`. A rota foi então exercitada em
+`127.0.0.1:3014`, origem já allowlisted, e o detalhe autenticado do usuário foi
+observado no Chrome com o CDP disponível em 9415. Fica pendente para R15 a
+allowlist governada de 3016 e a repetição das provas com essa origem.
+
 ## Child safety
 
 Action IDs: `child-safety.create`, `child-safety.edit`, `child-safety.suspend`.  

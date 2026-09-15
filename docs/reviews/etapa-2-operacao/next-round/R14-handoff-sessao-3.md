@@ -17,6 +17,9 @@ Antes da retomada, a pasta principal foi atualizada com
 também era o HEAD limpo da worktree. Esta sessão não edita os handoffs das
 Sessões 1 e 2.
 
+Após a retomada, a worktree foi sincronizada com avanço fast-forward publicado
+pelas demais sessões; `origin/dev` atual é `e592063d6`.
+
 ## Reivindicações e liberações
 
 | Tela | action_ids | Owner items | Estado ao liberar |
@@ -25,6 +28,22 @@ Sessões 1 e 2.
 | Segurança infantil | `child-safety.create`, `child-safety.edit`, `child-safety.suspend` | `owner.r12-13`, `owner.r12-15`, `owner.r12-16` | liberada; diagnóstico/prova local concluídos, rota pendente |
 | Perfis de acesso | `access-profiles.create`, `access-profiles.edit`, `access-profiles.assign` | `owner.r12-19` a `owner.r12-27` | liberada explicitamente; nenhuma mutação real confirmada |
 | Arquivos de Formulários | `forms.expire-file`, `forms.delete-file` | fila R14 | liberada; prova local, sem promoção de rota/worker |
+
+## Apoio de acesso QA remoto
+
+O fluxo oficial `internal-user-create` foi executado na rota real autenticada
+para destravar a validação do Bloco C. O usuário sintético
+`qa-r14-c-owner-20260915@coelo.me` foi criado no Auth remoto do projeto
+`evvbomzejfijozbtgvpt`, UID `edb2c331-8b64-4779-a084-d32646eb415d`, às
+2026-09-15 16:23:20 (horário exibido pelo dashboard). A tela de detalhe
+confirmou `QA R14BlocoC`, cargo `QA-Owner-R14-C`, perfil `Owner`, alcance
+`Global à plataforma`, convite pendente e credencial `Sem acesso`.
+
+Action ID contratual: `superadmin.internal-users.create` (a UI não expôs o
+correlation/action UUID individual; nenhum identificador foi inventado). A
+senha não foi definida e o link seguro de definição não foi copiado nem
+registrado. Esta criação é massa de apoio e não certifica, por si só,
+`access-profiles.create/edit/assign` nem os Owner items do Bloco C.
 
 ## Commits e provas
 
@@ -67,12 +86,21 @@ de preencher “Código”, pois o contrato atual gera o identificador técnico 
 backend e não expõe esse campo no formulário. Não houve create/edit/assign real
 confirmado; não foi iniciada atribuição em `/internal-users/:id/edit`.
 
+O usuário QA Owner remoto acima ficou disponível para uma retomada autenticada;
+o cadastro usado para destravar o acesso não foi contado como prova dos três
+action_ids de perfis.
+
 ## Bloqueios e sobra para R15
 
-- O alvo CUA disponível abriu o login local, mas não havia sessão autenticada
-  nem credencial QA fornecida/armazenada; CDP 9416 também não estava disponível
-  para esta retomada. Sem isso não é possível produzir `action_id` de rota,
-  persistência/reload ou negativas cross-tenant reais.
+- A prova remota de criação de usuário foi concluída, mas o servidor prescrito
+  `127.0.0.1:3016` não está na allowlist CORS do Edge Function remoto: o
+  preflight retornou 204 sem `Access-Control-Allow-Origin`. Para não alterar
+  produção por inferência, a mesma rota foi exercitada em `127.0.0.1:3014`,
+  origem já allowlisted. O ajuste governado da origem 3016 e a repetição das
+  provas autenticadas continuam para R15; o CDP efetivamente disponível foi
+  9415, não 9416.
+- O usuário QA Owner está com convite pendente e sem credencial ativa. Ainda
+  não houve handoff de senha ao usuário nem mudança de senha por automação.
 - Repetir `assessments.close/reopen` no alvo autenticado estável usando o mesmo
   diário `d2c945d8`, sem duplicar participante, vínculo, configuração ou diário.
 - Executar `access-profiles.create/edit/assign` após confirmar ausência de
@@ -82,6 +110,12 @@ confirmado; não foi iniciada atribuição em `/internal-users/:id/edit`.
 - Promover `forms.expire-file/delete-file` somente com prova de comando
   autoritativo, auditoria e worker/rota conforme a fila; não repetir
   upload/resolve sem nova falha.
+
+As telas não concluídas ficam explicitamente liberadas para a próxima sessão:
+`assessments.close/reopen`, `access-profiles.create/edit/assign`,
+`child-safety.create/edit/suspend` e `forms.expire-file/delete-file`. A criação
+da massa QA acima está concluída, mas não promove nenhuma dessas telas nem
+altera os contadores centrais.
 
 ## Contadores e arquivos não alterados
 
