@@ -39,9 +39,10 @@ até o aceite central desta coordenação; não entram artificialmente no 15/53.
 9. Chat › Criar grupo (`chat.create-group`).
 10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
 
-**Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; FE 231 e BE 224 ficam):**
+**Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; a formalização posterior de `agora.remove` leva a base a 193):**
 O delta controlado já foi aplicado ao inventário certificado; o denominador
-ativo agora é 192. As sete ações foram marcadas `deferred-post-mvp` no escopo
+ativo agora é 193, sendo 192 após o Bloco B e mais uma ação formalizada pela
+ADR 0040. As sete ações foram marcadas `deferred-post-mvp` no escopo
 autorizado e não bloqueiam a execução do MVP.
 11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
     → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
@@ -49,26 +50,29 @@ autorizado e não bloqueiam a execução do MVP.
 
 **Bloco C — uma tela com SQL pequeno + rota real:**
 12. Cardápios (`meal-plans.create/edit/model-create/model-edit/publish`) → FE/BE/E2E provados pela Sessão 2; `owner.r12-34/35/36/37` aguardam aceite central, sem repetir a prova.
-13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — a Sessão C
-    publicou a entrega, mas o item voltou a `pending-verification` por
-    divergência de alvo CDP; não promover sem rota real, sessão autenticada e
-    evidência central reconciliada.
+13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — certificado pela
+    delta oficial da Sessão C, com rota real, sessão autenticada, reload e
+    negativa publicados; não repetir.
 14. Perfis de acesso (`access-profiles.create/edit/assign`) + `owner.r12-19` a `27`.
 15. Segurança infantil (`child-safety.child/edit/suspend`, BE done) — sem r12-18.
-16. Arquivos de Formulários › Upload + Resolver (só E2E); depois Expirar/Excluir (BE + FE).
+16. Arquivos de Formulários › Upload + Resolver já têm prova publicada e não
+    devem ser repetidos; Expirar/Excluir permanecem como fatia separada (BE + FE)
+    e foram liberados para R15 sem aceite E2E remoto.
 
-**Bloco D — entregue tecnicamente; aceite central pendente:**
+**Bloco D — integrado seletivamente no `dev`; aceite técnico preservado:**
 17. OQ-031 catálogos de tipo, reader self da Conta e `owner.r12-29/30` foram
     provados pela Sessão D em produção, no branch `r14/bloco-cd`, SHA
     `b135c8f20`: pgTAP remoto 11/11, 6/6 e 6/6, respectivamente. As coleções
     aceitam registros independentes e rejeitam o 101º por entidade/coleção.
-    Falta integrar seletivamente os artefatos ao `dev` e obter o aceite central;
-    os contadores não mudam neste corte. H08/H13/H23 foram transferidos para
+    Os artefatos foram integrados seletivamente ao `dev`; a evidência continua
+    registrada sem novo delta de contador. H08/H13/H23 foram transferidos para
     R15 por decisão do Owner, sem inventar contrato ausente. Reader de Planos
     comerciais e recuperação/reset de Auth não entram na R14.
 
 **Bloco E — mais caros (contrato novo ou reconstrução):**
-18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). Recuperação/
+18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). O pacote
+    técnico da Sessão E foi integrado; o residual produtivo de `owner.r12-46`
+    permanece sem captura adicional de cabeçalho/avatar em nova sessão. Recuperação/
     redefinição (`auth.recover/reset`) ficam reservadas para a Etapa 3.
 19. Circular `H04` (host + goldens); Formulários `H10` (+ `H11` só se >60% pronto); Principal `H27/P54/H02`.
 20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real); Agora › Remover (`agora.remove`: remoção imediata);
@@ -77,9 +81,32 @@ autorizado e não bloqueiam a execução do MVP.
 
 `agora.remove` foi formalizado pela ADR 0040 como ação MVP separada: remoção
 explícita imediata, revogação no catálogo/gateway e purge idempotente do objeto
-R2 e da cópia Stream, preservando catálogo/recibo/auditoria. O action_id está
-no inventário como `pending-verification`; não há implementação nem aceite
-produtivo neste corte.
+R2 e da cópia Stream, preservando catálogo/recibo/auditoria. O pacote e a prova
+produtiva positiva foram integrados; o contrato local da negativa foi reforçado
+em `2707086cf`, mas a negativa produtiva cross-tenant segue bloqueada pelo
+helper/fixture ausente no schema remoto. O action_id permanece
+`pending-verification`.
+
+## Lote de coordenação — 15/09/2026
+
+- `assessments.close` e `assessments.reopen`: delta oficial aplicado pela
+  Sessão C; inventário agora registra `verified-e2e` e a dupla não deve ser
+  repetida.
+- `access-profiles.create/edit/assign`, `child-safety.create/edit/suspend` e
+  `owner.r12-13/15/16/19–27`: testes/diagnósticos das Sessões C e C contínua
+  não obtiveram rota produtiva certificável; 504, sessão/CORS/CDP, drift de
+  massa e ausência de autorização continuam bloqueios. Permanecem fora dos
+  contadores e são liberados para a próxima rodada conforme R15/R16 abaixo.
+- `forms.expire-file`/`forms.delete-file`: commits `0481384f5` e `ca4bf4cd3`
+  corrigem/auditam a lógica e passam as suítes direcionadas (Deno 56/56 e
+  Flutter 89/89), mas não houve sessão autenticada, persistência remota,
+  reload e negativa produtiva. Liberados para R15; não promover.
+- `owner.r12-05` no contexto Atividade: `14f6facab` registrou o bloqueio
+  isolado da RPC/massa; o contexto Turma já certificado não foi repetido. R15
+  precisa alinhar a massa QA ou corrigir a RPC com contrato antes da prova.
+- Sessão E: `agora.remove` teve o contrato local reforçado em `2707086cf`, sem
+  substituir a prova produtiva negativa. Stream genérico continua sem contrato
+  próprio. Nenhum desses pontos altera o inventário sem delta oficial.
 
 ## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9) — 6/6 decididas: 5 A, 1 A+
 
@@ -99,7 +126,7 @@ produtivo neste corte.
 | owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência. |
 | owner.r12-02 | activities.list, daily-routine.list | open / FE parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório. / Sem RPC/RLS novo; arquivamento não executado. / Pendente por contrato de archive, confirmação, versão, auditoria e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md | Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake. |
 | owner.r12-04 | daily-routine.list, attendance.dashboard | open / Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe. / Dashboard e contratos preservados; nenhum SQL/RPC novo. / Pendente por definição de tela/rota canônica e mapeamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md | Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7. |
-| owner.r12-05 | attendance.create | partial / FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida. / BE done; superadmin_attendance_context_options devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa. / verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável até corrigir a RPC/massa. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md | Sessão 2/R15: alinhar o escopo de activities ao de groups em superadmin_attendance_context_options (ou massa elegível na QA R04) e provar contexto Atividade pela tela. |
+| owner.r12-05 | attendance.create | partial / FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida. / BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa. / verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md; docs/reviews/evidence/etapa-2/r14-coordenacao/attendance-activity-blocked-20260915.md | R15: alinhar o escopo de activities ao de groups em `superadmin_attendance_context_options` (ou massa elegível autorizada) e provar seleção, criação, persistência/reload e negativa do contexto Atividade. |
 | owner.r12-06 | attendance.create, daily-routine.apply | partial / FE verified (rota real 15/09): wizard Contexto → Chamada sem etapa de rotina; texto "rotina resolvida pelo contexto autorizado". / BE done; superadmin_attendance_call_detail não expõe rotina/aplicação/versão e a rota de produção não injeta rotina na chamada — o vínculo efetivo não é observável por contrato. / verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md | R15: definir contrato de leitura da rotina efetiva na chamada (SQL) antes de provar rotina/versão/snapshot. |
 | owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | partial / FE verified em mark/finish na rota real 15/09 (chamada cd60f2d8: presente salvo, reload, concluída). / Contratos preservados; set_participant v2 e complete_call v3 em produção. / Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md | Criar vínculos criança↔turma adicionais (tela de Segurança infantil ou massa da Sessão 2) e repetir com ≥2 alunos; rotina vinculada depende de r12-06. |
 | owner.r12-09 | child-safety.list | open / Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo. / Contrato preservado; nenhum SQL/RPC novo. / Owner decision pending antes de alterar composição ou dados. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md | Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real. |
@@ -171,8 +198,10 @@ reexecutados sem nova abertura do Owner:
 - `owner.r12-19` a `r12-27`: executar Perfis de acesso após a reivindicação da
   Sessão C, preservando as rotas reais `/profiles` e
   `/internal-users/:id/edit`;
-- Formulários: criar uma ocorrência aberta identificada para provar upload em
-  resposta; manter Expirar/Excluir separados;
+- Formulários: `forms.upload` e `forms.resolve-file` têm prova publicada e não
+  devem ser repetidos. `forms.expire-file` e `forms.delete-file` estão
+  explicitamente liberados para R15 após os commits `0481384f5`/`ca4bf4cd3`,
+  sem promoção E2E;
 - Principal: corrigir a indicação de contexto ativo após “Ver como”;
 - `owner.r12-38` e `owner.r12-46`: migrar/provar imagem privada R2 de Cardápios
   e Conta, incluindo o layout A+ do “Meu acesso”;
@@ -187,8 +216,10 @@ aberta, não cria `action_id` e não autoriza novas provas.
 
 - `agora.remove`: a negativa cross-tenant foi tentada e bloqueada porque o
   helper remoto de fixture não existe no schema vinculado e a preparação SQL
-  falhou antes da publicação; identidades temporárias foram removidas. Evidência
-  em `agora-remove-cross-tenant-blocked-20260915.md`, commit `8ac946b3a`.
+  falhou antes da publicação; identidades temporárias foram removidas. O
+  contrato local foi reforçado no commit `2707086cf`, mas isso não é prova
+  produtiva. Evidência em `agora-remove-cross-tenant-blocked-20260915.md`,
+  commit `8ac946b3a`.
   Stream genérico permanece sem contrato, Edge, segredo, fixture e critério de
   aceite; o pacote atual comprova R2 privado e `stream_status=not_applicable`.
 - `owner.r12-46`: pacote técnico e prova local existem, mas falta captura
@@ -201,13 +232,16 @@ aberta, não cria `action_id` e não autoriza novas provas.
   H18–H20, H22, H24–H26 e H28 continuam sem combinação executável de
   `action_id`, contrato e evidência. H08, H13 e H23 continuam transferidos sem
   contrato produtivo do item relacionado e sem `action_id` próprio.
-- Resíduos da Sessão C ainda não certificados: `access-profiles.create/edit/assign`,
-  `child-safety.create/edit/suspend`, `forms.expire-file/delete-file` e
+- Resíduos da Sessão C ainda não certificados para redistribuição: 
+  `access-profiles.create/edit/assign`, `child-safety.create/edit/suspend` e
   `owner.r12-13/15/16/19–27`. Evidências bloqueadas foram integradas em
-  `82d1efbad` (Segurança infantil) e `d65840efe` (Perfis); Forms tem correção
-  autoritativa em `0481384f5`, mas falta prova remota. O 504 de
-  `child_safety_change_lifecycle`, sessão QA/CORS/CDP indisponíveis e ausência
-  de massa autorizada permanecem bloqueios.
+  `82d1efbad` (Segurança infantil) e `d65840efe` (Perfis). O 504 de
+  `child_safety_change_lifecycle`, sessão QA/CORS/CDP indisponíveis, drift de
+  massa e ausência de autorização permanecem bloqueios. Forms
+  `expire-file/delete-file` foi liberado para R15 após `ca4bf4cd3`; não é
+  resíduo aberto de R16.
+- `owner.r12-05` no contexto Atividade foi isolado em `14f6facab` e liberado
+  para R15; o caminho certificado de Turma permanece intacto.
 - `auth.recover`, `auth.reset`, SMTP, provedor e allowlist de recuperação seguem
   fora da R14/R15/R16 até a abertura da Etapa 3.
 
@@ -281,7 +315,7 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | activities | 2 | `activities.list` (local-green/done/pending-verification), `activities.publish` (local-green/done/pending-verification) |
 | agenda | 1 | `agenda.request` (local-green/done/pending-verification) |
 | agora | 5 | `agora.view` (verified/done/pending-verification), `agora.create` (local-green/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification), `agora.remove` (pending-verification/pending-verification/pending-verification) |
-| assessments | 2 | `assessments.close` (pending-verification/local-green/pending-verification), `assessments.reopen` (pending-verification/local-green/pending-verification) |
+| assessments | 2 | `assessments.close` (verified/local-green/verified-e2e), `assessments.reopen` (verified/local-green/verified-e2e) |
 | attendance | 1 | `attendance.create` (local-green/done/pending-verification) |
 | auth | 3 | `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification), `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
 | catalog | 4 | `catalog.list` (verified/pending-verification/pending-verification), `catalog.validate` (verified/pending-verification/pending-verification), `catalog.sync` (verified/pending-verification/pending-verification), `catalog.publish` (pending-verification/pending-verification/pending-verification) |
@@ -312,7 +346,7 @@ V1/Etapa 3: Catálogo de UI. Formulários autosave (H11): V1 se for caro, salvo 
 Etapa 3: `auth.recover`/`auth.reset`; 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
 Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em 15/09: opção B + regra de pessoas) e OQ-034 Locais com mapa por imagem (confirmado em 15/09; substitui `institutions.locations-map`).
 
-**15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C e ordem original do Bloco D). Duas sessões executam em paralelo; a coordenadora (Codex) atualiza este arquivo. A decisão posterior da ADR 0039 transfere recuperação/reset de Auth e a allowlist desse fluxo para a Etapa 3.
+**15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C e ordem original do Bloco D). A formalização posterior de `agora.remove` levou a base ativa a 193. Duas sessões executaram em paralelo; a coordenadora (Codex) atualiza este arquivo. A decisão posterior da ADR 0039 transfere recuperação/reset de Auth e a allowlist desse fluxo para a Etapa 3.
 
 ## Como atualizar
 

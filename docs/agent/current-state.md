@@ -17,20 +17,22 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último corte publicado: 15/09/2026, após as fatias das Sessões 1 e 2 — FE
-  186/232, BE 168/225, E2E 159/193 ativo. O Bloco A está 10/10 certificado;
+- Último corte publicado: 15/09/2026, após a reconciliação das Sessões C, D e E
+  — FE 186/232, BE 168/225, E2E 159/193 ativo. O Bloco A está 10/10 certificado;
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
   Owner: 15/53 concluídos e 38 abertos/parciais.
-- Entregas recentes ainda não alteram os quatro números certificados acima:
-  a Sessão C publicou sua entrega, mas Avaliações `close/reopen` voltou a
-  `pending-verification` por divergência de alvo CDP; Perfis de acesso não foi
-  confirmado; Segurança infantil continua bloqueada por fixture/drift do
-  espelho; e Expirar/Excluir de Formulários permanece pendente. A Sessão D foi
+- Entregas recentes ainda não alteram os quatro números certificados acima,
+  exceto o delta oficial de Avaliações: `assessments.close/reopen` agora está
+  certificado. Perfis de acesso não foi confirmado; Segurança infantil continua
+  bloqueada por 504/sessão/CORS/massa; e Expirar/Excluir de Formulários tem
+  somente avanço local e foi liberado para R15. A Sessão D foi
   integrada seletivamente ao `dev` (`0ab6abd8f`, `7797a8cad`, `2cd0da7c2`,
   `b135c8f20`, com dump produtivo preservado fora do Git). A Sessão E foi
-  integrada no pacote coordenado `b023b4ccb`/`382c3b975`; os números certificados
-  permanecem inalterados até deltas oficiais de evidência.
+  integrada no pacote coordenado `b023b4ccb`/`382c3b975`; `agora.remove` teve o
+  contrato local reforçado em `2707086cf`, mas a negativa produtiva permanece
+  bloqueada. Os números certificados permanecem inalterados fora do delta
+  oficial de Avaliações.
 - Bloqueios conhecidos durante a execução: o `504` de
   `child_safety_change_lifecycle` continua sem solução certificada. A entrega
   D não deve ser promovida por contador enquanto seus artefatos não estiverem
@@ -58,6 +60,11 @@ audience: "team"
   deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o
   backend deve aplicar limite defensivo de 100 registros por coleção/entidade,
   rejeitando o excesso sem deixar a proteção apenas no cliente.
+- Fechamento de coordenação de 15/09: Forms `expire-file/delete-file` passou
+  as suítes direcionadas, sem E2E remoto, e foi liberado para R15; o contexto
+  Atividade de `attendance.create` foi isolado como bloqueio de RPC/massa em
+  `14f6facab`. R16 permanece preparada, não aberta, para os resíduos da Sessão
+  E e contratos sem action_id.
 
 ## Fonte da fila atual
 

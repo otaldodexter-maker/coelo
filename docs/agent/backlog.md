@@ -17,9 +17,12 @@ e a fila única `R14-pendencias.md` apontada nele.
 
 R16 está somente preparada, não aberta. Seus resíduos estão registrados na
 seção `R16 preparado — não aberto` da fila R14; não criar action_ids ou iniciar
-uma fila concorrente. A próxima execução continua priorizando os action_ids
-R14 ainda não certificados, especialmente a negativa específica de
-`agora.remove` e as fatias C bloqueadas por sessão/CORS/504.
+uma fila concorrente. O corte de 15/09 concluiu o que era executável sem prova
+remota adicional: `assessments.close/reopen` recebeu delta oficial; Forms
+`expire-file/delete-file` e `attendance.create`/Atividade foram liberados para
+R15 por bloqueio de ambiente, RPC ou massa; a próxima execução deve priorizar
+as fatias C quando houver sessão/contrato/massa e manter em R16 a negativa
+específica de `agora.remove`, Stream genérico e resíduos sem contrato.
 
 ## Pendências do MVP
 
@@ -36,8 +39,9 @@ Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
   próprias com push para `dev` por rebase; a sessão do Codex coordena e atualiza os MDs.
 - **Bloco B autorizado:** `plans.assign`, `institutions.status`,
   `institutions.locations-map` e `catalog.*` (4) saíram do ativo
-  (`deferred-post-mvp`); o alvo E2E ativo 199 → 192 já foi aplicado pelo delta
-  controlado. Neste corte, o inventário registra E2E 150/199; FE e BE não mudam
+(`deferred-post-mvp`); o alvo E2E ativo 199 → 192 já foi aplicado pelo delta
+controlado e a formalização posterior de `agora.remove` leva a base ativa a 193.
+Neste corte, o inventário registra E2E 159/193; FE e BE não mudam de denominador
   de denominador. MFA já era gate formal.
 - **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
 - **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou

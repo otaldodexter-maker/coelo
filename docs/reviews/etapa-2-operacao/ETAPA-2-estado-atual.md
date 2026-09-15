@@ -6,7 +6,7 @@ lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 base: "dev"
-revision: "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02"
+revision: "14f6facabadcfdbeffbfe31b110c91e149fe5db8"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -36,13 +36,14 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
 
-## Snapshot de execução da R14 — C residual, D/E integrados
+## Snapshot de execução da R14 — C residual, D/E integrados, R15/R16 preparados
 
-O corte publicado e os percentuais canônicos acima permanecem inalterados porque
-o inventário não recebeu delta de certificação E2E. A Sessão C encerrou com
-Perfis de acesso não confirmados, Segurança infantil bloqueada por 504/drift e
-Expirar/Excluir de Formulários pendentes; `assessments.close/reopen` tem prova
-publicada, mas continua `pending-verification` no inventário até reconciliação.
+O corte publicado e os percentuais canônicos acima permanecem inalterados fora
+do delta oficial de Avaliações: `assessments.close/reopen` agora está
+`verified-e2e`. A Sessão C contínua encerrou com Perfis de acesso não
+confirmados, Segurança infantil bloqueada por 504/sessão/CORS/massa e
+Expirar/Excluir de Formulários sem prova remota; estes últimos foram liberados
+para R15, sem promoção.
 
 A Sessão D foi integrada seletivamente (`0ab6abd8f`, `7797a8cad`, `2cd0da7c2`,
 `b135c8f20`); as migrations de coleções de cuidado, catálogos OQ-031 e Account
@@ -50,19 +51,21 @@ self têm pgTAP remoto 6/6, 11/11 e 6/6. O dump produtivo foi preservado fora do
 Git com manifesto. A prova técnica não altera contadores sem delta oficial.
 
 A Sessão E foi integrada em `b023b4ccb`/`382c3b975`, com Agora/R2/Edge e
-`agora.remove` tecnicamente provados. A negativa cross-tenant específica foi
-tentada, mas o helper/fixture remoto não existe no schema vinculado; a evidência
-está bloqueada em `8ac946b3a`. Permanecem para R16 Stream sem contrato,
-residual produtivo de `owner.r12-46`, H10/H11 remoto e gates sem
-`action_id`/contrato/evidência.
+`agora.remove` tecnicamente provados; o contrato local da negativa foi
+reforçado em `2707086cf`. A negativa cross-tenant produtiva foi tentada, mas o
+helper/fixture remoto não existe no schema vinculado; a evidência está bloqueada
+em `8ac946b3a`. Permanecem para R16 Stream sem contrato, residual produtivo de
+`owner.r12-46`, H10/H11 remoto e gates sem `action_id`/contrato/evidência.
+O contexto Atividade de `attendance.create` foi isolado em `14f6facab` e
+liberado para R15; o contexto Turma já certificado não foi repetido.
 Qualquer prova local precisa ser seguida de rota real, commit, sincronização dos
 rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
 
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-15 após as fatias publicadas das Sessões 1 e 2, no checkout `dev`,
-SHA `6106d2b68`.
+2026-09-15 após a reconciliação das Sessões C, D e E, no checkout `dev`,
+SHA `14f6facab`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
