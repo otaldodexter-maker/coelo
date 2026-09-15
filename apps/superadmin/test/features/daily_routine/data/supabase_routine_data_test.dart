@@ -136,6 +136,37 @@ void main() {
     expect(model.sections.single.fields.single.options, hasLength(2));
   });
 
+  test('a aplicação hidrata horários do servidor no formato HH:MM do formulário', () async {
+    // R14 (rota real 15/09): o servidor devolve time como "08:00:00"; o campo
+    // "Horário inicial (HH:MM)" mostrava os segundos após o reload.
+    final backend = _Backend({
+      'superadmin_routine_application_detail': {
+        'id': 'application-1',
+        'source_model_version_id': 'version-1',
+        'institution_id': 'institution-1',
+        'scope_kind': 'institution',
+        'status': 'draft',
+        'inheritance_mode': 'inherited',
+        'effective_version': 1,
+        'management_version': 0,
+        'valid_from': '2026-09-15',
+        'valid_until': '2026-12-31',
+        'starts_at': '08:00:00',
+        'ends_at': '12:00:00',
+        'visibility': 'authorized_guardians',
+        'assignees': <Object?>[],
+        'can_manage': true,
+      },
+    });
+    final client = _clientFor(backend);
+    addTearDown(client.dispose);
+
+    final application = await SupabaseRoutineRepository(client).fetchApplication('application-1');
+
+    expect(application.startsAt, '08:00');
+    expect(application.endsAt, '12:00');
+  });
+
   test('o lançamento traz autoria contextual e vínculo de turma', () async {
     final backend = _Backend({
       'superadmin_routine_launch_detail': {

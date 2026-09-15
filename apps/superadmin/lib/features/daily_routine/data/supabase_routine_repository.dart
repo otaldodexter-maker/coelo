@@ -91,8 +91,8 @@ final class SupabaseRoutineRepository implements RoutineRepository {
       expectedVersion: _asInt(payload['management_version']),
       validFrom: _optionalDate(payload['valid_from']),
       validUntil: _optionalDate(payload['valid_until']),
-      startsAt: payload['starts_at'] as String?,
-      endsAt: payload['ends_at'] as String?,
+      startsAt: _clockTime(payload['starts_at']),
+      endsAt: _clockTime(payload['ends_at']),
       visibility: payload['visibility'] as String? ?? 'authorized_guardians',
       assignees: _rows(payload['assignees'])
           .map(
@@ -513,6 +513,14 @@ DateTime _date(Object? value) => _optionalDate(value) ?? DateTime.utc(1970);
 
 DateTime? _optionalDate(Object? value) =>
     value is String && value.isNotEmpty ? DateTime.parse(value) : null;
+
+// O servidor devolve `time` como HH:MM:SS; o formulário edita e envia HH:MM.
+String? _clockTime(Object? value) {
+  final text = value?.toString();
+  if (text == null || text.isEmpty) return text;
+  final match = RegExp(r'^(\d{2}:\d{2})(?::\d{2}(?:\.\d+)?)?$').firstMatch(text);
+  return match == null ? text : match.group(1);
+}
 
 String? _optionalDateOnly(DateTime? value) => value == null ? null : _dateOnly(value);
 
