@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "e136d749ad0188491640945807560aa485871a44",
+    "head": "151c4055f8b020d06243ae2cf289d9a6599bf230",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -61,11 +61,30 @@
     ],
     "inheritedOriginCount": 27,
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
-    "activeNonTerminalActionUnion": 78,
-    "nonTerminalByLayer": {
-      "frontend": 64,
-      "backend": 43,
-      "integrated": 77
+    "actionStatusCounts": {
+      "frontend": {
+        "local-green": 30,
+        "pending-verification": 37,
+        "verified": 164
+      },
+      "backend": {
+        "blocked-decision": 2,
+        "deferred-post-mvp": 22,
+        "done": 164,
+        "gate-formal-mvp": 3,
+        "local-green": 16,
+        "not-applicable": 7,
+        "pending-verification": 16,
+        "remote-green": 1
+      },
+      "integrated": {
+        "blocked-environment": 1,
+        "deferred-post-mvp": 22,
+        "flutter-only": 7,
+        "gate-formal-mvp": 3,
+        "pending-verification": 61,
+        "verified-e2e": 137
+      }
     },
     "deferredPostMvpActionCount": 22,
     "excludedCompletedOwnerIds": [
@@ -871,7 +890,7 @@
       "sourceRound": "R14"
     }
   ],
-  "baseReference": "e136d749ad0188491640945807560aa485871a44",
+  "baseReference": "151c4055f8b020d06243ae2cf289d9a6599bf230",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
