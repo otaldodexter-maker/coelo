@@ -132,7 +132,9 @@ altera os contadores centrais.
 
 ## Contadores e arquivos não alterados
 
-Contadores locais: FE 184/231, BE 166/224, E2E 157/192 e Owner 15/53.
-`node docs/reviews/validate-trackers.cjs` passou no encerramento e os arquivos
+Na validação final após o avanço externo de `origin/dev`,
+`node docs/reviews/validate-trackers.cjs` reportou actions 232, activeE2E 193,
+FE 184/232, BE 166/225 e E2E 157/193; Owner 15/53 permanece sem alteração.
+Os arquivos de coordenação
 de coordenação não foram alterados. Não foram alterados cabeçalho ou contadores
 da R14, `current-state.md`, checkpoint ou `entrega-atual.json`.

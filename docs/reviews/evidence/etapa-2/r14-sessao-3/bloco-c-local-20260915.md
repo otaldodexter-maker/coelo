@@ -108,7 +108,7 @@ contador central continua a cargo da coordenação.
 
 Não foi feita alteração em cabeçalho/contadores da R14, `current-state.md`,
 checkpoint ou `entrega-atual.json`. Os contadores locais permanecem FE 184/231,
-BE 166/224, E2E 157/192 e Owner 15/53. Avaliações têm prova real de close/reopen;
+BE 166/225, E2E 157/193 e Owner 15/53. Avaliações têm prova real de close/reopen;
 as telas de perfis de acesso e segurança infantil ficam liberadas
 explicitamente. Forms upload/resolve também ficam liberadas e não foram
 reivindicadas novamente.
