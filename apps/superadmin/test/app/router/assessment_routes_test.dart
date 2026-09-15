@@ -103,7 +103,7 @@ void main() {
       expect(tester.takeException(), isNull, reason: route);
     }
 
-    for (final route in ['/dev/activities/activity-1/assessment-settings']) {
+    for (final route in ['/dev/activities/activity-1/assessment-settings?institutionId=institution-1']) {
       router.go(route);
       await tester.pumpAndSettle();
       expect(find.text('Configuração avaliativa'), findsOneWidget, reason: route);
