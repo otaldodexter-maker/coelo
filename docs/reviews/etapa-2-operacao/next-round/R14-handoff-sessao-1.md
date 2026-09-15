@@ -19,7 +19,6 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | Tela | action_ids | Desde |
 |---|---|---|
 | Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC) | invites.list, invites.resend | 2026-09-15 |
-| Arquivos de Formulários › Upload + Resolver (folga do Bloco C; só E2E) | forms.upload, forms.resolve-file | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -37,6 +36,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | a1129b316 | Bloco B (1/2): `apply-tracker-delta.cjs` aceita `escopo` | — | script |
 | 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 | 98b768526 | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
+| (próximo) | forms.upload + forms.resolve-file FE verified, E2E verified-e2e | — | r14-sessao-1/forms-upload-resolve-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -48,9 +48,10 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 ## Sobra para a R15
 
 - Rotina: `superadmin_routine_application_detail` não expõe o número da versão do modelo; o rótulo "Modelo vinculado · versão N" mostra a revisão da aplicação após o reload (ver `daily-routine-apply-20260915.md`). Contrato antes de mexer no rótulo.
+- Formulários: upload em resposta (Galeria/Foto) exige ocorrência aberta e identificada para o Owner sintético — criar massa; ver `forms-upload-resolve-20260915.md`.
 - Principal: após "Ver como", o cabeçalho não indica o contexto ativo (UX; decisão de design). Ver `shell-switch-context-20260915.md`.
 - owner.r12-05 (contexto Atividade), r12-06 (rotina vinculada na chamada — contrato), r12-08 (massa com ≥2 alunos) — ver avisos acima.
 
 ## Contadores
 
-FE 175/231, BE 166/224, E2E 148/192, Owner 13/53 (após child-safety.child).
+FE 177/231, BE 166/224, E2E 150/192, Owner 13/53 (após forms.upload/resolve-file).

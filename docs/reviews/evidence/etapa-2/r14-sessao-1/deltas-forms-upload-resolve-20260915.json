@@ -1,0 +1,54 @@
+[
+ {
+  "action_id": "forms.upload",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: Imagens da pergunta com seletor nativo real (CDP), PNG confirmado e relido apos reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+   "revision": "065a5a59f",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.upload",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: prepare/PUT R2/finalize (question-image) em producao pela tela + reload + negativa FORM_MEDIA_NOT_FOUND. Upload em resposta fica como sobra de massa.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+   "revision": "065a5a59f",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.resolve-file",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: Ver imagem abre /forms/media/:assetId e renderiza a midia protegida do R2.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+   "revision": "065a5a59f",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.resolve-file",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: superadmin_form_media_resolve_v2 + ticket R2 pela tela; negativa 404 FORM_MEDIA_NOT_FOUND.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/forms-upload-resolve-20260915.md",
+   "revision": "065a5a59f",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T12:10:00-03:00"
+  }
+ }
+]
