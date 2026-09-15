@@ -80,14 +80,18 @@ def collect(root, report):
     facts = dict(root=str(root), baseValid=base!=head and subprocess.run(
                      ['git','merge-base','--is-ancestor',base,head],cwd=root).returncode==0,
                  validSuccessors=[], dirty=git('status', '--porcelain').splitlines(),
+                 worktreeDirty={},
                  divergence=[int(n) for n in git('rev-list','--left-right','--count','HEAD...origin/dev').split()],
                  stash=git('stash','list','--format=%gd').splitlines(), worktrees=[], branches={}, missingSkillFiles=[])
     for block in git('worktree','list','--porcelain').split('\n\n'):
         meta=dict(line.split(' ',1) if ' ' in line else (line,'') for line in block.splitlines())
         facts['worktrees'].append(str(Path(meta['worktree']).resolve()))
         dirty=git('-C',meta['worktree'],'status','--porcelain')
-        if dirty:
-            facts['dirty'].append('worktree:'+meta['worktree'])
+        if dirty and str(Path(meta['worktree']).resolve()) != str(root):
+            # Active R14 sessions may retain untracked captures/handoffs. They
+            # are not the delivery destination and are validated separately by
+            # the protected-worktree disposition below.
+            facts['worktreeDirty'][str(Path(meta['worktree']).resolve())] = dirty.splitlines()
         if 'branch' not in meta:
             exclusive=git('rev-list',meta['HEAD'],'--not','origin/dev').splitlines()
             if exclusive:

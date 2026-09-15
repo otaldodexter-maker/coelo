@@ -55,6 +55,17 @@ class DeliveryGateTests(unittest.TestCase):
             facts = {**self.facts, **change}
             self.assertTrue(self.errors(facts=facts))
 
+    def test_protected_worktree_wip_does_not_dirty_destination(self):
+        facts = {**self.facts, 'worktrees': ['target', 'session'],
+                 'worktreeDirty': {'session': ['?? captures/']}}
+        report = {**self.report, 'protectedWorktrees': {'session': {
+            'disposition': 'retained-active-r14',
+            'reason': 'Sessão ativa',
+            'branch': 'r14/session',
+            'sha': 'abc',
+        }}}
+        self.assertEqual(self.errors(report=report, facts=facts), [])
+
     def test_missing_target_skill_forbids_delivery(self):
         self.facts['missingSkillFiles'] = ['coelo-ui/SKILL.md']
         self.assertTrue(self.errors())

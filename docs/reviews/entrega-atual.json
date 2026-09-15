@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02",
+    "head": "ee179b1e1474eef594a131b95f762df0dc41d647",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -906,11 +906,23 @@
       "branch": "r14/bloco-ab",
       "sha": "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02"
     },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-c": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
+      "branch": "r14/bloco-c",
+      "sha": "ee179b1e1474eef594a131b95f762df0dc41d647"
+    },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-cd",
-      "sha": "9bda5bc84dd9ad206370f23511dd85bf58e04d03"
+      "sha": "ee179b1e1474eef594a131b95f762df0dc41d647"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-e": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
+      "branch": "r14/bloco-e",
+      "sha": "a85ac01c45dac2a615dab3fcffd64eaedcb9ff02"
     }
   },
   "preservedStash": {},
