@@ -3,7 +3,7 @@ title: "Backlog de limpeza de artefatos Coelo"
 source: "Owner em 2026-09-14; docs/agent/artifact-inventory-20260914.json; auditoria paralela de artefatos"
 status: "active"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 audience: "team"
 ---
 
@@ -44,10 +44,10 @@ Não remover `activity-patch-tree`, `staged-groups-validation`, `chrome-preview`
 
 ## Bloqueios e retenções
 
-- Capturas WIP atuais de R13: manter até o Claude classificar cada uma e fechar
-  Saúde/Cuidado e Medicamentos. Não fazer `git add -A`, stash, revert ou remoção.
+- Capturas WIP da R13/R14: manter como proveniência até a sessão executora
+  classificar cada uma. Não fazer `git add -A`, stash, revert ou remoção.
 - `.claude/settings*.json`, `launch.json` e junctions de skills: manter; revisar
-  permissões depois da R13.
+  permissões depois do fechamento da R14.
 - `.superpowers/brainstorm` e `.superpowers/sdd`: manter enquanto houver estado
   de trabalho ou referência ativa.
 - `.recovery-archives`: somente deduplicar/comprimir após inventário de nomes,
@@ -72,7 +72,8 @@ rodar os validadores de rastreadores, o gate de memória e o delivery gate.
 
 ## Próxima sessão
 
-1. Reconciliar as capturas WIP com o Claude e fechar R13.
+1. Reconciliar as capturas WIP com a sessão executora e fechar a R14 quando a
+   execução de produto terminar.
 2. Fazer inventário file-level de L3–L5 sem abrir dados sensíveis.
 3. Substituir no relatório as evidências históricas que deixarem de ser
    necessárias antes de arquivar documentos R01–R12.
