@@ -1,0 +1,10 @@
+[
+ {"action_id":"agenda.request","camada":"frontend","estado_proposto":"verified",
+  "delta":"R14 S1 rota real: tabela de aprovacoes, decidir (aprovar/recusar) com justificativa obrigatoria, historico em dialogo; defeito de rotulos pos-decisao corrigido (teste vermelho->verde, 55/55).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md","revision":"7782dc6a9","environment":"producao","recordedAt":"2026-09-15T10:00:00-03:00"}},
+ {"action_id":"agenda.request","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R14 S1: rascunho pela tela + request_publication (RPC autorizada) + decisao pela tela (b82f6714 approved, 98b763e0 rejected) relida em producao + reload + negativa 22023/instituicao alheia vazia.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md","revision":"7782dc6a9","environment":"producao","recordedAt":"2026-09-15T10:00:00-03:00"}}
+]

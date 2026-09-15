@@ -214,9 +214,20 @@ final class SupabaseAgendaRepository extends AgendaRepository {
       if (index < 0) {
         _publicationRequests = [..._publicationRequests, mapped];
       } else {
-        _publicationRequests[index] = mapped;
+        // A RPC de decisão devolve só ids (sem title/institution_name/
+        // requested_by_name); a linha carregada mantém os rótulos até a releitura.
+        final existing = _publicationRequests[index];
+        _publicationRequests[index] = existing.decided(
+          status: mapped.status,
+          decidedBy: mapped.decidedBy ?? decidedBy,
+          decidedAt: mapped.decidedAt ?? DateTime.now(),
+          reason: mapped.reason ?? reason.trim(),
+        );
       }
       await loadItem(mapped.itemId);
+      if (!_canApply(epoch)) return _staleMutationResult;
+      // Rótulos da decisão (decided_by_name) vêm do servidor, não do cliente.
+      await loadRequests();
       if (!_canApply(epoch)) return _staleMutationResult;
       return AgendaMutationResult.success;
     } on PostgrestException catch (error) {

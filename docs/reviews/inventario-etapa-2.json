@@ -4086,15 +4086,15 @@
       "family": "agenda",
       "screen": "Agenda / Solicitar",
       "scope": "mvp",
-      "done": "Retomada R12: superfície alterada; confirmar rota normal, persistência/reload e escopo real. Testes locais não certificam o aceite integrado.",
-      "fe": "R12-42: linha canônica de 64px, alinhamento compartilhado e histórico completo em diálogo; testes funcionais 6/6. Revisão visual e rota normal pendentes.",
+      "done": "R14 S1: rascunho pela tela + request_publication (RPC autorizada) + decisao pela tela (b82f6714 approved, 98b763e0 rejected) relida em producao + reload + negativa 22023/instituicao alheia vazia.",
+      "fe": "R14 S1 rota real: tabela de aprovacoes, decidir (aprovar/recusar) com justificativa obrigatoria, historico em dialogo; defeito de rotulos pos-decisao corrigido (teste vermelho->verde, 55/55).",
       "be": "R05: rascunho -> superadmin_agenda_command request_publication -> superadmin_agenda_requests lista pending -> superadmin_agenda_decide_publication aprova -> evento published -> reload; 20260911190100 (rotulos: title, institution_name, requested_by_name, decided_by_name) em producao (lote 43), pgTAP agenda_requests_labels_v1_test 7/7; RLS/grants por 200300 (pgTAP 22 com negativas).",
-      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; superadmin_agenda_requests recriada; nao exercida com dados; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-07-approvals-approved.png; ui-08-approvals-reload.png; evidence/etapa-2/r05-publicacoes-agenda/handoff.md; docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
+      "evidence": "specs/050-superadmin-agenda-backend.md; commitsf8a04b3a/4daeafb9/fe6f6b51; codex/e2e-agenda-operacoes@ca4c82ab; Fechamento R01 C03/r33; C03r33 final; contrato de localização/composição ainda aberto; etapa-2-operacao/reports/R01-fechamento-20260909.md; commit 29fa6ff13; apps/superadmin/test/features/agenda/data/supabase_agenda_repository_test.dart -> 54 PASS; suite de Agenda 261 PASS; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; superadmin_agenda_requests recriada; nao exercida com dados; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r05-publicacoes-agenda/ui/ui-07-approvals-approved.png; ui-08-approvals-reload.png; evidence/etapa-2/r05-publicacoes-agenda/handoff.md; docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md; docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 33,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:14-03:00",
@@ -4106,16 +4106,16 @@
           "recordedAt": "2026-09-11T14:40:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/ui/ui-08-approvals-reload.png",
-          "revision": "66a52986f",
-          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
-          "recordedAt": "2026-09-11T14:40:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
+          "revision": "7782dc6a9",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T10:00:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-publicacoes-agenda/handoff.md",
-          "revision": "66a52986f",
-          "environment": "build web profile de test_driver/qa_main.dart contra producao, sessao qa-r03, Chrome via CDP",
-          "recordedAt": "2026-09-11T14:40:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
+          "revision": "7782dc6a9",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T10:00:00-03:00"
         }
       }
     },
@@ -9218,7 +9218,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T12:42:45.420Z",
+  "updatedAt": "2026-09-15T12:59:38.906Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

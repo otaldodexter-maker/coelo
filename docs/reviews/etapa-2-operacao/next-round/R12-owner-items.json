@@ -814,16 +814,16 @@
   },
   {
     "id": "owner.r12-42",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "agenda.request"
     ],
-    "fe": "FE local-green: tabela canônica com linha de 64 px, alinhamento compartilhado e histórico completo em diálogo.",
-    "be": "BE preservado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Provar rota normal, decisão/reload e revisar goldens da tabela; investigar golden de calendário loading dark 375.",
+    "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela canônica, decisão aprovar/recusar com justificativa, histórico em diálogo, reload e negativa; defeito de rótulos pós-decisão corrigido (teste vermelho→verde). Golden de calendário loading dark 375 fica fora deste action_id.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

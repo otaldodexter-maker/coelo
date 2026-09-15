@@ -384,7 +384,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-19 e fontes antes de executar na cota R14 autorizada.",
+      "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -441,7 +441,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-23 e fontes antes de executar na cota R14 autorizada.",
+      "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -594,7 +594,7 @@
       "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura explícita da R14.",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
       "sourceRound": "R14"
     },
     {
@@ -721,16 +721,16 @@
     },
     {
       "id": "owner.r12-42",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "agenda.request"
       ],
-      "fe": "FE local-green: tabela canônica com linha de 64 px, alinhamento compartilhado e histórico completo em diálogo.",
-      "be": "BE preservado.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
       "owner": "C0 R14",
-      "nextGate": "Provar rota normal, decisão/reload e revisar goldens da tabela; investigar golden de calendário loading dark 375.",
+      "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela canônica, decisão aprovar/recusar com justificativa, histórico em diálogo, reload e negativa; defeito de rótulos pós-decisão corrigido (teste vermelho→verde). Golden de calendário loading dark 375 fica fora deste action_id.",
       "sourceRound": "R14"
     },
     {
@@ -1977,7 +1977,10 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-    "docs/reviews/inventario-etapa-2.json"
+    "docs/reviews/inventario-etapa-2.json",
+    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md"
   ],
   "trackerActionIds": [
     "auth.login",

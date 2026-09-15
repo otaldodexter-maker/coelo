@@ -939,6 +939,73 @@ void main() {
     expect(repository.requests.map((request) => request.id), isNot(contains(contains('fixture'))));
   });
 
+  test('decisão preserva rótulos da linha carregada quando a RPC devolve só ids', () async {
+    // R14 (rota real 15/09): superadmin_agenda_decide_publication não devolve
+    // title/institution_name/requested_by_name; a linha não pode regredir a UUIDs
+    // até o próximo reload.
+    var decided = false;
+    final client = _client((request) async {
+      final body = jsonDecode(request.body) as Map<String, dynamic>;
+      if (request.url.path.endsWith('superadmin_agenda_requests')) {
+        if (body['p_kind'] != 'publication') return _json(request, const []);
+        return _json(request, [
+          {
+            'id': _publicationRequestId,
+            'event_id': _eventId,
+            'title': 'Reunião pedagógica',
+            'institution_id': _institutionId,
+            'institution_name': 'Escola Sintética',
+            'requested_by_person_id': _personId,
+            'requested_by_name': 'Operador interno',
+            'requested_at': '2026-09-03T10:00:00Z',
+            'status': decided ? 'approved' : 'pending',
+            if (decided) 'decided_by_person_id': _personId,
+            if (decided) 'decided_by_name': 'Owner Coelo',
+            if (decided) 'decided_at': '2026-09-15T12:46:00Z',
+            if (decided) 'reason': 'Aprovado na rota real',
+          },
+        ]);
+      }
+      if (request.url.path.endsWith('superadmin_agenda_decide_publication')) {
+        decided = true;
+        return _json(request, {
+          'id': _publicationRequestId,
+          'event_id': _eventId,
+          'institution_id': _institutionId,
+          'requested_by_person_id': _personId,
+          'requested_at': '2026-09-03T10:00:00Z',
+          'status': 'approved',
+          'decided_by_person_id': _personId,
+          'decided_at': '2026-09-15T12:46:00Z',
+          'reason': 'Aprovado na rota real',
+        });
+      }
+      if (request.url.path.endsWith('superadmin_agenda_get')) {
+        return _json(request, _eventJson(id: _eventId, revision: 2, status: 'published'));
+      }
+      return _json(request, const {});
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseAgendaRepository(client, requestId: () => _requestId);
+    await repository.loadRequests();
+
+    final result = await repository.decidePublicationRequest(
+      requestId: _publicationRequestId,
+      approve: true,
+      decidedBy: 'Marina Oliveira',
+      reason: 'Aprovado na rota real',
+    );
+
+    expect(result, AgendaMutationResult.success);
+    final request = repository.publicationRequests.single;
+    expect(request.status, AgendaPublicationRequestStatus.approved);
+    expect(request.title, 'Reunião pedagógica');
+    expect(request.contextLabel, 'Escola Sintética');
+    expect(request.requestedBy, 'Operador interno');
+    expect(request.decidedBy, 'Owner Coelo');
+    expect(request.reason, 'Aprovado na rota real');
+  });
+
   test('falha fechada para escopo de recorrência não suportado pelo backend', () async {
     final client = _client((request) async => _json(request, const {}));
     addTearDown(client.dispose);

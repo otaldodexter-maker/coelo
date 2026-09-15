@@ -18,13 +18,14 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Agenda › Solicitar | agenda.request | 2026-09-15 |
+| Assiduidade › Nova chamada (+ Rotina › Aplicar) | attendance.create, daily-routine.apply | 2026-09-15 |
 
 ## Fatias entregues
 
 | SHA | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|
-| (este commit) | circulars.attach FE verified, E2E verified-e2e (Circulares 11/11) | — | r14-sessao-1/circulars-attach-20260915.md |
+| 7782dc6a9 | circulars.attach FE verified, E2E verified-e2e (Circulares 11/11) | — | r14-sessao-1/circulars-attach-20260915.md |
+| (próximo) | agenda.request FE verified, E2E verified-e2e (Agenda 7/7); correção FE em supabase_agenda_repository.dart | owner.r12-42 done | r14-sessao-1/agenda-request-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -36,4 +37,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 165/231, BE 164/224, E2E 138/199, Owner 9/53 (após circulars.attach).
+FE 166/231, BE 164/224, E2E 139/199, Owner 10/53 (após agenda.request).
