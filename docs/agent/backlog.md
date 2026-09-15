@@ -20,6 +20,24 @@ Use os itens não terminais da fila R14 e o inventário por `action_id`. Itens
 explicitamente `deferred-post-mvp` continuam registrados, mas não bloqueiam o
 MVP e não devem ser implementados por inferência.
 
+## Decisões do Owner de 15/09/2026 (abertura da execução da R14)
+
+Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
+`docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`:
+
+- **Execução paralela:** duas sessões executoras (Blocos A–B e C–D) em worktrees
+  próprias com push para `dev` por rebase; a sessão do Codex coordena e atualiza os MDs.
+- **Bloco B autorizado:** `plans.assign`, `institutions.status`,
+  `institutions.locations-map` e `catalog.*` (4) saem do ativo (`deferred-post-mvp`);
+  E2E ativo 199 → 192. FE e BE não mudam de denominador. MFA já era gate formal.
+- **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
+- **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou
+  suspende por período) → spec de ciclo de vida na R15.
+- **OQ-034:** Locais com mapa por imagem inteira na R15.
+- **Bloco C** na ordem Cardápios → Segurança infantil → Arquivos de Formulários →
+  Fechar/Reabrir → Perfis de acesso; **Bloco D** completo, incluindo `localhost` na
+  allowlist de redirect do Supabase Auth (não toca SMTP, DNS, senha nem token).
+
 ## Decisões do Owner de 14/09/2026 sobre escopo (fora da fila R14)
 
 Registradas no fechamento da R13; valem como direção até virarem ADR/spec.

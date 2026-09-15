@@ -34,7 +34,7 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 9. Chat › Criar grupo (`chat.create-group`).
 10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
 
-**Bloco B — reclassificação autorizada pelo Owner (sai do denominador ativo, sem código):**
+**Bloco B — reclassificação autorizada pelo Owner em 15/09 (só o E2E ativo muda: 199 → 192; FE 231 e BE 224 ficam):**
 11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
     → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
     Fecha Planos 4/4 e Usuários internos 4/4.
@@ -222,8 +222,9 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 Fora do MVP: `plans.assign`, Financeiro, `institutions.status`, `institutions.locations-map`, MFA ×3.
 V1/Etapa 3: Catálogo de UI. Formulários autosave (H11): V1 se for caro, salvo se >60% pronto.
 Etapa 3: 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
-Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). Decidir na abertura: OQ-033 (ativar/inativar/excluir em tudo). R15: OQ-034 Locais com mapa por imagem e hierarquia (substitui `institutions.locations-map`). Na abertura da R14, explicar esses temas
-ao Owner de forma visual antes de executar.
+Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em 15/09: opção B + regra de pessoas) e OQ-034 Locais com mapa por imagem (confirmado em 15/09; substitui `institutions.locations-map`).
+
+**15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C, Bloco D completo com `localhost` no Auth). Duas sessões executam em paralelo; a coordenadora (Codex) atualiza este arquivo.
 
 ## Como atualizar
 
@@ -231,3 +232,4 @@ ao Owner de forma visual antes de executar.
 - Owner items: editar a linha aqui e rodar `node docs/reviews/etapa-2-operacao/next-round/sync-r12-owner-records.cjs`.
 - H e itens da ADR: editar a linha aqui. Nunca editar R12/R13 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
+- Execução paralela (sessões, worktrees, handoffs): `R14-execucao-paralela.md`. Handoffs `R14-handoff-sessao-1.md`/`-2.md` são comunicação, não fila.

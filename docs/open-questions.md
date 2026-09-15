@@ -3,7 +3,7 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-12"
+updated_at: "2026-09-15"
 lifecycle: "current"
 reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038"
 ---
@@ -19,6 +19,16 @@ reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038
 
 ## OQ-033 — Ciclo de vida ativar/inativar/excluir em todas as entidades (2026-09-15)
 
+**Decidido pelo Owner em 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): opção B.**
+Exclusão real só para registros sem vínculo nem trilha de auditoria (ex.: turma vazia
+criada por engano); nos demais, exclusão lógica (some das telas, fica no histórico).
+Ativar/inativar vale para todas as entidades. Regra adicional do Owner: **instituição e
+unidade não excluem pessoas, só desvinculam** — a pessoa pertence ao app; apenas o
+superadmin pode excluir ou **suspender por período** (de/até). Implementação: spec de
+ciclo de vida na **R15**; `institutions.status` volta ao escopo dentro dela. Registro
+histórico da pergunta:
+
+
 Owner: instituições, unidades, turmas, atividades, pessoas, formulários "e tudo mais"
 devem poder ser **ativados, inativados e excluídos**. Conflito a decidir: as fontes
 vigentes (AGENTS.md, ADR 0032, LGPD/auditoria) pedem "arquivar, não apagar" para
@@ -29,6 +39,9 @@ manifesto e retenção. Sem decisão, `institutions.status` (ativar/desativar) c
 fora do MVP por R12-53. Decidir na abertura da R14.
 
 ## OQ-034 — Locais: mapa da instituição por imagem, mídia com visibilidade e hierarquia (2026-09-15, refinado)
+
+**Confirmado pelo Owner em 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): vai inteira para a
+R15 como spec própria; nada de Locais na R14.**
 
 Direção do Owner para a tela **Operação › Locais** (spec nova, **R15**, aprovada em
 intenção; substitui a ação `institutions.locations-map`, que fica fora do MVP até lá):

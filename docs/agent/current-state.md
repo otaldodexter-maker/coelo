@@ -22,8 +22,12 @@ audience: "team"
   Bloco A de `R14-pendencias.md` — ações que só precisam de E2E e fecham a tela
   (`circulars.attach`, `agenda.request`, `attendance.create`, `daily-routine.apply`,
   `acontece.create`, …); Cardápios vem no Bloco C.
-- Na retomada da R14, manter visíveis os temas listados em `docs/agent/backlog.md`
-  (decisões de 14/09); não reabrir decisões já registradas na ADR 0038.
+- 15/09: temas de abertura explicados e decididos pelo Owner (artefato
+  89AVWHKEnq5hrvYN6SFv6M; `docs/agent/backlog.md`, seção de 15/09). A R14 executa em
+  **paralelo**: Sessão 1 (Blocos A–B) e Sessão 2 (Blocos C–D) em worktrees próprias,
+  coordenadora Codex na pasta principal — papéis, portas, fluxo git e handoffs em
+  `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
+  Não reabrir decisões já registradas na ADR 0038.
 
 ## Fonte da fila atual
 
