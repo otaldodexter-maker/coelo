@@ -150,6 +150,7 @@ Deno.serve(async (request) => {
       const signed = await r2.presignGet(String(descriptor.object_key), ttl);
       return reply(origin, 200, {
         attachment_id: descriptor.attachment_id,
+        asset_id: descriptor.attachment_id,
         signed_url: signed.url.toString(),
         file_name: descriptor.file_name,
         content_type: descriptor.content_type,
@@ -178,6 +179,7 @@ Deno.serve(async (request) => {
       return reply(origin, 200, {
         message_id: prepared.message_id,
         attachment_id: prepared.attachment_id,
+        asset_id: prepared.attachment_id,
         object_key: prepared.object_key,
         upload_url: signed.url.toString(),
         required_headers: signed.requiredHeaders,
@@ -224,7 +226,8 @@ Deno.serve(async (request) => {
         const code = (data.error as Json | undefined)?.code;
         throw new Error(typeof code === "string" ? code.toLowerCase() : "attachment_finalize_failed");
       }
-      return reply(origin, 200, data.data as Json);
+      const result = data.data as Json;
+      return reply(origin, 200, { ...result, asset_id: result.attachment_id });
     }
     return reply(origin, 400, { error: "invalid_request" });
   } catch (error) {
