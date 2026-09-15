@@ -1,0 +1,114 @@
+[
+ {
+  "action_id": "plans.assign",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "plans.assign",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "institutions.status",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; spec de ciclo de vida OQ-033, R15",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "institutions.status",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; spec de ciclo de vida OQ-033, R15",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "institutions.locations-map",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; substituída pela spec de Locais, R15",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "institutions.locations-map",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; substituída pela spec de Locais, R15",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.list",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.list",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.validate",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.validate",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.sync",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.sync",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.publish",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "catalog.publish",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M): fora do MVP; V1 ou Etapa 3, a definir",
+  "evidencia": "docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md",
+  "escopo": "deferred-post-mvp"
+ }
+]

@@ -32,7 +32,9 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 8b99d9a06 | shell.switch-context FE verified (flutter-only; Shell 5/5) | — | r14-sessao-1/shell-switch-context-20260915.md |
 | d5f8bbe70 | activities.list + activities.publish FE verified, E2E verified-e2e (Atividades 7/7); correção FE em supabase_activity_command_repository.dart (publish chega ao servidor) | owner.r12-03 done | r14-sessao-1/activities-list-publish-20260915.md |
 | 3f3579c54 | chat.create-group E2E verified-e2e | — | r14-sessao-1/chat-create-group-20260915.md |
-| (próximo) | units.error + units.access-denied FE verified, BE done, E2E verified-e2e (Unidades 10/10) | — | r14-sessao-1/units-error-access-denied-20260915.md |
+| 95b9f81cb | units.error + units.access-denied FE verified, BE done, E2E verified-e2e (Unidades 10/10) | — | r14-sessao-1/units-error-access-denied-20260915.md |
+| a1129b316 | Bloco B (1/2): `apply-tracker-delta.cjs` aceita `escopo` | — | script |
+| (próximo) | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 
 ## Avisos para a outra sessão
 
@@ -48,4 +50,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 174/231, BE 166/224, E2E 147/199, Owner 11/53 (após units.error/access-denied).
+FE 174/231, BE 166/224, E2E 147/192, Owner 11/53 (após o Bloco B; E2E ativo 199 → 192).
