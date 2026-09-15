@@ -1,22 +1,22 @@
 {
-  "schema": "r13-current-delivery-report-v1",
-  "generatedAt": "2026-09-14",
+  "schema": "r14-current-delivery-report-v1",
+  "generatedAt": "2026-09-15",
   "reportType": "current-cut-reconciliation",
   "completion": "partial",
   "asOf": {
-    "round": "R13",
-    "roundStatus": "active-paused",
-    "nextRound": "R14 prepared-not-started",
+    "round": "R14",
+    "roundStatus": "active",
+    "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "046f8efd40d61b259424eae7afa29284f185f983",
+    "head": "adf6cd72f4e1e14815422bc854b72c71b3ac53dd",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
-    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
-    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json",
-    "ownerQueueProjection": "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
+    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md",
+    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
+    "ownerQueueProjection": null,
     "inventory": "docs/reviews/inventario-etapa-2.json",
     "artifactInventory": "docs/agent/artifact-inventory-20260914.json",
     "trackers": [
@@ -26,10 +26,10 @@
     ]
   },
   "currentQueue": {
-    "scope": "R13 vigente; R14 preparada sem execução",
+    "scope": "R14 vigente; R15 não aberta",
     "ownerTotal": 53,
-    "ownerPendingCount": 47,
-    "ownerDoneCount": 6,
+    "ownerPendingCount": 44,
+    "ownerDoneCount": 9,
     "inheritedOriginIds": [
       "H02",
       "H03",
@@ -60,7 +60,7 @@
       "H28"
     ],
     "inheritedOriginCount": 27,
-    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
+    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
     "activeNonTerminalActionUnion": 78,
     "nonTerminalByLayer": {
       "frontend": 64,
@@ -74,22 +74,25 @@
       "owner.r12-43"
     ],
     "completedInR13OwnerIds": [
+      "owner.r12-28",
+      "owner.r12-31",
+      "owner.r12-32",
       "owner.r12-48",
       "owner.r12-50",
       "owner.r12-51"
     ]
   },
   "metrics": {
-    "frontendVerified": "157/231 (67.97%)",
-    "frontendLocalGreen": "37/231 (16.02%)",
+    "frontendVerified": "164/231 (71.00%)",
+    "frontendLocalGreen": "30/231 (12.99%)",
     "backendDone": "164/224 (73.21%)",
     "backendLocalGreen": "16/224 (7.14%)",
-    "e2eVerified": "130/199 (65.33%)",
-    "e2ePlusFlutterOnly": "137/231 (59.31%)",
-    "ownerDone": "6/53 (11.32%)",
-    "ownerNonTerminal": "47/53 (88.68%)"
+    "e2eVerified": "137/199 (68.84%)",
+    "e2ePlusFlutterOnly": "144/231 (62.34%)",
+    "ownerDone": "9/53 (16.98%)",
+    "ownerNonTerminal": "44/53 (83.02%)"
   },
-  "firstGate": "Saúde/Cuidado na rota real",
+  "firstGate": "Circulares › Anexos (circulars.attach)",
   "ownerItems": [
     {
       "id": "owner.r12-01",
@@ -101,9 +104,9 @@
       "be": "Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card.",
       "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-02",
@@ -116,9 +119,9 @@
       "be": "Sem RPC/RLS novo; arquivamento não executado.",
       "e2e": "Pendente por contrato de archive, confirmação, versão, auditoria e reload.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-03",
@@ -130,9 +133,9 @@
       "be": "Contrato preservado, sem mutação nova.",
       "e2e": "Pending-verification: superfície mudou; rota normal/reload/escopo pendentes.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Conferir rota normal, os dois estados, filtros/paginação, reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-04",
@@ -145,9 +148,9 @@
       "be": "Dashboard e contratos preservados; nenhum SQL/RPC novo.",
       "e2e": "Pendente por definição de tela/rota canônica e mapeamento.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-05",
@@ -159,9 +162,9 @@
       "be": "Contrato preservado; servidor continua revalidando escopo/capacidade.",
       "e2e": "Pending-verification: rota normal, persistência/reload e escopo real pendentes.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Reproduzir com contexto real autorizado, atividade elegível, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-06",
@@ -174,9 +177,9 @@
       "be": "Contrato server-side preservado; sem RPC/RLS novo.",
       "e2e": "Pending-verification: rota normal, rotina/versão, persistência/reload e negativa cross-tenant pendentes.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Reproduzir com contexto real autorizado, confirmar rotina efetiva/versionamento e snapshot no servidor, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-07",
@@ -192,7 +195,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-08",
@@ -207,9 +210,9 @@
       "be": "Contratos preservados; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification: rota normal, massa suficiente, persistência/reload e negativa cross-tenant pendentes.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Reproduzir pela rota normal com múltiplos alunos/turmas e rotina vinculada; registrar payload/versão, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-09",
@@ -221,9 +224,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Owner decision pending antes de alterar composição ou dados.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-10",
@@ -235,9 +238,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Bloqueado por reconciliação visual e decisão sobre referência.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Comparar aprovado/failure lado a lado, localizar diferença e corrigir ou obter decisão do Owner sem regenerar baseline por inferência.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-11",
@@ -247,9 +250,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Visual golden pendente de reconciliação; sem action_id novo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Comparar goldens aprovado/failure e confirmar com Owner se a composição 2×2 atende antes de alterar.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-12",
@@ -261,9 +264,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification: golden, rota normal, reload e escopo autorizado.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Revisar golden aprovado/failure e provar rota normal, reload e escopo autorizado da criança.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-13",
@@ -276,9 +279,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Visual/E2E pendente para referência, rota normal, escopo e reload.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Comparar referência e provar create/edit pela rota normal com ator/criança autorizados.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-14",
@@ -290,9 +293,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification: locale, rota normal, reload e escopo autorizado.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Confirmar idioma suportado e provar rótulos na rota normal com dados autorizados.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-15",
@@ -306,9 +309,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification: rota normal, auditoria/retry, reload e negativa cross-tenant.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar estados pendente/aprovado ativo/suspenso pela rota normal e escopo do ator.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-16",
@@ -320,9 +323,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification de rota normal e escopo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar teclado/rota normal sem salto e sem perda de dados.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-17",
@@ -335,9 +338,9 @@
       "be": "Sem alteração backend; não criar busca fake.",
       "e2e": "Contract decision pending.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Aprovar reader/contrato de busca e vínculo real antes de implementar.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-18",
@@ -349,9 +352,9 @@
       "be": "Nenhuma tabela/RPC criada.",
       "e2e": "Contract decision pending.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Definir obrigatoriedade, identificação, deduplicação, auditoria e escopo.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-19",
@@ -361,9 +364,9 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
-      "sourceRound": "R13"
+      "owner": "C0 R14",
+      "nextGate": "Reconciliar R12-19 e fontes antes de executar na cota R14 autorizada.",
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-20",
@@ -375,9 +378,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar rota normal, quantidade arbitrária de registros, golden aprovado, reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-21",
@@ -389,9 +392,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar rota normal, catálogo real, golden aprovado, reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-22",
@@ -404,9 +407,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar criação/edição pela rota normal, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-23",
@@ -418,9 +421,9 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
-      "sourceRound": "R13"
+      "owner": "C0 R14",
+      "nextGate": "Reconciliar R12-23 e fontes antes de executar na cota R14 autorizada.",
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-24",
@@ -433,9 +436,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar catálogo real, rota normal, foco/toque, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-25",
@@ -448,9 +451,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar catálogo real, rota normal, responsividade, persistência/reload e negativa cross-tenant.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-26",
@@ -462,9 +465,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar rota normal e persistência da edição; aprovação visual do Owner permanece separada.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-27",
@@ -477,9 +480,9 @@
       "be": "BE inalterado; conflito Principal em R12-23 separado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Conferir catálogo real/traduções, alcance, ações adiadas e salvar/reload sem perder próprias/todas.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-28",
@@ -491,9 +494,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): edição com o nome real da criança (correção 165d3df8c), sinal salvo (version 1→2) e relido após reload.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-29",
@@ -507,9 +510,9 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; o apontamento de CRUD individual por registro segue aberto.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Exercitar dois registros de alergia independentes na rota real (adicionar/remover) e reload.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-30",
@@ -523,9 +526,9 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; o apontamento de CRUD individual por orientação segue aberto.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Exercitar duas orientações independentes na rota real e reload.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-31",
@@ -538,9 +541,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): criação Paracetamol R13 (10 ml, oral, vigência, 08:00, Seg/Qua) e edição da dose 5→7 ml da Dipirona R06, persistidas e relidas. Responsável depende de owner.r12-33 (R14).",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-32",
@@ -555,9 +558,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): diretório lista os planos reais por criança com contexto explícito; detalhe/criação/edição provados e relidos.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-33",
@@ -571,9 +574,9 @@
       "be": "Contratos e persistência a verificar.",
       "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
-      "owner": "C0 R13",
-      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
-      "sourceRound": "R13"
+      "owner": "C0 R14",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura explícita da R14.",
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-34",
@@ -586,9 +589,9 @@
       "be": "BE compatível sem mudança SQL.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar adicionar/renomear/duplicar/reordenar e reload pela rota real.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-35",
@@ -601,9 +604,9 @@
       "be": "BE compatível sem mudança SQL.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar adicionar/editar/remover e reload pela rota real; RLS e aprovação visual permanecem pendentes.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-36",
@@ -617,9 +620,9 @@
       "be": "BE contrato existente, sem SQL novo.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar instante no Supabase real e visibilidade antes/depois da publicação agendada.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-37",
@@ -632,9 +635,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar edição sem apagar exceções históricas e reload real.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-38",
@@ -649,9 +652,9 @@
       "be": "Adapter composto ainda usa Supabase Storage em upload/leitura, incompatível com R2 privado.",
       "e2e": "E2E não executado.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-39",
@@ -664,9 +667,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar save/reload e posição final pela rota normal.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-40",
@@ -679,9 +682,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar persistência/reload e nome na prévia pela rota normal.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-41",
@@ -695,7 +698,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-42",
@@ -707,9 +710,9 @@
       "be": "BE preservado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Provar rota normal, decisão/reload e revisar goldens da tabela; investigar golden de calendário loading dark 375.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-43",
@@ -723,7 +726,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-44",
@@ -735,9 +738,9 @@
       "be": "Contrato preservado; nenhum envio/reenvio executado.",
       "e2e": "Pending-verification: composição mudou e rota normal/reload/escopo precisam de nova prova.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-45",
@@ -749,9 +752,9 @@
       "be": "RPC v2 e contrato preservados; nenhum envio real.",
       "e2e": "Pending-verification: falta convite expirado real, recibo, reload e escopo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez, provar recibo/link de uso único, reload e negativa cross-tenant; não simular SMTP/Admin API.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-46",
@@ -763,9 +766,9 @@
       "be": "BE remote-green (lote 63): sigla/cor/celular em produção; foto R2 ausente.",
       "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-47",
@@ -778,9 +781,9 @@
       "be": "Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist.",
       "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-48",
@@ -795,7 +798,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): rascunho b04c879e carregado e salvo pela tela (version 2→3), reload relê, negativa por id inexistente; activities.publish já era done. Capturas em r13-coordenacao/capturas.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-49",
@@ -811,9 +814,9 @@
       "be": "BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green.",
       "e2e": "verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-50",
@@ -827,7 +830,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): /groups com Alunos 1 e Atividades 3 na turma 4214106c, busca \"R05\" (hotfix lote 64), reload mantém, negativa por instituição alheia. Capturas em r13-coordenacao/capturas.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-51",
@@ -839,7 +842,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-52",
@@ -851,9 +854,9 @@
       "be": "Sem mudança backend; R2 privado, ownership e autorização existentes preservados.",
       "e2e": "Pending-verification: faltam rota normal, mídia R2/MP4 real, reload e negativa cross-tenant.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     },
     {
       "id": "owner.r12-53",
@@ -863,12 +866,12 @@
       "be": "Não iniciado.",
       "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
-      "owner": "C0 R13",
+      "owner": "C0 R14",
       "nextGate": "Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema.",
-      "sourceRound": "R13"
+      "sourceRound": "R14"
     }
   ],
-  "baseReference": "046f8efd40d61b259424eae7afa29284f185f983",
+  "baseReference": "adf6cd72f4e1e14815422bc854b72c71b3ac53dd",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
@@ -1279,6 +1282,18 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
+    },
+    "dev": {
+      "sha": "adf6cd72f4e1e14815422bc854b72c71b3ac53dd",
+      "exclusive": [
+        "adf6cd72f4e1e14815422bc854b72c71b3ac53dd",
+        "9311499da765518bdae0873ed7d94659cdfed289"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -1907,11 +1922,11 @@
     "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
-    "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+    "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
-    "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
@@ -1936,15 +1951,13 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-name-r12-34.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md"
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2185,15 +2198,18 @@
   },
   "deployment": {
     "status": "pending",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md",
     "reason": "Os lotes SQL 63–69 e provas do executor permanecem registrados; esta rodada publicou documentação, sem novo deploy web, Edge ou Cloudflare."
   },
-  "r13Closure": {
-    "round": "R13",
-    "status": "active-paused",
-    "source": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+  "r14Status": {
+    "round": "R14",
+    "status": "active",
+    "source": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md",
     "completedOwnerItems": [
       "owner.r12-07",
+      "owner.r12-28",
+      "owner.r12-31",
+      "owner.r12-32",
       "owner.r12-41",
       "owner.r12-43",
       "owner.r12-48",
@@ -2227,11 +2243,8 @@
       "owner.r12-25",
       "owner.r12-26",
       "owner.r12-27",
-      "owner.r12-28",
       "owner.r12-29",
       "owner.r12-30",
-      "owner.r12-31",
-      "owner.r12-32",
       "owner.r12-33",
       "owner.r12-34",
       "owner.r12-35",
@@ -2256,22 +2269,22 @@
       "anexos com limite 10",
       "H21 backend"
     ],
-    "openFirstGate": "Saúde/Cuidado na rota real",
+    "openFirstGate": "Circulares › Anexos (circulars.attach)",
     "metrics": {
-      "frontendVerified": "157/231 (67.97%)",
-      "frontendLocalGreen": "37/231 (16.02%)",
+      "frontendVerified": "164/231 (71.00%)",
+      "frontendLocalGreen": "30/231 (12.99%)",
       "backendDone": "164/224 (73.21%)",
       "backendLocalGreen": "16/224 (7.14%)",
-      "e2eVerified": "130/199 (65.33%)",
-      "e2ePlusFlutterOnly": "137/231 (59.31%)",
-      "ownerDone": "6/53 (11.32%)",
-      "ownerNonTerminal": "47/53 (88.68%)"
+      "e2eVerified": "137/199 (68.84%)",
+      "e2ePlusFlutterOnly": "144/231 (62.34%)",
+      "ownerDone": "9/53 (16.98%)",
+      "ownerNonTerminal": "44/53 (83.02%)"
     },
     "deployment": "none for this documentation reconciliation",
     "memory": "no-op"
   },
   "history": {
-    "priorRounds": "R01–R12 preserved as provenance; never use as current queue",
+    "priorRounds": "R01–R13 preserved as provenance; never use as current queue",
     "priorDeliveryReport": "previous content replaced by this current-cut report; Git history preserves the old snapshot",
     "residualBranches": "preserved and re-read from current refs; branch deletion is not authorized"
   }

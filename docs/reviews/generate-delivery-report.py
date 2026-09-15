@@ -1,4 +1,4 @@
-"""Generate the current R13 delivery-reconciliation report from live sources.
+"""Generate the current R14 delivery-reconciliation report from live sources.
 
 This is a report generator, not a delivery command. It never fetches, commits,
 pushes, deploys, changes trackers or changes product state.
@@ -6,7 +6,9 @@ pushes, deploys, changes trackers or changes product state.
 from __future__ import annotations
 
 import json
+import re
 import subprocess
+from datetime import date
 from pathlib import Path
 
 
@@ -14,11 +16,16 @@ ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "docs/reviews/entrega-atual.json"
 INVENTORY = ROOT / "docs/reviews/inventario-etapa-2.json"
 OWNER_LEDGER = ROOT / "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
-OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json"
-CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md"
+OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md"
+CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md"
 CURRENT_STATE = "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md"
-PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md"
+PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md"
 ROUND_INDEX = "docs/reviews/etapa-2-operacao/next-round/RODADAS.md"
+EXCLUDED_COMPLETED_OWNER_IDS = {
+    "owner.r12-07",
+    "owner.r12-41",
+    "owner.r12-43",
+}
 
 
 def git(*args: str) -> str:
@@ -76,15 +83,15 @@ def normalize_gate(value: str) -> str:
     return (
         value.replace(
             "executar somente na R12 autorizada",
-            "executar somente na cota R13 autorizada; se não couber, preparar transferência para R14",
+            "executar somente na cota R14 autorizada",
         )
         .replace(
             "na R12 autorizada",
-            "na cota R13 autorizada; se não couber, preparar transferência para R14",
+            "na cota R14 autorizada",
         )
-        .replace("após abertura explícita da R12", "após abertura explícita da R13")
-        .replace("após abertura R12", "após abertura explícita da R13")
-        .replace("reproduzir na R12", "reproduzir na R13")
+        .replace("após abertura explícita da R12", "após abertura explícita da R14")
+        .replace("após abertura R12", "após abertura explícita da R14")
+        .replace("reproduzir na R12", "reproduzir na R14")
     )
 
 
@@ -104,27 +111,43 @@ def current_owner_items(ledger: list) -> list:
                 "be": item.get("be", ""),
                 "e2e": item.get("e2e", ""),
                 "evidence": evidence,
-                "owner": "C0 R13" if status != "done" else "registro histórico R12/R13",
+                "owner": "C0 R14" if status != "done" else "registro histórico R12/R13",
                 "nextGate": normalize_gate(item.get("nextGate", "")),
-                "sourceRound": "R13",
+                "sourceRound": "R14",
             }
         )
     return result
+
+
+def current_owner_queue(path: Path) -> tuple[set[str], set[str]]:
+    """Read the single live R14 Owner table and return all IDs and done IDs."""
+    text = path.read_text(encoding="utf-8")
+    rows = re.findall(r"^\| (owner\.r12-\d+) \|", text, flags=re.MULTILINE)
+    done = set(
+        re.findall(
+            r"^\| (owner\.r12-\d+) \|[^\n]*\| done /",
+            text,
+            flags=re.MULTILINE,
+        )
+    )
+    return set(rows), done
 
 
 def main() -> None:
     previous = read_json(REPORT) if REPORT.exists() else {}
     inventory = read_json(INVENTORY)
     ledger = read_json(OWNER_LEDGER)
-    queue = read_json(OWNER_QUEUE)
     if len(ledger) != 53:
         raise SystemExit(f"Expected 53 Owner records, found {len(ledger)}")
 
-    pending = set(queue["pendingOwnerIds"])
-    completed = set(queue["excludedCompletedOwnerIds"]) | set(queue["completedInR13OwnerIds"])
     ids = {item["id"] for item in ledger}
-    if pending | completed != ids or pending & completed:
-        raise SystemExit("R13 Owner queue does not partition the 53 canonical IDs")
+    queue_ids, queue_completed = current_owner_queue(OWNER_QUEUE)
+    if queue_ids != ids:
+        raise SystemExit("R14 Owner queue does not enumerate the 53 canonical IDs")
+    completed = {item["id"] for item in ledger if item["status"] == "done"}
+    if completed != queue_completed:
+        raise SystemExit("R14 Owner queue and canonical Owner ledger disagree on done IDs")
+    pending = ids - completed
 
     owner_items = current_owner_items(ledger)
     branches = current_residual_branches(previous)
@@ -140,30 +163,48 @@ def main() -> None:
         "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
         "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
         "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
+        "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
     }
     evidence.update(item["evidence"] for item in owner_items)
     evidence.update(entry["evidence"] for entry in branches.values())
     evidence = sorted(value for value in evidence if path_exists(value))
 
+    actions = inventory["actions"]
+    layers = inventory["layerCounts"]
+
+    def count(field: str, value: str) -> int:
+        return sum(1 for action in actions if action.get(field) == value)
+
+    def metric(done: int, total: int) -> str:
+        return f"{done}/{total} ({done / total * 100:.2f}%)"
+
+    frontend_total = layers["frontendApplicable"]
+    backend_total = layers["backendApplicable"]
+    integrated_total = layers["integratedActiveApplicable"]
+    flutter_only = count("integratedStatus", "flutter-only")
     metrics = {
-        "frontendVerified": "157/231 (67.97%)",
-        "frontendLocalGreen": "37/231 (16.02%)",
-        "backendDone": "164/224 (73.21%)",
-        "backendLocalGreen": "16/224 (7.14%)",
-        "e2eVerified": "130/199 (65.33%)",
-        "e2ePlusFlutterOnly": "137/231 (59.31%)",
-        "ownerDone": "6/53 (11.32%)",
-        "ownerNonTerminal": "47/53 (88.68%)",
+        "frontendVerified": metric(count("frontendStatus", "verified"), frontend_total),
+        "frontendLocalGreen": metric(count("frontendStatus", "local-green"), frontend_total),
+        "backendDone": metric(count("backendStatus", "done"), backend_total),
+        "backendLocalGreen": metric(count("backendStatus", "local-green"), backend_total),
+        "e2eVerified": metric(count("integratedStatus", "verified-e2e"), integrated_total),
+        "e2ePlusFlutterOnly": metric(
+            count("integratedStatus", "verified-e2e") + flutter_only,
+            frontend_total,
+        ),
+        "ownerDone": metric(len(completed), len(ids)),
+        "ownerNonTerminal": metric(len(pending), len(ids)),
     }
+    generated_at = date.today().isoformat()
     report = {
-        "schema": "r13-current-delivery-report-v1",
-        "generatedAt": "2026-09-14",
+        "schema": "r14-current-delivery-report-v1",
+        "generatedAt": generated_at,
         "reportType": "current-cut-reconciliation",
         "completion": "partial",
         "asOf": {
-            "round": "R13",
-            "roundStatus": "active-paused",
-            "nextRound": "R14 prepared-not-started",
+            "round": "R14",
+            "roundStatus": "active",
+            "nextRound": "R15 not opened",
             "branch": git("branch", "--show-current"),
             "head": git("rev-parse", "HEAD"),
             "worktree": "dirty-until-this-documentation-commit",
@@ -172,8 +213,8 @@ def main() -> None:
             "currentState": CURRENT_STATE,
             "roundIndex": ROUND_INDEX,
             "latestCheckpoint": CHECKPOINT,
-            "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json",
-            "ownerQueueProjection": "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
+            "ownerQueue": PENDENCIES,
+            "ownerQueueProjection": None,
             "inventory": "docs/reviews/inventario-etapa-2.json",
             "artifactInventory": "docs/agent/artifact-inventory-20260914.json",
             "trackers": [
@@ -183,7 +224,7 @@ def main() -> None:
             ],
         },
         "currentQueue": {
-            "scope": "R13 vigente; R14 preparada sem execução",
+            "scope": "R14 vigente; R15 não aberta",
             "ownerTotal": 53,
             "ownerPendingCount": len(pending),
             "ownerDoneCount": len(completed),
@@ -193,11 +234,11 @@ def main() -> None:
             "activeNonTerminalActionUnion": 78,
             "nonTerminalByLayer": {"frontend": 64, "backend": 43, "integrated": 77},
             "deferredPostMvpActionCount": 22,
-            "excludedCompletedOwnerIds": sorted(queue["excludedCompletedOwnerIds"]),
-            "completedInR13OwnerIds": sorted(queue["completedInR13OwnerIds"]),
+            "excludedCompletedOwnerIds": sorted(EXCLUDED_COMPLETED_OWNER_IDS),
+            "completedInR13OwnerIds": sorted(completed - EXCLUDED_COMPLETED_OWNER_IDS),
         },
         "metrics": metrics,
-        "firstGate": "Saúde/Cuidado na rota real",
+        "firstGate": "Circulares › Anexos (circulars.attach)",
         "ownerItems": owner_items,
         "baseReference": git("rev-parse", "HEAD"),
         "target": str(ROOT.resolve()),
@@ -215,20 +256,20 @@ def main() -> None:
             "evidence": CHECKPOINT,
             "reason": "Os lotes SQL 63–69 e provas do executor permanecem registrados; esta rodada publicou documentação, sem novo deploy web, Edge ou Cloudflare.",
         },
-        "r13Closure": {
-            "round": "R13",
-            "status": "active-paused",
+        "r14Status": {
+            "round": "R14",
+            "status": "active",
             "source": CHECKPOINT,
             "completedOwnerItems": sorted(completed),
             "openOwnerItems": sorted(pending),
             "completedGates": ["H06", "H17", "OQ-028", "anexos com limite 10", "H21 backend"],
-            "openFirstGate": "Saúde/Cuidado na rota real",
+            "openFirstGate": "Circulares › Anexos (circulars.attach)",
             "metrics": metrics,
             "deployment": "none for this documentation reconciliation",
             "memory": "no-op",
         },
         "history": {
-            "priorRounds": "R01–R12 preserved as provenance; never use as current queue",
+            "priorRounds": "R01–R13 preserved as provenance; never use as current queue",
             "priorDeliveryReport": "previous content replaced by this current-cut report; Git history preserves the old snapshot",
             "residualBranches": "preserved and re-read from current refs; branch deletion is not authorized",
         },
