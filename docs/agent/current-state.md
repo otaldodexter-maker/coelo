@@ -22,19 +22,23 @@ audience: "team"
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
   Owner: 15/53 concluídos e 38 abertos/parciais.
-- Observação de execução ainda não publicada: a Sessão C relata Avaliações
-  Fechar/Reabrir validadas localmente e retomou Perfis de acesso pelo alvo CDP
-  próprio; a Sessão D tem os contratos do espelho verdes (Conta 6/6,
-  múltiplos registros de cuidado 6/6 e OQ-031 11/11) e está partindo para a
-  rota real; a Sessão E aplicou a migration de Conta no espelho e segue para
-  Chat. Esses resultados ainda não alteram os números acima: faltam evidência
-  final, commit, push, reconciliação e gate.
+- Entregas recentes ainda não alteram os quatro números certificados acima:
+  a Sessão C publicou sua entrega, mas Avaliações `close/reopen` voltou a
+  `pending-verification` por divergência de alvo CDP; Perfis de acesso não foi
+  confirmado; Segurança infantil continua bloqueada por fixture/drift do
+  espelho; e Expirar/Excluir de Formulários permanece pendente. A Sessão D
+  encerrou no branch `r14/bloco-cd`, SHA `b135c8f20`, com prova produtiva de
+  Account self, coleções de cuidado e OQ-031; o aceite central e a integração
+  seletiva ao `dev` ainda precisam ser reconciliados. A Sessão E segue em
+  execução para concluir os deploys e a prova real.
 - Bloqueios conhecidos durante a execução: o `504` de
-  `child_safety_change_lifecycle` continua sem solução certificada; a Sessão C
-  deve provar identidade/sessão autenticada no alvo CDP antes de registrar nova
-  prova. O browser visível não é pré-requisito para o avanço automatizado.
+  `child_safety_change_lifecycle` continua sem solução certificada. A entrega
+  D não deve ser promovida por contador enquanto seus artefatos não estiverem
+  reconciliados no corte central; o dump produtivo permanece fora do Git.
+  O browser visível não é pré-requisito para o avanço automatizado.
 - 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B),
-  Sessões C, D e E ativas em worktrees próprias; a coordenadora Codex atualiza
+  Sessão C encerrada, Sessão D entregue em branch própria e Sessão E ainda
+  ativa em worktree própria; a coordenadora Codex atualiza
   os MDs na pasta principal. Papéis, portas, fluxo git e handoffs estão em
   `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
   As worktrees R14 existentes permanecem protegidas até o fechamento da rodada.

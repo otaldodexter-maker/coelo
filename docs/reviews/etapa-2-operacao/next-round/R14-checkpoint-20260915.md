@@ -22,20 +22,25 @@ Sessão 1 (Blocos A e B) e as provas de Cardápios publicadas pela Sessão 2. N�
 | E2E verificado ativo | 157 / 192 (81,77%) | denominador 192 após o Bloco B |
 | Owner items done | 15 / 53 (28,30%) | seis aceites novos da Sessão 1 sobre os nove anteriores |
 
-## Observação de execução — ainda não certificada no corte
+## Entregas das sessões — estado central ainda não certificado
 
-- **Sessão C:** Avaliações › Fechar/Reabrir passou a validação local e a sessão
-  retomou Perfis de acesso usando um alvo CDP próprio. A confirmação de URL,
-  identidade e sessão autenticada continua obrigatória antes de nova evidência.
-- **Sessão D:** contratos do espelho verdes — Conta 6/6, múltiplos registros de
-  alergias/orientações 6/6 e OQ-031 11/11. A prova da rota real ainda está em
-  execução; o limite defensivo de 100 continua sendo validado no backend.
-- **Sessão E:** migration da Conta aplicada no espelho com COMMIT sem erro;
-  Chat e as demais fatias autorizadas continuam em execução. O bloqueio
-  produtivo permanece intocado.
+- **Sessão C:** encerrou com entrega publicada. Avaliações › Fechar/Reabrir
+  retornou a `pending-verification` por divergência de alvo CDP; Perfis de
+  acesso não foi confirmado; Segurança infantil permanece bloqueada por
+  fixture/drift do espelho; e Expirar/Excluir de Formulários segue pendente.
+- **Sessão D:** encerrou no branch `r14/bloco-cd`, com SHA final
+  `b135c8f20`. Aplicou e registrou em produção as migrations de coleções de
+  cuidado, catálogos OQ-031 e Account self; os pgTAP remotos foram 6/6, 11/11
+  e 6/6. A entrega ainda aguarda integração seletiva dos artefatos e aceite
+  central, portanto não altera os quatro números certificados.
+- **Sessão E:** continua em execução. Após a autorização do Owner, está
+  concluindo o redeploy sequencial de Now/Acontece e Momentos antes da prova
+  produtiva de mídia; não registrar sucesso antes da verificação real.
 
-Esses avanços são locais/provisórios e não mudam os quatro números certificados
-acima até haver commit, push, reconciliação dos rastreadores e gate.
+Essas entregas só alteram os números certificados depois de commit/push no
+`dev`, reconciliação dos rastreadores e gate. A evidência e o dump produtivo de
+D não devem ser copiados cegamente: o dump permanece fora do Git e os artefatos
+devem ser integrados sem apagar provas de outras sessões.
 
 ## Delta desta coordenação
 
@@ -63,7 +68,8 @@ acesso `r12-19` a `r12-27`, upload em resposta de Formulários com ocorrência
 aberta, contexto ativo após “Ver como”, e as imagens privadas R2 de Cardápios
 (`r12-38`) e Conta (`r12-46`) ficam preparados para transferência. O contrato
 de Auth recovery/reset e o reader de Planos comerciais permanecem fora da R14
-por ADR 0039.
+por ADR 0039. H08, H13 e H23 foram transferidos formalmente para a R15 porque
+o item relacionado e o `action_id` produtivos ainda não têm contrato.
 
 ## Estado de execução
 

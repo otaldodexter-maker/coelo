@@ -48,19 +48,23 @@ autorizado e não bloqueiam a execução do MVP.
 
 **Bloco C — uma tela com SQL pequeno + rota real:**
 12. Cardápios (`meal-plans.create/edit/model-create/model-edit/publish`) → FE/BE/E2E provados pela Sessão 2; `owner.r12-34/35/36/37` aguardam aceite central, sem repetir a prova.
-13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — validação local da
-    Sessão C passou os scripts oficiais; aguarda commit, push, reconciliação e
-    confirmação central antes de sair da fila.
+13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — a Sessão C
+    publicou a entrega, mas o item voltou a `pending-verification` por
+    divergência de alvo CDP; não promover sem rota real, sessão autenticada e
+    evidência central reconciliada.
 14. Perfis de acesso (`access-profiles.create/edit/assign`) + `owner.r12-19` a `27`.
 15. Segurança infantil (`child-safety.child/edit/suspend`, BE done) — sem r12-18.
 16. Arquivos de Formulários › Upload + Resolver (só E2E); depois Expirar/Excluir (BE + FE).
 
-**Bloco D — pacotes SQL/config decididos:**
-17. OQ-031 catálogos de tipo; `H08` Duplicar Aviso + Avisos H23/H13;
-    reader self da Conta; `owner.r12-29/30` (vários registros independentes,
-    até 100 por coleção/entidade como limite defensivo, com rejeição no backend).
-    Reader de Planos comerciais e
-    recuperação/reset de Auth não entram na R14.
+**Bloco D — entregue tecnicamente; aceite central pendente:**
+17. OQ-031 catálogos de tipo, reader self da Conta e `owner.r12-29/30` foram
+    provados pela Sessão D em produção, no branch `r14/bloco-cd`, SHA
+    `b135c8f20`: pgTAP remoto 11/11, 6/6 e 6/6, respectivamente. As coleções
+    aceitam registros independentes e rejeitam o 101º por entidade/coleção.
+    Falta integrar seletivamente os artefatos ao `dev` e obter o aceite central;
+    os contadores não mudam neste corte. H08/H13/H23 foram transferidos para
+    R15 por decisão do Owner, sem inventar contrato ausente. Reader de Planos
+    comerciais e recuperação/reset de Auth não entram na R14.
 
 **Bloco E — mais caros (contrato novo ou reconstrução):**
 18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). Recuperação/
@@ -108,8 +112,8 @@ autorizado e não bloqueiam a execução do MVP.
 | owner.r12-25 | access-profiles.create, access-profiles.edit | partial / FE local-green: matriz compartilhada preserva colunas alinhadas e ações próprias/todas, com adaptação empilhada em telas estreitas. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md | Provar catálogo real, rota normal, responsividade, persistência/reload e negativa cross-tenant. |
 | owner.r12-26 | access-profiles.edit | partial / FE local-green: Continuar habilitado é FilledButton preenchido também na edição. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md | Provar rota normal e persistência da edição; aprovação visual do Owner permanece separada. |
 | owner.r12-27 | access-profiles.create, access-profiles.edit | partial / FE local-green: revisão mostra módulo → tela → ação do catálogo, motivo de indisponibilidade e distinção entre configuração e acesso efetivo. / BE inalterado; conflito Principal em R12-23 separado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md | Conferir catálogo real/traduções, alcance, ações adiadas e salvar/reload sem perder próprias/todas. |
-| owner.r12-29 | health-care.create, health-care.edit, health-care.detail | partial / FE verified em create/edit/detail com um registro de alergia; múltiplos registros independentes não exercitados na rota real. / BE done. / verified-e2e das ações; o apontamento de CRUD individual por registro segue aberto. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md | Exercitar vários registros de alergia independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a dois. |
-| owner.r12-30 | health-care.create, health-care.edit, health-care.detail | partial / FE verified em create/edit/detail com uma orientação; múltiplas orientações independentes não exercitadas na rota real. / BE done. / verified-e2e das ações; o apontamento de CRUD individual por orientação segue aberto. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md | Exercitar várias orientações independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a duas. |
+| owner.r12-29 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de alergias, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | Integrar seletivamente a evidência ao `dev` e registrar aceite central; não reduzir o contrato a dois registros. |
+| owner.r12-30 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de orientações, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | Integrar seletivamente a evidência ao `dev` e registrar aceite central; não reduzir o contrato a dois registros. |
 | owner.r12-34 | meal-plans.model-create, meal-plans.model-edit | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova; imagem R2 segue em owner.r12-38. |
 | owner.r12-35 | meal-plans.model-create, meal-plans.model-edit | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova. |
 | owner.r12-36 | meal-plans.create, meal-plans.edit, meal-plans.publish | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova. |
@@ -169,7 +173,7 @@ reexecutados sem nova abertura do Owner:
   na ordem da R14. Não abrir Planos comerciais, reader de Planos ou Auth
   recovery/reset; estes continuam fora da R14 conforme ADR 0039.
 
-## Resíduos H (herdados de R01–R07) — abertos (24)
+## Resíduos H (herdados de R01–R07) — abertos (21)
 
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
@@ -177,12 +181,10 @@ reexecutados sem nova abertura do Owner:
 | H03 | noturna/R01 | Composição das quatro abas de Perfil | Comparar referência vigente e decidir consumidor produtivo. |
 | H04 | R02/R07 | Compositor produtivo de Circular e blocos intercalados | Unificar host e provar na rota normal. |
 | H07 | noturna/R01 | Hash de edição/revogação sem `conversation_id` | Executar replay/contexto na revisão de segurança. |
-| H08 | R02 | Duplicar Aviso | Decidido (ADR 0038): Duplicar no MVP. Próximo gate: RPC de cópia para rascunho + botão no diretório/detalhe + prova. |
 | H09 | R04/R06 | Disparo agendado de expiração Agora | Medir trigger real; leitura não basta. |
 | H10 | noturna/R01 | Múltiplas regras de audiência em Formulários | Decidido (ADR 0038): preservar todas as regras de audiência. Próximo gate: editor lista/edita regras sem perder as demais + teste. |
 | H11 | noturna/R01 | Autosave de autoria de Formulários | Decidido (ADR 0038): autosave do autor ligado. Próximo gate: host produtivo passa `authoringApi` + teste. |
 | H12 | noturna/R01 | Controles de mínimo/máximo de seleção | Localizar contrato e registrar aceite. |
-| H13 | noturna/R01 | Destino do CTA de Comunicação | Decidido (ADR 0038): CTA abre o detalhe do item relacionado. Próximo gate: destino por tipo no adaptador + prova. |
 | H14 | R06 | Sino sem `action_id`/subaceite | Mapear ao action_id-pai sem novo denominador. |
 | H15 | R06 | Atribuição de Plano | Decidido (ADR 0038): `plans.assign` fora do MVP. Fechado: botão honestamente indisponível. |
 | H16 | R06 | Leitura people-based de cuidado | Provar escopo entre unidades. |
@@ -191,12 +193,19 @@ reexecutados sem nova abertura do Owner:
 | H20 | R06 | Imagem da dose sem gateway | Localizar consumidor e obter prova específica. |
 | H21 | R07 | Limite de texto/rodapé de Circular | Parcial em 14/09: **backend concluído (lote 68)** — `save_draft_v2` e constraint de `circular_revisions` em 4.000 somando blocos de texto; pgTAP 10/10; produção recusa 4.001 (`CIRCULAR_INVALID_INPUT`). Cliente `CircularLimits.bodyCharacters = 4000` (contador já somava blocos). Falta H04: host/rodapé em card/Opções conforme referência e regravação dos goldens web (18 goldens de circular já falhavam antes desta mudança). |
 | H22 | noturna/R01 | Descritor privado de Circular | Alinhar à ADR 0032 e provar ausência de bucket público. |
-| H23 | noturna/R01 | Continuidade visual de Avisos após refresh | Decidido (ADR 0038): manter lista + barra fina de progresso, padrão para todas as listas. Próximo gate: implementar em Avisos e registrar o padrão em coelo-ui. |
 | H24 | noturna/R01 | Rótulos do Sobre | Comparar com referência vigente. |
 | H25 | noturna/R01 | Alvo de redimensionamento de tabela | Medir teclado, semântica e toque. |
 | H26 | noturna/R01 | Opcional, escala legada e opções vazias | Reconciliar contrato atual por caso. |
 | H27 | noturna/R01 | Sinal de atualização de Momentos | Decidido (ADR 0038): saudação por hora do dia; ponto laranja na aba Momentos quando há momento não visto. Próximo gate: implementar no Principal + prova. |
 | H28 | R01 | Filtros, avatar e buffers de Pessoas | Rever somente diferenças funcionais persistentes. |
+
+## Resíduos H — transferidos para R15 (3)
+
+| ID | Origem | Motivo da transferência |
+|---|---|---|
+| H08 | R02 | Autorizado pelo Owner em 15/09; falta contrato produtivo do item a duplicar e `action_id`, portanto não inventar RPC, payload ou coluna na R14. |
+| H13 | noturna/R01 | Autorizado pelo Owner em 15/09; falta referência produtiva de item relacionado e `action_id` para o CTA. |
+| H23 | noturna/R01 | Autorizado pelo Owner em 15/09; implementação visual depende do contrato de Avisos que será definido junto com H08/H13 na R15. |
 
 ## Resíduos H — concluídos (3)
 
@@ -211,8 +220,8 @@ reexecutados sem nova abertura do Owner:
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
 | Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
-| Catálogos globais de tipo (OQ-031) | Aberto | Migration idempotente por `code` com as quatro listas da ADR e "Outros"; entidade pode mudar de tipo. |
-| Reader self da Conta (039) | Aberto | Leitura somente do próprio usuário interno, por sessão autenticada e sem ID arbitrário. |
+| Catálogos globais de tipo (OQ-031) | Entregue tecnicamente; aceite central pendente | Sessão D aplicou a migration `20260915131500` em produção e confirmou pgTAP remoto 11/11, quatro catálogos com oito entradas e "Outros"; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
+| Reader self da Conta (039) | Entregue tecnicamente; aceite central pendente | Sessão D aplicou a migration `20260915133000` em produção e confirmou pgTAP remoto 6/6, sessão autenticada e ausência de sobrecarga por UUID; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
 | Reader de Planos comerciais no Principal (039) | Transferido para V1/V2 | Não executar na R14; preservar contrato e IDs como preparação futura. `units_with_override` só deve ser calculado quando o Owner abrir o escopo. |
 | Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
 | Auth: localhost na allowlist de redirect (R12-47) | Transferido para Etapa 3 | Não executar na R14; pertence ao contrato futuro de recuperação/reset, com ambiente e prova próprios. |

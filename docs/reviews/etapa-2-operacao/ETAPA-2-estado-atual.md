@@ -36,19 +36,25 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
 
-## Snapshot de execução da R14 — não certificado
+## Snapshot de execução da R14 — C encerrada, D entregue, E em curso
 
 O corte publicado e os percentuais canônicos acima permanecem inalterados até
-que as sessões terminem suas fatias e a coordenadora aplique os deltas oficiais.
-No acompanhamento de 15/09, a Sessão C reportou Avaliações › Fechar/Reabrir
-validadas localmente e retomou Perfis de acesso; a Sessão D reportou contratos
-do espelho verdes para Conta (6/6), múltiplos registros de cuidado (6/6) e
-OQ-031 (11/11); a Sessão E aplicou a migration de Conta no espelho e iniciou a
-validação de Chat. São sinais de avanço, não novos estados certificados.
+que a coordenadora aplique os deltas oficiais no `dev`. A Sessão C encerrou
+com Avaliações › Fechar/Reabrir em `pending-verification` por divergência de
+alvo CDP, Perfis de acesso não confirmados, Segurança infantil bloqueada por
+fixture/drift e Expirar/Excluir de Formulários pendentes.
 
-O `504` de `child_safety_change_lifecycle` continua bloqueado. Qualquer prova
-local precisa ser seguida de evidência de rota real, commit, push, sincronização
-dos rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
+A Sessão D encerrou no branch `r14/bloco-cd`, SHA `b135c8f20`, com aplicação
+produtiva registrada das migrations de coleções de cuidado, catálogos OQ-031 e
+Account self. Os pgTAP remotos foram 6/6, 11/11 e 6/6. O resultado é uma prova
+técnica entregue, ainda sem promoção automática dos contadores: falta integrar
+seletivamente os artefatos ao corte central e obter o aceite/reconciliação.
+
+A Sessão E continua concluindo o redeploy sequencial de Now/Acontece e Momentos
+antes da prova produtiva de mídia. O `504` de `child_safety_change_lifecycle`
+continua bloqueado. Qualquer prova local precisa ser seguida de evidência de
+rota real, commit, push, sincronização dos rastreadores,
+`validate-trackers.cjs` e gate antes de alterar os números.
 
 ## Percentuais canônicos
 
@@ -87,12 +93,12 @@ primeiro gate seja fechado.
 | H05 | noturna/R01 | G4 + G5 | Decidido (ADR 0038): participantes ativos atuais; fechado sem mudança. |
 | H06 | noturna/R01 | G4 + G5 | Decidido (ADR 0038): proibir revogar em somente leitura no servidor; pgTAP. |
 | H07 | noturna/R01 | G5 | Fazer teste de replay/contexto para hash de edição/revogação com `conversation_id` na revisão profunda. |
-| H08 | R02 | G6 | Decidido (ADR 0038): Duplicar no MVP como novo rascunho; RPC + botão + prova. |
+| H08 | R02 | G6 | Transferido para R15 por decisão do Owner em 15/09: falta contrato produtivo do item a duplicar e `action_id`; não inventar RPC/payload. |
 | H09 | R04/R06 | C0 + G4 + G5 | Medir o disparo agendado real de expiração do Agora; filtro de leitura não basta. |
 | H10 | noturna/R01 | G3 | Decidido (ADR 0038): preservar todas as regras de audiência; teste. |
 | H11 | noturna/R01 | G3 | Decidido (ADR 0038): autosave do autor ligado; host passa `authoringApi`. |
 | H12 | noturna/R01 | G3 | Localizar/definir controles de mínimo e máximo de seleção e registrar o aceite. |
-| H13 | noturna/R01 | G4 + G6 | Decidido (ADR 0038): CTA abre o detalhe do item relacionado por tipo. |
+| H13 | noturna/R01 | G4 + G6 | Transferido para R15 por decisão do Owner em 15/09: falta referência produtiva do item relacionado e `action_id`. |
 | H14 | R06 | C0 + G6 | Mapear `action_id` e subaceite do sino sem criar denominador novo. |
 | H15 | R06 | G7 | Decidido (ADR 0038): `plans.assign` fora do MVP; fechado. |
 | H16 | R06 | G5 | Provar o escopo institucional de leitura people-based entre unidades. |
@@ -102,7 +108,7 @@ primeiro gate seja fechado.
 | H20 | R06 | G3 | Localizar o consumidor/gateway da imagem da dose e obter prova específica de mídia. |
 | H21 | R07 | G6 | Decidido (ADR 0038): 4.000 no total; compositor segue a referência inteira; regravar 6 goldens. |
 | H22 | noturna/R01 | G6 + G5 | Alinhar descritor privado da Circular à ADR 0032 e provar que não há bucket público. |
-| H23 | noturna/R01 | G6 | Decidido (ADR 0038): lista visível + barra fina, padrão para todas as listas. |
+| H23 | noturna/R01 | G6 | Transferido para R15 por decisão do Owner em 15/09: implementar junto com o contrato de Avisos/H08/H13. |
 | H24 | noturna/R01 | G4 | Comparar rótulos do Sobre com a referência vigente, sem misturar famílias visuais. |
 | H25 | noturna/R01 | C0 + G3 | Medir o alvo de redimensionamento de tabela com teclado, semântica e toque. |
 | H26 | noturna/R01 | G3 | Reconciliar opcional omitida, escala legada invertida e opções vazias por contrato atual. |
