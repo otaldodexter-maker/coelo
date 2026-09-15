@@ -182,6 +182,68 @@ void main() {
       expect(draft?.childLabel, 'Criança Um');
     });
 
+    test('reload carrega todos os registros independentes e a edição preserva ids', () async {
+      final detail = {
+        ..._profileDetail,
+        'allergies': [
+          ...(_profileDetail['allergies']! as List),
+          {
+            'id': 'allergy-2',
+            'label': 'Amendoim',
+            'allergy_type': 'food',
+            'status': 'active',
+            'active': true,
+            'last_episode_at': null,
+            'episode_severity': null,
+            'observed_reaction': 'Reação B',
+            'guidance': 'Orientação B',
+            'notes': '',
+            'inactivated_at': null,
+          },
+          {
+            'id': 'allergy-3',
+            'label': 'Amendoim',
+            'allergy_type': 'food',
+            'status': 'active',
+            'active': true,
+            'last_episode_at': null,
+            'episode_severity': null,
+            'observed_reaction': 'Reação C',
+            'guidance': 'Orientação C',
+            'notes': '',
+            'inactivated_at': null,
+          },
+        ],
+      };
+      final backend = _Backend({
+        'superadmin_health_care_profile_detail': detail,
+        'superadmin_health_care_save_profile': {'id': 'profile-1', 'revision': 5},
+      });
+      final client = _clientFor(backend);
+      addTearDown(client.dispose);
+
+      final repository = SupabaseHealthCareRepository(client);
+      final draft = await repository.loadCareProfileDraft('profile-1');
+      expect(draft?.allergies.map((item) => item.id), ['allergy-1', 'allergy-2', 'allergy-3']);
+
+      await repository.saveCareProfileDraft(
+        HealthCareProfileDraft(
+          childId: 'profile-1',
+          allergies: [draft!.allergies.first, draft.allergies.last],
+          justification: 'Remoção controlada.',
+        ),
+      );
+      final payload =
+          backend.paramsOf('superadmin_health_care_save_profile')['payload']! as Map<String, Object?>;
+      expect((payload['allergies']! as List).length, 3);
+      expect(
+        (payload['allergies']! as List)
+            .where((item) => (item as Map<String, Object?>)['status'] == 'history')
+            .map((item) => (item as Map<String, Object?>)['id']),
+        ['allergy-2'],
+      );
+    });
+
     test('perfil fora do escopo volta como ausente, sem confirmar existência', () async {
       final backend = _Backend({})
         ..errors['superadmin_health_care_profile_detail'] = (status: 403, code: '42501');

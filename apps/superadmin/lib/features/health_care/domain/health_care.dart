@@ -780,6 +780,35 @@ final class HealthCareProfileItem {
   final String? otherText;
 }
 
+final class HealthCareAllergyDraft {
+  HealthCareAllergyDraft({
+    this.id,
+    this.allergyType = HealthCareAllergyType.food,
+    this.allergyStatus = HealthCareAllergyStatus.active,
+    this.lastEpisode = '',
+    this.severity = HealthCareEpisodeSeverity.moderate,
+    this.observedReaction = '',
+    this.allergyGuidance = '',
+    this.allergyNotes = '',
+  });
+
+  final String? id;
+  final HealthCareAllergyType allergyType;
+  final HealthCareAllergyStatus allergyStatus;
+  final String lastEpisode;
+  final HealthCareEpisodeSeverity severity;
+  final String observedReaction;
+  final String allergyGuidance;
+  final String allergyNotes;
+
+  bool get hasContent =>
+      id != null ||
+      lastEpisode.trim().isNotEmpty ||
+      observedReaction.trim().isNotEmpty ||
+      allergyGuidance.trim().isNotEmpty ||
+      allergyNotes.trim().isNotEmpty;
+}
+
 final class HealthCareProfileDraft {
   HealthCareProfileDraft({
     required this.childId,
@@ -795,7 +824,22 @@ final class HealthCareProfileDraft {
     this.importantSigns = '',
     this.adaptations = '',
     this.justification = '',
-  }) : careItemIds = Set.unmodifiable(careItemIds);
+    List<HealthCareAllergyDraft>? allergies,
+  }) : careItemIds = Set.unmodifiable(careItemIds),
+       allergies = List.unmodifiable(
+         allergies ??
+             [
+               HealthCareAllergyDraft(
+                 allergyType: allergyType,
+                 allergyStatus: allergyStatus,
+                 lastEpisode: lastEpisode,
+                 severity: severity,
+                 observedReaction: observedReaction,
+                 allergyGuidance: allergyGuidance,
+                 allergyNotes: allergyNotes,
+               ),
+             ],
+       );
 
   final String childId;
 
@@ -812,6 +856,7 @@ final class HealthCareProfileDraft {
   final String importantSigns;
   final String adaptations;
   final String justification;
+  final List<HealthCareAllergyDraft> allergies;
 }
 
 final class HealthCareAcknowledgement {

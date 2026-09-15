@@ -187,7 +187,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
         'request_id': _requestId(),
         'profile_id': null,
         'expected_version': 0,
-        'payload': {'child_context_id': draft.childId, ..._draftPayload(draft, null)},
+        'payload': {'child_context_id': draft.childId, ..._draftPayload(draft)},
       }),
     );
     return saved['id']! as String;
@@ -200,14 +200,19 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     final detail = _map(
       await _rpc('superadmin_health_care_profile_detail', {'profile_id': draft.childId}),
     );
-    final activeAllergy = _rows(
-      detail['allergies'],
-    ).where((row) => row['active'] as bool? ?? true).firstOrNull;
+    final activeAllergies = _rows(detail['allergies'])
+        .where((row) => row['active'] as bool? ?? true)
+        .toList(growable: false);
+    final draftAllergyIds = draft.allergies.map((item) => item.id).whereType<String>().toSet();
+    final removedAllergyIds = activeAllergies
+        .map((row) => row['id'] as String?)
+        .whereType<String>()
+        .where((id) => !draftAllergyIds.contains(id));
     await _rpc('superadmin_health_care_save_profile', {
       'request_id': _requestId(),
       'profile_id': draft.childId,
       'expected_version': _asInt(detail['management_version']),
-      'payload': _draftPayload(draft, activeAllergy?['id'] as String?),
+      'payload': _draftPayload(draft, removedAllergyIds: removedAllergyIds),
     });
   }
 
@@ -222,13 +227,30 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
     }
     final detail = _map(payload);
     if (detail.isEmpty) return null;
-    final allergy = _rows(
-      detail['allergies'],
-    ).where((row) => row['active'] as bool? ?? true).firstOrNull;
+    final allergyRows = _rows(detail['allergies'])
+        .where((row) => row['active'] as bool? ?? true)
+        .toList(growable: false);
+    final allergy = allergyRows.firstOrNull;
     final lastEpisode = allergy?['last_episode_at'] as String?;
     return HealthCareProfileDraft(
       childId: profileId,
       childLabel: detail['display_name'] as String?,
+      allergies: [
+        for (final row in allergyRows)
+          HealthCareAllergyDraft(
+            id: row['id'] as String?,
+            allergyType: _allergyTypeFromDatabase(row['allergy_type'] as String?),
+            allergyStatus: _allergyStatusFromDatabase(row['status'] as String?),
+            lastEpisode: row['last_episode_at'] is String
+                ? (row['last_episode_at'] as String).substring(0, 10)
+                : '',
+            severity: _severityFromDatabase(row['episode_severity'] as String?) ??
+                HealthCareEpisodeSeverity.moderate,
+            observedReaction: row['observed_reaction'] as String? ?? '',
+            allergyGuidance: row['guidance'] as String? ?? '',
+            allergyNotes: row['notes'] as String? ?? '',
+          ),
+      ],
       careItemIds: {for (final row in _rows(detail['items'])) row['catalog_item_id']! as String},
       importantSigns: detail['important_signs'] as String? ?? '',
       adaptations: detail['adaptations'] as String? ?? '',
@@ -283,14 +305,15 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
 /// Corpo do comando de salvar a partir do rascunho do formulário. A alergia só
 /// entra quando o formulário descreveu alguma; com [activeAllergyId] ela
 /// atualiza a alergia ativa em vez de criar outra.
-Map<String, Object?> _draftPayload(HealthCareProfileDraft draft, String? activeAllergyId) {
-  final describesAllergy = [
-    draft.lastEpisode,
-    draft.observedReaction,
-    draft.allergyGuidance,
-    draft.allergyNotes,
-  ].any((value) => value.trim().isNotEmpty);
-  final lastEpisode = DateTime.tryParse(draft.lastEpisode.trim());
+Map<String, Object?> _draftPayload(
+  HealthCareProfileDraft draft, {
+  Iterable<String> removedAllergyIds = const [],
+}) {
+  final allergyPayload = [
+    for (final allergy in draft.allergies)
+      if (allergy.hasContent) _allergyPayload(allergy),
+    for (final id in removedAllergyIds) {'id': id, 'active': false, 'status': 'history'},
+  ];
   return {
     'subject': 'care_profile',
     'justification': draft.justification,
@@ -299,24 +322,25 @@ Map<String, Object?> _draftPayload(HealthCareProfileDraft draft, String? activeA
     'items': [
       for (final id in draft.careItemIds) {'catalog_item_id': id, 'other_text': null},
     ],
-    if (describesAllergy)
-      'allergies': [
-        {
-          'id': ?activeAllergyId,
-          'label': _allergyTypeLabel(draft.allergyType),
-          'allergy_type': _allergyTypeToDatabase(draft.allergyType),
-          'status': _allergyStatusToDatabase(draft.allergyStatus),
-          'active': true,
-          if (lastEpisode != null) 'last_episode_at': lastEpisode.toUtc().toIso8601String(),
-          // A gravidade descreve um episodio registrado (spec 020): sem data de
-          // episodio o servidor recusa com 23514 (health_care_allergies_severity_check,
-          // medido na rota real da R05). Sem data, a gravidade vai nula.
-          'episode_severity': lastEpisode == null ? null : _severityToDatabase(draft.severity),
-          'observed_reaction': draft.observedReaction,
-          'guidance': draft.allergyGuidance,
-          'notes': draft.allergyNotes,
-        },
-      ],
+    if (allergyPayload.isNotEmpty) 'allergies': allergyPayload,
+  };
+}
+
+Map<String, Object?> _allergyPayload(HealthCareAllergyDraft allergy) {
+  final lastEpisode = DateTime.tryParse(allergy.lastEpisode.trim());
+  return {
+    'id': ?allergy.id,
+    'label': _allergyTypeLabel(allergy.allergyType),
+    'allergy_type': _allergyTypeToDatabase(allergy.allergyType),
+    'status': _allergyStatusToDatabase(allergy.allergyStatus),
+    'active': true,
+    if (lastEpisode != null) 'last_episode_at': lastEpisode.toUtc().toIso8601String(),
+    // A gravidade descreve um episodio registrado (spec 020): sem data de
+    // episodio o servidor recusa com 23514. Sem data, a gravidade vai nula.
+    'episode_severity': lastEpisode == null ? null : _severityToDatabase(allergy.severity),
+    'observed_reaction': allergy.observedReaction,
+    'guidance': allergy.allergyGuidance,
+    'notes': allergy.allergyNotes,
   };
 }
 

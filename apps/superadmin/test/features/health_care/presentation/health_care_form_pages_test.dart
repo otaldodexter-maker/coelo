@@ -151,6 +151,57 @@ void main() {
     expect(saved?.justification, initial.justification);
   });
 
+  testWidgets('profile form keeps independent allergy records when adding and removing',
+      (tester) async {
+    HealthCareProfileDraft? saved;
+    final initial = HealthCareProfileDraft(
+      childId: 'child-demo-a',
+      justification: 'Revisão de registros',
+      allergies: [
+        HealthCareAllergyDraft(id: 'allergy-a', observedReaction: 'Reação A'),
+        HealthCareAllergyDraft(id: 'allergy-b', observedReaction: 'Reação B'),
+        HealthCareAllergyDraft(id: 'allergy-c', observedReaction: 'Reação C'),
+      ],
+    );
+    await tester.binding.setSurfaceSize(const Size(1440, 1200));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: HealthCareProfileFormPage(
+          logout: unavailableSuperadminLogout,
+          childOptions: _profileChildren,
+          childId: initial.childId,
+          loadDraft: (_) async => initial,
+          onCancel: () {},
+          onSaved: (draft) async => saved = draft,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.tap(find.text('Alergias e restrições').last);
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('health-care-allergy-card-0')), findsOneWidget);
+    expect(find.byKey(const Key('health-care-allergy-card-1')), findsOneWidget);
+    expect(find.byKey(const Key('health-care-allergy-card-2')), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('health-care-profile-add-allergy')));
+    await tester.tap(find.byKey(const Key('health-care-profile-add-allergy')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('health-care-allergy-card-3')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('health-care-profile-remove-allergy-1')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('health-care-allergy-card-3')), findsNothing);
+
+    await tester.tap(find.text('Revisão').last);
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(FilledButton, 'Salvar alterações'));
+    await tester.pumpAndSettle();
+
+    expect(saved?.allergies.map((item) => item.id), ['allergy-a', 'allergy-c', null]);
+    expect(saved?.allergies.map((item) => item.observedReaction), ['Reação A', 'Reação C', '']);
+  });
+
   testWidgets('profile edit shows the child name carried by the loaded draft', (tester) async {
     // Host produtivo: a rota só conhece o id; o nome vem do detalhe (display_name).
     await tester.pumpWidget(
