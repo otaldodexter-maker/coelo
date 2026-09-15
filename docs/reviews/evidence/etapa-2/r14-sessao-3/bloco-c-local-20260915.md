@@ -10,7 +10,8 @@ Banco usado nas provas SQL: espelho Docker `supabase_db_coelo_mirror_r14`.
 Após a execução paralela, a worktree foi atualizada por fast-forward para o
 `origin/dev` publicado `e592063d6`.
 
-O registro desta prova foi publicado no commit `2e0aaaab3` em `origin/dev`.
+O registro desta prova foi publicado nos commits `2e0aaaab3` e
+`d1025286d` em `origin/dev`.
 
 ## Apoio de acesso QA remoto
 
@@ -91,15 +92,23 @@ explicitamente liberadas para outra sessão.
 Action IDs: `assessments.close`, `assessments.reopen`.  
 Owner item: `owner.r12-49`.
 
-Os commits anteriores da Sessão 3 preservam a prova do mesmo diário
-`d2c945d8`, a hierarquia Instituição → Unidade → Turma → período e as guardas
-de não duplicação, mas a observação foi rebaixada por divergência de alvo CDP.
-Sem nova sessão autenticada estável, close/reopen não é promovido.
+O diário usado foi `d2c945d8-3809-4d84-b836-2bc6da7c381d`, sem duplicar diário,
+participante ou vínculo, preservando a hierarquia Escola R04 Estrutura →
+Unidade Centro R04 → Turma R05 Estrutura → período `R08 sintético`.
+Na rota normal `/assessments/entry` o envio para fechamento foi confirmado e,
+em `/assessments/closing/<diary-id>`, a revisão foi concluída com a razão
+`R14 fechamento autorizado - QA em massa sintética`, gerando o evento imutável
+`Revisado`, versão 11, às 17:11. A reabertura anterior permanece como evento
+`Devolvido ao professor`, versão 9, razão `R14 reabertura autorizada`.
+O reload da URL direta confirmou novamente o histórico e a versão 11. Os
+action_ids são `assessments.close` e `assessments.reopen`; a promoção do
+contador central continua a cargo da coordenação.
 
 ## Ambiente e liberação
 
 Não foi feita alteração em cabeçalho/contadores da R14, `current-state.md`,
 checkpoint ou `entrega-atual.json`. Os contadores locais permanecem FE 184/231,
-BE 166/224, E2E 157/192 e Owner 15/53. As telas de avaliações, perfis de acesso
-e segurança infantil ficam liberadas explicitamente; Forms upload/resolve
-também ficam liberadas e não foram reivindicadas novamente.
+BE 166/224, E2E 157/192 e Owner 15/53. Avaliações têm prova real de close/reopen;
+as telas de perfis de acesso e segurança infantil ficam liberadas
+explicitamente. Forms upload/resolve também ficam liberadas e não foram
+reivindicadas novamente.

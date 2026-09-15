@@ -19,13 +19,13 @@ Sessões 1 e 2.
 
 Após a retomada, a worktree foi sincronizada com avanço fast-forward publicado
 pelas demais sessões; `origin/dev` intermediário foi `e592063d6` e o commit
-final desta sessão foi publicado em `2e0aaaab3`.
+final desta sessão foi publicado em `d1025286d`.
 
 ## Reivindicações e liberações
 
 | Tela | action_ids | Owner items | Estado ao liberar |
 |---|---|---|---|
-| Avaliações › Fechar/Reabrir | `assessments.close`, `assessments.reopen` | `owner.r12-49` | liberada; sem promoção E2E |
+| Avaliações › Fechar/Reabrir | `assessments.close`, `assessments.reopen` | `owner.r12-49` | prova de rota real + reload concluída; promoção central pendente |
 | Segurança infantil | `child-safety.create`, `child-safety.edit`, `child-safety.suspend` | `owner.r12-13`, `owner.r12-15`, `owner.r12-16` | liberada; diagnóstico/prova local concluídos, rota pendente |
 | Perfis de acesso | `access-profiles.create`, `access-profiles.edit`, `access-profiles.assign` | `owner.r12-19` a `owner.r12-27` | liberada explicitamente; nenhuma mutação real confirmada |
 | Arquivos de Formulários | `forms.expire-file`, `forms.delete-file` | fila R14 | liberada; prova local, sem promoção de rota/worker |
@@ -53,6 +53,7 @@ registrado. Esta criação é massa de apoio e não certifica, por si só,
 | `0cbcf19f8`, `abdc2fbee`, `6d9210d19` | assessments close/reopen e bloqueio por alvo CDP divergente | `r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md` e `deltas-revert-unverified-target-20260915.json` |
 | `544a2b899` | fixtures nominais para o follower global exigido pelo espelho em child-safety e Forms; compatibilidade PG17 nos testes de policy; expectativa obsoleta do consumidor de modelos removida | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 | `2e0aaaab3` | prova textual do usuário QA Owner remoto e bloqueios de entrega | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
+| `d1025286d` | handoff/evidência final antes da retomada autenticada; origin/dev confirmado | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 
 ### Child safety
 
@@ -85,8 +86,12 @@ negativa cross-tenant; não certificam worker físico nem rota autenticada.
 
 `model_command_consumer_test.dart` passou 9/9. O ajuste remove a expectativa
 de preencher “Código”, pois o contrato atual gera o identificador técnico no
-backend e não expõe esse campo no formulário. Não houve create/edit/assign real
-confirmado; não foi iniciada atribuição em `/internal-users/:id/edit`.
+backend e não expõe esse campo no formulário. A lista real confirmou o perfil
+sintético existente `R14 Perfil Operacoes QA` (ativo, escopo Plataforma,
+`b4f9444c-5911-484b-b74a-78b4b815da0b`) e não havia reivindicação conflitante.
+Não houve create/edit/assign real confirmado; não foi iniciada atribuição em
+`/internal-users/:id/edit` porque a sessão autenticada expirou após o reinício
+do servidor local.
 
 O usuário QA Owner remoto acima ficou disponível para uma retomada autenticada;
 o cadastro usado para destravar o acesso não foi contado como prova dos três
@@ -103,8 +108,9 @@ action_ids de perfis.
   9415, não 9416.
 - O usuário QA Owner está com convite pendente e sem credencial ativa. Ainda
   não houve handoff de senha ao usuário nem mudança de senha por automação.
-- Repetir `assessments.close/reopen` no alvo autenticado estável usando o mesmo
-  diário `d2c945d8`, sem duplicar participante, vínculo, configuração ou diário.
+- A prova real de `assessments.close/reopen` foi concluída nesta retomada no
+  mesmo diário `d2c945d8`, sem duplicar participante, vínculo, configuração ou
+  diário; a coordenação deve reconciliar a promoção central.
 - Executar `access-profiles.create/edit/assign` após confirmar ausência de
   reivindicação ativa conflitante e registrar o `action_id` real.
 - Executar `child-safety.create/edit/suspend` na rota normal após massa/contrato
@@ -118,7 +124,7 @@ action_ids de perfis.
   destino/Bloco E fica para a coordenação.
 
 As telas não concluídas ficam explicitamente liberadas para a próxima sessão:
-`assessments.close/reopen`, `access-profiles.create/edit/assign`,
+`access-profiles.create/edit/assign`,
 `child-safety.create/edit/suspend` e `forms.expire-file/delete-file`. A criação
 da massa QA acima está concluída, mas não promove nenhuma dessas telas nem
 altera os contadores centrais.
