@@ -18,8 +18,7 @@ também era o HEAD limpo da worktree. Esta sessão não edita os handoffs das
 Sessões 1 e 2.
 
 Após a retomada, a worktree foi sincronizada com avanço fast-forward publicado
-pelas demais sessões; `origin/dev` intermediário foi `e592063d6` e o commit
-final de implementação/evidência desta retomada foi publicado em `5ba0b5ddf`.
+pelas demais sessões; `origin/dev` atual foi confirmado em `b023b4ccb`.
 
 ## Reivindicações e liberações
 
@@ -129,6 +128,54 @@ As telas não concluídas ficam explicitamente liberadas para a próxima sessão
 `child-safety.create/edit/suspend` e `forms.expire-file/delete-file`. A criação
 da massa QA acima está concluída, mas não promove nenhuma dessas telas nem
 altera os contadores centrais.
+
+## Retomada final — 2026-09-15
+
+`origin/dev` foi confirmado em `b023b4ccb`; a worktree principal ficou limpa
+antes deste registro e as worktrees `r14-ab`, `r14/bloco-c`, `r14/bloco-cd` e
+`r14/bloco-e` foram preservadas. A rota normal `http://127.0.0.1:3016/login`
+foi aberta, mas o Chrome isolado não possuía sessão autenticada compartilhada.
+O mecanismo de clipboard virtual também recusou a credencial QA; nenhuma senha,
+token ou identificador sensível foi exposto, registrado ou inventado.
+
+O bloqueio reproduzido é de aceite E2E autenticado, não de uma nova falha SQL:
+sem sessão não foi possível alcançar `/profiles`, `/internal-users/:id/edit`,
+`/safety` nem a tela de arquivos por rota normal. Assim, não foi feita mutação
+real, não foram gerados `action_id`s individuais e não se alteraram contadores.
+O `504` histórico de `child_safety_change_lifecycle` permanece diagnosticado
+somente até o nível comprovado: drift de massa/estrutura do espelho no vínculo
+`follow_links`; após rebaseline, os testes SQL anteriores passaram 25/25 e
+63/63, mas não houve uma chamada autenticada real que permita declarar correção
+produtiva. Não se mascara timeout com fixture nem com aumento artificial de
+timeout.
+
+Verificações executadas nesta retomada:
+
+- `flutter test test/features/access_profiles/presentation/model_command_consumer_test.dart` — 85/85;
+- `flutter test test/features/safety/application/child_safety_controller_test.dart test/features/safety/application/child_safety_error_hang_test.dart` — 77/77;
+- `supabase status`/`migration list --linked` — bloqueados porque não há Docker local nem projeto linkado nesta worktree;
+- nenhuma repetição de `assessments.close/reopen`, Cardápios, `forms.upload` ou `forms.resolve-file`.
+
+## Liberação exata e classificação
+
+Ficam liberados para redistribuição, sem reivindicação residual nesta sessão:
+
+- `access-profiles.create`, `access-profiles.edit`, `access-profiles.assign`;
+- `child-safety.create`, `child-safety.edit`, `child-safety.suspend`;
+- `forms.expire-file`, `forms.delete-file`.
+
+Os Owner items `owner.r12-19` a `owner.r12-27`, `owner.r12-13`,
+`owner.r12-15` e `owner.r12-16` ficam igualmente sem promoção. Conforme o
+checkpoint corrente, todas essas fatias são classificadas como sobra da R15:
+dependem de sessão autenticada/allowlist e prova real de tenant, ownership,
+persistência e reload; a correção produtiva do 504 só pode ser classificada
+depois de nova reprodução autorizada. Nenhum item é promovido para R16 nesta
+sessão.
+
+Nenhuma ação da Sessão C foi certificada adicionalmente nesta retomada; os
+únicos `action_id`s tratados foram os oito acima, sem UUID de correlação
+inventado. O SHA deste registro será o commit explícito da sessão; push deverá
+ser fast-forward e sem force.
 
 ## Contadores e arquivos não alterados
 

@@ -265,3 +265,8 @@
 
 # lote 69 (14/09 15:50) - R13/ADR0038 OQ-028: mapeamento A de status de Suporte (set_status -> open/pending/resolved, trigger de coerencia, closure_reason em get/list); pgTAP 13/13 + base 23/23+28/28+17/17; dump esquema+dados (SHA-256 c95bcfa9/655cd222); ledger 293; prova em producao no chamado 6c5eb791
 20260914153000_r13_support_status_mapping_v1.sql
+
+# lote 70 (15/09 15:30) - R14 Bloco D: limite backend de colecoes de cuidado, catalogos globais idempotentes por code e reader self da Conta; espelho proprio, pgTAP local/remoto verdes, dump de schema produtivo (SHA-256 379f42648b1454eebcef331c08c55866814e44de94eb393b9218507a6a8a8959), ledger remoto 294-296; autorizacao nominal do Owner recebida em 15/09/2026
+20260915130000_health_care_collection_limit_v1.sql
+20260915131500_global_type_catalogs_v1.sql
+20260915133000_account_self_reader_acl_v1.sql

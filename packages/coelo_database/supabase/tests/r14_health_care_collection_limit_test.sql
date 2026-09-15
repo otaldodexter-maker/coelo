@@ -10,7 +10,8 @@ insert into public.people(id,person_type,first_name,last_name,display_name)
 values
   ('c0e10000-0000-4000-8000-000000000001','adult','Coelo','System','Coelo System'),
   ('30000000-0000-4000-8000-000000000001','adult','R14','Actor','R14 Actor'),
-  ('30000000-0000-4000-8000-000000000002','child','R14','Child','R14 Child');
+  ('30000000-0000-4000-8000-000000000002','child','R14','Child','R14 Child')
+on conflict (id) do nothing;
 insert into public.institutions(id,public_name,slug,status)
 values ('30000000-0000-4000-8000-000000000003','R14 Health Fixture','r14-health-fixture','active');
 insert into public.child_contexts(id,child_person_id,institution_id,status)
