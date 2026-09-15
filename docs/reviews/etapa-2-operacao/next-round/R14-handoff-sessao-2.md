@@ -38,4 +38,4 @@ em produção e a atualizar a ordem de aplicação.
 
 ## Contadores
 
-FE 169/231, BE 164/224, E2E 142/199, Owner 13/53 (após Cardápios; base de runtime `b1ebb8983eadbccc8cbfc3ed890994b98169a69b`).
+FE 182/231, BE 166/224, E2E 155/192, Owner 13/53 (após Cardápios; contadores reconciliados com `origin/dev 9d6636115`).
