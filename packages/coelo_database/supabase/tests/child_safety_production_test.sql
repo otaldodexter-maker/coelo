@@ -98,10 +98,16 @@ select ok(not has_function_privilege('authenticated',
 select ok(exists(select 1 from storage.buckets
   where id='child-safety-evidence' and not public and file_size_limit=10485760),
   'evidence bucket is private and size-limited');
-select ok(exists(select 1 from pg_policy where schemaname='storage'
-  and tablename='objects' and policyname='child_safety_evidence_insert')
-  and exists(select 1 from pg_policy where schemaname='storage'
-  and tablename='objects' and policyname='child_safety_evidence_select'),
+select ok(exists(select 1 from pg_policy policy_row
+  join pg_class relation_row on relation_row.oid=policy_row.polrelid
+  join pg_namespace namespace_row on namespace_row.oid=relation_row.relnamespace
+  where namespace_row.nspname='storage' and relation_row.relname='objects'
+    and policy_row.polname='child_safety_evidence_insert')
+  and exists(select 1 from pg_policy policy_row
+    join pg_class relation_row on relation_row.oid=policy_row.polrelid
+    join pg_namespace namespace_row on namespace_row.oid=relation_row.relnamespace
+    where namespace_row.nspname='storage' and relation_row.relname='objects'
+      and policy_row.polname='child_safety_evidence_select'),
   'Storage has scoped insert and read policies');
 select ok(pg_get_functiondef(
   'app_private.child_safety_register_evidence(uuid,jsonb)'::regprocedure)

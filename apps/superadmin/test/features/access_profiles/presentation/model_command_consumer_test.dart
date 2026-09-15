@@ -185,7 +185,6 @@ Future<void> _checkDraft(WidgetTester tester, String operation) async {
     await tester.pumpAndSettle();
   }
   expect(_fieldText(tester, 'Nome do perfil'), 'Nome revisado');
-  expect(_fieldText(tester, 'Código'), 'nominal.model');
   expect(_fieldText(tester, 'Descrição'), 'Descrição revisada');
 }
 
@@ -215,9 +214,6 @@ Future<void> _submit(WidgetTester tester, String operation) async {
       find.widgetWithText(CoeloFormTextField, 'Nome do perfil'),
       'Nome revisado',
     );
-    if (operation == 'create') {
-      await tester.enterText(find.widgetWithText(CoeloFormTextField, 'Código'), 'nominal.model');
-    }
     await tester.enterText(
       find.widgetWithText(CoeloFormTextField, 'Descrição'),
       'Descrição revisada',

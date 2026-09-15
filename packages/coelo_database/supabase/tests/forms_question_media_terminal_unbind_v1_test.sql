@@ -8,6 +8,8 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
  ('9f090000-0000-4000-8000-000000000010','QA R08 FM unbind','qa-r08-fm-unbind','active','9f090000-0000-4000-8000-000000000001');
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('9f090000-0000-4000-8000-000000000102','authenticated','authenticated','fm-unbind@invalid.test',now(),now(),now(),'{}','{}');
+insert into public.people(id,person_type,first_name,last_name,display_name)
+values ('c0e10000-0000-4000-8000-000000000001','adult','Coelo','Sistema','Coelo Sistema');
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('9f090000-0000-4000-8000-000000000202','9f090000-0000-4000-8000-000000000102',now(),now(),'aal1',now()+interval '1 hour');
 insert into app_private.superadmin_internal_identities(id) values

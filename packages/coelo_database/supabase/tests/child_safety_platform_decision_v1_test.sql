@@ -36,6 +36,11 @@ insert into public.institutions(id,public_name,slug,institution_type_id) values
 insert into public.units(id,institution_id,unit_type_id,name,slug,handle) values
 ('c5322000-0000-4000-8000-000000000001','c5321000-0000-4000-8000-000000000001','c5320000-0000-4000-8000-000000000002','P32 unit A1','a1','p32unita1'),
 ('c5322000-0000-4000-8000-000000000002','c5321000-0000-4000-8000-000000000001','c5320000-0000-4000-8000-000000000002','P32 unit A2','a2','p32unita2');
+-- A baseline de producao possui a pessoa tecnica Coelo. O trigger global de
+-- follows usa esse id como follower/target e a fixture deve semeá-lo antes
+-- de inserir qualquer pessoa ativa, sem desabilitar o trigger.
+insert into public.people(id,person_type,first_name,last_name,display_name)
+values ('c0e10000-0000-4000-8000-000000000001','adult','Coelo','Sistema','Coelo Sistema');
 insert into public.people(id,person_type,first_name,last_name,display_name) values
 ('c5323000-0000-4000-8000-000000000001','child','P32','Synthetic','P32 synthetic child'),
 ('c5323000-0000-4000-8000-000000000002','adult','P32','Synthetic','P32 synthetic guardian'),

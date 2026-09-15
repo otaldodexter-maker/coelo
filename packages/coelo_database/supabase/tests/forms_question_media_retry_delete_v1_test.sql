@@ -10,6 +10,8 @@ insert into public.institutions(id,public_name,slug,status,institution_type_id) 
 insert into auth.users(id,aud,role,email,email_confirmed_at,created_at,updated_at,raw_app_meta_data,raw_user_meta_data) values
  ('9f080000-0000-4000-8000-000000000102','authenticated','authenticated','fm-retry-a@invalid.test',now(),now(),now(),'{}','{}'),
  ('9f080000-0000-4000-8000-000000000103','authenticated','authenticated','fm-retry-b@invalid.test',now(),now(),now(),'{}','{}');
+insert into public.people(id,person_type,first_name,last_name,display_name)
+values ('c0e10000-0000-4000-8000-000000000001','adult','Coelo','Sistema','Coelo Sistema');
 insert into auth.sessions(id,user_id,created_at,updated_at,aal,not_after) values
  ('9f080000-0000-4000-8000-000000000202','9f080000-0000-4000-8000-000000000102',now(),now(),'aal1',now()+interval '1 hour'),
  ('9f080000-0000-4000-8000-000000000203','9f080000-0000-4000-8000-000000000103',now(),now(),'aal1',now()+interval '1 hour');
