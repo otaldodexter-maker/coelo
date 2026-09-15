@@ -222,7 +222,7 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 Fora do MVP: `plans.assign`, Financeiro, `institutions.status`, `institutions.locations-map`, MFA ×3.
 V1/Etapa 3: Catálogo de UI. Formulários autosave (H11): V1 se for caro, salvo se >60% pronto.
 Etapa 3: 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
-Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). Na abertura da R14, explicar esses temas
+Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). Decidir na abertura: OQ-033 (ativar/inativar/excluir em tudo). R15: OQ-034 Locais com mapa por imagem e hierarquia (substitui `institutions.locations-map`). Na abertura da R14, explicar esses temas
 ao Owner de forma visual antes de executar.
 
 ## Como atualizar

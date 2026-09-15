@@ -16,7 +16,7 @@ e a fila única `R14-pendencias.md` apontada nele.
 
 ## Pendências do MVP
 
-Use os itens não terminais do estado R13 e o inventário por `action_id`. Itens
+Use os itens não terminais da fila R14 e o inventário por `action_id`. Itens
 explicitamente `deferred-post-mvp` continuam registrados, mas não bloqueiam o
 MVP e não devem ser implementados por inferência.
 
@@ -43,7 +43,7 @@ Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
   perfis, 1 a 4 publicações/dia no total, para dar movimento e notificações
   na rede): decidir a lista antes de fechar o MVP (não é Etapa 3). Proposta
   inicial em `docs/open-questions.md` (OQ-032).
-- **Ao abrir a R14:** perguntar ao Owner e explicar, de forma simples e
+- **Na retomada da R14:** manter visíveis para o Owner e explicar, de forma simples e
   visual, os temas: telas de erro/acesso negado/arquivos/mapa de Instituições e
   Unidades; Catálogo de UI; Chat › Anexar; Formulários H10/H11; e as decisões
   acima.

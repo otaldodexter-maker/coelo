@@ -17,6 +17,32 @@ reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038
 
 # Perguntas abertas e conflitos
 
+## OQ-033 — Ciclo de vida ativar/inativar/excluir em todas as entidades (2026-09-15)
+
+Owner: instituições, unidades, turmas, atividades, pessoas, formulários "e tudo mais"
+devem poder ser **ativados, inativados e excluídos**. Conflito a decidir: as fontes
+vigentes (AGENTS.md, ADR 0032, LGPD/auditoria) pedem "arquivar, não apagar" para
+registros com vínculos, crianças ou trilha de auditoria. Opções: (A) excluir =
+exclusão lógica sempre (some das telas, fica no histórico); (B) exclusão real só
+para registros sem vínculo/auditoria, lógica nos demais; (C) exclusão real com
+manifesto e retenção. Sem decisão, `institutions.status` (ativar/desativar) continua
+fora do MVP por R12-53. Decidir na abertura da R14.
+
+## OQ-034 — Locais: mapa da instituição por imagem, mídia com visibilidade e hierarquia bloco/andar/tipo (2026-09-15)
+
+Owner descreveu a tela desejada (Operação › Locais): card por instituição com
+"Ver mapa" / "Ver unidades"; wizard com (1) mapa geral por **imagem anexada**
+(sem provedor de mapas), endereço sincronizado com o cadastro da instituição com
+popup de confirmação quando mudar em qualquer tela, fotos/vídeos da instituição com
+visibilidade todos / só quem acompanha / ninguém (aviso: servem para visibilidade,
+vão ao perfil público depois do MVP); (2) locais hierárquicos: Bloco (opcional,
+nome livre) → Andar (subsolo, -1, -2, -3, térreo, 1º–8º, outros) → Tipo (sala,
+quadra, piscina, secretaria, estoque, laboratório, refeitório, biblioteca, auditório,
+pátio/parquinho, banheiro/fraldário, enfermaria, outros) → Nome → foto → planta →
+visibilidade todos / funcionários / responsáveis / admin / nenhum. Decisão do Owner:
+**é robusto → R15**, com spec aprovada antes de código; substitui a ação
+`institutions.locations-map` atual (que fica fora do MVP até lá).
+
 ## OQ-032 — Perfis oficiais do Coelo seguidos automaticamente (2026-09-14)
 
 Owner: para dar movimento de rede social e notificações, todos os usuários do
