@@ -14,6 +14,19 @@ Branch: `r14/bloco-e`
 - `owner.r12-18` e `owner.r12-33` não foram reivindicados.
 - Fora do escopo preservado: Planos, `plans.assign`, Auth recovery/allowlist e duplicações de Cardápios, Avaliações, Perfis de acesso e reader self.
 
+## Atualização após autorização de produção — 2026-09-15
+
+- O Owner autorizou explicitamente a continuação em produção e a criação de uma
+  identidade QA sintética se necessária.
+- Migration versionada `20260915185048_qa_r14_chat_cross_tenant_identity_v1.sql`
+  foi aplicada ao projeto vinculado e marcada como `applied` no histórico da
+  Supabase CLI. Ela só cria a função privada de preparação da fixture; não
+  contém segredo, CPF real ou dado de usuário.
+- A identidade `qa-r14-chat-cross-tenant@coelo.me` foi criada/atualizada pelo
+  Auth Admin, recebeu apenas membership `institution` em
+  `qa-r04-cuidado-sintetico`, e foi revogada após a prova. O vínculo interno,
+  membership e espelho de plataforma ficaram `revoked`.
+
 ## Entregue localmente
 
 ### Conta A+ / owner.r12-46
@@ -64,7 +77,17 @@ Branch: `r14/bloco-e`
 - Fluxo SQL sintético descartável, fora do Git, em `C:\Users\adrie\Documents\Coelo-backups\r14-e-avatar-behavior.sql`: **9/9**, cobrindo prepare, catálogo/tenant, finalize, read autorizado, negativas cross-tenant, remove e read após revogação; fixtures dentro de transação com `ROLLBACK`.
 - Produção autorizada: dump pré-aplicação em `C:\Users\adrie\Documents\Coelo-backups\schema-producao-r14-e-before.sql`; migrations Account `20260915120000...` e Chat `20260915130000...` aplicadas pelo linked project; verificação confirmou catálogo, RLS/grants e finalize service-role-only.
 - Prova produtiva Account: login QA, prepare, PUT de PNG sintético em R2, finalize, projeção de perfil em modo foto, read assinado, bytes iguais, reload, sete identidades QA de escopos não autorizados com `422`, remove e read posterior negado. Nenhum segredo, token, URL assinada ou dado pessoal foi impresso.
-- Prova produtiva Chat: inbox real, prepare com `asset_id`, PUT R2, finalize, read assinado, bytes iguais, thread/reload com `asset_id` no envelope. As sete identidades QA disponíveis compartilham o mesmo fingerprint de escopo e receberam `200`; não há identidade QA de outro tenant para declarar negativa Chat. As duas mensagens sintéticas foram revogadas pela RPC (`2/2`).
+- Prova produtiva Chat: conversa real selecionada explicitamente em
+  `qa-r04-chat`, prepare com `asset_id`, PUT R2, finalize, read assinado, bytes
+  iguais, thread/reload com `asset_id` no envelope. O usuário sintético restrito
+  a `qa-r04-cuidado-sintetico` recebeu `422` ao tentar ler o anexo de
+  `qa-r04-chat`; a mensagem sintética foi revogada pela RPC (`1/1` nesta prova,
+  além da limpeza anterior). A fixture de identidade foi revogada após a
+  leitura negativa. Não houve URL assinada, token ou credencial no log.
+- A preparação de fixture foi registrada em
+  `packages/coelo_database/migrations/20260915185048_qa_r14_chat_cross_tenant_identity_v1.sql`;
+  a execução produtiva foi feita pelo CLI vinculado, seguida de reparo nominal
+  do histórico para `applied`.
 - Prova produtiva Principal: fixture PNG criada pelas RPCs reais e retirada após leitura para Momentos e Acontece; Agora foi publicada e o sweep de expiração respondeu `200`. Os testes confirmaram read assinado e bytes iguais nas três superfícies.
 - Edge Functions produtivas finais: `account-media` v1, `chat-media` v8, `now-media` v8, `moments-media` v12 e `happens-media` v7, todos apontando para este worktree.
 - Rota real: `http://127.0.0.1:3017/login` carregou no Chrome isolado; árvore Flutter AX expôs os seletores reais de E-mail, Senha e Entrar. A porta `3017` estava em LISTEN. O CDP TCP `9417` não estava em LISTEN neste host, portanto não há prova por esse endpoint literal.
@@ -74,21 +97,30 @@ Branch: `r14/bloco-e`
 - A autorização nominal foi concedida pelo usuário nesta sessão; SQL/migrations e Edge Functions foram aplicados somente no projeto vinculado autorizado, com dump prévio e sem alterar os MDs centrais.
 - O servidor `127.0.0.1:3017` está em LISTEN e a rota `/login` foi verificada no Chrome isolado. O Chrome CDP TCP `9417` não está disponível neste host; a prova UI não deve ser descrita como execução pelo endpoint CDP literal.
 - Não registrar nem commitar segredos, tokens, PII, mídia privada ou URLs assinadas. As provas produtivas usaram credenciais QA apenas em memória; saídas foram reduzidas a status/booleans. Scripts efêmeros ficaram fora do Git.
-- Negativa cross-tenant produtiva está comprovada para a Conta (sete leituras negadas). O Chat não tem uma segunda identidade/tenant QA; todos os perfis disponíveis compartilham o mesmo escopo, então essa negativa específica continua pendente.
+- Negativa cross-tenant produtiva está comprovada para a Conta (sete leituras negadas)
+  e agora também para o Chat (identidade sintética restrita a outro tenant,
+  leitura do anexo negada com `422`). A identidade criada para a prova foi
+  revogada ao final.
 - Autosave H10/H11 tem 228 testes locais, mas aceite remoto acima de 60% ainda não foi executado; manter a decisão formal para R15/coordenadora.
 
 ## Sobra explícita para R15
 
-1. Concluído nesta sessão: aplicar as duas migrations em espelho e produção autorizados, após dump/manifesto e ordem de aplicação; executar os testes SQL R14, incluindo positivo, ownership, tenant e negativa cross-tenant.
-2. Confirmar no gate da coordenadora as migrations já aplicadas em produção e anexar o manifesto/dump externo; não reaplicar sem nova autorização.
-3. Repetir prova real de Chat Anexar com uma identidade de outro tenant; conferir negativa produtiva além do contrato e do positivo já provado.
-4. Integrar Stream somente quando existir contrato/Edge/segredo/fixture autorizados; as provas desta sessão são R2 privado.
-5. Executar QA pelo CDP literal `9417` quando o endpoint estiver disponível; a rota `3017` já foi carregada por Chrome isolado.
-6. Confirmar H10/H11 remotamente; manter autosave no MVP apenas se o aceite remoto continuar acima do limiar de 60%.
-7. Só abrir Circular/Principal/gates quando cada item tiver `action_id`, contrato e prova definidos; não reivindicar `owner.r12-18`/`owner.r12-33` sem autorização.
+1. Confirmar no gate da coordenadora as migrations e a prova Chat já aplicadas em
+   produção; não reaplicar sem nova autorização.
+2. Integrar Stream somente quando existir contrato, Edge, segredo, fixture e
+   critério de aceite autorizados; as provas desta sessão são R2 privado.
+3. Executar QA pelo CDP literal `9417` quando o endpoint estiver disponível; a
+   rota `3017` foi carregada no Chrome isolado, mas o endpoint TCP foi recusado
+   pelo ambiente.
+4. Confirmar H10/H11 remotamente; manter autosave no MVP apenas se o aceite
+   remoto continuar acima do limiar de 60%.
+5. Agora não possui remoção imediata no contrato vigente; seu ciclo provado é
+   expiração/sweep. Não inventar RPC de remoção.
+6. Só abrir Circular/Principal/gates quando cada item tiver `action_id`, contrato
+   e prova definidos; não reivindicar `owner.r12-18`/`owner.r12-33` sem autorização.
 
 ## Estado ao handoff
 
-- HEAD antes deste ajuste do handoff: `622d2fc5a16e19592a99d691ff045c01cd5fb05a`.
+- HEAD antes deste ajuste do handoff: `b31561325c3f57683f9ea755d653b059395a60d2`.
 - Commits desta sessão incluem `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat), `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd` (teste de remoção), `5535634632a5d6907a70fb587f37d5197f45c805` (enum do catálogo), `9117da7ca2c14073f3bb5906e14cba69234fdb76` (handoff/prova), `e8096df191794696e9e381eead4b09bbd889a15d` (lock Edge) e `622d2fc5a16e19592a99d691ff045c01cd5fb05a` (normalização Now).
 - Este handoff é o único novo registro desta sessão. Handoffs de outras sessões não foram editados.
