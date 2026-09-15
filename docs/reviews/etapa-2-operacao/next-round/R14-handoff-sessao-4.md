@@ -47,7 +47,7 @@ Branch: `r14/bloco-e`
 
 - Account Edge: `deno test --allow-read --no-check index_test.ts` — **2 passed**.
 - Chat Edge: `deno test --allow-read --no-check index_test.ts` — **4 passed**.
-- Account repository: teste focado — **4 passed**.
+- Account repository: teste focado — **5 passed**, incluindo remoção após reload.
 - Account profile UI: teste focado — **24 passed**, incluindo alinhamento, compacto, 200%, rolagem/controles e estados de avatar.
 - Chat Flutter (repository + upload): **52 passed**.
 - Agora Flutter (repository/controller/page): **71 passed**.
@@ -77,6 +77,6 @@ Branch: `r14/bloco-e`
 
 ## Estado ao handoff
 
-- HEAD: `762dc148e61af21cfb33b66d4bdcceefcb0951cb`.
-- Commits desta sessão: `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat).
+- HEAD antes deste ajuste do handoff: `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd`.
+- Commits desta sessão: `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat), `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd` (teste de remoção).
 - Este handoff é o único novo registro desta sessão. Handoffs de outras sessões não foram editados.
