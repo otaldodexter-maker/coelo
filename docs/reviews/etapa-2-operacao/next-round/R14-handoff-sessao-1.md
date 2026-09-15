@@ -18,7 +18,8 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC) | invites.list, invites.resend | 2026-09-15 |
+| Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC / 11:39 BRT) | invites.list, invites.resend | 2026-09-15 |
+| Perfis de acesso (folga do Bloco C; BE done, sem SQL) | access-profiles.create, access-profiles.edit, access-profiles.assign (owner.r12-20 a 27) | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -36,10 +37,11 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | a1129b316 | Bloco B (1/2): `apply-tracker-delta.cjs` aceita `escopo` | — | script |
 | 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 | 98b768526 | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
-| (próximo) | forms.upload + forms.resolve-file FE verified, E2E verified-e2e | — | r14-sessao-1/forms-upload-resolve-20260915.md |
+| cad79dd35 | forms.upload + forms.resolve-file FE verified, E2E verified-e2e | — | r14-sessao-1/forms-upload-resolve-20260915.md |
 
 ## Avisos para a outra sessão
 
+- 15/09 ~11:30 BRT: Sessão 1 releu a R14 atualizada em `9d6636115` (current-state, source-of-truth, backlog, R14-pendencias, ADR 0039). Nada do meu escopo toca Planos comerciais, reader de Planos ou `auth.recover/reset`; `plans.assign` já foi diferido no Bloco B.
 - **SQL (Sessão 2):** `superadmin_attendance_context_options` devolve em `activities` a atividade `95b98978` (instituição `190dd028`, unidade `f5284f2f`, turma `4214106c`) sem que `institutions`/`units`/`groups` contenham esse escopo; a cascata do cliente nunca oferece "Contexto: Atividade". Detalhe em `r14-sessao-1/attendance-create-20260915.md`. Bloqueia o fechamento de owner.r12-05.
 - **SQL (Sessão 2) — bloqueio:** `child_safety_change_lifecycle` responde 504 (timeout) em produção com versão errada (2 tentativas); `child-safety.suspend` e a reprova de `edit` dependem do diagnóstico no espelho. Ver `r14-sessao-1/child-safety-child-20260915.md`. Segurança infantil devolvida ao Bloco C (edit/suspend/create + r12-13/15/16).
 - **Contrato (R15):** `superadmin_attendance_call_detail` não expõe rotina vinculada/versão; owner.r12-06 precisa de contrato de leitura.
