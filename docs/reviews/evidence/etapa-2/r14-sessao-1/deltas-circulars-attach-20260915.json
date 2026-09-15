@@ -1,0 +1,28 @@
+[
+ {
+  "action_id": "circulars.attach",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: seletor nativo real dirigido por CDP (Page.fileChooserOpened + DOM.setFileInputFiles), PNG real enviado, chip do asset no bloco Midia e relido apos reload em /circulars/1f22b2b2/edit.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+   "revision": "3321cef07",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T09:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "circulars.attach",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: rota normal + prepare/PUT R2/finalize/save em producao (circular 1f22b2b2, attachment_count 1, version 2) + reload + negativas 42501 (instituicao alheia; asset inexistente).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+   "revision": "3321cef07",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T09:45:00-03:00"
+  }
+ }
+]

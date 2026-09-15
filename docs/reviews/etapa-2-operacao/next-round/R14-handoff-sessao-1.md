@@ -18,16 +18,17 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Circulares › Anexos | circulars.attach | 2026-09-15 |
+| Agenda › Solicitar | agenda.request | 2026-09-15 |
 
 ## Fatias entregues
 
 | SHA | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|
+| (este commit) | circulars.attach FE verified, E2E verified-e2e (Circulares 11/11) | — | r14-sessao-1/circulars-attach-20260915.md |
 
 ## Avisos para a outra sessão
 
-- Nenhum.
+- Método novo para seletor de arquivo real: `r14-sessao-1/ferramentas/cdp_filechooser.dart` (Page.fileChooserOpened + DOM.setFileInputFiles); serve para Arquivos de Formulários › Upload e Chat › Anexar.
 
 ## Sobra para a R15
 
@@ -35,4 +36,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 164/231, BE 164/224, E2E 137/199, Owner 9/53 (base 0c8add8a7, sem delta desta sessão).
+FE 165/231, BE 164/224, E2E 138/199, Owner 9/53 (após circulars.attach).

@@ -9179,13 +9179,13 @@
       "family": "circulars",
       "screen": "Circular / Anexos",
       "scope": "mvp",
-      "done": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R09 C0: primeiro gate e permissao Allow access to file URLs da extensao para o seletor real; depois prepare/PUT/finalize/save/read/reload. Mock QA foi tornado opt-in, nenhum novo E2E, BE historico preservado.",
-      "fe": "Pós-consolidação: Card compartilhado substitui botão em ambos os compositores. Ainda exige anexo produtivo/reload e negativa de escopo; não herda aceite do PNG Acontece. Anterior: R09 C0: seletor normal agora e padrao no QA9eb24fbf1; analyze e build71s PASS. Rota normal/contexto/compositor e filechooser reais abrem; setFiles recusado pela extensao por permissao de arquivos. Sem upload/persistencia/reload, nao verified.",
+      "done": "R14 S1: rota normal + prepare/PUT R2/finalize/save em producao (circular 1f22b2b2, attachment_count 1, version 2) + reload + negativas 42501 (instituicao alheia; asset inexistente).",
+      "fe": "R14 S1 rota real: seletor nativo real dirigido por CDP (Page.fileChooserOpened + DOM.setFileInputFiles), PNG real enviado, chip do asset no bloco Midia e relido apos reload em /circulars/1f22b2b2/edit.",
       "be": "Pós-consolidação: Nenhum SQL ou deploy remoto novo. Acontece comprovou R2/Edge/RPC em origem autorizada3000; contratos/certificações anteriores preservados. Provas específicas de cada ação ainda conforme Principal-pos-R10.md. Anterior: R05: 190000 + 190200 (R2 para Circulares: prepare presign em coelo-media-prod com chave tenants/.../circulars/circular/.../attachment/.../original) + 190300 (gateway v2 aceita bloco de midia com asset ready da propria circular) em producao: prepare -> PUT no R2 -> finalize ready -> rascunho com bloco de midia -> detail devolve asset_id -> publish com midia -> read signed_url -> bytes conferem; anon 401; delete de anexo publicado recusado (imutavel). pgTAP 18/18 + v2 34/34 + r2 45/46.",
-      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/circular-native-picker.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
-      "frontendStatus": "local-green",
+      "evidence": "etapa-2-operacao/next-round/R02-20260909/CIRCULARES-MAPEAMENTO-ACEITO.md; specs/037-principal-circulars.md; decisions/0032-mvp-private-media-r2.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado em dev via merge d502350ce) e b10f48d1e; principal_circular_attachment_tile_test.dart e principal_circular_detail_media_passthrough_test.dart integrados de L01 3697dd49e; 2026-09-09, local; commit 04acb3e7b; deno test --config deno.json --allow-all packages/coelo_database/supabase/functions/circular-media/index_test.ts, 25 PASS e 0 FAIL, incluindo os casos que provam que o segredo e as credenciais do bucket nunca saem, que um R2 nao configurado e recusado antes de alcancar o objeto e que a falha de transporte e opaca; 2026-09-09, local; commit 4e825eef5, reusando a entrega autoral L01 3697dd49e; production_circular_attachments_test.dart; circular_routes_test confirma que a rota produtiva monta ProductionCircularComposerHost e nao o host de desenvolvimento; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; coordenacao.json R03 rev 13; evidence/etapa-2/r04-publicacoes-agenda/handoff.md; R2 em producao; upload real nao exercido; ver handoff.md; evidence/etapa-2/r05-publicacoes-agenda/prova-producao-r05-resultado.json; evidence/etapa-2/r06-publicacoes-agenda/ui/ui-09-circulars-attach-preflight-x-client-info.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/circular-native-picker.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md; docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T13:20:58.702584-03:00",
       "mappingSource": {
         "round": "R02",
@@ -9202,11 +9202,23 @@
           "revision": "66a52986f",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST/Edge Function (prova-producao-r05.js 34/34 as 14:36)",
           "recordedAt": "2026-09-11T14:40:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+          "revision": "3321cef07",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T09:45:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/circulars-attach-20260915.md",
+          "revision": "3321cef07",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T09:45:00-03:00"
         }
       }
     }
   ],
-  "updatedAt": "2026-09-14T20:24:39.816Z",
+  "updatedAt": "2026-09-15T12:42:45.420Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
