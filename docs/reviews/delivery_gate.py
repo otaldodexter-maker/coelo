@@ -57,6 +57,16 @@ def validate(report, facts):
         if item.get('status') != 'done':
             require(bool(item.get('owner')) and bool(item.get('nextGate')), 'Open item lacks owner/next gate')
             require(report.get('completion') == 'partial', 'Open commitment forbids complete claim')
+    formal_actions = report.get('formalActions', [])
+    formal_ids = [item.get('id') for item in formal_actions]
+    require(all(formal_ids) and len(formal_ids) == len(set(formal_ids)), 'Missing or duplicate formal action IDs')
+    for item in formal_actions:
+        require(item.get('status') in ('open', 'done', 'deferred'), 'Invalid formal action status: '+str(item.get('id')))
+        require(item.get('evidence') in evidence, 'Formal action has no published evidence: '+str(item.get('id')))
+        require(bool(item.get('owner')) and bool(item.get('nextGate')), 'Formal action lacks owner/next gate: '+str(item.get('id')))
+        if item.get('status') != 'done':
+            require(report.get('completion') == 'partial', 'Open formal action forbids complete claim')
+        mapped.add(item.get('id'))
     require(set(facts['changedActions']).issubset(mapped), 'Changed action omitted from commitment ledger')
     require(mapped.issubset(set(report.get('trackerActionIds', []))), 'Action missing from one or more trackers')
     memory = report.get('memory', {})

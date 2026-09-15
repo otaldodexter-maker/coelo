@@ -183,6 +183,7 @@ def main() -> None:
         PENDENCIES,
         "docs/agent/current-state.md",
         "docs/agent/source-of-truth.md",
+        "decisions/0040-agora-immediate-removal.md",
         "docs/agent/artifact-inventory-20260914.json",
         "docs/reviews/inventario-etapa-2.json",
         "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
@@ -196,6 +197,11 @@ def main() -> None:
 
     actions = inventory["actions"]
     layers = inventory["layerCounts"]
+    formal_actions = [
+        {"id": action["id"], **action["formalCommitment"]}
+        for action in actions
+        if action.get("formalCommitment")
+    ]
 
     def count(field: str, value: str) -> int:
         return sum(1 for action in actions if action.get(field) == value)
@@ -277,6 +283,7 @@ def main() -> None:
         "metrics": metrics,
         "firstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
         "ownerItems": owner_items,
+        "formalActions": formal_actions,
         "baseReference": BASE_REFERENCE,
         "target": str(ROOT.resolve()),
         "protectedWorktrees": current_protected_worktrees(),
