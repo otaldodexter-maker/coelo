@@ -8,7 +8,7 @@ reconciled_with: ADR0032; decisions/0038; docs/design/design-system.md
 ---
 
 > **Direção futura/pendente — não é aceite atual.** Este arquivo preserva a
-> referência do Owner para a fila R13/R14. Não autoriza implementação, não
+> referência do Owner para a fila R14. Não autoriza implementação, não
 > substitui a política R2 e não deve ser tratado como golden aprovado ou prova
 > de `chat.attach`.
 
@@ -67,4 +67,4 @@ mídias e compositor com teclado/texto multilinha; desenhar o delta conforme
 coelo-ui e obter aceite visual do render. Testar envio/leitura/reload e RLS,
 sem refazer as correções R10 já válidas. Nenhum aceite FE/BE/E2E novo aqui.
 
-Destino operacional após decisão do Owner em13/09/2026: R12, conforme `docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md` (Conta R12-46; compositor R12-52, coordenado com R12-43). Direção e aceites preservados; transferência não certifica implementação.
+Destino operacional atual: R14, conforme `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md` (ação preservada como `owner.r12-52`). Direção e aceites continuam condicionados à prova da fila; este documento não certifica implementação.

@@ -7,8 +7,8 @@ updated_at: 2026-09-14
 reconciled_with: AGENTS.md; decisions/0032; decisions/0038; docs/design/design-system.md
 ---
 
-> **Overlay de estado — 14/09/2026.** Esta referência continua vinculada ao
-> item atual `owner.r12-46`; a sigla foi provada, mas a foto privada R2 e o
+> **Overlay de estado — 15/09/2026.** Esta referência continua vinculada ao
+> item atual `owner.r12-46` na fila R14; a sigla foi provada, mas a foto privada R2 e o
 > aceite integral permanecem pendentes. O anexo orienta composição, não
 > substitui contrato, permissão, persistência ou prova de rota normal.
 
@@ -64,4 +64,4 @@ remotos estão em `docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md`.
 Este registro não converte render automatizado em aprovação visual A nem
 certifica a ação inteira.
 
-Destino operacional após decisão do Owner em13/09/2026: R12, conforme `docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md` (Conta R12-46; compositor R12-52, coordenado com R12-43). Direção e aceites preservados; transferência não certifica implementação.
+Destino operacional atual: R14, conforme `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md` (ação preservada como `owner.r12-46`). Direção e aceites continuam condicionados à prova da fila; este documento não certifica implementação.

@@ -3,7 +3,7 @@ title: "Dois testes podem afirmar contratos opostos, e o vermelho não diz qual 
 knowledge_id: "dated-test-expectations"
 source: "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema.md"
 status: "draft"
-lifecycle: "current"
+lifecycle: "future"
 generated_at: "2026-09-10"
 updated_at: "2026-09-10"
 audience: "team"

@@ -114,8 +114,10 @@ não muda de conteúdo: correção posterior nasce como pacote novo. Sessões da
 Conta são listadas por RPC própria e revogadas pelo GoTrue (`scope=others`),
 sem função de borda nem chave de serviço.
 
-Lotes 63 a 65 (14/09/2026, R13, ADR 0038): a fila SQL foi reaberta com o rito
-da Decisão 8. Regras medidas: um espelho descartável novo (`config.toml` com
+Lotes 63 a 65 (14/09/2026, fechamento da R13, ADR 0038): a fila SQL foi
+reaberta com o rito da Decisão 8. Qualquer trabalho de produto posterior segue
+a fila única R14; este parágrafo preserva apenas as regras de execução e prova
+do ambiente. Regras medidas: um espelho descartável novo (`config.toml` com
 `project_id` próprio e portas 613xx, `supabase/migrations/` só com a baseline,
 `supabase start` sem studio/realtime/storage) mais `psql` do container para os
 167 arquivos da ordem real leva poucos minutos e reproduz produção (md5 de

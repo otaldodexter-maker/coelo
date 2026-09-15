@@ -3,7 +3,7 @@ title: "Limite de tamanho de campo é contrato, e quando falta no cliente o erro
 knowledge_id: "field-length-contract"
 source: "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema.md"
 status: "draft"
-lifecycle: "current"
+lifecycle: "future"
 generated_at: "2026-09-10"
 updated_at: "2026-09-10"
 audience: "team"

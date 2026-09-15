@@ -42,8 +42,10 @@ aceite ponta a ponta.
 
 As ADRs posteriores podem restringir esses contratos: em particular, ADR 0031
 adia importações/exportações gerais, ADR 0032 substitui o desenho de mídia por
-R2 privado, ADR 0034 separa estado documental de aceite real e ADR 0038 altera
-regras da fila R13. `plans.assign` fica fora do MVP até nova decisão.
+R2 privado, ADR 0034 separa estado documental de aceite real e ADR 0038 registra
+decisões do fechamento da R13 que foram transferidas para a fila única R14; ela
+não transforma a R13 em fila vigente. `plans.assign` fica fora do MVP até nova
+decisão.
 
 ## Planejamento, futuro ou bloqueio
 

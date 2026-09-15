@@ -3,7 +3,7 @@ title: "Contrato de escrita de repositório — a implementação de referência
 knowledge_id: "repository-write-contract"
 source: "docs/reviews/etapa-2-operacao/reports/E2-noturna-idempotencia-escrita-20260909.md"
 status: "draft"
-lifecycle: "current"
+lifecycle: "future"
 generated_at: "2026-09-10"
 updated_at: "2026-09-10"
 audience: "team"

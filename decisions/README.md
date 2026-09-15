@@ -13,7 +13,7 @@ que a implementação, RLS ou E2E exista. Para o trabalho atual, comece por
 | Mídia privada | `0032-mvp-private-media-r2.md` | R2 privado como master; catálogo e permissões no Postgres; Stream só quando aplicável. |
 | Importação e exportação | `0031-mvp-import-export-buttons-only.md` | Controles podem aparecer; execução geral fica adiada, com a exceção de `forms.responses.export`. |
 | Principal, host e controles de mídia | `0037-principal-host-context-and-media-controls.md` | Conferir junto da ADR 0032 e da spec da superfície. |
-| Decisões do Owner da R13 | `0038-owner-decisions-etapa2-backlog-20260914.md` | Fechamentos de produto da fila R13; não reabrir o que ela decidiu. |
+| Decisões registradas no fechamento da R13 | `0038-owner-decisions-etapa2-backlog-20260914.md` | Overlay de produto para a fila R14; não reabrir o que o Owner decidiu. |
 | Etapa 3 reservada | `0035-etapa3-mvp-contextual-access-and-app-delivery.md` | Planejamento aprovado; não iniciar automaticamente. |
 
 ## Base arquitetural
