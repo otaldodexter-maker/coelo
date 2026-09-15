@@ -17,19 +17,20 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último delta de execução: 14/09 ~18:00 — Saúde/Cuidado provado na rota real;
-  contadores FE 164/231, BE 164/224, E2E 137/199, Owner 9/53.
+- Último delta de execução: 15/09 ~10:21 — Sessão 1 provou Circulares, Agenda,
+  Assiduidade, Rotina e Acontece na rota real; contadores FE 169/231, BE 164/224,
+  E2E 142/199, Owner 10/53.
 - Próximo gate executável (ordem ajustada pelo Owner em 14/09: mais fácil primeiro):
-  Bloco A de `R14-pendencias.md` — ações que só precisam de E2E e fecham a tela
-  (`circulars.attach`, `agenda.request`, `attendance.create`, `daily-routine.apply`,
-  `acontece.create`, …); Cardápios vem no Bloco C.
+  Bloco A continua em execução, com `shell.switch-context`, Atividades, Convites,
+  Chat › Criar grupo e Unidades ainda sem entrega certificada; Cardápios está
+  reivindicado pela Sessão 2 no Bloco C, sem fatia entregue.
 - 15/09: temas de abertura explicados e decididos pelo Owner (artefato
   89AVWHKEnq5hrvYN6SFv6M; `docs/agent/backlog.md`, seção de 15/09). A R14 executa em
   **paralelo**: o protocolo está registrado para Sessão 1 (Blocos A–B) e Sessão 2
   (Blocos C–D) em worktrees próprias, com coordenadora Codex na pasta principal —
   papéis, portas, fluxo git e handoffs em
   `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`. As worktrees
-  previstas ainda não existem; só serão criadas quando o Owner iniciar a execução.
+  `r14-ab` e `r14-cd` estão ativas e protegidas até o fechamento da R14.
   Não reabrir decisões já registradas na ADR 0038.
 
 ## Fonte da fila atual

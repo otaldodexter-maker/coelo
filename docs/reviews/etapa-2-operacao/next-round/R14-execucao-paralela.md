@@ -17,12 +17,11 @@ histórico; vira `historical` quando a R14 fechar.
 
 ## Estado verificável da infraestrutura
 
-Na publicação deste protocolo, em 15/09/2026, `git worktree list` contém somente
-`C:\Users\adrie\Documents\Coelo` na branch `dev`; as pastas
-`Coelo.worktrees\r14-ab` e `Coelo.worktrees\r14-cd` ainda não existem. Os
-caminhos e branches abaixo são reservas do plano, não prova de que as sessões
-estejam abertas. Só devem ser criados quando o Owner iniciar a execução
-paralela; os handoffs das sessões passam a existir nesse momento.
+Na verificação do corte de 15/09/2026, `git worktree list` contém a pasta
+principal e as worktrees `Coelo.worktrees\r14-ab` e `Coelo.worktrees\r14-cd` nas
+branches `r14/bloco-ab` e `r14/bloco-cd`. Elas são sessões R14 ativas e devem
+ser preservadas até o fechamento, mesmo quando uma delas estiver aguardando
+rebase ou prova; a remoção exige o manifesto final da coordenadora.
 
 ## Papéis
 
