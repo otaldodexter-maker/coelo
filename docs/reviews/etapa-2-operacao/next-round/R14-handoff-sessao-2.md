@@ -34,13 +34,13 @@ em produção e a atualizar a ordem de aplicação.
 
 - **Cardápios — 15/09/2026:** prova concluída em produção nos cinco action_ids. Sem SQL novo e sem lote/ledger nesta fatia; RPCs existentes persistiram modelo/cardápio e `meal_plan_get` confirmou `visibilityMode=scheduled`, `visibleFrom=2026-09-16T11:00:00Z`, status `published` e `specificDates=[2026-09-16]`. A outra sessão deve ler este handoff antes de reivindicar telas.
 - **Avaliações — 15/09/2026:** `assessments.close/reopen` usou o diário existente `d2c945d8-3809-4d84-b836-2bc6da7c381d`; a devolução e o reload conservaram Instituição → Unidade → Turma → período e não criaram diário, participante ou vínculo.
-- **Saúde, Account e OQ-031 — 15/09/2026:** migrations candidatas aplicadas duas vezes no espelho próprio e testes pgTAP verdes. `owner.r12-29/30` recebeu coleção independente e limite backend 100; `account.profile` recebeu ACL self-only. Produção não recebeu SQL: falta autorização nominal.
-- **H08/H23/H13:** bloqueados por falta de contrato produtivo de item relacionado e `action_id`; não foi inventado payload, coluna ou ação.
+- **Saúde, Account e OQ-031 — 15/09/2026:** migrations aplicadas duas vezes no espelho próprio e, após autorização nominal do Owner nesta conversa, aplicadas em produção na ordem `20260915130000`, `20260915131500`, `20260915133000`; as três constam na ledger remota. PgTAP remoto: saúde 6/6, catálogos 11/11, Account self 6/6. Snapshot produtivo e capturas estão em `r14-sessao-2/block-d-20260915.md`. `owner.r12-29/30` recebeu coleção independente e limite backend 100; `account.profile` recebeu ACL self-only.
+- **H08/H23/H13:** transferidos para R15 por autorização do Owner. O contrato produtivo de item relacionado e `action_id` continua ausente; não foi inventado payload, coluna ou ação.
 
 ## Sobra para a R15
 
-- H08 Duplicar Aviso e consumidores H23/H13: definir no contrato produtivo o item relacionado e a política de `action_id` antes de implementar.
-- Aplicar as três migrations candidatas em produção somente após autorização nominal e reconciliação do gate.
+- H08 Duplicar Aviso e consumidores H23/H13: R15 deve definir no contrato produtivo o item relacionado e a política de `action_id` antes de implementar.
+- Reconciliação do gate produtivo do lote 70 e aceite central dos itens entregues.
 - Aceite central dos itens `owner.r12-29`, `owner.r12-30` e `owner.r12-49`; `owner.r12-34/35/36/37` continuam partial até aceite central.
 - `owner.r12-46` (A+/foto R2) e todos os itens explicitamente fora do escopo continuam abertos.
 
