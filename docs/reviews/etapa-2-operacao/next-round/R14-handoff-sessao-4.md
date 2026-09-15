@@ -138,3 +138,63 @@ Branch: `r14/bloco-e`
   centrais ou contadores por inferência.
 - A porta `3017` continua verificável e a rota `/login` foi carregada no Chrome;
   a porta TCP `9417` continuou indisponível e não há aceite CDP literal.
+
+## Correção de fechamento — `agora.remove` e critérios Account — 2026-09-15
+
+Esta seção atualiza, sem apagar o histórico acima, o estado vigente depois da
+formalização do Owner e da coordenadora:
+
+- `action_id=agora.remove` foi implementado em quatro migrations forward-only:
+  `20260915194620` (enum isolado), `20260915195203` (contrato/RPC/fila),
+  `20260915200003` (capability no papel sistêmico `institution_admin`) e
+  `20260915201349` (recibo agregado do purge). As quatro versões foram
+  aplicadas ao projeto Supabase `evvbomzejfijozbtgvpt` e registradas no ledger.
+- `public.remove_now_publication` exige ator/capacidade/contexto resolvidos no
+  backend, trava de versão e request id; materializa `removed`, revoga tickets,
+  marca assets como `deleted`, preserva catálogo/auditoria e enfileira purge.
+  Os wrappers de claim/resultado são service-only. `anon` não tem execute e
+  `authenticated` só tem execute no comando público.
+- `now-media` foi publicado na versão produtiva **11**. O worker consome os
+  descritores somente no servidor, apaga o objeto R2 com delete idempotente e
+  confirma `purged` na auditoria. Não existe cópia Stream na implementação
+  vigente; a prova registra `stream_status=not_applicable`, sem inventar
+  contrato ou armazenamento.
+- Prova produtiva final, sem segredo/token/URL privada no log: login QA,
+  draft, prepare R2, PUT, finalize, publish, read antes, `agora.remove`
+  (`purge_status=purged`), replay idempotente, ticket antigo negado `403` e
+  reload sem publicação. Resumo: **10 PASS**; a auditoria remota mostrou
+  `action_id=agora.remove`, `outcome=success`, `purge_status=purged`,
+  `purge_results` presente e todos os jobs em `purged`.
+- A suíte Edge/R2 do Agora ficou em **16 passed / 0 failed**. O teste de
+  contrato pgTAP foi versionado em
+  `packages/coelo_database/supabase/tests/now_publication_removal_test.sql`;
+  o runner local não pôde ser executado porque não há container Supabase local
+  e o linked runner não concede acesso ao schema `extensions`.
+- O Flutter QA foi iniciado a partir desta worktree em `3017`; HTTP `/login`
+  respondeu `200`. O endpoint TCP `9417` está LISTEN e a aba CDP confirmou
+  URL `/login` e título `Superadmin Coelo`. A verificação de texto AX não se
+  aplica ao canvas Flutter, mas a rota navegou pelo endpoint CDP literal.
+- A prova local dos critérios adicionais de `owner.r12-46` terminou **36/36**:
+  avatar global usa estado confirmado e avisa quando o save não foi confirmado;
+  foto persiste no reload; celular é obrigatório, validado e normalizado.
+  A captura produtiva explícita de cabeçalho/nova sessão não foi refeita nesta
+  continuação e permanece residual de aceite remoto se a coordenadora exigir
+  essa evidência separada.
+- Negativa cross-tenant específica do Agora não foi fabricada: o pacote tem
+  guard server-side e a Account/Chat já possuem negativas produtivas, mas esta
+  prova do Agora usou somente o ator QA autorizado do tenant sintético. Criar
+  uma segunda identidade e membership exclusivamente para este caso é sobra
+  de R15, salvo redistribuição formal.
+- Commits desta continuação: `a7243e1ee2988ac78d75a5576f453c2b1f19bf65`
+  (contract/worker/proof) e `3fa28d0b4fd3ed5ef59073fa88dc763bc7fd043a`
+  (audit purge status). O HEAD atual desta worktree é o segundo SHA e a
+  worktree está limpa.
+
+### Bloqueios preservados
+
+- H10/H11 continuam sem aceite remoto acima de 60%; H11 permanece V1.
+- Stream genérico continua fora sem contrato/segredo/critério próprios; para
+  Agora, esta implementação comprova R2 master e `not_applicable` para Stream.
+- Circular, Principal e gates sem `action_id`, contrato e evidência continuam
+  sem aceite artificial. O delivery gate permanece dependente da integração da
+  coordenadora e da divergência histórica do espelho de migrations.
