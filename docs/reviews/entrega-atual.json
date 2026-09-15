@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "6f76f5bb74e71140af74543b3c2a0c3505bb6680",
+    "head": "7b58a944ee8b16ee2d97162ca8be30ad0ca4508c",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -28,8 +28,8 @@
   "currentQueue": {
     "scope": "R14 vigente; R15 não aberta",
     "ownerTotal": 53,
-    "ownerPendingCount": 44,
-    "ownerDoneCount": 9,
+    "ownerPendingCount": 43,
+    "ownerDoneCount": 10,
     "inheritedOriginIds": [
       "H02",
       "H03",
@@ -63,9 +63,9 @@
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
-        "local-green": 30,
-        "pending-verification": 37,
-        "verified": 164
+        "local-green": 25,
+        "pending-verification": 36,
+        "verified": 170
       },
       "backend": {
         "blocked-decision": 2,
@@ -82,8 +82,8 @@
         "deferred-post-mvp": 22,
         "flutter-only": 7,
         "gate-formal-mvp": 3,
-        "pending-verification": 61,
-        "verified-e2e": 137
+        "pending-verification": 56,
+        "verified-e2e": 142
       }
     },
     "deferredPostMvpActionCount": 22,
@@ -96,20 +96,21 @@
       "owner.r12-28",
       "owner.r12-31",
       "owner.r12-32",
+      "owner.r12-42",
       "owner.r12-48",
       "owner.r12-50",
       "owner.r12-51"
     ]
   },
   "metrics": {
-    "frontendVerified": "164/231 (71.00%)",
-    "frontendLocalGreen": "30/231 (12.99%)",
+    "frontendVerified": "170/231 (73.59%)",
+    "frontendLocalGreen": "25/231 (10.82%)",
     "backendDone": "164/224 (73.21%)",
     "backendLocalGreen": "16/224 (7.14%)",
-    "e2eVerified": "137/199 (68.84%)",
-    "e2ePlusFlutterOnly": "144/231 (62.34%)",
-    "ownerDone": "9/53 (16.98%)",
-    "ownerNonTerminal": "44/53 (83.02%)"
+    "e2eVerified": "142/199 (71.36%)",
+    "e2ePlusFlutterOnly": "149/231 (64.50%)",
+    "ownerDone": "10/53 (18.87%)",
+    "ownerNonTerminal": "43/53 (81.13%)"
   },
   "firstGate": "Circulares › Anexos (circulars.attach)",
   "ownerItems": [
@@ -384,7 +385,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
+      "nextGate": "Reconciliar R12-19 e fontes antes de executar na cota R14 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -441,7 +442,7 @@
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
+      "nextGate": "Reconciliar R12-23 e fontes antes de executar na cota R14 autorizada.",
       "sourceRound": "R14"
     },
     {
@@ -594,7 +595,7 @@
       "e2e": "Não executado para este apontamento.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
       "owner": "C0 R14",
-      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
+      "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura explícita da R14.",
       "sourceRound": "R14"
     },
     {
@@ -729,7 +730,7 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela canônica, decisão aprovar/recusar com justificativa, histórico em diálogo, reload e negativa; defeito de rótulos pós-decisão corrigido (teste vermelho→verde). Golden de calendário loading dark 375 fica fora deste action_id.",
       "sourceRound": "R14"
     },
@@ -890,14 +891,14 @@
       "sourceRound": "R14"
     }
   ],
-  "baseReference": "6f76f5bb74e71140af74543b3c2a0c3505bb6680",
+  "baseReference": "7b58a944ee8b16ee2d97162ca8be30ad0ca4508c",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-ab": {
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-ab",
-      "sha": "3321cef0757ff783370ee330a2d8ff756a97ac6f"
+      "sha": "8b99d9a06fbfce2ef12a999d4aef9d16f6052918"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
       "disposition": "retained-active-r14",
@@ -1956,10 +1957,6 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
@@ -1977,11 +1974,9 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-plan-form-r12-36-37.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/meal-specific-dates-r12-35.md",
     "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2235,6 +2230,7 @@
       "owner.r12-31",
       "owner.r12-32",
       "owner.r12-41",
+      "owner.r12-42",
       "owner.r12-43",
       "owner.r12-48",
       "owner.r12-50",
@@ -2277,7 +2273,6 @@
       "owner.r12-38",
       "owner.r12-39",
       "owner.r12-40",
-      "owner.r12-42",
       "owner.r12-44",
       "owner.r12-45",
       "owner.r12-46",
@@ -2295,14 +2290,14 @@
     ],
     "openFirstGate": "Circulares › Anexos (circulars.attach)",
     "metrics": {
-      "frontendVerified": "164/231 (71.00%)",
-      "frontendLocalGreen": "30/231 (12.99%)",
+      "frontendVerified": "170/231 (73.59%)",
+      "frontendLocalGreen": "25/231 (10.82%)",
       "backendDone": "164/224 (73.21%)",
       "backendLocalGreen": "16/224 (7.14%)",
-      "e2eVerified": "137/199 (68.84%)",
-      "e2ePlusFlutterOnly": "144/231 (62.34%)",
-      "ownerDone": "9/53 (16.98%)",
-      "ownerNonTerminal": "44/53 (83.02%)"
+      "e2eVerified": "142/199 (71.36%)",
+      "e2ePlusFlutterOnly": "149/231 (64.50%)",
+      "ownerDone": "10/53 (18.87%)",
+      "ownerNonTerminal": "43/53 (81.13%)"
     },
     "deployment": "none for this documentation reconciliation",
     "memory": "no-op"
