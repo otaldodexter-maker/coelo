@@ -19,6 +19,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | Tela | action_ids | Desde |
 |---|---|---|
 | Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC) | invites.list, invites.resend | 2026-09-15 |
+| Segurança infantil (folga do Bloco C; sem SQL) | child-safety.child, child-safety.edit, child-safety.suspend (owner.r12-12 a 16) | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -34,7 +35,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 3f3579c54 | chat.create-group E2E verified-e2e | — | r14-sessao-1/chat-create-group-20260915.md |
 | 95b9f81cb | units.error + units.access-denied FE verified, BE done, E2E verified-e2e (Unidades 10/10) | — | r14-sessao-1/units-error-access-denied-20260915.md |
 | a1129b316 | Bloco B (1/2): `apply-tracker-delta.cjs` aceita `escopo` | — | script |
-| (próximo) | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
+| 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 
 ## Avisos para a outra sessão
 
