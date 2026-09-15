@@ -18,7 +18,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Perfis de acesso (folga do Bloco C; BE done, sem SQL) | access-profiles.create, access-profiles.edit, access-profiles.assign (owner.r12-20 a 27) | 2026-09-15 |
+| (nenhuma — Sessão 1 encerrada em 15/09 ~11:50 BRT; Blocos A e B fechados; Perfis de acesso liberado para a sessão do Bloco C) | — | — |
 
 ## Fatias entregues
 
@@ -37,7 +37,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 | 98b768526 | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
 | cad79dd35 | forms.upload + forms.resolve-file FE verified, E2E verified-e2e | — | r14-sessao-1/forms-upload-resolve-20260915.md |
-| (próximo) | invites.list + invites.resend FE verified, E2E verified-e2e (Convites 5/5) — **Bloco A 10/10 fechado** | owner.r12-44, r12-45 done | r14-sessao-1/invites-list-resend-20260915.md |
+| f041fc731 | invites.list + invites.resend FE verified, E2E verified-e2e (Convites 5/5) — **Bloco A 10/10 fechado** | owner.r12-44, r12-45 done | r14-sessao-1/invites-list-resend-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -49,6 +49,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Sobra para a R15
 
+- Perfis de acesso (access-profiles.create/edit/assign, r12-20 a 27): mapeado, não executado — rota real é `/profiles` (não `/access-profiles`); assign acontece em `/internal-users/:id/edit` (campo "Perfil Superadmin"); fica para a sessão do Bloco C.
 - Rotina: `superadmin_routine_application_detail` não expõe o número da versão do modelo; o rótulo "Modelo vinculado · versão N" mostra a revisão da aplicação após o reload (ver `daily-routine-apply-20260915.md`). Contrato antes de mexer no rótulo.
 - Formulários: upload em resposta (Galeria/Foto) exige ocorrência aberta e identificada para o Owner sintético — criar massa; ver `forms-upload-resolve-20260915.md`.
 - Principal: após "Ver como", o cabeçalho não indica o contexto ativo (UX; decisão de design). Ver `shell-switch-context-20260915.md`.
