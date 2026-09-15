@@ -189,12 +189,12 @@ begin
   if asset.status <> 'draft' then raise exception using errcode = '42501', message = 'account_avatar_ticket_denied'; end if;
   if p_byte_size is distinct from asset.size_bytes
     or lower(coalesce(p_checksum_sha256, '')) is distinct from lower(coalesce(asset.checksum_sha256, '')) then
-    update public.person_avatar_assets set status = 'revoked', revoked_at = now() where id = asset.id;
+    update public.person_avatar_assets set status = 'inactive', revoked_at = now() where id = asset.id;
     update app_private.superadmin_account_avatar_tickets set used_at = now() where asset_id = asset.id;
     raise exception using errcode = '22023', message = 'account_avatar_mismatch';
   end if;
   actor_id := ticket.person_id;
-  update public.person_avatar_assets set status = 'revoked', revoked_at = now()
+  update public.person_avatar_assets set status = 'inactive', revoked_at = now()
     where person_id = actor_id and status = 'active' and id <> asset.id;
   update public.person_avatar_assets set status = 'active', checksum_sha256 = lower(p_checksum_sha256), activated_at = now()
     where id = asset.id returning * into asset;
@@ -247,7 +247,7 @@ begin
   ) then
     raise exception using errcode = '42501', message = 'account_avatar_remove_denied';
   end if;
-  update public.person_avatar_assets set status = 'revoked', revoked_at = now()
+  update public.person_avatar_assets set status = 'inactive', revoked_at = now()
   where id = asset.id returning * into asset;
   insert into audit.audit_logs(actor_person_id, action_code, object_type, object_id,
     institution_id, outcome)
@@ -270,7 +270,7 @@ begin
     where t.used_at is null and t.expires_at < now() and a.status = 'draft'
     order by t.expires_at limit least(greatest(coalesce(p_limit, 100), 1), 500) for update of t skip locked
   loop
-    update public.person_avatar_assets set status = 'revoked', revoked_at = now() where id = item.asset_id;
+    update public.person_avatar_assets set status = 'inactive', revoked_at = now() where id = item.asset_id;
     update app_private.superadmin_account_avatar_tickets set used_at = now() where asset_id = item.asset_id;
     items := items || jsonb_build_array(jsonb_build_object('asset_id', item.asset_id, 'object_key', item.storage_path));
     expired := expired + 1;
