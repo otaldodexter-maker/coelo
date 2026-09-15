@@ -26,7 +26,7 @@ em produção e a atualizar a ordem de aplicação.
 
 | SHA | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|
-| b1ebb8983 | meal-plans.model-create, meal-plans.model-edit, meal-plans.create, meal-plans.edit, meal-plans.publish → FE verified, BE done (contrato existente), E2E verified-e2e | owner.r12-34, owner.r12-35, owner.r12-36, owner.r12-37 done | r14-sessao-2/meal-plans-20260915.md |
+| 5fbee1774 | meal-plans.model-create, meal-plans.model-edit, meal-plans.create, meal-plans.edit, meal-plans.publish → FE verified, BE done (contrato existente), E2E verified-e2e | owner.r12-34, owner.r12-35, owner.r12-36, owner.r12-37 done | r14-sessao-2/meal-plans-20260915.md |
 
 ## Avisos para a outra sessão
 
