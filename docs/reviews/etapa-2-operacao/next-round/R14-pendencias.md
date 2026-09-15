@@ -180,6 +180,32 @@ reexecutados sem nova abertura do Owner:
   na ordem da R14. Não abrir Planos comerciais, reader de Planos ou Auth
   recovery/reset; estes continuam fora da R14 conforme ADR 0039.
 
+## R16 preparado — não aberto
+
+Registro de bloqueios e itens sem certificação após a Sessão E. R16 não está
+aberta, não cria `action_id` e não autoriza novas provas.
+
+- `agora.remove`: falta a negativa cross-tenant específica; a prova produtiva
+  existente usou apenas ator autorizado. Stream genérico permanece sem
+  contrato, Edge, segredo, fixture e critério de aceite; o pacote atual comprova
+  R2 privado e `stream_status=not_applicable`.
+- `owner.r12-46`: pacote técnico e prova local existem, mas falta captura
+  produtiva explícita do cabeçalho/avatar em nova sessão, com reload e save
+  confirmado.
+- H10/H11: regras de audiência preservadas, porém sem aceite remoto; autosave
+  não tem prova remota acima de 60% e permanece V1 se esse limiar não for
+  demonstrado.
+- Circular, Principal, páginas de erro e H03, H04, H07, H09, H12, H14, H16,
+  H18–H20, H22, H24–H26 e H28 continuam sem combinação executável de
+  `action_id`, contrato e evidência. H08, H13 e H23 continuam transferidos sem
+  contrato produtivo do item relacionado e sem `action_id` próprio.
+- Resíduos da Sessão C ainda não certificados: `access-profiles.create/edit/assign`,
+  `child-safety.create/edit/suspend`, `forms.expire-file/delete-file` e
+  `owner.r12-13/15/16/19–27`. O 504 de `child_safety_change_lifecycle`, sessão
+  QA/CORS/CDP indisponíveis e ausência de massa autorizada permanecem bloqueios.
+- `auth.recover`, `auth.reset`, SMTP, provedor e allowlist de recuperação seguem
+  fora da R14/R15/R16 até a abertura da Etapa 3.
+
 ## Resíduos H (herdados de R01–R07) — abertos (20)
 
 | ID | Origem | Escopo pendente | Próximo gate |

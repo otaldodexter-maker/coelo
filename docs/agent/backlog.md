@@ -15,6 +15,12 @@ audience: "team"
 É a única fila executável neste momento. Use [current-state.md](current-state.md)
 e a fila única `R14-pendencias.md` apontada nele.
 
+R16 está somente preparada, não aberta. Seus resíduos estão registrados na
+seção `R16 preparado — não aberto` da fila R14; não criar action_ids ou iniciar
+uma fila concorrente. A próxima execução continua priorizando os action_ids
+R14 ainda não certificados, especialmente a negativa específica de
+`agora.remove` e as fatias C bloqueadas por sessão/CORS/504.
+
 ## Pendências do MVP
 
 Use os itens não terminais da fila R14 e o inventário por `action_id`. Itens

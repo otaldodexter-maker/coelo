@@ -36,25 +36,25 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
 
-## Snapshot de execução da R14 — C encerrada, D entregue, E em curso
+## Snapshot de execução da R14 — C residual, D/E integrados
 
-O corte publicado e os percentuais canônicos acima permanecem inalterados até
-que a coordenadora aplique os deltas oficiais no `dev`. A Sessão C encerrou
-com Avaliações › Fechar/Reabrir em `pending-verification` por divergência de
-alvo CDP, Perfis de acesso não confirmados, Segurança infantil bloqueada por
-fixture/drift e Expirar/Excluir de Formulários pendentes.
+O corte publicado e os percentuais canônicos acima permanecem inalterados porque
+o inventário não recebeu delta de certificação E2E. A Sessão C encerrou com
+Perfis de acesso não confirmados, Segurança infantil bloqueada por 504/drift e
+Expirar/Excluir de Formulários pendentes; `assessments.close/reopen` tem prova
+publicada, mas continua `pending-verification` no inventário até reconciliação.
 
-A Sessão D encerrou no branch `r14/bloco-cd`, SHA `b135c8f20`, com aplicação
-produtiva registrada das migrations de coleções de cuidado, catálogos OQ-031 e
-Account self. Os pgTAP remotos foram 6/6, 11/11 e 6/6. O resultado é uma prova
-técnica entregue, ainda sem promoção automática dos contadores: falta integrar
-seletivamente os artefatos ao corte central e obter o aceite/reconciliação.
+A Sessão D foi integrada seletivamente (`0ab6abd8f`, `7797a8cad`, `2cd0da7c2`,
+`b135c8f20`); as migrations de coleções de cuidado, catálogos OQ-031 e Account
+self têm pgTAP remoto 6/6, 11/11 e 6/6. O dump produtivo foi preservado fora do
+Git com manifesto. A prova técnica não altera contadores sem delta oficial.
 
-A Sessão E continua concluindo o redeploy sequencial de Now/Acontece e Momentos
-antes da prova produtiva de mídia. O `504` de `child_safety_change_lifecycle`
-continua bloqueado. Qualquer prova local precisa ser seguida de evidência de
-rota real, commit, push, sincronização dos rastreadores,
-`validate-trackers.cjs` e gate antes de alterar os números.
+A Sessão E foi integrada em `b023b4ccb`/`382c3b975`, com Agora/R2/Edge e
+`agora.remove` tecnicamente provados. Permanecem para R16 a negativa
+cross-tenant específica do Agora, Stream sem contrato, residual produtivo de
+`owner.r12-46`, H10/H11 remoto e gates sem `action_id`/contrato/evidência.
+Qualquer prova local precisa ser seguida de rota real, commit, sincronização dos
+rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
 
 ## Percentuais canônicos
 

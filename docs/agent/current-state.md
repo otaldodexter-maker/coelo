@@ -26,19 +26,18 @@ audience: "team"
   a Sessão C publicou sua entrega, mas Avaliações `close/reopen` voltou a
   `pending-verification` por divergência de alvo CDP; Perfis de acesso não foi
   confirmado; Segurança infantil continua bloqueada por fixture/drift do
-  espelho; e Expirar/Excluir de Formulários permanece pendente. A Sessão D
-  encerrou no branch `r14/bloco-cd`, SHA `b135c8f20`, com prova produtiva de
-  Account self, coleções de cuidado e OQ-031; o aceite central e a integração
-  seletiva ao `dev` ainda precisam ser reconciliados. A Sessão E segue em
-  execução para concluir os deploys e a prova real.
+  espelho; e Expirar/Excluir de Formulários permanece pendente. A Sessão D foi
+  integrada seletivamente ao `dev` (`0ab6abd8f`, `7797a8cad`, `2cd0da7c2`,
+  `b135c8f20`, com dump produtivo preservado fora do Git). A Sessão E foi
+  integrada no pacote coordenado `b023b4ccb`/`382c3b975`; os números certificados
+  permanecem inalterados até deltas oficiais de evidência.
 - Bloqueios conhecidos durante a execução: o `504` de
   `child_safety_change_lifecycle` continua sem solução certificada. A entrega
   D não deve ser promovida por contador enquanto seus artefatos não estiverem
   reconciliados no corte central; o dump produtivo permanece fora do Git.
   O browser visível não é pré-requisito para o avanço automatizado.
 - 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B),
-  Sessão C encerrada, Sessão D entregue em branch própria e Sessão E ainda
-  ativa em worktree própria; a coordenadora Codex atualiza
+  Sessões C/D/E entregues e reconciliadas no checkout coordenador; a coordenadora Codex atualiza
   os MDs na pasta principal. Papéis, portas, fluxo git e handoffs estão em
   `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
   As worktrees R14 existentes permanecem protegidas até o fechamento da rodada.
@@ -50,9 +49,9 @@ audience: "team"
   Planos de medicação não são afetados.
 - Decisão adicional do Owner em 15/09 (`decisions/0040-agora-immediate-removal.md`):
   a expiração automática do Agora continua em 24 horas, mas a remoção explícita
-  passa a ser imediata. O novo `action_id` oficial é `agora.remove`; contrato,
-  migration/Edge, prova e aceite ainda estão pendentes e não alteram os
-  contadores até certificação.
+  passa a ser imediata. O `action_id` oficial `agora.remove` já tem pacote
+  migration/Edge e prova produtiva integrado; a negativa cross-tenant específica
+  ainda não foi certificada e o inventário permanece sem promoção.
 - Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
   registros independentes de alergias e orientações. A validação da rota real
   deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o

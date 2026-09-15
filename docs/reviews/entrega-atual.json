@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "abea633e02ff1ee29c51c2c8dfc330206b133911",
+    "head": "0481384f5f7c115895171d33e32f458a6ae53cde",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -919,7 +919,7 @@
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-c",
-      "sha": "d1025286d358abb114deb81ff6802dc6c051dbb5"
+      "sha": "8e2f89f4f46c75ec5b91f300049d761ee3740e95"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-cd": {
       "disposition": "retained-active-r14",
@@ -931,7 +931,7 @@
       "disposition": "retained-active-r14",
       "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
       "branch": "r14/bloco-e",
-      "sha": "3b089f6f5dc24b33cf3421651ec63b8e0771eafd"
+      "sha": "31503be0538422593492819b39d3c27c199e3e82"
     }
   },
   "preservedStash": {},
@@ -1343,6 +1343,18 @@
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
     },
+    "r14/bloco-c": {
+      "sha": "8e2f89f4f46c75ec5b91f300049d761ee3740e95",
+      "exclusive": [
+        "8e2f89f4f46c75ec5b91f300049d761ee3740e95",
+        "6d98e03747ee129b04458722fc4f3d05d5b4a7ea"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
     "r14/bloco-cd": {
       "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22",
       "exclusive": [
@@ -1359,8 +1371,11 @@
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
     "r14/bloco-e": {
-      "sha": "3b089f6f5dc24b33cf3421651ec63b8e0771eafd",
+      "sha": "31503be0538422593492819b39d3c27c199e3e82",
       "exclusive": [
+        "31503be0538422593492819b39d3c27c199e3e82",
+        "3fa28d0b4fd3ed5ef59073fa88dc763bc7fd043a",
+        "a7243e1ee2988ac78d75a5576f453c2b1f19bf65",
         "3b089f6f5dc24b33cf3421651ec63b8e0771eafd",
         "dc5f0aaa790246a26634fdb5837e9385c5802227",
         "b31561325c3f57683f9ea755d653b059395a60d2",
@@ -1903,6 +1918,35 @@
         "2cd0da7c2ee5f0f9713a5c5da201a0abb1fe2167",
         "7797a8cadb41acb813d8c21863421323e9322310",
         "0ab6abd8f7dfcf754774fc6d42248f111275de8e"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "origin/r14/bloco-e": {
+      "sha": "31503be0538422593492819b39d3c27c199e3e82",
+      "exclusive": [
+        "31503be0538422593492819b39d3c27c199e3e82",
+        "3fa28d0b4fd3ed5ef59073fa88dc763bc7fd043a",
+        "a7243e1ee2988ac78d75a5576f453c2b1f19bf65",
+        "3b089f6f5dc24b33cf3421651ec63b8e0771eafd",
+        "dc5f0aaa790246a26634fdb5837e9385c5802227",
+        "b31561325c3f57683f9ea755d653b059395a60d2",
+        "622d2fc5a16e19592a99d691ff045c01cd5fb05a",
+        "e8096df191794696e9e381eead4b09bbd889a15d",
+        "eee8cb19f091970b88c8ab57c7ad0383806596f5",
+        "370ef842f1eb03fdbf91e8024cbef1c4421026b2",
+        "9117da7ca2c14073f3bb5906e14cba69234fdb76",
+        "5535634632a5d6907a70fb587f37d5197f45c805",
+        "2c883deffb9fcae540a05ee03cf8e7571216b1e1",
+        "a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd",
+        "d16357ef9d3742a931c84d9a01b006e186f970cd",
+        "762dc148e61af21cfb33b66d4bdcceefcb0951cb",
+        "dc64976ee1aef584b185890e5fbf9df903bc9b69",
+        "4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a",
+        "7e6af350512988492fc8ac56c5e5ef1bfe09f200"
       ],
       "disposition": "retained-review",
       "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
