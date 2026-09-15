@@ -1,0 +1,15 @@
+[
+ {
+  "action_id": "chat.create-group",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: create_group_v2 em producao (conversa 7f54da12, 2 membros) pela tela + reload da inbox + negativa CHAT_NOT_FOUND para instituicao alheia.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/chat-create-group-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/chat-create-group-20260915.md",
+   "revision": "d5f8bbe70",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:20:00-03:00"
+  }
+ }
+]

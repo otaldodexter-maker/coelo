@@ -4347,15 +4347,15 @@
       "family": "chat",
       "screen": "Chat / Criar grupo",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
+      "done": "R14 S1: create_group_v2 em producao (conversa 7f54da12, 2 membros) pela tela + reload da inbox + negativa CHAT_NOT_FOUND para instituicao alheia.",
       "fe": "Prova FE anterior preservada, sem nova certificacao. R09 G4/C0: regressao real RED1PASS/2FAIL, corrigido erro residual/tardio na troca A/B; GREEN3PASS/0FAIL, sem UI/BE/E2E novo.",
       "be": "R04 realm-interno: superadmin_chat_create_group_v2 (20260910240400) em producao (lote 9); prova qa-r03 22:32: grupo criado com membros e replay idempotente; auditoria. pgTAP 19/19.",
-      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; 61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png; 67c-inbox-reload.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md",
+      "evidence": "evidence/etapa-2/r04-realm-interno/prova-producao-2026-09-10.md; comunicacao/realm-interno.json r6; 61-chat-criar-grupo-pessoas.png, 67a-nome-via-driver.png; 67c-inbox-reload.png; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r09-coordenacao/chat-context-and-header-followup.md; docs/reviews/evidence/etapa-2/r14-sessao-1/chat-create-group-20260915.md",
       "historicalFrontend": "pending-verification",
       "historicalBackend": "pending-verification",
       "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "R04 realm-interno r6",
       "lastHandoffReceivedAt": "2026-09-10T22:40:00-03:00",
       "documentationReconciledAt": "2026-09-10T22:40:00-03:00",
@@ -4371,6 +4371,12 @@
           "revision": "31632cd1c (rev 17)",
           "environment": "producao Supabase evvbomzejfijozbtgvpt; app build release de test_driver/qa_main.dart com .env.local em 127.0.0.1:3009; Chrome 152 CDP 9409 swiftshader; sessao qa-r03@coelo.me",
           "recordedAt": "2026-09-11T03:55:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/chat-create-group-20260915.md",
+          "revision": "d5f8bbe70",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:20:00-03:00"
         }
       }
     },
@@ -9238,7 +9244,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T13:37:09.624Z",
+  "updatedAt": "2026-09-15T13:46:03.857Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
