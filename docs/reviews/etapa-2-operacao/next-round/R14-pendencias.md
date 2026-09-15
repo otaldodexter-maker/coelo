@@ -203,8 +203,11 @@ aberta, não cria `action_id` e não autoriza novas provas.
   contrato produtivo do item relacionado e sem `action_id` próprio.
 - Resíduos da Sessão C ainda não certificados: `access-profiles.create/edit/assign`,
   `child-safety.create/edit/suspend`, `forms.expire-file/delete-file` e
-  `owner.r12-13/15/16/19–27`. O 504 de `child_safety_change_lifecycle`, sessão
-  QA/CORS/CDP indisponíveis e ausência de massa autorizada permanecem bloqueios.
+  `owner.r12-13/15/16/19–27`. Evidências bloqueadas foram integradas em
+  `82d1efbad` (Segurança infantil) e `d65840efe` (Perfis); Forms tem correção
+  autoritativa em `0481384f5`, mas falta prova remota. O 504 de
+  `child_safety_change_lifecycle`, sessão QA/CORS/CDP indisponíveis e ausência
+  de massa autorizada permanecem bloqueios.
 - `auth.recover`, `auth.reset`, SMTP, provedor e allowlist de recuperação seguem
   fora da R14/R15/R16 até a abertura da Etapa 3.
 
