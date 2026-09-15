@@ -246,6 +246,16 @@ reset role;
 
 select ok((select count(*)>=5 from audit.audit_logs where action_code like 'forms.media.%' and institution_id='9f060000-0000-4000-8000-000000000010'),
   'prepare, finalize, resolve e delete auditados');
+select ok(exists(
+  select 1 from audit.audit_logs
+  where action_code='forms.media.expire'
+    and object_type='media_asset'
+    and object_id=(select (body#>>'{data,asset_id}')::uuid from fm where label='prepare3')
+    and institution_id='9f060000-0000-4000-8000-000000000010'
+    and outcome='success'
+    and origin='edge_function'
+    and after_json->>'state'='deleted'
+), 'expire registra o ciclo autoritativo no diario de auditoria');
 
 select * from finish();
 rollback;
