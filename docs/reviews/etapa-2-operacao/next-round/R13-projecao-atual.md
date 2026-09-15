@@ -1,21 +1,22 @@
 ---
 source: R13-pendencias.md; R13-checkpoint-20260914-1620.md; inventario-etapa-2.json; ETAPA-2-estado-atual.md
-status: active; fila vigente R13; execução documental parcial
+status: historical; projeção da R13 encerrada; não executar; fila vigente R14
+lifecycle: "historical"
 generated_at: 2026-09-14
 updated_at: 2026-09-14
 ---
 
-# R13 — Projeção vigente e histórico do corte
+# R13 — Projeção histórica do corte
 
 A R13 recebeu 50 compromissos, preservando os IDs `owner.r12-*`; os três
 concluídos antes da transferência ficaram fora. Na execução de 14/09, mais
 `owner.r12-48`, `owner.r12-50` e `owner.r12-51` foram concluídos. Portanto,
 47/53 Owner items permanecem não terminais. Este arquivo é uma projeção de
-contexto; o checkpoint mais recente e a fila R13 registram o detalhe da prova.
+contexto; o checkpoint final da R13 registra o detalhe histórico da prova.
 
-A fila operacional atual é [`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md),
-formada pelos 47 Owner items não terminais e pelos resíduos H02–H28 incorporados
-de R01–R07. R01–R12 são fontes históricas; não se somam itens duplicados nem se
+A fila operacional atual é [`R14-pendencias.md`](R14-pendencias.md), formada
+pelos 44 Owner items não terminais e pelos resíduos H02–H28 incorporados de
+R01–R07. R01–R13 são fontes históricas; não se somam itens duplicados nem se
 criam novos action IDs.
 
 ## Percentuais canônicos na revisão atual
@@ -41,7 +42,7 @@ Não somar camadas nem usar item de Owner como denominador de action ID.
 integrado `130/199`. Validação estrutural e checks locais não certificam
 runtime.
 
-## Ordem vigente da R13
+## Ordem histórica da R13
 
 1. Saúde/Cuidado: provar as rotas reais de criação, detalhe, edição e medicação
    conforme o checkpoint mais recente.
@@ -56,5 +57,5 @@ runtime.
    explícitos; não abrir Etapa 3.
 
 Os bloqueios externos permanecem registrados nos MDs de camada, neste arquivo
-e no `R13-owner-items-atual.json`. Eles pertencem à fila R13 e não devem ser
+e no `R13-owner-items-atual.json`. Eles pertenciam à fila R13 e não devem ser
 recontados como itens independentes ou duplicados por origem histórica.

@@ -1,13 +1,13 @@
 ---
 source: Owner 2026-09-14; R13-prompt-execucao-20260914.md; R13-pendencias.md; R13-owner-items-atual.json
-status: active; plano da fila vigente R13; execução documental parcial
+status: historical; plano da R13 encerrada; não executar; fila vigente R14
+lifecycle: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
 
-> Bloco histórico de uma instrução anterior. R13 é a rodada vigente conforme
-> confirmação do Owner em 14/09/2026. A fonte de execução é
-> `R13-prompt-execucao-20260914.md`; este plano não dispara agente.
+> Bloco histórico de uma instrução anterior. R13 foi encerrada em 14/09/2026.
+> A fonte corrente é `R14-pendencias.md`; este plano não dispara agente.
 
 
 # R13 — Continuidade reservada e fila vigente
@@ -15,13 +15,14 @@ updated_at: 2026-09-14
 Fonte: `R13-pendencias.md` e `R13-prompt-execucao-20260914.md`. A projeção é
 somente contexto e não substitui a fila corrente.
 A fonte operacional atual da Etapa 2 é
-[`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md), com a fila R13.
+[`R14-pendencias.md`](R14-pendencias.md), com o estado agregado em
+[`ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md).
 Escopo: 50 Owner items ainda abertos/parciais e os resíduos H02–H28 herdados,
 sem renumerar IDs e sem repetir
 R12-07, R12-41 e R12-43, já concluídos.
 
-Atualização do Owner: a execução da R13 está autorizada pelo prompt de
-execução datado de 14/09/2026 e permanece no Claude. A retomada deve confirmar
+Na época, a execução da R13 foi autorizada pelo prompt de
+execução datado de 14/09/2026 e permaneceu no Claude. A retomada da R14 deve confirmar
 o checkout consolidado e os gates reais; não seguir prompts de R12/Luna como
 fonte atual.
 

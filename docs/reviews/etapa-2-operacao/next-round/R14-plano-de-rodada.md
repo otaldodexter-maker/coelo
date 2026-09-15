@@ -1,15 +1,16 @@
 ---
 source: R13-prompt-execucao-20260914.md; R13-pendencias.md; R14-catalogo.md
-status: preparado; execução não autorizada automaticamente
+status: historical; superado pela fila R14; não executar
+lifecycle: "historical"
 generated_at: 2026-09-14
 updated_at: 2026-09-14
 ---
 
 # Plano de abertura R14
 
-Este plano só pode ser usado depois do fechamento formal da R13 e da abertura
-explícita da R14 pelo Owner. Até lá, não iniciar agente, rodada, migration,
-QA, publicação ou nova fila.
+Este plano registrou a preparação após o fechamento formal da R13. A fila viva
+da R14 está em `R14-pendencias.md`; não iniciar agente, migration, QA,
+publicação ou nova fila a partir deste arquivo.
 
 ## Limite de transferência preparado pelo Owner
 

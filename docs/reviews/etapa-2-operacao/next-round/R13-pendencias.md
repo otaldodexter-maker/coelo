@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13; R13-owner-items-atual.json; R12-fechamento.md; R01–R07 resíduos incorporados; inventario-etapa-2.json
-status: active; fila vigente R13; execução documental parcial
+status: historical; R13 encerrada; não executar; fila vigente R14
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 decisions: decisions/0038-owner-decisions-etapa2-backlog-20260914.md
@@ -10,10 +10,10 @@ lifecycle: "historical"
 > Etapa 2 é `R14-pendencias.md`. Não editar este arquivo; ele permanece apenas como
 > proveniência dos IDs e das decisões da rodada.
 
-> R13 é a fila vigente da Etapa 2. Ela recebeu 50 compromissos transferidos e
-> os resíduos H02–H28 herdados de R01–R07. Após os aceites registrados em
-> 14/09, 47 Owner items permanecem não terminais. R01–R12 permanecem apenas
-> como origem e histórico; R14 não foi iniciada. O estado agregado está em
+> R13 foi a rodada que recebeu 50 compromissos transferidos e os resíduos H02–H28
+> herdados de R01–R07. Após os aceites registrados em 14/09, 44 Owner items
+> permaneceram não terminais e foram consolidados na fila única R14. R01–R13
+> permanecem como origem e histórico; o estado agregado atual está em
 > [ETAPA-2-estado-atual.md](../ETAPA-2-estado-atual.md).
 
 

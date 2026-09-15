@@ -1,6 +1,6 @@
 ---
 source: R12-prompt-unico.md; execução C0; provas R12
-status: encerrada; histórica; R13 é a fila vigente
+status: encerrada; histórica; R14 é a fila vigente
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---

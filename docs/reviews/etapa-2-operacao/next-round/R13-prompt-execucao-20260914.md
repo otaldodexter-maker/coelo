@@ -1,25 +1,26 @@
 ---
 source: ADR 0038; R13-pendencias.md; ETAPA-2-estado-atual.md; AGENTS.md
-status: prompt de execução autorizado pelo Owner em 14/09/2026
+status: historical; autorização consumida no fechamento da R13; não executar
+lifecycle: "historical"
 generated_at: 2026-09-14
 ---
 
-# Prompt — resolver a R13 e avançar a Etapa 2
+# Prompt histórico — execução da R13
 
 Cole o bloco abaixo numa conversa nova (Claude Code, checkout `dev`
-consolidado). Ele abre a execução da fila R13 com as decisões da ADR 0038 já
-tomadas; não reabre perguntas respondidas.
+consolidado). Ele abriu a execução da fila R13 com as decisões da ADR 0038 já
+tomadas; a fila corrente é a R14 e este arquivo não deve ser reexecutado.
 
-> Este prompt é a autorização/base de abertura, não um snapshot imutável da
-> fila. Antes de cada gate, prevalecem `R13-pendencias.md`, o checkpoint mais
-> recente e `docs/agent/current-state.md`. Não repetir nem reabrir itens já
+> Este prompt é a autorização/base histórica da abertura da R13, não um
+> snapshot corrente. Para qualquer trabalho, prevalecem `R14-pendencias.md`,
+> `docs/agent/current-state.md` e a ADR 0038. Não repetir nem reabrir itens já
 > concluídos em R13, incluindo `owner.r12-48`, `owner.r12-50`,
 > `owner.r12-51`, H06, H17, H21 e OQ-028/anexos ×10, salvo regressão material.
 
 ```text
 $coelo-frontend-backend
 
-Recorte: Etapa 2 › apps/superadmin › fila vigente R13 (H02–H28 + owner.r12-* abertos), com as decisões da ADR 0038 (decisions/0038-owner-decisions-etapa2-backlog-20260914.md) já tomadas — não reabrir nenhuma pergunta respondida nela nem no adendo. Modo padrão: resolver pendências até prova E2E, não auditar.
+Recorte histórico: Etapa 2 › apps/superadmin › fila R13 (H02–H28 + owner.r12-* abertos), com as decisões da ADR 0038 (decisions/0038-owner-decisions-etapa2-backlog-20260914.md) já tomadas — não reabrir nenhuma pergunta respondida nela nem no adendo. Este prompt não é a fila vigente nem deve ser executado.
 
 Ordem obrigatória:
 

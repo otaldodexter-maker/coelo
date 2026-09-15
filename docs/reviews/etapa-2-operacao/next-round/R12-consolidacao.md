@@ -1,13 +1,12 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: histórico; substituído pela fila vigente R13
+status: histórico; substituído pela fila vigente R14
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
 
 > Documento histórico. A R12 não é a fila atual e seu prompt não deve ser
-> reexecutado. Use `docs/agent/current-state.md` e os documentos correntes da
-> R13.
+> reexecutado. Use `docs/agent/current-state.md` e `R14-pendencias.md`.
 
 # R12 — Base única consolidada
 

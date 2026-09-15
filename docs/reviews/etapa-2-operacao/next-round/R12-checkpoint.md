@@ -1,6 +1,7 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: execução em andamento; primeiro aceite local comprovado
+status: histórico; checkpoint de execução R12; não executar
+lifecycle: "historical"
 generated_at: 2026-09-13
 ---
 

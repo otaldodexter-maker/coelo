@@ -1,14 +1,13 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R13-checkpoint.md; R13-pendencias.md; R13-owner-items.json; git/testes R13
-status: histórico; não é fonte da fila R13
+status: histórico; R13 encerrada; não é fonte da fila R14
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 execution_status: PASS DOCUMENTED_PARTIAL em 2026-09-14; nenhum aceite terminal novo
 ---
 
-> Documento histórico. Não afirmar a partir dele que R13 foi encerrada ou que
-> R12/R13 formam uma única rodada. A fonte atual é `R13-pendencias.md`, o
-> prompt autorizado de R13 e `docs/agent/current-state.md`.
+> Documento histórico. R13 foi encerrada e sua fila foi consolidada na R14.
+> A fonte atual é `R14-pendencias.md` e `docs/agent/current-state.md`.
 
 
 # R13 — Fechamento parcial
@@ -16,7 +15,7 @@ execution_status: PASS DOCUMENTED_PARTIAL em 2026-09-14; nenhum aceite terminal 
 > Este arquivo registra o corte de execução já realizado e não quita a fila.
 > A organização vigente da Etapa 2 está em
 > [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md) e [`RODADAS.md`](RODADAS.md):
-> fila R13 com os 50 Owner items e H02–H28 incorporados; R14 não iniciada.
+> fila R14 com os itens não terminais herdados da R13 e H02–H28 incorporados.
 
 R13 foi encerrada dentro da fase de reserva, sem iniciar Etapa 3 e sem alterar
 Supabase, SQL, R2, Stream, Edge Functions ou deploy público. A posse veio da

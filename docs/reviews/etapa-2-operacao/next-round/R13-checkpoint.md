@@ -5,16 +5,16 @@ generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---
 
-> Bloco histórico de uma instrução anterior. R13 é a rodada vigente conforme
+> Bloco histórico de uma instrução anterior. R13 foi encerrada conforme
 > confirmação do Owner em 14/09/2026. Não usar R12-consolidacao.md,
-> R12-prompt-unico.md ou instruções Luna como fila atual. A execução autorizada
-> deve seguir R13-prompt-execucao-20260914.md; este checkpoint não dispara nada.
+> R12-prompt-unico.md ou instruções Luna como fila atual. A fila corrente é
+> `R14-pendencias.md`; este checkpoint não dispara nada.
 
 
 # R13 — checkpoint de execução e passagem
 
 > Este checkpoint registra o corte de execução da R13. A fila vigente da Etapa 2
-> é R13, conforme [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md),
+> é R14, conforme [`R14-pendencias.md`](R14-pendencias.md),
 > reunindo os 50 Owner items e H02–H28 incorporados de R01–R07. O inventário
 > atual mantém os denominadores: FE 151/231 (65,37%), BE 159/224 (70,98%),
 > E2E 125/199 (62,81%) e E2E + flutter-only 132/231 (57,14%).

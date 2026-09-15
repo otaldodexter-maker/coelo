@@ -1,17 +1,18 @@
 ---
 source: R13-prompt-execucao-20260914.md; R13-pendencias.md; R14-plano-de-rodada.md
-status: preparado; não iniciado; requer abertura explícita do Owner
+status: historical; superado pela fila R14; não executar
+lifecycle: "historical"
 generated_at: 2026-09-14
 updated_at: 2026-09-14
 ---
 
 # Prompt de abertura R14
 
-Este arquivo é um molde para a próxima rodada. Não dispara agente, supervisor,
-Claude, Codex, migration, QA ou publicação. A R13 continua vigente e sendo
-trabalhada no Claude.
+Este arquivo foi um molde para a abertura da rodada. Não dispara agente,
+supervisor, Claude, Codex, migration, QA ou publicação. A R14 já possui fila
+única viva em `R14-pendencias.md`; este prompt permanece apenas como histórico.
 
-Ao abrir formalmente a R14, começar por `docs/agent/current-state.md`, pelo
+Na retomada da R14, começar por `docs/agent/current-state.md`, pela
 fechamento final da R13, por `R14-catalogo.md` e por
 `R14-plano-de-rodada.md`. Confirmar o recorte e o primeiro gate antes de ler
 qualquer rastreador grande.

@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: histórico de origem; 50 pendências transferidas para a fila vigente R13
+status: histórico de origem; pendências transferidas para a fila vigente R14
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 lifecycle: "historical"
@@ -9,7 +9,7 @@ lifecycle: "historical"
 > Etapa 2 é `R14-pendencias.md`. Não editar este arquivo; ele permanece apenas como
 > proveniência dos IDs e das decisões da rodada.
 
-# R12 — Catálogo consolidado por camada (histórico; fila transferida para R13)
+# R12 — Catálogo consolidado por camada (histórico; fila transferida para R14)
 
 > Este arquivo preserva a fonte de origem dos 53 `owner.r12-*`. Os 3 itens
 > concluídos (`07`, `41` e `43`) não retornam; os 50 abertos/parciais foram
