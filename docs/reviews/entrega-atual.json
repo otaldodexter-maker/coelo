@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "be4dffd97127085369ee5a223ccab3d205c08f38",
+    "head": "6f76f5bb74e71140af74543b3c2a0c3505bb6680",
     "worktree": "dirty-until-this-documentation-commit"
   },
   "sources": {
@@ -890,7 +890,7 @@
       "sourceRound": "R14"
     }
   ],
-  "baseReference": "be4dffd97127085369ee5a223ccab3d205c08f38",
+  "baseReference": "6f76f5bb74e71140af74543b3c2a0c3505bb6680",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-ab": {
