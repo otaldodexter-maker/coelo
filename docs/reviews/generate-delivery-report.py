@@ -42,6 +42,7 @@ def path_exists(relative: str) -> bool:
 
 def current_residual_branches(previous: dict) -> dict:
     result = {}
+    current_branch = git("branch", "--show-current")
     rows = git(
         "for-each-ref",
         "--format=%(refname:short)|%(objectname)",
@@ -50,7 +51,7 @@ def current_residual_branches(previous: dict) -> dict:
     ).splitlines()
     for row in rows:
         branch, sha = row.split("|", 1)
-        if branch == "origin/HEAD":
+        if branch in {"origin/HEAD", current_branch, f"origin/{current_branch}"}:
             continue
         exclusive = git("rev-list", branch, "--not", "origin/dev").splitlines()
         if not exclusive:
