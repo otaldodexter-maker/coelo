@@ -17,12 +17,12 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último delta de execução: 15/09 ~10:21 — Sessão 1 provou Circulares, Agenda,
-  Assiduidade, Rotina e Acontece na rota real; contadores FE 169/231, BE 164/224,
-  E2E 142/199, Owner 10/53.
+- Último delta de execução: 15/09 ~10:25 — Sessão 1 provou Circulares, Agenda,
+  Assiduidade, Rotina e Acontece na rota real e concluiu `shell.switch-context`
+  como `flutter-only`; contadores FE 170/231, BE 164/224, E2E 142/199, Owner 10/53.
 - Próximo gate executável (ordem ajustada pelo Owner em 14/09: mais fácil primeiro):
-  Bloco A continua em execução, com `shell.switch-context`, Atividades, Convites,
-  Chat › Criar grupo e Unidades ainda sem entrega certificada; Cardápios está
+  Bloco A continua em execução, com Atividades, Convites, Chat › Criar grupo e
+  Unidades ainda sem entrega certificada; Cardápios está
   reivindicado pela Sessão 2 no Bloco C, sem fatia entregue.
 - 15/09: temas de abertura explicados e decididos pelo Owner (artefato
   89AVWHKEnq5hrvYN6SFv6M; `docs/agent/backlog.md`, seção de 15/09). A R14 executa em

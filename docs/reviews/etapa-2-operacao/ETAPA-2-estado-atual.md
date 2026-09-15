@@ -39,13 +39,13 @@ fora do trabalho corrente do MVP.
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-15 (10:21, após cinco fatias da Sessão 1 na rota real), no checkout
-`dev`, SHA `821e18b1134efa82783e9318025280b5c5799305`.
+2026-09-15 (10:25, após seis fatias da Sessão 1 na rota real), no checkout
+`dev`, SHA `8b99d9a06fbfce2ef12a999d4aef9d16f6052918`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 169 / 231 | 73,16% | terminal FE da base inteira |
+| FE verificado | 170 / 231 | 73,59% | terminal FE da base inteira |
 | FE local-green | 25 / 231 | 10,82% | avanço local; não é aceite E2E |
 | BE concluído/verificado | 164 / 224 | 73,21% | somente ações aplicáveis ao BE |
 | BE local-green | 16 / 224 | 7,14% | avanço local; não é prova remota |

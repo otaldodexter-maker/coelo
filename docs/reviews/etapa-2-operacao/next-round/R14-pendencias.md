@@ -17,8 +17,8 @@ audience: "team"
 > Regra: item `done` fica registrado aqui apenas para contagem e não volta à execução;
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
-Contadores certificados (inventário, 15/09/2026 10:21, após cinco fatias da
-Sessão 1): FE 169/231 (73,16%), BE 164/224 (73,21%), E2E 142/199 (71,36%),
+Contadores certificados (inventário, 15/09/2026 10:25, após seis fatias da
+Sessão 1): FE 170/231 (73,59%), BE 164/224 (73,21%), E2E 142/199 (71,36%),
 Owner 10/53 (18,87%).
 
 ## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
