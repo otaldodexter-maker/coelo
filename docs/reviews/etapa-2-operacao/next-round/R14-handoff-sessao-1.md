@@ -19,6 +19,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | Tela | action_ids | Desde |
 |---|---|---|
 | Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC) | invites.list, invites.resend | 2026-09-15 |
+| Arquivos de Formulários › Upload + Resolver (folga do Bloco C; só E2E) | forms.upload, forms.resolve-file | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -35,7 +36,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 95b9f81cb | units.error + units.access-denied FE verified, BE done, E2E verified-e2e (Unidades 10/10) | — | r14-sessao-1/units-error-access-denied-20260915.md |
 | a1129b316 | Bloco B (1/2): `apply-tracker-delta.cjs` aceita `escopo` | — | script |
 | 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
-| (próximo) | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
+| 98b768526 | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
 
 ## Avisos para a outra sessão
 
