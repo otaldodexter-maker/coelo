@@ -470,9 +470,14 @@ export async function handleNowMediaRequest(
           }
           if (success) purgedCount += 1;
           else failedCount += 1;
-          if (typeof job.job_id === "number") {
+          const parsedJobId = typeof job.job_id === "number"
+            ? job.job_id
+            : typeof job.job_id === "string" && /^\d+$/.test(job.job_id)
+            ? Number(job.job_id)
+            : null;
+          if (parsedJobId !== null && Number.isSafeInteger(parsedJobId)) {
             await admin.rpc("record_now_media_purge_result", {
-              p_job_id: job.job_id,
+              p_job_id: parsedJobId,
               p_success: success,
               p_error: success ? null : "purge_failed",
             });

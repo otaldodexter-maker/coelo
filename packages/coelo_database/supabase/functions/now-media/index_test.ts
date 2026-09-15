@@ -50,5 +50,6 @@ Deno.test("removal is an authorized RPC followed by server-side purge", async ()
   assertEquals(code.includes("claim_now_media_purge_jobs"), true);
   assertEquals(code.includes("record_now_media_purge_result"), true);
   assertEquals(code.includes("transportFor(dependencies, bucket).delete"), true);
+  assertEquals(code.includes("Number(job.job_id)"), true);
   assertEquals(code.includes("object_key: descriptor"), false);
 });
