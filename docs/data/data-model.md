@@ -10,8 +10,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0038; decisions/0039"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -24,6 +24,12 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; dec
 > exigir. Importação real, staging/jobs e exportação geral ficam pós-MVP,
 > exceto `forms.responses.export`; não criar schema, migration ou tabela nova
 > somente por uma passagem desatualizada deste documento.
+>
+> **Overlay de escopo — 15/09/2026.** Planos comerciais ficam fora da operação
+> do MVP. `plans`, subscriptions, limites e entitlements permanecem como
+> preparação estrutural para V1/V2; não criar UI, vínculo, atribuição ou
+> enforcement comercial por este modelo. Planos de medicação são entidades de
+> Saúde e Cuidado e não são afetados.
 | Coluna 1 | COELO<br>PRD Modelo de Dados Master Oficial v1<br>Supabase/Postgres · modelo conceitual e governança |
 | --- | --- |
 
@@ -230,7 +236,7 @@ precisa nem pode receber acesso à linha privada reutilizável em
 | institution_role_assignments | Atribuição do perfil a uma membership e escopo efetivo. |
 | institution_memberships | Vínculo contextual da pessoa ao Admin institucional. |
 | plans | Catálogo de planos e limites preparados para futuro. |
-| institution_subscriptions | Plano/status/datas por instituição; operação manual no MVP. |
+| institution_subscriptions | Plano/status/datas por instituição; preparação para V1/V2, sem operação comercial no MVP. |
 | usage_limits/analytics.usage_counters | Limites e consumo, inicialmente informativos. |
 | platform_notices | Avisos globais/segmentados. |
 | notice_audiences/receipts | Audiência e leitura. |
@@ -487,7 +493,7 @@ A decisao tecnica inicial de schemas para o Coelo e:
 | CPF adultos | Obrigatório. |
 | Identificador infantil | Não necessário no MVP; eventual decisão pertence à experiência/login infantil. |
 | Importação | CSV/XLSX para entidades aplicáveis. |
-| Planos | Manual no MVP, preparado para automação. |
+| Planos | Preparação estrutural para V1/V2; operação comercial fora do MVP. |
 | Responsáveis adicionais | Sem limite técnico; eventual regra comercial permanece adiada. |
 | Retenção | Prazos não definidos. |
 | Download mídia | Bloqueado por padrão. |

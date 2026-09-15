@@ -3,9 +3,16 @@ title: "Superadmin MVP"
 source: "specs/003-superadmin-core.md; specs/010-superadmin-completo-v1-technical-spec.md; specs/011-superadmin-database-rls.md; docs/product/prd-superadmin.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; docs/architecture/macro-architecture.md"
 status: "approved-for-planning"
 generated_at: "2026-06-27"
+updated_at: "2026-09-15"
+reconciled_with: "decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md"
 ---
 
 # Superadmin MVP
+
+> **Overlay de escopo — 15/09/2026.** Esta spec ampla permanece como baseline,
+> mas não autoriza operação comercial de Planos no MVP. Criação, edição,
+> vínculo, atribuição e entitlements ficam para V1/V2 conforme ADR 0039.
+> Recuperação/reset de Auth fica na Etapa 3; não executar esses fluxos na R14.
 
 ## Aditivo 2026-08-31 — Agenda institucional
 

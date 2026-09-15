@@ -8,8 +8,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0039"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -22,12 +22,18 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; dec
 > Agenda produtiva pertence ao Superadmin. Cláusulas antigas de CSV/XLSX,
 > Storage ou AAL2 devem ser lidas como baseline histórica quando conflitarem
 > com este overlay e as ADRs atuais.
+>
+> **Overlay de escopo — 15/09/2026.** Por decisão da ADR 0039, Planos
+> comerciais não são uma operação do MVP: não criar, editar, arquivar,
+> restaurar, atribuir, vincular ou aplicar entitlements. O schema e o contrato
+> ficam preparados para V1/V2. Recuperação/reset de Auth fica reservado à
+> Etapa 3; não é um trabalho executável da R14.
 | Coluna 1 | COELO<br>PRD Superadmin Oficial v1<br>superadmin.coelo.me · Operação interna da plataforma |
 | --- | --- |
 
 Versão: v1.0 | Data: 21/06/2026 | Status: Draft para validação
 
-| O Superadmin controla instituições, planos, usuários internos, avisos, suporte e auditoria sem substituir o Admin da instituição. |
+| O Superadmin controla instituições, usuários internos, avisos, suporte e auditoria sem substituir o Admin da instituição; Planos comerciais ficam preparados para fase futura. |
 | --- |
 
 Simples como Airbnb Visual como Instagram Confiável como escola
@@ -68,7 +74,7 @@ Documento derivado do Product Vision Oficial v1 e do PRD Master Oficial v1 do Co
 | Público interno | Produto, design, engenharia, dados, segurança, jurídico, operações e agentes de coding. |
 | Status | Draft para revisão e versionamento. |
 | Base interna | Product Vision Oficial v1; PRD Master Oficial v1; História da Logo e Marca Oficial v1; mapa competitivo e decisões do fundador. |
-| Escopo | Gestão interna da plataforma Coelo, tenants, planos manuais, usuários internos, avisos, suporte autorizado, uso básico e auditoria. |
+| Escopo | Gestão interna da plataforma Coelo, tenants, status operacional, usuários internos, avisos, suporte autorizado, uso básico e auditoria; Planos comerciais ficam fora do MVP. |
 
 | Versão | Data | Mudança | Responsável |
 | --- | --- | --- | --- |
@@ -80,7 +86,9 @@ Documento derivado do Product Vision Oficial v1 e do PRD Master Oficial v1 do Co
 
 O Superadmin é o ambiente interno do Coelo. Ele deve permitir que a equipe própria crie e gerencie instituições, controle o status operacional, cadastre usuários internos, publique avisos globais ou segmentados, acompanhe indicadores básicos e mantenha rastreabilidade das ações sensíveis.
 
-No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A modelagem, entretanto, deve nascer preparada para cobrança, assinatura e aplicação automática de limites em versões futuras, sem implementar esse fluxo completo agora.
+No MVP, a modelagem de planos, datas, assinaturas e limites permanece apenas como
+preparação futura. A operação comercial de Planos não será exposta nem executada;
+criação, vínculo, atribuição e entitlements ficam para V1/V2.
 
 | Decisão central<br>Usuários internos autorizados poderão acessar dados privados conforme o cargo. Todo acesso sensível continuará dependente de permissão interna e deverá gerar registro de auditoria, conforme o PRD Master. |
 | --- |
@@ -89,10 +97,10 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 | Objetivo | Aplicação |
 | --- | --- |
-| Ativar instituições | Criar tenant, owner inicial, unidade inicial opcional, plano/status e convite de acesso. |
+| Ativar instituições | Criar tenant, owner inicial, unidade inicial opcional, status operacional e convite de acesso; Plano comercial fica reservado para fase futura. |
 | Operar com segurança | Separar funções internas e registrar acessos, alterações e ações sensíveis. |
 | Reduzir dependência técnica | Permitir ações operacionais comuns sem manipulação direta do banco. |
-| Preparar monetização | Manter planos e limites modelados, mas operados manualmente no MVP. |
+| Preparar monetização | Manter schema e contratos de planos/limites sem operação comercial no MVP. |
 | Comunicar a base | Enviar avisos in-app e, quando crítico, push segmentado com prazo de exibição. |
 | Evitar invasão de escopo | Não substituir o Admin da instituição nem editar rotina cotidiana sem necessidade de suporte. |
 
@@ -102,7 +110,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | --- | --- | --- |
 | Instituições | Sim | Criar, editar, ativar, inativar, suspender e consultar o tenant. |
 | Owner inicial | Sim | Vincular pessoa responsável pela instituição e emitir convite. |
-| Planos/status | Sim — manual | Registrar plano, datas, status e campos de limites; sem cobrança automática. |
+| Planos/status | Não no MVP | Schema, contratos e limites ficam preparados para V1/V2; não há tela nem mutation comercial. |
 | Usuários internos | Sim | Owner, operações, suporte, conteúdo e auditoria, com permissões internas. |
 | Avisos | Sim | Globais ou segmentados por instituição, unidade, papel ou contexto, com vigência. |
 | Perfis oficiais Coelo | Sim | Publicar dicas e comunicações oficiais sem transformar o app em publicidade infantil. |
@@ -145,7 +153,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 - Cadastro e edição dos dados institucionais mínimos.
 
-- Status operacional, plano manual e datas relevantes.
+- Status operacional e datas relevantes; plano comercial permanece futuro.
 
 - Vínculo com owner/diretor inicial.
 
@@ -155,7 +163,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 ## 7.2 Planos e limites
 
-- Operação manual no MVP.
+- Preparação estrutural para V1/V2; nenhuma operação comercial no MVP.
 
 - Estrutura preparada para limites de usuários, responsáveis, storage e módulos.
 
@@ -195,12 +203,12 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 | Fluxo | Passos essenciais | Critério de aceite |
 | --- | --- | --- |
-| Ativar instituição | Criar instituição → definir plano/status → vincular owner → emitir convite → confirmar acesso. | Owner acessa somente a própria instituição e vê checklist inicial. |
+| Ativar instituição | Criar instituição → definir status → vincular owner → emitir convite → confirmar acesso. | Owner acessa somente a própria instituição e vê checklist inicial; plano comercial fica para fase futura. |
 | Suspender instituição | Selecionar tenant → informar motivo → confirmar ação → registrar log. | Acesso é bloqueado conforme regra sem apagar dados. |
 | Criar usuário interno | Cadastrar identidade interna exclusiva → definir perfil e escopo → revisar → simular convite. | O acesso existe somente no Superadmin e recebe permissões derivadas do perfil. |
 | Publicar aviso | Definir identidade → conteúdo/aparência → público/dispositivos → exibição/recorrência → revisar/publicar. | Aviso aparece apenas para audiência autorizada, nos destinos escolhidos, e respeita vigência e recorrência. |
 | Atendimento de suporte | Abrir instituição/contexto → registrar motivo → consultar/agir conforme cargo → encerrar. | Acesso e ações aparecem na auditoria com ator, tempo e objeto. |
-| Alterar plano manual | Selecionar instituição → alterar plano/status/datas → registrar justificativa. | Mudança é persistida sem iniciar cobrança automática. |
+| Planos comerciais | Não executável no MVP → preservar preparação para V1/V2. | Nenhuma tela, vínculo, atribuição ou mutation comercial é aberta por este PRD. |
 
 # 9. Requisitos funcionais
 
@@ -214,7 +222,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | SA-RF-006 | Avisos | Criar avisos controlados com um alvo hierárquico e papel opcional, destino único, vigência, recorrência simples e prévia. |
 | SA-RF-007 | Conteúdo oficial | Gerenciar perfis oficiais Coelo e preferências de silenciamento. |
 | SA-RF-008 | Suporte | Permitir acesso privado conforme cargo e registrar a sessão de suporte. |
-| SA-RF-009 | Auditoria | Registrar mudanças de status, plano, permissões, acessos e conteúdo. |
+| SA-RF-009 | Auditoria | Registrar mudanças de status, permissões, acessos e conteúdo; alterações de Plano só em V1/V2. |
 | SA-RF-010 | Uso básico | Exibir contadores básicos derivados dos eventos do MVP. |
 
 # 10. Regras de negócio
@@ -223,7 +231,8 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 
 - A inativação ou suspensão não deve excluir dados automaticamente.
 
-- Planos do MVP são controlados manualmente; qualquer bloqueio automático depende de versão futura.
+- Planos comerciais não são operados no MVP; qualquer catálogo, vínculo,
+  atribuição ou bloqueio depende de abertura futura em V1/V2.
 
 - Acesso privado por usuários internos depende de cargo e escopo cadastrados.
 
@@ -238,7 +247,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Domínio de dados | Entidades/objetos relacionados | Observação |
 | --- | --- | --- |
 | Tenants | institutions, units, institution_settings | Superadmin cria e mantém o tenant; dados internos continuam isolados. |
-| Planos | plans, institution_subscriptions, usage_limits | Operação manual no MVP; nomes físicos finais no Modelo de Dados Master. |
+| Planos | plans, institution_subscriptions, usage_limits | Preparação para V1/V2; sem operação comercial no MVP. |
 | Equipe Coelo | identidade interna, credencial Superadmin, vínculo, perfil e escopo | Agregado exclusivo do Superadmin; não reutiliza Pessoas, Admin ou Principal. O desenho físico produtivo depende da ADR 0019 e de spec técnica futura. |
 | Avisos | platform_notices, notice_audiences, notice_media, notice_receipts | Composição controlada, audiência, destinos, vigência, recorrência e recibos. |
 | Suporte | support_sessions, audit.audit_logs | Motivo, ator, tenant, escopo e ações. |
@@ -307,7 +316,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | --- | --- | --- |
 | Acesso interno excessivo | Crítico | Cargos, escopos, logs, revisão periódica e minimização de dados. |
 | Superadmin virar Admin da escola | Alto | Separar responsabilidades e limitar edição cotidiana. |
-| Planos manuais gerarem erro | Médio | Histórico, validação e justificativa de mudanças. |
+| Preparação de Planos ser confundida com operação | Médio | Manter contratos e schema marcados como futuros; não expor mutations no MVP. |
 | Avisos parecerem publicidade ou campanha invasiva | Médio | Separar conteúdo crítico de opcional, permitir silenciar e limitar o MVP a composição/recorrência controladas. |
 | Dashboard atrasar o MVP | Médio | Exibir apenas contadores básicos e registrar eventos completos. |
 
@@ -316,7 +325,7 @@ No MVP, planos e datas serão gerenciados manualmente para acelerar a entrega. A
 | Decisão | Valor oficial v1 |
 | --- | --- |
 | Acesso de suporte | Permitido conforme o cargo interno; ações sensíveis auditadas. |
-| Planos no MVP | Cadastro e operação manual. |
+| Planos no MVP | Não entram como operação; somente preparação estrutural futura. |
 | Preparação futura | Estrutura pronta para assinatura, cobrança e limites automáticos. |
 | Impersonation invisível | Não adotada. |
 | Dashboard | Básico no MVP; completo futuramente. |
@@ -360,8 +369,8 @@ Este aditivo registra decisoes de produto aprovadas apos a versao original do PR
 | --- | --- |
 | Primeira fatia do produto | Superadmin Completo v1 sera a primeira fatia operacional do Coelo. |
 | Ordem de trabalho | Banco primeiro, wireframe depois, Flutter por ultimo. |
-| Primeiro fluxo | Ativacao de instituicao: criar instituicao, definir plano/status, vincular owner institucional, emitir convite e registrar auditoria. |
-| Escopo v1 | Instituicoes, planos/status, usuarios internos, avisos/popups, suporte auditado, logs e base para dashboard futuro. |
+| Primeiro fluxo | Ativacao de instituicao: criar instituicao, definir status, vincular owner institucional, emitir convite e registrar auditoria. Planos comerciais ficam futuros. |
+| Escopo v1 | Instituicoes/status, usuarios internos, avisos/popups, suporte auditado, logs e base para dashboard futuro; Planos comerciais não são operação do MVP. |
 | Dados futuros | O banco deve nascer preparado para crescimento, evitando alteracoes estruturais previsiveis logo depois do MVP. |
 | Avisos/popups | O MVP usa um alvo hierarquico global, instituicao, unidade ou grupo/turma e papel opcional; regras arbitrarias e campanhas automatizadas ficam para depois. |
 | Popup com midia | O MVP permite texto sobre fundo ou uma unica imagem horizontal/vertical; pixels, proporcao, limite, crop, processamento e persistencia dependem da Technical Spec de midia/R2. |
@@ -389,7 +398,7 @@ O Superadmin v1 mantem cinco papeis internos: Owner, Operations, Support, Conten
 | Papel | Diretriz v1 |
 | --- | --- |
 | Owner Coelo | Comeca como conta unica do fundador. Pode criar outros Owners por convite + MFA. Possui poder total e pode liberar permissoes para os demais papeis. |
-| Operations | Opera instituicoes, status, planos manuais e fluxos de ativacao conforme permissoes liberadas. |
+| Operations | Opera instituicoes, status e fluxos de ativacao conforme permissoes liberadas; não opera Planos comerciais no MVP. |
 | Support | Acessa dados privados apenas conforme permissao e contexto de suporte, sempre com motivo e trilha de auditoria. |
 | Content | Opera avisos, popups e perfis oficiais sem acesso desnecessario a dados infantis. |
 | Auditor | Consulta logs, evidencias e historicos, sem editar dados operacionais. |

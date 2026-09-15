@@ -3,8 +3,9 @@ title: Gestão de Planos do Superadmin
 knowledge_id: superadmin-plans-management
 source: specs/022-superadmin-plans-ui.md
 status: validated
-lifecycle: "current"
+lifecycle: "future"
 generated_at: 2026-08-05
+updated_at: 2026-09-15
 audience: team
 surfaces: [superadmin, admin, principal, plans]
 visibility: internal
@@ -13,7 +14,13 @@ review_owner: Coelo Product
 
 # Gestão de Planos do Superadmin
 
-O catálogo de planos é global ao Coelo e sua operação permanece manual no MVP.
+> **Overlay de escopo — 15/09/2026.** Este artigo é referência futura para
+> V1/V2. Planos comerciais não são operação do MVP/R14; não criar, editar,
+> arquivar, restaurar, atribuir, vincular ou aplicar entitlements. Preserve o
+> conteúdo como referência sem tratá-lo como instrução atual.
+
+O catálogo de planos é global ao Coelo e sua operação futura permanece manual
+até que haja decisão de automação.
 A experiência local do Superadmin possui diretório em Cards e Tabela, busca por
 nome ou código, segmentos **Todos**, **Ativos** e **Arquivados**, paginação e
 ações auditáveis de arquivar e restaurar. Não existe exclusão permanente nessa

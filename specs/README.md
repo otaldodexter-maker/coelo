@@ -25,7 +25,7 @@ aceite ponta a ponta.
 ## MVP/Etapa 2 e contratos aprovados
 
 `012-superadmin-mvp.md`, `018-profiles-permissions-superadmin.md`,
-`022-superadmin-plans-ui.md`, `027-superadmin-audit-production.md`,
+`027-superadmin-audit-production.md`,
 `028-superadmin-conversations-production.md`,
 `030-superadmin-child-safety-production.md`,
 `036-principal-now-publication-mvp.md`, `037-principal-circulars.md`,
@@ -37,20 +37,21 @@ aceite ponta a ponta.
 `043-superadmin-internal-unit-detail-v2.md`,
 `045-superadmin-internal-group-detail-v2.md`,
 `046-superadmin-internal-person-detail-v2.md`,
-`050-superadmin-agenda-backend.md`, `050-principal-ui-ux-closure.md` e
-`051-superadmin-plans-production.md`.
+`050-superadmin-agenda-backend.md` e `050-principal-ui-ux-closure.md`.
 
 As ADRs posteriores podem restringir esses contratos: em particular, ADR 0031
 adia importações/exportações gerais, ADR 0032 substitui o desenho de mídia por
-R2 privado, ADR 0034 separa estado documental de aceite real e ADR 0038 registra
-decisões do fechamento da R13 que foram transferidas para a fila única R14; ela
-não transforma a R13 em fila vigente. `plans.assign` fica fora do MVP até nova
-decisão.
+R2 privado, ADR 0034 separa estado documental de aceite real, ADR 0038 registra
+decisões do fechamento da R13 transferidas para a fila única R14 e ADR 0039
+retira a operação comercial de Planos do MVP, mantendo a preparação para V1/V2.
+A R13 não é fila vigente.
 
 ## Planejamento, futuro ou bloqueio
 
 - `010-superadmin-completo-v1-technical-spec.md`: desenho amplo histórico; não
   é a fila atual.
+- `022-superadmin-plans-ui.md` e `051-superadmin-plans-production.md`: referência
+  futura de Planos comerciais; não executar no MVP/R14.
 - `016-superadmin-support-prototype.md`: design/protótipo.
 - `044-unit-child-table-direct-access-closure.md`: bloqueada por proveniência.
 - `047-superadmin-internal-invite-detail-v2-draft.md`,

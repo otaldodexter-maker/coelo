@@ -8,8 +8,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0033; decisions/0034; decisions/0037; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0033; decisions/0034; decisions/0037; decisions/0038; decisions/0039"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -21,6 +21,11 @@ reconciled_with: "AGENTS.md; decisions/0033; decisions/0034; decisions/0037; dec
 > cláusula antiga de AAL2 é hardening futuro até nova decisão do Owner.
 > Recursos remotos são produção, e a mídia privada segue R2 + gateway
 > server-side conforme ADR 0032.
+>
+> **Overlay de escopo — 15/09/2026.** Recuperação e redefinição de Auth ficam
+> reservadas à Etapa 3. A R14 não executa e-mail, callback, allowlist,
+> expiração, uso único ou prova produtiva desse fluxo; login, sessão,
+> bootstrap, autorização e RLS correntes permanecem no escopo vigente.
 | Coluna 1 | COELO<br>PRD Auth, Multi-tenant e Permissões Oficial v1<br>Identidade global · contexto ativo · RBAC + RLS |
 | --- | --- |
 
@@ -138,13 +143,13 @@ QR, sem busca pública ou indexação aberta.
 
 # 6. Login e recuperação
 
-| Caminho | Regra do MVP |
+| Caminho | Regra de fase |
 | --- | --- |
 | E-mail | Usuário pode escolher login por e-mail. |
 | Celular | Usuário pode escolher login por celular. |
 | Senha/OTP | Supabase suporta ambos; a combinação final por tela será definida na Functional Spec. |
 | @username | Identificador de perfil e busca controlada; não substitui sozinho a prova de posse do e-mail/celular. |
-| Recuperação | Por e-mail ou celular, sem confirmar publicamente se a conta existe. |
+| Recuperação | Etapa 3: por e-mail ou celular, sem confirmar publicamente se a conta existe. Não executar na R14. |
 | Troca de contato | Exige reautenticação e confirmação do novo contato. |
 | Convite | Vincula a pessoa existente ou cria Auth para a pessoa cadastrada. |
 
@@ -458,7 +463,8 @@ Eventos de uso e produto ficam em `analytics`; evidencias de acesso privilegiado
 
 - Technical Spec de policies RLS e funções auxiliares.
 
-- Functional Spec de login, convite, recuperação e seletor de contexto.
+- Functional Spec de login, convite e seletor de contexto; recuperação/reset
+  pertencem à spec própria da Etapa 3.
 
 - Threat model de eventual identificador infantil e deduplicação, se adotado
   pela spec futura de experiência/login infantil.

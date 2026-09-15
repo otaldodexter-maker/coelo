@@ -8,8 +8,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0039"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -22,6 +22,12 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; dec
 > `forms.responses.export` em XLSX privado. O MVP não exige MFA/AAL2. Agenda
 > produtiva permanece no Superadmin. Crianças não recebem `@` público/global
 > pesquisável. Capacidades são contextuais por vínculo e tenant.
+>
+> **Overlay de escopo — 15/09/2026.** Planos comerciais não são uma operação
+> do MVP: criação, edição, arquivamento, restauração, atribuição, vínculo e
+> entitlements ficam preparados para V1/V2. Recuperação/reset de Auth fica
+> reservado à Etapa 3; não é execução corrente da R14. Planos de medicação são
+> outro domínio e não são afetados.
 | Coluna 1 | COELO<br>PRD Master Oficial v1<br>coelo.me · Produto completo + MVP/v1 + roadmap |
 | --- | --- |
 
@@ -243,9 +249,9 @@ O Coelo deve nascer amplo o suficiente para qualquer instituição que cuide, ac
 
 | Módulo | Entra no MVP/v1 | Observação |
 | --- | --- | --- |
-| Login unificado | Sim | E-mail/celular, convites, recuperação, pessoa única e contexto ativo. |
+| Login unificado | Sim | E-mail/celular, convites, pessoa única e contexto ativo; recuperação/reset ficam reservados à Etapa 3. |
 | Multi-tenant | Sim | Instituição > Unidade > Grupo/Perfil > Criança/Aluno/Atendido > Responsável, com vínculos flexíveis. |
-| Superadmin | Sim | Gestão de clientes, status, planos, usuários internos, avisos e logs. |
+| Superadmin | Sim | Gestão de clientes, status, usuários internos, avisos e logs; Planos comerciais ficam fora da operação do MVP. |
 | Admin | Sim | Unidades, grupos, atividades, pessoas, responsáveis, equipe (perfil), permissões, comunicados, agenda, rotina e chat. |
 | App mobile | Sim | iOS/Android para responsáveis, professores, coordenadores, direção e equipe. |
 | Feed/comunicados | Sim | Privado, contextual, com mídia e confirmação de leitura. |
@@ -262,7 +268,7 @@ O Coelo deve nascer amplo o suficiente para qualquer instituição que cuide, ac
 | --- | --- | --- |
 | Dashboard visual completo | Aumenta escopo; dados ainda serão validados. | Registrar eventos, logs e métricas desde o MVP. |
 | Site institucional/SEO completo | Não é necessário para piloto real. | Reservar coelo.me e criar página simples futura. |
-| Pagamentos | Exige operação financeira, conciliação e suporte. | Modelar planos/status sem cobrança automática. |
+| Pagamentos | Exige operação financeira, conciliação e suporte. | Modelar contratos futuros de planos/status sem cobrança automática nem operação comercial no MVP. |
 | Matrícula digital | Fluxo jurídico/contratual maior. | Preparar pessoa, responsável, assinatura e documentos futuros. |
 | ERP/financeiro completo | Fora da tese inicial. | Integrar futuramente com ERPs, sem tentar substituir agora. |
 | Gamificação completa | Pode distrair do cuidado e da rotina. | Registrar eventos úteis para badges futuros. |
@@ -313,7 +319,7 @@ A arquitetura deve suportar múltiplas instituições e múltiplos papéis por p
 | Domínio | Papel | Prioridade |
 | --- | --- | --- |
 | coelo.me | Site institucional, SEO, landing page, planos, sobre nós, história da marca, conversão e conteúdo. | Futuro / não MVP completo |
-| superadmin.coelo.me | Painel interno do Coelo para gestão de clientes, planos, usuários internos, avisos e auditoria. | MVP |
+| superadmin.coelo.me | Painel interno do Coelo para gestão de clientes, usuários internos, avisos e auditoria; Planos comerciais ficam futuros. | MVP |
 | admin.coelo.me | Painel da instituição para gestão de unidades, grupos, pessoas, permissões, comunicados, agenda e rotina. | MVP |
 | app.coelo.me | Versão web do app, útil para acesso rápido e operação leve. | MVP se não atrasar; mobile é prioridade |
 | Apps iOS/Android | Experiência diária de responsáveis, professores, coordenadores, direção e equipe. | MVP |
@@ -324,7 +330,7 @@ Permissões devem ser RBAC + escopo de contexto. O papel “professor” sozinho
 
 | Papel | Escopo | Permissões principais |
 | --- | --- | --- |
-| Superadmin Owner | Plataforma Coelo | Tudo no Superadmin, gestão de usuários internos, planos, auditoria e configurações globais. |
+| Superadmin Owner | Plataforma Coelo | Tudo no Superadmin, gestão de usuários internos, auditoria e configurações globais; Planos comerciais ficam futuros. |
 | Superadmin Operações | Plataforma Coelo | Cadastrar/ativar instituições, suporte operacional e avisos segmentados. |
 | Superadmin Conteúdo | Perfis globais Coelo | Publicar dicas e conteúdos globais sem acessar dados privados de crianças. |
 | Diretor/Owner Instituição | Instituição inteira | Configurações, unidades, grupos, equipe, responsáveis, comunicados, agenda, relatórios e permissões. |
@@ -350,20 +356,20 @@ Permissões devem ser RBAC + escopo de contexto. O papel “professor” sozinho
 
 | Fluxo | Passos essenciais | Critério de aceite |
 | --- | --- | --- |
-| Ativação de instituição | Superadmin cria instituição, define plano/status, owner, unidade inicial e convite do admin. | Admin acessa apenas sua instituição e vê checklist de configuração. |
+| Ativação de instituição | Superadmin cria instituição, define status, owner, unidade inicial e convite do admin; Plano comercial fica futuro. | Admin acessa apenas sua instituição e vê checklist de configuração. |
 | Cadastro de unidade/grupo | Admin cria unidade, grupo/turma/perfil, configura seguidores automáticos e permissões. | Perfis da unidade/grupo são criados e usuários vinculados seguem automaticamente conforme regra. |
 | Cadastro de pessoa | Admin busca por e-mail/celular/CPF opcional; cria pessoa; escolhe se terá acesso como usuário: sim/não. | Não duplica pessoa existente; cria vínculo contextual; convite só é enviado se usuário = sim. |
 | Vínculo de criança e responsável | Admin cadastra criança/aluno/atendido, vincula responsáveis e define permissões. | Responsável vê apenas conteúdos vinculados à criança e aos grupos/unidades seguidos. |
 | Publicação no feed | Equipe escolhe perfil, audiência, mídia, confirmação de leitura e agendamento. | Post aparece apenas para audiência autorizada e gera eventos de leitura. |
 | Registro de rotina | Professor escolhe grupo, aplica template em lote, ajusta individualmente e publica. | Responsáveis recebem rotina individual; alterações ficam auditadas. |
 | Chat/canal | Usuário abre conversa contextual; membros são derivados de vínculo e permissão. | Mensagem só trafega entre membros autorizados e gera leitura/histórico. |
-| Recuperação de conta | Usuário recupera por e-mail/celular, com verificação e proteção contra enumeração. | Conta recuperada sem expor dados de crianças ou instituições indevidamente. |
+| Recuperação de conta | Reservada à Etapa 3: recuperação por e-mail/celular, verificação e proteção contra enumeração. | Não executar na R14; a futura conta recuperada não expõe dados de crianças ou instituições indevidamente. |
 
 # 19. Módulos do produto
 
 | Módulo | MVP | Objetivo | Notas |
 | --- | --- | --- | --- |
-| Identidade/Auth | Sim | Login, convites, recuperação e contexto. | Base de toda permissão. |
+| Identidade/Auth | Sim | Login, convites e contexto; recuperação/reset na Etapa 3. | Base de toda permissão. |
 | Multi-tenant/RBAC | Sim | Isolar instituições e papéis. | RLS obrigatório. |
 | Superadmin | Sim | Operação Coelo. | Sem dashboard completo, mas com logs, já criar tabelas necessárias e ir salvando mesmo que ainda naõ tenha o dashboard para que se possa mensurar tudo no futuro. |
 | Admin | Sim | Gestão institucional. | Painel web em Flutter. |
@@ -385,7 +391,7 @@ O Superadmin é o sistema interno do Coelo. Ele precisa ser seguro, simples e au
 | Funcionalidade | MVP | Detalhe |
 | --- | --- | --- |
 | Cadastro de instituições | Sim | Criar, editar, ativar, inativar, suspender e definir status operacional. |
-| Planos/status | Sim | Plano manual, datas, limites e status; cobrança automática fica fora. |
+| Planos/status | Não no MVP | Schema e contratos preparados para V1/V2; sem operação comercial, vínculo ou atribuição. |
 | Usuários internos Coelo | Sim | Perfis de acesso: owner, operações, suporte, conteúdo, auditor. |
 | Avisos globais/segmentados | Sim | Para todos, por instituição, unidade, papel ou contexto. Com prazo de exibição. |
 | Perfis globais Coelo | Sim | Perfis oficiais para dicas e conteúdos; sem acesso a dados privados dos usuários. |
@@ -584,7 +590,7 @@ Identidade é uma das partes mais importantes do Coelo. O erro de modelagem aqui
 | Cadastro por Admin | Ao cadastrar responsável/equipe, perguntar: “Criar acesso como usuário agora? Sim/Não”. Se não, fica contato/vínculo sem login até convite futuro. |
 | Deduplicação | Buscar por e-mail, celular, CPF opcional e outros identificadores; nunca exibir dados completos de outra instituição durante match. |
 | Login | E-mail + senha/OTP e celular/OTP como caminhos principais; social login pode ficar para futuro. Caso seja fácil |
-| Recuperação | E-mail, celular e suporte institucional com provas mínimas; sem expor se a conta existe. |
+| Recuperação | Etapa 3: e-mail, celular e suporte institucional com provas mínimas; sem expor se a conta existe. |
 | @username adultos | Útil para perfis, responsáveis e equipe; facilita menções internas e busca controlada. |
 | @username crianças | Não recomendar username público/global para crianças. Usar identificador interno/contextual e não pesquisável. |
 | Perfis de unidade/grupo | Username único tipo @escola.unidade ou @turma-jardim-a, visível apenas dentro da rede privada. |
@@ -694,7 +700,7 @@ Como o Coelo trata dados de crianças/adolescentes, segurança e LGPD devem ser 
 
 | ID | Área | Requisito |
 | --- | --- | --- |
-| RF-001 | Autenticação | Permitir login/recuperação por e-mail e/ou celular, com convites e vínculo de pessoa global. |
+| RF-001 | Autenticação | Permitir login por e-mail e/ou celular, com convites e vínculo de pessoa global; recuperação fica na Etapa 3. |
 | RF-002 | Contexto ativo | Permitir alternar instituição, papel, unidade/grupo quando a pessoa tiver múltiplos vínculos. |
 | RF-003 | Superadmin | Cadastrar, editar, ativar/inativar instituições e gerenciar usuários internos do Coelo. |
 | RF-004 | Admin | Cadastrar unidades, grupos, atividades, pessoas, crianças/alunos/atendidos, responsáveis e equipe. |
@@ -815,7 +821,7 @@ A arquitetura inicial deve privilegiar velocidade, segurança e aprendizado, sem
 
 1. Fundação técnica: Supabase, schema, RLS, Auth, design system e ambiente dev/stage/prod.
 
-1. Superadmin mínimo: criar instituição, owner, planos/status, avisos e logs.
+1. Superadmin mínimo: criar instituição, owner, status, avisos e logs; Planos comerciais ficam futuros.
 
 1. Admin: unidade, grupo, pessoas, vínculos, permissões e conteúdo.
 

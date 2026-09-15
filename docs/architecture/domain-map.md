@@ -8,8 +8,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0037; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; decisions/0034; decisions/0037; decisions/0038; decisions/0039"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -21,6 +21,11 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; dec
 > pessoa global, `tenant_id`/instituição, vínculo/contexto e RLS server-side.
 > O mapa de domínio abaixo é baseline; decisões posteriores de mídia,
 > ambientes, permissões e MVP prevalecem.
+>
+> **Overlay de escopo — 15/09/2026.** D22 (Planos e Entitlements) permanece
+> como preparação arquitetural para V1/V2, não como operação do MVP. Não
+> implementar catálogo comercial, vínculo, atribuição ou enforcement por este
+> mapa. Planos de medicação pertencem a Saúde e Cuidado.
 | Coluna 1 | COELO<br>Mapa de Domínios Oficial v1<br>Produto completo · MVP/v1 · roadmap · bounded contexts |
 | --- | --- |
 
@@ -156,7 +161,7 @@ Figura 1 — Landscape de domínios e bounded contexts do Coelo.
 | D19 | Analytics e Uso do Produto | Supporting | MVP dados / UI futura |
 | D20 | Administração do Tenant e Onboarding | Supporting | MVP |
 | D21 | Operação da Plataforma e Suporte | Supporting | MVP |
-| D22 | Planos e Entitlements | Supporting | MVP manual |
+| D22 | Planos e Entitlements | Supporting | V1/V2 — preparação estrutural |
 | D23 | Importação e Qualidade de Dados | Supporting | MVP |
 | D24 | Cobrança e Pagamentos | Supporting | Próxima fase |
 | D25 | Matrícula e Documentos | Supporting | Próxima fase |
@@ -467,7 +472,7 @@ D21 · Operação da Plataforma e Suporte Supporting · MVP
 | Dependências | Tenancy, Entitlements, Auditoria e Identidade; executa por backend seguro. |
 | Eventos publicados | platform_user_invited, platform_notice_published, support_session_opened, tenant_suspended. |
 
-D22 · Planos e Entitlements Supporting · MVP manual
+D22 · Planos e Entitlements Supporting · V1/V2 — preparação estrutural
 
 | Responsabilidade | Definir catálogo de planos, recursos liberados, limites e snapshot de acesso por instituição. |
 | --- | --- |

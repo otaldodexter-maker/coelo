@@ -5,13 +5,17 @@ status: "approved-for-implementation"
 generated_at: "2026-08-27"
 lifecycle: "current"
 updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0019; decisions/0034; decisions/0038"
+reconciled_with: "AGENTS.md; decisions/0019; decisions/0034; decisions/0038; decisions/0039"
 ---
 
 > **Overlay vigente — 14/09/2026.** A identidade interna permanece separada
 > de People/Principal no mesmo projeto Supabase; autorização continua
 > server-side. O MVP não exige MFA/AAL2, e o aditivo de AAL deve ser lido como
 > regra de aceitação do MVP, não como autorização para ampliar escopo.
+>
+> **Overlay de escopo — 15/09/2026.** Recuperação/reset de Auth continuam fora
+> deste contrato e foram reservados à Etapa 3 pela ADR 0039. A R14 trabalha
+> apenas identidade, sessão, bootstrap e autorização já aprovados.
 
 # Auth, sessão e contexto interno do Superadmin
 
@@ -397,7 +401,8 @@ implementação para no primeiro bloqueio abaixo:
 4. OQ-006 continua aberta para a política de MFA de demais perfis: esta spec só
    aplica o catálogo `requires_mfa` já aprovado e não inventa novos requisitos;
 5. recuperação/reset, convite e transições de provisionamento continuam fora de
-   escopo e requerem spec própria antes de habilitação produtiva.
+   escopo deste contrato; recuperação/reset só poderão ser habilitados na Etapa
+   3 com spec própria e prova produtiva.
 
 Nenhum desses bloqueios permite degradar para `platform_memberships`, pessoa
 sintética, claim mutável, e-mail como autorização ou `service_role` no cliente.

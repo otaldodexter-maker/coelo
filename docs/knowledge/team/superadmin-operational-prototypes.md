@@ -3,9 +3,9 @@ title: Protótipos operacionais do Superadmin
 knowledge_id: superadmin-operational-prototypes
 source: docs/superpowers/specs/2026-08-03-superadmin-operational-surfaces-prototype-design.md
 status: validated
-lifecycle: "current"
+lifecycle: "future"
 generated_at: 2026-08-03
-updated_at: 2026-08-05
+updated_at: 2026-09-15
 audience: team
 surfaces: [superadmin, plans, imports, invites, notices, audit]
 visibility: internal
@@ -13,6 +13,10 @@ review_owner: Coelo Product
 ---
 
 # Protótipos operacionais do Superadmin
+
+> **Overlay de escopo — 15/09/2026.** Este artigo preserva protótipos locais
+> como referência futura. A superfície de Planos comerciais não é executável
+> no MVP/R14 e não autoriza migrations, mutations, vínculo ou E2E.
 
 Planos, Importações, Convites, Avisos e Auditoria devem nascer primeiro como
 experiências locais navegáveis em rotas `/dev` do Superadmin. Os dados ficam em

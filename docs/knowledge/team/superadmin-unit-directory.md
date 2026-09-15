@@ -14,6 +14,11 @@ review_owner: Coelo Product
 
 # Diretório de unidades do Superadmin
 
+> **Overlay de escopo — 15/09/2026.** Campos de plano efetivo, herança e
+> override permanecem preparação estrutural; não expõem operação comercial de
+> Planos no MVP/R14. A regra não afeta o catálogo de tipos nem Planos de
+> medicação.
+
 O diretório de unidades replica os padrões de Instituições para cards, tabela
 redimensionável, filtros, paginação, estados e formulário responsivo. A
 hierarquia apresentada é Instituição → Unidade → Turma → Atividade → Pessoa,

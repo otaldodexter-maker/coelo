@@ -61,3 +61,7 @@ Formulários, Perfis de cuidado, Planos de medicação, Planos, Cardápios,
 Circulares, Comunicações, Pessoas, Convites e Perfis de acesso. Suporte e
 Auditoria são workspaces com painel de detalhe e seguem com toolbar própria na
 allowlist até o grupo responsável alinhá-la ao composto.
+
+`Planos` nesta lista é uma referência de composição histórica/futura. A ADR
+0039 não autoriza ativar ou executar Planos comerciais no MVP/R14; não confundir
+com Planos de medicação.

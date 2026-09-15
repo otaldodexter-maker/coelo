@@ -2,9 +2,16 @@
 source: "Plano aprovado pelo Owner Coelo em 2026-08-05; docs/product/prd-superadmin.md; docs/data/data-model.md; decisions/0016-unit-type-and-plan-inheritance.md; specs/018-profiles-permissions-superadmin.md"
 status: "approved"
 generated_at: "2026-08-05"
+updated_at: "2026-09-15"
+lifecycle: "future"
+reconciled_with: "decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md"
 ---
 
 # Gestão de Planos do Superadmin
+
+> **Overlay de escopo — 15/09/2026.** Esta spec descreve uma superfície futura
+> de Planos comerciais. Não implementar nem reabrir o fluxo no MVP/R14; o
+> schema e a referência são preservados para V1/V2 conforme a ADR 0039.
 
 ## Objetivo
 

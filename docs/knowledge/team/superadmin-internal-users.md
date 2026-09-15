@@ -49,9 +49,10 @@ autoriza separadamente recuperação, callback e redefinição locais do
 Superadmin. O aceite FE local de Auth não amplia o contrato de convite nem
 comprova execução em produção.
 
-A recuperação mantém uma sessão restrita em memória para redefinir a senha.
-Com a remoção do armazenamento concluída, reinicializar depois de consumir o
-callback exige outro link. Falha permanente de remoção pode reter a credencial;
+A recuperação/reset descritos abaixo pertencem à Etapa 3 e não fazem parte da
+execução da R14. Quando esse escopo for aberto, a recuperação deverá manter uma
+sessão restrita em memória para redefinir a senha. Com a remoção do armazenamento
+concluída, reinicializar depois de consumir o callback exigirá outro link. Falha permanente de remoção pode reter a credencial;
 a proteção cliente não substitui a autorização no servidor. O controle backend
 comprovado localmente exige AMR `password` da mesma sessão validada para obter
 contexto interno e nega recovery/OTP, inclusive após refresh. A prova usa
