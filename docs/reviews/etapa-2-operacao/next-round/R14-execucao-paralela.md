@@ -91,7 +91,7 @@ rebase ou prova; a remoção exige o manifesto final da coordenadora.
   `institutions.locations-map`, `catalog.list`, `catalog.validate`, `catalog.sync`,
   `catalog.publish` (BE e E2E = `deferred-post-mvp`; FE fica como está). MFA ×3 já está em
   `gate-formal-mvp`; sem mudança. O alvo é E2E ativo 199 → 192; FE 231 e BE 224 não
-  mudam. Neste corte, o inventário ainda está em 137/199; a reclassificação só vale
+  mudam. Neste corte, o inventário ainda está em 142/199; a reclassificação só vale
   como estado corrente depois de delta controlado e evidência publicada.
   `apply-tracker-delta.cjs` ganha o campo opcional `escopo` para gravar `scope`.
 3. **Catálogo de UI**: registrar "V1 ou Etapa 3 (a definir)".
