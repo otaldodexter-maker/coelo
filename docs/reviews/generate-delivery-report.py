@@ -17,7 +17,10 @@ REPORT = ROOT / "docs/reviews/entrega-atual.json"
 INVENTORY = ROOT / "docs/reviews/inventario-etapa-2.json"
 OWNER_LEDGER = ROOT / "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
 OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md"
-CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1800.md"
+CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md"
+# Last coordination base before the R14 action deltas. This keeps the gate
+# audit anchored to the published cut instead of comparing HEAD with itself.
+BASE_REFERENCE = "9d6636115a15d10f6c44b1ababa4f162fed0ae06"
 CURRENT_STATE = "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md"
 PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md"
 ROUND_INDEX = "docs/reviews/etapa-2-operacao/next-round/RODADAS.md"
@@ -269,12 +272,12 @@ def main() -> None:
                 1 for action in actions if action.get("scope") == "deferred-post-mvp"
             ),
             "excludedCompletedOwnerIds": sorted(EXCLUDED_COMPLETED_OWNER_IDS),
-            "completedInR13OwnerIds": sorted(completed - EXCLUDED_COMPLETED_OWNER_IDS),
+            "completedInR14OrPriorOwnerIds": sorted(completed - EXCLUDED_COMPLETED_OWNER_IDS),
         },
         "metrics": metrics,
-        "firstGate": "Circulares › Anexos (circulars.attach)",
+        "firstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
         "ownerItems": owner_items,
-        "baseReference": git("rev-parse", "HEAD"),
+        "baseReference": BASE_REFERENCE,
         "target": str(ROOT.resolve()),
         "protectedWorktrees": current_protected_worktrees(),
         "preservedStash": {},

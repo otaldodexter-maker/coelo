@@ -557,7 +557,7 @@
     "e2e": "verified-e2e das ações; o apontamento de CRUD individual por registro segue aberto.",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Exercitar dois registros de alergia independentes na rota real (adicionar/remover) e reload.",
+    "nextGate": "Exercitar vários registros de alergia independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a dois.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -578,7 +578,7 @@
     "e2e": "verified-e2e das ações; o apontamento de CRUD individual por orientação segue aberto.",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Exercitar duas orientações independentes na rota real e reload.",
+    "nextGate": "Exercitar várias orientações independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a duas.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -651,17 +651,17 @@
   },
   {
     "id": "owner.r12-34",
-    "status": "done",
+    "status": "partial",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"
     ],
-    "fe": "FE verified: nome de refeição separado do prato, duplicação, renomeação, ordenação e reload provados na rota real.",
-    "be": "BE done, sem mudança SQL.",
-    "e2e": "E2E verified-e2e.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Fechado na R14; imagem R2 segue em owner.r12-38.",
+    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova; imagem R2 segue em owner.r12-38.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -671,17 +671,17 @@
   },
   {
     "id": "owner.r12-35",
-    "status": "done",
+    "status": "partial",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"
     ],
-    "fe": "FE verified: datas específicas adicionadas, ordenadas, removidas individualmente e reidratadas após reload na rota real.",
-    "be": "BE done, contrato existente sem mudança SQL.",
-    "e2e": "E2E verified-e2e.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Fechado na R14; RLS foi exercitado pelo catálogo autorizado no fluxo.",
+    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -691,18 +691,18 @@
   },
   {
     "id": "owner.r12-36",
-    "status": "done",
+    "status": "partial",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit",
       "meal-plans.publish"
     ],
-    "fe": "FE verified: data/hora local preservada e enviada como UTC.",
-    "be": "BE done, contrato existente sem SQL novo.",
-    "e2e": "E2E verified-e2e.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Fechado: `16/09/2026 08:00` local = `2026-09-16T11:00:00Z` no Supabase real; publicação agendada e reload provados.",
+    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -712,17 +712,17 @@
   },
   {
     "id": "owner.r12-37",
-    "status": "done",
+    "status": "partial",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit"
     ],
-    "fe": "FE verified: edição de recorrência e remoção de data específica sem apagar o histórico do payload, com reload real.",
-    "be": "BE done, inalterado.",
-    "e2e": "E2E verified-e2e.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Fechado na R14; data 18/09 foi removida e não reapareceu após reload.",
+    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
