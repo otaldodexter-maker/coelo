@@ -5,7 +5,7 @@ source: "AGENTS.md"
 status: "validated"
 lifecycle: "current"
 generated_at: "2026-09-08"
-updated_at: "2026-09-12"
+updated_at: "2026-09-15"
 audience: "team"
 surfaces: [documentation, frontend, backend, integration]
 visibility: "internal"
@@ -48,6 +48,13 @@ rotina. Encerrar quando os aceites do recorte estiverem resolvidos ou houver
 impedimento demonstrado depois do trabalho independente. Relatório registra
 o resultado; sozinho não resolve a pendência. Explicação/review somente leitura
 e edição da própria skill não iniciam implementação do produto.
+
+O procedimento operacional de rota real da R14, inclusive o seletor de arquivo
+por `Page.fileChooserOpened` + `DOM.setFileInputFiles` e o bloqueio temporário
+de rede via CDP, está em
+`.agents/skills/coelo-flutter-supabase-review/references/review-scope.md` e na
+evidência reproduzível de `r14-sessao-1/ferramentas/`. Este artigo mantém a
+regra de escopo; não duplica os comandos nem transforma captura em aceite.
 
 Retomada confere worktrees, base integrada, protocolo/fechamento da rodada e
 handoff por revisão, data e SHA. O `dev` local pode estar desatualizado. Rodada

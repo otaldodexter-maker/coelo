@@ -222,3 +222,17 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
 - Espelho descartável: `config.toml` com `project_id` próprio e portas 613xx,
   `supabase/migrations/` só com a baseline, `supabase start` sem studio/realtime/
   storage, depois `psql` do container para a ordem real e os candidatos.
+
+## Rota real medida em 15/09/2026 (R14)
+
+- Para upload real pelo Chrome, armar `Page.enable`, `DOM.enable` e
+  `Page.setInterceptFileChooserDialog(enabled: true)`, aguardar o evento
+  `Page.fileChooserOpened` e então chamar `DOM.setFileInputFiles` com o caminho
+  local e o `backendNodeId`. O procedimento está reproduzível em
+  `docs/reviews/evidence/etapa-2/r14-sessao-1/ferramentas/cdp_filechooser.dart`;
+  usar somente arquivo de teste sem dados pessoais e desarmar a interceptação
+  no `finally`.
+- Para provar fail-closed/retry sem substituir a rota real, usar a sessão
+  `cdp_block.dart`, que habilita `Network.setBlockedURLs` por tempo limitado e
+  remove o bloqueio ao terminar. Captura, erro observado e reload devem ficar
+  juntos da evidência do action_id; o bloqueio não certifica backend.
