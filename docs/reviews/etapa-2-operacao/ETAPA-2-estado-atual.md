@@ -52,7 +52,8 @@ Git com manifesto. A prova técnica não altera contadores sem delta oficial.
 
 A Sessão E foi integrada em `b023b4ccb`/`382c3b975`, com Agora/R2/Edge e
 `agora.remove` tecnicamente provados; o contrato local da negativa foi
-reforçado em `2707086cf`. A negativa cross-tenant produtiva foi tentada, mas o
+reforçado em `2707086cf` e recebeu pgTAP comportamental local em `5ae79bef1`.
+A negativa cross-tenant produtiva foi tentada, mas o
 helper/fixture remoto não existe no schema vinculado; a evidência está bloqueada
 em `8ac946b3a`. Permanecem para R16 Stream sem contrato, residual produtivo de
 `owner.r12-46`, H10/H11 remoto e gates sem `action_id`/contrato/evidência.

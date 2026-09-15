@@ -217,9 +217,10 @@ aberta, não cria `action_id` e não autoriza novas provas.
 - `agora.remove`: a negativa cross-tenant foi tentada e bloqueada porque o
   helper remoto de fixture não existe no schema vinculado e a preparação SQL
   falhou antes da publicação; identidades temporárias foram removidas. O
-  contrato local foi reforçado no commit `2707086cf`, mas isso não é prova
-  produtiva. Evidência em `agora-remove-cross-tenant-blocked-20260915.md`,
-  commit `8ac946b3a`.
+  contrato local foi reforçado no commit `2707086cf` e o pgTAP comportamental
+  local de não-mutação foi adicionado em `5ae79bef1`, mas nenhum dos dois é
+  prova produtiva. Evidência em `agora-remove-cross-tenant-blocked-20260915.md`,
+  commit `8ac946b3a`, e em `agora-remove-cross-tenant-local-behavior-20260915.md`.
   Stream genérico permanece sem contrato, Edge, segredo, fixture e critério de
   aceite; o pacote atual comprova R2 privado e `stream_status=not_applicable`.
 - `owner.r12-46`: pacote técnico e prova local existem, mas falta captura

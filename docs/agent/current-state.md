@@ -55,6 +55,10 @@ audience: "team"
   migration/Edge e prova produtiva integrado; a negativa cross-tenant específica
   foi tentada e bloqueada por fixture/helper ausente no schema remoto, com
   identidades temporárias removidas. O inventário permanece sem promoção.
+- A negativa cross-tenant de `agora.remove` recebeu assertions de contrato e
+  pgTAP comportamental local nos commits `2707086cf` e `5ae79bef1`; ambos
+  preservam a não-mutação esperada, mas o Postgres local e o helper/fixture
+  remoto seguem indisponíveis. O aceite produtivo continua preparado em R16.
 - Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
   registros independentes de alergias e orientações. A validação da rota real
   deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o
