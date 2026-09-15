@@ -124,3 +124,17 @@ Branch: `r14/bloco-e`
 - HEAD antes deste ajuste do handoff: `b31561325c3f57683f9ea755d653b059395a60d2`.
 - Commits desta sessão incluem `7e6af350512988492fc8ac56c5e5ef1bfe09f200` (desenho), `4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a` (plano), `dc64976ee1aef584b185890e5fbf9df903bc9b69` (Conta), `762dc148e61af21cfb33b66d4bdcceefcb0951cb` (Chat), `a7b66b5c5e97fdbe8cff7d2ab37d7f0314c97fdd` (teste de remoção), `5535634632a5d6907a70fb587f37d5197f45c805` (enum do catálogo), `9117da7ca2c14073f3bb5906e14cba69234fdb76` (handoff/prova), `e8096df191794696e9e381eead4b09bbd889a15d` (lock Edge) e `622d2fc5a16e19592a99d691ff045c01cd5fb05a` (normalização Now).
 - Este handoff é o único novo registro desta sessão. Handoffs de outras sessões não foram editados.
+
+## Fechamento desta continuação — 2026-09-15
+
+- SHA final da Sessão E: `dc5f0aaa790246a26634fdb5837e9385c5802227`.
+- A suíte Edge consolidada de Conta, Chat, Agora, Momentos e Acontece terminou
+  `19 passed | 0 failed` após o commit final; `git diff --check` e o worktree
+  estão limpos; a base `a85ac01c4...` permanece ancestral.
+- Delivery gate executado após o commit terminou em `FAIL` por condições de
+  integração da coordenadora: destino/raiz declarados divergentes, worktrees e
+  branches R14 sem disposição final, ledger central incompleto e diferenças
+  para `origin/dev`. Nenhuma dessas condições foi resolvida alterando MDs
+  centrais ou contadores por inferência.
+- A porta `3017` continua verificável e a rota `/login` foi carregada no Chrome;
+  a porta TCP `9417` continuou indisponível e não há aceite CDP literal.
