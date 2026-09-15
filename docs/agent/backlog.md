@@ -29,20 +29,20 @@ Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
 - **Execução paralela:** duas sessões executoras (Blocos A–B e C–D) em worktrees
   próprias com push para `dev` por rebase; a sessão do Codex coordena e atualiza os MDs.
 - **Bloco B autorizado:** `plans.assign`, `institutions.status`,
-  `institutions.locations-map` e `catalog.*` (4) devem sair do ativo
-  (`deferred-post-mvp`); o alvo é E2E ativo 199 → 192. Esta decisão ainda não foi
-  aplicada ao inventário certificado neste SHA: até a execução controlada do
-  delta, o estado vigente neste corte continua E2E 142/199. FE e BE não mudam de denominador;
-  MFA já era gate formal.
+  `institutions.locations-map` e `catalog.*` (4) saíram do ativo
+  (`deferred-post-mvp`); o alvo E2E ativo 199 → 192 já foi aplicado pelo delta
+  controlado. Neste corte, o inventário registra E2E 150/199; FE e BE não mudam
+  de denominador. MFA já era gate formal.
 - **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
 - **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou
   suspende por período) → spec de ciclo de vida na R15.
 - **OQ-034:** Locais com mapa por imagem inteira na R15.
 - **Bloco C** na ordem Cardápios → Segurança infantil → Arquivos de Formulários →
-  Fechar/Reabrir → Perfis de acesso; **Bloco D** completo, incluindo `localhost` na
-  allowlist de redirect do Supabase Auth (não toca SMTP, DNS, senha nem token).
+  Fechar/Reabrir → Perfis de acesso; **Bloco D** segue com
+  reader self da Conta e owner.r12-29/30. Recuperação/reset de Auth e sua
+  allowlist ficam na Etapa 3.
 
-## Decisões do Owner de 14/09/2026 sobre escopo (fora da fila R14)
+## Decisões do Owner de 14/09 e 15/09/2026 sobre escopo (fora da fila R14)
 
 Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
 
@@ -51,6 +51,13 @@ Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
   `auth/account/internal-users.mfa` (gate formal). A decisão de escopo está
   registrada; a aplicação do delta aos sete action_ids aguarda execução
   controlada e evidência, sem alterar estados certificados por inferência.
+- **Decisão de 15/09:** nenhum Plano comercial é operação do MVP (listar,
+  criar, editar, arquivar, restaurar, atribuir, vincular ou aplicar
+  entitlements). Schema e specs ficam como preparação V1/V2. O reader self da
+  Conta continua no MVP/R14; o reader de Planos no Principal não entra na R14.
+- **Etapa 3:** `auth.recover` e `auth.reset`, incluindo e-mail, callback,
+  expiração, uso único, sessão e prova produtiva. Não executar recuperação/reset
+  nem a allowlist específica desse fluxo dentro da R14.
 - **V1 ou Etapa 3 (a definir):** Catálogo de UI (`catalog.list/validate/sync/
   publish`) — tela do catálogo `coelo-ui`; não é MVP.
 - **Formulários autosave (H11):** se der muito trabalho, vai para V1; se já

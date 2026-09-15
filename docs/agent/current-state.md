@@ -1,6 +1,6 @@
 ---
 title: "Estado atual do trabalho do Coelo"
-source: "Owner em 2026-09-14; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md"
+source: "Owner em 2026-09-14 e 2026-09-15; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md; decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -17,13 +17,13 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último delta de execução: 15/09 ~10:25 — Sessão 1 provou Circulares, Agenda,
-  Assiduidade, Rotina e Acontece na rota real e concluiu `shell.switch-context`
-  como `flutter-only`; contadores FE 170/231, BE 164/224, E2E 142/199, Owner 10/53.
+- Último delta de execução: 15/09 ~11:12 — Sessões 1 e 2 publicaram fatias de
+  Atividades, Chat, Segurança infantil e Formulários; contadores FE 177/231,
+  BE 166/224, E2E 150/199 (ativo 192), Owner 13/53.
 - Próximo gate executável (ordem ajustada pelo Owner em 14/09: mais fácil primeiro):
-  Bloco A continua em execução, com Atividades, Convites, Chat › Criar grupo e
-  Unidades ainda sem entrega certificada; Cardápios está
-  reivindicado pela Sessão 2 no Bloco C, sem fatia entregue.
+  no Bloco A, somente Convites › Lista/Reenviar ainda aguardam prova E2E; as
+  demais fatias publicadas de A estão certificadas. Cardápios continua
+  reivindicado pela Sessão 2 no Bloco C.
 - 15/09: temas de abertura explicados e decididos pelo Owner (artefato
   89AVWHKEnq5hrvYN6SFv6M; `docs/agent/backlog.md`, seção de 15/09). A R14 executa em
   **paralelo**: o protocolo está registrado para Sessão 1 (Blocos A–B) e Sessão 2
@@ -32,6 +32,11 @@ audience: "team"
   `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`. As worktrees
   `r14-ab` e `r14-cd` estão ativas e protegidas até o fechamento da R14.
   Não reabrir decisões já registradas na ADR 0038.
+- Decisão adicional do Owner em 15/09
+  (`decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md`): Planos comerciais
+  não entram no MVP; o reader de Planos fica para V1/V2, o reader self da Conta
+  permanece no MVP/R14 e `auth.recover`/`auth.reset` ficam reservados à Etapa 3.
+  Planos de medicação não são afetados.
 
 ## Fonte da fila atual
 

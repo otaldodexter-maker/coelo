@@ -1,6 +1,6 @@
 ---
 title: "R14 — fila única consolidada da Etapa 2"
-source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
+source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); Owner em 2026-09-15 (ADR 0039); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -17,9 +17,9 @@ audience: "team"
 > Regra: item `done` fica registrado aqui apenas para contagem e não volta à execução;
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
-Contadores certificados (inventário, 15/09/2026 10:25, após seis fatias da
-Sessão 1): FE 170/231 (73,59%), BE 164/224 (73,21%), E2E 142/199 (71,36%),
-Owner 10/53 (18,87%).
+Contadores certificados (inventário, 15/09/2026 11:12, após as fatias
+publicadas das Sessões 1 e 2): FE 177/231 (76,62%), BE 166/224 (74,11%),
+E2E 150/199 (75,38%), E2E ativo 150/192 (78,13%), Owner 13/53 (24,53%).
 
 ## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
 
@@ -36,8 +36,8 @@ Owner 10/53 (18,87%).
 10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
 
 **Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; FE 231 e BE 224 ficam):**
-O alvo ainda não foi aplicado ao inventário certificado neste corte; até o delta
-controlado, o contador vigente permanece E2E 142/199.
+O delta controlado já foi aplicado ao inventário certificado; o denominador
+ativo agora é 192 e o contador global vigente é E2E 150/199.
 11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
     → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
     Fecha Planos 4/4 e Usuários internos 4/4.
@@ -50,11 +50,13 @@ controlado, o contador vigente permanece E2E 142/199.
 16. Avaliações › Fechar/Reabrir (`assessments.close/reopen`).
 
 **Bloco D — pacotes SQL/config decididos:**
-17. OQ-031 catálogos de tipo; `H08` Duplicar Aviso + Avisos H23/H13; `owner.r12-47` localhost no Auth;
-    readers de Planos (039) e reader self da Conta; `owner.r12-29/30`.
+17. OQ-031 catálogos de tipo; `H08` Duplicar Aviso + Avisos H23/H13;
+    reader self da Conta; `owner.r12-29/30`. Reader de Planos comerciais e
+    recuperação/reset de Auth não entram na R14.
 
 **Bloco E — mais caros (contrato novo ou reconstrução):**
-18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`); Auth recuperar/redefinir (`auth.recover/reset`).
+18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). Recuperação/
+    redefinição (`auth.recover/reset`) ficam reservadas para a Etapa 3.
 19. Circular `H04` (host + goldens); Formulários `H10` (+ `H11` só se >60% pronto); Principal `H27/P54/H02`.
 20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real);
     `owner.r12-33` medicação; `owner.r12-18` pessoa sem conta; páginas de erro (BE/E2E).
@@ -71,7 +73,7 @@ controlado, o contador vigente permanece E2E 142/199.
 | Atividades › Configuração avaliativa | activities.assessment | **A** | — |
 | Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | **A** | — |
 
-## Owner items — abertos/parciais (43)
+## Owner items — abertos/parciais e atualizações da execução
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|
@@ -115,7 +117,7 @@ controlado, o contador vigente permanece E2E 142/199.
 | owner.r12-44 | invites.list | partial / FE local-green: tabela-only, cards/toggle removidos e busca/filtros/paginação/Novo convite preservados. / Contrato preservado; nenhum envio/reenvio executado. / Pending-verification: composição mudou e rota normal/reload/escopo precisam de nova prova. | docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md | Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture. |
 | owner.r12-45 | invites.resend | partial / FE local-green: `Reenviar convite` já encontrável na linha/detalhe expirado, com guards e recibo local. / RPC v2 e contrato preservados; nenhum envio real. / Pending-verification: falta convite expirado real, recibo, reload e escopo. | docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md | Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez, provar recibo/link de uso único, reload e negativa cross-tenant; não simular SMTP/Admin API. |
 | owner.r12-46 | account.profile | partial / FE verified (rota real 14/09): sigla QE→QR salva e relida após reload, celular e cor exibidos. / BE remote-green (lote 63): sigla/cor/celular em produção; foto R2 ausente. / E2E aberto até a foto privada (R2) existir no BE. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. Aprovação visual 14/09: A+ — colocar o card "Meu acesso" na mesma linha de "Dados pessoais" com rolagem interna (coelo-ui), depois foto R2. |
-| owner.r12-47 | auth.recover, auth.reset | open / Verified histórico; pedido normal e endereço inexistente observados na R11. / Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP. |
+| owner.r12-47 | auth.recover, auth.reset | open / Verified histórico; pedido normal e endereço inexistente observados na R11. / Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Transferido para Etapa 3 pela ADR 0039; não executar na R14. Quando aberto, obter acesso/configuração de caixa/SMTP/redirect e provar link real, nova senha/sessão, expiração e uso único; preservar credencial QA privada. |
 | owner.r12-49 | assessments.entry, assessments.gradebook, assessments.detail, assessments.close, assessments.reopen | partial / FE verified em entry/gradebook/detail (rota real 14/09): participante listada, nota 8.5 salva e relida. / BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green. / verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário. |
 | owner.r12-52 | chat.attach | partial / FE local-green: mosaico por mensagem para múltiplas mídias visuais, contador de adicionais, tile único e anexos não visuais preservados. / Sem mudança backend; R2 privado, ownership e autorização existentes preservados. / Pending-verification: faltam rota normal, mídia R2/MP4 real, reload e negativa cross-tenant. | docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md | Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema. |
@@ -171,15 +173,16 @@ controlado, o contador vigente permanece E2E 142/199.
 | H06 | noturna/R01 | Revogar em Chat somente leitura | **Concluído em 14/09 (lote 65)**: `superadmin_chat_revoke_message_v2` recusa `CHAT_READ_ONLY` no servidor; pgTAP 14/14 + suíte base 36/36 no espelho; guard presente em produção; negativa `CHAT_NOT_FOUND` por RPC. `chat.revoke` já era verified-e2e; sem delta de estado. |
 | H17 | R06 | Papel fixo versus capacidade em cuidado | **Concluído em 14/09 (lote 66)**: capacidade `care_policies.manage` nos catálogos Superadmin (Owner) e Admin (Administrador da instituição); `superadmin_unit_care_policy_set_v1` exige só a capacidade; pgTAP 15/15 + base 20/20; get/set/reload em produção na unidade f5284f2f e negativa por unidade alheia. Sem action_id próprio no inventário (sem tela no cliente); sem delta de estado. |
 
-## Itens da ADR 0038 sem ID H nem Owner item — abertos (5)
+## Itens da ADR 0038 sem ID H nem Owner item — abertos (4) e transferidos (2)
 
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
 | Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
 | Catálogos globais de tipo (OQ-031) | Aberto | Migration idempotente por `code` com as quatro listas da ADR e "Outros"; entidade pode mudar de tipo. |
-| Readers de Planos no principal 039 e reader self da Conta | Aberto | Readers somente leitura no principal interno; `units_with_override` só com cálculo comprovado. |
+| Reader self da Conta (039) | Aberto | Leitura somente do próprio usuário interno, por sessão autenticada e sem ID arbitrário. |
+| Reader de Planos comerciais no Principal (039) | Transferido para V1/V2 | Não executar na R14; preservar contrato e IDs como preparação futura. `units_with_override` só deve ser calculado quando o Owner abrir o escopo. |
 | Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
-| Auth: localhost na allowlist de redirect (R12-47) | Aberto | Configurar pelo CLI/painel; sem custo. |
+| Auth: localhost na allowlist de redirect (R12-47) | Transferido para Etapa 3 | Não executar na R14; pertence ao contrato futuro de recuperação/reset, com ambiente e prova próprios. |
 
 ## Itens da ADR 0038 — concluídos (2)
 
@@ -220,14 +223,16 @@ controlado, o contador vigente permanece E2E 142/199.
 | shell | 1 | `shell.switch-context` (pending-verification/not-applicable/flutter-only) |
 | units | 2 | `units.error` (pending-verification/local-green/pending-verification), `units.access-denied` (pending-verification/local-green/pending-verification) |
 
-## Decisões de escopo do Owner (14/09, ver `docs/agent/backlog.md`)
+## Decisões de escopo do Owner (14/09 e 15/09, ver `docs/agent/backlog.md`)
 
-Fora do MVP: `plans.assign`, Financeiro, `institutions.status`, `institutions.locations-map`, MFA ×3.
+Fora do MVP: operações de Planos comerciais (listar/criar/editar/arquivar/restaurar/
+atribuir/vincular/entitlements), `plans.assign`, Financeiro, `institutions.status`,
+`institutions.locations-map`, MFA ×3.
 V1/Etapa 3: Catálogo de UI. Formulários autosave (H11): V1 se for caro, salvo se >60% pronto.
-Etapa 3: 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
+Etapa 3: `auth.recover`/`auth.reset`; 3 instituições fictícias com hierarquia para o Owner verificar "Para você" (nome a rever).
 Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em 15/09: opção B + regra de pessoas) e OQ-034 Locais com mapa por imagem (confirmado em 15/09; substitui `institutions.locations-map`).
 
-**15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C, Bloco D completo com `localhost` no Auth). Duas sessões executam em paralelo; a coordenadora (Codex) atualiza este arquivo.
+**15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C e ordem original do Bloco D). Duas sessões executam em paralelo; a coordenadora (Codex) atualiza este arquivo. A decisão posterior da ADR 0039 transfere recuperação/reset de Auth e a allowlist desse fluxo para a Etapa 3.
 
 ## Como atualizar
 
