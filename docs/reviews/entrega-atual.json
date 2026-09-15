@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "18b4925d0e19a4d49cbc116509e1e14101425608",
+    "head": "abea633e02ff1ee29c51c2c8dfc330206b133911",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
