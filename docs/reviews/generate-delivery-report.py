@@ -179,6 +179,13 @@ def main() -> None:
     def metric(done: int, total: int) -> str:
         return f"{done}/{total} ({done / total * 100:.2f}%)"
 
+    def status_counts(field: str) -> dict[str, int]:
+        counts: dict[str, int] = {}
+        for action in actions:
+            value = action.get(field, "missing")
+            counts[value] = counts.get(value, 0) + 1
+        return dict(sorted(counts.items()))
+
     frontend_total = layers["frontendApplicable"]
     backend_total = layers["backendApplicable"]
     integrated_total = layers["integratedActiveApplicable"]
@@ -232,9 +239,14 @@ def main() -> None:
             "inheritedOriginIds": [f"H{i:02d}" for i in range(2, 29)],
             "inheritedOriginCount": 27,
             "inheritedStateSource": PENDENCIES,
-            "activeNonTerminalActionUnion": 78,
-            "nonTerminalByLayer": {"frontend": 64, "backend": 43, "integrated": 77},
-            "deferredPostMvpActionCount": 22,
+            "actionStatusCounts": {
+                "frontend": status_counts("frontendStatus"),
+                "backend": status_counts("backendStatus"),
+                "integrated": status_counts("integratedStatus"),
+            },
+            "deferredPostMvpActionCount": sum(
+                1 for action in actions if action.get("scope") == "deferred-post-mvp"
+            ),
             "excludedCompletedOwnerIds": sorted(EXCLUDED_COMPLETED_OWNER_IDS),
             "completedInR13OwnerIds": sorted(completed - EXCLUDED_COMPLETED_OWNER_IDS),
         },
