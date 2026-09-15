@@ -223,7 +223,10 @@ Tudo que não foi certificado fica destinado à R16:
 3. prova produtiva adicional do avatar da Conta em nova sessão;
 4. residual produtivo de `owner.r12-46`;
 5. aceite remoto de H10/H11;
-6. gates sem `action_id`, contrato e evidência;
+6. gates sem `action_id`, contrato e evidência; o delivery gate pós-push também
+   apontou inventário/disposição incompletos para `r14/bloco-e` e
+   `origin/r14/bloco-e`, commits exclusivos não classificados e ausência de
+   evidência de content review;
 7. demais bloqueios declarados neste handoff, incluindo a rota CDP literal
    quando o ambiente voltar a exigir essa evidência.
 
