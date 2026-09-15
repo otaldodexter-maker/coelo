@@ -1,10 +1,10 @@
 ---
 title: "R14 — fila única consolidada da Etapa 2"
-source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (SHA 7c5b3998c); R14-catalogo.md"
+source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 audience: "team"
 ---
 

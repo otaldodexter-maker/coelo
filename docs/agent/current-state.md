@@ -3,7 +3,7 @@ title: "Estado atual do trabalho do Coelo"
 source: "Owner em 2026-09-14; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md"
 status: "active"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 audience: "team"
 ---
 
@@ -22,8 +22,8 @@ audience: "team"
   Bloco A de `R14-pendencias.md` — ações que só precisam de E2E e fecham a tela
   (`circulars.attach`, `agenda.request`, `attendance.create`, `daily-routine.apply`,
   `acontece.create`, …); Cardápios vem no Bloco C.
-- Ao abrir a R14, antes de executar, explicar ao Owner de forma visual os temas
-  listados em `docs/agent/backlog.md` (decisões de 14/09) e colher as respostas.
+- Na retomada da R14, manter visíveis os temas listados em `docs/agent/backlog.md`
+  (decisões de 14/09); não reabrir decisões já registradas na ADR 0038.
 
 ## Fonte da fila atual
 
@@ -56,9 +56,9 @@ A cada fechamento de rodada:
 
 ## Fora do trabalho corrente
 
-Etapa 3, V1, V2, pós-MVP, históricos R01–R12 e artefatos de execução não são
+Etapa 3, V1, V2, pós-MVP, históricos R01–R13 e artefatos de execução não são
 trabalho corrente. Consulte [backlog.md](backlog.md) apenas quando a tarefa
 explicitamente tratar desses horizontes.
 
 Para uma tarefa explícita de limpeza, use o
-[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R13.
+[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R14.

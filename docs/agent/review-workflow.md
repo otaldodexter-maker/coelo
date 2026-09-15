@@ -3,7 +3,7 @@ title: "Roteamento de revisões e aceites Coelo"
 source: "AGENTS.md; .agents/skills/coelo-flutter-review/SKILL.md; .agents/skills/coelo-supabase/SKILL.md; .agents/skills/coelo-flutter-supabase-review/SKILL.md"
 status: "active"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 audience: "team"
 ---
 
@@ -19,7 +19,7 @@ O contrato do recorte contém objetivo, incluído, fora de escopo, ordem,
 critério de parada, evidências esperadas e tempo estimado. Uma auditoria
 documental não certifica runtime, persistência, RLS, reload ou E2E.
 
-Para R13, comece pelo estado atual e pelas pendências R13. Os grandes
+Para R14, comece pelo estado atual e pela fila única R14. Os grandes
 rastreadores em `docs/reviews` são detalhe de auditoria; os arquivos em
 `docs/reviews/archive` nunca são fila executável.
 

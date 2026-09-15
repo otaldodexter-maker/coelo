@@ -1,9 +1,9 @@
 ---
-title: "Etapa 2 — estado atual e fila vigente R13"
-source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; R13-pendencias.md; R13-owner-items-atual.json; R01–R12 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
-status: "active; fila vigente R13; R01–R12 históricos"
+title: "Etapa 2 — estado atual e fila vigente R14"
+source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; R14-pendencias.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
+status: "active; fila vigente R14; R01–R13 históricos"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 base: "dev"
 revision: "1f34b9dbfda5f94b98edbb154ce1841059df67bf"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
@@ -12,25 +12,23 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 # Etapa 2 — estado atual
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
-operacional vigente é a R13: 50 `owner.r12-*` foram transferidos da R12 e,
-após seis aceites `done` registrados em 14/09, 47 permanecem não terminais,
-além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e não volta
-para a fila. R01–R12 permanecem como fontes
+operacional vigente é a R14: os itens não terminais foram consolidados a partir
+da R13 e, após nove aceites `done` registrados até 14/09, 44 permanecem não
+terminais, além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e
+não volta para a fila. R01–R13 permanecem como fontes
 históricas; seus itens pendentes não devem continuar apontando para uma rodada
 anterior como destino executável.
 
 Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
 o último estado canônico por `action_id`; os 231 action IDs não ganham novos
-IDs pela transferência. A separação abaixo distingue a fila R13 das fontes
+IDs pela transferência. A separação abaixo distingue a fila R14 das fontes
 históricas e das 22 ações formalmente adiadas para pós-MVP.
 
-Detalhamento operacional: [`R13-prompt-execucao-20260914.md`](next-round/R13-prompt-execucao-20260914.md),
-[`R13-pendencias.md`](next-round/R13-pendencias.md), catálogo Owner derivado
-[`R13-owner-items-atual.json`](next-round/R13-owner-items-atual.json) e índice
-das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint mais recente
-define o primeiro gate da retomada.
+Detalhamento operacional: [`R14-pendencias.md`](next-round/R14-pendencias.md) e
+índice das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint final da
+R13 permanece apenas como proveniência do corte que abriu a R14.
 
-No snapshot por `action_id`, a R13 concentra 78 ações ativas com algum gate não
+No snapshot por `action_id`, a R14 concentra 78 ações ativas com algum gate não
 terminal (64 FE, 43 BE e 77 integradas; números por camada, não somáveis). As
 22 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
@@ -58,10 +56,10 @@ O valor `164/231` não é percentual de BE válido: sete ações não são
 aplicáveis ao backend. Da mesma forma, `144/231` é somente a métrica combinada
 E2E + flutter-only; para aceite integrado a base correta é `125/199`.
 
-## Fila vigente R13 — pendências herdadas
+## Fila vigente R14 — pendências herdadas
 
-O detalhe completo permanece na seção **Pendências R13 incorporadas de R01–R07**
-dos três rastreadores e no MD da R13. A tabela abaixo é o índice operacional mínimo;
+O detalhe completo permanece na fila única R14 e nas seções de auditoria dos três
+rastreadores. A tabela abaixo é o índice operacional mínimo;
 cada item continua `open`, `partial` ou dependente de decisão/prova até que o
 primeiro gate seja fechado.
 
@@ -117,9 +115,8 @@ não deve ser reaberto por esta organização documental.
 ## Rodadas preservadas
 
 O índice e o estado de cada rodada estão em
-[`next-round/RODADAS.md`](next-round/RODADAS.md). R01–R12 são as origens
-históricas dos itens incorporados. R13 é a fila vigente; R14 está apenas
-preparada e não foi iniciada.
+[`next-round/RODADAS.md`](next-round/RODADAS.md). R01–R13 são as origens
+históricas dos itens incorporados. R14 é a fila vigente; R15 não foi aberta.
 
 ## Fechamento documental
 

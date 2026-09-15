@@ -3,7 +3,7 @@ title: "Mapa de horizontes e pendências Coelo"
 source: "docs/agent/current-state.md; decisões e PRDs canônicos"
 status: "active"
 generated_at: "2026-09-14"
-updated_at: "2026-09-14"
+updated_at: "2026-09-15"
 audience: "team"
 ---
 
