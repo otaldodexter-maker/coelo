@@ -36,6 +36,20 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
 
+## Snapshot de execução da R14 — não certificado
+
+O corte publicado e os percentuais canônicos acima permanecem inalterados até
+que as sessões terminem suas fatias e a coordenadora aplique os deltas oficiais.
+No acompanhamento de 15/09, a Sessão C reportou Avaliações › Fechar/Reabrir
+validadas localmente e retomou Perfis de acesso; a Sessão D reportou contratos
+do espelho verdes para Conta (6/6), múltiplos registros de cuidado (6/6) e
+OQ-031 (11/11); a Sessão E aplicou a migration de Conta no espelho e iniciou a
+validação de Chat. São sinais de avanço, não novos estados certificados.
+
+O `504` de `child_safety_change_lifecycle` continua bloqueado. Qualquer prova
+local precisa ser seguida de evidência de rota real, commit, push, sincronização
+dos rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
+
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em

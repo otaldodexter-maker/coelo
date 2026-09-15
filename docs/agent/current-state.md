@@ -22,15 +22,21 @@ audience: "team"
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
   Owner: 15/53 concluídos e 38 abertos/parciais.
-- Próximo gate executável: Sessão 2 continua em Avaliações › Fechar/Reabrir,
-  usando a hierarquia autorizada e o mesmo diário já preparado. Depois seguem
-  Perfis de acesso, Segurança infantil e Formulários conforme a fila R14. O
-  contexto de Atividade da Assiduidade, a rotina observável e o 504 de
-  `child_safety_change_lifecycle` ficam registrados para a sobra da R15.
-- 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B), a
-  Sessão 2 ativa (C/D), e novas sessões C e E previstas em worktrees próprias;
-  a coordenadora Codex atualiza os MDs na pasta principal. Papéis, portas, fluxo
-  git e handoffs estão em `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
+- Observação de execução ainda não publicada: a Sessão C relata Avaliações
+  Fechar/Reabrir validadas localmente e retomou Perfis de acesso pelo alvo CDP
+  próprio; a Sessão D tem os contratos do espelho verdes (Conta 6/6,
+  múltiplos registros de cuidado 6/6 e OQ-031 11/11) e está partindo para a
+  rota real; a Sessão E aplicou a migration de Conta no espelho e segue para
+  Chat. Esses resultados ainda não alteram os números acima: faltam evidência
+  final, commit, push, reconciliação e gate.
+- Bloqueios conhecidos durante a execução: o `504` de
+  `child_safety_change_lifecycle` continua sem solução certificada; a Sessão C
+  deve provar identidade/sessão autenticada no alvo CDP antes de registrar nova
+  prova. O browser visível não é pré-requisito para o avanço automatizado.
+- 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B),
+  Sessões C, D e E ativas em worktrees próprias; a coordenadora Codex atualiza
+  os MDs na pasta principal. Papéis, portas, fluxo git e handoffs estão em
+  `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
   As worktrees R14 existentes permanecem protegidas até o fechamento da rodada.
   Não reabrir decisões já registradas nas ADRs atuais.
 - Decisão adicional do Owner em 15/09

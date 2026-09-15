@@ -22,6 +22,21 @@ Sessão 1 (Blocos A e B) e as provas de Cardápios publicadas pela Sessão 2. N�
 | E2E verificado ativo | 157 / 192 (81,77%) | denominador 192 após o Bloco B |
 | Owner items done | 15 / 53 (28,30%) | seis aceites novos da Sessão 1 sobre os nove anteriores |
 
+## Observação de execução — ainda não certificada no corte
+
+- **Sessão C:** Avaliações › Fechar/Reabrir passou a validação local e a sessão
+  retomou Perfis de acesso usando um alvo CDP próprio. A confirmação de URL,
+  identidade e sessão autenticada continua obrigatória antes de nova evidência.
+- **Sessão D:** contratos do espelho verdes — Conta 6/6, múltiplos registros de
+  alergias/orientações 6/6 e OQ-031 11/11. A prova da rota real ainda está em
+  execução; o limite defensivo de 100 continua sendo validado no backend.
+- **Sessão E:** migration da Conta aplicada no espelho com COMMIT sem erro;
+  Chat e as demais fatias autorizadas continuam em execução. O bloqueio
+  produtivo permanece intocado.
+
+Esses avanços são locais/provisórios e não mudam os quatro números certificados
+acima até haver commit, push, reconciliação dos rastreadores e gate.
+
 ## Delta desta coordenação
 
 - Bloco A fechado em 10/10: Circulares, Agenda, Assiduidade, Rotina, Acontece,
@@ -53,6 +68,5 @@ por ADR 0039.
 ## Estado de execução
 
 Sessão 1 está encerrada. Sessão 2 continua em `Coelo.worktrees/r14-cd`, branch
-`r14/bloco-cd`; as worktrees/branches R14 devem ser preservadas até o fechamento
-da rodada. Novas sessões C e E serão abertas em worktrees próprias, sem apagar
-as existentes.
+`r14/bloco-cd`; Sessões C e E também estão ativas em worktrees próprias. As
+worktrees/branches R14 devem ser preservadas até o fechamento da rodada.

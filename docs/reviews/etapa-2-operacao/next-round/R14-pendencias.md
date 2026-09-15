@@ -48,7 +48,9 @@ autorizado e não bloqueiam a execução do MVP.
 
 **Bloco C — uma tela com SQL pequeno + rota real:**
 12. Cardápios (`meal-plans.create/edit/model-create/model-edit/publish`) → FE/BE/E2E provados pela Sessão 2; `owner.r12-34/35/36/37` aguardam aceite central, sem repetir a prova.
-13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — próxima prova da Sessão 2.
+13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — validação local da
+    Sessão C passou os scripts oficiais; aguarda commit, push, reconciliação e
+    confirmação central antes de sair da fila.
 14. Perfis de acesso (`access-profiles.create/edit/assign`) + `owner.r12-19` a `27`.
 15. Segurança infantil (`child-safety.child/edit/suspend`, BE done) — sem r12-18.
 16. Arquivos de Formulários › Upload + Resolver (só E2E); depois Expirar/Excluir (BE + FE).
