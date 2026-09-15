@@ -42,3 +42,13 @@ Deno.test("normalizes optional video duration before the RPC call", async () => 
   const code = await source();
   assertEquals(code.includes("durationSeconds: body.duration_seconds ?? null"), true);
 });
+
+Deno.test("removal is an authorized RPC followed by server-side purge", async () => {
+  const code = await source();
+  assertEquals(code.includes('body.action === "remove"'), true);
+  assertEquals(code.includes("remove_now_publication"), true);
+  assertEquals(code.includes("claim_now_media_purge_jobs"), true);
+  assertEquals(code.includes("record_now_media_purge_result"), true);
+  assertEquals(code.includes("transportFor(dependencies, bucket).delete"), true);
+  assertEquals(code.includes("object_key: descriptor"), false);
+});
