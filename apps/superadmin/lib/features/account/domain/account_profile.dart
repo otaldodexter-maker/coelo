@@ -16,6 +16,7 @@ class AccountAvatar {
     required this.initials,
     required this.backgroundColor,
     this.photoBytes,
+    this.photoAssetId,
     this.photoScale = 1,
     this.photoOffset = Offset.zero,
   });
@@ -24,6 +25,9 @@ class AccountAvatar {
   final String initials;
   final Color backgroundColor;
   final Uint8List? photoBytes;
+
+  /// Opaque server-issued catalog identity. It grants no read authority.
+  final String? photoAssetId;
   final double photoScale;
   final Offset photoOffset;
 
@@ -81,7 +85,9 @@ class AccountAvatar {
     String? initials,
     Color? backgroundColor,
     Uint8List? photoBytes,
+    String? photoAssetId,
     bool clearPhoto = false,
+    bool clearPhotoAsset = false,
     double? photoScale,
     Offset? photoOffset,
   }) {
@@ -90,6 +96,7 @@ class AccountAvatar {
       initials: initials ?? this.initials,
       backgroundColor: backgroundColor ?? this.backgroundColor,
       photoBytes: clearPhoto ? null : photoBytes ?? this.photoBytes,
+      photoAssetId: clearPhoto || clearPhotoAsset ? null : photoAssetId ?? this.photoAssetId,
       photoScale: photoScale ?? this.photoScale,
       photoOffset: photoOffset ?? this.photoOffset,
     );

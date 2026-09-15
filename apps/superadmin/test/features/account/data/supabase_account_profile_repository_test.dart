@@ -1,8 +1,10 @@
 import 'dart:convert';
+import 'dart:typed_data';
 
 import 'package:coelo_superadmin/app/activity/superadmin_activity.dart';
 import 'package:coelo_superadmin/features/account/data/account_profile_repository.dart';
 import 'package:coelo_superadmin/features/account/data/supabase_account_profile_repository.dart';
+import 'package:coelo_superadmin/features/account/domain/account_profile.dart';
 import 'package:coelo_superadmin/features/account/presentation/account_controller.dart';
 import 'package:coelo_superadmin/features/account/presentation/screens/profile_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
@@ -38,6 +40,16 @@ Map<String, Object?> response(int version) => {
   },
 };
 
+Map<String, Object?> photoResponse(int version) => {
+  ...response(version),
+  'avatar': {
+    'mode': 'photo',
+    'asset_id': '8d200000-0000-4000-8000-000000000901',
+    'initials': 'CQ',
+    'background_color': '#336699',
+  },
+};
+
 void main() {
   test('negotiates persisted color and resets contract on older account load', () async {
     var version = 2;
@@ -67,6 +79,182 @@ void main() {
     await repository.save(profile);
     expect(requests.last.url.path, endsWith('/superadmin_account_profile_save'));
     expect(jsonDecode(requests.last.body), isNot(contains('p_avatar_background_color')));
+  });
+
+  test('projects a finalized private avatar asset as a photo after reload', () async {
+    late final MockClient mediaClient;
+    mediaClient = MockClient((request) async {
+      if (request.url.path.endsWith('/functions/v1/account-media')) {
+        return Response(
+          jsonEncode({
+            'asset_id': '8d200000-0000-4000-8000-000000000901',
+            'signed_url': 'https://r2.coelo.test/read',
+            'expires_in': 120,
+          }),
+          200,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      if (request.url.host == 'r2.coelo.test') return Response('', 200, request: request);
+      return Response(
+        jsonEncode(photoResponse(2)),
+        200,
+        request: request,
+        headers: {'content-type': 'application/json'},
+      );
+    });
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'synthetic-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: mediaClient,
+    );
+    addTearDown(client.dispose);
+
+    final profile = await SupabaseAccountProfileRepository(client, mediaClient: mediaClient).load();
+
+    expect(profile.avatar.mode, AccountAvatarMode.photo);
+    expect(profile.avatar.photoAssetId, '8d200000-0000-4000-8000-000000000901');
+  });
+
+  test('uploads a new avatar through the private media gateway before saving', () async {
+    final requests = <Request>[];
+    late final MockClient mediaClient;
+    mediaClient = MockClient((request) async {
+      requests.add(request);
+      if (request.url.path.endsWith('/functions/v1/account-media')) {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        return Response(
+          jsonEncode(switch (body['action']) {
+            'prepare' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000902',
+              'object_key': 'people/owner/avatar/902/original/object.png',
+              'upload_url': 'https://r2.coelo.test/upload',
+              'required_headers': {'content-type': 'image/png'},
+              'expires_at': DateTime.now()
+                  .toUtc()
+                  .add(const Duration(minutes: 5))
+                  .toIso8601String(),
+              'upload_status': 'draft',
+            },
+            'finalize' => {'asset_id': '8d200000-0000-4000-8000-000000000902', 'status': 'active'},
+            'read' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000902',
+              'signed_url': 'https://r2.coelo.test/read',
+              'expires_in': 120,
+            },
+            _ => <String, Object?>{},
+          }),
+          200,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      if (request.url.host == 'r2.coelo.test') {
+        return Response('', 200, request: request);
+      }
+      if (request.url.path.endsWith('/superadmin_account_profile_save_v2')) {
+        return Response(
+          jsonEncode(photoResponse(2)),
+          200,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      return Response(jsonEncode(response(2)), 200, request: request);
+    });
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'synthetic-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: mediaClient,
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAccountProfileRepository(client, mediaClient: mediaClient);
+    await repository.load();
+    final profile = AccountProfile.prototype().copyWith(
+      avatar: AccountAvatar(
+        mode: AccountAvatarMode.photo,
+        initials: 'OC',
+        backgroundColor: AccountAvatar.defaultBackgroundColor,
+        photoBytes: Uint8List.fromList(const [1, 2, 3]),
+      ),
+    );
+
+    final saved = await repository.save(profile);
+
+    expect(
+      requests
+          .where((request) => request.url.path.endsWith('/functions/v1/account-media'))
+          .map((request) => (jsonDecode(request.body) as Map)['action']),
+      containsAllInOrder(['prepare', 'finalize', 'read']),
+    );
+    expect(saved.avatar.mode, AccountAvatarMode.photo);
+    expect(saved.avatar.photoAssetId, '8d200000-0000-4000-8000-000000000901');
+  });
+
+  test('removes the previously loaded private avatar before saving initials', () async {
+    final actions = <String>[];
+    late final MockClient mediaClient;
+    mediaClient = MockClient((request) async {
+      if (request.url.path.endsWith('/functions/v1/account-media')) {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        actions.add(body['action'] as String);
+        return Response(
+          jsonEncode(switch (body['action']) {
+            'read' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000901',
+              'signed_url': 'https://r2.coelo.test/read',
+              'expires_in': 120,
+            },
+            'remove' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000901',
+              'status': 'revoked',
+              'object_key': 'people/owner/avatar/901/original/object.png',
+            },
+            _ => <String, Object?>{},
+          }),
+          200,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      if (request.url.host == 'r2.coelo.test') return Response('', 200, request: request);
+      return Response(
+        jsonEncode(
+          request.url.path.endsWith('/superadmin_account_profile_get')
+              ? photoResponse(2)
+              : response(2),
+        ),
+        200,
+        request: request,
+        headers: {'content-type': 'application/json'},
+      );
+    });
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'synthetic-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: mediaClient,
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAccountProfileRepository(client, mediaClient: mediaClient);
+    await repository.load();
+
+    final saved = await repository.save(
+      AccountProfile.prototype().copyWith(
+        avatar: AccountAvatar(
+          mode: AccountAvatarMode.initials,
+          initials: 'OC',
+          backgroundColor: AccountAvatar.defaultBackgroundColor,
+        ),
+      ),
+    );
+
+    expect(actions, containsAllInOrder(['read', 'remove']));
+    expect(saved.avatar.mode, AccountAvatarMode.initials);
+    expect(saved.avatar.photoAssetId, isNull);
   });
 
   testWidgets('access groups and search use returned module and institution', (tester) async {

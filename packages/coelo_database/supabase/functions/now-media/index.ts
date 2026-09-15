@@ -134,6 +134,28 @@ function secret(dependencies: NowMediaDependencies) {
   return value;
 }
 
+function removalEnvelope(body: Json) {
+  if (
+    typeof body.request_id !== "string" ||
+    !/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      body.request_id,
+    ) ||
+    typeof body.publication_id !== "string" ||
+    typeof body.expected_version !== "number" ||
+    !Number.isSafeInteger(body.expected_version) ||
+    body.expected_version < 1 ||
+    (body.reason !== undefined &&
+      body.reason !== null &&
+      (typeof body.reason !== "string" || body.reason.length > 280))
+  ) throw new Error("invalid_request");
+  return {
+    requestId: body.request_id,
+    publicationId: body.publication_id,
+    expectedVersion: body.expected_version,
+    reason: typeof body.reason === "string" ? body.reason : null,
+  };
+}
+
 function uploadEnvelope(body: Json, dependencies: NowMediaDependencies) {
   if (
     typeof body.request_id !== "string" || body.request_id.length < 1 ||
@@ -158,7 +180,7 @@ function uploadEnvelope(body: Json, dependencies: NowMediaDependencies) {
     name: body.name,
     mimeType: body.mime_type,
     sizeBytes: body.size_bytes,
-    durationSeconds: body.duration_seconds,
+    durationSeconds: body.duration_seconds ?? null,
     rightsConfirmed: body.rights_confirmed === true,
   };
 }
@@ -399,6 +421,85 @@ export async function handleNowMediaRequest(
       });
       if (finalized.error) throw new Error("asset_finalize_failed");
       return respond(origin, 200, finalized.data as Json);
+    }
+
+    if (body.action === "remove") {
+      const input = removalEnvelope(body);
+      const removed = await user.rpc("remove_now_publication", {
+        p_request_id: input.requestId,
+        p_publication_id: input.publicationId,
+        p_expected_version: input.expectedVersion,
+        p_reason: input.reason,
+      });
+      if (removed.error) {
+        const conflict = removed.error.code === "40001" ||
+          removed.error.message?.includes("expected_version_conflict");
+        return respond(origin, conflict ? 409 : 422, {
+          error: conflict ? "expected_version_conflict" : "publication_remove_denied",
+        });
+      }
+      const result = removed.data as Json;
+      const expectedJobs = Number(result.purge_job_count ?? 0);
+      let purgedCount = 0;
+      let failedCount = 0;
+      const claimed = await admin.rpc("claim_now_media_purge_jobs", {
+        p_worker: `now-media:${crypto.randomUUID()}`,
+        p_limit: 100,
+      });
+      if (!claimed.error && Array.isArray(claimed.data)) {
+        for (const value of claimed.data) {
+          const job = value as Json;
+          const bucket = job.bucket_id;
+          const objectKey = job.object_key;
+          let success = false;
+          if (typeof bucket === "string" && typeof objectKey === "string") {
+            try {
+              if (job.storage_provider === "r2") {
+                await transportFor(dependencies, bucket).delete(objectKey)
+                  .catch(opaqueTransport);
+              } else if (job.storage_provider === "supabase_mvp") {
+                const deleted = await admin.storage.from(bucket).remove([objectKey]);
+                if (deleted.error) throw new Error("purge_failed");
+              } else {
+                throw new Error("purge_failed");
+              }
+              success = true;
+            } catch (_) {
+              success = false;
+            }
+          }
+          if (success) purgedCount += 1;
+          else failedCount += 1;
+          const parsedJobId = typeof job.job_id === "number"
+            ? job.job_id
+            : typeof job.job_id === "string" && /^\d+$/.test(job.job_id)
+            ? Number(job.job_id)
+            : null;
+          if (parsedJobId !== null && Number.isSafeInteger(parsedJobId)) {
+            await admin.rpc("record_now_media_purge_result", {
+              p_job_id: parsedJobId,
+              p_success: success,
+              p_error: success ? null : "purge_failed",
+            });
+          }
+        }
+      }
+      const purgeStatus = expectedJobs === 0
+        ? "not_applicable"
+        : failedCount > 0 || claimed.error
+        ? "queued"
+        : purgedCount === expectedJobs
+        ? "purged"
+        : "queued";
+      return respond(origin, 200, {
+        id: result.id,
+        status: result.status,
+        removed_at: result.removed_at,
+        management_version: result.management_version,
+        purge_status: purgeStatus,
+        purged_count: purgedCount,
+        failed_count: failedCount,
+      });
     }
 
     return respond(origin, 400, { error: "invalid_request" });

@@ -12,6 +12,8 @@ Deno.test("chat gateway autentica o usuario, nunca usa Supabase Storage nem Stre
   assertEquals(source.includes("video/mp4"), true);
   assertEquals(source.includes("presignPut"), true);
   assertEquals(source.includes("r2.head("), true);
+  assertEquals(source.includes("asset_id: prepared.attachment_id"), true);
+  assertEquals(source.includes("asset_id: descriptor.attachment_id"), true);
 });
 
 Deno.test("CORS por allowlist e expire so com segredo do worker", async () => {
@@ -34,4 +36,5 @@ Deno.test("finalize mede os bytes e usa ticket do usuario com RPC service_role",
 Deno.test("prepare preserva o status autoritativo do anexo", async () => {
   const source = await Deno.readTextFile(new URL("./index.ts", import.meta.url));
   assertEquals(source.includes("upload_status: prepared.upload_status"), true);
+  assertEquals(source.includes("asset_id: result.attachment_id"), true);
 });
