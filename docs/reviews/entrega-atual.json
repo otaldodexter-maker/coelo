@@ -8,8 +8,8 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "acb8411222b8a5d9113d5aa14b80f3bc4158656c",
-    "worktree": "dirty-until-this-documentation-commit"
+    "head": "6b40421a26b8e8a8fa7618326ea224ea5e227d28",
+    "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
@@ -2285,7 +2285,7 @@
   "deployment": {
     "status": "pending",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-    "reason": "Os lotes SQL 63–69 e provas do executor permanecem registrados; esta rodada publicou documentação, sem novo deploy web, Edge ou Cloudflare."
+    "reason": "A Sessão D aplicou em produção as migrations de coleções de cuidado, OQ-031 e Account self; a Sessão E ainda tem deploy/prova produtiva de mídia em andamento. O relatório não autoriza novo deploy por si só."
   },
   "r14Status": {
     "round": "R14",
@@ -2353,9 +2353,12 @@
       "H17",
       "OQ-028",
       "anexos com limite 10",
-      "H21 backend"
+      "H21 backend",
+      "D produção: coleções de cuidado (pgTAP 6/6)",
+      "D produção: OQ-031 (pgTAP 11/11)",
+      "D produção: Account self (pgTAP 6/6)"
     ],
-    "openFirstGate": "Circulares › Anexos (circulars.attach)",
+    "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
       "frontendVerified": "184/231 (79.65%)",
       "frontendLocalGreen": "13/231 (5.63%)",

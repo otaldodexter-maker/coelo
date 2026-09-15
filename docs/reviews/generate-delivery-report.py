@@ -239,7 +239,7 @@ def main() -> None:
             "nextRound": "R15 not opened",
             "branch": git("branch", "--show-current"),
             "head": git("rev-parse", "HEAD"),
-            "worktree": "dirty-until-this-documentation-commit",
+            "worktree": "source checkout at report generation; report commit follows",
         },
         "sources": {
             "currentState": CURRENT_STATE,
@@ -291,7 +291,7 @@ def main() -> None:
         "deployment": {
             "status": "pending",
             "evidence": CHECKPOINT,
-            "reason": "Os lotes SQL 63–69 e provas do executor permanecem registrados; esta rodada publicou documentação, sem novo deploy web, Edge ou Cloudflare.",
+            "reason": "A Sessão D aplicou em produção as migrations de coleções de cuidado, OQ-031 e Account self; a Sessão E ainda tem deploy/prova produtiva de mídia em andamento. O relatório não autoriza novo deploy por si só.",
         },
         "r14Status": {
             "round": "R14",
@@ -299,8 +299,17 @@ def main() -> None:
             "source": CHECKPOINT,
             "completedOwnerItems": sorted(completed),
             "openOwnerItems": sorted(pending),
-            "completedGates": ["H06", "H17", "OQ-028", "anexos com limite 10", "H21 backend"],
-            "openFirstGate": "Circulares › Anexos (circulars.attach)",
+            "completedGates": [
+                "H06",
+                "H17",
+                "OQ-028",
+                "anexos com limite 10",
+                "H21 backend",
+                "D produção: coleções de cuidado (pgTAP 6/6)",
+                "D produção: OQ-031 (pgTAP 11/11)",
+                "D produção: Account self (pgTAP 6/6)",
+            ],
+            "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
             "metrics": metrics,
             "deployment": "none for this documentation reconciliation",
             "memory": "no-op",
