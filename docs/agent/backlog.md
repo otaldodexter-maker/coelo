@@ -29,8 +29,11 @@ Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
 - **Execução paralela:** duas sessões executoras (Blocos A–B e C–D) em worktrees
   próprias com push para `dev` por rebase; a sessão do Codex coordena e atualiza os MDs.
 - **Bloco B autorizado:** `plans.assign`, `institutions.status`,
-  `institutions.locations-map` e `catalog.*` (4) saem do ativo (`deferred-post-mvp`);
-  E2E ativo 199 → 192. FE e BE não mudam de denominador. MFA já era gate formal.
+  `institutions.locations-map` e `catalog.*` (4) devem sair do ativo
+  (`deferred-post-mvp`); o alvo é E2E ativo 199 → 192. Esta decisão ainda não foi
+  aplicada ao inventário certificado neste SHA: até a execução controlada do
+  delta, o estado vigente continua E2E 137/199. FE e BE não mudam de denominador;
+  MFA já era gate formal.
 - **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
 - **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou
   suspende por período) → spec de ciclo de vida na R15.
@@ -45,8 +48,9 @@ Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
 
 - **Fora do MVP:** `plans.assign` (Planos › Atribuir), qualquer módulo
   **Financeiro**, `institutions.status`, `institutions.locations-map`,
-  `auth/account/internal-users.mfa` (gate formal). Só precisam ser marcados
-  como tal no inventário (reclassificação a autorizar na abertura da R14).
+  `auth/account/internal-users.mfa` (gate formal). A decisão de escopo está
+  registrada; a aplicação do delta aos sete action_ids aguarda execução
+  controlada e evidência, sem alterar estados certificados por inferência.
 - **V1 ou Etapa 3 (a definir):** Catálogo de UI (`catalog.list/validate/sync/
   publish`) — tela do catálogo `coelo-ui`; não é MVP.
 - **Formulários autosave (H11):** se der muito trabalho, vai para V1; se já

@@ -88,11 +88,13 @@ paralela; os handoffs das sessões passam a existir nesse momento.
 ## Decisões do Owner de 15/09/2026 (artefato 89AVWHKEnq5hrvYN6SFv6M)
 
 1. **Worktrees separadas** para as duas sessões (recria `Coelo.worktrees`); push para `dev` por rebase.
-2. **Bloco B**: sete ações `mvp` → `deferred-post-mvp` — `plans.assign`, `institutions.status`,
-   `institutions.locations-map`, `catalog.list`, `catalog.validate`, `catalog.sync`,
-   `catalog.publish` (BE e E2E = `deferred-post-mvp`; FE fica como está). MFA ×3 já está em
-   `gate-formal-mvp`; sem mudança. E2E ativo 199 → 192; FE 231 e BE 224 não mudam.
-   `apply-tracker-delta.cjs` ganha o campo opcional `escopo` para gravar `scope`.
+2. **Bloco B**: decisão autorizada para sete ações `mvp` → `deferred-post-mvp` — `plans.assign`, `institutions.status`,
+  `institutions.locations-map`, `catalog.list`, `catalog.validate`, `catalog.sync`,
+  `catalog.publish` (BE e E2E = `deferred-post-mvp`; FE fica como está). MFA ×3 já está em
+  `gate-formal-mvp`; sem mudança. O alvo é E2E ativo 199 → 192; FE 231 e BE 224 não
+  mudam. Neste corte, o inventário ainda está em 137/199; a reclassificação só vale
+  como estado corrente depois de delta controlado e evidência publicada.
+  `apply-tracker-delta.cjs` ganha o campo opcional `escopo` para gravar `scope`.
 3. **Catálogo de UI**: registrar "V1 ou Etapa 3 (a definir)".
 4. **OQ-033 = B** (exclusão real só sem vínculo/auditoria; lógica nos demais) + regra de pessoas:
    instituição/unidade não excluem pessoas, só **desvinculam**; a pessoa pertence ao app e só o

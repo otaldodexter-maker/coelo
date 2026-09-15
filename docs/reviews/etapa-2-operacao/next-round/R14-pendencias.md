@@ -34,7 +34,9 @@ BE 164/224 (73,21%), E2E 137/199 (68,84%), Owner 9/53 (16,98%).
 9. Chat › Criar grupo (`chat.create-group`).
 10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
 
-**Bloco B — reclassificação autorizada pelo Owner em 15/09 (só o E2E ativo muda: 199 → 192; FE 231 e BE 224 ficam):**
+**Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; FE 231 e BE 224 ficam):**
+O alvo ainda não foi aplicado ao inventário certificado neste corte; até o delta
+controlado, os contadores vigentes permanecem E2E 137/199.
 11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
     → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
     Fecha Planos 4/4 e Usuários internos 4/4.
