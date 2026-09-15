@@ -1,0 +1,80 @@
+[
+  {
+    "action_id": "assessments.close",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R14 S3: RPC de fechamento exercitada pela rota real em produção no diário autorizado; o teste SQL do espelho parou por drift de privilégios/fixture, sem mascaramento e sem SQL de produção.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 S3: rota real no mesmo diário d2c945d8; envio, revisão com justificativa auditada, hierarquia instituição/unidade/turma/período preservada e sem duplicação.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  },
+  {
+    "action_id": "assessments.close",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 S3: fechamento pela tela real, diálogo de revisão, histórico com versão 8/ator auditado e negativa de UUID inexistente; build e testes direcionados PASS.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "backend",
+    "estado_proposto": "done",
+    "delta": "R14 S3: RPC de reabertura exercitada pela rota real em produção no diário autorizado; o teste SQL do espelho parou por drift de privilégios/fixture, sem mascaramento e sem SQL de produção.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "frontend",
+    "estado_proposto": "verified",
+    "delta": "R14 S3: reabertura do mesmo diário pela tela real, justificativa obrigatória auditada, histórico preservado e estado confirmado após reload.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  },
+  {
+    "action_id": "assessments.reopen",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R14 S3: devolução ao professor confirmada na rota real no mesmo diário, versão 9/ator auditado após reload e deep-link inválido fail-closed.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+      "revision": "9c4e97c23",
+      "environment": "producao",
+      "recordedAt": "2026-09-15T12:46:00-03:00"
+    }
+  }
+]
