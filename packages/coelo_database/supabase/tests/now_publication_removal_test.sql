@@ -1,7 +1,7 @@
 begin;
 create extension if not exists pgtap with schema extensions;
 set local search_path = extensions, public;
-select extensions.plan(15);
+select extensions.plan(19);
 
 select extensions.has_type('public', 'now_publication_status', 'the Agora status type exists');
 select ok(
@@ -59,6 +59,29 @@ select ok(
     pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
   )>0,
   'the removal RPC checks the official action capability'
+);
+select ok(
+  position('target.institution_id' in
+    pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
+  )>0
+  and position('app_private.now_actor' in
+    pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
+  )>0,
+  'tenant and contextual actor are resolved from the target on the server'
+);
+select ok(
+  position('select * into actor' in
+    pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
+  ) < position('update public.now_publications' in
+    pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
+  ),
+  'authorization is evaluated before the removal mutation'
+);
+select ok(
+  position('now_remove_denied' in
+    pg_get_functiondef('public.remove_now_publication(uuid,uuid,bigint,text)'::regprocedure)
+  )>0,
+  'unknown or inaccessible publications use a non-enumerating denial'
 );
 select ok(
   position('removed_at' in
