@@ -1135,36 +1135,76 @@
       "family": "units",
       "screen": "Unidades / Erro",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
-      "fe": "Revalidar o aceite específico desta ação: Falhar sem sucesso falso, mensagem clara, criar quando permitido e retry acessível. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
-      "be": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R14 S1: erro de transporte real pela tela + retry recuperando dados de producao; negativa 403 distinta.",
+      "fe": "R14 S1 rota real: RPC bloqueada por CDP -> painel Nao foi possivel carregar; Recarregar apos desbloqueio recupera a unidade real.",
+      "be": "R14 S1: falha de transporte e envelope invalido caem em unavailable (fail-closed); negacao 403 permanece denied.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        }
+      }
     },
     {
       "id": "units.access-denied",
       "family": "units",
       "screen": "Unidades / Acesso negado",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
-      "fe": "Revalidar o aceite específico desta ação: Estado final negado em 375 px/200% sem dados ou ações, mensagem semântica e bounds válidos; ainda exigir pré-resposta, success→revogação, foco/teclado, 768–1440, tenant A/B, link direto e E2E. C04mediu composição Unavailable; status viaja no save genérico sem transição própria. Mapa/cópia/agenda ainda parciais.",
-      "be": "R04: 13 RPCs de Unidades (160000, lote 1) e a ponte de ator (220400, lote 10) em producao: qa-r03 deixa de ser negado por current_person_id; superadmin_unit_detail_v2 (180300, 31/31) no lote 10. Rota real por action_id pendente.",
-      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R14 S1: negativa real do servidor renderizada pela tela + reload; nenhum dado vazado.",
+      "fe": "R14 S1 rota real: uuid inexistente -> painel Acesso nao autorizado sem dado; reload mantem.",
+      "be": "R14 S1: superadmin_unit_detail_v2 devolve SAI_PERMISSION_DENIED 403 em producao para id inexistente/fora de escopo (mesma negativa, sem enumeracao); pgTAP 31/31.",
+      "evidence": "apps/superadmin/lib/core/config/superadmin_auth_scope.dart; evidence/etapa-2/estruturas/2026-09-07-detail-logout-followup.md; Fechamento R01 C04/r61; C04estado47/r61; patches/commits preservados; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited / fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T05:41:00-03:00"
+      "lastEvidenceAt": "2026-09-09T05:41:00-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+          "revision": "3f3579c54",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:35:00-03:00"
+        }
+      }
     },
     {
       "id": "units.reload",
@@ -9244,7 +9284,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T13:46:03.857Z",
+  "updatedAt": "2026-09-15T13:49:29.656Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

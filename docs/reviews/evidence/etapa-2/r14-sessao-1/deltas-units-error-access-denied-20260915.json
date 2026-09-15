@@ -1,0 +1,80 @@
+[
+ {
+  "action_id": "units.access-denied",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: uuid inexistente -> painel Acesso nao autorizado sem dado; reload mantem.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.access-denied",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R14 S1: superadmin_unit_detail_v2 devolve SAI_PERMISSION_DENIED 403 em producao para id inexistente/fora de escopo (mesma negativa, sem enumeracao); pgTAP 31/31.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.access-denied",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: negativa real do servidor renderizada pela tela + reload; nenhum dado vazado.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.error",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: RPC bloqueada por CDP -> painel Nao foi possivel carregar; Recarregar apos desbloqueio recupera a unidade real.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.error",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R14 S1: falha de transporte e envelope invalido caem em unavailable (fail-closed); negacao 403 permanece denied.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ },
+ {
+  "action_id": "units.error",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: erro de transporte real pela tela + retry recuperando dados de producao; negativa 403 distinta.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/units-error-access-denied-20260915.md",
+   "revision": "3f3579c54",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:35:00-03:00"
+  }
+ }
+]

@@ -19,7 +19,6 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | Tela | action_ids | Desde |
 |---|---|---|
 | Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC) | invites.list, invites.resend | 2026-09-15 |
-| Unidades › Erro + Acesso negado | units.error, units.access-denied | 2026-09-15 |
 
 ## Fatias entregues
 
@@ -32,7 +31,8 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 821e18b11 | acontece.create FE verified, E2E verified-e2e (Acontece 4/4) | — | r14-sessao-1/acontece-create-20260915.md |
 | 8b99d9a06 | shell.switch-context FE verified (flutter-only; Shell 5/5) | — | r14-sessao-1/shell-switch-context-20260915.md |
 | d5f8bbe70 | activities.list + activities.publish FE verified, E2E verified-e2e (Atividades 7/7); correção FE em supabase_activity_command_repository.dart (publish chega ao servidor) | owner.r12-03 done | r14-sessao-1/activities-list-publish-20260915.md |
-| (próximo) | chat.create-group E2E verified-e2e | — | r14-sessao-1/chat-create-group-20260915.md |
+| 3f3579c54 | chat.create-group E2E verified-e2e | — | r14-sessao-1/chat-create-group-20260915.md |
+| (próximo) | units.error + units.access-denied FE verified, BE done, E2E verified-e2e (Unidades 10/10) | — | r14-sessao-1/units-error-access-denied-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -48,4 +48,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 172/231, BE 164/224, E2E 145/199, Owner 11/53 (após chat.create-group).
+FE 174/231, BE 166/224, E2E 147/199, Owner 11/53 (após units.error/access-denied).
