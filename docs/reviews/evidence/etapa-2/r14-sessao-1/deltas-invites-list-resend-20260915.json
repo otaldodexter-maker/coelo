@@ -1,0 +1,54 @@
+[
+ {
+  "action_id": "invites.list",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: tabela-only com busca, filtros Status/Canal, paginacao, Novo convite e acoes por linha; reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+   "revision": "b5ebd527a",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "invites.list",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: directory_v2 real pela tela com filtro Pendente/Expirado + reload; escopo platform.invites.manage.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+   "revision": "b5ebd527a",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "invites.resend",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S1 rota real: Reenviar convite so no expirado real, dialogo Novo link do convite (uso unico), reload mostra Pendente renovado.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+   "revision": "b5ebd527a",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:45:00-03:00"
+  }
+ },
+ {
+  "action_id": "invites.resend",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S1: resend_v2 em producao pela tela (f1eb1cf7 v1->2, +48h) + reload + negativas SAI_INVALID_ARGUMENT (vigente/revogado) e SAI_CONCURRENT_CHANGE; sem SMTP.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+   "revision": "b5ebd527a",
+   "environment": "producao",
+   "recordedAt": "2026-09-15T11:45:00-03:00"
+  }
+ }
+]

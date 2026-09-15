@@ -18,7 +18,6 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 | Tela | action_ids | Desde |
 |---|---|---|
-| Convites › Lista + Reenviar (aguardando convite f1eb1cf7 expirar às 14:39 UTC / 11:39 BRT) | invites.list, invites.resend | 2026-09-15 |
 | Perfis de acesso (folga do Bloco C; BE done, sem SQL) | access-profiles.create, access-profiles.edit, access-profiles.assign (owner.r12-20 a 27) | 2026-09-15 |
 
 ## Fatias entregues
@@ -38,6 +37,7 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 | 169bab03c | Bloco B (2/2): plans.assign, institutions.status, institutions.locations-map, catalog.list/validate/sync/publish → BE e E2E `deferred-post-mvp`, scope `deferred-post-mvp` (E2E ativo 199 → 192; FE 231/BE 224 iguais) | — | r14-sessao-1/deltas-bloco-b-reclassificacao-20260915.json; R14-execucao-paralela.md |
 | 98b768526 | child-safety.child FE verified, E2E verified-e2e; child-safety.suspend E2E blocked-backend (504) | r12-12, r12-14 done; r12-15 partial | r14-sessao-1/child-safety-child-20260915.md |
 | cad79dd35 | forms.upload + forms.resolve-file FE verified, E2E verified-e2e | — | r14-sessao-1/forms-upload-resolve-20260915.md |
+| (próximo) | invites.list + invites.resend FE verified, E2E verified-e2e (Convites 5/5) — **Bloco A 10/10 fechado** | owner.r12-44, r12-45 done | r14-sessao-1/invites-list-resend-20260915.md |
 
 ## Avisos para a outra sessão
 
@@ -56,4 +56,4 @@ Só a Sessão 1 escreve aqui. Cada fatia provada vai para `dev` por rebase + pus
 
 ## Contadores
 
-FE 177/231, BE 166/224, E2E 150/192, Owner 13/53 (após forms.upload/resolve-file).
+FE 179/231, BE 166/224, E2E 152/192, Owner 15/53 (após invites.list/resend — Bloco A fechado).

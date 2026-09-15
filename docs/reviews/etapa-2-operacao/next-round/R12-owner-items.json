@@ -853,16 +853,16 @@
   },
   {
     "id": "owner.r12-44",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "invites.list"
     ],
-    "fe": "FE local-green: tabela-only, cards/toggle removidos e busca/filtros/paginação/Novo convite preservados.",
-    "be": "Contrato preservado; nenhum envio/reenvio executado.",
-    "e2e": "Pending-verification: composição mudou e rota normal/reload/escopo precisam de nova prova.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Abrir rota normal QA, conferir tabela responsiva, busca/filtros/paginação/ações por linha, reload e negativa cross-tenant; não certificar por fixture.",
+    "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela-only, busca/filtros/paginação/Novo convite/ações por linha, reload; convite real expirado e renovado na mesma tabela.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -872,16 +872,16 @@
   },
   {
     "id": "owner.r12-45",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "invites.resend"
     ],
-    "fe": "FE local-green: `Reenviar convite` já encontrável na linha/detalhe expirado, com guards e recibo local.",
-    "be": "RPC v2 e contrato preservados; nenhum envio real.",
-    "e2e": "Pending-verification: falta convite expirado real, recibo, reload e escopo.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Pela rota autorizada, preparar/localizar convite expirado permitido, reenviar uma vez, provar recibo/link de uso único, reload e negativa cross-tenant; não simular SMTP/Admin API.",
+    "nextGate": "Concluído 15/09 (rota real, Sessão 1): convite expirado real (emitido com 1 h por RPC autorizada), reenviado uma vez pela tela, link de uso único (mascarado), reload e negativas SAI_INVALID_ARGUMENT/SAI_CONCURRENT_CHANGE; sem SMTP.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -920,7 +920,7 @@
     "e2e": "Pendente; transferência documental não certifica execução.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
-    "nextGate": "Obter acesso/configuração de caixa/SMTP/redirect; usar link real na UI e provar nova senha/sessão, expiração/uso único; preservar credencial QA privada. Não usar link Admin API como entrega SMTP.",
+    "nextGate": "Transferido para Etapa 3 pela ADR 0039; não executar na R14. Quando aberto, obter acesso/configuração de caixa/SMTP/redirect e provar link real, nova senha/sessão, expiração e uso único; preservar credencial QA privada.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

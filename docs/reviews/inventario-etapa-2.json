@@ -2389,15 +2389,15 @@
       "family": "invites",
       "screen": "Convites / Lista",
       "scope": "mvp",
-      "done": "A composição aprovada para R12-44 substitui a superfície anteriormente certificada; a rota normal, reload e escopo precisam ser reproduzidos antes de manter o certificado integrado.",
-      "fe": "R12 C0: diretório de convites fixado na tabela canônica conforme decisão do Owner; cards e toggle removidos, busca, filtros, paginação, Novo convite e ações por linha preservados.",
+      "done": "R14 S1: directory_v2 real pela tela com filtro Pendente/Expirado + reload; escopo platform.invites.manage.",
+      "fe": "R14 S1 rota real: tabela-only com busca, filtros Status/Canal, paginacao, Novo convite e acoes por linha; reload.",
       "be": "R04: superadmin_invite_directory_v2 (lote 4) responde ok:true para qa-r03; pgTAP 33/33 no lote 4. | Backlog R12 (registro 2026-09-13): R12-44. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-44 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.list); Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md; 5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md;c30f28d42/invite-labels/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-INVITES-V2); coordenacao.json R03 rev 10; evidence/etapa-2/r04-acessos-pessoas/capturas/invites-list-vazio.png; comunicacao/acessos-pessoas.json r97; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.list); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.list); Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md; 5a1ed044f;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/invites-visual/handoff.md;c30f28d42/invite-labels/handoff.md; comunicacao/acessos-pessoas.json r84 (AP-INVITES-V2); coordenacao.json R03 rev 10; evidence/etapa-2/r04-acessos-pessoas/capturas/invites-list-vazio.png; comunicacao/acessos-pessoas.json r97; docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:38:28.742086-03:00",
@@ -2415,16 +2415,16 @@
           "recordedAt": "2026-09-10T22:40:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
-          "revision": "80a308394",
-          "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
-          "recordedAt": "2026-09-11T14:30:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+          "revision": "b5ebd527a",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:45:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-acessos-pessoas/capturas/invites-list-com-convite-revogado.png",
-          "revision": "80a308394",
-          "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
-          "recordedAt": "2026-09-11T14:30:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+          "revision": "b5ebd527a",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:45:00-03:00"
         }
       }
     },
@@ -2533,15 +2533,15 @@
       "family": "invites",
       "screen": "Convite / Reenviar",
       "scope": "mvp",
-      "done": "A descoberta local não substitui a prova positiva em rota normal com convite expirado real, recibo, reload e escopo; nenhum contrato backend foi alterado.",
-      "fe": "R12 C0: ação Reenviar convite está encontrável no menu da linha e no detalhe expirado, com elegibilidade por status, requestId/managementVersion, feedback e diálogo de link temporário preservados.",
+      "done": "R14 S1: resend_v2 em producao pela tela (f1eb1cf7 v1->2, +48h) + reload + negativas SAI_INVALID_ARGUMENT (vigente/revogado) e SAI_CONCURRENT_CHANGE; sem SMTP.",
+      "fe": "R14 S1 rota real: Reenviar convite so no expirado real, dialogo Novo link do convite (uso unico), reload mostra Pendente renovado.",
       "be": "R05: superadmin_invite_resend_v2 aplica a regra do contrato: convite pending vigente nao reenvia (SAI_INVALID_ARGUMENT 422); so expirado (ou pending vencido) gera token novo. Caminho positivo coberto por pgTAP superadmin_internal_invites_v2_test; nao ha convite expirado em producao para prova positiva. | Backlog R12 (registro 2026-09-13): R12-45. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-45 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.resend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.resend) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json rev 120; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar invites.resend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar invites.resend) R01/16h: C01r30/608dd187; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 r31 ID/domain223PASS;clipboard49PASS;preferências31+4PASS;login48PASS/3goldenFAIL. ef1dd82e/495b89c9/45f6c68b/5584f88d/50f36f98/ed9aada6; integração parcial por SHA.; Fechamento R01 C01/r51; C00288PASS conjunto; sem SMTP real; etapa-2-operacao/reports/R01-fechamento-20260909.md; evidence/etapa-2/r02-d00-integration-20260909/manifest-d04-integrated-f17e5b89.json; etapa-2-operacao/next-round/R02-20260909/FECHAMENTO-OWNER.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json rev 120; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "local-green",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T16:54:21.342597-03:00",
@@ -2557,6 +2557,18 @@
           "revision": "ad04f85c3",
           "environment": "producao, sessao qa-r03 via PostgREST",
           "recordedAt": "2026-09-11T12:15:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+          "revision": "b5ebd527a",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:45:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
+          "revision": "b5ebd527a",
+          "environment": "producao",
+          "recordedAt": "2026-09-15T11:45:00-03:00"
         }
       }
     },
@@ -9308,7 +9320,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-15T14:32:41.039Z",
+  "updatedAt": "2026-09-15T14:44:36.892Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
