@@ -30,6 +30,12 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0033; dec
 > preparação estrutural para V1/V2; não criar UI, vínculo, atribuição ou
 > enforcement comercial por este modelo. Planos de medicação são entidades de
 > Saúde e Cuidado e não são afetados.
+
+> **Overlay de execução — 15/09/2026.** A R14 registrou em produção um recorte
+> de Saúde e Cuidado com coleções independentes limitadas a 100 por entidade,
+> catálogos globais de tipo e reader self de Account sem ID arbitrário. A prova
+> técnica está no handoff da Sessão D; o aceite central da fila continua
+> separado e não autoriza inferir que o modelo inteiro foi implementado.
 | Coluna 1 | COELO<br>PRD Modelo de Dados Master Oficial v1<br>Supabase/Postgres · modelo conceitual e governança |
 | --- | --- |
 

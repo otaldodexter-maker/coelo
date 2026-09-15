@@ -5,7 +5,7 @@ source: decisions/0034-mvp-remote-application-and-acceptance-bar.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-09-01
-updated_at: 2026-09-14
+updated_at: 2026-09-15
 audience: team
 surfaces: [supabase, database, auth, storage, edge-functions]
 visibility: internal
@@ -13,6 +13,13 @@ review_owner: Coelo Product
 ---
 
 # Ambiente Supabase de produção
+
+> **Overlay de execução — 15/09/2026.** Após autorização nominal do Owner, a
+> Sessão D aplicou e reconciliou na ledger produtiva, nesta ordem, as migrations
+> `20260915130000` (coleções de cuidado), `20260915131500` (OQ-031) e
+> `20260915133000` (Account self). Os pgTAP remotos foram 6/6, 11/11 e 6/6.
+> O dump/snapshot produtivo permanece fora do Git; a prova e o aceite central
+> continuam registrados na reconciliação da R14.
 
 O projeto Supabase `coelo`, identificado por `evvbomzejfijozbtgvpt`, é o
 ambiente de **produção** e, em 10/09/2026, ainda não tem clientes reais.

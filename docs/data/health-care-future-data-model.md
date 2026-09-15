@@ -4,8 +4,8 @@ source: "specs/020-superadmin-health-care.md; docs/data/data-model.md; docs/secu
 status: "proposed"
 generated_at: "2026-08-04"
 lifecycle: "future"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038; docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md"
 ---
 
 > **Documento futuro — não é modelo produtivo atual.** Esta proposta não
@@ -13,13 +13,22 @@ reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038"
 > vigente é a ADR 0032 (R2 privado e catálogo Postgres); a ADR 0010 permanece
 > apenas como histórico. Qualquer abertura exige spec e decisão próprias.
 
+> **Overlay de execução — 15/09/2026.** Parte desta proposta deixou de ser
+> apenas futura: as tabelas de coleções de Saúde e Cuidado já existem no
+> modelo aplicado, e a Sessão D registrou em produção o limite defensivo de
+> 100 registros por coleção/entidade, com rejeição do 101º. Este documento
+> continua `future` para as entidades, contratos e fluxos ainda não aprovados;
+> não use a frase histórica “não há tabelas produtivas” como instrução atual.
+
 # Proposta futura de dados para Saúde e Cuidado
 
 ## Limites
 
 A proposta separa dados permanentes de cuidado da operação periódica de
-medicamentos. Não aprova nomes físicos, migration, RLS, RPC, grant ou retenção.
-O schema atual não possui tabelas produtivas deste módulo.
+medicamentos. Ela não aprova novos nomes físicos, migrations, RLS, RPCs, grants
+ou retenção para as partes ainda futuras. O recorte já aplicado em produção é
+limitado às coleções de cuidado e ao guard de 100 registros; o restante deste
+documento continua sujeito a spec, decisão e aceite próprios.
 
 ## Perfis de cuidado
 

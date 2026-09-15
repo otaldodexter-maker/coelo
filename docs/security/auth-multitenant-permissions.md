@@ -26,6 +26,11 @@ reconciled_with: "AGENTS.md; decisions/0033; decisions/0034; decisions/0037; dec
 > reservadas à Etapa 3. A R14 não executa e-mail, callback, allowlist,
 > expiração, uso único ou prova produtiva desse fluxo; login, sessão,
 > bootstrap, autorização e RLS correntes permanecem no escopo vigente.
+
+> **Overlay de execução — 15/09/2026.** O reader self de Account usa a sessão
+> autenticada do usuário interno e não aceita UUID arbitrário como seletor. A
+> Sessão D registrou ACL e pgTAP remoto 6/6; isso não conclui a foto privada R2
+> nem o aceite integral de `account.profile`.
 | Coluna 1 | COELO<br>PRD Auth, Multi-tenant e Permissões Oficial v1<br>Identidade global · contexto ativo · RBAC + RLS |
 | --- | --- |
 
