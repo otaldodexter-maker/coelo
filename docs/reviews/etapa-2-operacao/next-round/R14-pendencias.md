@@ -18,8 +18,8 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` em
-15/09/2026, após as fatias publicadas das Sessões 1 e 2: FE 184/232
-(79,31%), BE 166/225 (73,78%), E2E 157/193 (81,35%), Owner 15/53
+15/09/2026, após o delta oficial de Avaliações: FE 186/232
+(80,17%), BE 168/225 (74,67%), E2E 159/193 (82,38%), Owner 15/53
 (28,30%). O denominador integrado ativo é 193 após o Bloco B e a formalização
 de `agora.remove`. Cardápios tem
 prova FE/BE/E2E publicada, mas seus quatro Owner items permanecem `partial`

@@ -18,7 +18,7 @@ audience: "team"
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
 - Último corte publicado: 15/09/2026, após as fatias das Sessões 1 e 2 — FE
-  184/232, BE 166/225, E2E 157/193 ativo. O Bloco A está 10/10 certificado;
+  186/232, BE 168/225, E2E 159/193 ativo. O Bloco A está 10/10 certificado;
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
   Owner: 15/53 concluídos e 38 abertos/parciais.

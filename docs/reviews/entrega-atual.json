@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "8ac946b3aa895c42bd38ae0d4cb503058b9e044a",
+    "head": "6106d2b68c97da2c7e5313d0df53cd07f82032e6",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -64,15 +64,15 @@
     "actionStatusCounts": {
       "frontend": {
         "local-green": 13,
-        "pending-verification": 35,
-        "verified": 184
+        "pending-verification": 33,
+        "verified": 186
       },
       "backend": {
         "blocked-decision": 2,
         "deferred-post-mvp": 29,
-        "done": 166,
+        "done": 168,
         "gate-formal-mvp": 3,
-        "local-green": 13,
+        "local-green": 11,
         "not-applicable": 7,
         "pending-verification": 11,
         "remote-green": 1
@@ -83,8 +83,8 @@
         "deferred-post-mvp": 29,
         "flutter-only": 7,
         "gate-formal-mvp": 3,
-        "pending-verification": 34,
-        "verified-e2e": 157
+        "pending-verification": 32,
+        "verified-e2e": 159
       }
     },
     "deferredPostMvpActionCount": 29,
@@ -109,12 +109,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "184/232 (79.31%)",
+    "frontendVerified": "186/232 (80.17%)",
     "frontendLocalGreen": "13/232 (5.60%)",
-    "backendDone": "166/225 (73.78%)",
-    "backendLocalGreen": "13/225 (5.78%)",
-    "e2eVerified": "157/193 (81.35%)",
-    "e2ePlusFlutterOnly": "164/232 (70.69%)",
+    "backendDone": "168/225 (74.67%)",
+    "backendLocalGreen": "11/225 (4.89%)",
+    "e2eVerified": "159/193 (82.38%)",
+    "e2ePlusFlutterOnly": "166/232 (71.55%)",
     "ownerDone": "15/53 (28.30%)",
     "ownerNonTerminal": "38/53 (71.70%)"
   },
@@ -2417,12 +2417,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "184/232 (79.31%)",
+      "frontendVerified": "186/232 (80.17%)",
       "frontendLocalGreen": "13/232 (5.60%)",
-      "backendDone": "166/225 (73.78%)",
-      "backendLocalGreen": "13/225 (5.78%)",
-      "e2eVerified": "157/193 (81.35%)",
-      "e2ePlusFlutterOnly": "164/232 (70.69%)",
+      "backendDone": "168/225 (74.67%)",
+      "backendLocalGreen": "11/225 (4.89%)",
+      "e2eVerified": "159/193 (82.38%)",
+      "e2ePlusFlutterOnly": "166/232 (71.55%)",
       "ownerDone": "15/53 (28.30%)",
       "ownerNonTerminal": "38/53 (71.70%)"
     },

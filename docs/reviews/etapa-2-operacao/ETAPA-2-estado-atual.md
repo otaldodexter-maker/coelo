@@ -62,23 +62,22 @@ rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
 2026-09-15 após as fatias publicadas das Sessões 1 e 2, no checkout `dev`,
-SHA `a85ac01c45dac2a615dab3fcffd64eaedcb9ff02`.
+SHA `6106d2b68`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 184 / 232 | 79,31% | terminal FE da base inteira |
+| FE verificado | 186 / 232 | 80,17% | terminal FE da base inteira |
 | FE local-green | 13 / 232 | 5,60% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 166 / 225 | 73,78% | somente ações aplicáveis ao BE |
-| BE local-green | 13 / 225 | 5,78% | avanço local; não é prova remota |
-| E2E verificado | 157 / 193 | 81,35% | base integrada ativa após o Bloco B e a formalização de `agora.remove` |
-| E2E + flutter-only | 164 / 232 | 70,69% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
+| BE concluído/verificado | 168 / 225 | 74,67% | somente ações aplicáveis ao BE |
+| BE local-green | 11 / 225 | 4,89% | avanço local; não é prova remota |
+| E2E verificado | 159 / 193 | 82,38% | base integrada ativa após o delta oficial de Avaliações |
+| E2E + flutter-only | 166 / 232 | 71,55% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
 | Owner items done | 15 / 53 | 28,30% | IDs de Owner, não action IDs |
 | Owner items abertos/parciais | 38 / 53 | 71,70% | complemento dos 15 concluídos |
 
-O denominador de BE é 224 porque sete ações não são aplicáveis ao backend. Da
-mesma forma, `164/231` é somente a métrica combinada E2E + flutter-only; para
-aceite integrado, a base correta continua sendo `157/192`.
+O denominador de BE é 225 nesta versão do inventário. A métrica combinada é
+`166/232`; para aceite integrado, a base correta continua sendo `159/193`.
 
 ## Fila vigente R14 — pendências herdadas
 
