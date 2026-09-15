@@ -12,7 +12,7 @@ audience: "team"
 
 Sessão 3, worktree `C:\Users\adrie\Documents\Coelo.worktrees\r14-c`, branch
 `r14/bloco-c`, servidor `127.0.0.1:3016`, Chrome CDP `9416`, base inicial
-`origin/dev ee179b1e1`; publicação final `origin/dev 6d9210d19`. Esta sessão não
+`origin/dev ee179b1e1`; publicação final `origin/dev d8fda6479`. Esta sessão não
 edita os handoffs das Sessões 1 e 2.
 
 ## Reivindicações e liberações
@@ -36,7 +36,7 @@ assign confirmado. A sessão não reivindica essa tela.
 
 ## Avisos para a outra sessão
 
-- A worktree/branch da Sessão 3 foi materializada a partir do SHA publicado atual `ee179b1e1` porque a referência inicial `a85ac01c4` estava três commits atrás; os commits finais foram rebaseados sobre `f38ae3966` e publicados em `6d9210d19`.
+- A worktree/branch da Sessão 3 foi materializada a partir do SHA publicado atual `ee179b1e1` porque a referência inicial `a85ac01c4` estava três commits atrás; os commits finais foram rebaseados sobre `f38ae3966` e publicados em `d8fda6479`.
 - Perfis de acesso foram liberados: `/profiles` carregou no alvo CDP autenticado, mas a automação não conseguiu preencher a justificativa auditável; nenhuma criação foi confirmada. Assign em `/internal-users/:id/edit` não foi iniciado.
 - A prova de Avaliações permanece bloqueada para aceite até repetir no alvo CDP estável com identidade/URL confirmadas; as capturas anteriores não devem ser contadas como certificação.
 - O Chrome dedicado foi encerrado quando o alvo visível foi confundido; depois a coordenação autorizou continuar em CDP próprio. A sessão CDP própria foi reaberta, confirmou `http://127.0.0.1:3016/profiles`, título `Superadmin Coelo`, ausência de login e chamada de bootstrap de auth; ainda assim nenhuma tela foi promovida sem concluir o fluxo auditável.
