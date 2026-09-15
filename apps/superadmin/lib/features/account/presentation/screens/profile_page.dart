@@ -210,6 +210,7 @@ class _ProfilePageState extends State<ProfilePage> {
         _avatar = _avatar!.copyWith(
           mode: AccountAvatarMode.photo,
           photoBytes: adjusted.bytes,
+          clearPhotoAsset: true,
           // The rasterizer already baked the chosen crop into these bytes.
           photoScale: 1,
           photoOffset: Offset.zero,
