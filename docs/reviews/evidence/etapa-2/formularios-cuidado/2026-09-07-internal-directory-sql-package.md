@@ -1,7 +1,8 @@
 ---
 title: "F-READ01 — pacote SQL nominal para replay local"
 source: "Reserva do Coordenador; fundação Forms e contexto interno SAI canônicos; revisão estática E2E4"
-status: "prepared-unexecuted"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-07"
 ---
 

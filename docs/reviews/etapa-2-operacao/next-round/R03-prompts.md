@@ -1,7 +1,8 @@
 ---
 title: "Rodada 3 — contrato comum e prompts por conversa"
 source: "R03-plano.md; decisões do Owner em 10/09/2026; ADR 0034 (Decisões 1–5); docs/reviews/evidence/etapa-2/goldens-claro-decisoes-2026-09-10.md; TRABALHO-ATUAL.md (protocolo de comunicação)"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "historical; prompts superseded; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---

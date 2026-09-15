@@ -1,6 +1,7 @@
 ---
 source: R13-prompt-execucao-20260914.md; R13-pendencias.md; ETAPA-2-estado-atual.md; histórico R12/R13
-status: histórico; superseded by R13-checkpoint-20260914-1620.md; não usar como fila
+status: "historical"
+lifecycle: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 ---

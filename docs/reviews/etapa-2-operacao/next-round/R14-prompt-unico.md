@@ -1,6 +1,6 @@
 ---
 source: R13-prompt-execucao-20260914.md; R13-pendencias.md; R14-plano-de-rodada.md
-status: historical; superado pela fila R14; não executar
+status: "historical"
 lifecycle: "historical"
 generated_at: 2026-09-14
 updated_at: 2026-09-14

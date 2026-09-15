@@ -1,7 +1,8 @@
 ---
 title: "R02 D03 — plano focal HTTP local do diretório CHILD"
 source: "prompt D03; assignment D00; contrato CHILD-READ01; Test-LocalAuthLifecycle.ps1"
-status: "prepared-not-executed-awaiting-nominal-runner-mode"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

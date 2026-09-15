@@ -1,7 +1,8 @@
 ---
 title: "Rodada 4 — contrato comum e prompts por conversa (noite de 10→11/09/2026)"
 source: "R03-prompts.md; coordenacao.json rev 18 (fechamento da R03); ADR 0034 (Decisões 1–12); os três md de pendências em docs/reviews; goldens-claro-decisoes, goldens-acontece-cardapios-decisoes e goldens-decisoes-complementares de 10/09; ordem do Owner de 10/09/2026 à noite"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "historical; prompts superseded; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-10"
 timezone: "America/Sao_Paulo"
 ---

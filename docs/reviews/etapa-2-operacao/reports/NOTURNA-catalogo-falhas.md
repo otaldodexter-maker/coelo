@@ -1,7 +1,8 @@
 ---
 title: "Catalogo das 182 falhas da base integrada"
 source: "Coordenacao e Integracao — Claude; flutter test --reporter=json em apps/superadmin"
-status: "active"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

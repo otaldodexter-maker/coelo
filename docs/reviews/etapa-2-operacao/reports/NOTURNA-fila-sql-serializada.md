@@ -1,7 +1,8 @@
 ---
 title: "Fila SQL serializada da rodada noturna 09→10/09/2026"
 source: "Coordenação e Integração — Claude; candidatos publicados pelos grupos"
-status: "active"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

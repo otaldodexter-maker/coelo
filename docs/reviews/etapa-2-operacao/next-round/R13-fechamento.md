@@ -1,6 +1,7 @@
 ---
 source: R13-luna-continuacao.md; R13-plano-de-rodada.md; R13-checkpoint.md; R13-pendencias.md; R13-owner-items.json; git/testes R13
-status: histórico; R13 encerrada; não é fonte da fila R14
+status: "historical"
+lifecycle: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 execution_status: PASS DOCUMENTED_PARTIAL em 2026-09-14; nenhum aceite terminal novo

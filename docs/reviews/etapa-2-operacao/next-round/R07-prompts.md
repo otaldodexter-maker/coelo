@@ -1,7 +1,8 @@
 ---
 title: "Rodada 7 — contrato comum e prompts por conversa (Codex, Luna médio)"
 source: "R06-prompts.md; R06-fechamento.md; coordenacao.json rev 60; ADR 0034 (Decisões 1–19); os três md de pendências (bloco Estado vigente R06); R06-perguntas-ao-owner-20260911.md; ordem do Owner de 11/09/2026 à noite"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "historical; prompts superseded; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---

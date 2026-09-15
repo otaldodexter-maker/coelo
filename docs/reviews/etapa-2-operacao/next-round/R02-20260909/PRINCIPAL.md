@@ -1,7 +1,8 @@
 ---
 title: "E2 R02 — composição do Principal no Superadmin"
 source: "Owner nesta tarefa; coelo-ui; spec050; referências aprovadas"
-status: "prepared-not-started"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

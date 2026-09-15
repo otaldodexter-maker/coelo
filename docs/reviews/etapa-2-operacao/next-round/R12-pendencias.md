@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13 — consolidar R12/R13 como R12, Luna médio, commits e pendências
-status: histórico de origem; pendências transferidas para a fila vigente R14
+status: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 lifecycle: "historical"

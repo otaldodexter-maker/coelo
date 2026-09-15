@@ -1,7 +1,8 @@
 ---
 title: "F-AUTHOR01 — reautorização após espera e protocolo concorrente"
 source: "Revisão central do pacote 1ccae045; fechamento técnico do Coordenador; specs 011 e 042"
-status: "prepared-not-executed"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-07"
 ---
 

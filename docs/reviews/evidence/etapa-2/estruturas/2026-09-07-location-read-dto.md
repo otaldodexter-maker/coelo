@@ -1,7 +1,8 @@
 ---
 title: "LOC-DTO01 — modelo e decoder de leitura"
 source: "docs/superpowers/plans/2026-09-07-location-read-dto.md; LOC-CATALOG01 ce318d05"
-status: "prepared-local-tests-pass-not-e2e"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-07"
 ---
 

@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-13; R13-owner-items-atual.json; R12-fechamento.md; R01–R07 resíduos incorporados; inventario-etapa-2.json
-status: historical; R13 encerrada; não executar; fila vigente R14
+status: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14
 decisions: decisions/0038-owner-decisions-etapa2-backlog-20260914.md

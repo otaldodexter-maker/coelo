@@ -1,7 +1,8 @@
 ---
 title: "E2 R02 — cobertura da rodada e restante da Etapa 2"
 source: "inventario-etapa-2.json de 09/09/2026 08:41:13 -03; escopo.json"
-status: "prepared-not-started"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
@@ -82,4 +83,3 @@ O contrato atribui um dono por contexto inteiro, integra commits durante o dia,
 restringe repetição de testes a causas concretas e exige evidência da ação.
 Prazo de fechamento completo só pode ser atualizado pelo delta inspecionado e
 pela vazão real de aceites E2E; não multiplicar uma faixa fixa de horas por tela.
-

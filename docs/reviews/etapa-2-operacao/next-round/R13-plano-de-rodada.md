@@ -1,6 +1,6 @@
 ---
 source: Owner 2026-09-14; R13-prompt-execucao-20260914.md; R13-pendencias.md; R13-owner-items-atual.json
-status: historical; plano da R13 encerrada; não executar; fila vigente R14
+status: "historical"
 lifecycle: "historical"
 generated_at: 2026-09-13
 updated_at: 2026-09-14

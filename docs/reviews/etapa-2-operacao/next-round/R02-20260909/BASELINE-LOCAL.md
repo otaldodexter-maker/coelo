@@ -1,7 +1,8 @@
 ---
 title: "E2 R02 — delta local herdado de Auth"
 source: "Git local; turno de Auth interrompido pelo Owner; baseline-local-manifest.json"
-status: "prepared-not-started"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---
@@ -60,4 +61,3 @@ Revalidar hashes se outros colaboradores tiverem mudado os arquivos.
 Não adicionar todos os arquivos de trabalho ao commit documental.
 Não executar reset/clean genérico, apagar evidências ou perder mudanças novas
 para satisfazer um indicador de worktree limpa.
-

@@ -1,7 +1,8 @@
 ---
 title: "LOC-READUI01 — leitura local preparada, não E2E"
 source: "reserva da coordenação; LOC-DTO01 9430a78d; design Locais; testes e inspeção local"
-status: "prepared-local-with-shared-accessibility-gap"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-08"
 ---
 

@@ -1,7 +1,8 @@
 ---
 title: "D01 — pacote local reservado de sessão password"
 source: "password-session-context-proposal.md; D00 assignment r9, r10 e r11 ACKs de 2026-09-09; packages/coelo_database/migrations/20260909173000_superadmin_password_session_context.sql"
-status: "prepared-not-executed"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 ---
 

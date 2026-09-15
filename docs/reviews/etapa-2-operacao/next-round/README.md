@@ -23,8 +23,19 @@ itens não terminais consolidados. Use [`RODADAS.md`](RODADAS.md) para o estado
 das rodadas. R01–R13 permanecem como fontes históricas. Os prompts e protocolos abaixo são
 preservados para proveniência e não autorizam execução automática.
 
-Os cinco `R01-CXX-prompt.md` são completos para abertura manual pelo Owner na worktree correspondente. Não criam conversas. A fonte viva permanece nas assignments C00.
+> **Importante:** todo o conteúdo abaixo desta linha é proveniência histórica.
+> Não executar, copiar ou tratar como fila; qualquer retomada deve nascer da
+> fonte vigente indicada acima.
 
-R02 será preparada depois dos handoffs/integrações finais R01, em09/09 entre06:00 e07:40. Não inventar agora tarefas residuais, SHA final ou conclusão. Usar nomes E2 R02 C00–C05, mesmos modelos/níveis planejados salvo decisão Owner, caminhos novos inspecionados e dependências residuais comprovadas. Transferência do coordenador exige papel explícito, confirmação do sucessor e heartbeat antigo pausado.
+**Proveniência histórica — não executar:** os cinco `R01-CXX-prompt.md` foram
+preparados para abertura manual pelo Owner na worktree correspondente. Não
+criam conversas e não são fonte viva; a fila atual é exclusivamente R14.
 
-Retomada C00: abrir sua worktree, conferir git status/branch, ler bloco R01 da coordenação, PROTOCOLO, reports/estado-operacional.json e somente handoffs de revisão nova pelos caminhos absolutos. Nunca executar a coordenação histórica como instrução vigente.
+**Proveniência histórica — não executar:** o plano R02 abaixo foi preparado em
+09/09 e não representa a fila atual. Não usar seus horários, nomes, SHAs,
+dependências ou handoffs como instruções; decisões novas devem ser registradas
+na R14 vigente.
+
+**Proveniência histórica — não executar:** o texto de retomada C00 abaixo não
+deve ser usado como procedimento vigente. Nunca execute a coordenação histórica
+como instrução atual.

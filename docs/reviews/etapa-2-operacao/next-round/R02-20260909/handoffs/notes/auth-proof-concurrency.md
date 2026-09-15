@@ -1,7 +1,8 @@
 ---
 title: "R02 D00 — harness local de revalidação Auth pós-lock"
 source: "Executor D01 corrigido; AuthOnly; Test-ActivityV2Concurrency.ps1; guard canônico internal Auth; delegação D00"
-status: "prepared-local-harness; pester-pass; sql-not-executed; wrapper-hook-integrated-local"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

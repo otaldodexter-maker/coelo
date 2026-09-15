@@ -1,7 +1,8 @@
 ---
 title: "E2 R02 — contrato de execução por contextos"
 source: "Owner em 09/09/2026 nesta tarefa; AGENTS.md; coelo-etapa-2-coordenacao.md; PROTOCOLO R01; inventario-etapa-2.json"
-status: "prepared-not-started"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

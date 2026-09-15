@@ -1,6 +1,7 @@
 ---
 source: "Owner C06; C00 Git inspection; native automation update; assignments/C06.md"
-status: "prepared-awaiting-real-session-ack"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-08T17:34:14-03:00"
 timezone: "America/Sao_Paulo"
 ---

@@ -1,7 +1,8 @@
 ---
 title: "Rodada 5 — contrato comum e prompts por conversa (tarde de 11/09/2026)"
 source: "R04-prompts.md; coordenacao.json rev 37; ADR 0034 (Decisões 1–16); os três md de pendências em docs/reviews (bloco Estado vigente R04 e atualizações de 10:30, 11:05, 11:35, 11:50, 12:05 e 12:15); R04-perguntas-ao-owner-20260911.md (duas levas de respostas); ordem do Owner de 11/09/2026 à tarde"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "historical; prompts superseded; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---

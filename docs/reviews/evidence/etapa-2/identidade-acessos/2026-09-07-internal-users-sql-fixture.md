@@ -1,7 +1,8 @@
 ---
 title: "Identidade e Acessos — fixture nominal de usuários internos"
 source: "Reserva focal do Coordenador em 2026-09-07; migration 20260901210000; revisão estática realm_audit"
-status: "prepared-for-exclusive-eng1-replay; not-verified-e2e"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-07"
 ---
 

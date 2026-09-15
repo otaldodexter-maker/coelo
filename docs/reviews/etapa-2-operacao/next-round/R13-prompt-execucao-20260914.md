@@ -1,6 +1,6 @@
 ---
 source: ADR 0038; R13-pendencias.md; ETAPA-2-estado-atual.md; AGENTS.md
-status: historical; autorização consumida no fechamento da R13; não executar
+status: "historical"
 lifecycle: "historical"
 generated_at: 2026-09-14
 ---

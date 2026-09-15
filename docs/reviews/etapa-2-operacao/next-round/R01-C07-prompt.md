@@ -1,7 +1,8 @@
 ---
 title: "Prompt E2 R01 C07 — Validação visual e fluxos"
 source: "Owner; C06 operational preparation; C00 assignments/C07.md I002"
-status: "ready-for-owner"
+status: "historical; prompt de R01; não executar"
+lifecycle: "historical"
 generated_at: "2026-09-08T18:01:23-03:00"
 timezone: "America/Sao_Paulo"
 ---

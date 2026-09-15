@@ -1,7 +1,8 @@
 ---
 title: "Varredura R01–R06 para a Rodada 7"
 source: "R01-C01..C07-prompt.md; R02-20260909; R03-plano; R03-fase0-handoff; R04/R05/R06 prompts, fechamentos, perguntas; comunicacao/*.json; tres rastreadores; skills Coelo"
-status: "em andamento"
+status: "historical; levantamento encerrado; não executar"
+lifecycle: "historical"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---

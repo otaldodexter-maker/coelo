@@ -1,7 +1,8 @@
 ---
 title: "R02 D03 — plano focal de concorrência do diretório CHILD"
 source: "prompts/D03.md; assignment D00 revisão 8; migration 20260908051500; contrato CHILD de 2026-09-08"
-status: "prepared-not-executed"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

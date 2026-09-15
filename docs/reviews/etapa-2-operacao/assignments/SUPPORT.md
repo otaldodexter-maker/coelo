@@ -1,6 +1,7 @@
 ---
 source: "Owner; C00; apoio 01a082d8-0d41-71b0-95a3-72240507e254"
-status: "active-exclusive-local-Docker-recovery"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-08T18:32:00-03:00"
 timezone: "America/Sao_Paulo"
 ---

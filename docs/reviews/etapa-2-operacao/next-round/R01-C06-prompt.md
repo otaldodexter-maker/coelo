@@ -1,7 +1,8 @@
 ---
 title: "Prompt E2 R01 C06 — Coordenador Claude"
 source: "Owner; C00 R01; PROTOCOLO.md; assignments/C06.md"
-status: "ready-for-owner"
+status: "historical; prompt de R01; não executar"
+lifecycle: "historical"
 generated_at: "2026-09-08T17:29:41-03:00"
 timezone: "America/Sao_Paulo"
 ---

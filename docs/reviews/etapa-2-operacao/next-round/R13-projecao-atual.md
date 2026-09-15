@@ -1,6 +1,6 @@
 ---
 source: R13-pendencias.md; R13-checkpoint-20260914-1620.md; inventario-etapa-2.json; ETAPA-2-estado-atual.md
-status: historical; projeção da R13 encerrada; não executar; fila vigente R14
+status: "historical"
 lifecycle: "historical"
 generated_at: 2026-09-14
 updated_at: 2026-09-14

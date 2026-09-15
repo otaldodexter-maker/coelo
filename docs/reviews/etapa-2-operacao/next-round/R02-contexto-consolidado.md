@@ -1,7 +1,8 @@
 ---
 title: "Contexto mínimo de passagem R01 para novas conversas"
 source: "Owner 09/09; reports/R01-fechamento-20260909.md; três rastreadores oficiais"
-status: "prepared-context; assignment-and-writer-transfer-not-authorized"
+status: "historical; context transfer completed; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 ---
 

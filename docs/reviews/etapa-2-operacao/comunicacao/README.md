@@ -1,7 +1,8 @@
 ---
 title: "Canal durável da rodada noturna 09→10/09/2026"
 source: "docs/reviews/etapa-2-operacao/TRABALHO-ATUAL.md; coordenação Claude"
-status: "active"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-09"
 timezone: "America/Sao_Paulo"
 ---

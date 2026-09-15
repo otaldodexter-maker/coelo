@@ -1,6 +1,7 @@
 ---
 source: Owner 2026-09-13; R11-prompt-unico.md; Git e quota reais
-status: execução R11 em andamento
+status: histórico; checkpoint R11; não executar
+lifecycle: "historical"
 generated_at: 2026-09-13
 ---
 

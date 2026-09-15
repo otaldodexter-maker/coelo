@@ -1,7 +1,8 @@
 ---
 title: "Rodada 6 — contrato comum e prompts por conversa (2 h de frentes + 30 min de fechamento)"
 source: "R05-prompts.md; R05-fechamento.md; coordenacao.json rev 51; ADR 0034 (Decisões 1–17); os três md de pendências (bloco Estado vigente R05); R05-perguntas-ao-owner-20260911.md; artefato de aprovações 2150f92d; ordem do Owner de 11/09/2026 à tarde"
-status: "authorized-on-prompt-start; conversations-not-started-by-document-creation"
+status: "historical; prompts superseded; do not execute"
+lifecycle: "historical"
 generated_at: "2026-09-11"
 timezone: "America/Sao_Paulo"
 ---
