@@ -8,7 +8,7 @@ const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
 const maximumBytes = 2 * 1024 * 1024;
 
 function allowedOrigins() {
-  return new Set((Deno.env.get("ACCOUNT_MEDIA_ALLOWED_ORIGINS") ?? "")
+  return new Set((Deno.env.get("ACCOUNT_MEDIA_ALLOWED_ORIGINS") ?? Deno.env.get("COELO_ALLOWED_ORIGINS") ?? "")
     .split(",").map((value) => value.trim()).filter(Boolean));
 }
 
