@@ -2,15 +2,21 @@
 source: "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md, item31; referência histórica de20/08 call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
 status: approved
 generated_at: 2026-08-20
-updated_at: 2026-08-31
+updated_at: 2026-09-15
 lifecycle: current
-reconciled_with: AGENTS.md; decisions/0032; decisions/0034; decisions/0037; decisions/0038
+reconciled_with: AGENTS.md; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0040
 ---
 
 > **Overlay vigente — 14/09/2026.** A composição pertence ao Principal no
 > contêiner definido pela ADR 0037. Mídia nova usa R2 privado; Supabase Storage
 > citado na baseline está superado pela ADR 0032. Esta spec não autoriza a
 > abertura automática do fluxo nem substitui os gates da R13.
+>
+> **Overlay de produto — 15/09/2026.** A publicação continua expirando por
+> padrão em 24 horas, mas a remoção explícita é imediata conforme a ADR 0040 e o
+> `action_id` `agora.remove`: revoga a leitura, invalida novas URLs/tickets,
+> solicita o purge do objeto R2 e da cópia Stream, preservando catálogo,
+> recibo e auditoria. A implementação ainda não está aceita.
 
 # Publicação do Agora no MVP
 
@@ -23,11 +29,15 @@ Entregar um composer rápido e leve para publicar uma mídia vertical no Agora. 
 - Preview executável isolado em `apps/superadmin`, representando o futuro app Principal.
 - Uma imagem ou um vídeo vertical, texto opcional de até 60 caracteres, overlay simples, áudio próprio, enquadramento, capa, público/contexto, rascunho e agendamento.
 - Vídeo de até 30 segundos no plano-base; planos podem conceder limite superior informado e revalidado pelo backend.
-- Supabase Storage privado temporário no MVP conforme ADR 0026.
+- Mídia nova no R2 privado conforme ADR 0032; Postgres guarda catálogo,
+  autorização, ownership, retenção e auditoria.
 
 ## Fora de escopo
 
-- UI do viewer ou lista do Agora, timeline, catálogo comercial de músicas, múltiplas mídias, editor profissional e migração para R2. O contrato backend mínimo de leitura privada faz parte desta entrega para impedir integração futura com dados demonstrativos ou URLs públicas.
+- UI do viewer ou lista do Agora, timeline, catálogo comercial de músicas,
+  múltiplas mídias e editor profissional. O contrato backend mínimo de leitura
+  privada faz parte desta entrega para impedir integração futura com dados
+  demonstrativos ou URLs públicas.
 
 ## Superfícies e UX
 
@@ -58,15 +68,20 @@ A divergência com a redação genérica sobre etapas está registrada em
 
 - O backend resolve ator, tenant, instituição, unidade, grupo, públicos permitidos e capacidade do plano; IDs do cliente são não confiáveis.
 - Bucket privado, RLS deny-by-default, comandos autenticados, versão otimista, idempotência e auditoria são obrigatórios.
+- A remoção exige a capacidade contextual `now.publications.remove`, além de
+  autoria/ownership e tenant resolvidos no servidor.
 - MIME real, tamanho de até 25 MB no upload transitório do MVP e duração são validados server-side. Áudio próprio exige confirmação de direitos.
 - Upload usa intenção server-side e URL assinada temporária diretamente para o bucket privado; a Edge Function finaliza somente após reler e validar o objeto armazenado. Base64 de mídia pela função é proibido.
 - Unidade e grupo são revalidados contra a instituição; receipts de comando preservam idempotência e retries não reenviam assets já finalizados.
-- Conteúdo publicado expira em 24 horas; URLs públicas permanentes e `service_role` no cliente são proibidos.
+- Conteúdo publicado expira em 24 horas; remoção explícita usa `agora.remove`
+  e revoga a leitura imediatamente. URLs públicas permanentes e `service_role`
+  no cliente são proibidos.
 - Preview do próprio rascunho exige capability de criação e URL de 60 segundos. Leitura pública usa capability `now.publications.read`, feed filtrado por tenant, contexto, papel, audiência, vínculo ativo e expiração, seguido de ticket opaco, individual, descartável e trocado server-side por URL de 60 segundos.
 
 ## Estados e critérios de aceite
 
-- Estados: inicial, carregando, editando, enviando, salvando, salvo, publicando, sucesso, conflito, falha e não autorizado.
+- Estados: inicial, carregando, editando, enviando, salvando, salvo, publicando,
+  sucesso, removendo, removido, conflito, falha e não autorizado.
 - Imagem e vídeo válidos podem ser pré-visualizados e editados; vídeo acima da capacidade é rejeitado.
 - Publicar exige mídia e público/contexto válidos; agendamento exige instante futuro.
 - Texto, música, corte e capa possuem fluxo funcional e feedback acessível.
@@ -74,7 +89,9 @@ A divergência com a redação genérica sobre etapas está registrada em
 
 ## Testes exigidos
 
-- Unidade para domínio/controller; widgets e goldens responsivos; rota separada do viewer; pgTAP para RLS, grants, cross-tenant, duração, versão e auditoria; análise estática e gates do catálogo/memória.
+- Unidade para domínio/controller; widgets e goldens responsivos; rota separada
+  do viewer; pgTAP para RLS, grants, cross-tenant, duração, versão, remoção,
+  purge e auditoria; análise estática e gates do catálogo/memória.
 
 ## Riscos
 

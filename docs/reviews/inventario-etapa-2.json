@@ -2,15 +2,15 @@
   "sourceCommit": "19b8f574",
   "generatedAt": "2026-09-08",
   "counts": {
-    "mvp": 194,
+    "mvp": 195,
     "gate-formal-mvp": 3,
     "flutter-only": 5,
     "deferred-post-mvp": 29
   },
   "layerCounts": {
-    "frontendApplicable": 231,
-    "backendApplicable": 224,
-    "integratedActiveApplicable": 192,
+    "frontendApplicable": 232,
+    "backendApplicable": 225,
+    "integratedActiveApplicable": 193,
     "backendNotApplicable": 7,
     "integratedNotApplicable": 7
   },
@@ -5888,6 +5888,28 @@
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+    },
+    {
+      "id": "agora.remove",
+      "family": "agora",
+      "screen": "Agora / Remover",
+      "scope": "mvp",
+      "done": "ADR 0040 formalizada pelo Owner em 2026-09-15: remoção explícita imediata, revogação lógica e limpeza da cópia Stream; implementação e aceite produtivo ainda pendentes.",
+      "fe": "Implementar ação de remoção imediata pela rota normal, com confirmação, estados de sucesso/conflito/falha, ausência após reload e sem acesso por URL/ticket novo.",
+      "be": "Implementar contrato server-side de agora.remove com autoria/capacidade contextual, tenant/ownership, expected_version, idempotência, auditoria minimizada, revogação no catálogo/gateway, purge idempotente do objeto R2 e da cópia Stream; preservar catálogo/recibo/auditoria.",
+      "evidence": "decisions/0040-agora-immediate-removal.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/036-principal-now-publication-mvp.md",
+      "historicalFrontend": "blocked-decision",
+      "historicalBackend": "blocked-decision",
+      "frontendStatus": "pending-verification",
+      "backendStatus": "pending-verification",
+      "integratedStatus": "pending-verification",
+      "formalCommitment": {
+        "status": "open",
+        "owner": "Owner/C0/E",
+        "evidence": "decisions/0040-agora-immediate-removal.md",
+        "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
+      },
+      "documentationReconciledAt": "2026-09-15"
     },
     {
       "id": "momentos.view",

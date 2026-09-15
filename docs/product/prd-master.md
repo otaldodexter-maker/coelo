@@ -9,7 +9,7 @@ version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
 updated_at: "2026-09-15"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0039"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0039; decisions/0040"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -28,6 +28,11 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; dec
 > entitlements ficam preparados para V1/V2. Recuperação/reset de Auth fica
 > reservado à Etapa 3; não é execução corrente da R14. Planos de medicação são
 > outro domínio e não são afetados.
+>
+> **Overlay de produto — 15/09/2026.** No Agora, a expiração padrão permanece
+> em 24 horas, porém a remoção explícita é imediata pelo `agora.remove`, com
+> revogação de leitura, purge do objeto R2 e da cópia Stream, com catálogo e
+> auditoria preservados. A implementação não está certificada nesta atualização.
 | Coluna 1 | COELO<br>PRD Master Oficial v1<br>coelo.me · Produto completo + MVP/v1 + roadmap |
 | --- | --- |
 
@@ -474,7 +479,7 @@ Feed podendo ter carrossel (Até 10 fotos, em versão futuras aumentamos) com fo
 | Aspecto | MVP/v1 |
 | --- | --- |
 | Nome de produto | Now é mais seguro e institucional que “Stories”, mas pode usar linguagem visual familiar. |
-| Duração | Expiração padrão de 24h; histórico interno/auditável conforme política de retenção. |
+| Duração | Expiração padrão de 24h; remoção explícita imediata via `agora.remove`; histórico interno/auditável conforme política de retenção. |
 | Audiência | Unidade, grupo, criança específica ou segmentação por papel. |
 | Mídia | Fotos e vídeos curtos (30 segundos); limite de tamanho e duração para controlar custo. |
 | Privacidade | Sem compartilhamento público; downloads podem ser controlados por política da instituição. |

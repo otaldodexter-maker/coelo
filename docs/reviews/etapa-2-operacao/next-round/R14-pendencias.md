@@ -1,6 +1,6 @@
 ---
 title: "R14 — fila única consolidada da Etapa 2"
-source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); Owner em 2026-09-15 (ADR 0039); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
+source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); Owner em 2026-09-15 (ADR 0039 e ADR 0040); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -18,9 +18,10 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` em
-15/09/2026, após as fatias publicadas das Sessões 1 e 2: FE 184/231
-(79,65%), BE 166/224 (74,11%), E2E 157/192 (81,77%), Owner 15/53
-(28,30%). O denominador integrado ativo é 192 após o Bloco B. Cardápios tem
+15/09/2026, após as fatias publicadas das Sessões 1 e 2: FE 184/232
+(79,31%), BE 166/225 (73,78%), E2E 157/193 (81,35%), Owner 15/53
+(28,30%). O denominador integrado ativo é 193 após o Bloco B e a formalização
+de `agora.remove`. Cardápios tem
 prova FE/BE/E2E publicada, mas seus quatro Owner items permanecem `partial`
 até o aceite central desta coordenação; não entram artificialmente no 15/53.
 
@@ -70,9 +71,15 @@ autorizado e não bloqueiam a execução do MVP.
 18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). Recuperação/
     redefinição (`auth.recover/reset`) ficam reservadas para a Etapa 3.
 19. Circular `H04` (host + goldens); Formulários `H10` (+ `H11` só se >60% pronto); Principal `H27/P54/H02`.
-20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real);
+20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real); Agora › Remover (`agora.remove`: remoção imediata);
     `owner.r12-33` medicação; `owner.r12-18` pessoa sem conta; páginas de erro (BE/E2E).
 21. Gates de medição: `H03`, `H07`, `H09`, `H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
+
+`agora.remove` foi formalizado pela ADR 0040 como ação MVP separada: remoção
+explícita imediata, revogação no catálogo/gateway e purge idempotente do objeto
+R2 e da cópia Stream, preservando catálogo/recibo/auditoria. O action_id está
+no inventário como `pending-verification`; não há implementação nem aceite
+produtivo neste corte.
 
 ## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9) — 6/6 decididas: 5 A, 1 A+
 
@@ -233,7 +240,7 @@ reexecutados sem nova abertura do Owner:
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 
-## Ações não terminais por família (inventário: 66 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 67 ações; FE/BE/E2E)
 
 | Família | Qtd | action_ids |
 |---|---:|---|
@@ -242,7 +249,7 @@ reexecutados sem nova abertura do Owner:
 | acontece | 1 | `acontece.create` (local-green/done/pending-verification) |
 | activities | 2 | `activities.list` (local-green/done/pending-verification), `activities.publish` (local-green/done/pending-verification) |
 | agenda | 1 | `agenda.request` (local-green/done/pending-verification) |
-| agora | 4 | `agora.view` (verified/done/pending-verification), `agora.create` (local-green/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification) |
+| agora | 5 | `agora.view` (verified/done/pending-verification), `agora.create` (local-green/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification), `agora.remove` (pending-verification/pending-verification/pending-verification) |
 | assessments | 2 | `assessments.close` (pending-verification/local-green/pending-verification), `assessments.reopen` (pending-verification/local-green/pending-verification) |
 | attendance | 1 | `attendance.create` (local-green/done/pending-verification) |
 | auth | 3 | `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification), `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |

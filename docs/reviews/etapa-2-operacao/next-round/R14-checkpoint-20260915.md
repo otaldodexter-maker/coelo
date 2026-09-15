@@ -15,11 +15,15 @@ Sessão 1 (Blocos A e B) e as provas de Cardápios publicadas pela Sessão 2. N�
 
 ## Quatro números certificados
 
+Após este corte, o Owner formalizou a remoção imediata do Agora. O novo
+`action_id` `agora.remove` foi adicionado ao inventário como pendente; não há
+alteração nos números de conclusão até existir implementação e prova.
+
 | Indicador | Resultado | Leitura |
 |---|---:|---|
-| FE verificado | 184 / 231 (79,65%) | inventário validado |
-| BE concluído | 166 / 224 (74,11%) | sete ações não aplicáveis ao BE |
-| E2E verificado ativo | 157 / 192 (81,77%) | denominador 192 após o Bloco B |
+| FE verificado | 184 / 232 (79,31%) | inventário validado; `agora.remove` pendente |
+| BE concluído | 166 / 225 (73,78%) | sete ações não aplicáveis ao BE |
+| E2E verificado ativo | 157 / 193 (81,35%) | denominador 193 após a formalização de `agora.remove` |
 | Owner items done | 15 / 53 (28,30%) | seis aceites novos da Sessão 1 sobre os nove anteriores |
 
 ## Entregas das sessões — estado central ainda não certificado

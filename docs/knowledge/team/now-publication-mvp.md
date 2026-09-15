@@ -1,11 +1,11 @@
 ---
 title: "Publicação do Agora no MVP"
 knowledge_id: "now-publication-mvp"
-source: "decisions/0032-mvp-private-media-r2.md"
+source: "decisions/0040-agora-immediate-removal.md"
 status: "validated"
 lifecycle: "current"
 generated_at: "2026-08-20"
-updated_at: "2026-09-08"
+updated_at: "2026-09-15"
 audience: "team"
 surfaces: [principal, agora, superadmin-preview, supabase, authorization]
 visibility: "internal"
@@ -31,8 +31,11 @@ No MVP, o master Coelo de mídia e áudio fica no R2 privado
 Media Gateway server-side; o cliente não escolhe paths, não recebe segredo e
 não concede autorização. Para vídeo quente, uma cópia privada pode ser
 promovida ao Stream por até 24 horas; quando o Agora expira, um job idempotente
-remove apenas a cópia do Stream, preservando o master no R2. Metadados,
-contexto, versão, auditoria, idempotência e expiração ficam no Postgres;
+remove apenas a cópia do Stream, preservando o master no R2. Quando o autor
+remove explicitamente, `agora.remove` revoga a leitura imediatamente, impede
+novos tickets/URLs e solicita o purge do objeto R2 e da cópia Stream, mantendo
+catálogo/recibo/auditoria. Metadados, contexto, versão, auditoria,
+idempotência e expiração ficam no Postgres;
 unidade e grupo são sempre revalidados contra a instituição.
 
 Na composição Flutter, contexto produtivo é obrigatório e fixtures só entram por
@@ -46,7 +49,7 @@ e não equivale a `Mídia indisponível`; fonte quebrada continua fail-closed, s
 substituição por fixture demo.
 
 O preview de mídia do rascunho pertence ao autor e usa capability de criação com URL de 60 segundos. O consumo público é um contrato separado: 
-ow.publications.read`, feed filtrado por tenant, instituição, unidade, grupo, papel, audiência, vínculo ativo e expiração; cada mídia retorna um ticket opaco, individual e descartável que a Edge Function troca por URL de 60 segundos após revalidar a pessoa autenticada.
+`now.publications.read`, feed filtrado por tenant, instituição, unidade, grupo, papel, audiência, vínculo ativo e expiração; cada mídia retorna um ticket opaco, individual e descartável que a Edge Function troca por URL de 60 segundos após revalidar a pessoa autenticada.
 
 
 A referência visual do Agora de31/08 está preservada em `docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png`, com hash e origem no README. O vínculo canônico está no item31 da spec de fechamento visual e na spec036. Ela mantém “Sua publicação” e preview desktop, sem trilho lateral ou barra segmentada; isso não remove funções ou validações e não aprova goldens. A redação geral sobre etapas tem conflito registrado em `docs/open-questions.md`, sem extensão automática a Acontece/Momentos.

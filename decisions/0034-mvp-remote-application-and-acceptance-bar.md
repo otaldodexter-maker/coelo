@@ -3,6 +3,7 @@ title: "Aplicação remota autorizada e régua de aceite do MVP"
 source: "decisão do Owner Coelo em 2026-09-10; AGENTS.md; docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md"
 status: "approved"
 generated_at: "2026-09-10"
+amended_by: "decisions/0040-agora-immediate-removal.md (remoção explícita do Agora)"
 ---
 
 # ADR 0034 — Aplicação remota autorizada e régua de aceite do MVP
@@ -110,8 +111,11 @@ pertencem e voltam a contar na revisão profunda.
   continua valendo. Regra de produto: ao cadastrar uma criança em unidade,
   turma e demais níveis, ela e seus responsáveis acompanham automaticamente
   toda a hierarquia acima, inclusive a instituição.
-- Agora: manter o Stream com a estratégia de 24 horas da ADR 0032; sem arquivo
-  não há custo. Nada além do Agora vai ao Stream.
+- Agora: manter a promoção seletiva ao Stream por até 24 horas da ADR 0032;
+  sem arquivo não há custo. A remoção explícita deixou de ser expiration-only
+  e segue `agora.remove`/ADR 0040: revogação lógica imediata, limpeza da cópia
+  Stream e purge do objeto R2, com catálogo/recibo/auditoria preservados. Nada
+  além do Agora vai ao Stream.
 - Não existe prévia: Acontece, Agora e Momentos são o produto e cada ação
   funciona de verdade, ponta a ponta; nenhuma mensagem de prévia permanece; o
   feed do Acontece carrega mais pela paginação do servidor.

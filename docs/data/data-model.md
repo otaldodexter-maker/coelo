@@ -271,7 +271,7 @@ servidor.
 | post_reactions | Reações simples. | MVP. |
 | post_comments | Comentários. | Preparar somente; desativado no MVP. |
 | read_receipts | Leitura confirmada. | Usuário/pessoa, objeto e timestamp. |
-| now_items | Conteúdo temporário. | expires_at padrão 24h. |
+| now_items | Conteúdo temporário. | `expires_at` padrão 24h; remoção explícita imediata por `agora.remove`, com `removed_at`/ator e estado não legível pelo produto. |
 | moments | Vídeos privados. | Até 2 minutos; validação de duração. |
 
 # 11. Mídia

@@ -313,7 +313,7 @@ D06 · Happens Core · MVP
 
 D07 · Now Core · MVP
 
-| Responsabilidade | Gerenciar conteúdos temporários privados com expiração padrão de 24 horas e audiência contextual. |
+| Responsabilidade | Gerenciar conteúdos temporários privados com expiração padrão de 24 horas, remoção explícita imediata (`agora.remove`) e audiência contextual. |
 | --- | --- |
 | Fonte oficial | Item Now, sequência, status de publicação, expiração e visualização agregada. |
 | Não controla | Posts permanentes, vídeos Moments, arquivo físico ou política comercial. |

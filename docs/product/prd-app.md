@@ -8,8 +8,8 @@ status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-24"
 lifecycle: "current"
-updated_at: "2026-09-14"
-reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038"
+updated_at: "2026-09-15"
+reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; decisions/0037; decisions/0038; decisions/0040"
 ---
 
 <!-- Documento derivado de fonte oficial. Edite a fonte DOCX ou registre uma decisao antes de alterar conteudo normativo. -->
@@ -21,6 +21,12 @@ reconciled_with: "AGENTS.md; decisions/0031; decisions/0032; decisions/0034; dec
 > 10 anexos por envio, com `asset_id` separado de `attachment_id`. Crianças não
 > recebem `@` público/global pesquisável. Exportações gerais e importação real
 > permanecem adiadas; MFA/AAL2 não é requisito do MVP.
+>
+> **Overlay de produto — 15/09/2026.** Agora mantém expiração padrão de 24h,
+> mas remoção explícita é imediata pelo `agora.remove`: a publicação some do
+> feed, novas leituras/tickets são negados, o objeto R2 e a cópia Stream entram
+> em purge, e catálogo/auditoria permanecem. Implementação e aceite ainda são
+> pendentes.
 | Coluna 1 | COELO<br>PRD App Oficial v1<br>app.coelo.me + iOS/Android · Experiência diária |
 | --- | --- |
 
@@ -163,7 +169,7 @@ Now deve aparecer como faixa visual no topo do Happens. Moments pode ser acessad
 
 | Aspecto | MVP/v1 |
 | --- | --- |
-| Duração | Expiração padrão de 24 horas. |
+| Duração | Expiração padrão de 24 horas; remoção explícita imediata via `agora.remove`. |
 | Mídia | Fotos e vídeos curtos de até 30 segundos. |
 | Audiência | Instituição, unidade, grupo, criança específica ou papel autorizado. |
 | Consentimento | Respeitar autorização de imagem e regras da instituição. |
@@ -413,7 +419,8 @@ presença.
 
 - Happens aceita reação simples e não apresenta campo de comentário.
 
-- Now expira visualmente após 24 horas.
+- Now expira visualmente após 24 horas e uma remoção explícita deixa de ser
+  legível imediatamente via `agora.remove`.
 
 - Moments impede publicação acima de 2 minutos conforme validação definida na spec.
 

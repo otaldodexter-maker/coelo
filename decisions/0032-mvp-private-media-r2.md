@@ -5,6 +5,7 @@ status: "approved"
 generated_at: "2026-09-03"
 updated_at: "2026-09-03"
 supersedes: "decisions/0030-mvp-private-media-supabase-storage.md"
+amended_by: "decisions/0040-agora-immediate-removal.md (remoção explícita do Agora)"
 ---
 
 # ADR 0032 — Mídia privada de produção no Cloudflare R2 e Stream
@@ -165,7 +166,9 @@ primeiro no R2. A política de distribuição é por produto:
 - **Agora:** promover vídeo para Stream por até 24 horas quando a publicação
   exigir reprodução adaptativa; enquanto a cópia codifica, tocar o MP4 do R2 ou
   mostrar estado de processamento. Ao expirar, remover somente Stream e manter
-  o master no R2.
+  o master no R2. A remoção explícita é imediata conforme a ADR 0040: revoga a
+  leitura no catálogo/gateway, solicita o purge do objeto R2 e da cópia Stream,
+  mantendo catálogo/recibo/auditoria.
 - **Momentos:** R2 é padrão; Stream apenas para conteúdo novo/popular ou que
   ultrapasse um limiar de tráfego medido. A janela inicial não é fixada em 30
   dias; será decidida após métricas do piloto. Pode promover novamente depois.

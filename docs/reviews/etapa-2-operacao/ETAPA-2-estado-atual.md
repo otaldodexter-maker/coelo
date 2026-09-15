@@ -1,6 +1,6 @@
 ---
 title: "Etapa 2 — estado atual e fila vigente R14"
-source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; R14-pendencias.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
+source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/0040-agora-immediate-removal.md; R14-pendencias.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
 status: "active; fila vigente R14; R01–R13 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -21,8 +21,8 @@ históricas; seus itens pendentes não devem continuar apontando para uma rodada
 anterior como destino executável.
 
 Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
-o último estado canônico por `action_id`; os 231 action IDs não ganham novos
-IDs pela transferência. A separação abaixo distingue a fila R14 das fontes
+o último estado canônico por `action_id`; a decisão do Owner de 15/09 acrescenta
+o novo `agora.remove` como ação formal pendente. A separação abaixo distingue a fila R14 das fontes
 históricas e das 29 ações formalmente adiadas para pós-MVP.
 
 Detalhamento operacional: [`R14-pendencias.md`](next-round/R14-pendencias.md) e
@@ -65,12 +65,12 @@ Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 184 / 231 | 79,65% | terminal FE da base inteira |
-| FE local-green | 13 / 231 | 5,63% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 166 / 224 | 74,11% | somente ações aplicáveis ao BE |
-| BE local-green | 13 / 224 | 5,80% | avanço local; não é prova remota |
-| E2E verificado | 157 / 192 | 81,77% | base integrada ativa após o Bloco B |
-| E2E + flutter-only | 164 / 231 | 71,00% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
+| FE verificado | 184 / 232 | 79,31% | terminal FE da base inteira |
+| FE local-green | 13 / 232 | 5,60% | avanço local; não é aceite E2E |
+| BE concluído/verificado | 166 / 225 | 73,78% | somente ações aplicáveis ao BE |
+| BE local-green | 13 / 225 | 5,78% | avanço local; não é prova remota |
+| E2E verificado | 157 / 193 | 81,35% | base integrada ativa após o Bloco B e a formalização de `agora.remove` |
+| E2E + flutter-only | 164 / 232 | 70,69% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
 | Owner items done | 15 / 53 | 28,30% | IDs de Owner, não action IDs |
 | Owner items abertos/parciais | 38 / 53 | 71,70% | complemento dos 15 concluídos |
 

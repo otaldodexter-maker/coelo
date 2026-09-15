@@ -47,8 +47,8 @@ um baseline pode conter uma proposta antiga dentro de uma seção “MVP”.
 Overlays operacionais prioritários nesta fase: ADR 0031 (importação/exportação),
 ADR 0032 (mídia privada), ADR 0034 (aplicação remota e régua de aceite), ADR
 0037 (host/contexto do Principal), ADR 0038 (decisões do Owner da Etapa 2,
-registradas no fechamento da R13) e ADR 0039 (escopo de Planos comerciais e
-Auth). `docs/knowledge` é índice
+registradas no fechamento da R13), ADR 0039 (escopo de Planos comerciais e
+Auth) e ADR 0040 (remoção imediata do Agora). `docs/knowledge` é índice
 projetado e não sobe nessa precedência.
 
 Os baselines canônicos agora exibem um overlay datado no topo; esse overlay

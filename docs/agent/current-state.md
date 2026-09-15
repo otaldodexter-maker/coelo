@@ -1,6 +1,6 @@
 ---
 title: "Estado atual do trabalho do Coelo"
-source: "Owner em 2026-09-14 e 2026-09-15; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md; decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md"
+source: "Owner em 2026-09-14 e 2026-09-15; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md; decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md; decisions/0040-agora-immediate-removal.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -18,7 +18,7 @@ audience: "team"
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
 - Último corte publicado: 15/09/2026, após as fatias das Sessões 1 e 2 — FE
-  184/231, BE 166/224, E2E 157/192 ativo. O Bloco A está 10/10 certificado;
+  184/232, BE 166/225, E2E 157/193 ativo. O Bloco A está 10/10 certificado;
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
   Owner: 15/53 concluídos e 38 abertos/parciais.
@@ -48,6 +48,11 @@ audience: "team"
   não entram no MVP; o reader de Planos fica para V1/V2, o reader self da Conta
   permanece no MVP/R14 e `auth.recover`/`auth.reset` ficam reservados à Etapa 3.
   Planos de medicação não são afetados.
+- Decisão adicional do Owner em 15/09 (`decisions/0040-agora-immediate-removal.md`):
+  a expiração automática do Agora continua em 24 horas, mas a remoção explícita
+  passa a ser imediata. O novo `action_id` oficial é `agora.remove`; contrato,
+  migration/Edge, prova e aceite ainda estão pendentes e não alteram os
+  contadores até certificação.
 - Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
   registros independentes de alergias e orientações. A validação da rota real
   deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o

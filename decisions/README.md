@@ -15,6 +15,7 @@ que a implementação, RLS ou E2E exista. Para o trabalho atual, comece por
 | Principal, host e controles de mídia | `0037-principal-host-context-and-media-controls.md` | Conferir junto da ADR 0032 e da spec da superfície. |
 | Decisões registradas no fechamento da R13 | `0038-owner-decisions-etapa2-backlog-20260914.md` | Overlay de produto para a fila R14; não reabrir o que o Owner decidiu. |
 | Escopo de Planos comerciais e recuperação de Auth | `0039-owner-scope-commercial-plans-auth-stage3-20260915.md` | Planos comerciais não entram no MVP; reader de Planos fica para V1/V2; recuperação/reset de Auth fica na Etapa 3; reader self da Conta permanece na R14. |
+| Remoção explícita do Agora | `0040-agora-immediate-removal.md` | `agora.remove`: revogação lógica imediata, purge do objeto R2 e da cópia Stream, catálogo/recibo/auditoria preservados; implementação e aceite ainda pendentes. |
 | Etapa 3 reservada | `0035-etapa3-mvp-contextual-access-and-app-delivery.md` | Planejamento aprovado; não iniciar automaticamente. |
 
 ## Base arquitetural
