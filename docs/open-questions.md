@@ -28,20 +28,34 @@ para registros sem vínculo/auditoria, lógica nos demais; (C) exclusão real co
 manifesto e retenção. Sem decisão, `institutions.status` (ativar/desativar) continua
 fora do MVP por R12-53. Decidir na abertura da R14.
 
-## OQ-034 — Locais: mapa da instituição por imagem, mídia com visibilidade e hierarquia bloco/andar/tipo (2026-09-15)
+## OQ-034 — Locais: mapa da instituição por imagem, mídia com visibilidade e hierarquia (2026-09-15, refinado)
 
-Owner descreveu a tela desejada (Operação › Locais): card por instituição com
-"Ver mapa" / "Ver unidades"; wizard com (1) mapa geral por **imagem anexada**
-(sem provedor de mapas), endereço sincronizado com o cadastro da instituição com
-popup de confirmação quando mudar em qualquer tela, fotos/vídeos da instituição com
-visibilidade todos / só quem acompanha / ninguém (aviso: servem para visibilidade,
-vão ao perfil público depois do MVP); (2) locais hierárquicos: Bloco (opcional,
-nome livre) → Andar (subsolo, -1, -2, -3, térreo, 1º–8º, outros) → Tipo (sala,
-quadra, piscina, secretaria, estoque, laboratório, refeitório, biblioteca, auditório,
-pátio/parquinho, banheiro/fraldário, enfermaria, outros) → Nome → foto → planta →
-visibilidade todos / funcionários / responsáveis / admin / nenhum. Decisão do Owner:
-**é robusto → R15**, com spec aprovada antes de código; substitui a ação
-`institutions.locations-map` atual (que fica fora do MVP até lá).
+Direção do Owner para a tela **Operação › Locais** (spec nova, **R15**, aprovada em
+intenção; substitui a ação `institutions.locations-map`, que fica fora do MVP até lá):
+
+- **Provedor de mapas** (Google Maps/Mapbox) só na seção **Sobre** da instituição
+  (pós-MVP, perfil público). Em Locais o "mapa geral" é **imagem anexada**; sem provedor.
+- **Lista**: um card por instituição (também em tabela); menu ⋯ com "Ver mapa da
+  instituição" e "Ver unidades". Em Unidades, a mesma mecânica: cards/tabela com as
+  unidades da instituição, cada uma com seu mapa e locais.
+- **Mapa da instituição (wizard)**: (1) endereço puxado do cadastro da instituição —
+  alterar em qualquer tela avisa por popup que muda nas duas e pede confirmação;
+  imagem do mapa geral; fotos e vídeos da instituição com visibilidade
+  **todos / só quem acompanha / ninguém**, com aviso de que servem para dar
+  visibilidade (vão ao perfil público depois do MVP). (2) Locais.
+- **Locais — tipo de localidade**: **interno** ou **externo**.
+  - Interno: Bloco (tem? se sim, nome livre) → Andar (subsolo, -3, -2, -1, térreo,
+    1º a 8º, outros) → Tipo (sala, quadra, piscina, secretaria, estoque,
+    laboratório, refeitório, biblioteca, auditório, pátio/parquinho,
+    banheiro/fraldário, enfermaria, outros) → Nome → foto (opcional) → planta
+    (opcional) → visibilidade **todos / funcionários / responsáveis / admin / nenhum**.
+  - Externo: **endereço obrigatório**; os demais campos acima são opcionais
+    (pode ficar só o endereço).
+- **Integração com Turmas e Atividades**: ao cadastrar local a partir de turma ou
+  atividade, sem locais → leva a esta tela para iniciar o cadastro; com locais →
+  leva a esta tela com a hierarquia (instituição/unidade/bloco/andar) já
+  pré-selecionada.
+- Mídia no R2 privado conforme ADR 0032; visibilidade validada no backend/RLS.
 
 ## OQ-032 — Perfis oficiais do Coelo seguidos automaticamente (2026-09-14)
 
