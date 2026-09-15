@@ -11,7 +11,10 @@
 //
 // Formato de <deltas.json>: array de
 //   {action_id, camada: frontend|backend|integrated, estado_proposto,
-//    delta?, evidencia?, certificacao?: {evidence, revision, environment, recordedAt}}
+//    delta?, evidencia?, escopo?: mvp|gate-formal-mvp|flutter-only|deferred-post-mvp,
+//    certificacao?: {evidence, revision, environment, recordedAt}}
+//   `escopo` grava action.scope (reclassificacao autorizada pelo Owner); os
+//   contadores de cabecalho sao recalculados a partir do inventario.
 
 const fs = require('node:fs');
 const path = require('node:path');
@@ -32,6 +35,12 @@ function applyDeltas(data, deltas) {
     if (!action) throw new Error('action_id desconhecido: ' + entry.action_id);
     const index = layers.indexOf(entry.camada);
     if (index < 0) throw new Error('camada invalida em ' + entry.action_id + ': ' + entry.camada);
+    if (entry.escopo) {
+      if (!['mvp', 'gate-formal-mvp', 'flutter-only', 'deferred-post-mvp'].includes(entry.escopo)) {
+        throw new Error('escopo invalido em ' + entry.action_id + ': ' + entry.escopo);
+      }
+      action.scope = entry.escopo;
+    }
     const field = entry.camada + 'Status';
     const before = action[field];
     if (entry.estado_proposto) action[field] = entry.estado_proposto;
@@ -48,7 +57,7 @@ function applyDeltas(data, deltas) {
       action.certifications = action.certifications || {};
       action.certifications[entry.camada] = entry.certificacao;
     }
-    applied.push(entry.action_id + ' ' + entry.camada + ': ' + before + ' -> ' + action[field]);
+    applied.push(entry.action_id + ' ' + entry.camada + ': ' + before + ' -> ' + action[field] + (entry.escopo ? ' (scope ' + entry.escopo + ')' : ''));
   }
   return applied;
 }
