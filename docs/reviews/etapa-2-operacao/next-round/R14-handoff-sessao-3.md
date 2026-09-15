@@ -18,7 +18,8 @@ também era o HEAD limpo da worktree. Esta sessão não edita os handoffs das
 Sessões 1 e 2.
 
 Após a retomada, a worktree foi sincronizada com avanço fast-forward publicado
-pelas demais sessões; `origin/dev` atual é `e592063d6`.
+pelas demais sessões; `origin/dev` intermediário foi `e592063d6` e o commit
+final desta sessão foi publicado em `2e0aaaab3`.
 
 ## Reivindicações e liberações
 
@@ -51,6 +52,7 @@ registrado. Esta criação é massa de apoio e não certifica, por si só,
 |---|---|---|
 | `0cbcf19f8`, `abdc2fbee`, `6d9210d19` | assessments close/reopen e bloqueio por alvo CDP divergente | `r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md` e `deltas-revert-unverified-target-20260915.json` |
 | `544a2b899` | fixtures nominais para o follower global exigido pelo espelho em child-safety e Forms; compatibilidade PG17 nos testes de policy; expectativa obsoleta do consumidor de modelos removida | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
+| `2e0aaaab3` | prova textual do usuário QA Owner remoto e bloqueios de entrega | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 
 ### Child safety
 
@@ -110,6 +112,10 @@ action_ids de perfis.
 - Promover `forms.expire-file/delete-file` somente com prova de comando
   autoritativo, auditoria e worker/rota conforme a fila; não repetir
   upload/resolve sem nova falha.
+- O gate pós-publicação também reportou `Audit root differs from declared
+  destination`, `Residual HEAD changed: r14/bloco-e` e `Unclassified exclusive
+  commits: r14/bloco-e`. O validador de trackers passou; a reconciliação do
+  destino/Bloco E fica para a coordenação.
 
 As telas não concluídas ficam explicitamente liberadas para a próxima sessão:
 `assessments.close/reopen`, `access-profiles.create/edit/assign`,
@@ -120,6 +126,6 @@ altera os contadores centrais.
 ## Contadores e arquivos não alterados
 
 Contadores locais: FE 184/231, BE 166/224, E2E 157/192 e Owner 15/53.
-`node docs/reviews/validate-trackers.cjs` foi mantido como gate anterior e os
-arquivos de coordenação não foram alterados. Não foram alterados cabeçalho ou
-contadores da R14, `current-state.md`, checkpoint ou `entrega-atual.json`.
+`node docs/reviews/validate-trackers.cjs` passou no encerramento e os arquivos
+de coordenação não foram alterados. Não foram alterados cabeçalho ou contadores
+da R14, `current-state.md`, checkpoint ou `entrega-atual.json`.

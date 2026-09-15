@@ -10,6 +10,8 @@ Banco usado nas provas SQL: espelho Docker `supabase_db_coelo_mirror_r14`.
 Após a execução paralela, a worktree foi atualizada por fast-forward para o
 `origin/dev` publicado `e592063d6`.
 
+O registro desta prova foi publicado no commit `2e0aaaab3` em `origin/dev`.
+
 ## Apoio de acesso QA remoto
 
 Action ID: `superadmin.internal-users.create`.
