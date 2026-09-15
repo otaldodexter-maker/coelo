@@ -194,6 +194,69 @@ void main() {
     expect(saved.avatar.photoAssetId, '8d200000-0000-4000-8000-000000000901');
   });
 
+  test('removes the previously loaded private avatar before saving initials', () async {
+    final actions = <String>[];
+    late final MockClient mediaClient;
+    mediaClient = MockClient((request) async {
+      if (request.url.path.endsWith('/functions/v1/account-media')) {
+        final body = jsonDecode(request.body) as Map<String, dynamic>;
+        actions.add(body['action'] as String);
+        return Response(
+          jsonEncode(switch (body['action']) {
+            'read' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000901',
+              'signed_url': 'https://r2.coelo.test/read',
+              'expires_in': 120,
+            },
+            'remove' => {
+              'asset_id': '8d200000-0000-4000-8000-000000000901',
+              'status': 'revoked',
+              'object_key': 'people/owner/avatar/901/original/object.png',
+            },
+            _ => <String, Object?>{},
+          }),
+          200,
+          request: request,
+          headers: {'content-type': 'application/json'},
+        );
+      }
+      if (request.url.host == 'r2.coelo.test') return Response('', 200, request: request);
+      return Response(
+        jsonEncode(
+          request.url.path.endsWith('/superadmin_account_profile_get')
+              ? photoResponse(2)
+              : response(2),
+        ),
+        200,
+        request: request,
+        headers: {'content-type': 'application/json'},
+      );
+    });
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'synthetic-key',
+      authOptions: const AuthClientOptions(autoRefreshToken: false),
+      httpClient: mediaClient,
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseAccountProfileRepository(client, mediaClient: mediaClient);
+    await repository.load();
+
+    final saved = await repository.save(
+      AccountProfile.prototype().copyWith(
+        avatar: AccountAvatar(
+          mode: AccountAvatarMode.initials,
+          initials: 'OC',
+          backgroundColor: AccountAvatar.defaultBackgroundColor,
+        ),
+      ),
+    );
+
+    expect(actions, containsAllInOrder(['read', 'remove']));
+    expect(saved.avatar.mode, AccountAvatarMode.initials);
+    expect(saved.avatar.photoAssetId, isNull);
+  });
+
   testWidgets('access groups and search use returned module and institution', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1440, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
