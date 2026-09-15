@@ -19,7 +19,7 @@ Sessões 1 e 2.
 
 Após a retomada, a worktree foi sincronizada com avanço fast-forward publicado
 pelas demais sessões; `origin/dev` intermediário foi `e592063d6` e o commit
-final desta sessão foi publicado em `d1025286d`.
+final de implementação/evidência desta retomada foi publicado em `5ba0b5ddf`.
 
 ## Reivindicações e liberações
 
@@ -54,6 +54,7 @@ registrado. Esta criação é massa de apoio e não certifica, por si só,
 | `544a2b899` | fixtures nominais para o follower global exigido pelo espelho em child-safety e Forms; compatibilidade PG17 nos testes de policy; expectativa obsoleta do consumidor de modelos removida | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 | `2e0aaaab3` | prova textual do usuário QA Owner remoto e bloqueios de entrega | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 | `d1025286d` | handoff/evidência final antes da retomada autenticada; origin/dev confirmado | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
+| `5ba0b5ddf` | prova real de assessments close/reopen e recarga; atualização da evidência | `docs/reviews/evidence/etapa-2/r14-sessao-3/bloco-c-local-20260915.md` |
 
 ### Child safety
 
