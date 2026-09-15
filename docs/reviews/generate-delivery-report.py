@@ -80,6 +80,27 @@ def current_residual_branches(previous: dict) -> dict:
     return result
 
 
+def current_protected_worktrees() -> dict:
+    result = {}
+    for block in git("worktree", "list", "--porcelain").split("\n\n"):
+        values = {}
+        for line in block.splitlines():
+            key, _, value = line.partition(" ")
+            values[key] = value
+        raw_path = values.get("worktree")
+        branch = values.get("branch", "")
+        if not raw_path or not branch.startswith("refs/heads/r14/"):
+            continue
+        path = str(Path(raw_path).resolve())
+        result[path] = {
+            "disposition": "retained-active-r14",
+            "reason": "Worktree de sessão R14; preservar até o fechamento e manifesto.",
+            "branch": branch.removeprefix("refs/heads/"),
+            "sha": values.get("HEAD", ""),
+        }
+    return result
+
+
 def normalize_gate(value: str) -> str:
     return (
         value.replace(
@@ -255,7 +276,7 @@ def main() -> None:
         "ownerItems": owner_items,
         "baseReference": git("rev-parse", "HEAD"),
         "target": str(ROOT.resolve()),
-        "protectedWorktrees": {},
+        "protectedWorktrees": current_protected_worktrees(),
         "preservedStash": {},
         "residualBranches": branches,
         "evidenceFiles": evidence,
