@@ -18,9 +18,10 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` no fechamento
-da R14 (16/09/2026): FE 189/232 (81,47%), BE 171/219 (78,08%), E2E 162/186
-(87,10%), Owner 21/53 (39,62%). Fila herdada: 27 ações não terminais (22
-executáveis + 3 MFA `gate-formal-mvp` + 2 Auth reservadas à Etapa 3), 32 Owner
+da R14 (16/09/2026): FE 189/232 (81,47%), BE 172/219 (78,54%), E2E 162/186
+(87,10%), Owner 21/53 (39,62%) — após E8/E9 de 16/09 (`auth.recover` BE done;
+MFA ×3 → pós-MVP). Fila: 24 ações não terminais no MVP (22 + `auth.recover/reset`,
+que voltam ao MVP pela E8); meta do Owner: **186/186**, 32 Owner
 items abertos/parciais (27 executáveis + 5 fora por decisão), 19 resíduos H,
 2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
 renumerado; nenhum estado mudou na abertura.
@@ -53,6 +54,9 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
   uma, com registro.
 - **E5 ordem = A** (Bloco A → B → C), executada com quatro prompts: coordenadora
   + um por bloco.
+- **E8**: reset de senha no MVP, provado com a caixa do Owner (`auth.recover` BE
+  done em 16/09); SMTP próprio → Etapa 3. **E9**: MFA fora do MVP
+  (`deferred-post-mvp`).
 - **E6 = a** (publicar no Histórico); **E7 = b** (responsável recebe o sino em
   atualização e dose — ajustar `20260916190000` por migration v2 + pgTAP + FE
   antes da prova de r12-33).
@@ -68,6 +72,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 5. Chat `chat.attach` + `owner.r12-52` — só depois do contrato E3 (Bloco C, item 12a).
 6. Momentos `momentos.view/publish/remove` (`momentos.create` se o ambiente permitir; roteiro em `r14-sessao-7/momentos-bloqueado-20260916.md`).
 7. `errors.409` (flutter-only, captura na rota real).
+8. `auth.recover` / `auth.reset` + `owner.r12-47` (E8): pedir na tela `/recover` do app QA com o e-mail do Owner, abrir o link em `/reset-password` (após o push da allowlist `127.0.0.1:*`), senha nova, nova sessão, expiração/uso único; sem registrar link.
 
 **Bloco B — migrations já aplicadas (lote 74); rota real + OQ-047 sistêmica:**
 8. OQ-047 (E1): migration única 40001 → PT409 com pgTAP por família; depois Segurança da criança `child-safety.edit/suspend` + `owner.r12-13/15/16`.
@@ -83,7 +88,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 15. H08/H13/H23 (Avisos: duplicar, CTA, visual) e demais H com gate de medição.
 16. `owner.r12-38` Cardápios imagem R2 (migrar adapter para Media Gateway).
 
-**Fora da R15:** `auth.recover/reset` e allowlist de redirect (Etapa 3, ADR 0039); MFA ×3 (`gate-formal-mvp`); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
+**Fora da R15:** SMTP próprio (Etapa 3, E8); MFA ×3 (`deferred-post-mvp`, E9); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
 
 ## Owner items — abertos/parciais e atualizações da execução (32)
 
@@ -276,4 +281,4 @@ Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em
 - H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
 - Execução paralela (sessões, worktrees, handoffs): `R15-execucao-paralela.md` quando aberta; prompts em `R15-prompts.md` (coordenadora + Blocos A/B/C, E5); handoffs são comunicação, não fila.
-- Recuperação/redefinição de senha (`auth.recover/reset`, r12-47): allowlist de redirect para `127.0.0.1:*`/`localhost:*` preparada em config mínimo (push pendente de aprovação do Owner — classificador "Security Weaken"); SMTP próprio ausente — prova com a caixa do Owner (opção a) ou SMTP próprio (opção b), decisão E8 pendente.
+- Recuperação/redefinição de senha (E8): `auth.recover` BE done (entrega real 16/09, `r15-coordenacao/auth-recover-mfa-decisoes-20260916.md`); prova pela tela no Bloco A; allowlist `127.0.0.1:*` preparada (push depende do Owner); SMTP próprio na Etapa 3.

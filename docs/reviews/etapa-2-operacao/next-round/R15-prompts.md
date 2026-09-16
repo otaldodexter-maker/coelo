@@ -13,8 +13,8 @@ audience: "team"
 Quatro prompts, conforme E5 da ADR 0042: um para a coordenadora (pasta
 principal, `dev`) e um por bloco (worktree própria). Cada bloco é uma sessão
 executora; a coordenadora integra por cherry-pick. Copie o prompt inteiro para
-a sessão correspondente. Meta do Owner: **E2E 186/186** (hoje 162) — as ações
-que dependem de decisão estão nomeadas no prompt da coordenadora.
+a sessão correspondente. Meta do Owner: **E2E 186/186** (hoje 162): 24 ações, todas com decisão tomada
+(E8 reset de senha no MVP; E9 MFA fora).
 
 Regras comuns (valem para os quatro): AGENTS.md → `docs/agent/current-state.md`
 → `source-of-truth.md` → ADR 0041 e ADR 0042 → `R15-pendencias.md` →
@@ -40,7 +40,7 @@ Entrada obrigatória: AGENTS.md; `docs/agent/current-state.md`; `docs/agent/sour
 
 Papel: (1) escrever `R15-execucao-paralela.md` (sessões A/B/C, worktrees `Coelo.worktrees\r15-bloco-a|b|c` em branches `r15/bloco-a|b|c` criadas de `dev`, `.env.local` copiado, portas 3014/3015/3016 e CDP 9414/9415/9416, espelhos 621xx/622xx/623xx, handoffs `R15-handoff-bloco-a|b|c.md`); (2) lançar as três sessões com os Prompts A, B e C deste arquivo; (3) integrar cada entrega em `dev` por cherry-pick (conflito em inventário/rastreadores: manter `dev`, reaplicar o delta JSON, `validate-trackers`; conflito em `R15-pendencias.md`: manter as duas linhas); (4) a cada integração: atualizar cabeçalho/contadores/projeção de `R15-pendencias.md` (projeção de ações não terminais gerada do inventário por `frontendStatus/backendStatus/integratedStatus`), `current-state.md`, `ETAPA-2-estado-atual.md`, `entrega-atual.json` (worktrees protegidas, branches residuais `patch-equivalent` com `successor`, formalActions para ações mudadas fora de Owner items), `node docs/reviews/validate-trackers.cjs`, `powershell -File .agents/skills/coelo-knowledge/scripts/Test-CoeloKnowledge.ps1 -Root <raiz>`, `git diff --check`, commit + `git push origin dev`, `python docs/reviews/delivery_gate.py docs/reviews/entrega-atual.json` (PASS); (5) escritas em produção que uma sessão não conseguir por permissão são feitas por você pelo rito (regra local já liberada); (6) no fim: checkpoint `R15-checkpoint-<data>.md`, contadores antes→depois, action_ids certificados, bloqueios por causa (sessão/massa/RPC/ambiente/decisão), gate PASS, stash vazio, worktrees listadas. Não execute telas você mesma; não edite dentro das worktrees.
 
-Decisões ainda necessárias para 186/186 (levar ao Owner só se as sessões chegarem lá): `auth.recover`/`auth.reset` (ADR 0039 → Etapa 3; Owner sinalizou provar com a própria caixa — registrar como E8 se confirmar) e `auth.mfa`/`account.mfa`/`internal-users.mfa` (`gate-formal-mvp`: provar TOTP real na rota ou reclassificar). Sem essas 5, o teto é 181/186.
+Sem decisões pendentes: as 24 ações não terminais do MVP (22 + `auth.recover/reset`, E8) estão distribuídas nos Blocos A/B/C; MFA ×3 já é `deferred-post-mvp` (E9). Uma ação do Owner ainda em aberto: o `config push` da allowlist de redirect (`scratchpad/auth-redirect`) — sem ela, `auth.reset` só prova em `superadmin.coelo.me`; peça ao Owner quando o Bloco A chegar à fatia 7.
 
 Ordem de integração: aceite o que chegar; se duas sessões tocarem o mesmo arquivo Dart, resolva mantendo os dois comportamentos e rode `flutter analyze` + as suítes das famílias tocadas antes do commit. Goldens: só regravar quando o `isolatedDiff` for cabeçalho (E4) ou mudança decidida (B2); registrar cada regravação.
 
@@ -57,7 +57,8 @@ Fatias, nesta ordem, cada uma com md + capturas sem PII + `deltas-<fatia>-<data>
 4. Formulários (`qa-r06-formularios`): `forms.expire-file` e `forms.delete-file` (lote 73 aplicado: worker/EF `form-media` reais — ler `r14-sessao-6/forms-expire-delete-file-20260916.md`), `forms.create`/`forms.edit` + r12-39 (posição final persistida após arrastar/mover) + r12-40 (seção renomeada, nome na prévia), `forms.location-answer` (resposta com localização, persistência, reload, valor inválido rejeitado, formulário alheio → 403).
 5. Momentos (`qa-r06-publicacoes` publica, `qa-r06-principal` lê): `momentos.view`, `momentos.publish`, `momentos.remove` e `momentos.create` (bloqueio de CORS caiu — se o `blocked-environment` tiver outra causa, registre-a) com mídia R2 real, reload e negativas por PostgREST.
 6. `errors.409` (flutter-only): provocar conflito real (avançar `management_version` por PostgREST e salvar pela tela) e capturar a página/estado 409; delta só `frontend` → verified.
-7. Se sobrar: `agora.publish` E2E depende da massa E2 (Bloco B cria); combine pelo handoff do Bloco B antes de tentar.
+7. `auth.recover` / `auth.reset` + `owner.r12-47` (E8): na tela `/recover` do app QA pedir recuperação para o e-mail do Owner (`adrieldasbc@live.com`; ele confirma o recebimento no chat), abrir o link no app local em `/reset-password` (exige a allowlist `127.0.0.1:*` — pedir o push ao Owner via coordenadora se ainda não feito), definir senha nova, entrar com ela, provar expiração/uso único do link (segundo clique → erro) e negativa (e-mail inexistente → 200 sem enumeração). Nunca registrar link/token; senha nova só o Owner sabe. `recover` BE já é done (16/09).
+8. Se sobrar: `agora.publish` E2E depende da massa E2 (Bloco B cria); combine pelo handoff do Bloco B antes de tentar.
 
 Parada: ~5% de cota ou bloqueio sem rota → commit/push verdes, handoff com Reivindicações/Fatias entregues/Avisos/Bloqueios (causa)/Contadores, relatório ≤ 25 linhas. Encerrar Chrome/servidor.
 

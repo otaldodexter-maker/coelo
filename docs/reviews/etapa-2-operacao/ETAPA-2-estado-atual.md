@@ -107,7 +107,7 @@ Os denominadores são por camada e não devem ser somados entre si.
 |---|---:|---:|---|
 | FE verificado | 189 / 232 | 81,47% | terminal FE da base inteira |
 | FE local-green | 12 / 232 | 5,17% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 171 / 219 | 78,08% | somente ações aplicáveis ao BE (219 após `errors.*` → not-applicable) |
+| BE concluído/verificado | 172 / 219 | 78,54% | somente ações aplicáveis ao BE (219 após `errors.*` → not-applicable) |
 | BE local-green | 8 / 219 | 3,65% | avanço local; não é prova remota |
 | E2E verificado | 162 / 186 | 87,10% | base integrada ativa após ADR 0041 (`institutions.files` pós-MVP; `errors.*` flutter-only) |
 | E2E + flutter-only | 174 / 232 | 75,00% | 162 E2E + 12 flutter-only com FE verificado; `errors.409` (flutter-only, FE local-green) não conta até a rota real |

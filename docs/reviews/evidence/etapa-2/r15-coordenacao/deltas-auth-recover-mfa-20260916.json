@@ -1,0 +1,63 @@
+[
+ {
+  "action_id": "auth.mfa",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "auth.mfa",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "account.mfa",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "account.mfa",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "internal-users.mfa",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "internal-users.mfa",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0042 E9): MFA fora do MVP",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "auth.recover",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R15 coord 16/09: POST /auth/v1/recover 200 em producao, recovery_sent_at gravado, e-mail recebido pelo Owner (sem link registrado)",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+   "revision": "3a8c37ba5",
+   "environment": "producao",
+   "recordedAt": "2026-09-16T17:52:10-03:00"
+  }
+ }
+]

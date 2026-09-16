@@ -111,7 +111,7 @@
   "metrics": {
     "frontendVerified": "189/232 (81.47%)",
     "frontendLocalGreen": "12/232 (5.17%)",
-    "backendDone": "171/219 (78.08%)",
+    "backendDone": "172/219 (78.54%)",
     "backendLocalGreen": "8/219 (3.65%)",
     "e2eVerified": "162/186 (87.10%)",
     "e2ePlusFlutterOnly": "174/232 (75.00%)",
@@ -981,6 +981,34 @@
       "owner": "Sessao 7 / C0",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
       "nextGate": "E2E: expiracao de 24 h reais observada pela tela apos publicacao; BE done."
+    },
+    {
+      "id": "auth.mfa",
+      "status": "deferred",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "account.mfa",
+      "status": "deferred",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "internal-users.mfa",
+      "status": "deferred",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "auth.recover",
+      "status": "open",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "BE done 16/09 (entrega real); E2E pela tela no Bloco A (E8)."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
@@ -2365,7 +2393,8 @@
     "specs/054-archive-activity-routine-models.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
-    "decisions/0042-r14-closure-r15-opening-20260916.md"
+    "decisions/0042-r14-closure-r15-opening-20260916.md",
+    "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md"
   ],
   "trackerActionIds": [
     "auth.login",

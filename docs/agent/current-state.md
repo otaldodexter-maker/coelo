@@ -27,7 +27,9 @@ audience: "team"
   sistêmica autorizada; massa mínima `QA R15` autorizada (responsável + 2
   crianças + admin/educador); Chat passa a aceitar vários anexos por mensagem
   (contrato novo); goldens regravam suíte a suíte; B2 publica no Histórico;
-  sino de Medicação inclui o responsável. CORS das Edge por porta aplicado
+  sino de Medicação inclui o responsável. E8: reset de senha no MVP, provado
+  com a caixa do Owner (`auth.recover` BE done; SMTP próprio → Etapa 3). E9:
+  MFA ×3 → pós-MVP. Corte: FE 189/232, BE 172/219, E2E 162/186. CORS das Edge por porta aplicado
   (`127.0.0.1:3014–3024` nas seis `*_ALLOWED_ORIGINS`); sem pendência de ambiente.
 - Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
