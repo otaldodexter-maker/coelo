@@ -5791,30 +5791,36 @@
       "family": "agora",
       "screen": "Agora / Visualizar",
       "scope": "mvp",
-      "done": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R08 G4 — primeiro gate: Provar agora.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
-      "fe": "Pós-consolidação: Cabeçalho/contêiner e título alinhados com Acontece; leitura/expiração produtiva e contexto múltiplo ainda têm gates próprios. Anterior: rota normal abre com o contexto real e estado vazio honesto 'Nada novo no Agora' (12)",
-      "be": "Pós-consolidação: Nenhum SQL ou deploy remoto novo. Acontece comprovou R2/Edge/RPC em origem autorizada3000; contratos/certificações anteriores preservados. Provas específicas de cada ação ainda conforme Principal-pos-R10.md. Anterior: 130000 em producao: now_actor reconhece a sessao interna; load_now_draft 200 para qa-r03 e outro tenant 42501 (prova RPC)",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); 51-principal-now.png; coordenacao.json R04 rev 30 (lote22); captura 12; pgTAP 22/22 (now_actor); RPC; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "done": "R14 S7: rota do leitor + publicacao real em producao (655e437b, school_staff, midia R2) + reload completo + negativas de tenant/ticket/asset.",
+      "fe": "R14 S7 rota real: leitor qa-r06-principal ve a story R14 S7 Agora QA staff com imagem R2 real (ticket + URL assinada), contexto e tempo relativo; reload completo rele a story.",
+      "be": "R14 S7 producao: list_visible_now_publications 200 com read_ticket por asset e now-media read 200 (URL assinada 60s); 403 now_permission_denied para instituicao alheia; 403 media_read_denied para ticket alheio; 422 asset_read_not_authorized para asset de outro autor.",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 40abfa875; principal_now_authorization_revision_test.dart (2 PASS), verificado que a prova FALHA sem a correcao e passa com ela; principal_now_preview_route_test.dart sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; coordenacao.json R04 rev 20 (lote9); 51-principal-now.png; coordenacao.json R04 rev 30 (lote22); captura 12; pgTAP 22/22 (now_actor); RPC; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
-          "revision": "principal-chat-sistema r25",
-          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
-          "recordedAt": "2026-09-11T14:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:30:00-03:00"
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-principal-chat-sistema/rota-real/12-agora.png",
-          "revision": "principal-chat-sistema r25",
-          "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
-          "recordedAt": "2026-09-11T14:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:30:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:30:00-03:00"
         }
       }
     },
@@ -5823,15 +5829,15 @@
       "family": "agora",
       "screen": "Agora / Criar",
       "scope": "mvp",
-      "done": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R08 G4 — primeiro gate: Provar agora.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
-      "fe": "Pós-consolidação: Card vazio usa o componente neutro do Criar instituição;58 testes Agora/Momentos no lote anterior PASS. Falta prova própria de picker/publish/reload Agora neste build. Anterior: V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
-      "be": "Pós-consolidação: Nenhum SQL ou deploy remoto novo. Acontece comprovou R2/Edge/RPC em origem autorizada3000; contratos/certificações anteriores preservados. Provas específicas de cada ação ainda conforme Principal-pos-R10.md. Anterior: R04 (10/09, lote 9): fundacao do Agora e mídia em R2 APLICADAS EM PRODUCAO (190300..190600). Gate para done: deploy de now-media e rota normal com sessao.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote9); captura 28; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); goldens principal_*_publication_*; capturas 12, 16, 17; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "done": "R14 S7: tela + persistencia em producao (rascunho 1cb15b83 com midia R2) + reload completo relendo o rascunho + negativas cross-tenant/asset alheio.",
+      "fe": "R14 S7 rota real: publicador hospedado com picker nativo real (PNG 64x64), legenda, card Publico e contexto, Salvar rascunho; reload rele o rascunho com midia via load_now_draft + read-draft.",
+      "be": "R14 S7 producao: save_now_draft 200 + now-media prepare/PUT R2 presignado/finalize 200 (object_key sob tenants/<inst>/now); negativas 403 now_permission_denied (instituicao alheia) e 422 asset_read_not_authorized (asset alheio/leitor nao autor).",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; coordenacao.json R04 rev 20 (lote9); captura 28; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); goldens principal_*_publication_*; capturas 12, 16, 17; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -5842,6 +5848,26 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:20:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:20:00-03:00"
+        }
       }
     },
     {
@@ -5849,14 +5875,14 @@
       "family": "agora",
       "screen": "Agora / Publicar",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar agora.publish na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
-      "fe": "publish_now tinha o mesmo defeito de publish_happens_post e recebeu a mesma correcao: a chave de idempotencia e do controlador, reapresentada em uma nova tentativa da mesma publicacao e descartada quando a intencao muda ou e aceita. Composicao verificada conforme a regra do coordenador: main.dart compoe o caminho SIM; o router monta a pagina PRODUTIVA SIM, fora de /dev; existe implementacao de producao do repositorio, nao apenas interface, SIM.; R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png e agora-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
-      "be": "R04 (10/09, lote 9): fundacao do Agora e mídia em R2 APLICADAS EM PRODUCAO (190300..190600). Stream HOT so quando a publicacao exigir (D2). Gate para done: deploy de now-media e rota normal com sessao.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart, caso do Agora (PASS); suites de principal_now_publication sem regressao; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R14 S7: tela publicou em producao (a4e65c73) mas a releitura apos reload nao e observavel por nenhuma identidade QA (audiencia Familias exige responsavel com crianca; D6 veda massa); bloqueio massa/decisao. Persistencia relida pelo contrato pendente da Edge remove (incidente PostgREST 16/09).",
+      "fe": "R14 S7 rota real: Publicar agora exige publico marcado (validacao Escolha o publico e o contexto), publica e volta ao feed; audiencia fixa Familias impede o autor staff de ver a propria publicacao (observacao de produto para R15).",
+      "be": "R14 S7 producao: publish_now 200 (status published, expires_at = publish_at + 24h) apos prepare/PUT R2/finalize; negativa 403 publication_not_authorized para publicacao inexistente; feed de outra instituicao 403.",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart, caso do Agora (PASS); suites de principal_now_publication sem regressao; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
@@ -5868,6 +5894,20 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:20:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:20:00-03:00"
+        }
       }
     },
     {
@@ -5875,32 +5915,40 @@
       "family": "agora",
       "screen": "Agora / Expirar",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Confirmar disparador agendado de expiração, executar prova sintética e reler (H09).",
+      "done": "R14 S7: expiracao automatica de 24h nao observavel dentro da sessao (sem alterar relogio/dados); FE sem superficie propria alem da copy e do filtro por expires_at. Bloqueio: tempo/ambiente.",
       "fe": "Revalidar o aceite específico desta ação: Expirar/cancelar/falhar e ausência após reload. R01/16h: Ausência de botão manual não prova ausência da expiração aprovada; conferir se retirada manual é critério canônico.",
-      "be": "R04 (10/09, lote 9): transicao de expiracao (190500) APLICADA EM PRODUCAO; pgTAP 16/16. Gate para done: rota normal com sessao e reload. R08: lote56 aplicado em producao apos pgTAP6/6 e regressao31/31, backup logico ADR0034 Decisao8, ledger e cron nominal confirmados. Duas execucoes automaticas succeeded; fluxo UI continua pendente.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r9/r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09; coordenacao.json R04 rev 20 (lote9); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md",
+      "be": "R14 S7 producao: expires_at persistido e relido = publish_at + 24h (publish_now e feed); expire_due_now_publications executado pela rota autorizada (200 expired_count) e negado para instituicao alheia (403); cron coelo-now-publications-expire ja certificado no lote 56.",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r9/r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09; coordenacao.json R04 rev 20 (lote9); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
+      "backendStatus": "done",
       "integratedStatus": "pending-verification",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+          "revision": "dbe518101",
+          "environment": "producao",
+          "recordedAt": "2026-09-16T12:30:00-03:00"
+        }
+      }
     },
     {
       "id": "agora.remove",
       "family": "agora",
       "screen": "Agora / Remover",
       "scope": "mvp",
-      "done": "ADR 0040 formalizada pelo Owner em 2026-09-15: remoção explícita imediata, revogação lógica e limpeza da cópia Stream; implementação e aceite produtivo ainda pendentes.",
-      "fe": "Implementar ação de remoção imediata pela rota normal, com confirmação, estados de sucesso/conflito/falha, ausência após reload e sem acesso por URL/ticket novo.",
+      "done": "R14 S7: candidato de projecao do feed e negativa D5 bloqueados por permissao da sessao (criar migration / db query recusados) e senha da identidade sintetica indisponivel; ver agora-remove-20260916.md.",
+      "fe": "R14 S7: opcao Remover este Agora na folha de opcoes (autor com can_remove + management_version projetados), confirmacao, estados sucesso/negado/conflito/indisponivel e releitura do feed; 67/67 testes; sem rota real porque producao ainda nao projeta management_version/can_remove.",
       "be": "Implementar contrato server-side de agora.remove com autoria/capacidade contextual, tenant/ownership, expected_version, idempotência, auditoria minimizada, revogação no catálogo/gateway, purge idempotente do objeto R2 e da cópia Stream; preservar catálogo/recibo/auditoria.",
-      "evidence": "decisions/0040-agora-immediate-removal.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/036-principal-now-publication-mvp.md",
+      "evidence": "decisions/0040-agora-immediate-removal.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/036-principal-now-publication-mvp.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "local-green",
       "backendStatus": "pending-verification",
       "integratedStatus": "pending-verification",
       "formalCommitment": {
@@ -9382,7 +9430,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-16T14:09:56.474Z",
+  "updatedAt": "2026-09-16T16:19:11.507Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
