@@ -30,12 +30,13 @@ cherry-pick.
 |---|---|---|---|
 | cf8139e8c | agora.create FE verified, BE done, E2E verified-e2e; agora.view FE verified, BE done, E2E verified-e2e; agora.publish FE verified, BE done (E2E pending: audiência Famílias sem identidade responsável, D6); agora.expire BE done (E2E pending: 24 h reais) | — | r14-sessao-7/agora-20260916.md + deltas-agora-20260916.json |
 | d0cb90dd4 | agora.remove FE local-green (opção "Remover este Agora", confirmação, estados, releitura; 67/67 testes); E2E pending | — | r14-sessao-7/agora-remove-20260916.md |
+| (esta) | momentos.* sem alteração de estado — fatia não iniciada por incidente do PostgREST; roteiro de retomada e queda do bloqueio CORS de `momentos.create` registrados | — | r14-sessao-7/momentos-bloqueado-20260916.md |
 
 ## Avisos para as outras sessões
 
 - **Incidente de produção (12:35 BRT em diante):** PostgREST respondeu `504`/`PGRST003 Timed out
   acquiring connection from connection pool` e depois ficou mudo para todas as chamadas REST/Edge
-  (Auth continuou ok; projeto `ACTIVE_HEALTHY` na Management API) por mais de 50 minutos. Gatilho
+  (Auth continuou ok; `GET /rest/v1/` sem banco responde 401; projeto `ACTIVE_HEALTHY` na Management API) das 12:35 até pelo menos 14:02 BRT (fim da sessão), 60+ sondagens. Gatilho
   observado nesta sessão: `publish_now` do rascunho `1cb15b83…` por identidade não autora (primeira
   resposta `504 upstream request timeout`). Não consegui ler `pg_stat_activity`/locks (classificador
   negou). Se outra sessão estava com chamadas longas (`child_safety_change_lifecycle`), pode ser a
@@ -62,7 +63,8 @@ cherry-pick.
    "Somente famílias e responsáveis deste contexto" na story.
 3. `agora.publish` E2E: depende de identidade responsável (ou do item 2); `agora.expire` E2E:
    observação após 24 h (a4e65c73 e 655e437b expiram em 17/09 ~15:06/15:16 UTC).
-4. Momentos: ver seção Bloqueios.
+4. Momentos: executar o roteiro de `momentos-bloqueado-20260916.md` (mesmo build/origem 3020; +3 E2E prováveis, e `momentos.create` sai de `blocked-environment` se o upload passar).
+5. Investigar a causa do esgotamento do pool do PostgREST (locks em `now_publications … for update`? chamadas longas de outras sessões?) antes de novas provas concorrentes.
 
 ## Bloqueios
 
@@ -71,7 +73,7 @@ cherry-pick.
 | agora.publish E2E | massa/decisão — audiência Famílias exige responsável com criança vinculada; D6 veda massa fictícia | identidade responsável QA ou audiência de staff no publicador |
 | agora.expire E2E | tempo/ambiente — expiração automática de 24 h; relógio/dados não alterados | reobservar em 17/09 |
 | agora.remove BE/E2E | ambiente — classificador recusou criar migration (projeção e fixture D5) e `supabase db query`; sessão — senha da identidade sintética `qa-r14-chat-cross-tenant` não disponível | coordenadora aplica o candidato e a fixture pelo rito |
-| momentos.* | ambiente — PostgREST de produção sem resposta (pool esgotado) a partir das 12:35 BRT; ver seção abaixo quando/se recuperar | PostgREST responder |
+| momentos.view/publish/remove/create | ambiente — PostgREST de produção sem resposta (pool esgotado) das 12:35 às 14:02+ BRT; o bloqueio CORS histórico de `momentos.create` caiu na origem 3020 (OPTIONS 200) | PostgREST responder; seguir o roteiro de `momentos-bloqueado-20260916.md` |
 
 ## Contadores
 
