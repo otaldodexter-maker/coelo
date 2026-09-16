@@ -100,6 +100,19 @@ void main() {
                   name: 'Rotina Berçário',
                 ),
               ),
+              // Legado: concluída antes do snapshot existir.
+              fakeHistoryItem(
+                'call-3',
+                date: DateTime(2026, 9, 10),
+                groupName: 'Turma Lua',
+                responsible: 'Cid Educador',
+                routine: const AttendanceRoutineRef(
+                  source: AttendanceRoutineSource.current,
+                  applicationId: 'app-2',
+                  revisionNo: 1,
+                  name: 'Rotina Lua',
+                ),
+              ),
             ],
             hasMore: false,
           ),
@@ -117,12 +130,15 @@ void main() {
     expect(find.text('Música'), findsOneWidget);
     expect(find.text('Ana Educadora'), findsOneWidget);
     expect(find.text('Bia Educadora'), findsOneWidget);
-    expect(find.text('Concluída'), findsOneWidget);
+    expect(find.text('Concluída'), findsNWidgets(2));
     expect(find.text('Em andamento'), findsOneWidget);
-    // Rotina: snapshot mostra nome + versão; rotina atual leva a indicação do Owner.
+    // Rotina: snapshot mostra nome + versão; chamada aberta segue a vigente sem
+    // qualificador; legado concluído sem snapshot leva a indicação do Owner.
     expect(find.text('Rotina Berçário · v3'), findsOneWidget);
     expect(find.text('Rotina Berçário · v4'), findsOneWidget);
+    expect(find.text('Rotina Lua · v1'), findsOneWidget);
     expect(find.text('rotina atual (não registrada na época)'), findsOneWidget);
+    expect(find.text('rotina vigente'), findsNothing, reason: 'na tabela, só o legado leva qualificador');
     // Nenhum controle de presença/edição nesta tela.
     expect(find.text('Presente'), findsNothing);
     expect(find.text('Concluir chamada'), findsNothing);

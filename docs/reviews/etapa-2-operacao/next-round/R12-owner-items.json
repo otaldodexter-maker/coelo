@@ -103,12 +103,12 @@
       "attendance.create",
       "daily-routine.apply"
     ],
-    "fe": "FE verified (rota real 15/09): wizard Contexto → Chamada sem etapa de rotina; texto \"rotina resolvida pelo contexto autorizado\".",
-    "be": "BE done; superadmin_attendance_call_detail não expõe rotina/aplicação/versão e a rota de produção não injeta rotina na chamada — o vínculo efetivo não é observável por contrato.",
-    "e2e": "verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+    "fe": "FE local-green (Sessão 10, 16/09): detalhe da chamada e Histórico mostram a rotina (snapshot \"registrada na conclusão\"; aberta = vigente; legado concluído sem snapshot = \"rotina atual (não registrada na época)\"); repositório mapeia PT409; FE verified anterior (wizard sem etapa de rotina) preservado.",
+    "be": "BE local-green: `20260916183000_attendance_routine_snapshot_v1` (colunas de snapshot, `attendance_effective_routine`, complete_call grava só na primeira conclusão, call_detail expõe routine_snapshot/routine_current/routine_source, histórico projeta a rotina, 40001 → PT409 na família) + pgTAP 43/43 no espelho; NÃO aplicada em produção.",
+    "e2e": "Pendente: aplicar a migration, concluir/reabrir chamada real, reload do detalhe e negativa 409 PT409 (bloqueio: incidente PostgREST 504).",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B3: híbrido — chamada aberta segue a rotina vigente; ao concluir grava snapshot (rotina + versão) e o histórico mostra o snapshot; reabrir não altera. Sem snapshot legado: exibir \"rotina atual (não registrada na época)\".",
+    "nextGate": "Aplicar `20260916183000` pelo rito após `20260916180000` e o fim do incidente; provar na rota real: concluir grava snapshot, reabrir/concluir preserva, legado mostra a indicação; negativa de versão defasada responde 409 PT409.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

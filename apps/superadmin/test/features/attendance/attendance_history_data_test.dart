@@ -139,14 +139,15 @@ void main() {
     expect(first.contextName, 'Turma A');
     expect(first.routine.source, AttendanceRoutineSource.snapshot);
     expect(first.routine.label, 'Rotina Berçário · v3');
-    expect(first.routine.sourceLabel, 'registrada na conclusão');
+    expect(first.routine.sourceLabel(concluded: true), 'registrada na conclusão');
     expect(first.routine.recordedAt, DateTime.utc(2026, 9, 15, 18));
 
     final second = page.items[1];
     expect(second.status, AttendanceCallStatus.reopened);
     expect(second.contextName, 'Música');
     expect(second.routine.source, AttendanceRoutineSource.current);
-    expect(second.routine.sourceLabel, 'rotina atual (não registrada na época)');
+    expect(second.routine.sourceLabel(concluded: true), 'rotina atual (não registrada na época)');
+    expect(second.routine.sourceLabel(concluded: false), 'rotina vigente');
 
     final third = page.items[2];
     expect(third.routine.source, AttendanceRoutineSource.none);

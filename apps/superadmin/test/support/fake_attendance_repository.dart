@@ -373,6 +373,13 @@ List<AttendanceCall> _seedCalls() => [
     canManage: true,
     participants: _participants(secondState: AttendancePresenceState.absent),
     responsible: 'Prof. Marina',
+    // Aberta: segue a rotina vigente (spec 052).
+    routine: const AttendanceRoutineRef(
+      source: AttendanceRoutineSource.current,
+      applicationId: 'routine-app-sun',
+      revisionNo: 2,
+      name: 'Rotina demonstrativa Sol',
+    ),
   ),
   AttendanceCall(
     id: 'call-completed',
@@ -391,6 +398,14 @@ List<AttendanceCall> _seedCalls() => [
       thirdState: AttendancePresenceState.late,
     )..[1].justification = AttendanceJustificationState.accepted,
     responsible: 'Prof. Caio',
+    // Concluída com snapshot gravado na conclusão (spec 052).
+    routine: AttendanceRoutineRef(
+      source: AttendanceRoutineSource.snapshot,
+      applicationId: 'routine-app-moon',
+      revisionNo: 1,
+      name: 'Rotina demonstrativa Lua',
+      recordedAt: DateTime(2026, 8, 2, 17),
+    ),
   ),
   AttendanceCall(
     id: 'call-other-group',

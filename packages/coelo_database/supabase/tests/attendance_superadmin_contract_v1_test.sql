@@ -211,7 +211,8 @@ select is((select value from at5 where key='set1_replay'),(select value from at5
 select is((select count(*) from public.attendance_records where attendance_session_id=pg_temp.at5_uuid('create','id') and status='active'),1::bigint,'replay wrote no second record');
 select is((select version from public.attendance_sessions where id=pg_temp.at5_uuid('create','id')),2::bigint,'replay did not bump the version again');
 
--- Versao obsoleta -> 40001.
+-- Versao obsoleta -> PT409 (era 40001; OQ-047, lote da familia em
+-- 20260916183000_attendance_routine_snapshot_v1).
 select set_config('request.jwt.claims','{"sub":"8f190000-0000-4000-8000-000000000121","aal":"aal1","role":"authenticated"}',true);
 set local role authenticated;
 -- Reservar de novo a mesma intencao (mesma versao esperada) devolve a mesma
@@ -219,9 +220,9 @@ set local role authenticated;
 select is(public.attendance_reserve_idempotency_key('set_participant',pg_temp.at5_uuid('create','id'),1,null),(pg_temp.at5_get('k_set1')#>>'{}')::uuid,'same intent reserves the same consumed key');
 select throws_ok(format('select public.superadmin_attendance_correct_participant(%L,%L,''absent'',''teste'',1)',
   pg_temp.at5_uuid('create','id'),pg_temp.at_id(312)),
-  '40001',null,'stale expected_version is a version conflict');
+  'PT409',null,'stale expected_version is a version conflict');
 select throws_ok(format('select public.superadmin_attendance_reopen_call(%L,1,''teste'')',pg_temp.at5_uuid('create','id')),
-  '40001',null,'stale expected_version on reopen is a version conflict');
+  'PT409',null,'stale expected_version on reopen is a version conflict');
 select throws_ok(format('select public.superadmin_attendance_set_participant(public.attendance_reserve_idempotency_key(''set_participant'',%L,2,null),%L,%L,''sleeping'',2)',
   pg_temp.at5_uuid('create','id'),pg_temp.at5_uuid('create','id'),pg_temp.at_id(312)),
   '22023',null,'unknown presence state is refused');
@@ -260,7 +261,7 @@ insert into at5 values('undo1_again',public.superadmin_attendance_undo_bulk(pg_t
 insert into at5 values('set2',public.superadmin_attendance_set_participant(public.attendance_reserve_idempotency_key('set_participant',pg_temp.at5_uuid('create','id'),5,null),pg_temp.at5_uuid('create','id'),pg_temp.at_id(311),'absent',5));
 insert into at5 values('set3',public.superadmin_attendance_set_participant(public.attendance_reserve_idempotency_key('set_participant',pg_temp.at5_uuid('create','id'),6,null),pg_temp.at5_uuid('create','id'),pg_temp.at_id(312),'late_arrival',6));
 select throws_ok(format('select public.superadmin_attendance_undo_bulk(%L,%L,7)',pg_temp.at5_uuid('bulk2','receipt.operation_id'),pg_temp.at5_uuid('create','id')),
-  '40001',null,'an operation that is no longer the last cannot be undone');
+  'PT409',null,'an operation that is no longer the last cannot be undone');
 insert into at5 values('k_complete',to_jsonb(public.attendance_reserve_idempotency_key('complete_call',pg_temp.at5_uuid('create','id'),7,null)));
 insert into at5 values('complete',public.superadmin_attendance_complete_call(pg_temp.at5_uuid('create','id'),7,(pg_temp.at5_get('k_complete')#>>'{}')::uuid));
 insert into at5 values('complete_replay',public.superadmin_attendance_complete_call(pg_temp.at5_uuid('create','id'),7,(pg_temp.at5_get('k_complete')#>>'{}')::uuid));

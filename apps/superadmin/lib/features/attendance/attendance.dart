@@ -320,12 +320,22 @@ class AttendanceRoutineRef {
       ? (revisionNo == null || revisionNo == 0 ? name! : '$name · v$revisionNo')
       : 'Sem rotina vinculada';
 
-  /// Qualificador da origem, exigido pelo Owner para o legado.
-  String? get sourceLabel => switch (source) {
+  /// Qualificador da origem. Para chamadas já concluídas/reabertas sem
+  /// snapshot vale a indicação exigida pelo Owner ("rotina atual (não
+  /// registrada na época)"); numa chamada ainda aberta a rotina é só a vigente.
+  String? sourceLabel({required bool concluded}) => switch (source) {
     AttendanceRoutineSource.snapshot => 'registrada na conclusão',
-    AttendanceRoutineSource.current => 'rotina atual (não registrada na época)',
+    AttendanceRoutineSource.current =>
+      concluded ? 'rotina atual (não registrada na época)' : 'rotina vigente',
     AttendanceRoutineSource.none => null,
   };
+
+  /// Verdadeiro quando a chamada concluída não tem snapshot (legado).
+  bool isLegacyFor(AttendanceCallStatus status) =>
+      source == AttendanceRoutineSource.current && statusConcluded(status);
+
+  static bool statusConcluded(AttendanceCallStatus status) =>
+      status == AttendanceCallStatus.completed || status == AttendanceCallStatus.reopened;
 }
 
 /// Filtros do Histórico de chamadas (ADR 0041 B2, spec 052).

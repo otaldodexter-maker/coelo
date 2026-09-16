@@ -355,7 +355,7 @@ class _CallsTable extends StatelessWidget {
         initialWidth: 240,
         minWidth: CoeloSize.touchMin * 2,
         maxWidth: 480,
-        cellBuilder: (context, item) => _RoutineCell(routine: item.routine),
+        cellBuilder: (context, item) => _RoutineCell(routine: item.routine, status: item.status),
       ),
       _column('status', 'Situação', 140, (item) => attendanceHistoryStatusLabel(item.status)),
       if (onOpenCall != null)
@@ -381,14 +381,17 @@ class _CallsTable extends StatelessWidget {
 }
 
 class _RoutineCell extends StatelessWidget {
-  const _RoutineCell({required this.routine});
+  const _RoutineCell({required this.routine, required this.status});
 
   final AttendanceRoutineRef routine;
+  final AttendanceCallStatus status;
 
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final qualifier = routine.sourceLabel;
+    final qualifier = routine.sourceLabel(
+      concluded: AttendanceRoutineRef.statusConcluded(status),
+    );
     return Align(
       alignment: AlignmentDirectional.centerStart,
       child: Tooltip(
@@ -398,7 +401,7 @@ class _RoutineCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(routine.label, maxLines: 1, overflow: TextOverflow.ellipsis),
-            if (qualifier != null && routine.source == AttendanceRoutineSource.current)
+            if (qualifier != null && routine.isLegacyFor(status))
               Text(
                 qualifier,
                 maxLines: 1,

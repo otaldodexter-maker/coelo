@@ -594,6 +594,56 @@ class _AttendanceFact extends StatelessWidget {
   );
 }
 
+/// Rotina diária da chamada (ADR 0041 B3, spec 052 §5): o snapshot gravado na
+/// conclusão, ou a rotina vigente com a indicação exigida pelo Owner para o
+/// legado ("rotina atual (não registrada na época)").
+class _AttendanceRoutineFact extends StatelessWidget {
+  const _AttendanceRoutineFact({required this.routine, required this.status});
+
+  final AttendanceRoutineRef routine;
+  final AttendanceCallStatus status;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final qualifier = routine.sourceLabel(
+      concluded: AttendanceRoutineRef.statusConcluded(status),
+    );
+    return Padding(
+      padding: const EdgeInsets.only(top: CoeloSpacing.space3),
+      child: Semantics(
+        key: const Key('attendance-call-routine'),
+        label: 'Rotina diária: ${routine.label}${qualifier == null ? '' : ' — $qualifier'}',
+        child: Row(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Icon(Icons.view_agenda_outlined, size: CoeloSize.iconSm, color: theme.colorScheme.onSurfaceVariant),
+            const SizedBox(width: CoeloSpacing.space2),
+            Expanded(
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text('Rotina diária', style: theme.textTheme.labelMedium),
+                  Text(routine.label, style: theme.textTheme.bodyMedium),
+                  if (qualifier != null)
+                    Text(
+                      qualifier,
+                      style: theme.textTheme.labelSmall?.copyWith(
+                        color: routine.isLegacyFor(status)
+                            ? theme.colorScheme.tertiary
+                            : theme.colorScheme.onSurfaceVariant,
+                      ),
+                    ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
 class _AttendanceRequirementNotice extends StatelessWidget {
   const _AttendanceRequirementNotice();
 
@@ -963,6 +1013,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                                         color: colors.onSurfaceVariant,
                                       ),
                                     ),
+                                    _AttendanceRoutineFact(routine: call.routine, status: call.status),
                                   ],
                                 ),
                               ),
@@ -1124,6 +1175,7 @@ class _AttendanceCallPageState extends State<AttendanceCallPage> {
                       context,
                     ).textTheme.bodyMedium?.copyWith(color: colors.onSurfaceVariant),
                   ),
+                  _AttendanceRoutineFact(routine: call.routine, status: call.status),
                 ],
               ),
             ),
