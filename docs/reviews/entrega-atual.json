@@ -535,7 +535,7 @@
       "fe": "Sessão D provou em produção a coleção independente de alergias, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º.",
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
-      "evidence": "`origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md`",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
       "owner": "C0 R14",
       "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base.",
       "sourceRound": "R14"
@@ -551,7 +551,7 @@
       "fe": "Sessão D provou em produção a coleção independente de orientações, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º.",
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
-      "evidence": "`origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md`",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
       "owner": "C0 R14",
       "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15.",
       "sourceRound": "R14"
@@ -2081,7 +2081,6 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
-    "`origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md`",
     "decisions/0041-owner-decisions-r14-mesa-20260916.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
@@ -2089,7 +2088,9 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md"
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md"
   ],
   "trackerActionIds": [
     "auth.login",
