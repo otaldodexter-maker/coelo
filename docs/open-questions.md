@@ -44,14 +44,28 @@ Fontes: `R14-handoff-sessao-4.md`; `agora-remove-cross-tenant-blocked-20260915.m
 
 **16/09/2026, 14:05 UTC — Owner autorizou (ADR 0041 D1/D2)** a leitura de
 metadados em produção e, após ela, o renome forward-only do carimbo do Chat.
-Pendente de execução.
 
-Decisão necessária (coordenação/Owner, antes de reconstruir espelho ou abrir R16):
-(1) confirmar por consulta de metadados, sem mutação, se `person_avatar_assets`
-(Account), o binding `asset_id` do Chat e a função de fixture existem em produção;
-(2) renomear o carimbo do Chat (forward-only, sem reaplicar) ou registrar a
-exceção na ordem real; (3) só então decidir se a negativa `agora.remove` em R16
-usa essa fixture ou outra rota autorizada.
+**Resolvido em 16/09/2026 pela coordenação (lote 72 em
+`ordem-de-aplicacao-producao.txt`):**
+
+1. Leitura sem mutação por dump de schema de produção
+   (`Coelo-backups/schema-producao-20260916-r14-coord-before.sql`, SHA-256
+   `f1f677ca…`): `public.person_avatar_assets` e as seis RPCs
+   `superadmin_account_avatar_*_v1` existem (migration `20260915120000`
+   aplicada); `superadmin_chat_thread_v2` já devolve `asset_id` nos anexos
+   (migration do Chat aplicada); `app_private.seed_qa_r14_chat_cross_tenant_user`
+   existe com `REVOKE ALL FROM PUBLIC` — a mensagem "não existe" da tentativa
+   do Agora veio de chamada por PostgREST/`authenticated`, que não enxerga
+   `app_private`; a fixture precisa ser invocada como `postgres` (CLI/psql).
+2. Carimbo do Chat renomeado no repositório para
+   `20260915130100_chat_media_asset_binding_v1.sql` (forward-only, sem
+   reexecutar SQL) e as versões `20260915120000` e `20260915130100` marcadas
+   `applied` no ledger remoto por `supabase migration repair` (ledger 302–303,
+   confirmado por `supabase migration list --linked`). O ledger e a ordem real
+   voltam a coincidir; `20260915203000` (Formulários) segue pendente e
+   marcada como tal.
+3. A negativa cross-tenant de `agora.remove` (ADR 0041 D5) pode usar essa
+   fixture, executada como `postgres` e revogada ao fim.
 
 ## OQ-033 — Ciclo de vida ativar/inativar/excluir em todas as entidades (2026-09-15)
 

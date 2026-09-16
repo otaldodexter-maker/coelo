@@ -278,10 +278,15 @@
 20260915200003_agora_immediate_removal_role_seed_v1.sql
 20260915201349_agora_purge_audit_status_v1.sql
 
-# PENDENTE DE RECONCILIACAO (16/09) - nao usar para reconstruir espelho sem confirmar:
-# - 20260915120000_account_avatar_private_r2_v1.sql e 20260915130000_chat_media_asset_binding_v1.sql:
-#   a Sessao E declara aplicacao no projeto vinculado com verificacao de catalogo/RLS/grants
-#   (R14-handoff-sessao-4.md), mas nao ha linha propria no ledger remoto; 20260915130000 colide
-#   com o carimbo de health_care_collection_limit_v1 (lote 70). Ver docs/open-questions.md OQ-046.
+# lote 72 (16/09 11:30) - R14 coordenacao / OQ-046 (ADR 0041 D1+D2): leitura de metadados em producao por dump de schema
+# (Coelo-backups/schema-producao-20260916-r14-coord-before.sql, SHA-256 f1f677ca) confirmou person_avatar_assets + RPCs de avatar
+# (20260915120000), o binding asset_id em superadmin_chat_thread_v2 (Chat) e app_private.seed_qa_r14_chat_cross_tenant_user
+# (20260915185048; funcao privada sem grants, invisivel ao PostgREST). Carimbo do Chat renomeado 20260915130000 -> 20260915130100
+# (forward-only, sem reexecutar SQL) e as duas versoes registradas no ledger remoto por `supabase migration repair --status applied`
+# (ledger 302-303, confirmado por `supabase migration list --linked`). Conteudo ja estava em producao desde 15/09 (Sessao E).
+20260915120000_account_avatar_private_r2_v1.sql
+20260915130100_chat_media_asset_binding_v1.sql
+
+# PENDENTE (16/09) - nao usar para reconstruir espelho sem confirmar:
 # - 20260915203000_forms_question_media_expire_audit_v1.sql: versionada em 0481384f5, suites locais
 #   verdes, NAO aplicada em producao (ausente do ledger); liberada para R15 com forms.expire-file.
