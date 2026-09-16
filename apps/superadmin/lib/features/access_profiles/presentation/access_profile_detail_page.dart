@@ -12,6 +12,7 @@ import '../../../app/shell/superadmin_shell.dart';
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
+import 'access_permission_labels.dart';
 
 final class AccessProfileDetailPage extends StatefulWidget {
   const AccessProfileDetailPage({
@@ -431,7 +432,7 @@ final class _PermissionSummary extends StatelessWidget {
               for (final entry in modules.entries)
                 ExpansionTile(
                   initiallyExpanded: true,
-                  title: Text(_detailModuleLabel(entry.key)),
+                  title: Text(permissionModuleLabel(entry.value.first)),
                   subtitle: Text('${entry.value.length} permissões'),
                   children: [
                     for (final permission in entry.value)
@@ -439,7 +440,7 @@ final class _PermissionSummary extends StatelessWidget {
                         leading: const Icon(Icons.check_circle_outline),
                         title: Text(permission.name),
                         subtitle: Text(
-                          '${_detailScreenLabel(permission.screenCode)} · ${_detailActionLabel(permission.actionCode)}',
+                          '${permissionScreenLabel(permission)} → ${permissionActionLabel(permission)}',
                         ),
                         trailing: permission.requiresMfa
                             ? const Tooltip(
@@ -455,44 +456,6 @@ final class _PermissionSummary extends StatelessWidget {
       ),
     );
   }
-}
-
-String _detailModuleLabel(String module) => switch (module) {
-  'structure' => 'Estrutura',
-  'management' => 'Gestão',
-  'directory' => 'Listagem',
-  'platform' => 'Plataforma',
-  _ => _detailHumanize(module),
-};
-
-String _detailScreenLabel(String screen) => switch (screen) {
-  'activities' => 'Atividades',
-  'institutions' => 'Instituições',
-  'units' => 'Unidades',
-  'groups' => 'Turmas',
-  'forms' => 'Formulários',
-  'access_profiles' => 'Perfis e permissões',
-  'people' => 'Pessoas',
-  'chat' => 'Conversas',
-  _ => _detailHumanize(screen),
-};
-
-String _detailActionLabel(String action) => switch (action) {
-  'read' || 'view' || 'list' => 'Ver',
-  'create' => 'Criar',
-  'update' || 'edit' => 'Editar',
-  'delete' => 'Excluir',
-  'manage' => 'Gerenciar',
-  'assign' => 'Atribuir',
-  'edit_own' => 'Editar próprias',
-  'edit_all' => 'Editar todas',
-  _ => _detailHumanize(action),
-};
-
-String _detailHumanize(String value) {
-  final words = value.replaceAll('_', ' ').replaceAll('.', ' ').trim();
-  if (words.isEmpty) return 'Geral';
-  return '${words[0].toUpperCase()}${words.substring(1)}';
 }
 
 final class _ImpactSummary extends StatelessWidget {

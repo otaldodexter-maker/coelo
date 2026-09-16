@@ -73,6 +73,9 @@ final class AccessPermission {
     this.grantable = true,
     this.inherited = false,
     this.unavailableReason,
+    this.moduleLabel,
+    this.screenLabel,
+    this.actionLabel,
   });
 
   factory AccessPermission.fromJson(Map<String, dynamic> json, {bool selected = false}) =>
@@ -89,7 +92,18 @@ final class AccessPermission {
         grantable: json['grantable'] as bool? ?? true,
         inherited: json['inherited'] as bool? ?? false,
         unavailableReason: json['unavailable_reason'] as String?,
+        // Rótulos de produto do catálogo real (superadmin_access_profile_detail /
+        // superadmin_access_permission_catalog); ausentes em cargas antigas.
+        moduleLabel: _nonEmpty(json['module_label']),
+        screenLabel: _nonEmpty(json['screen_label']),
+        actionLabel: _nonEmpty(json['action_label']),
       );
+
+  static String? _nonEmpty(Object? value) {
+    if (value is! String) return null;
+    final trimmed = value.trim();
+    return trimmed.isEmpty ? null : trimmed;
+  }
 
   final String code;
   final String module;
@@ -103,6 +117,9 @@ final class AccessPermission {
   final bool grantable;
   final bool inherited;
   final String? unavailableReason;
+  final String? moduleLabel;
+  final String? screenLabel;
+  final String? actionLabel;
 
   bool get isSensitive => risk == 'high' || risk == 'critical' || requiresMfa;
 
@@ -119,6 +136,9 @@ final class AccessPermission {
     grantable: grantable,
     inherited: inherited,
     unavailableReason: unavailableReason,
+    moduleLabel: moduleLabel,
+    screenLabel: screenLabel,
+    actionLabel: actionLabel,
   );
 }
 

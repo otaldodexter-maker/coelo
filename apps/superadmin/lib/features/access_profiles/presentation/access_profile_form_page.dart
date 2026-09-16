@@ -15,6 +15,7 @@ import '../../../shared/presentation/widgets/superadmin_form_step_navigation.dar
 import '../../auth/domain/logout_action.dart';
 import '../../support/domain/support_ticket.dart';
 import '../domain/access_profile.dart';
+import 'access_permission_labels.dart';
 
 String? _profileNameError(String? value) =>
     value == null || value.trim().isEmpty ? 'Informe o nome do perfil.' : null;
@@ -1021,10 +1022,7 @@ final class _PermissionModule extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
-    final screens = <String, List<AccessPermission>>{};
-    for (final permission in permissions) {
-      screens.putIfAbsent(permission.screenCode, () => []).add(permission);
-    }
+    final rows = permissionMatrixRows(permissions);
     final actions = permissions.map((item) => item.actionCode).toSet().toList()
       ..sort((left, right) => _actionOrder(left).compareTo(_actionOrder(right)));
     final unavailable = permissions
@@ -1048,41 +1046,47 @@ final class _PermissionModule extends StatelessWidget {
             padding: const EdgeInsets.all(CoeloSpacing.space4),
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final title = Text(module, style: Theme.of(context).textTheme.titleMedium);
-                final actions = Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    TextButton.icon(
-                      key: Key('permission-module-select-all-$module'),
-                      onPressed: selectable.isEmpty ? null : () => onToggleAll(!allSelected),
-                      icon: Icon(
-                        allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
-                        size: CoeloSize.iconSm,
-                      ),
-                      label: Text(allSelected ? 'Limpar módulo' : 'Selecionar módulo'),
-                    ),
-                    const SizedBox(width: CoeloSpacing.space2),
-                    Text(
-                      '${permissions.where((item) => item.selected).length} de ${permissions.length}',
-                      style: Theme.of(
-                        context,
-                      ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
-                    ),
-                  ],
+                final title = Text(
+                  permissionModuleLabel(permissions.first),
+                  style: Theme.of(context).textTheme.titleMedium,
+                );
+                final selectAll = TextButton.icon(
+                  key: Key('permission-module-select-all-$module'),
+                  onPressed: selectable.isEmpty ? null : () => onToggleAll(!allSelected),
+                  icon: Icon(
+                    allSelected ? Icons.deselect_rounded : Icons.select_all_rounded,
+                    size: CoeloSize.iconSm,
+                  ),
+                  label: Text(allSelected ? 'Limpar módulo' : 'Selecionar módulo'),
+                );
+                final count = Text(
+                  '${permissions.where((item) => item.selected).length} de ${permissions.length}',
+                  style: Theme.of(
+                    context,
+                  ).textTheme.labelMedium?.copyWith(color: colors.onSurfaceVariant),
                 );
                 if (constraints.maxWidth < 480) {
+                  // Tela estreita: título em cima e ações quebrando linha, sem
+                  // estourar a largura disponível.
                   return Column(
                     crossAxisAlignment: CrossAxisAlignment.stretch,
                     children: [
                       title,
-                      Align(alignment: Alignment.centerRight, child: actions),
+                      Wrap(
+                        alignment: WrapAlignment.end,
+                        crossAxisAlignment: WrapCrossAlignment.center,
+                        spacing: CoeloSpacing.space2,
+                        children: [selectAll, count],
+                      ),
                     ],
                   );
                 }
                 return Row(
                   children: [
                     Expanded(child: title),
-                    actions,
+                    selectAll,
+                    const SizedBox(width: CoeloSpacing.space2),
+                    count,
                   ],
                 );
               },
@@ -1097,7 +1101,7 @@ final class _PermissionModule extends StatelessWidget {
                 if (constraints.maxWidth >= requiredWidth) {
                   return _DesktopPermissionMatrix(
                     module: module,
-                    screens: screens,
+                    rows: rows,
                     actions: actions,
                     onToggle: onToggle,
                     onToggleScreen: onToggleScreen,
@@ -1105,7 +1109,7 @@ final class _PermissionModule extends StatelessWidget {
                 }
                 return _StackedPermissionMatrix(
                   module: module,
-                  screens: screens,
+                  rows: rows,
                   onToggle: onToggle,
                   onToggleScreen: onToggleScreen,
                 );
@@ -1144,14 +1148,14 @@ final class _PermissionModule extends StatelessWidget {
 final class _DesktopPermissionMatrix extends StatelessWidget {
   const _DesktopPermissionMatrix({
     required this.module,
-    required this.screens,
+    required this.rows,
     required this.actions,
     required this.onToggle,
     required this.onToggleScreen,
   });
 
   final String module;
-  final Map<String, List<AccessPermission>> screens;
+  final List<PermissionMatrixRow> rows;
   final List<String> actions;
   final void Function(AccessPermission permission, bool selected) onToggle;
   final void Function(String screen, bool selected) onToggleScreen;
@@ -1175,7 +1179,7 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
               SizedBox(
                 width: 112,
                 child: Text(
-                  _actionLabel(action),
+                  _actionColumnLabel(rows, action),
                   textAlign: TextAlign.center,
                   style: Theme.of(context).textTheme.labelLarge,
                 ),
@@ -1183,7 +1187,7 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
           ],
         ),
         const SizedBox(height: CoeloSpacing.space2),
-        for (var index = 0; index < screens.length; index++) ...[
+        for (final row in rows)
           Container(
             decoration: BoxDecoration(
               border: Border(top: BorderSide(color: colors.outlineVariant)),
@@ -1194,35 +1198,31 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
                 Expanded(
                   child: _ScreenSelectionHeader(
                     module: module,
-                    screen: screens.keys.elementAt(index),
-                    permissions: screens.values.elementAt(index),
+                    screen: row.screenCode,
+                    label: row.label,
+                    permissions: row.permissions,
                     onToggleAll: onToggleScreen,
                   ),
                 ),
                 for (final action in actions)
                   SizedBox(
                     width: 112,
-                    child:
-                        screens.values
-                                .elementAt(index)
-                                .where((item) => item.actionCode == action)
-                                .firstOrNull ==
-                            null
-                        ? Center(
-                            child: Text('—', style: TextStyle(color: colors.onSurfaceVariant)),
-                          )
-                        : _PermissionActionCell(
-                            permission: screens.values
-                                .elementAt(index)
-                                .firstWhere((item) => item.actionCode == action),
-                            showLabel: false,
-                            onToggle: onToggle,
-                          ),
+                    child: switch (row.permissions
+                        .where((item) => item.actionCode == action)
+                        .firstOrNull) {
+                      null => Center(
+                        child: Text('—', style: TextStyle(color: colors.onSurfaceVariant)),
+                      ),
+                      final permission => _PermissionActionCell(
+                        permission: permission,
+                        showLabel: false,
+                        onToggle: onToggle,
+                      ),
+                    },
                   ),
               ],
             ),
           ),
-        ],
       ],
     );
   }
@@ -1231,13 +1231,13 @@ final class _DesktopPermissionMatrix extends StatelessWidget {
 final class _StackedPermissionMatrix extends StatelessWidget {
   const _StackedPermissionMatrix({
     required this.module,
-    required this.screens,
+    required this.rows,
     required this.onToggle,
     required this.onToggleScreen,
   });
 
   final String module;
-  final Map<String, List<AccessPermission>> screens;
+  final List<PermissionMatrixRow> rows;
   final void Function(AccessPermission permission, bool selected) onToggle;
   final void Function(String screen, bool selected) onToggleScreen;
 
@@ -1246,7 +1246,7 @@ final class _StackedPermissionMatrix extends StatelessWidget {
     final colors = Theme.of(context).colorScheme;
     return Column(
       children: [
-        for (var index = 0; index < screens.length; index++) ...[
+        for (var index = 0; index < rows.length; index++) ...[
           Container(
             padding: const EdgeInsets.all(CoeloSpacing.space3),
             decoration: BoxDecoration(
@@ -1258,12 +1258,13 @@ final class _StackedPermissionMatrix extends StatelessWidget {
               children: [
                 _ScreenSelectionHeader(
                   module: module,
-                  screen: screens.keys.elementAt(index),
-                  permissions: screens.values.elementAt(index),
+                  screen: rows[index].screenCode,
+                  label: rows[index].label,
+                  permissions: rows[index].permissions,
                   onToggleAll: onToggleScreen,
                 ),
                 const SizedBox(height: CoeloSpacing.space2),
-                for (final permission in screens.values.elementAt(index))
+                for (final permission in rows[index].permissions)
                   _PermissionActionCell(
                     permission: permission,
                     showLabel: true,
@@ -1272,7 +1273,7 @@ final class _StackedPermissionMatrix extends StatelessWidget {
               ],
             ),
           ),
-          if (index < screens.length - 1) const SizedBox(height: CoeloSpacing.space3),
+          if (index < rows.length - 1) const SizedBox(height: CoeloSpacing.space3),
         ],
       ],
     );
@@ -1283,12 +1284,14 @@ final class _ScreenSelectionHeader extends StatelessWidget {
   const _ScreenSelectionHeader({
     required this.module,
     required this.screen,
+    required this.label,
     required this.permissions,
     required this.onToggleAll,
   });
 
   final String module;
   final String screen;
+  final String label;
   final List<AccessPermission> permissions;
   final void Function(String screen, bool selected) onToggleAll;
 
@@ -1300,7 +1303,7 @@ final class _ScreenSelectionHeader extends StatelessWidget {
       children: [
         Expanded(
           child: Text(
-            _screenLabel(screen, module),
+            label,
             maxLines: 2,
             overflow: TextOverflow.ellipsis,
             style: Theme.of(context).textTheme.titleSmall,
@@ -1365,7 +1368,7 @@ final class _PermissionActionCellState extends State<_PermissionActionCell> {
       enabled: enabled,
       checked: permission.selected,
       label:
-          '${_actionLabel(permission.actionCode)} em ${_screenLabel(permission.screenCode, permission.module)}'
+          '${permissionActionInScreen(permission)}'
           '${reason == null ? '' : '. Indisponível. $reason'}',
       child: Tooltip(
         message: _permissionTooltip(permission),
@@ -1414,7 +1417,7 @@ final class _PermissionActionCellState extends State<_PermissionActionCell> {
                             child: Column(
                               mainAxisSize: MainAxisSize.min,
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [Text(_actionLabel(permission.actionCode))],
+                              children: [Text(permissionActionLabel(permission))],
                             ),
                           ),
                         ]
@@ -1508,13 +1511,8 @@ final class _ReviewSection extends StatelessWidget {
         .map((code) {
           final permission = catalog[code];
           if (permission == null) return 'Permissão sem descrição no catálogo ($code)';
-          final module = _screenLabel(permission.module, permission.module);
-          final screen = _screenLabel(permission.screenCode, module);
-          final action = permission.name == permission.code
-              ? _actionLabel(permission.actionCode)
-              : permission.name;
           final availability = permission.grantable ? '' : ' — ${_unavailableReason(permission)}';
-          return '$module → $screen → $action$availability';
+          return '${permissionPath(permission)}$availability';
         })
         .toList(growable: false);
   }
@@ -1704,7 +1702,7 @@ String _permissionTooltip(AccessPermission permission) {
   if (permission.requiresMfa) {
     return 'Esta ação exige MFA e validação de autoridade no servidor.';
   }
-  return 'Permissão ${_actionLabel(permission.actionCode)} em ${_screenLabel(permission.screenCode, permission.module)}.';
+  return 'Permissão ${permissionActionInScreen(permission)}.';
 }
 
 int _actionOrder(String action) => switch (action) {
@@ -1715,41 +1713,13 @@ int _actionOrder(String action) => switch (action) {
   _ => 4,
 };
 
-String _actionLabel(String action) => switch (action) {
-  'read' || 'view' || 'list' => 'Ver',
-  'create' => 'Criar',
-  'update' || 'edit' => 'Editar',
-  'delete' => 'Excluir',
-  'manage' => 'Gerenciar',
-  'moderate' => 'Moderar',
-  'access' => 'Acessar',
-  _ => _humanize(action),
-};
-
-String _screenLabel(String screen, String module) => switch (screen) {
-  'general' => module,
-  'activities' => 'Atividades',
-  'institutions' => 'Instituições',
-  'units' => 'Unidades',
-  'groups' => 'Turmas',
-  'forms' => 'Formulários',
-  'structure' => 'Estrutura',
-  'management' => 'Gestão',
-  'directory' => 'Listagem',
-  'platform' => 'Plataforma',
-  'audit' => 'Auditoria',
-  'access_profiles' => 'Perfis e permissões',
-  'support' => 'Suporte',
-  'people' => 'Pessoas',
-  'attendance' => 'Frequência',
-  'chat' => 'Conversas',
-  _ => _humanize(screen),
-};
-
-String _humanize(String value) {
-  final words = value.replaceAll('_', ' ').replaceAll('.', ' ').trim();
-  if (words.isEmpty) return 'Geral';
-  return '${words[0].toUpperCase()}${words.substring(1)}';
+String _actionColumnLabel(List<PermissionMatrixRow> rows, String action) {
+  for (final row in rows) {
+    for (final permission in row.permissions) {
+      if (permission.actionCode == action) return permissionActionLabel(permission);
+    }
+  }
+  return humanizePermissionCode(action);
 }
 
 String _newRequestId() {
