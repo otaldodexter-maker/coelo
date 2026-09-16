@@ -34,7 +34,7 @@ cherry-pick.
 
 ## Avisos para as outras sessões
 
-- 16/09 12:30–12:50 BRT: produção respondeu `504 PGRST003 Timed out acquiring connection from
+- 16/09 12:28–14:13 BRT (ainda em curso ao encerrar): produção respondeu `504 PGRST003 Timed out acquiring connection from
   connection pool` em TODAS as RPCs (Perfis, Instituições), por mais de 20 minutos, logo após a
   abertura de `/profiles/platform/281699f2…` (detalhe do perfil). Não sei se a causa foi esse
   detalhe ou carga de outra sessão (o 504 de `child_safety_change_lifecycle` é conhecido). Se
@@ -62,9 +62,13 @@ cherry-pick.
 
 ## Bloqueios
 
-- **ambiente** — pool de conexões de produção esgotado (PGRST003) a partir de 12:30 BRT; bloqueia
-  reload do detalhe, edição, atribuição e as demais fatias até o pool voltar. Gate afetado: E2E de
-  `access-profiles.*`, `institutions.*`, `account.profile`.
+- **ambiente** — pool de conexões de produção esgotado (`504 PGRST003`) de 12:28 até pelo menos
+  14:13 BRT (105 min, monitorado a cada ~70 s; projeto `ACTIVE_HEALTHY`; Auth respondendo; até a RPC
+  anônima `superadmin_access_permission_catalog` falha). Bloqueia edição/atribuição de Perfis,
+  `institutions.error/access-denied`, `account.profile` e `errors.409`. Sessão encerrada por bloqueio
+  sem rota (regra de parada). Recomendação à coordenação: verificar `pg_stat_activity`/locks no painel
+  do Supabase (uma migration/`ALTER` esperando lock ou uma RPC travada esgota o pool para todos); a
+  Sessão 5 não tem autorização de SQL e não executou diagnóstico direto.
 
 ## Contadores
 
