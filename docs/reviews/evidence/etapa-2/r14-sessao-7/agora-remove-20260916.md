@@ -28,9 +28,9 @@ diagnóstico da coordenadora ("prova positiva integrada") vale para a prova por 
 (`now-immediate-removal-production-proof.cjs`, Sessão E), não para uma tela: **não existia
 consumidor de `agora.remove` em `apps/superadmin/lib`** antes desta sessão.
 
-Candidato de backend preparado e provado no espelho (não aplicado em produção):
+Candidato de backend preparado e provado no espelho da sessão (não aplicado em produção):
 
-- Migration `20260916155500_now_feed_removal_projection_v1.sql` — `drop/create` de
+- Migration candidata `20260916155500_now_feed_removal_projection_v1.sql` — `drop/create` de
   `public.list_visible_now_publications(uuid,uuid,uuid,integer)` com o corpo vigente em produção
   (dump `schema-producao-20260916-r14-coord-before.sql`, SHA `f1f677ca…`) mais duas colunas de
   saída: `management_version bigint` e `can_remove boolean` (autor = ator **e**
@@ -40,18 +40,29 @@ Candidato de backend preparado e provado no espelho (não aplicado em produção
   `now.publications.remove`. Sem direito novo: a autorização segue exclusivamente na RPC.
 - O classificador de permissões desta sessão **recusou criar o arquivo** em
   `packages/coelo_database/migrations/` e também em `docs/reviews/evidence/.../candidatos/`
-  ("Modify Shared Resources"); o texto integral está no scratchpad da sessão
-  (`lvnp-body.sql`) e é reproduzível a partir da definição vigente + o diff descrito acima.
-  Bloqueio classificado: **ambiente (permissão da sessão)**, não decisão nem RPC.
+  ("Modify Shared Resources"); o texto integral ficou no scratchpad da sessão
+  (`candidato-20260916155500_now_feed_removal_projection_v1.sql`) e é reproduzível a partir da
+  definição vigente + o diff descrito acima. Bloqueio classificado: **ambiente (permissão da
+  sessão)**, não decisão nem RPC.
 - Espelho `coelo_mirror_r14_agora` (portas 618xx) restaurado do dump de 16/09 (schema-only) e
   semeado apenas com a pessoa `Coelo` (`c0e10000-…0001`, exigida pelo trigger de follow) e as
   quatro permissões `now.publications.*` (o dump de dados de produção também foi recusado pelo
-  classificador). Baseline pgTAP no espelho antes do candidato:
-  `now_publication_removal_test` 17/19 (2 falhas de grant/ACL do dump),
-  `now_publication_removal_cross_tenant_test` 6/6, `now_media_private_r2_v1_test` 20/23
-  (grants/anon do dump), `now_publication_expiry_transition_test` 15/16 (anon),
-  `now_publication_mvp_test` executado. O candidato não foi aplicado no espelho porque o arquivo
-  não pôde ser criado no repositório; o espelho foi parado ao fim (`supabase stop`).
+  classificador). pgTAP no espelho, **antes → depois** do candidato (as falhas de baseline são
+  ACL/grant do dump schema-only, idênticas nos dois lados):
+  `now_publication_removal_test` 16/19 (9, 18) → 16/19 (9, 18);
+  `now_publication_removal_cross_tenant_test` 6/6 → 6/6;
+  `now_publication_mvp_test` 66/70 (18, 19, 38, 52) → 65/70 (+ **58**);
+  `now_media_private_r2_v1_test` 20/23 (10, 16, 17) → 20/23;
+  `now_publication_expiry_transition_test` 15/16 (10) → 15/16;
+  `now_publication_expiry_dispatch_v1_test` 3/6 (2, 3, 4) → 3/6.
+  A única regressão é o guard **58 "Agora feed exposes only its minimum presentation
+  projection"**, que compara a assinatura de saída literalmente: o candidato amplia a projeção
+  por desenho (ADR 0040 exige `expected_version` da tela), então aplicar o candidato implica
+  atualizar esse guard no mesmo lote — decisão da coordenadora, não desta sessão.
+- Verificação comportamental no espelho (fixtures do `now_publication_removal_cross_tenant_test`
+  + papéis de leitura, em transação com `rollback`), 4/4: autor A vê `management_version 2` e
+  `can_remove true`; ator B (tenant B) recebe `42501` sem vazamento; segundo membro de A sem a
+  capacidade de remoção vê o item com `can_remove false`.
 
 ## Negativa cross-tenant (ADR 0041 D5) — não executada
 
