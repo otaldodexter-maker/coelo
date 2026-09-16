@@ -115,7 +115,9 @@ final class SupabaseChildSafetyRepository
       throw switch (error.code) {
         '42501' => const ChildSafetyUnauthorizedException(),
         'P0002' => const ChildSafetyNotFoundException(),
-        '23505' || '40001' => const ChildSafetyConflictException(),
+        // PT409: conflito de versao sinalizado pelas RPCs de child_safety desde
+        // 20260916152000 (40001 fazia o PostgREST reexecutar ate o 504).
+        '23505' || '40001' || 'PT409' => const ChildSafetyConflictException(),
         '22023' || '23514' => const ChildSafetyValidationException(),
         _ => const ChildSafetyUnavailableException(),
       };

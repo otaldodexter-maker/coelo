@@ -119,7 +119,7 @@ select throws_ok(
   $$select public.child_safety_decide_authorization(
     'c5330000-0000-4000-8000-000000000002','c5327000-0000-4000-8000-000000000002',99,'approved',
     'P32 versao obsoleta')$$,
-  '40001','stale child safety version','versao obsoleta da serialization_failure ao ator de plataforma');
+  'PT409','stale child safety version','versao obsoleta responde PT409 (409 sem retentativa) ao ator de plataforma');
 -- Pedido ja decidido nao pode ser decidido de novo, mesmo pela plataforma.
 select throws_ok(
   $$select public.child_safety_decide_authorization(

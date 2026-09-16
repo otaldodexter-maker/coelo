@@ -23,7 +23,7 @@ void main() {
     });
   }
 
-  for (final code in ['42501', '40001', '23505']) {
+  for (final code in ['42501', '40001', '23505', 'PT409']) {
     test('transport boundary preserves database error $code', () async {
       final client = _client(
         (request) async => Response(

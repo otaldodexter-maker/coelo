@@ -505,3 +505,30 @@ O README antigo dizia ordem por carimbo; `packages/coelo_database/migrations/ord
 ## Destino R12 do gate herdado de PITR — 2026-09-13
 
 O Owner transferiu as pendências R11 para R12. A decisão de PITR permanece aberta no item R12-51 de `docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md`; não foi concedida exceção por esta transferência. Owner decide, C0 R12 verifica e aplica o lote somente sob a regra vigente.
+
+## OQ-047 — SQLSTATE 40001 (`raise serialization_failure`) faz o PostgREST 14.5 reexecutar RPCs sem limite (2026-09-16)
+
+Conflito entre a convenção do código e o comportamento do gateway, observado pela
+Sessão 8 da R14 ao diagnosticar o 504 de `child_safety_change_lifecycle` (ADR 0041
+D4; evidência `docs/reviews/evidence/etapa-2/r14-sessao-8/child-safety-lifecycle-504-20260916.md`):
+
+- Convenção vigente: RPCs sinalizam versão defasada com `raise serialization_failure`
+  (173 ocorrências no dump de produção de 16/09; 221 nas migrations) e os
+  repositórios Flutter mapeiam `40001` para conflito.
+- Comportamento observado em produção e reproduzido no espelho com a mesma
+  versão (PostgREST 14.5): `40001` é tratado como falha transitória e a transação
+  é **reexecutada sem limite** (~500 tx/s) até o 504 do gateway (125 s); o laço
+  continua no banco após o 504. Com PostgREST v16.2 a mesma chamada responde
+  `500 40001` em 242 ms, sem laço. Nenhuma negativa de versão defasada por
+  PostgREST foi provada em produção até hoje.
+- Correção local da Sessão 8 (só a família child_safety): SQLSTATE `PT409`
+  (HTTP 409 sem retentativa) + mapeamento `PT409` no repositório FE.
+
+Decisão pendente do Owner: (a) padronizar `PT409` (ou outro SQLSTATE não
+retentável, com helper compartilhado) em todas as RPCs que hoje usam
+`serialization_failure`, com os mapeamentos FE correspondentes, em lote
+forward-only por família; (b) enquanto isso, encerrar os laços já ativos em
+produção (`child_safety_change_lifecycle` e `withdraw_happens_post`) por
+aplicação da migration `20260916152000` e restart da API / `pg_terminate_backend`
+dos backends PostgREST em laço; (c) registrar a regra durável em
+`coelo-supabase`/`docs/knowledge` depois da decisão.
