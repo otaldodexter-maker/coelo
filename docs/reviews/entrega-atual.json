@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "f452b2e00c2118cec6319d09785623494d9c6f18",
+    "head": "88edcde5c751ead260160295fd895867f935db23",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1002,6 +1002,16 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-seguranca-assiduidade": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-visual-arquivar": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-assiduidade-historico": {
       "disposition": "retained-session",
       "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
@@ -2140,8 +2150,8 @@
         "89be705fa76ac0765ba5f3a07493006c0f68b713"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "origin/r14/acessos-instituicoes": {
@@ -2153,8 +2163,8 @@
         "89be705fa76ac0765ba5f3a07493006c0f68b713"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "r14/formularios-chat": {
@@ -2164,8 +2174,8 @@
         "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "origin/r14/formularios-chat": {
@@ -2175,8 +2185,8 @@
         "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "r14/agora-momentos": {
@@ -2188,8 +2198,8 @@
         "cf8139e8c844d13326507cdb23c70dc54453b011"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "origin/r14/agora-momentos": {
@@ -2201,8 +2211,8 @@
         "cf8139e8c844d13326507cdb23c70dc54453b011"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "r14/seguranca-assiduidade": {
@@ -2213,8 +2223,8 @@
         "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     },
     "origin/r14/seguranca-assiduidade": {
@@ -2225,8 +2235,60 @@
         "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
       ],
       "disposition": "patch-equivalent",
-      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "r14/visual-arquivar": {
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+      "exclusive": [
+        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+        "dd72abb8873c274db848fb57d41f40dc18b21520",
+        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
+        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/visual-arquivar": {
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+      "exclusive": [
+        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+        "dd72abb8873c274db848fb57d41f40dc18b21520",
+        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
+        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "r14/assiduidade-historico": {
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+      "exclusive": [
+        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
+        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
+        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/assiduidade-historico": {
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+      "exclusive": [
+        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
+        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
+        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     }
   },
