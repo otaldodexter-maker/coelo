@@ -7,6 +7,7 @@ import '../listing/coelo_admin_create_action.dart';
 import '../listing/coelo_admin_file_actions.dart';
 import '../listing/coelo_admin_listing_toolbar.dart';
 import '../listing/coelo_admin_pagination.dart';
+import 'coelo_admin_card_grid.dart';
 import 'coelo_admin_directory_view_toggle.dart';
 import 'coelo_admin_pagination_footer.dart';
 import 'coelo_admin_underline_tabs.dart';
@@ -596,84 +597,22 @@ final class _CardGrid extends StatelessWidget {
   final double cardMinHeight;
 
   @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) {
-      final columns = CoeloAdminDirectoryMetrics.columns(constraints.maxWidth);
-      final children = <Widget>[
-        if (create case final create?)
-          ConstrainedBox(
-            constraints: BoxConstraints(minHeight: cardMinHeight),
-            child: KeyedSubtree(
-              key: create.tileSurfaceKey,
-              child: CoeloAdminCreateAction(
-                key: create.tileKey,
-                label: create.label,
-                icon: create.icon,
-                onPressed: create.onPressed,
-              ),
-            ),
-          ),
-        for (final card in cards)
-          ConstrainedBox(
-            constraints: BoxConstraints(minHeight: cardMinHeight),
-            child: card,
-          ),
-      ];
-      // Cards da mesma linha têm a mesma altura, como na referência de
-      // Instituições. Table com alinhamento intrinsicHeight mede os filhos por
-      // layout real, o que funciona com cards que usam LayoutBuilder
-      // (IntrinsicHeight não suporta esses filhos).
-      final width = CoeloAdminDirectoryMetrics.cardWidth(constraints.maxWidth);
-      return Column(
-        key: gridKey,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          for (var start = 0; start < children.length; start += columns) ...[
-            if (start > 0) const SizedBox(height: CoeloAdminDirectoryMetrics.cardGap),
-            Table(
-              defaultColumnWidth: FixedColumnWidth(width),
-              defaultVerticalAlignment: TableCellVerticalAlignment.intrinsicHeight,
-              columnWidths: {
-                for (var gap = 1; gap < columns * 2 - 1; gap += 2)
-                  gap: const FixedColumnWidth(CoeloAdminDirectoryMetrics.cardGap),
-              },
-              children: [
-                TableRow(
-                  children: [
-                    for (var column = 0; column < columns; column++) ...[
-                      if (column > 0) const SizedBox.shrink(),
-                      start + column < children.length
-                          ? _RowStretch(child: children[start + column])
-                          : const SizedBox.shrink(),
-                    ],
-                  ],
-                ),
-              ],
-            ),
-          ],
-        ],
-      );
+  Widget build(BuildContext context) => CoeloAdminCardGrid(
+    gridKey: gridKey,
+    cardMinHeight: cardMinHeight,
+    leading: switch (create) {
+      final create? => KeyedSubtree(
+        key: create.tileSurfaceKey,
+        child: CoeloAdminCreateAction(
+          key: create.tileKey,
+          label: create.label,
+          icon: create.icon,
+          onPressed: create.onPressed,
+        ),
+      ),
+      null => null,
     },
-  );
-}
-
-/// Estica o card até a altura da linha sem impor altura máxima: o conteúdo
-/// que cresce um fio (hover do indicador de status) não estoura o layout.
-final class _RowStretch extends StatelessWidget {
-  const _RowStretch({required this.child});
-
-  final Widget child;
-
-  @override
-  Widget build(BuildContext context) => LayoutBuilder(
-    builder: (context, constraints) => constraints.hasBoundedHeight
-        ? OverflowBox(
-            alignment: Alignment.topLeft,
-            minHeight: constraints.maxHeight,
-            maxHeight: double.infinity,
-            child: child,
-          )
-        : child,
+    cards: cards,
   );
 }
 

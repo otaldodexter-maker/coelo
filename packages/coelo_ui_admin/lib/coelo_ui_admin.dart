@@ -1,5 +1,6 @@
 library;
 
+export 'src/directory/coelo_admin_card_grid.dart';
 export 'src/directory/coelo_admin_directory.dart';
 export 'src/directory/coelo_admin_directory_view_toggle.dart';
 export 'src/directory/coelo_admin_pagination_footer.dart';

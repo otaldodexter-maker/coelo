@@ -32,6 +32,7 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onCreateLaunch,
     this.onLaunchCreated,
     this.onArchive,
+    this.onRestore,
     this.onImport,
     this.onExport,
     this.activityController,
@@ -64,8 +65,13 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   /// atual é apenas recarregada.
   final VoidCallback? onLaunchCreated;
 
-  /// V-15: arquivar modelo ou rotina (status archived pelo save existente).
+  /// ADR 0041 B1: arquivar modelo ou rotina = inativação reversível (sai da
+  /// lista padrão, fica em "Arquivados"); o servidor valida permissão, versão
+  /// e audita. O card só expõe a ação e o callback.
   final Future<bool> Function(RoutineDirectoryItem item)? onArchive;
+
+  /// ADR 0041 B1: restaura um item arquivado para a lista padrão.
+  final Future<bool> Function(RoutineDirectoryItem item)? onRestore;
   final VoidCallback? onImport;
   final VoidCallback? onExport;
   final SuperadminActivityController? activityController;
@@ -212,6 +218,39 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       final archived = await archive(item);
       if (!mounted) return;
       if (archived) _load(page: _controller.state.page?.page ?? 1);
+    } finally {
+      if (mounted) setState(() => _publishing.remove(item.id));
+    }
+  }
+
+  Future<void> _restore(RoutineDirectoryItem item) async {
+    final restore = widget.onRestore;
+    if (restore == null) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('daily-routine-restore-dialog'),
+        title: Text('Restaurar ${item.name}?'),
+        content: const Text('O item volta às listas ativas com a mesma configuração.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            key: const Key('daily-routine-restore-confirm'),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Restaurar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _publishing.add(item.id));
+    try {
+      final restored = await restore(item);
+      if (!mounted) return;
+      if (restored) _load(page: _controller.state.page?.page ?? 1);
     } finally {
       if (mounted) setState(() => _publishing.remove(item.id));
     }
@@ -475,69 +514,45 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     };
   }
 
-  Widget _cards(RoutineDirectoryPage page) => Column(
-    children: [
-      LayoutBuilder(
-        builder: (context, constraints) {
-          final columns = constraints.maxWidth >= 1020
-              ? 3
-              : constraints.maxWidth >= 680
-              ? 2
-              : 1;
-          final width = (constraints.maxWidth - (columns - 1) * CoeloSpacing.space6) / columns;
-          return Wrap(
-            key: const Key('daily-routine-cards'),
-            spacing: CoeloSpacing.space6,
-            runSpacing: CoeloSpacing.space6,
-            children: [
-              if (_canCreate)
-                SizedBox(
-                  width: width,
-                  child: ConstrainedBox(
-                    constraints: const BoxConstraints(minHeight: 216),
-                    child: _createAction(key: const Key('daily-routine-create-tile')),
-                  ),
+  /// ADR 0041 C3: cards em grade compartilhada com linhas de altura uniforme
+  /// (`CoeloAdminCardGrid`), linha "Efetivo" sempre presente ("—" quando não
+  /// há valor) e Arquivar/Restaurar em todos os cards.
+  Widget _cards(RoutineDirectoryPage page) => CoeloAdminCardGrid(
+    gridKey: const Key('daily-routine-cards'),
+    leading: _canCreate ? _createAction(key: const Key('daily-routine-create-tile')) : null,
+    cards: [
+      for (final item in page.items)
+        CoeloAdminInteractiveCard(
+          key: Key('daily-routine-card-${item.id}'),
+          semanticLabel: 'Abrir ${item.name}',
+          onPressed: widget.onEdit == null ? null : () => widget.onEdit!(item),
+          child: Padding(
+            padding: const EdgeInsets.all(CoeloSpacing.space4),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(item.name, style: Theme.of(context).textTheme.titleMedium),
+                const SizedBox(height: CoeloSpacing.space3),
+                _RoutineStatusIndicator(status: item.status),
+                const SizedBox(height: CoeloSpacing.space2),
+                Text('Versão v${item.version}'),
+                if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
+                Text(
+                  'Efetivo: ${item.effectiveLabel ?? '—'}',
+                  key: Key('daily-routine-effective-${item.id}'),
                 ),
-              for (final item in page.items)
-                SizedBox(
-                  width: width,
-                  child: CoeloAdminInteractiveCard(
-                    key: Key('daily-routine-card-${item.id}'),
-                    semanticLabel: 'Abrir ${item.name}',
-                    onPressed: widget.onEdit == null ? null : () => widget.onEdit!(item),
-                    child: ConstrainedBox(
-                      constraints: const BoxConstraints(minHeight: 216),
-                      child: Padding(
-                        padding: const EdgeInsets.all(CoeloSpacing.space4),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(item.name, style: Theme.of(context).textTheme.titleMedium),
-                            const SizedBox(height: CoeloSpacing.space3),
-                            _RoutineStatusIndicator(status: item.status),
-                            const SizedBox(height: CoeloSpacing.space2),
-                            Text('Versão v${item.version}'),
-                            if (item.originLabel != null) Text('Origem: ${item.originLabel}'),
-                            if (item.effectiveLabel != null)
-                              Text('Efetivo: ${item.effectiveLabel}'),
-                            if (_itemActions(item) case final actions when actions.isNotEmpty) ...[
-                              const SizedBox(height: CoeloSpacing.space3),
-                              Wrap(
-                                spacing: CoeloSpacing.space2,
-                                runSpacing: CoeloSpacing.space2,
-                                children: actions,
-                              ),
-                            ],
-                          ],
-                        ),
-                      ),
-                    ),
+                if (_itemActions(item) case final actions when actions.isNotEmpty) ...[
+                  const SizedBox(height: CoeloSpacing.space3),
+                  Wrap(
+                    spacing: CoeloSpacing.space2,
+                    runSpacing: CoeloSpacing.space2,
+                    children: actions,
                   ),
-                ),
-            ],
-          );
-        },
-      ),
+                ],
+              ],
+            ),
+          ),
+        ),
     ],
   );
 
@@ -630,8 +645,9 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   }
 
   /// Ações do item (card e tabela): modelo duplica ou vira rotina; rotina é
-  /// lançada hoje; lançamento em rascunho é publicado. Arquivar ainda não
-  /// tem comando no servidor e fica registrado como pendência.
+  /// lançada hoje; lançamento em rascunho é publicado. Arquivar/Restaurar
+  /// (ADR 0041 B1) aparecem em todos os modelos e rotinas: arquivado mostra
+  /// Restaurar, os demais mostram Arquivar.
   List<Widget> _itemActions(RoutineDirectoryItem item, {bool tableRow = false}) {
     if (!_canManage) return const [];
     final busy = _publishing.contains(item.id);
@@ -658,8 +674,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             Icons.playlist_add_rounded,
             () => widget.onCreateFromModel!(item),
           ),
-        if (widget.onArchive != null && item.status != 'archived')
-          action('archive', 'Arquivar', Icons.archive_outlined, busy ? null : () => _archive(item)),
+        ..._lifecycleActions(item, action, busy: busy),
       ],
       RoutineEntryKind.application => [
         if (widget.onCreateLaunch != null)
@@ -669,8 +684,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             Icons.today_rounded,
             busy ? null : () => _createLaunch(item),
           ),
-        if (widget.onArchive != null && item.status != 'archived')
-          action('archive', 'Arquivar', Icons.archive_outlined, busy ? null : () => _archive(item)),
+        ..._lifecycleActions(item, action, busy: busy),
       ],
       RoutineEntryKind.launch => [
         if (item.status == 'draft' && widget.onPublishLaunch != null)
@@ -683,6 +697,23 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
       ],
     };
   }
+
+  List<Widget> _lifecycleActions(
+    RoutineDirectoryItem item,
+    Widget Function(String id, String label, IconData icon, VoidCallback? onPressed) action, {
+    required bool busy,
+  }) => [
+    if (item.status == 'archived') ...[
+      if (widget.onRestore != null)
+        action(
+          'restore',
+          'Restaurar',
+          Icons.unarchive_outlined,
+          busy ? null : () => _restore(item),
+        ),
+    ] else if (widget.onArchive != null)
+      action('archive', 'Arquivar', Icons.archive_outlined, busy ? null : () => _archive(item)),
+  ];
 
   bool get _canCreate =>
       _canManage &&

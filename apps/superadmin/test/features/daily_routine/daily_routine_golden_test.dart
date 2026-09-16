@@ -152,6 +152,9 @@ Future<void> _pumpDirectory(WidgetTester tester) async {
         onEdit: (_) {},
         onDuplicateModel: (_) {},
         onCreateFromModel: (_) {},
+        // ADR 0041 C3/B1: Arquivar em todos os cards; Restaurar no arquivado.
+        onArchive: (_) async => true,
+        onRestore: (_) async => true,
       ),
     ),
   );

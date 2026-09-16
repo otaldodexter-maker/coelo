@@ -18,14 +18,15 @@ estado por `action_id` alterado (nenhum delta aplicado).
 ## Reivindicações
 
 - Fatia 1 (goldens do cabeçalho global) — entregue.
-- Fatia 2 (`owner.r12-01`, cards de Modelos de rotina) — em andamento.
-- Fatia 3 (`owner.r12-02`, Arquivar modelos de Atividade/Rotina) — a seguir.
+- Fatia 2 (`owner.r12-01`, cards de Modelos de rotina) — entregue.
+- Fatia 3 (`owner.r12-02`, Arquivar modelos de Atividade/Rotina) — em andamento.
 
 ## Fatias entregues
 
 | SHA | Fatia | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|---|
-| (ver git) | Goldens — deriva do cabeçalho global (ADR 0041 C1): causa observada (`3945394f3` trocou `OC`/"Owner Coelo" estáticos por `headerProfile` da sessão; sem host os goldens renderizavam o placeholder `–`/`Conta`, deslocando sino e Bug); estabilização por `SuperadminHeaderProfileScope` + `SuperadminHeaderProfile.preview()` + `test/support/golden_header_profile.dart`; 30 referências regravadas nas três famílias; suítes 30/30 verdes; shell 72/72. | nenhum (golden não promove) | `owner.r12-10` → `partial / FE local-green …`; `owner.r12-11` já done (só citado) | `r14-sessao-9/goldens-cabecalho-global-20260916.md` (+ `capturas/`, `goldens-outras-suites-preexistentes-20260916.tsv`) |
+| `cb7a2418e` | Goldens — deriva do cabeçalho global (ADR 0041 C1): causa observada (`3945394f3` trocou `OC`/"Owner Coelo" estáticos por `headerProfile` da sessão; sem host os goldens renderizavam o placeholder `–`/`Conta`, deslocando sino e Bug); estabilização por `SuperadminHeaderProfileScope` + `SuperadminHeaderProfile.preview()` + `test/support/golden_header_profile.dart`; 30 referências regravadas nas três famílias; suítes 30/30 verdes; shell 72/72. | nenhum (golden não promove) | `owner.r12-10` → `partial / FE local-green …`; `owner.r12-11` já done (só citado) | `r14-sessao-9/goldens-cabecalho-global-20260916.md` (+ `capturas/`, `goldens-outras-suites-preexistentes-20260916.tsv`) |
+| (fatia 2) | `owner.r12-01` — cards de Modelos de rotina (ADR 0041 C3): `CoeloAdminCardGrid` público em coelo_ui_admin (grade de altura uniforme extraída do composto), "Efetivo: —", Arquivar em todos/Restaurar no arquivado (callbacks `onArchive`/`onRestore`); widget test 4/4, pasta 119/119, goldens do diretório regravados. | nenhum | `owner.r12-01` → `partial / FE local-green …` | `r14-sessao-9/daily-routine-cards-r12-01-20260916.md` |
 
 ## Avisos para as outras sessões e para a coordenadora
 
@@ -36,6 +37,8 @@ estado por `action_id` alterado (nenhum delta aplicado).
    249 deles — 194/3.058/3.068 px — e causas já triadas nos demais). Não regravados: a C1 cobre nominalmente
    Segurança/Perfis/Rotina. Lista completa no TSV da evidência.
 3. `entrega-atual.json` e `R12-owner-items.json` mudaram apenas por `sync-r12-owner-records.cjs` (projeção).
+4. `CoeloAdminCardGrid` (coelo_ui_admin) é a grade de altura uniforme do composto, agora pública; diretórios que
+   ainda montam a própria toolbar podem consumi-la em vez de `Wrap`. O composto delega a ela (158/158).
 
 ## Sobra para a R15 (sugestão)
 
