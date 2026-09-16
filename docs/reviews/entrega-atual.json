@@ -400,12 +400,12 @@
       "actionIds": [
         "access-profiles.list"
       ],
-      "fe": "FE local-green: cards distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem inventar métrica.",
+      "fe": "FE verified na rota real (S5 16/09): 8 cards após reload com Status, Escopo máximo, Vínculos e Tipo (ADR 0041 C2).",
       "be": "BE inalterado.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
+      "e2e": "E2E pending-verification: negativa de escopo só por id inexistente/capability inválida (perfis Superadmin não têm tenant).",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Provar rota normal, quantidade arbitrária de registros, golden aprovado, reload e negativa cross-tenant.",
+      "nextGate": "Conferir rolagem da terceira linha de cards em viewport baixo (não rolou por CDP) e registrar a negativa aceita; Owner decide se \"Vínculos 0\" (platform_memberships) é a métrica certa para usuários internos.",
       "sourceRound": "R14"
     },
     {
@@ -414,12 +414,12 @@
       "actionIds": [
         "access-profiles.detail"
       ],
-      "fe": "FE local-green: detalhe traduz módulos, telas e ações para rótulos de produto, preservando código técnico fora do texto principal e ações próprias/todas.",
-      "be": "BE inalterado.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
+      "fe": "FE corrigido (89be705fa/63ec6e973): módulo › tela › ação traduzidos a partir do catálogo real (module_label/screen_label/action_label + tradução local), telas com ações repetidas desdobradas; visto na rota real de criação (S5 16/09).",
+      "be": "BE inalterado; catálogo devolve rótulos em inglês e `CardÃ¡pios` (resíduo).",
+      "e2e": "E2E pending-verification (detalhe bloqueado por PGRST003).",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Provar rota normal, catálogo real, golden aprovado, reload e negativa cross-tenant.",
+      "nextGate": "Abrir /profiles/platform/281699f2… no build 63ec6e973, capturar detalhe traduzido e reload.",
       "sourceRound": "R14"
     },
     {
@@ -429,12 +429,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE local-green: campo Código removido do fluxo; identificador interno preservado/gerado.",
-      "be": "BE inalterado.",
-      "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
+      "fe": "FE verified: criação pela rota real sem campo Código; identificador gerado pelo servidor (`r14-s5-perfil-qa-46749519`).",
+      "be": "BE done (create).",
+      "e2e": "E2E verified-e2e para create (S5 16/09); edição bloqueada por PGRST003.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Provar criação/edição pela rota normal, persistência/reload e negativa cross-tenant.",
+      "nextGate": "Provar edição pela rota normal (renomear/alterar permissão), persistência/reload.",
       "sourceRound": "R14"
     },
     {
@@ -458,12 +458,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE local-green: marcador repetido Crítico/MFA removido; consequência de sensibilidade, MFA e trilha de auditoria explicada por tooltip acessível.",
+      "fe": "FE: tooltip de sensibilidade visto na rota real por hover (crítica: \"Ação sensível…\"); em 63ec6e973 aparece também por foco de teclado e explica risco elevado (teste de widget).",
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Provar catálogo real, rota normal, foco/toque, persistência/reload e negativa cross-tenant.",
+      "nextGate": "Capturar tooltip por foco no build 63ec6e973 na rota real de edição.",
       "sourceRound": "R14"
     },
     {
@@ -473,12 +473,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE local-green: matriz compartilhada preserva colunas alinhadas e ações próprias/todas, com adaptação empilhada em telas estreitas.",
+      "fe": "FE: matriz alinhada (colunas por ação) e empilhada quando não cabe, agora sem esconder permissões com a mesma ação (desdobra por alvo) e sem estouro do cabeçalho em tela estreita (teste 1440/600). Visto na rota real em 1440 (S5 16/09).",
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Provar catálogo real, rota normal, responsividade, persistência/reload e negativa cross-tenant.",
+      "nextGate": "Capturar ~600 px (Emulation.setDeviceMetricsOverride) na rota real e persistência/reload.",
       "sourceRound": "R14"
     },
     {
@@ -502,12 +502,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE local-green: revisão mostra módulo → tela → ação do catálogo, motivo de indisponibilidade e distinção entre configuração e acesso efetivo.",
-      "be": "BE inalterado; conflito Principal em R12-23 separado.",
+      "fe": "FE: revisão mostra módulo › tela › nome do catálogo (\"Acessos › Modelos de perfil › Consultar modelos Admin.\"), motivo de indisponibilidade e texto configuração × acesso efetivo; visto na rota real de criação (S5 16/09; a seta → era tofu na fonte web, trocada por › em 63ec6e973).",
+      "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "Conferir catálogo real/traduções, alcance, ações adiadas e salvar/reload sem perder próprias/todas.",
+      "nextGate": "Salvar/reload na edição sem perder permissões; capturar revisão com › no build 63ec6e973.",
       "sourceRound": "R14"
     },
     {
@@ -2139,7 +2139,8 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md"
+    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md"
   ],
   "trackerActionIds": [
     "auth.login",

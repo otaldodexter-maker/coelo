@@ -1,0 +1,28 @@
+[
+ {
+  "action_id": "access-profiles.create",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R14 S5 rota real: /profiles/new/platform sem campo Codigo; matriz traduz modulo > tela > acao do catalogo real e desdobra Modelos de perfil por Admin/Superadmin/Principal (correcao 89be705fa); revisao e motivo; perfil R14 S5 Perfil QA criado pela tela.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+   "revision": "89be705fa",
+   "environment": "producao",
+   "recordedAt": "2026-09-16T12:30:00-03:00"
+  }
+ },
+ {
+  "action_id": "access-profiles.create",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R14 S5: superadmin_access_profile_save criou platform_roles 281699f2 (code gerado r14-s5-perfil-qa-46749519, v1, 1 capacidade) relido por superadmin_access_profiles_list; reload de /profiles mostra o card; negativas: id inexistente -> P0002 sem mutacao, capability inexistente/institution alheia -> 400 22023.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+   "revision": "89be705fa",
+   "environment": "producao",
+   "recordedAt": "2026-09-16T12:30:00-03:00"
+  }
+ }
+]
