@@ -3,8 +3,9 @@ import 'package:flutter/material.dart';
 
 import '../../../../app/shell/superadmin_notice.dart';
 
-/// Ações de arquivo de Instituições. Import/export continuam adiados no MVP
-/// (botão visível e indisponibilidade honesta).
+/// Ações de arquivo de Instituições. Importação e exportação estão fora do
+/// MVP (ADR 0041 A4): o flyout permanece na tela e, ao clicar, informa que a
+/// função está em desenvolvimento; nada é importado ou exportado.
 List<CoeloAdminFileAction> institutionFileActions(BuildContext context) => [
   CoeloAdminFileAction(
     key: const Key('institution-files-import'),
@@ -26,6 +27,14 @@ List<CoeloAdminFileAction> institutionFileActions(BuildContext context) => [
   ),
 ];
 
+/// Texto único do aviso, também usado pelos testes de widget.
+const institutionFilesInDevelopmentMessage =
+    'Arquivos em desenvolvimento: importar e exportar instituições chegam depois do MVP.';
+
 void _showUnavailable(BuildContext context) {
-  showSuperadminNotice(context, 'Indisponível nesta etapa', icon: Icons.info_outline_rounded);
+  showSuperadminNotice(
+    context,
+    institutionFilesInDevelopmentMessage,
+    icon: Icons.construction_outlined,
+  );
 }

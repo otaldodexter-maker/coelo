@@ -1,13 +1,13 @@
 import '../domain/access_profile.dart';
 
-/// Rótulos de produto para módulo → tela → ação de uma permissão.
+/// Rótulos de produto para módulo › tela › ação de uma permissão.
 ///
 /// O catálogo real (`superadmin_access_profile_detail`) devolve os códigos e
 /// `module_label`, `screen_label` e `action_label`. A tradução local curada do
 /// código real tem prioridade (o servidor ainda devolve rótulos em inglês ou
 /// com codificação errada para alguns itens); sem tradução local vale o rótulo
 /// do servidor, desde que ele não seja só o código humanizado (ex.:
-/// `directory` → "Directory"); por último, o código humanizado. Nenhum código
+/// `directory` › "Directory"); por último, o código humanizado. Nenhum código
 /// técnico cru aparece no texto principal da tela.
 String permissionModuleLabel(AccessPermission permission) =>
     _resolve(permission.moduleLabel, permission.module, _moduleLabels[permission.module]);
@@ -27,14 +27,14 @@ String permissionActionLabel(AccessPermission permission) =>
 String permissionActionInScreen(AccessPermission permission) =>
     '${permissionActionLabel(permission)} em ${permissionScreenLabel(permission)}';
 
-/// Caminho completo "Módulo → Tela → Ação" da revisão e do detalhe. Quando o
+/// Caminho completo "Módulo › Tela › Ação" da revisão e do detalhe. Quando o
 /// nome do catálogo é mais específico que o rótulo da ação (ex.: "Criar
 /// modelos Admin." em vez de só "Criar"), ele é usado no último segmento.
 String permissionPath(AccessPermission permission) {
   final action = permission.name == permission.code
       ? permissionActionLabel(permission)
       : permission.name;
-  return '${permissionModuleLabel(permission)} → ${permissionScreenLabel(permission)} → $action';
+  return '${permissionModuleLabel(permission)} › ${permissionScreenLabel(permission)} › $action';
 }
 
 /// Uma linha da matriz: normalmente uma tela; quando a mesma tela tem mais de

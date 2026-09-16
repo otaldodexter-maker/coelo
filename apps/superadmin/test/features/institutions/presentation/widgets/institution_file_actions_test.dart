@@ -14,10 +14,8 @@ void main() {
           theme: CoeloTheme.light,
           home: Scaffold(
             body: Builder(
-              builder: (context) => CoeloAdminFileActions(
-                compact: compact,
-                actions: institutionFileActions(context),
-              ),
+              builder: (context) =>
+                  CoeloAdminFileActions(compact: compact, actions: institutionFileActions(context)),
             ),
           ),
         ),
@@ -31,7 +29,9 @@ void main() {
       expect(find.text('Exportar XLSX'), findsOneWidget);
       await tester.tap(find.text('Exportar CSV'));
       await tester.pumpAndSettle();
-      expect(find.text('Indisponível nesta etapa'), findsOneWidget);
+      // ADR 0041 A4: o flyout fica na tela e informa que está em desenvolvimento.
+      expect(find.text(institutionFilesInDevelopmentMessage), findsOneWidget);
+      expect(find.textContaining('em desenvolvimento'), findsOneWidget);
       expect(find.textContaining('24 linhas'), findsNothing);
       expect(find.textContaining('2 linhas'), findsNothing);
     });

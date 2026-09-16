@@ -440,7 +440,7 @@ final class _PermissionSummary extends StatelessWidget {
                         leading: const Icon(Icons.check_circle_outline),
                         title: Text(permission.name),
                         subtitle: Text(
-                          '${permissionScreenLabel(permission)} → ${permissionActionLabel(permission)}',
+                          '${permissionScreenLabel(permission)} › ${permissionActionLabel(permission)}',
                         ),
                         trailing: permission.requiresMfa
                             ? const Tooltip(

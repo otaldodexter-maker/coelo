@@ -1337,6 +1337,7 @@ final class _PermissionActionCell extends StatefulWidget {
 
 final class _PermissionActionCellState extends State<_PermissionActionCell> {
   late final FocusNode _focusNode = FocusNode(debugLabel: 'permission-${widget.permission.code}');
+  final _tooltipKey = GlobalKey<TooltipState>();
   bool _hovered = false;
   bool _focused = false;
 
@@ -1371,6 +1372,7 @@ final class _PermissionActionCellState extends State<_PermissionActionCell> {
           '${permissionActionInScreen(permission)}'
           '${reason == null ? '' : '. Indisponível. $reason'}',
       child: Tooltip(
+        key: _tooltipKey,
         message: _permissionTooltip(permission),
         child: FocusableActionDetector(
           key: Key('permission-focus-${permission.code}'),
@@ -1388,7 +1390,12 @@ final class _PermissionActionCellState extends State<_PermissionActionCell> {
               },
             ),
           },
-          onShowFocusHighlight: (value) => setState(() => _focused = value),
+          // Teclado: a explicação de sensibilidade/MFA/auditoria aparece
+          // também ao focar a célula, não só ao pairar ou tocar.
+          onShowFocusHighlight: (value) {
+            setState(() => _focused = value);
+            if (value) _tooltipKey.currentState?.ensureTooltipVisible();
+          },
           child: MouseRegion(
             onEnter: enabled ? (_) => setState(() => _hovered = true) : null,
             onExit: enabled ? (_) => setState(() => _hovered = false) : null,
@@ -1701,6 +1708,9 @@ String _permissionTooltip(AccessPermission permission) {
   }
   if (permission.requiresMfa) {
     return 'Esta ação exige MFA e validação de autoridade no servidor.';
+  }
+  if (permission.risk == 'high') {
+    return 'Ação de risco elevado: fica registrada na trilha de auditoria do servidor.';
   }
   return 'Permissão ${permissionActionInScreen(permission)}.';
 }

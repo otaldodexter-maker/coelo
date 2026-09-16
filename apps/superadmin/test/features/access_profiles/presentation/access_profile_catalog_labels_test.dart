@@ -1,5 +1,5 @@
 // R14 S5 (owner.r12-21/25/27): o catálogo real devolve códigos técnicos e
-// rótulos do servidor; a matriz e a revisão precisam traduzir módulo → tela →
+// rótulos do servidor; a matriz e a revisão precisam traduzir módulo › tela →
 // ação e não podem esconder permissões que compartilham a mesma ação numa
 // tela (Modelos de perfil × Admin/Superadmin/Principal).
 import 'package:coelo_superadmin/features/access_profiles/data/fake_access_profile_repository.dart';
@@ -132,7 +132,7 @@ void main() {
       expect(permissionModuleLabel(admin), 'Acessos');
       expect(permissionScreenLabel(admin), 'Modelos de perfil');
       expect(permissionActionLabel(admin), 'Criar');
-      expect(permissionPath(admin), 'Acessos → Modelos de perfil → Criar modelos Admin.');
+      expect(permissionPath(admin), 'Acessos › Modelos de perfil › Criar modelos Admin.');
 
       final meal = _realCatalog.last;
       // module_label veio com codificação errada do servidor; a tradução local vale.
@@ -153,7 +153,7 @@ void main() {
       expect(permissionModuleLabel(unknown), 'Zeta');
       expect(permissionScreenLabel(unknown), 'Tela Zeta');
       expect(permissionActionLabel(unknown), 'Fazer zeta');
-      expect(permissionPath(unknown), 'Zeta → Tela Zeta → Fazer zeta');
+      expect(permissionPath(unknown), 'Zeta › Tela Zeta › Fazer zeta');
     });
 
     test('tela com ações repetidas desdobra por alvo sem perder permissão', () {
@@ -206,10 +206,27 @@ void main() {
         find.descendant(of: cell, matching: find.byType(Tooltip)),
       );
       expect(tooltip.message, contains('Ação sensível'));
+      // Foco por teclado mostra a mesma explicação (owner.r12-24).
+      final detector = tester.widget<FocusableActionDetector>(
+        find.byKey(const Key('permission-focus-principal.role_models.create')),
+      );
+      FocusManager.instance.highlightStrategy = FocusHighlightStrategy.alwaysTraditional;
+      addTearDown(() => FocusManager.instance.highlightStrategy = FocusHighlightStrategy.automatic);
+      detector.focusNode!.requestFocus();
+      await tester.pumpAndSettle();
+      expect(find.text(tooltip.message!), findsOneWidget);
+      // Risco elevado sem MFA explica a trilha de auditoria.
+      final high = tester.widget<Tooltip>(
+        find.descendant(
+          of: find.byKey(const Key('permission-institution.role_models.create')),
+          matching: find.byType(Tooltip),
+        ),
+      );
+      expect(high.message, contains('trilha de auditoria'));
     });
   }
 
-  testWidgets('revisão descreve módulo → tela → ação com o nome do catálogo', (tester) async {
+  testWidgets('revisão descreve módulo › tela › ação com o nome do catálogo', (tester) async {
     tester.view.physicalSize = const Size(1440, 1200);
     tester.view.devicePixelRatio = 1;
     addTearDown(tester.view.resetPhysicalSize);
@@ -222,13 +239,13 @@ void main() {
     await tester.ensureVisible(cell);
     await tester.tap(cell);
     await tester.pumpAndSettle();
-    // Permissões → Pessoas vinculadas → Revisão.
+    // Permissões › Pessoas vinculadas › Revisão.
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
     await tester.tap(find.byKey(const Key('access-profile-continue')));
     await tester.pumpAndSettle();
     expect(
-      find.text('Acessos → Modelos de perfil → Criar modelos Superadmin.', skipOffstage: false),
+      find.text('Acessos › Modelos de perfil › Criar modelos Superadmin.', skipOffstage: false),
       findsOneWidget,
     );
   });
@@ -255,7 +272,7 @@ void main() {
     await tester.pumpAndSettle();
     expect(find.text('Acessos', skipOffstage: false), findsWidgets);
     expect(find.text('Consultar modelos Admin.', skipOffstage: false), findsOneWidget);
-    expect(find.text('Modelos de perfil → Ver', skipOffstage: false), findsOneWidget);
+    expect(find.text('Modelos de perfil › Ver', skipOffstage: false), findsOneWidget);
     expect(find.text('Access profile models · Ver', skipOffstage: false), findsNothing);
   });
 }
