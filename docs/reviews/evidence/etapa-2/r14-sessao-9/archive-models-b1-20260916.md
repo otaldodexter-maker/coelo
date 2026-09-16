@@ -1,5 +1,5 @@
 ---
-source: "Sessão 9 da R14 (Opus 5), 16/09/2026; ADR 0041 B1 (owner.r12-02); specs/052-archive-activity-routine-models.md; OQ-033 opção B; OQ-047 (PT409)"
+source: "Sessão 9 da R14 (Opus 5), 16/09/2026; ADR 0041 B1 (owner.r12-02); specs/054-archive-activity-routine-models.md; OQ-033 opção B; OQ-047 (PT409)"
 status: evidence
 generated_at: 2026-09-16
 ---
@@ -13,14 +13,14 @@ em produção e a prova de rota real ficam para a coordenadora pelo rito (dump p
 
 ## Contrato
 
-`specs/052-archive-activity-routine-models.md` (draft-for-review). Nomes verificados no dump de schema de produção de
+`specs/054-archive-activity-routine-models.md` (draft-for-review). Nomes verificados no dump de schema de produção de
 16/09 (SHA-256 `f1f677ca…`): `public.activity_templates` (status `record_status`, **sem** versão de gestão; leitor
 `superadmin_activity_template_options` devolve só `active`; comandos no contexto interno com
 `activities.templates.manage`), `public.routine_models` (`status` text com `archived`, `management_version`; ator
 people-based `require_routine_actor('routine.manage_models')`; `superadmin_routine_directory` devolvia arquivados
 misturados quando `p_status` era nulo; Arquivar reenviava o modelo inteiro por `save_model`, que usa `40001`).
 
-## Backend — migration `packages/coelo_database/migrations/20260916183000_archive_models_v1.sql`
+## Backend — migration `packages/coelo_database/migrations/20260916193000_archive_models_v1.sql`
 
 Forward-only, idempotente (aplicada 2× no espelho sem erro), preflight, `lock_timeout 5s`/`statement_timeout 120s`:
 

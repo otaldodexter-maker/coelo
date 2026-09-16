@@ -362,7 +362,7 @@ Future<bool> _archiveRoutineEntry(
   try {
     switch (item.kind) {
       case RoutineEntryKind.model:
-        // spec 052: comando próprio com expected_version (PT409) e auditoria;
+        // spec 054: comando próprio com expected_version (PT409) e auditoria;
         // o save antigo continua só onde não há repositório de ciclo de vida.
         if (repository case final RoutineModelLifecycleRepository lifecycle) {
           await lifecycle.archiveModel(
@@ -399,7 +399,7 @@ Future<bool> _archiveRoutineEntry(
   }
 }
 
-/// spec 052: Restaurar devolve o modelo arquivado à lista padrão. Só modelos
+/// spec 054: Restaurar devolve o modelo arquivado à lista padrão. Só modelos
 /// têm o comando; rotinas aplicadas arquivadas ficam para a spec de ciclo de vida.
 Future<bool> _restoreRoutineEntry(
   BuildContext context,
@@ -1109,7 +1109,7 @@ GoRouter createSuperadminRouter({
     ),
   );
 
-  /// spec 052 (ADR 0041 B1): Arquivar/Restaurar modelo de atividade pelo
+  /// spec 054 (ADR 0041 B1): Arquivar/Restaurar modelo de atividade pelo
   /// comando v1 com `expected_version`; a página confirma antes e recarrega
   /// depois. Só repositórios que implementam o ciclo de vida expõem a ação.
   Future<bool> Function(ActivityTemplateOption template)? activityTemplateLifecycle(
@@ -3091,7 +3091,7 @@ GoRouter createSuperadminRouter({
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
               onCreateLaunch: (item) => _createRoutineLaunch(context, dailyRoutineRepository, item),
-              // Spec 052 §3: o rascunho criado passa a ser consultado e
+              // Spec 054 §3: o rascunho criado passa a ser consultado e
               // publicado em Assiduidade › Histórico › Lançamentos de rotina.
               onLaunchCreated: () => context.goNamed(
                 SuperadminRoutes.attendanceHistoryName,

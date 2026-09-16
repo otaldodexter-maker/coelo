@@ -421,16 +421,16 @@ final class RoutineDirectoryItem {
   final String? originLabel;
   final String? effectiveLabel;
 
-  /// Rotina aplicada de origem de um lançamento (spec 052 §3).
+  /// Rotina aplicada de origem de um lançamento (spec 054 §3).
   final String? applicationId;
   /// `management_version` do registro (expected_version de Arquivar/Restaurar,
-  /// spec 052). `version` continua sendo a versão da definição publicada.
+  /// spec 054). `version` continua sendo a versão da definição publicada.
   final int managementVersion;
 
   bool get isArchived => status == 'archived';
 }
 
-/// Arquivar/Restaurar modelo de rotina (ADR 0041 B1, spec 052): comandos
+/// Arquivar/Restaurar modelo de rotina (ADR 0041 B1, spec 054): comandos
 /// próprios com `expected_version` (PT409 em versão defasada), recibo por
 /// `requestId` e auditoria; separado de [RoutineRepository] para não obrigar
 /// os repositórios de preview/teste a implementá-los.

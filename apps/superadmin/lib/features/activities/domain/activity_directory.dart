@@ -471,14 +471,14 @@ final class ActivityTemplateOption {
   final ActivityGovernance governance;
   final ActivityStatus status;
 
-  /// `management_version` do modelo (spec 052); `expected_version` de
+  /// `management_version` do modelo (spec 054); `expected_version` de
   /// Arquivar/Restaurar. Só o diretório v1 devolve o valor real.
   final int managementVersion;
 
   bool get isArchived => status == ActivityStatus.archived;
 }
 
-/// Leitor do diretório de modelos (spec 052): mesmo envelope das opções, mas
+/// Leitor do diretório de modelos (spec 054): mesmo envelope das opções, mas
 /// com **todos** os status (inclusive arquivados) e `management_version`.
 /// Separado de [ActivityDirectoryRepository] para não alterar o leitor de
 /// opções que o formulário usa (só modelos ativos).

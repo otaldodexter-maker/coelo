@@ -312,7 +312,7 @@ final class UnavailableActivityCommandRepository implements ActivityCommandRepos
   }) => _unavailable();
 }
 
-/// Arquivar/Restaurar modelo de atividade (ADR 0041 B1, spec 052): inativação
+/// Arquivar/Restaurar modelo de atividade (ADR 0041 B1, spec 054): inativação
 /// reversível com `expected_version`, idempotente por `requestId`.
 abstract interface class ActivityTemplateLifecycleRepository {
   Future<ActivityTemplateLifecycleResult> archiveTemplate(ActivityTemplateLifecycleCommand command);

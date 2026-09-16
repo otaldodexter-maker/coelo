@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 import '../../../support/activities/fake_activity_directory_repository.dart';
 
-/// spec 052 (ADR 0041 B1, owner.r12-02): Atividades › Modelos com aba
+/// spec 054 (ADR 0041 B1, owner.r12-02): Atividades › Modelos com aba
 /// Arquivados, Arquivar/Restaurar com confirmação, recarga e leitor v1.
 void main() {
   Future<void> pump(

@@ -9,8 +9,6 @@ import 'package:coelo_superadmin/features/access_profiles/presentation/access_pr
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
-import 'package:coelo_ui_admin/coelo_ui_admin.dart';
-import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 

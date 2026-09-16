@@ -91,7 +91,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   var _display = _RoutineDisplay.cards;
   var _selectedType = RoutineEntryKind.model;
 
-  /// Filtro de status (spec 052): sem filtro o servidor já exclui arquivados;
+  /// Filtro de status (spec 054): sem filtro o servidor já exclui arquivados;
   /// "Arquivados" pede `status = archived`.
   String? _selectedStatus;
 

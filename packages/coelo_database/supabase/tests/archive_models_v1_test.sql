@@ -1,6 +1,6 @@
 -- Somente replay LOCAL descartavel. Fixtures sinteticas com rollback. Nenhuma conta real.
--- Prova da migration 20260916183000_archive_models_v1 (R14 Sessao 9, ADR 0041 B1,
--- owner.r12-02; specs/052-archive-activity-routine-models.md): Arquivar/Restaurar
+-- Prova da migration 20260916193000_archive_models_v1 (R14 Sessao 9, ADR 0041 B1,
+-- owner.r12-02; specs/054-archive-activity-routine-models.md): Arquivar/Restaurar
 -- modelos de Atividade (activity_templates, contexto interno) e de Rotina
 -- (routine_models, ator people-based) como inativacao reversivel com expected_version
 -- (PT409), estado (55000), escopo (P0002), recibo idempotente, auditoria; diretorio de

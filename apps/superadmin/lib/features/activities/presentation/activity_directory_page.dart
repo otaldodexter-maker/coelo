@@ -94,7 +94,7 @@ CoeloAdminDirectoryStatusTab _tabForStatuses(Set<ActivityStatus> statuses) {
   return CoeloAdminDirectoryStatusTab.inactive;
 }
 
-/// Filtro de status dos modelos (spec 052): "Todos" e "Inativos" não incluem
+/// Filtro de status dos modelos (spec 054): "Todos" e "Inativos" não incluem
 /// arquivados; "Arquivados" mostra só eles.
 bool _templateMatchesTab(ActivityTemplateOption template, CoeloAdminDirectoryStatusTab tab) =>
     switch (tab) {
@@ -328,7 +328,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
     _templatesRequested = true;
     setState(() => _templatesFailed = false);
     try {
-      // spec 052: o diretório lê todos os status (com management_version);
+      // spec 054: o diretório lê todos os status (com management_version);
       // o formulário continua no leitor de opções (só ativos).
       final Object reader = repository;
       final options = reader is ActivityTemplateDirectoryReader

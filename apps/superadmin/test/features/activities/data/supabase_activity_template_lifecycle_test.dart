@@ -9,7 +9,7 @@ import 'package:http/http.dart';
 import 'package:http/testing.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
-/// spec 052 (ADR 0041 B1, owner.r12-02): Arquivar/Restaurar modelo de
+/// spec 054 (ADR 0041 B1, owner.r12-02): Arquivar/Restaurar modelo de
 /// atividade pelos comandos v1 e leitura do diretório v1 (todos os status,
 /// `management_version`).
 void main() {

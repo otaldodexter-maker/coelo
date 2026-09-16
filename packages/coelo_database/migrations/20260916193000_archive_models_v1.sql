@@ -1,7 +1,7 @@
 -- R14 Sessao 9 / ADR 0041 B1 (owner.r12-02): Arquivar e restaurar modelos de
 -- Atividade (public.activity_templates) e de Rotina (public.routine_models)
 -- como inativacao reversivel (OQ-033 opcao B). Contrato em
--- specs/052-archive-activity-routine-models.md.
+-- specs/054-archive-activity-routine-models.md.
 --
 -- Atividade: coluna management_version, recibos privados de ciclo de vida,
 -- leitor de diretorio v1 (todos os status + versao) e comandos

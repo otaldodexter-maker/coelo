@@ -331,7 +331,7 @@ final class SupabaseRoutineRepository
         'Rotina indisponível.',
       );
     }
-    // PT409: versão defasada sem retentativa do PostgREST (spec 052, OQ-047).
+    // PT409: versão defasada sem retentativa do PostgREST (spec 054, OQ-047).
     if (error.code == 'PT409' || error.code == '40001' || error.code == '55P03') {
       return const RoutineRepositoryException(
         RoutineRepositoryFailureKind.conflict,

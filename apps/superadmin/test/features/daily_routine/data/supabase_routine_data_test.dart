@@ -293,7 +293,7 @@ void main() {
     );
   });
 
-  // spec 052 (ADR 0041 B1): Arquivar/Restaurar modelo pelos comandos v1.
+  // spec 054 (ADR 0041 B1): Arquivar/Restaurar modelo pelos comandos v1.
   test('arquivar e restaurar modelo chamam os comandos v1 com expected_version', () async {
     final backend = _Backend({
       'superadmin_routine_model_archive_v1': {

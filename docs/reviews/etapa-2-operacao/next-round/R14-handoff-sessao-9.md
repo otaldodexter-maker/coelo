@@ -27,7 +27,7 @@ estado por `action_id` alterado (nenhum delta aplicado).
 |---|---|---|---|---|
 | `cb7a2418e` | Goldens — deriva do cabeçalho global (ADR 0041 C1): causa observada (`3945394f3` trocou `OC`/"Owner Coelo" estáticos por `headerProfile` da sessão; sem host os goldens renderizavam o placeholder `–`/`Conta`, deslocando sino e Bug); estabilização por `SuperadminHeaderProfileScope` + `SuperadminHeaderProfile.preview()` + `test/support/golden_header_profile.dart`; 30 referências regravadas nas três famílias; suítes 30/30 verdes; shell 72/72. | nenhum (golden não promove) | `owner.r12-10` → `partial / FE local-green …`; `owner.r12-11` já done (só citado) | `r14-sessao-9/goldens-cabecalho-global-20260916.md` (+ `capturas/`, `goldens-outras-suites-preexistentes-20260916.tsv`) |
 | `d40eeaa75` | `owner.r12-01` — cards de Modelos de rotina (ADR 0041 C3): `CoeloAdminCardGrid` público em coelo_ui_admin (grade de altura uniforme extraída do composto), "Efetivo: —", Arquivar em todos/Restaurar no arquivado (callbacks `onArchive`/`onRestore`); widget test 4/4, pasta 119/119, goldens do diretório regravados. | nenhum | `owner.r12-01` → `partial / FE local-green …` | `r14-sessao-9/daily-routine-cards-r12-01-20260916.md` |
-| `dd72abb88` | `owner.r12-02` — B1 Arquivar/Restaurar modelos de Atividade e Rotina: `specs/052-archive-activity-routine-models.md`; migration `20260916183000_archive_models_v1.sql` + pgTAP `archive_models_v1_test.sql` 63/63 no espelho `coelo_mirror_r14_visual` (**não aplicada em produção**); FE nos dois diretórios (aba/filtro Arquivados, Arquivar/Restaurar com confirmação e recarga, `PT409`/`55000`/`P0002` mapeados); testes de repositório e widget verdes. | nenhum | `owner.r12-02` → `partial / FE local-green + BE local-green (espelho)` | `r14-sessao-9/archive-models-b1-20260916.md` |
+| `dd72abb88` | `owner.r12-02` — B1 Arquivar/Restaurar modelos de Atividade e Rotina: `specs/054-archive-activity-routine-models.md`; migration `20260916193000_archive_models_v1.sql` + pgTAP `archive_models_v1_test.sql` 63/63 no espelho `coelo_mirror_r14_visual` (**não aplicada em produção**); FE nos dois diretórios (aba/filtro Arquivados, Arquivar/Restaurar com confirmação e recarga, `PT409`/`55000`/`P0002` mapeados); testes de repositório e widget verdes. | nenhum | `owner.r12-02` → `partial / FE local-green + BE local-green (espelho)` | `r14-sessao-9/archive-models-b1-20260916.md` |
 
 ## Avisos para as outras sessões e para a coordenadora
 
@@ -40,7 +40,7 @@ estado por `action_id` alterado (nenhum delta aplicado).
 3. `entrega-atual.json` e `R12-owner-items.json` mudaram apenas por `sync-r12-owner-records.cjs` (projeção).
 4. `CoeloAdminCardGrid` (coelo_ui_admin) é a grade de altura uniforme do composto, agora pública; diretórios que
    ainda montam a própria toolbar podem consumi-la em vez de `Wrap`. O composto delega a ela (158/158).
-5. **Coordenadora — aplicação em produção (rito):** `packages/coelo_database/migrations/20260916183000_archive_models_v1.sql`
+5. **Coordenadora — aplicação em produção (rito):** `packages/coelo_database/migrations/20260916193000_archive_models_v1.sql`
    (copiada também no espelho CLI da worktree, ignorado pelo Git). Muda `app_private.superadmin_routine_directory`
    (sem `p_status`, arquivados saem da lista padrão de modelos e rotinas aplicadas) e adiciona coluna
    `activity_templates.management_version`, 2 tabelas privadas e 5 RPCs novas. pgTAP 63/63 no espelho. Depois de
@@ -63,7 +63,7 @@ estado por `action_id` alterado (nenhum delta aplicado).
 ## Bloqueios
 
 - ambiente: rota real indisponível (PostgREST 504 `PGRST003`) — nenhuma prova FE/E2E na rota real nesta sessão.
-- rito/permissão: aplicação de `20260916183000_archive_models_v1` em produção fica para a coordenadora (a fatia não
+- rito/permissão: aplicação de `20260916193000_archive_models_v1` em produção fica para a coordenadora (a fatia não
   autorizava escrita em produção); gate: E2E de `owner.r12-02` nos dois diretórios.
 - ambiente (espelho): testes pgTAP pré-existentes das duas famílias falham na fixture antiga (FK `follow_links` da
   pessoa técnica; ACL do espelho) antes de qualquer função desta fatia — não regressão.

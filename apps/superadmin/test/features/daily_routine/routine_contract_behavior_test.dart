@@ -207,7 +207,7 @@ void main() {
       'unauthorized',
       'notFound',
       'conflict',
-      // spec 052: estado inválido (55000) ao arquivar/restaurar modelo.
+      // spec 054: estado inválido (55000) ao arquivar/restaurar modelo.
       'invalidState',
       'unavailable',
     ]);
