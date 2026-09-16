@@ -23,13 +23,16 @@ restaurado do dump de schema de 16/09 (SHA-256 `f1f677ca…`), sem erros.
   `owner.r12-06` (fatia 2).
 - Rotina diária › Diretório: só a remoção da aba Lançamentos (`daily-routine.list`); as demais
   mudanças do diretório (cards, Arquivar — C3/B1) são da Sessão 9.
+- Medicação › sino in-app (`owner.r12-33`): contrato de notificação (triggers/helpers) e rótulos do
+  sino; nenhuma tela de Medicação alterada.
 
 ## Fatias entregues
 
 | SHA | Fatia | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|---|
 | `1cdab7d5c` | B2 — Histórico de chamadas + retirada de Lançamentos do diretório de Rotina | nenhum estado alterado (`attendance.dashboard`, `daily-routine.list`, `daily-routine.publish` seguem como no corte) | `owner.r12-04` → `partial` / FE local-green / BE local-green / E2E pendente | `r14-sessao-10/attendance-history-20260916.md`; spec 052 |
-| (fatia 2) | B3 — snapshot da rotina na chamada (híbrido) + PT409 na família Assiduidade | nenhum estado alterado (`attendance.finish`/`attendance.create` seguem verified-e2e; contrato ampliado, não provado em produção) | `owner.r12-06` → `partial` / FE local-green / BE local-green / E2E pendente | `r14-sessao-10/attendance-routine-snapshot-20260916.md`; spec 052 §4.2/§5 |
+| `733ab527a` | B3 — snapshot da rotina na chamada (híbrido) + PT409 na família Assiduidade | nenhum estado alterado (`attendance.finish`/`attendance.create` seguem verified-e2e; contrato ampliado, não provado em produção) | `owner.r12-06` → `partial` / FE local-green / BE local-green / E2E pendente | `r14-sessao-10/attendance-routine-snapshot-20260916.md`; spec 052 §4.2/§5 |
+| (fatia 3) | B8 — sino in-app de Medicação (editar plano + dose; audiência admins da unidade + educadores da turma) | nenhum estado alterado (`medication.*` seguem como no corte) | `owner.r12-33` → `partial` / FE local-green / BE local-green / E2E pendente | `r14-sessao-10/medication-notifications-20260916.md`; spec 053 |
 
 Artefatos da fatia 1: `specs/052-superadmin-attendance-history-and-routine-snapshot.md`;
 `packages/coelo_database/migrations/20260916180000_attendance_call_history_v1.sql` (copiada
@@ -45,9 +48,18 @@ Artefatos da fatia 2: `packages/coelo_database/migrations/20260916183000_attenda
 `AttendanceRoutineRef.sourceLabel(concluded:)`/`isLegacyFor`, bloco "Rotina diária" no detalhe da
 chamada, seeds do fake com rotina, `attendance_call_routine_test.dart` 4/4 (284 verdes no total).
 
+Artefatos da fatia 3: `specs/053-superadmin-medication-in-app-notifications.md`;
+`packages/coelo_database/migrations/20260916190000_medication_in_app_notifications_v1.sql`
+(copiada para o espelho CLI); pgTAP `medication_in_app_notifications_v1_test.sql` (29/29); FE
+`context_notification_feed.dart` (rótulos) + teste 4/4.
+
 ## Avisos para as outras sessões e para a coordenadora
 
-1. **Duas migrations novas, não aplicadas** (ordem por carimbo, depois de `20260916154500` D3):
+0. **Três migrations novas, não aplicadas**: além das duas de Assiduidade abaixo,
+   `20260916190000_medication_in_app_notifications_v1` (triggers em `medication_plan_versions` e
+   `medication_plan_evidence`; não altera o trigger existente de `medication_plans`). Sem ela, o
+   sino segue recebendo só "plano criado"/status, como hoje.
+1. **Duas migrations de Assiduidade, não aplicadas** (ordem por carimbo, depois de `20260916154500` D3):
    `20260916180000_attendance_call_history_v1` (leitura pura) e
    `20260916183000_attendance_routine_snapshot_v1` (colunas de snapshot em `attendance_sessions`,
    `complete_call`/`call_payload`/`require_call`/`undo_bulk`/histórico substituídos; **40001 →
@@ -73,8 +85,12 @@ chamada, seeds do fake com rotina, `attendance_call_routine_test.dart` 4/4 (284 
   (`routine_source='snapshot'`), reabrir/corrigir/concluir e confirmar snapshot inalterado; chamada
   antiga (ex. `0757355f`) deve mostrar "rotina atual (não registrada na época)"; negativa de versão
   defasada → 409 `PT409` (só depois do fim do incidente).
-- B8 (`owner.r12-33`, sino de Medicação) **não iniciado** nesta sessão (parada por ordem das fatias
-  e cota de tempo; nenhum leitor de sino in-app existente foi investigado).
+- Prova E2E de `owner.r12-33`: após `20260916190000`, editar um plano e registrar uma dose com
+  `qa-r06-operacoes`; abrir o sino com uma identidade da unidade e com um educador da turma
+  (criar as identidades QA de unidade/turma se ainda não existirem — D6 só veda crianças/vínculos).
+  Decisão do Owner a confirmar na prova: responsáveis continuam recebendo "plano criado" (trigger
+  anterior) mas não "plano atualizado"/"dose" (audiência B8) — se quiser uniformizar, é ajuste de
+  destinatários, não de contrato.
 - Prova E2E de `/attendance/history` (`qa-r06-operacoes`): rota normal, filtros, cursor, abrir
   detalhe, reload e negativa por PostgREST (`superadmin_attendance_call_history_v1` com
   `p_institution_id` alheio → 0 itens; identidade sem `attendance.read` → 403 `42501`).
@@ -88,7 +104,7 @@ chamada, seeds do fake com rotina, `attendance_call_routine_test.dart` 4/4 (284 
 |---|---|---|
 | E2E `owner.r12-04` | ambiente (incidente PostgREST 504) + rito de produção não executado nesta sessão | migration validada só no espelho; rota real não aberta |
 | E2E `owner.r12-06` | ambiente (incidente) + rito de produção não executado | idem; negativa PT409 por PostgREST só após OQ-047/reinício da API |
-| B8 `owner.r12-33` | sessão (cota/ordem) | não iniciado; linha não alterada |
+| E2E `owner.r12-33` | ambiente (incidente) + rito de produção não executado + massa (identidades QA de unidade/turma para observar o sino) | migration validada só no espelho |
 | Goldens de Assiduidade/Rotina | decisão (C1: regravar só após estabilizar o cabeçalho) | 10 falhas idênticas na base `e6b8d6f63` |
 
 ## Contadores

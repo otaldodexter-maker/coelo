@@ -596,12 +596,12 @@
         "medication.edit",
         "medication.detail"
       ],
-      "fe": "Planejado R12, não implementado.",
-      "be": "Contratos e persistência a verificar.",
-      "e2e": "Não executado para este apontamento.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "fe": "FE local-green (Sessão 10, 16/09): sino já lia `context_notification_*`; rótulos para plano criado/atualizado/status e dose registrada (resumo por desfecho).",
+      "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); NÃO aplicada em produção.",
+      "e2e": "Pendente: aplicar a migration, editar plano e registrar dose reais e observar o sino com identidade da unidade/educador (bloqueio: incidente PostgREST 504).",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "ADR 0041 B8: sino in-app para admins da unidade e educadores da turma ao criar/editar plano e a cada dose; sem e-mail/push. Implementar contrato de notificação + prova.",
+      "nextGate": "Aplicar `20260916190000` pelo rito após o incidente; provar o sino na rota real com duas identidades (admin da unidade e educador da turma); sem e-mail/push.",
       "sourceRound": "R14"
     },
     {
@@ -2294,7 +2294,9 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-8/child-safety-lifecycle-504-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
     "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
+    "specs/053-superadmin-medication-in-app-notifications.md"
   ],
   "trackerActionIds": [
     "auth.login",

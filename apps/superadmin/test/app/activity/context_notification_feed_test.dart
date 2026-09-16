@@ -80,6 +80,30 @@ void main() {
     expect(repository.markAttempts, 2);
     expect(repository.marked, ['e1']);
   });
+  test('medicacao (ADR 0041 B8): rotulos do sino para plano criado/editado e dose', () {
+    ContextNotification event(String code, Map<String, Object?> payload, [String type = 'medication_plan']) =>
+        ContextNotification(
+          eventId: code,
+          eventCode: code,
+          objectType: type,
+          createdAt: DateTime(2026, 9, 16, 10),
+          payload: payload,
+          readAt: null,
+        );
+    expect(ContextNotificationFeed.subjectFor(event('medication.plan.created', const {})), 'Medicação · plano criado');
+    expect(ContextNotificationFeed.subjectFor(event('medication.plan.updated', const {'version': 2})), 'Medicação · plano atualizado');
+    expect(ContextNotificationFeed.summaryFor(event('medication.plan.updated', const {'version': 2})), 'Versão 2 do plano');
+    expect(ContextNotificationFeed.subjectFor(event('medication.plan.suspended', const {})), 'Medicação · plano suspenso');
+    final dose = event('medication.dose.recorded', const {'outcome': 'refused'}, 'medication_plan_evidence');
+    expect(ContextNotificationFeed.subjectFor(dose), 'Medicação · dose registrada');
+    expect(ContextNotificationFeed.summaryFor(dose), 'Dose recusada');
+    expect(
+      ContextNotificationFeed.summaryFor(event('medication.dose.recorded', const {'outcome': 'administered'})),
+      'Dose administrada',
+    );
+    // Codigo desconhecido continua honesto (nao inventa texto).
+    expect(ContextNotificationFeed.subjectFor(event('medication.something', const {})), 'medication · something');
+  });
 }
 
 final _unreadNotification = ContextNotification(

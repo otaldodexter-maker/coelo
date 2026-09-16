@@ -141,6 +141,14 @@ final class ContextNotificationFeed {
     'child_safety.authorization' => 'Segurança infantil · autorização',
     'child_safety.restriction' => 'Segurança infantil · restrição',
     'medication.plan' => 'Medicação · plano',
+    // ADR 0041 B8 (spec 053): plano criado/editado e cada dose registrada.
+    'medication.plan.created' => 'Medicação · plano criado',
+    'medication.plan.updated' => 'Medicação · plano atualizado',
+    'medication.plan.active' => 'Medicação · plano ativo',
+    'medication.plan.suspended' => 'Medicação · plano suspenso',
+    'medication.plan.ended' => 'Medicação · plano encerrado',
+    'medication.plan.draft' => 'Medicação · plano em rascunho',
+    'medication.dose.recorded' => 'Medicação · dose registrada',
     'attendance.absence' => 'Assiduidade · falta',
     _ => item.eventCode.replaceAll('_', ' ').replaceAll('.', ' · '),
   };
@@ -149,6 +157,18 @@ final class ContextNotificationFeed {
   static String summaryFor(ContextNotification item) {
     final title = item.payload['title'] ?? item.payload['summary'] ?? item.payload['message'];
     if (title is String && title.trim().isNotEmpty) return title.trim();
+    // Dose (spec 053): o payload traz só o desfecho, sem texto livre.
+    if (item.eventCode == 'medication.dose.recorded') {
+      return switch (item.payload['outcome']) {
+        'administered' => 'Dose administrada',
+        'not_administered' => 'Dose não administrada',
+        'refused' => 'Dose recusada',
+        _ => 'Dose registrada',
+      };
+    }
+    if (item.eventCode == 'medication.plan.updated' && item.payload['version'] is num) {
+      return 'Versão ${item.payload['version']} do plano';
+    }
     return item.objectType.replaceAll('_', ' ');
   }
 }
