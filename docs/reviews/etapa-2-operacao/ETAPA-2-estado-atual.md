@@ -6,7 +6,7 @@ lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-15"
 base: "dev"
-revision: "14f6facabadcfdbeffbfe31b110c91e149fe5db8"
+revision: "655a86a75 + Mesa do Owner 16/09 (ADR 0041)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -14,7 +14,7 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
 operacional vigente é a R14: os itens não terminais foram consolidados a partir
-da R13 e, após quinze aceites `done` registrados até 15/09, 38 permanecem não
+da R13 e, após vinte e um aceites `done` registrados até 16/09, 32 permanecem não
 terminais, além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e
 não volta para a fila. R01–R13 permanecem como fontes
 históricas; seus itens pendentes não devem continuar apontando para uma rodada
@@ -35,6 +35,17 @@ As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
 > Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
+
+## Snapshot de 16/09 — Mesa do Owner (ADR 0041)
+
+O Owner decidiu as 27 pendências que dependiam dele
+(`decisions/0041-owner-decisions-r14-mesa-20260916.md`). Efeitos no corte:
+Cardápios, `r12-09` e `r12-11` → `done` (Owner 21/53); OQ-031 e reader self
+concluídos na ADR 0038; `institutions.files` → `deferred-post-mvp`; seis
+páginas de erro → `flutter-only` (BE `not-applicable`). O denominador E2E
+ativo passa de 193 para 186 e o BE aplicável de 225 para 219 **por
+reclassificação autorizada**, não por certificação nova; os numeradores
+não mudaram. `r12-29/30` não foram aceitos e viram spec na R15.
 
 ## Snapshot de execução da R14 — C residual, D/E integrados, R15/R16 preparados
 
@@ -65,23 +76,23 @@ rastreadores, `validate-trackers.cjs` e gate antes de alterar os números.
 ## Percentuais canônicos
 
 Base: inventário `docs/reviews/inventario-etapa-2.json`, revisado em
-2026-09-15 após a reconciliação das Sessões C, D e E, no checkout `dev`,
-SHA `14f6facab`.
+2026-09-16 após a Mesa do Owner (deltas `r14-coordenacao/deltas-mesa-owner-20260916.json`),
+no checkout `dev`.
 Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
 | FE verificado | 186 / 232 | 80,17% | terminal FE da base inteira |
 | FE local-green | 13 / 232 | 5,60% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 168 / 225 | 74,67% | somente ações aplicáveis ao BE |
-| BE local-green | 11 / 225 | 4,89% | avanço local; não é prova remota |
-| E2E verificado | 159 / 193 | 82,38% | base integrada ativa após o delta oficial de Avaliações |
-| E2E + flutter-only | 166 / 232 | 71,55% | soma de categorias sem dupla contagem; `flutter-only` segue separado de E2E |
-| Owner items done | 15 / 53 | 28,30% | IDs de Owner, não action IDs |
+| BE concluído/verificado | 168 / 219 | 76,71% | somente ações aplicáveis ao BE (219 após `errors.*` → not-applicable) |
+| BE local-green | 11 / 219 | 5,02% | avanço local; não é prova remota |
+| E2E verificado | 159 / 186 | 85,48% | base integrada ativa após ADR 0041 (`institutions.files` pós-MVP; `errors.*` flutter-only) |
+| E2E + flutter-only | 171 / 232 | 73,71% | 159 E2E + 12 flutter-only com FE verificado; `errors.409` (flutter-only, FE local-green) não conta até a rota real |
+| Owner items done | 21 / 53 | 39,62% | IDs de Owner, não action IDs |
 | Owner items abertos/parciais | 38 / 53 | 71,70% | complemento dos 15 concluídos |
 
-O denominador de BE é 225 nesta versão do inventário. A métrica combinada é
-`166/232`; para aceite integrado, a base correta continua sendo `159/193`.
+O denominador de BE é 219 nesta versão do inventário. A métrica combinada é
+`171/232`; para aceite integrado, a base correta continua sendo `159/186`.
 
 ## Fila vigente R14 — pendências herdadas
 

@@ -2,9 +2,10 @@
 name: coelo-frontend
 description: Use when reviewing, correcting, implementing, estimating, or verifying Coelo front-end behavior in Flutter/Dart or Astro, including routes, states, responsiveness, accessibility, architecture, tests, and visual regressions.
 metadata:
-  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; docs/design/design-system.md"
+  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; docs/design/design-system.md; decisions/0041-owner-decisions-r14-mesa-20260916.md"
   status: "active"
   generated_at: "2026-09-14"
+  updated_at: "2026-09-16"
 ---
 
 # Coelo Front-end
@@ -28,6 +29,14 @@ percentuais ou fila copiada. Estado e pendências ficam em
 5. Para UI, carregue `coelo-ui` e somente as referências visuais necessárias.
 6. Corrija, teste e prove o aceite FE. Não declare E2E por mock, `/dev`, golden,
    fixture ou rota aberta; registre dependências BE/E2E separadamente.
+7. Golden vermelho: abra o `*_isolatedDiff.png` antes de atribuir a falha à
+   tela e siga `references/golden-failure-triage.md`. Deriva do cabeçalho
+   global não é defeito da tela nem autoriza regravar por conta própria.
+
+Ações que são só tela (páginas de erro, troca de contexto do shell) têm escopo
+`flutter-only`: o aceite terminal é FE na rota real e BE é `not-applicable`.
+A classificação é decisão do Owner registrada em ADR, nunca inferida para
+zerar pendência.
 
 ## Escopo atual e limites
 

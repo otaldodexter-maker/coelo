@@ -104,3 +104,6 @@ google-services.json
 GoogleService-Info.plist
 *.mobileprovision
 *.provisionprofile
+
+# Credenciais locais de QA/usuarios (Owner, 16/09/2026): nunca versionar
+supabase/usuario/

@@ -24,6 +24,13 @@ R15 por bloqueio de ambiente, RPC ou massa; a próxima execução deve priorizar
 as fatias C quando houver sessão/contrato/massa e manter em R16 a negativa
 específica de `agora.remove`, Stream genérico e resíduos sem contrato.
 
+Em 16/09 o Owner respondeu às 27 pendências que dependiam dele
+(`decisions/0041-owner-decisions-r14-mesa-20260916.md`): aceites de Cardápios,
+`r12-09/11`, OQ-031 e reader self; contratos B1–B9 fixados; autorizações de
+produção D1–D5; `institutions.files` fora do MVP; páginas de erro `flutter-only`;
+H11 → V1. Para R15 ficaram duas specs novas: perfil transversal/funcionário no
+Principal (OQ-044) e Perfis de cuidado redesenhados (§5 da ADR).
+
 ## Pendências do MVP
 
 Use os itens não terminais da fila R14 e o inventário por `action_id`. Itens
@@ -73,15 +80,24 @@ Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
   nem a allowlist específica desse fluxo dentro da R14.
 - **V1 ou Etapa 3 (a definir):** Catálogo de UI (`catalog.list/validate/sync/
   publish`) — tela do catálogo `coelo-ui`; não é MVP.
-- **Formulários autosave (H11):** se der muito trabalho, vai para V1; se já
-  estiver mais de 60% em andamento, manter no MVP. H10 (regras de audiência)
-  continua no MVP.
+- **Formulários autosave (H11):** **V1** por decisão de 16/09 (ADR 0041 B10),
+  sem medir o limiar de 60%. H10 (regras de audiência) continua no MVP.
+- **Instituições › Arquivos (`institutions.files`):** fora do MVP (ADR 0041 A4);
+  o flyout permanece e avisa "em desenvolvimento". `institutions.error` e
+  `institutions.access-denied` ficam no MVP.
+- **Páginas de erro (`errors.*`):** `flutter-only` (ADR 0041 A5); aceite terminal
+  é FE na rota real.
 - **Chat › Anexar (`chat.attach`):** continua no MVP (asset_id + Edge Function),
   explicar ao Owner na abertura da R14.
 - **Saúde e Cuidado — múltiplos registros (15/09):** owner.r12-29/30 cobre
   coleções de alergias e orientações independentes, com adicionar/remover/reload
   na rota real. O limite defensivo de 100 por coleção/entidade é proteção de
   integridade, não uma meta de uso nem motivo para reduzir a capacidade a dois.
+  **16/09 (ADR 0041 A2/§5):** o Owner não aceitou ainda e redesenhou o contrato
+  (wizard Alimentos × Restrições, nomes de lista categorizada com busca e
+  "Outro", reordenar, campo "O que fazer se consumido?"); vira spec na R15.
+- **Perfil transversal / funcionário no Principal (OQ-044, r12-19/23):** spec
+  própria na R15 (ADR 0041 B7).
 - **Etapa 3:** 3 instituições fictícias com pessoas e hierarquia completa
   (unidades, turmas, responsáveis, crianças) para o Owner verificar a tela
   "Para você" do Principal; avaliar outro nome para "Para você" (já usado por

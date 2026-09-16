@@ -3,6 +3,7 @@ title: "Triagem de falhas de golden: três assinaturas, três causas"
 source: "docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-golden-divergence-measurement.md; medições próprias em apps/superadmin na rodada noturna de 2026-09-09"
 status: "active"
 generated_at: "2026-09-10"
+updated_at: "2026-09-16"
 ---
 
 # Triagem de falhas de golden
@@ -83,6 +84,21 @@ Medido em `principal_moments`: 99,17% a 100% nas onze variantes. Confirmado por
 imagem: a referência renderiza o viewer com letterbox, barras pretas nas
 laterais, e o código atual renderiza full-bleed. Mesma foto, mesmos contadores,
 mesma legenda.
+
+### 4. Deriva do cabeçalho global (medida em 16/09/2026)
+
+Percentual **baixo** (0,3% a 0,7%), absoluto **pequeno e concentrado** numa
+faixa horizontal no topo direito; o `*_isolatedDiff.png` acende só avatar, nome
+e sino. O conteúdo da tela é idêntico à referência.
+
+Medido em `child_safety_directory_light_1440`, `access_profile_cards_*` e
+`daily_routine_directory_cards_light_1440`: três suítes, três telas, uma causa
+— o cabeçalho mudou depois que as referências foram gravadas.
+
+Não é defeito da tela. Estabilizar o cabeçalho (`coelo-ui`) e só então regravar,
+com autorização registrada (ADR 0041 C1). Atenção ao efeito colateral: uma
+referência antiga pode já conter o defeito de produto que o Owner apontou
+(alturas de card desiguais em Rotina); golden verde não prova aceite.
 
 ## Duas armadilhas que custaram tempo real
 

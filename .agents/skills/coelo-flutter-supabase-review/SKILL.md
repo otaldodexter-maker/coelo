@@ -2,9 +2,10 @@
 name: coelo-frontend-backend
 description: Use when a Coelo task crosses front-end and back-end, including Flutter/Dart or Astro with Supabase/Postgres, Auth, RLS, Edge Functions, Cloudflare, remote persistence, security, or end-to-end behavior.
 metadata:
-  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md"
+  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md; decisions/0041-owner-decisions-r14-mesa-20260916.md"
   status: "active"
   generated_at: "2026-09-14"
+  updated_at: "2026-09-16"
 ---
 
 # Coelo Front-end + Back-end
@@ -41,7 +42,8 @@ em `docs/agent/current-state.md`; não usar uma rodada histórica como fila atua
 
 As referências detalhadas desta skill ficam em:
 
-- `references/review-scope.md` — entrada, retomada, profundidade e recursão;
+- `references/review-scope.md` — entrada, retomada, profundidade, recursão e a
+  sessão QA autenticada da rota real (onde as credenciais vivem, como carregar);
 - `references/medicao-confiavel.md` — métricas e denominadores;
 - `references/delivery-gate.md` — somente integração/publicação/entrega formal.
 
@@ -50,7 +52,11 @@ As referências detalhadas desta skill ficam em:
 Frontend apenas solicita e renderiza; backend/RLS valida ator, tenant,
 ownership, hierarquia e regra de negócio. Nenhum segredo entra no cliente,
 Git ou log. Mídia nova do MVP segue ADR 0032; decisões de importação/exportação
-seguem ADR 0031; decisões de produto da R13 seguem ADR 0038.
+seguem ADR 0031; decisões de produto da R13 seguem ADR 0038; contratos e
+aceites decididos pelo Owner na R14 seguem ADR 0041 (busca de pessoa, pessoa
+sem conta, snapshot de rotina na chamada, arquivar, notificações de medicação,
+"ver como"). Uma decisão do Owner registrada em ADR nunca é reaberta por uma
+sessão; se a implementação encontrar conflito, registre em `open-questions.md`.
 
 Histórico, handoff, checkpoint, prompt, screenshot, backup e artefato só são
 proveniência quando uma fonte atual os apontar. Não declarar entrega por

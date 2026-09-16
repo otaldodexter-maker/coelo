@@ -5,7 +5,7 @@ source: docs/knowledge/README.md
 status: validated
 lifecycle: current
 generated_at: 2026-08-04
-updated_at: 2026-09-10
+updated_at: 2026-09-16
 audience: team
 surfaces:
   - documentation
@@ -32,6 +32,7 @@ auditoria e nunca substituem a fonte canônica.
 | team | Superadmin / Unidades | [Diretório de unidades do Superadmin](team/superadmin-unit-directory.md) | validated | current | `decisions/0016-unit-type-and-plan-inheritance.md`; `specs/017-superadmin-unit-schema-foundation.md`; `decisions/0031-mvp-import-export-buttons-only.md`; `decisions/0022-superadmin-activities-and-identity-storage.md` |
 | team | Superadmin / Atividades | [Diretório de atividades do Superadmin](team/superadmin-activity-directory.md) | validated | current | `docs/superpowers/specs/2026-07-29-superadmin-activity-inspection-design.md` |
 | team | Superadmin / Atividades | [Wizard de atividade do Superadmin](team/superadmin-activity-form-wizard.md) | validated | current | `docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md` |
+| team | Produto / Decisões do Owner | [Regras de produto fixadas pelo Owner em 16/09/2026](team/owner-decisions-r14-mesa.md) | validated | current | `decisions/0041-owner-decisions-r14-mesa-20260916.md` |
 | team | Produto / Nomenclatura | [Happens é o nome do feed privado](team/happens-product-naming.md) | validated | current | `decisions/0018-happens-product-name.md` |
 | team | Superadmin / Perfis e permissões | [Perfis e Permissões do Superadmin](team/superadmin-access-profiles.md) | validated | current | `specs/018-profiles-permissions-superadmin.md`; `decisions/0017-access-profile-governance.md` |
 | team | Superadmin / Avisos | [Avisos do Superadmin MVP](team/superadmin-notices-mvp.md) | validated | current | `docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md` |

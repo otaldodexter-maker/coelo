@@ -223,6 +223,24 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
   `supabase/migrations/` só com a baseline, `supabase start` sem studio/realtime/
   storage, depois `psql` do container para a ordem real e os candidatos.
 
+## Sessão QA autenticada (fixado em 16/09/2026, ADR 0041 D7)
+
+- As identidades sintéticas de QA (`qa-r06-<área>@coelo.me`, uma por área,
+  escopo só no tenant sintético) já existem em produção. Suas credenciais
+  vivem fora do Git, na máquina do Owner: `C:\Users\adrie\Documents\Coelo-backups\qa-r06-*.env`
+  e `C:\Users\adrie\Documents\Coelo\supabase\usuario\` (pasta ignorada pelo
+  `.gitignore`). Não copiar para dentro do repositório, não imprimir em log,
+  evidência, handoff ou conversa.
+- O driver lê `QA_EMAIL` e `QA_PASSWORD` do ambiente do processo
+  (`test_driver/qa_login.dart`, `qa_drive.dart`); o `.env.local` do app carrega
+  só URL e chave pública do Supabase e precisa existir no checkout que roda —
+  uma worktree nova não o herda. Carregar o `.env` da área antes de abrir o
+  Chrome; usar a identidade da área da tela (Acessos, Estrutura, Formulários,
+  Operações, Publicações, Principal), nunca a conta pessoal do Owner.
+- "Sem sessão autenticada" não é bloqueio de credencial: é checkout sem
+  `.env.local`, variável não carregada ou clipboard/CDP que recusou colar.
+  Registrar qual dos três antes de liberar a fatia para outra rodada.
+
 ## Rota real medida em 15/09/2026 (R14)
 
 - Para upload real pelo Chrome, armar `Page.enable`, `DOM.enable` e

@@ -17,11 +17,12 @@ audience: "team"
   não retornam).
 - A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
   (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último corte publicado: 15/09/2026, após a reconciliação das Sessões C, D e E
-  — FE 186/232, BE 168/225, E2E 159/193 ativo. O Bloco A está 10/10 certificado;
+- Último corte publicado: 16/09/2026, após a Mesa do Owner (ADR 0041)
+  — FE 186/232, BE 168/219, E2E 159/186 ativo, Owner 21/53. Corte anterior
+  (15/09, Sessões C/D/E): FE 186/232, BE 168/225, E2E 159/193. O Bloco A está 10/10 certificado;
   o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
   prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
-  Owner: 15/53 concluídos e 38 abertos/parciais.
+  Owner: 21/53 concluídos e 32 abertos/parciais.
 - Entregas recentes ainda não alteram os quatro números certificados acima,
   exceto o delta oficial de Avaliações: `assessments.close/reopen` agora está
   certificado. Perfis de acesso não foi confirmado; Segurança infantil continua
@@ -69,6 +70,17 @@ audience: "team"
   Atividade de `attendance.create` foi isolado como bloqueio de RPC/massa em
   `14f6facab`. R16 permanece preparada, não aberta, para os resíduos da Sessão
   E e contratos sem action_id.
+- **Mesa do Owner, 16/09 (ADR 0041)**: as 27 pendências que dependiam do Owner
+  foram decididas. Aceites: Cardápios (`r12-34/35/36/37`), `r12-09`, `r12-11`,
+  OQ-031 e reader self da Conta → Owner 21/53. Reclassificações autorizadas:
+  `institutions.files` → pós-MVP; `errors.*` → `flutter-only`; E2E ativo
+  193 → 186, BE aplicável 225 → 219, sem estado terminal novo. Contratos B1–B9
+  fixados nos gates da fila; H11 → V1; duas specs novas preparadas para R15
+  (perfil transversal OQ-044; Perfis de cuidado §5). Autorizações de produção
+  D1–D5 concedidas (leitura OQ-046, carimbo do Chat, RPC de contexto de
+  chamada, 504 de Segurança infantil, fixture do Agora); D6 negada. Credenciais
+  QA existem em `Coelo-backups/qa-r06-*.env` e `supabase/usuario/` (local,
+  ignorado pelo Git). Corte: FE 186/232, BE 168/219, E2E 159/186, Owner 21/53.
 - Auditoria de 16/09 sobre o fechamento `525844e61`: contadores, trackers,
   knowledge (77) e gate reconfirmados; nenhuma skill precisou mudar (são portas
   sem estado de rodada). Achado: a ordem real de migrations em produção estava

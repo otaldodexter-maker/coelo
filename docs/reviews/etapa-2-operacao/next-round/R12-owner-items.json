@@ -10,7 +10,7 @@
     "e2e": "Não executado para este apontamento.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência.",
+    "nextGate": "ADR 0041 C3: altura uniforme dos cards, linha \"Efetivo: —\" quando vazio e Arquivar em todos (depende de B1); golden regrava após estabilizar cabeçalho (C1). Não estava corrigido.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -30,7 +30,7 @@
     "e2e": "Pendente por contrato de archive, confirmação, versão, auditoria e reload.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake.",
+    "nextGate": "ADR 0041 B1: Arquivar = inativar reversível (OQ-033 B), lista \"Arquivados\", mesma permissão de editar; derivados seguem válidos. Implementar nos dois diretórios com expected_version, auditoria e reload.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -69,7 +69,7 @@
     "e2e": "Pendente por definição de tela/rota canônica e mapeamento.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7.",
+    "nextGate": "ADR 0041 B2: nova tela Acompanhamento › Assiduidade › Histórico (tabela de chamadas, filtros, abre detalhe, sem edição); retirar Lançamentos do diretório de Rotina.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -84,11 +84,11 @@
       "attendance.create"
     ],
     "fe": "FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida.",
-    "be": "BE done; superadmin_attendance_context_options devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa.",
-    "e2e": "verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável até corrigir a RPC/massa.",
+    "be": "BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa.",
+    "e2e": "verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2/R15: alinhar o escopo de activities ao de groups em superadmin_attendance_context_options (ou massa elegível na QA R04) e provar contexto Atividade pela tela.",
+    "nextGate": "ADR 0041 D3: autorizada migration forward-only alinhando escopo de activities ao de groups em superadmin_attendance_context_options (espelho + pgTAP antes); depois provar seleção, criação, reload e negativa do contexto Atividade.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -108,7 +108,7 @@
     "e2e": "verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "R15: definir contrato de leitura da rotina efetiva na chamada (SQL) antes de provar rotina/versão/snapshot.",
+    "nextGate": "ADR 0041 B3: híbrido — chamada aberta segue a rotina vigente; ao concluir grava snapshot (rotina + versão) e o histórico mostra o snapshot; reabrir não altera. Sem snapshot legado: exibir \"rotina atual (não registrada na época)\".",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -152,7 +152,7 @@
     "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Criar vínculos criança↔turma adicionais (tela de Segurança infantil ou massa da Sessão 2) e repetir com ≥2 alunos; rotina vinculada depende de r12-06.",
+    "nextGate": "ADR 0041 D6: Owner não autoriza massa fictícia agora; prova com ≥2 alunos fica para depois. Bloqueado por decisão, não por ambiente.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -162,7 +162,7 @@
   },
   {
     "id": "owner.r12-09",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "child-safety.list"
     ],
@@ -171,7 +171,7 @@
     "e2e": "Owner decision pending antes de alterar composição ou dados.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real.",
+    "nextGate": "Concluído 16/09: Owner aprovou o card atual sem campo alerta/restrição (ADR 0041 B4).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -190,7 +190,7 @@
     "e2e": "Bloqueado por reconciliação visual e decisão sobre referência.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Comparar aprovado/failure lado a lado, localizar diferença e corrigir ou obter decisão do Owner sem regenerar baseline por inferência.",
+    "nextGate": "ADR 0041 C1: diff isolado mostra só o cabeçalho global; regravar golden após estabilizar cabeçalho. Tabela do diretório ainda deve ser revista contra a Table canônica.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -200,14 +200,14 @@
   },
   {
     "id": "owner.r12-11",
-    "status": "open",
+    "status": "done",
     "actionIds": [],
     "fe": "Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS.",
     "be": "Contrato preservado; nenhum SQL/RPC novo.",
     "e2e": "Visual golden pendente de reconciliação; sem action_id novo.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Comparar goldens aprovado/failure e confirmar com Owner se a composição 2×2 atende antes de alterar.",
+    "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -246,7 +246,7 @@
     "e2e": "Visual/E2E pendente para referência, rota normal, escopo e reload.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Comparar referência e provar create/edit pela rota normal com ator/criança autorizados.",
+    "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504 de child_safety_change_lifecycle; depois provar create/edit pela rota normal.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -286,7 +286,7 @@
     "e2e": "child verified-e2e; suspend blocked-backend; estados pendente e aprovado-ativo não exercitados.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2: diagnosticar o 504 de change_lifecycle no espelho; depois criar autorização pendente pelo wizard, aprovar e suspender pela tela para fechar r12-15/13/16.",
+    "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504; depois criar autorização, aprovar e suspender pela tela para fechar r12-15/13/16.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -305,7 +305,7 @@
     "e2e": "Pending-verification de rota normal e escopo.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Provar teclado/rota normal sem salto e sem perda de dados.",
+    "nextGate": "ADR 0041 D4: depende do 504; depois provar teclado/rota normal sem salto e sem perda de dados.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -325,7 +325,7 @@
     "e2e": "Contract decision pending.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Aprovar reader/contrato de busca e vínculo real antes de implementar.",
+    "nextGate": "ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -344,7 +344,7 @@
     "e2e": "Contract decision pending.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
-    "nextGate": "Definir obrigatoriedade, identificação, deduplicação, auditoria e escopo.",
+    "nextGate": "ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -361,7 +361,7 @@
     "e2e": "Sem nova prova.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-19 e fontes antes de executar na R12 autorizada.",
+    "nextGate": "ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -438,7 +438,7 @@
     "e2e": "Sem nova prova.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-23 e fontes antes de executar na R12 autorizada.",
+    "nextGate": "ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -497,7 +497,7 @@
     "e2e": "E2E pending-verification.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
     "owner": "C0 R12",
-    "nextGate": "Provar rota normal e persistência da edição; aprovação visual do Owner permanece separada.",
+    "nextGate": "ADR 0041 C4: Owner aceitou a prova de FE em teste; captura na rota real entra junto do lote de Perfis (sessão QA D7).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -552,12 +552,12 @@
       "health-care.edit",
       "health-care.detail"
     ],
-    "fe": "FE verified em create/edit/detail com um registro de alergia; múltiplos registros independentes não exercitados na rota real.",
+    "fe": "Sessão D provou em produção a coleção independente de alergias, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º.",
     "be": "BE done.",
-    "e2e": "verified-e2e das ações; o apontamento de CRUD individual por registro segue aberto.",
-    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+    "e2e": "verified-e2e das ações; aceite central ainda pendente.",
+    "evidence": "`origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md`",
     "owner": "C0 R12",
-    "nextGate": "Exercitar vários registros de alergia independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a dois.",
+    "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -573,12 +573,12 @@
       "health-care.edit",
       "health-care.detail"
     ],
-    "fe": "FE verified em create/edit/detail com uma orientação; múltiplas orientações independentes não exercitadas na rota real.",
+    "fe": "Sessão D provou em produção a coleção independente de orientações, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º.",
     "be": "BE done.",
-    "e2e": "verified-e2e das ações; o apontamento de CRUD individual por orientação segue aberto.",
-    "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+    "e2e": "verified-e2e das ações; aceite central ainda pendente.",
+    "evidence": "`origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md`",
     "owner": "C0 R12",
-    "nextGate": "Exercitar várias orientações independentes, com adicionar/remover/reload e limite defensivo de 100 registros por coleção/entidade validado no backend; não limitar a prova a duas.",
+    "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -641,7 +641,7 @@
     "e2e": "Não executado para este apontamento.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
     "owner": "C0 R12",
-    "nextGate": "Reconciliar R12-33, reproduzir e desenhar contrato focal após abertura R12.",
+    "nextGate": "ADR 0041 B8: sino in-app para admins da unidade e educadores da turma ao criar/editar plano e a cada dose; sem e-mail/push. Implementar contrato de notificação + prova.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -651,7 +651,7 @@
   },
   {
     "id": "owner.r12-34",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"
@@ -661,7 +661,7 @@
     "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova; imagem R2 segue em owner.r12-38.",
+    "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2; imagem R2 segue em owner.r12-38.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -671,7 +671,7 @@
   },
   {
     "id": "owner.r12-35",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "meal-plans.model-create",
       "meal-plans.model-edit"
@@ -681,7 +681,7 @@
     "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
+    "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -691,7 +691,7 @@
   },
   {
     "id": "owner.r12-36",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit",
@@ -702,7 +702,7 @@
     "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
+    "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -712,7 +712,7 @@
   },
   {
     "id": "owner.r12-37",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit"
@@ -722,7 +722,7 @@
     "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova.",
+    "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -900,7 +900,7 @@
     "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
     "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "owner": "C0 R12",
-    "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
+    "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. A confirmação deve atualizar também o avatar global do cabeçalho; rascunho local não pode aparentar sucesso quando o servidor não confirmou. O Celular permanece obrigatório e precisa de máscara/formato de entrada, normalização e prova de valor inválido/válido. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -1035,7 +1035,7 @@
     "e2e": "Pendente; transferência documental não certifica execução.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
-    "nextGate": "Somente considerar institutions.status OU institutions.locations-map após concluir Conta/Auth e os três blocos de Estrutura, com margem e escopo R12 autorizado. Não promover esta opção a tarefa obrigatória nem abrir outro macrotema.",
+    "nextGate": "Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

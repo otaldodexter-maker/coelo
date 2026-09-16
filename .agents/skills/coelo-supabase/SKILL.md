@@ -2,9 +2,10 @@
 name: coelo-backend
 description: Use when a Coelo task involves Supabase, Postgres, Auth, RLS, RPCs, Edge Functions, Realtime, Cloudflare R2/Stream/Workers, Media Gateway, migrations, remote persistence, security, or backend completion.
 metadata:
-  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md"
+  source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md; decisions/0041-owner-decisions-r14-mesa-20260916.md"
   status: "active"
   generated_at: "2026-09-14"
+  updated_at: "2026-09-16"
 ---
 
 # Coelo Back-end
@@ -44,6 +45,16 @@ definida para exportação de respostas de Formulários.
 Backend `done` exige o pacote aplicável implementado, teste pgTAP/negativa
 pertinente e aplicação/verificação remota quando o contrato da ação exigir.
 Documentação, mock, migration local ou UI escondida não certificam produção.
+
+Leitores de busca sobre dado pessoal (nome, @, e-mail, celular, CPF) seguem a
+regra da ADR 0041: mínimo de caracteres por tipo antes de responder, escopo do
+ator aplicado no servidor, auditoria, limite de taxa e resultado minimizado —
+CPF nunca aparece em resultado de busca; a normalização (só dígitos) é do
+backend. Negativa cross-tenant produtiva usa identidade sintética temporária
+criada por função versionada sem grants públicos e revogada ao fim; nunca
+credencial real. `ordem-de-aplicacao-producao.txt` só registra o que o ledger
+remoto confirma; uma migration versionada e não aplicada fica anotada como
+pendente, nunca dentro de um lote.
 
 ## Coordenação e fechamento
 

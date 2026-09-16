@@ -1,0 +1,114 @@
+[
+ {
+  "action_id": "institutions.files",
+  "camada": "backend",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0041, A4): fora do MVP; flyout permanece e avisa 'em desenvolvimento'; sem importar/exportar em Instituicoes",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "institutions.files",
+  "camada": "integrated",
+  "estado_proposto": "deferred-post-mvp",
+  "delta": "Owner 16/09/2026 (ADR 0041, A4): fora do MVP; flyout permanece e avisa 'em desenvolvimento'; sem importar/exportar em Instituicoes",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "deferred-post-mvp"
+ },
+ {
+  "action_id": "errors.403",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.403",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.404",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.404",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.409",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.409",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.500",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.500",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.503",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.503",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.retry",
+  "camada": "backend",
+  "estado_proposto": "not-applicable",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ },
+ {
+  "action_id": "errors.retry",
+  "camada": "integrated",
+  "estado_proposto": "flutter-only",
+  "delta": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
+  "evidencia": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+  "escopo": "flutter-only"
+ }
+]

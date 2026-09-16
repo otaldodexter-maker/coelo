@@ -18,12 +18,13 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` em
-15/09/2026, após o delta oficial de Avaliações: FE 186/232
-(80,17%), BE 168/225 (74,67%), E2E 159/193 (82,38%), Owner 15/53
-(28,30%). O denominador integrado ativo é 193 após o Bloco B e a formalização
-de `agora.remove`. Cardápios tem
-prova FE/BE/E2E publicada, mas seus quatro Owner items permanecem `partial`
-até o aceite central desta coordenação; não entram artificialmente no 15/53.
+16/09/2026, após a Mesa do Owner (ADR 0041): FE 186/232 (80,17%),
+BE 168/219 (76,71%), E2E 159/186 (85,48%), Owner 21/53 (39,62%). O
+denominador integrado ativo caiu de 193 para 186 pela reclassificação
+autorizada de `institutions.files` (pós-MVP) e das seis páginas de erro
+(`flutter-only`); nenhum estado terminal novo foi certificado. Cardápios
+(`owner.r12-34/35/36/37`), `owner.r12-09` e `owner.r12-11` receberam aceite
+central do Owner e saíram da execução.
 
 ## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
 
@@ -87,6 +88,27 @@ em `2707086cf`, mas a negativa produtiva cross-tenant segue bloqueada pelo
 helper/fixture ausente no schema remoto. O action_id permanece
 `pending-verification`.
 
+## Lote de coordenação — 16/09/2026 (Mesa do Owner, ADR 0041)
+
+- Aceites: `owner.r12-34/35/36/37` (Cardápios), `owner.r12-09` e
+  `owner.r12-11` → `done`; OQ-031 e reader self da Conta → concluídos na
+  ADR 0038. `owner.r12-29/30` **não** aceitos: contrato redesenhado (§5 da
+  ADR) vai para R15.
+- Reclassificações aplicadas por `deltas-mesa-owner-20260916.json`:
+  `institutions.files` → `deferred-post-mvp` (flyout fica e avisa "em
+  desenvolvimento"); `errors.*` (6) → `flutter-only`. `institutions.error` e
+  `institutions.access-denied` ficam no MVP e precisam de prova.
+- Contratos decididos (B1–B9) entram nos gates das linhas de Owner abaixo;
+  H11 (autosave) sai do MVP para V1 (B10).
+- Autorizações de produção concedidas: leitura OQ-046 (D1), renomear carimbo do
+  Chat (D2), migration de escopo de `attendance_context_options` (D3),
+  diagnóstico + correção do 504 de Segurança infantil (D4), fixture cross-tenant
+  do Agora (D5). Negada: massa fictícia de alunos (D6).
+- Ambiente: credenciais QA existem em `Coelo-backups/qa-r06-*.env` e
+  `supabase/usuario/` (local, ignorado pelo Git); Docker ficará ligado (D8).
+- Goldens: falhas de Segurança da criança/Perfis/Rotina são deriva do cabeçalho
+  global; regravar referências só após estabilizar o cabeçalho (C1).
+
 ## Lote de coordenação — 15/09/2026
 
 - `assessments.close` e `assessments.reopen`: delta oficial aplicado pela
@@ -119,40 +141,34 @@ helper/fixture ausente no schema remoto. O action_id permanece
 | Atividades › Configuração avaliativa | activities.assessment | **A** | — |
 | Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | **A** | — |
 
-## Owner items — abertos/parciais e atualizações da execução (38)
+## Owner items — abertos/parciais e atualizações da execução (32)
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|
-| owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | Estabilizar/reconciliar o cabeçalho global; depois comparar Modelos em referência autorizada e corrigir alturas/rodapés/ações sem regenerar baseline por inferência. |
-| owner.r12-02 | activities.list, daily-routine.list | open / FE parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório. / Sem RPC/RLS novo; arquivamento não executado. / Pendente por contrato de archive, confirmação, versão, auditoria e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md | Definir/aplicar comando aprovado de Arquivar nos dois diretórios, com expected_version, escopo, auditoria e reload; não criar ação fake. |
-| owner.r12-04 | daily-routine.list, attendance.dashboard | open / Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe. / Dashboard e contratos preservados; nenhum SQL/RPC novo. / Pendente por definição de tela/rota canônica e mapeamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md | Definir rota/tela de Histórico com Owner, leitura autorizada, tabela/filtros/reload/escopo; só então separar Lançamentos sem quebrar D7. |
-| owner.r12-05 | attendance.create | partial / FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida. / BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa. / verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md; docs/reviews/evidence/etapa-2/r14-coordenacao/attendance-activity-blocked-20260915.md | R15: alinhar o escopo de activities ao de groups em `superadmin_attendance_context_options` (ou massa elegível autorizada) e provar seleção, criação, persistência/reload e negativa do contexto Atividade. |
-| owner.r12-06 | attendance.create, daily-routine.apply | partial / FE verified (rota real 15/09): wizard Contexto → Chamada sem etapa de rotina; texto "rotina resolvida pelo contexto autorizado". / BE done; superadmin_attendance_call_detail não expõe rotina/aplicação/versão e a rota de produção não injeta rotina na chamada — o vínculo efetivo não é observável por contrato. / verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md | R15: definir contrato de leitura da rotina efetiva na chamada (SQL) antes de provar rotina/versão/snapshot. |
-| owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | partial / FE verified em mark/finish na rota real 15/09 (chamada cd60f2d8: presente salvo, reload, concluída). / Contratos preservados; set_participant v2 e complete_call v3 em produção. / Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md | Criar vínculos criança↔turma adicionais (tela de Segurança infantil ou massa da Sessão 2) e repetir com ≥2 alunos; rotina vinculada depende de r12-06. |
-| owner.r12-09 | child-safety.list | open / Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo. / Contrato preservado; nenhum SQL/RPC novo. / Owner decision pending antes de alterar composição ou dados. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md | Aprovar campos operacionais autoritativos e então implementar com minimização, estados e escopo real. |
-| owner.r12-10 | child-safety.list | open / Golden local falha em 1440px com 0,34%/4.857 px; nenhum código ou baseline alterado. / Contrato preservado; nenhum SQL/RPC novo. / Bloqueado por reconciliação visual e decisão sobre referência. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md | Comparar aprovado/failure lado a lado, localizar diferença e corrigir ou obter decisão do Owner sem regenerar baseline por inferência. |
-| owner.r12-11 | gate/mapeamento pendente | open / Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS. / Contrato preservado; nenhum SQL/RPC novo. / Visual golden pendente de reconciliação; sem action_id novo. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md | Comparar goldens aprovado/failure e confirmar com Owner se a composição 2×2 atende antes de alterar. |
-| owner.r12-13 | child-safety.create, child-safety.edit | open / Wizard já usa FormFrame, painel único por etapa, grupos e rodapé canônicos; testes funcionais do wizard passam. / Contrato preservado; nenhum SQL/RPC novo. / Visual/E2E pendente para referência, rota normal, escopo e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md | Comparar referência e provar create/edit pela rota normal com ator/criança autorizados. |
-| owner.r12-15 | child-safety.child, child-safety.edit, child-safety.suspend | partial / FE verified no estado suspenso (rota real 15/09): diálogo com identidade, contexto, relação, capacidades, motivo, decisão, situação, validade e só Concluir. / BE: child_safety_change_lifecycle responde 504 (timeout) em produção — bloqueio para Sessão 2 (SQL/espelho). / child verified-e2e; suspend blocked-backend; estados pendente e aprovado-ativo não exercitados. | docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md | Sessão 2: diagnosticar o 504 de change_lifecycle no espelho; depois criar autorização pendente pelo wizard, aprovar e suspender pela tela para fechar r12-15/13/16. |
-| owner.r12-16 | child-safety.create | open / FE local-green: stepper bloqueia salto para etapa futura e permite retorno às concluídas; testes do wizard cobrem o fluxo. / Contrato preservado; nenhum SQL/RPC novo. / Pending-verification de rota normal e escopo. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | Provar teclado/rota normal sem salto e sem perda de dados. |
-| owner.r12-17 | child-safety.create, child-safety.edit | open / Diagnóstico: campo atual ainda aceita identificador/UUID técnico; não existe contrato de busca autorizada por nome, CPF, e-mail ou celular. / Sem alteração backend; não criar busca fake. / Contract decision pending. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | Aprovar reader/contrato de busca e vínculo real antes de implementar. |
-| owner.r12-18 | child-safety.create | open / Diagnóstico: pessoa global sem conta e campos mínimos/deduplicação não têm contrato definido. / Nenhuma tabela/RPC criada. / Contract decision pending. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | Definir obrigatoriedade, identificação, deduplicação, auditoria e escopo. |
-| owner.r12-19 | gate/mapeamento pendente | open / Planejado R12, não implementado. / Contrato a verificar; conflito Principal em R12-23. / Sem nova prova. | docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md | Reconciliar R12-19 e fontes antes de executar na cota R14 autorizada. |
+| owner.r12-01 | daily-routine.list | open / Planejado R12; não implementado. / Contratos a verificar; triagem golden encontrou apenas diferença no cabeçalho global, sem atribuir falha ao card. / Não executado para este apontamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md; docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md | ADR 0041 C3: altura uniforme dos cards, linha "Efetivo: —" quando vazio e Arquivar em todos (depende de B1); golden regrava após estabilizar cabeçalho (C1). Não estava corrigido. |
+| owner.r12-02 | activities.list, daily-routine.list | open / FE parcial: Duplicar existe em Atividades; Arquivar não tem callback/contrato no diretório. / Sem RPC/RLS novo; arquivamento não executado. / Pendente por contrato de archive, confirmação, versão, auditoria e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md | ADR 0041 B1: Arquivar = inativar reversível (OQ-033 B), lista "Arquivados", mesma permissão de editar; derivados seguem válidos. Implementar nos dois diretórios com expected_version, auditoria e reload. |
+| owner.r12-04 | daily-routine.list, attendance.dashboard | open / Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe. / Dashboard e contratos preservados; nenhum SQL/RPC novo. / Pendente por definição de tela/rota canônica e mapeamento. | docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md | ADR 0041 B2: nova tela Acompanhamento › Assiduidade › Histórico (tabela de chamadas, filtros, abre detalhe, sem edição); retirar Lançamentos do diretório de Rotina. |
+| owner.r12-05 | attendance.create | partial / FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida. / BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa. / verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md; docs/reviews/evidence/etapa-2/r14-coordenacao/attendance-activity-blocked-20260915.md | ADR 0041 D3: autorizada migration forward-only alinhando escopo de activities ao de groups em superadmin_attendance_context_options (espelho + pgTAP antes); depois provar seleção, criação, reload e negativa do contexto Atividade. |
+| owner.r12-06 | attendance.create, daily-routine.apply | partial / FE verified (rota real 15/09): wizard Contexto → Chamada sem etapa de rotina; texto "rotina resolvida pelo contexto autorizado". / BE done; superadmin_attendance_call_detail não expõe rotina/aplicação/versão e a rota de produção não injeta rotina na chamada — o vínculo efetivo não é observável por contrato. / verified-e2e de attendance.create; rotina efetiva/versionamento/snapshot exigem contrato novo. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md | ADR 0041 B3: híbrido — chamada aberta segue a rotina vigente; ao concluir grava snapshot (rotina + versão) e o histórico mostra o snapshot; reabrir não altera. Sem snapshot legado: exibir "rotina atual (não registrada na época)". |
+| owner.r12-08 | attendance.mark, attendance.correct, attendance.finish, daily-routine.apply | partial / FE verified em mark/finish na rota real 15/09 (chamada cd60f2d8: presente salvo, reload, concluída). / Contratos preservados; set_participant v2 e complete_call v3 em produção. / Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados. | docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md | ADR 0041 D6: Owner não autoriza massa fictícia agora; prova com ≥2 alunos fica para depois. Bloqueado por decisão, não por ambiente. |
+| owner.r12-10 | child-safety.list | open / Golden local falha em 1440px com 0,34%/4.857 px; nenhum código ou baseline alterado. / Contrato preservado; nenhum SQL/RPC novo. / Bloqueado por reconciliação visual e decisão sobre referência. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md | ADR 0041 C1: diff isolado mostra só o cabeçalho global; regravar golden após estabilizar cabeçalho. Tabela do diretório ainda deve ser revista contra a Table canônica. |
+| owner.r12-13 | child-safety.create, child-safety.edit | open / Wizard já usa FormFrame, painel único por etapa, grupos e rodapé canônicos; testes funcionais do wizard passam. / Contrato preservado; nenhum SQL/RPC novo. / Visual/E2E pendente para referência, rota normal, escopo e reload. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md | ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504 de child_safety_change_lifecycle; depois provar create/edit pela rota normal. |
+| owner.r12-15 | child-safety.child, child-safety.edit, child-safety.suspend | partial / FE verified no estado suspenso (rota real 15/09): diálogo com identidade, contexto, relação, capacidades, motivo, decisão, situação, validade e só Concluir. / BE: child_safety_change_lifecycle responde 504 (timeout) em produção — bloqueio para Sessão 2 (SQL/espelho). / child verified-e2e; suspend blocked-backend; estados pendente e aprovado-ativo não exercitados. | docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md | ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504; depois criar autorização, aprovar e suspender pela tela para fechar r12-15/13/16. |
+| owner.r12-16 | child-safety.create | open / FE local-green: stepper bloqueia salto para etapa futura e permite retorno às concluídas; testes do wizard cobrem o fluxo. / Contrato preservado; nenhum SQL/RPC novo. / Pending-verification de rota normal e escopo. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | ADR 0041 D4: depende do 504; depois provar teclado/rota normal sem salto e sem perda de dados. |
+| owner.r12-17 | child-safety.create, child-safety.edit | open / Diagnóstico: campo atual ainda aceita identificador/UUID técnico; não existe contrato de busca autorizada por nome, CPF, e-mail ou celular. / Sem alteração backend; não criar busca fake. / Contract decision pending. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE. |
+| owner.r12-18 | child-safety.create | open / Diagnóstico: pessoa global sem conta e campos mínimos/deduplicação não têm contrato definido. / Nenhuma tabela/RPC criada. / Contract decision pending. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar. |
+| owner.r12-19 | gate/mapeamento pendente | open / Planejado R12, não implementado. / Contrato a verificar; conflito Principal em R12-23. / Sem nova prova. | docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md | ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito. |
 | owner.r12-20 | access-profiles.list | partial / FE local-green: cards distribuem Status, Escopo máximo, Vínculos e Tipo em grade 2×2 responsiva, sem inventar métrica. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md | Provar rota normal, quantidade arbitrária de registros, golden aprovado, reload e negativa cross-tenant. |
 | owner.r12-21 | access-profiles.detail | partial / FE local-green: detalhe traduz módulos, telas e ações para rótulos de produto, preservando código técnico fora do texto principal e ações próprias/todas. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md | Provar rota normal, catálogo real, golden aprovado, reload e negativa cross-tenant. |
 | owner.r12-22 | access-profiles.create, access-profiles.edit | partial / FE local-green: campo Código removido do fluxo; identificador interno preservado/gerado. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md | Provar criação/edição pela rota normal, persistência/reload e negativa cross-tenant. |
-| owner.r12-23 | access-profiles.create | open / Planejado R12, não implementado. / Contrato a verificar; conflito Principal em R12-23. / Sem nova prova. | docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md | Reconciliar R12-23 e fontes antes de executar na cota R14 autorizada. |
+| owner.r12-23 | access-profiles.create | open / Planejado R12, não implementado. / Contrato a verificar; conflito Principal em R12-23. / Sem nova prova. | docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md | ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14. |
 | owner.r12-24 | access-profiles.create, access-profiles.edit | partial / FE local-green: marcador repetido Crítico/MFA removido; consequência de sensibilidade, MFA e trilha de auditoria explicada por tooltip acessível. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md | Provar catálogo real, rota normal, foco/toque, persistência/reload e negativa cross-tenant. |
 | owner.r12-25 | access-profiles.create, access-profiles.edit | partial / FE local-green: matriz compartilhada preserva colunas alinhadas e ações próprias/todas, com adaptação empilhada em telas estreitas. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md | Provar catálogo real, rota normal, responsividade, persistência/reload e negativa cross-tenant. |
-| owner.r12-26 | access-profiles.edit | partial / FE local-green: Continuar habilitado é FilledButton preenchido também na edição. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md | Provar rota normal e persistência da edição; aprovação visual do Owner permanece separada. |
+| owner.r12-26 | access-profiles.edit | partial / FE local-green: Continuar habilitado é FilledButton preenchido também na edição. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md | ADR 0041 C4: Owner aceitou a prova de FE em teste; captura na rota real entra junto do lote de Perfis (sessão QA D7). |
 | owner.r12-27 | access-profiles.create, access-profiles.edit | partial / FE local-green: revisão mostra módulo → tela → ação do catálogo, motivo de indisponibilidade e distinção entre configuração e acesso efetivo. / BE inalterado; conflito Principal em R12-23 separado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md | Conferir catálogo real/traduções, alcance, ações adiadas e salvar/reload sem perder próprias/todas. |
-| owner.r12-29 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de alergias, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | Integrar seletivamente a evidência ao `dev` e registrar aceite central; não reduzir o contrato a dois registros. |
-| owner.r12-30 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de orientações, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | Integrar seletivamente a evidência ao `dev` e registrar aceite central; não reduzir o contrato a dois registros. |
-| owner.r12-34 | meal-plans.model-create, meal-plans.model-edit | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova; imagem R2 segue em owner.r12-38. |
-| owner.r12-35 | meal-plans.model-create, meal-plans.model-edit | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova. |
-| owner.r12-36 | meal-plans.create, meal-plans.edit, meal-plans.publish | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova. |
-| owner.r12-37 | meal-plans.create, meal-plans.edit | partial / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md | Sessão 2 publicou a prova de camada na rota real; aceite central do Owner ainda não foi incorporado ao contador desta coordenação. Não repetir a prova. |
-| owner.r12-33 | medication.create, medication.edit, medication.detail | open / Planejado R12, não implementado. / Contratos e persistência a verificar. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md | Reconciliar R12-33, reproduzir e desenhar contrato focal na cota R14 autorizada. |
+| owner.r12-29 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de alergias, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, "O que fazer se consumido?"). Spec para R15; coleção + limite 100 já em produção são a base. |
+| owner.r12-30 | health-care.create, health-care.edit, health-care.detail | partial / Sessão D provou em produção a coleção independente de orientações, com IDs, adicionar/remover/reload e compatibilidade legada; pgTAP remoto 6/6 e limite backend de 100, com rejeição do 101º. / BE done. / verified-e2e das ações; aceite central ainda pendente. | `origin/r14/bloco-cd` em `b135c8f20`, handoff e evidência `r14-sessao-2/block-d-20260915.md` | ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15. |
+| owner.r12-33 | medication.create, medication.edit, medication.detail | open / Planejado R12, não implementado. / Contratos e persistência a verificar. / Não executado para este apontamento. | docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md | ADR 0041 B8: sino in-app para admins da unidade e educadores da turma ao criar/editar plano e a cada dose; sem e-mail/push. Implementar contrato de notificação + prova. |
 | owner.r12-38 | meal-plans.create, meal-plans.edit, meal-plans.publish, meal-plans.model-edit | open / FE mantém envio desabilitado. / Adapter composto ainda usa Supabase Storage em upload/leitura, incompatível com R2 privado. / E2E não executado. | docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md | C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag. |
 | owner.r12-39 | forms.edit, forms.create | partial / FE local-green: arraste/movimentação e alternativas por botões preservadas. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md | Provar save/reload e posição final pela rota normal. |
 | owner.r12-40 | forms.edit, forms.create | partial / FE local-green: seção pode ser renomeada por diálogo e o draft é atualizado. / BE inalterado. / E2E pending-verification. | docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md | Provar persistência/reload e nome na prévia pela rota normal. |
@@ -162,10 +178,16 @@ helper/fixture ausente no schema remoto. O action_id permanece
 | owner.r12-52 | chat.attach | partial / FE local-green: mosaico por mensagem para múltiplas mídias visuais, contador de adicionais, tile único e anexos não visuais preservados. / Sem mudança backend; R2 privado, ownership e autorização existentes preservados. / Pending-verification: faltam rota normal, mídia R2/MP4 real, reload e negativa cross-tenant. | docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md | Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema. |
 
-## Owner items — concluídos (15; não voltam à execução)
+## Owner items — concluídos (21; não voltam à execução)
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|
+| owner.r12-34 | meal-plans.model-create, meal-plans.model-edit | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2; imagem R2 segue em owner.r12-38. |
+| owner.r12-35 | meal-plans.model-create, meal-plans.model-edit | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2. |
+| owner.r12-36 | meal-plans.create, meal-plans.edit, meal-plans.publish | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2. |
+| owner.r12-37 | meal-plans.create, meal-plans.edit | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2. |
+| owner.r12-09 | child-safety.list | done / Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo. / Contrato preservado; nenhum SQL/RPC novo. / Owner decision pending antes de alterar composição ou dados. | docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: Owner aprovou o card atual sem campo alerta/restrição (ADR 0041 B4). |
+| owner.r12-11 | gate/mapeamento pendente | done / Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS. / Contrato preservado; nenhum SQL/RPC novo. / Visual golden pendente de reconciliação; sem action_id novo. | docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1). |
 | owner.r12-03 | activities.list | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md | Concluído 15/09 (rota real, Sessão 1): abas "Modelos de atividade"/"Atividades", busca, filtros, cards/tabela, status, paginação e reload com dados reais; negativa por id inexistente e escopo pgTAP. |
 | owner.r12-07 | attendance.mark, attendance.correct, attendance.finish | done / verified / not-applicable / flutter-only | docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md | Ajuste visual entregue; não refazer |
 | owner.r12-12 | child-safety.child | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md | Concluído 15/09 (rota real, Sessão 1): tabela distingue "Aprovado · Suspensa" e mantém validade com dados reais; reload e negativa P0002. Golden 1440 permanece em r12-10. |
@@ -205,7 +227,10 @@ reexecutados sem nova abertura do Owner:
 - Principal: corrigir a indicação de contexto ativo após “Ver como”;
 - `owner.r12-38` e `owner.r12-46`: migrar/provar imagem privada R2 de Cardápios
   e Conta, incluindo o layout A+ do “Meu acesso”;
-- demais H, OQ-031, `chat.attach`, `owner.r12-33` e os gates de medição seguem
+- ADR 0041 (16/09): spec própria de perfil transversal/funcionário no Principal
+  (`owner.r12-19/23`, OQ-044) e spec redesenhada de Perfis de cuidado
+  (`owner.r12-29/30`, §5 da ADR) — ambas R15, sem execução na R14;
+- demais H, `chat.attach`, `owner.r12-33` e os gates de medição seguem
   na ordem da R14. Não abrir Planos comerciais, reader de Planos ou Auth
   recovery/reset; estes continuam fora da R14 conforme ADR 0039.
 
@@ -253,7 +278,7 @@ aberta, não cria `action_id` e não autoriza novas provas.
   fixture consta aplicada mas foi reportada ausente do schema remoto. Confirmar
   por metadados antes de qualquer espelho, R16 ou nova negativa do Agora.
 
-## Resíduos H (herdados de R01–R07) — abertos (20)
+## Resíduos H (herdados de R01–R07) — abertos (19)
 
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
@@ -263,7 +288,6 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | H07 | noturna/R01 | Hash de edição/revogação sem `conversation_id` | Executar replay/contexto na revisão de segurança. |
 | H09 | R04/R06 | Disparo agendado de expiração Agora | Medir trigger real; leitura não basta. |
 | H10 | noturna/R01 | Múltiplas regras de audiência em Formulários | Decidido (ADR 0038): preservar todas as regras de audiência. Próximo gate: editor lista/edita regras sem perder as demais + teste. |
-| H11 | noturna/R01 | Autosave de autoria de Formulários | Decidido (ADR 0038): autosave do autor ligado. Próximo gate: host produtivo passa `authoringApi` + teste. |
 | H12 | noturna/R01 | Controles de mínimo/máximo de seleção | Localizar contrato e registrar aceite. |
 | H14 | R06 | Sino sem `action_id`/subaceite | Mapear ao action_id-pai sem novo denominador. |
 | H16 | R06 | Leitura people-based de cuidado | Provar escopo entre unidades. |
@@ -278,10 +302,11 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | H27 | noturna/R01 | Sinal de atualização de Momentos | Decidido (ADR 0038): saudação por hora do dia; ponto laranja na aba Momentos quando há momento não visto. Próximo gate: implementar no Principal + prova. |
 | H28 | R01 | Filtros, avatar e buffers de Pessoas | Rever somente diferenças funcionais persistentes. |
 
-## Resíduos H — transferidos para R15 (3)
+## Resíduos H — transferidos (4: H08/H13/H23 → R15; H11 → V1)
 
 | ID | Origem | Motivo da transferência |
 |---|---|---|
+| H11 | noturna/R01 | **V1** por decisão do Owner em 16/09 (ADR 0041 B10): autosave de autoria de Formulários sai do MVP sem medir o limiar de 60%; testes locais preservados, nenhum aceite remoto exigido. |
 | H08 | R02 | Autorizado pelo Owner em 15/09; falta contrato produtivo do item a duplicar e `action_id`, portanto não inventar RPC, payload ou coluna na R14. |
 | H13 | noturna/R01 | Autorizado pelo Owner em 15/09; falta referência produtiva de item relacionado e `action_id` para o CTA. |
 | H23 | noturna/R01 | Autorizado pelo Owner em 15/09; implementação visual depende do contrato de Avisos que será definido junto com H08/H13 na R15. |
@@ -295,30 +320,30 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | H17 | R06 | Papel fixo versus capacidade em cuidado | **Concluído em 14/09 (lote 66)**: capacidade `care_policies.manage` nos catálogos Superadmin (Owner) e Admin (Administrador da instituição); `superadmin_unit_care_policy_set_v1` exige só a capacidade; pgTAP 15/15 + base 20/20; get/set/reload em produção na unidade f5284f2f e negativa por unidade alheia. Sem action_id próprio no inventário (sem tela no cliente); sem delta de estado. |
 | H15 | R06 | Atribuição de Plano | **Concluído por decisão de escopo:** `plans.assign` fica fora do MVP; botão e operação permanecem honestamente indisponíveis. |
 
-## Itens da ADR 0038 sem ID H nem Owner item — abertos (4) e transferidos (2)
+## Itens da ADR 0038 sem ID H nem Owner item — abertos (2) e transferidos (2)
 
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
 | Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
-| Catálogos globais de tipo (OQ-031) | Entregue tecnicamente; aceite central pendente | Sessão D aplicou a migration `20260915131500` em produção e confirmou pgTAP remoto 11/11, quatro catálogos com oito entradas e "Outros"; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
-| Reader self da Conta (039) | Entregue tecnicamente; aceite central pendente | Sessão D aplicou a migration `20260915133000` em produção e confirmou pgTAP remoto 6/6, sessão autenticada e ausência de sobrecarga por UUID; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
 | Reader de Planos comerciais no Principal (039) | Transferido para V1/V2 | Não executar na R14; preservar contrato e IDs como preparação futura. `units_with_override` só deve ser calculado quando o Owner abrir o escopo. |
 | Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
 | Auth: localhost na allowlist de redirect (R12-47) | Transferido para Etapa 3 | Não executar na R14; pertence ao contrato futuro de recuperação/reset, com ambiente e prova próprios. |
 
-## Itens da ADR 0038 — concluídos (2)
+## Itens da ADR 0038 — concluídos (4)
 
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
+| Catálogos globais de tipo (OQ-031) | Concluído 16/09 (aceite do Owner, ADR 0041 A3) | Sessão D aplicou a migration `20260915131500` em produção e confirmou pgTAP remoto 11/11, quatro catálogos com oito entradas e "Outros"; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
+| Reader self da Conta (039) | Concluído 16/09 (aceite do Owner, ADR 0041 A3) | Sessão D aplicou a migration `20260915133000` em produção e confirmou pgTAP remoto 6/6, sessão autenticada e ausência de sobrecarga por UUID; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 
-## Ações não terminais por família (inventário: 37 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 30 ações; FE/BE/E2E)
 
-Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` (SHA `f325a7b82`):
-ações `mvp`/`gate-formal-mvp` cujo estado integrado não é `verified-e2e` nem
-`flutter-only`. As 29 `deferred-post-mvp` ficam fora. Bloco A, Cardápios e
-`assessments.close/reopen` já são terminais e não aparecem.
+Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` após a
+Mesa do Owner (ADR 0041): ações `mvp`/`gate-formal-mvp` cujo estado integrado
+não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
+`errors.409` (flutter-only, FE local-green) ainda deve provar FE na rota real.
 
 | Família | Qtd | action_ids |
 |---|---:|---|
@@ -328,11 +353,10 @@ ações `mvp`/`gate-formal-mvp` cujo estado integrado não é `verified-e2e` nem
 | auth | 3 | `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp), `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
 | chat | 1 | `chat.attach` (local-green/local-green/pending-verification) |
 | child_safety | 2 | `child-safety.edit` (local-green/done/pending-verification), `child-safety.suspend` (local-green/done/blocked-backend) |
-| error_pages | 6 | `errors.403` (verified/pending-verification/pending-verification), `errors.404` (verified/pending-verification/pending-verification), `errors.409` (local-green/pending-verification/pending-verification), `errors.500` (verified/pending-verification/pending-verification), `errors.503` (verified/pending-verification/pending-verification), `errors.retry` (verified/pending-verification/pending-verification) |
 | forms_authoring | 2 | `forms.create` (local-green/done/pending-verification), `forms.edit` (local-green/done/pending-verification) |
 | forms_files | 2 | `forms.delete-file` (pending-verification/local-green/pending-verification), `forms.expire-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
-| institutions | 3 | `institutions.access-denied` (pending-verification/local-green/pending-verification), `institutions.error` (pending-verification/local-green/pending-verification), `institutions.files` (pending-verification/pending-verification/pending-verification) |
+| institutions | 2 | `institutions.access-denied` (pending-verification/local-green/pending-verification), `institutions.error` (pending-verification/local-green/pending-verification) |
 | internal_users | 1 | `internal-users.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
 | momentos | 4 | `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification), `momentos.view` (verified/done/pending-verification) |
 | principal_profile | 2 | `principal.for-you` (verified/blocked-decision/pending-verification), `principal.profile-edit` (local-green/blocked-decision/pending-verification) |
@@ -347,6 +371,8 @@ Etapa 3: `auth.recover`/`auth.reset`; 3 instituições fictícias com hierarquia
 Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em 15/09: opção B + regra de pessoas) e OQ-034 Locais com mapa por imagem (confirmado em 15/09; substitui `institutions.locations-map`).
 
 **15/09/2026 — abertura da execução (artefato 89AVWHKEnq5hrvYN6SFv6M):** temas explicados e sete decisões registradas em `R14-execucao-paralela.md` (papéis, worktrees, portas, handoffs, Bloco B autorizado com E2E ativo 199 → 192, ordem do Bloco C e ordem original do Bloco D). A formalização posterior de `agora.remove` levou a base ativa a 193. Duas sessões executaram em paralelo; a coordenadora (Codex) atualiza este arquivo. A decisão posterior da ADR 0039 transfere recuperação/reset de Auth e a allowlist desse fluxo para a Etapa 3.
+
+**16/09/2026 — Mesa do Owner (artefato Jrsk1XBe97MCLpeUBGAeYz, ADR 0041):** 27 decisões registradas; `institutions.files` fora do MVP; páginas de erro `flutter-only`; H11 → V1; perfil transversal e Perfis de cuidado redesenhados → specs R15; contratos B1–B9 fixados; autorizações D1–D5 concedidas, D6 negada.
 
 ## Como atualizar
 
