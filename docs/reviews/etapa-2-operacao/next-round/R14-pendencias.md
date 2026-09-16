@@ -313,37 +313,29 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 
-## Ações não terminais por família (inventário: 67 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 37 ações; FE/BE/E2E)
+
+Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` (SHA `f325a7b82`):
+ações `mvp`/`gate-formal-mvp` cujo estado integrado não é `verified-e2e` nem
+`flutter-only`. As 29 `deferred-post-mvp` ficam fora. Bloco A, Cardápios e
+`assessments.close/reopen` já são terminais e não aparecem.
 
 | Família | Qtd | action_ids |
 |---|---:|---|
-| access_profiles | 3 | `access-profiles.create` (local-green/done/pending-verification), `access-profiles.edit` (local-green/done/pending-verification), `access-profiles.assign` (pending-verification/done/pending-verification) |
-| account | 2 | `account.profile` (verified/remote-green/pending-verification), `account.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
-| acontece | 1 | `acontece.create` (local-green/done/pending-verification) |
-| activities | 2 | `activities.list` (local-green/done/pending-verification), `activities.publish` (local-green/done/pending-verification) |
-| agenda | 1 | `agenda.request` (local-green/done/pending-verification) |
-| agora | 5 | `agora.view` (verified/done/pending-verification), `agora.create` (local-green/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification), `agora.remove` (pending-verification/pending-verification/pending-verification) |
-| assessments | 2 | `assessments.close` (verified/local-green/verified-e2e), `assessments.reopen` (verified/local-green/verified-e2e) |
-| attendance | 1 | `attendance.create` (local-green/done/pending-verification) |
-| auth | 3 | `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification), `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
-| catalog | 4 | `catalog.list` (verified/pending-verification/pending-verification), `catalog.validate` (verified/pending-verification/pending-verification), `catalog.sync` (verified/pending-verification/pending-verification), `catalog.publish` (pending-verification/pending-verification/pending-verification) |
-| chat | 2 | `chat.create-group` (verified/done/pending-verification), `chat.attach` (local-green/local-green/pending-verification) |
-| child_safety | 3 | `child-safety.child` (local-green/done/pending-verification), `child-safety.edit` (local-green/done/pending-verification), `child-safety.suspend` (local-green/done/pending-verification) |
-| circulars | 1 | `circulars.attach` (local-green/done/pending-verification) |
-| daily_routine | 1 | `daily-routine.apply` (local-green/done/pending-verification) |
+| access_profiles | 3 | `access-profiles.assign` (pending-verification/done/pending-verification), `access-profiles.create` (local-green/done/pending-verification), `access-profiles.edit` (local-green/done/pending-verification) |
+| account | 2 | `account.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp), `account.profile` (verified/remote-green/pending-verification) |
+| agora | 5 | `agora.create` (local-green/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.remove` (pending-verification/pending-verification/pending-verification), `agora.view` (verified/done/pending-verification) |
+| auth | 3 | `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp), `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
+| chat | 1 | `chat.attach` (local-green/local-green/pending-verification) |
+| child_safety | 2 | `child-safety.edit` (local-green/done/pending-verification), `child-safety.suspend` (local-green/done/blocked-backend) |
 | error_pages | 6 | `errors.403` (verified/pending-verification/pending-verification), `errors.404` (verified/pending-verification/pending-verification), `errors.409` (local-green/pending-verification/pending-verification), `errors.500` (verified/pending-verification/pending-verification), `errors.503` (verified/pending-verification/pending-verification), `errors.retry` (verified/pending-verification/pending-verification) |
 | forms_authoring | 2 | `forms.create` (local-green/done/pending-verification), `forms.edit` (local-green/done/pending-verification) |
-| forms_files | 4 | `forms.upload` (local-green/done/pending-verification), `forms.resolve-file` (local-green/done/pending-verification), `forms.expire-file` (pending-verification/local-green/pending-verification), `forms.delete-file` (pending-verification/local-green/pending-verification) |
+| forms_files | 2 | `forms.delete-file` (pending-verification/local-green/pending-verification), `forms.expire-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
-| institutions | 5 | `institutions.status` (pending-verification/pending-verification/pending-verification), `institutions.files` (pending-verification/pending-verification/pending-verification), `institutions.error` (pending-verification/local-green/pending-verification), `institutions.access-denied` (pending-verification/local-green/pending-verification), `institutions.locations-map` (pending-verification/local-green/pending-verification) |
+| institutions | 3 | `institutions.access-denied` (pending-verification/local-green/pending-verification), `institutions.error` (pending-verification/local-green/pending-verification), `institutions.files` (pending-verification/pending-verification/pending-verification) |
 | internal_users | 1 | `internal-users.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
-| invites | 2 | `invites.list` (local-green/done/pending-verification), `invites.resend` (local-green/done/pending-verification) |
-| meal_plans | 5 | `meal-plans.create` (local-green/done/pending-verification), `meal-plans.edit` (local-green/done/pending-verification), `meal-plans.model-create` (local-green/done/pending-verification), `meal-plans.model-edit` (local-green/done/pending-verification), `meal-plans.publish` (local-green/done/pending-verification) |
-| momentos | 4 | `momentos.view` (verified/done/pending-verification), `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification) |
-| plans | 1 | `plans.assign` (pending-verification/pending-verification/pending-verification) |
+| momentos | 4 | `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification), `momentos.view` (verified/done/pending-verification) |
 | principal_profile | 2 | `principal.for-you` (verified/blocked-decision/pending-verification), `principal.profile-edit` (local-green/blocked-decision/pending-verification) |
-| shell | 1 | `shell.switch-context` (pending-verification/not-applicable/flutter-only) |
-| units | 2 | `units.error` (pending-verification/local-green/pending-verification), `units.access-denied` (pending-verification/local-green/pending-verification) |
 
 ## Decisões de escopo do Owner (14/09 e 15/09, ver `docs/agent/backlog.md`)
 
