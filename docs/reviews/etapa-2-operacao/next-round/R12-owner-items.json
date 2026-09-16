@@ -166,9 +166,9 @@
     "actionIds": [
       "child-safety.list"
     ],
-    "fe": "Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo.",
-    "be": "Contrato preservado; nenhum SQL/RPC novo.",
-    "e2e": "Owner decision pending antes de alterar composição ou dados.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
     "owner": "C0 R12",
     "nextGate": "Concluído 16/09: Owner aprovou o card atual sem campo alerta/restrição (ADR 0041 B4).",

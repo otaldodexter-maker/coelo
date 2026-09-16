@@ -246,9 +246,9 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Diagnóstico: card já mostra identificação/contexto, situação textual, autorizações e pendências; alerta/restrição separado não existe no modelo.",
-      "be": "Contrato preservado; nenhum SQL/RPC novo.",
-      "e2e": "Owner decision pending antes de alterar composição ou dados.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
       "owner": "C0 R14",
       "nextGate": "Concluído 16/09: Owner aprovou o card atual sem campo alerta/restrição (ADR 0041 B4).",
@@ -904,6 +904,55 @@
       "owner": "Owner/C0/E",
       "evidence": "decisions/0040-agora-immediate-removal.md",
       "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
+    },
+    {
+      "id": "institutions.files",
+      "status": "deferred",
+      "owner": "Owner (ADR 0041 A4)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "Fora do MVP: flyout permanece e avisa 'em desenvolvimento'; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "errors.403",
+      "status": "done",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
+    },
+    {
+      "id": "errors.404",
+      "status": "done",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
+    },
+    {
+      "id": "errors.409",
+      "status": "open",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: aceite terminal é FE na rota real; errors.409 ainda precisa de captura na rota real."
+    },
+    {
+      "id": "errors.500",
+      "status": "done",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
+    },
+    {
+      "id": "errors.503",
+      "status": "done",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
+    },
+    {
+      "id": "errors.retry",
+      "status": "done",
+      "owner": "Owner (ADR 0041 A5)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
