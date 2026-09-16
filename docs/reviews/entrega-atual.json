@@ -1,6 +1,6 @@
 {
   "schema": "r14-current-delivery-report-v1",
-  "generatedAt": "2026-09-15",
+  "generatedAt": "2026-09-16",
   "reportType": "current-cut-reconciliation",
   "completion": "partial",
   "asOf": {
@@ -8,13 +8,13 @@
     "roundStatus": "active",
     "nextRound": "R15 not opened",
     "branch": "dev",
-    "head": "5ae79bef1af012605b5ceb3a1936fec86f33eac1",
+    "head": "f452b2e00c2118cec6319d09785623494d9c6f18",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
-    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
     "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
     "ownerQueueProjection": null,
     "inventory": "docs/reviews/inventario-etapa-2.json",
@@ -109,14 +109,14 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "186/232 (80.17%)",
-    "frontendLocalGreen": "13/232 (5.60%)",
-    "backendDone": "168/225 (74.67%)",
-    "backendLocalGreen": "11/225 (4.89%)",
-    "e2eVerified": "159/193 (82.38%)",
-    "e2ePlusFlutterOnly": "166/232 (71.55%)",
-    "ownerDone": "15/53 (28.30%)",
-    "ownerNonTerminal": "38/53 (71.70%)"
+    "frontendVerified": "189/232 (81.47%)",
+    "frontendLocalGreen": "12/232 (5.17%)",
+    "backendDone": "171/219 (78.08%)",
+    "backendLocalGreen": "8/219 (3.65%)",
+    "e2eVerified": "162/186 (87.10%)",
+    "e2ePlusFlutterOnly": "174/232 (75.00%)",
+    "ownerDone": "21/53 (39.62%)",
+    "ownerNonTerminal": "32/53 (60.38%)"
   },
   "firstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
   "ownerItems": [
@@ -902,8 +902,8 @@
       "id": "agora.remove",
       "status": "open",
       "owner": "Owner/C0/E",
-      "evidence": "decisions/0040-agora-immediate-removal.md",
-      "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
+      "nextGate": "Aplicar projecao management_version/can_remove pelo rito, provar remocao pela tela e negativa D5; so entao promover."
     },
     {
       "id": "institutions.files",
@@ -953,11 +953,60 @@
       "owner": "Owner (ADR 0041 A5)",
       "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
       "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
+    },
+    {
+      "id": "agora.create",
+      "status": "done",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
+    },
+    {
+      "id": "agora.view",
+      "status": "done",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
+    },
+    {
+      "id": "agora.publish",
+      "status": "open",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "E2E: leitor responsavel na audiencia Familias nao existe no QA (D6); provar quando houver massa autorizada."
+    },
+    {
+      "id": "agora.expire",
+      "status": "open",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "E2E: expiracao de 24 h reais observada pela tela apos publicacao; BE done."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
-  "protectedWorktrees": {},
+  "protectedWorktrees": {
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-acessos-instituicoes": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-formularios-chat": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-agora-momentos": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-seguranca-assiduidade": {
+      "disposition": "retained-session",
+      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    }
+  },
   "preservedStash": {},
   "residualBranches": {
     "codex/e2-r02-d01-autenticacao": {
@@ -2081,6 +2130,104 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "b5a0fe8e7ff5f3d0022f6ff5f805557efa9a3e0c"
+    },
+    "r14/acessos-instituicoes": {
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
+      "exclusive": [
+        "b271d178b7e3933e98fd632d422a8a5719c510e6",
+        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
+        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
+        "89be705fa76ac0765ba5f3a07493006c0f68b713"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/acessos-instituicoes": {
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
+      "exclusive": [
+        "b271d178b7e3933e98fd632d422a8a5719c510e6",
+        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
+        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
+        "89be705fa76ac0765ba5f3a07493006c0f68b713"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "r14/formularios-chat": {
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+      "exclusive": [
+        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/formularios-chat": {
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+      "exclusive": [
+        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "r14/agora-momentos": {
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+      "exclusive": [
+        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
+        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
+        "cf8139e8c844d13326507cdb23c70dc54453b011"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/agora-momentos": {
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+      "exclusive": [
+        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
+        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
+        "cf8139e8c844d13326507cdb23c70dc54453b011"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "r14/seguranca-assiduidade": {
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+      "exclusive": [
+        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+        "bf606665563160fe7b44db951b8e9b122f601f7e",
+        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+    },
+    "origin/r14/seguranca-assiduidade": {
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+      "exclusive": [
+        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+        "bf606665563160fe7b44db951b8e9b122f601f7e",
+        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
+      ],
+      "disposition": "patch-equivalent",
+      "successor": "6ddf6a72e5ebc25be2b0526d1750a79199d6d2f3",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..6ddf6a72e); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     }
   },
   "evidenceFiles": [
@@ -2140,7 +2287,11 @@
     "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-8/child-safety-lifecycle-504-20260916.md"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2382,8 +2533,8 @@
   },
   "deployment": {
     "status": "pending",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-    "reason": "A Sessão D aplicou em produção as migrations de coleções de cuidado, OQ-031 e Account self; a Sessão E ainda tem deploy/prova produtiva de mídia em andamento. O relatório não autoriza novo deploy por si só."
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "reason": "Lotes 72/73 aplicados em producao pelo rito; migrations D3/D4 (20260916152000, 20260916154500) versionadas e pendentes de aplicacao por bloqueio de permissao do executor; incidente do PostgREST em aberto."
   },
   "r14Status": {
     "round": "R14",
