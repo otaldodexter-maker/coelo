@@ -142,7 +142,7 @@
         "daily-routine.list"
       ],
       "fe": "FE local-green (S9 16/09): Atividades › Modelos com aba Arquivados, Arquivar/Restaurar com confirmação e recarga (leitor v1); Rotina › Modelos com filtro Arquivados e comandos v1 no router; testes 6/6 + 6/6 + 3 + 1.",
-      "be": "BE local-green (espelho): spec 052 + migration `20260916183000_archive_models_v1` (RPCs `superadmin_activity_template_archive_v1/_restore_v1/_directory_v1`, `superadmin_routine_model_archive_v1/_restore_v1`, diretório de Rotina exclui arquivados por padrão; PT409, recibo, auditoria, RLS deny-by-default) + pgTAP 63/63; **não aplicada em produção**.",
+      "be": "BE local-green (espelho): spec 054 + migration `20260916193000_archive_models_v1` (RPCs `superadmin_activity_template_archive_v1/_restore_v1/_directory_v1`, `superadmin_routine_model_archive_v1/_restore_v1`, diretório de Rotina exclui arquivados por padrão; PT409, recibo, auditoria, RLS deny-by-default) + pgTAP 63/63; **não aplicada em produção**.",
       "e2e": "Pendente: aplicação em produção pelo rito e rota real dos dois diretórios (Arquivar, Restaurar, filtro, reload, negativa).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
       "owner": "C0 R14",
@@ -2362,7 +2362,7 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "specs/052-archive-activity-routine-models.md"
+    "specs/054-archive-activity-routine-models.md"
   ],
   "trackerActionIds": [
     "auth.login",
