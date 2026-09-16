@@ -275,4 +275,5 @@ Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em
 - Owner items: editar a linha aqui e rodar `node docs/reviews/etapa-2-operacao/next-round/sync-r12-owner-records.cjs`.
 - H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
-- Execução paralela (sessões, worktrees, handoffs): `R15-execucao-paralela.md` quando aberta; handoffs são comunicação, não fila.
+- Execução paralela (sessões, worktrees, handoffs): `R15-execucao-paralela.md` quando aberta; prompts em `R15-prompts.md` (coordenadora + Blocos A/B/C, E5); handoffs são comunicação, não fila.
+- Recuperação/redefinição de senha (`auth.recover/reset`, r12-47): allowlist de redirect para `127.0.0.1:*`/`localhost:*` preparada em config mínimo (push pendente de aprovação do Owner — classificador "Security Weaken"); SMTP próprio ausente — prova com a caixa do Owner (opção a) ou SMTP próprio (opção b), decisão E8 pendente.
