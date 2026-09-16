@@ -90,4 +90,89 @@ void main() {
     expect(find.text('Maria Recarregada'), findsOneWidget);
     expect(find.text('MR'), findsOneWidget);
   });
+
+  _headerProfileScopeTests();
+}
+
+void _headerProfileScopeTests() {
+  Widget scopedShell({SuperadminHeaderProfile? explicit}) => MaterialApp(
+    theme: CoeloTheme.light,
+    home: SuperadminHeaderProfileScope(
+      profile: const SuperadminHeaderProfile.preview(),
+      child: SuperadminShell(
+        logout: () async => const LogoutResult.success(),
+        headerProfile: explicit,
+        showChatLauncher: false,
+        child: const SizedBox.expand(),
+      ),
+    ),
+  );
+
+  testWidgets('renders the session placeholder when no profile source exists', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell(
+          logout: () async => const LogoutResult.success(),
+          showChatLauncher: false,
+          child: const SizedBox.expand(),
+        ),
+      ),
+    );
+    expect(find.text('Conta'), findsOneWidget);
+    expect(find.text('–'), findsOneWidget);
+    expect(find.text('Owner Coelo'), findsNothing);
+  });
+
+  testWidgets('resolves the deterministic preview identity from the scope', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    await tester.pumpWidget(scopedShell());
+    expect(find.text('Owner Coelo'), findsOneWidget);
+    expect(find.text('OC'), findsOneWidget);
+    expect(find.text('Superadmin'), findsWidgets);
+    expect(find.text('Conta'), findsNothing);
+  });
+
+  testWidgets('explicit and host profiles win over the scope', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1200, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+
+    final maria = SuperadminHeaderProfile(
+      name: 'Maria Operadora',
+      role: 'Operador interno',
+      initials: 'MO',
+      avatarBackgroundColor: CoeloPalette.orange50,
+    );
+    await tester.pumpWidget(scopedShell(explicit: maria));
+    expect(find.text('Maria Operadora'), findsOneWidget);
+    expect(find.text('Owner Coelo'), findsNothing);
+
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminHeaderProfileScope(
+          profile: const SuperadminHeaderProfile.preview(),
+          child: SuperadminShell.host(
+            logout: () async => const LogoutResult.success(),
+            currentDestination: 'institutions',
+            onDestinationSelected: (_) {},
+            headerProfile: maria,
+            child: SuperadminShell(
+              logout: () async => const LogoutResult.success(),
+              currentDestination: 'institutions',
+              showChatLauncher: false,
+              child: const SizedBox.expand(),
+            ),
+          ),
+        ),
+      ),
+    );
+    expect(find.text('Maria Operadora'), findsOneWidget);
+    expect(find.text('Owner Coelo'), findsNothing);
+  });
 }

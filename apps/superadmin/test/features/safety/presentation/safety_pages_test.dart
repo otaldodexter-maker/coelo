@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/golden_header_profile.dart';
+
 void main() {
   testWidgets('read-only composition disables edit transition and suspension', (tester) async {
     final controller = ChildSafetyController(_Repository(mutationsEnabled: false));
@@ -673,7 +675,7 @@ Widget _app(
   themeMode: themeMode,
   builder: (context, body) => MediaQuery(
     data: MediaQuery.of(context).copyWith(textScaler: textScaler),
-    child: body!,
+    child: withGoldenHeaderProfile(body!),
   ),
   home: child,
 );

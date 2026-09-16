@@ -10,6 +10,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 import '../../support/fake_routine_repository.dart';
+import '../../support/golden_header_profile.dart';
 
 const _removedOriginFilterReason =
     'V2.10 no longer exposes an origin-filter overlay. The directory uses typed tabs and search.';
@@ -176,7 +177,7 @@ Widget _app(Brightness brightness, Widget home) => MaterialApp(
       data: MediaQuery.of(
         context,
       ).copyWith(disableAnimations: true, textScaler: TextScaler.noScaling),
-      child: child!,
+      child: withGoldenHeaderProfile(child!),
     ),
   ),
   home: home,

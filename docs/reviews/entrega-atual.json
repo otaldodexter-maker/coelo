@@ -260,12 +260,12 @@
       "actionIds": [
         "child-safety.list"
       ],
-      "fe": "Golden local falha em 1440px com 0,34%/4.857 px; nenhum código ou baseline alterado.",
+      "fe": "FE local-green (S9 16/09): causa da deriva observada no shell (`3945394f3` trocou a identidade estática por `headerProfile` da sessão; sem host o golden renderizava o placeholder `–`/`Conta`); cabeçalho estabilizado por `SuperadminHeaderProfileScope` + `SuperadminHeaderProfile.preview()` e golden `child_safety_directory_light_1440` regravado (C1), suíte 30/30 verde.",
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
-      "e2e": "Bloqueado por reconciliação visual e decisão sobre referência.",
-      "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
+      "e2e": "Pendente: rota real da tabela e revisão contra a Table canônica.",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
       "owner": "C0 R14",
-      "nextGate": "ADR 0041 C1: diff isolado mostra só o cabeçalho global; regravar golden após estabilizar cabeçalho. Tabela do diretório ainda deve ser revista contra a Table canônica.",
+      "nextGate": "Revisar a tabela do diretório contra a Table canônica e capturar na rota real quando o PostgREST voltar; golden não certifica aceite.",
       "sourceRound": "R14"
     },
     {
@@ -2296,7 +2296,8 @@
     "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
-    "specs/053-superadmin-medication-in-app-notifications.md"
+    "specs/053-superadmin-medication-in-app-notifications.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md"
   ],
   "trackerActionIds": [
     "auth.login",

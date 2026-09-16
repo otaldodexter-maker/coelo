@@ -42,11 +42,42 @@ class SuperadminHeaderProfile {
     this.avatarImage,
   });
 
+  /// Identidade determinística usada pelo preview `/dev` e pelos goldens.
+  ///
+  /// O cabeçalho global só é estável em teste quando a identidade não depende
+  /// de sessão nem de carga assíncrona; este fixture é a mesma composição
+  /// (avatar de iniciais em `orange50`, nome e papel) das referências visuais
+  /// aprovadas. Produção nunca usa este valor: o host resolve o perfil da
+  /// sessão e, sem sessão, cai no placeholder `–`/`Conta`.
+  const SuperadminHeaderProfile.preview()
+    : name = 'Owner Coelo',
+      role = 'Superadmin',
+      initials = 'OC',
+      avatarBackgroundColor = CoeloPalette.orange50,
+      avatarImage = null;
+
   final String name;
   final String role;
   final String initials;
   final Color avatarBackgroundColor;
   final ImageProvider? avatarImage;
+}
+
+/// Fornece um [SuperadminHeaderProfile] a shells que não recebem o perfil por
+/// parâmetro nem por host (páginas montadas isoladamente em catálogo, preview
+/// ou golden). A ordem de resolução do cabeçalho é: `headerProfile` do shell,
+/// depois o host persistente, depois este escopo; sem nenhum, o placeholder.
+class SuperadminHeaderProfileScope extends InheritedWidget {
+  const SuperadminHeaderProfileScope({required this.profile, required super.child, super.key});
+
+  final SuperadminHeaderProfile profile;
+
+  static SuperadminHeaderProfile? maybeOf(BuildContext context) {
+    return context.dependOnInheritedWidgetOfExactType<SuperadminHeaderProfileScope>()?.profile;
+  }
+
+  @override
+  bool updateShouldNotify(SuperadminHeaderProfileScope oldWidget) => profile != oldWidget.profile;
 }
 
 class SuperadminShell extends StatefulWidget {
@@ -308,6 +339,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   Widget build(BuildContext context) {
     final pageBody = widget.child ?? const SizedBox.expand();
     final hostScope = _SuperadminShellHostScope.maybeOf(context);
+    final headerProfile = widget.headerProfile ?? SuperadminHeaderProfileScope.maybeOf(context);
     if (!widget.isHost && hostScope != null) {
       _hostScope = hostScope;
       hostScope.onChatLauncherVisibilityChanged(widget.showChatLauncher);
@@ -331,7 +363,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                         onLogout: _handleLogout,
                         onDestinationSelected: widget.onDestinationSelected,
                         activityController: _activityController,
-                        headerProfile: widget.headerProfile,
+                        headerProfile: headerProfile,
                         currentScreen:
                             coeloNavigationNodeById(widget.currentDestination)?.label ??
                             widget.currentDestination,
@@ -379,7 +411,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 onLogout: _handleLogout,
                 onDestinationSelected: widget.onDestinationSelected,
                 activityController: _activityController,
-                headerProfile: widget.headerProfile,
+                headerProfile: headerProfile,
                 currentScreen: widget.title,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),
@@ -421,7 +453,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                       onLogout: _handleLogout,
                       onDestinationSelected: widget.onDestinationSelected,
                       activityController: _activityController,
-                      headerProfile: widget.headerProfile,
+                      headerProfile: headerProfile,
                       compact: true,
                       onBugReportSubmitted: widget.onBugReportSubmitted,
                     ),
@@ -460,7 +492,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                         onLogout: _handleLogout,
                         onDestinationSelected: widget.onDestinationSelected,
                         activityController: _activityController,
-                        headerProfile: widget.headerProfile,
+                        headerProfile: headerProfile,
                         onBugReportSubmitted: widget.onBugReportSubmitted,
                       ),
                       const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -534,7 +566,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   Widget _hostedContent(Widget child, {required bool isDesktop}) {
     return _SuperadminShellHostScope(
       isDesktop: isDesktop,
-      headerProfile: widget.headerProfile,
+      headerProfile: widget.headerProfile ?? SuperadminHeaderProfileScope.maybeOf(context),
       onDestinationSelected: widget.onDestinationSelected!,
       chatLauncherPositionController: _chatLauncherPositionController,
       onChatLauncherBottomInsetChanged: _handleEmbeddedChatLauncherBottomInset,
@@ -559,7 +591,10 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                   onLogout: _handleLogout,
                   onDestinationSelected: hostScope.onDestinationSelected,
                   activityController: _activityController,
-                  headerProfile: widget.headerProfile ?? hostScope.headerProfile,
+                  headerProfile:
+                      widget.headerProfile ??
+                      hostScope.headerProfile ??
+                      SuperadminHeaderProfileScope.maybeOf(context),
                   onBugReportSubmitted: widget.onBugReportSubmitted,
                 ),
                 const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -577,7 +612,10 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                 onLogout: _handleLogout,
                 onDestinationSelected: hostScope.onDestinationSelected,
                 activityController: _activityController,
-                headerProfile: widget.headerProfile ?? hostScope.headerProfile,
+                headerProfile:
+                    widget.headerProfile ??
+                    hostScope.headerProfile ??
+                    SuperadminHeaderProfileScope.maybeOf(context),
                 compact: true,
                 onBugReportSubmitted: widget.onBugReportSubmitted,
               ),

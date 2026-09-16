@@ -11,6 +11,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_test/flutter_test.dart';
 
+import '../../../support/golden_header_profile.dart';
+
 void main() {
   setUpAll(_loadGoldenFonts);
 
@@ -129,7 +131,7 @@ Widget _directoryApp(Brightness brightness) => MaterialApp(
     key: const Key('access-profile-golden-root'),
     child: MediaQuery(
       data: MediaQuery.of(context).copyWith(disableAnimations: true),
-      child: child!,
+      child: withGoldenHeaderProfile(child!),
     ),
   ),
   home: AccessProfileDirectoryPage(repository: FakeAccessProfileRepository(), logout: _logout),
@@ -145,7 +147,7 @@ Widget _formApp(Widget child, Brightness brightness) => MaterialApp(
     key: const Key('access-profile-form-golden-root'),
     child: MediaQuery(
       data: MediaQuery.of(context).copyWith(disableAnimations: true),
-      child: child!,
+      child: withGoldenHeaderProfile(child!),
     ),
   ),
   home: child,
