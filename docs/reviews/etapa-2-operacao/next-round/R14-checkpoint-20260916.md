@@ -51,12 +51,36 @@ o delta do corte; a fila continua sendo `R14-pendencias.md`.
   as 10 conexões. Provas de rota real das Sessões 5/6/7 pararam por ambiente.
   Correção sistêmica em `docs/open-questions.md` OQ-047.
 
+## Terceira onda (Sessões 9 e 10, trabalho local — integrada em `74040c470`)
+
+- Sessão 9: cabeçalho global estabilizado via coelo-ui (causa observada:
+  `headerProfile` da sessão sem host nos goldens desde `3945394f3`); 30
+  referências de Segurança/Rotina/Perfis regravadas (C1); cards de Modelos de
+  rotina com altura uniforme, "Efetivo: —" e Arquivar em todos (C3, r12-01);
+  B1 Arquivar/Restaurar em Atividades e Rotina (spec 054, migration
+  `20260916193000_archive_models_v1`, pgTAP 63/63 no espelho) — r12-01/02/10
+  → partial/local-green.
+- Sessão 10: B2 Histórico de Assiduidade (spec 052, `20260916180000`, pgTAP
+  44/44), B3 snapshot híbrido de rotina (`20260916183000`, pgTAP 43/43), B8
+  sino de Medicação (spec 053, `20260916190000`, pgTAP 29/29) — r12-04/06/33
+  → partial/local-green.
+- Integração: spec/carimbo da Sessão 9 renumerados (052 → 054;
+  183000 → 193000) por colisão com a Sessão 10; os dois callbacks do diretório
+  de Rotina mantidos; goldens de Rotina e do menu dev regravados pela remoção
+  da aba Lançamentos/entrada Histórico (B2). Falhas pré-existentes não
+  tocadas: `model_save_completion_routes_test` (3), `principal_real_route_test`
+  (1), `principal_profile_for_you_production_routes_test` (1),
+  `activity_routes_test` (1) e goldens de outras 30+ suítes (C1 nominal).
+- Fila de aplicação em produção (pelo rito, nesta ordem, após D3/D4):
+  `20260916180000`, `20260916183000`, `20260916190000`, `20260916193000`.
+
 ## Worktrees e branches da onda (disposição)
 
-As quatro worktrees `Coelo.worktrees\r14-<fatia>` e as branches
-`r14/acessos-instituicoes`, `r14/formularios-chat`, `r14/agora-momentos` e
-`r14/seguranca-assiduidade` (locais e `origin/`) foram integradas em `dev`
-por cherry-pick (`809120367..6ddf6a72e`); os commits exclusivos são
+As seis worktrees `Coelo.worktrees\r14-<fatia>` e as branches
+`r14/acessos-instituicoes`, `r14/formularios-chat`, `r14/agora-momentos`,
+`r14/seguranca-assiduidade`, `r14/visual-arquivar` e `r14/assiduidade-historico`
+(locais e `origin/`) foram integradas em `dev`
+por cherry-pick (`809120367..6ddf6a72e` e `82a30f01c..74040c470`); os commits exclusivos são
 equivalentes por patch aos integrados. Permanecem protegidas até o
 fechamento da R14 para retomada das fatias bloqueadas pelo incidente.
 

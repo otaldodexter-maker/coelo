@@ -111,7 +111,7 @@ reivindicado pela Sessão 2 (Segurança infantil; Arquivos › Upload/Resolver),
 
 ## Segunda onda — 16/09/2026 (após a Mesa do Owner, ADR 0041)
 
-Coordenadora: sessão principal (Claude) na pasta principal, branch `dev`. Quatro
+Coordenadora: sessão principal (Claude) na pasta principal, branch `dev`. Seis
 sessões filhas em worktrees próprias criadas a partir de `dev` `dbe518101`
 (OQ-046 resolvida). As filhas **não** fazem push em `dev` nem rebase: commitam
 na própria branch, publicam `origin/r14/<fatia>` como backup e a coordenadora
@@ -120,10 +120,12 @@ inventário. Handoffs `R14-handoff-sessao-5..8.md` (um por filha).
 
 | Sessão | Worktree / branch | Fatias | Área QA | Servidor / CDP | Produção |
 |---|---|---|---|---|---|
-| 5 | `Coelo.worktrees14-acessos-instituicoes` / `r14/acessos-instituicoes` | Perfis de acesso (create/edit/assign; owner.r12-20/21/22/24/25/26/27), Instituições (error/access-denied; aviso A4 do flyout Arquivos), Conta (owner.r12-46 foto R2), errors.409 | acessos, estrutura | 3016 / 9416 | somente leitura |
-| 6 | `Coelo.worktrees14-formularios-chat` / `r14/formularios-chat` | Formulários expire/delete-file (migration 20260915203000 se necessária), create/edit (owner.r12-39/40), location-answer; Chat attach (owner.r12-52) | formularios, publicacoes | 3017 / 9417 | migration de Formulários pelo rito; espelho 616xx |
-| 7 | `Coelo.worktrees14-agora-momentos` / `r14/agora-momentos` | Agora view/create/publish/expire, agora.remove (fixture D5, revogada ao fim), Momentos view/publish/remove | publicacoes, principal | 3018 / 9418 | fixture D5 pelo rito; espelho 618xx |
-| 8 | `Coelo.worktrees14-seguranca-assiduidade` / `r14/seguranca-assiduidade` | 504 de `child_safety_change_lifecycle` (D4) + child-safety.edit/suspend (owner.r12-13/15/16); escopo de `superadmin_attendance_context_options` (D3) + owner.r12-05 | operacoes, acessos | 3019 / 9419 | migrations D3/D4 pelo rito; espelho 617xx |
+| 5 | `Coelo.worktrees\r14-acessos-instituicoes` / `r14/acessos-instituicoes` | Perfis de acesso (create/edit/assign; owner.r12-20/21/22/24/25/26/27), Instituições (error/access-denied; aviso A4 do flyout Arquivos), Conta (owner.r12-46 foto R2), errors.409 | acessos, estrutura | 3016 / 9416 | somente leitura |
+| 6 | `Coelo.worktrees\r14-formularios-chat` / `r14/formularios-chat` | Formulários expire/delete-file (migration 20260915203000 se necessária), create/edit (owner.r12-39/40), location-answer; Chat attach (owner.r12-52) | formularios, publicacoes | 3017 / 9417 | migration de Formulários pelo rito; espelho 616xx |
+| 7 | `Coelo.worktrees\r14-agora-momentos` / `r14/agora-momentos` | Agora view/create/publish/expire, agora.remove (fixture D5, revogada ao fim), Momentos view/publish/remove | publicacoes, principal | 3018 / 9418 | fixture D5 pelo rito; espelho 618xx |
+| 8 | `Coelo.worktrees\r14-seguranca-assiduidade` / `r14/seguranca-assiduidade` | 504 de `child_safety_change_lifecycle` (D4) + child-safety.edit/suspend (owner.r12-13/15/16); escopo de `superadmin_attendance_context_options` (D3) + owner.r12-05 | operacoes, acessos | 3019 / 9419 | migrations D3/D4 pelo rito; espelho 617xx |
+| 9 | `Coelo.worktrees\r14-visual-arquivar` / `r14/visual-arquivar` | Goldens C1 (cabeçalho global), owner.r12-01 (C3), B1 Arquivar (owner.r12-02, spec 054) | — (trabalho local) | 3021 / 9421 | nenhuma; espelho 619xx |
+| 10 | `Coelo.worktrees\r14-assiduidade-historico` / `r14/assiduidade-historico` | B2 Histórico de Assiduidade (owner.r12-04), B3 snapshot de rotina (owner.r12-06), B8 sino de Medicação (owner.r12-33); specs 052/053 | — (trabalho local) | — | nenhuma; espelho 620xx |
 
 Regras adicionais desta onda: toda escrita em produção segue espelho próprio
 restaurado do dump de schema de 16/09 (`Coelo-backups/schema-producao-20260916-r14-coord-before.sql`),
