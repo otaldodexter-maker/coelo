@@ -4,10 +4,34 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 import '../attendance.dart';
 
 final class SupabaseAttendanceRepository
-    implements AttendanceRepository, AttendanceDashboardRepository {
+    implements AttendanceRepository, AttendanceDashboardRepository, AttendanceHistoryRepository {
   const SupabaseAttendanceRepository(this._client);
 
   final SupabaseClient _client;
+
+  /// Histórico de chamadas (ADR 0041 B2, spec 052): leitor paginado por
+  /// cursor; o servidor aplica o escopo do ator e devolve só agregados.
+  @override
+  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query) async {
+    final payload = _map(
+      await _rpc('superadmin_attendance_call_history_v1', {
+        'p_institution_id': query.institutionId,
+        'p_unit_id': query.unitId,
+        'p_group_id': query.groupId,
+        'p_activity_id': query.activityId,
+        'p_start': _dateOnly(query.periodStart),
+        'p_end': _dateOnly(query.periodEnd),
+        'p_status': query.status?.name,
+        'p_cursor': query.cursor,
+        'p_page_size': query.pageSize,
+      }),
+    );
+    return AttendanceHistoryPageResult(
+      items: _rows(payload['items']).map(_historyItem).toList(growable: false),
+      hasMore: payload['has_more'] as bool? ?? false,
+      nextCursor: payload['next_cursor'] as String?,
+    );
+  }
 
   @override
   Future<AttendanceDashboardAccess> fetchAccess() async =>
@@ -316,7 +340,11 @@ final class SupabaseAttendanceRepository
       if (error.code == '42501' || error.code == 'PGRST301') {
         throw const AttendanceUnauthorizedException();
       }
-      if (error.code == '40001' || error.code == 'P0001' && error.message.contains('version')) {
+      // OQ-047: a família passa a sinalizar versão defasada com PT409 (HTTP
+      // 409, sem retentativa pelo PostgREST); 40001 fica por compatibilidade.
+      if (error.code == 'PT409' ||
+          error.code == '40001' ||
+          error.code == 'P0001' && error.message.contains('version')) {
         throw const AttendanceVersionConflictException();
       }
       rethrow;
@@ -336,10 +364,14 @@ final class SupabaseAttendanceRepository
 }
 
 final class UnavailableAttendanceRepository
-    implements AttendanceRepository, AttendanceDashboardRepository {
+    implements AttendanceRepository, AttendanceDashboardRepository, AttendanceHistoryRepository {
   const UnavailableAttendanceRepository();
 
   Future<T> _unavailable<T>() => Future<T>.error(const AttendanceUnavailableException());
+
+  @override
+  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query) =>
+      _unavailable();
 
   @override
   Future<AttendanceDashboardAccess> fetchAccess() => _unavailable();
@@ -429,7 +461,66 @@ AttendanceCall _call(Map<String, dynamic> json) => AttendanceCall(
   updatedAt: DateTime.tryParse(json['updated_at'] as String? ?? ''),
   version: (json['version'] as num?)?.toInt() ?? 1,
   revisions: _rows(json['revisions']).map(_revision).toList(growable: false),
+  routine: _callRoutine(json),
 );
+
+/// Rotina da chamada (spec 052 §4.2): `routine_source` decide entre o snapshot
+/// gravado na conclusão e a rotina vigente; sem as chaves (servidor anterior à
+/// migration) a chamada fica sem rotina, sem inventar origem.
+AttendanceRoutineRef _callRoutine(Map<String, dynamic> json) {
+  final source = json['routine_source'];
+  final snapshot = json['routine_snapshot'];
+  final current = json['routine_current'];
+  return switch (source) {
+    'snapshot' when snapshot is Map => _routineRef(
+      AttendanceRoutineSource.snapshot,
+      _map(snapshot),
+    ),
+    'current' when current is Map => _routineRef(AttendanceRoutineSource.current, _map(current)),
+    _ => const AttendanceRoutineRef.none(),
+  };
+}
+
+AttendanceRoutineRef _routineRef(AttendanceRoutineSource source, Map<String, dynamic> json) =>
+    AttendanceRoutineRef(
+      source: source,
+      applicationId: json['application_id'] as String?,
+      revisionNo: (json['revision_no'] as num?)?.toInt(),
+      name: json['name'] as String?,
+      recordedAt: DateTime.tryParse(json['recorded_at'] as String? ?? ''),
+    );
+
+AttendanceHistoryItem _historyItem(Map<String, dynamic> json) {
+  final routine = json['routine'];
+  return AttendanceHistoryItem(
+    id: json['id'] as String,
+    date: DateTime.parse(json['session_date'] as String),
+    institutionId: json['institution_id'] as String,
+    institutionName: json['institution_name'] as String? ?? '',
+    unitId: json['unit_id'] as String,
+    unitName: json['unit_name'] as String? ?? '',
+    groupId: json['group_id'] as String,
+    groupName: json['group_name'] as String? ?? '',
+    activityId: json['activity_id'] as String?,
+    activityName: json['activity_name'] as String?,
+    status: _callStatus(json['status']),
+    responsible: json['responsible'] as String? ?? '',
+    expected: (json['expected'] as num?)?.toInt() ?? 0,
+    present: (json['present'] as num?)?.toInt() ?? 0,
+    absent: (json['absent'] as num?)?.toInt() ?? 0,
+    late: (json['late'] as num?)?.toInt() ?? 0,
+    earlyDepartures: (json['early_departures'] as num?)?.toInt() ?? 0,
+    officialRecords: (json['official_records'] as num?)?.toInt() ?? 0,
+    canOpen: json['can_open'] as bool? ?? true,
+    routine: routine is Map
+        ? switch (routine['source']) {
+            'snapshot' => _routineRef(AttendanceRoutineSource.snapshot, _map(routine)),
+            'current' => _routineRef(AttendanceRoutineSource.current, _map(routine)),
+            _ => const AttendanceRoutineRef.none(),
+          }
+        : const AttendanceRoutineRef.none(),
+  );
+}
 
 AttendanceParticipant _participant(Map<String, dynamic> json) => AttendanceParticipant(
   id: (json['participant_id'] ?? json['id']) as String,

@@ -346,6 +346,7 @@ RoutineDirectoryItem _directoryItem(RoutineEntryKind kind, Map<String, Object?> 
         'customized' => 'Personalizada',
         final other => other,
       },
+      applicationId: row['application_id'] as String?,
     );
 
 RoutineSection _section(Map<String, Object?> row) => RoutineSection(

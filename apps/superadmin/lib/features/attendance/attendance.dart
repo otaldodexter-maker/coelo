@@ -128,6 +128,7 @@ class AttendanceCall {
     this.responsible = 'Equipe Coelo',
     this.canManage = false,
     this.version = 1,
+    this.routine = const AttendanceRoutineRef.none(),
     DateTime? updatedAt,
     List<AttendanceRevision>? revisions,
   }) : revisions = revisions ?? [],
@@ -148,6 +149,10 @@ class AttendanceCall {
   final String responsible;
   final bool canManage;
   final int version;
+
+  /// Rotina diária da chamada (ADR 0041 B3): snapshot gravado na conclusão ou
+  /// rotina vigente, conforme [AttendanceRoutineRef.source].
+  final AttendanceRoutineRef routine;
   DateTime updatedAt;
   final List<AttendanceRevision> revisions;
 
@@ -282,4 +287,169 @@ abstract interface class AttendanceRepository {
     required String reason,
     required int expectedVersion,
   });
+}
+
+/// Origem da rotina exibida numa chamada (ADR 0041 B3, spec 052).
+///
+/// `snapshot`: registrada na conclusão; `current`: rotina vigente hoje (chamada
+/// aberta ou concluída antes do snapshot existir); `none`: nenhuma rotina.
+enum AttendanceRoutineSource { snapshot, current, none }
+
+@immutable
+class AttendanceRoutineRef {
+  const AttendanceRoutineRef({
+    required this.source,
+    this.applicationId,
+    this.revisionNo,
+    this.name,
+    this.recordedAt,
+  });
+
+  const AttendanceRoutineRef.none() : this(source: AttendanceRoutineSource.none);
+
+  final AttendanceRoutineSource source;
+  final String? applicationId;
+  final int? revisionNo;
+  final String? name;
+  final DateTime? recordedAt;
+
+  bool get hasRoutine => source != AttendanceRoutineSource.none && (name ?? '').isNotEmpty;
+
+  /// "Nome · v3" ou "Sem rotina vinculada".
+  String get label => hasRoutine
+      ? (revisionNo == null || revisionNo == 0 ? name! : '$name · v$revisionNo')
+      : 'Sem rotina vinculada';
+
+  /// Qualificador da origem, exigido pelo Owner para o legado.
+  String? get sourceLabel => switch (source) {
+    AttendanceRoutineSource.snapshot => 'registrada na conclusão',
+    AttendanceRoutineSource.current => 'rotina atual (não registrada na época)',
+    AttendanceRoutineSource.none => null,
+  };
+}
+
+/// Filtros do Histórico de chamadas (ADR 0041 B2, spec 052).
+@immutable
+class AttendanceHistoryQuery {
+  const AttendanceHistoryQuery({
+    required this.periodStart,
+    required this.periodEnd,
+    this.institutionId,
+    this.unitId,
+    this.groupId,
+    this.activityId,
+    this.status,
+    this.cursor,
+    this.pageSize = 20,
+  });
+
+  final DateTime periodStart;
+  final DateTime periodEnd;
+  final String? institutionId;
+  final String? unitId;
+  final String? groupId;
+  final String? activityId;
+
+  /// `pending` (aberta/reaberta/rascunho) ou `completed` (concluída/corrigida).
+  final AttendanceHistoryStatusFilter? status;
+  final String? cursor;
+  final int pageSize;
+
+  bool get hasContextFilter =>
+      institutionId != null || unitId != null || groupId != null || activityId != null;
+
+  AttendanceHistoryQuery copyWith({
+    DateTime? periodStart,
+    DateTime? periodEnd,
+    Object? institutionId = _unset,
+    Object? unitId = _unset,
+    Object? groupId = _unset,
+    Object? activityId = _unset,
+    Object? status = _unset,
+    Object? cursor = _unset,
+    int? pageSize,
+  }) => AttendanceHistoryQuery(
+    periodStart: periodStart ?? this.periodStart,
+    periodEnd: periodEnd ?? this.periodEnd,
+    institutionId: identical(institutionId, _unset) ? this.institutionId : institutionId as String?,
+    unitId: identical(unitId, _unset) ? this.unitId : unitId as String?,
+    groupId: identical(groupId, _unset) ? this.groupId : groupId as String?,
+    activityId: identical(activityId, _unset) ? this.activityId : activityId as String?,
+    status: identical(status, _unset) ? this.status : status as AttendanceHistoryStatusFilter?,
+    cursor: identical(cursor, _unset) ? this.cursor : cursor as String?,
+    pageSize: pageSize ?? this.pageSize,
+  );
+
+  static const _unset = Object();
+}
+
+enum AttendanceHistoryStatusFilter { pending, completed }
+
+@immutable
+class AttendanceHistoryItem {
+  const AttendanceHistoryItem({
+    required this.id,
+    required this.date,
+    required this.institutionId,
+    required this.institutionName,
+    required this.unitId,
+    required this.unitName,
+    required this.groupId,
+    required this.groupName,
+    required this.status,
+    required this.responsible,
+    required this.expected,
+    required this.present,
+    required this.absent,
+    required this.late,
+    required this.earlyDepartures,
+    required this.officialRecords,
+    this.activityId,
+    this.activityName,
+    this.canOpen = true,
+    this.routine = const AttendanceRoutineRef.none(),
+  });
+
+  final String id;
+  final DateTime date;
+  final String institutionId;
+  final String institutionName;
+  final String unitId;
+  final String unitName;
+  final String groupId;
+  final String groupName;
+  final String? activityId;
+  final String? activityName;
+  final AttendanceCallStatus status;
+  final String responsible;
+  final int expected;
+  final int present;
+  final int absent;
+  final int late;
+  final int earlyDepartures;
+  final int officialRecords;
+  final bool canOpen;
+  final AttendanceRoutineRef routine;
+
+  String get contextName => activityName ?? groupName;
+}
+
+@immutable
+class AttendanceHistoryPageResult {
+  const AttendanceHistoryPageResult({
+    required this.items,
+    required this.hasMore,
+    this.nextCursor,
+  });
+
+  final List<AttendanceHistoryItem> items;
+  final bool hasMore;
+  final String? nextCursor;
+}
+
+/// Leitor do Histórico; separado de [AttendanceRepository] para não obrigar
+/// as composições de preview a implementá-lo.
+abstract interface class AttendanceHistoryRepository {
+  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query);
+  Future<AttendanceContextOptions> fetchContextOptions({required DateTime date});
 }

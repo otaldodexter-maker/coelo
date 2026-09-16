@@ -30,6 +30,7 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
     this.onCreateFromModel,
     this.onPublishLaunch,
     this.onCreateLaunch,
+    this.onLaunchCreated,
     this.onArchive,
     this.onImport,
     this.onExport,
@@ -56,6 +57,12 @@ class DailyRoutineDirectoryPage extends StatefulWidget {
   /// D7: cria o rascunho do lançamento de hoje para uma rotina aplicada; o
   /// servidor recalcula escopo e capacidade (routine.record).
   final Future<bool> Function(RoutineDirectoryItem application)? onCreateLaunch;
+
+  /// ADR 0041 B2 (spec 052 §3): a aba "Lançamentos" saiu deste diretório; o
+  /// rascunho criado por "Lançar hoje" passa a ser consultado e publicado em
+  /// Assiduidade › Histórico › Lançamentos de rotina. Sem callback, a lista
+  /// atual é apenas recarregada.
+  final VoidCallback? onLaunchCreated;
 
   /// V-15: arquivar modelo ou rotina (status archived pelo save existente).
   final Future<bool> Function(RoutineDirectoryItem item)? onArchive;
@@ -217,7 +224,12 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     try {
       final created = await create(application);
       if (!mounted || !created) return;
-      updateDirectory(() => _selectedType = RoutineEntryKind.launch);
+      final onLaunchCreated = widget.onLaunchCreated;
+      if (onLaunchCreated != null) {
+        onLaunchCreated();
+      } else {
+        _load(page: _controller.state.page?.page ?? 1);
+      }
     } finally {
       if (mounted) setState(() => _publishing.remove(application.id));
     }
@@ -315,10 +327,6 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
                           SuperadminUnderlineTab(
                             value: RoutineEntryKind.application,
                             label: 'Rotinas',
-                          ),
-                          SuperadminUnderlineTab(
-                            value: RoutineEntryKind.launch,
-                            label: 'Lançamentos',
                           ),
                         ],
                         onSelected: (value) => updateDirectory(() => _selectedType = value),

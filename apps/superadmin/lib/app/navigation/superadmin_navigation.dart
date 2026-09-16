@@ -118,6 +118,9 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
         Icons.add_task_outlined,
         capability: 'attendance.create',
       ),
+      // ADR 0041 B2 (spec 052): historico de chamadas com filtros; Lancamentos
+      // saiu do diretorio de Rotina diaria.
+      _leaf('attendance-history', 'Histórico', Icons.history_outlined, keywords: const ['chamadas', 'lançamentos']),
     ]),
     _screen('daily-routine', 'Rotina diária', Icons.view_agenda_outlined, const []),
     _leaf('students', 'Acompanhamento de alunos', Icons.school_outlined),

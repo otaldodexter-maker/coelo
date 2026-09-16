@@ -108,6 +108,7 @@ import '../../features/auth/presentation/screens/superadmin_login_screen.dart';
 import '../../features/auth/presentation/screens/superadmin_reset_password_screen.dart';
 import '../../features/attendance/attendance.dart';
 import '../../features/attendance/data/supabase_attendance_repository.dart';
+import '../../features/attendance/attendance_history_page.dart';
 import '../../features/attendance/attendance_pages.dart';
 import '../../features/daily_routine/data/supabase_routine_repository.dart';
 import '../../features/daily_routine/daily_routine.dart';
@@ -2911,6 +2912,39 @@ GoRouter createSuperadminRouter({
                   ),
           ),
           GoRoute(
+            path: SuperadminRoutes.attendanceHistory,
+            name: SuperadminRoutes.attendanceHistoryName,
+            // ADR 0041 B2 (spec 052): consulta paginada das chamadas no escopo
+            // do ator; o servidor aplica o escopo e devolve so agregados. O
+            // segmento de lancamentos de rotina (D7) vive aqui desde que a aba
+            // saiu do diretorio de Rotina diaria.
+            builder: (context, state) => ListenableBuilder(
+              listenable: session,
+              builder: (context, child) => AttendanceHistoryPage(
+                key: ValueKey(session.authorizationInvalidationRevision),
+                repository: attendanceRepository is AttendanceHistoryRepository
+                    ? attendanceRepository as AttendanceHistoryRepository
+                    : const UnavailableAttendanceRepository(),
+                logout: logout,
+                onOpenCall: hasAuthoritativeMutationCapability('/attendance')
+                    ? (id) => context.goNamed(
+                        SuperadminRoutes.attendanceCallName,
+                        pathParameters: {'callId': id},
+                      )
+                    : null,
+                routineRepository: dailyRoutineRepository is UnavailableRoutineRepository
+                    ? null
+                    : dailyRoutineRepository,
+                onPublishLaunch: (item) =>
+                    _publishRoutineLaunch(context, dailyRoutineRepository, item),
+                initialSegment: state.uri.queryParameters['segment'] == 'launches'
+                    ? AttendanceHistorySegment.launches
+                    : AttendanceHistorySegment.calls,
+                activityController: attendanceActivities,
+              ),
+            ),
+          ),
+          GoRoute(
             path: SuperadminRoutes.dailyRoutine,
             name: SuperadminRoutes.dailyRoutineName,
             builder: (context, state) => DailyRoutineDirectoryPage(
@@ -2946,6 +2980,12 @@ GoRouter createSuperadminRouter({
               onPublishLaunch: (item) =>
                   _publishRoutineLaunch(context, dailyRoutineRepository, item),
               onCreateLaunch: (item) => _createRoutineLaunch(context, dailyRoutineRepository, item),
+              // Spec 052 §3: o rascunho criado passa a ser consultado e
+              // publicado em Assiduidade › Histórico › Lançamentos de rotina.
+              onLaunchCreated: () => context.goNamed(
+                SuperadminRoutes.attendanceHistoryName,
+                queryParameters: const {'segment': 'launches'},
+              ),
               onArchive: (item) => _archiveRoutineEntry(context, dailyRoutineRepository, item),
             ),
           ),
@@ -6771,6 +6811,9 @@ String _destinationForLocation(String location) {
   if (location.startsWith('/attendance/new')) {
     return 'attendance-create';
   }
+  if (location.startsWith('/attendance/history')) {
+    return 'attendance-history';
+  }
   if (location.startsWith('/attendance')) {
     return 'attendance';
   }
@@ -7047,6 +7090,8 @@ void _navigateFromPersistentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.activityCreateName);
     case 'attendance-create':
       context.goNamed(SuperadminRoutes.attendanceCreateName);
+    case 'attendance-history':
+      context.goNamed(SuperadminRoutes.attendanceHistoryName);
     case 'daily-routine-create':
       context.goNamed(SuperadminRoutes.dailyRoutineCreateName);
     case 'person-create':
@@ -7144,6 +7189,8 @@ void _navigateFromDevelopmentShell(BuildContext context, String destination) {
       context.goNamed(SuperadminRoutes.devActivityCreateName);
     case 'attendance-create':
       context.goNamed(SuperadminRoutes.devAttendanceCreateName);
+    case 'attendance-history':
+      context.goNamed(SuperadminRoutes.devAttendanceName);
     case 'daily-routine-create':
       context.goNamed(SuperadminRoutes.devDailyRoutineCreateName);
     case 'health-care-profile-create':

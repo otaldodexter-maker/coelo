@@ -55,6 +55,8 @@ abstract final class SuperadminRoutes {
   static const attendanceCreateName = 'attendance-create';
   static const attendanceCall = '/attendance/calls/:callId';
   static const attendanceCallName = 'attendance-call';
+  static const attendanceHistory = '/attendance/history';
+  static const attendanceHistoryName = 'attendance-history';
   static const students = '/students';
   static const studentsName = 'students';
   static const studentManage = '/students/:childContextId/manage';

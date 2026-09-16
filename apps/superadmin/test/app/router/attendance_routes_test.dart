@@ -64,6 +64,93 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('the history route lists calls from the production repository and opens the detail', (
+    tester,
+  ) async {
+    // ADR 0041 B2 (spec 052): /attendance/history e a folha do menu.
+    final session = SuperadminSession()..authorize(_fullContext, sessionId: 'nominal-session');
+    final repository = _TrackingAttendanceRepository();
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+      attendanceRepository: repository,
+      attendancePermissions: const AttendancePermissions.owner(),
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+    addTearDown(repository.dispose);
+
+    router.go(SuperadminRoutes.attendanceHistory);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(SuperadminRoutes.attendanceHistory, '/attendance/history');
+    expect(repository.calls, contains('fetchHistory'));
+    expect(find.text('Histórico de chamadas'), findsOneWidget);
+    expect(find.text('Turma R14 S10'), findsOneWidget);
+    expect(
+      find.byKey(const Key('attendance-history-segments')),
+      findsNothing,
+      reason: 'sem repositório de rotina composto não há segmento de lançamentos',
+    );
+
+    tester
+        .widget<IconButton>(find.byKey(const ValueKey('attendance-history-open-call-progress')))
+        .onPressed!();
+    await tester.pumpAndSettle();
+    expect(router.routeInformationProvider.value.uri.path, '/attendance/calls/call-progress');
+  });
+
+  testWidgets('the history route is unavailable when the host has no attendance source', (
+    tester,
+  ) async {
+    final session = SuperadminSession()..authorize(_fullContext, sessionId: 'nominal-session');
+    final router = createSuperadminRouter(
+      session: session,
+      login: unavailableSuperadminLogin,
+      logout: unavailableSuperadminLogout,
+      requestPasswordRecovery: unavailableSuperadminPasswordRecovery,
+      onThemeModeChanged: (_) {},
+    );
+    addTearDown(router.dispose);
+    addTearDown(session.dispose);
+
+    router.go(SuperadminRoutes.attendanceHistory);
+    await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
+    await tester.pumpAndSettle();
+
+    expect(find.text('Histórico indisponível'), findsOneWidget);
+    expect(find.text('Tentar novamente'), findsNothing);
+  });
+
+  testWidgets('shell exposes Histórico under Assiduidade and navigates to it', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 900));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    String? destination;
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: SuperadminShell.host(
+          logout: unavailableSuperadminLogout,
+          currentDestination: 'attendance-history',
+          onDestinationSelected: (value) => destination = value,
+          canAccessCapability: (_) => false,
+          child: const SizedBox(),
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Histórico é leitura: aparece mesmo sem a capacidade de criar chamada.
+    expect(find.text('Histórico'), findsOneWidget);
+    expect(find.text('Nova chamada'), findsNothing);
+    await tester.tap(find.text('Histórico'));
+    expect(destination, 'attendance-history');
+  });
+
   test('declares production and development attendance routes', () {
     expect(SuperadminRoutes.attendance, '/attendance');
     expect(SuperadminRoutes.attendanceCreate, '/attendance/new');
@@ -250,9 +337,37 @@ void main() {
 }
 
 final class _TrackingAttendanceRepository
-    implements AttendanceRepository, AttendanceDashboardRepository {
+    implements AttendanceRepository, AttendanceDashboardRepository, AttendanceHistoryRepository {
   final _delegate = DevelopmentAttendanceRepository.content();
   final calls = <String>[];
+
+  @override
+  Future<AttendanceHistoryPageResult> fetchHistory(AttendanceHistoryQuery query) async {
+    calls.add('fetchHistory');
+    return AttendanceHistoryPageResult(
+      items: [
+        AttendanceHistoryItem(
+          id: 'call-progress',
+          date: DateTime(2026, 9, 15),
+          institutionId: 'inst-1',
+          institutionName: 'Escola',
+          unitId: 'unit-1',
+          unitName: 'Unidade',
+          groupId: 'group-1',
+          groupName: 'Turma R14 S10',
+          status: AttendanceCallStatus.completed,
+          responsible: 'Ana',
+          expected: 3,
+          present: 2,
+          absent: 1,
+          late: 0,
+          earlyDepartures: 0,
+          officialRecords: 3,
+        ),
+      ],
+      hasMore: false,
+    );
+  }
 
   void dispose() => _delegate.dispose();
 

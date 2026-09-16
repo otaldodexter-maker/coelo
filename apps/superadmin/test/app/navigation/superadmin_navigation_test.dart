@@ -95,6 +95,7 @@ void main() {
       'Acompanhamento',
       'Assiduidade',
       'Nova chamada',
+      'Histórico',
       'Rotina diária',
       'Acompanhamento de alunos',
       'Acessos',

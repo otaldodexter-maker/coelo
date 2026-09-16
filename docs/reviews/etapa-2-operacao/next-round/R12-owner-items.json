@@ -59,17 +59,17 @@
   },
   {
     "id": "owner.r12-04",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "daily-routine.list",
       "attendance.dashboard"
     ],
-    "fe": "Rota atual mantém Modelos/Rotinas/Lançamentos para o fluxo D7; Histórico separado não existe.",
-    "be": "Dashboard e contratos preservados; nenhum SQL/RPC novo.",
-    "e2e": "Pendente por definição de tela/rota canônica e mapeamento.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
+    "fe": "FE local-green (Sessão 10, 16/09): tela Acompanhamento › Assiduidade › Histórico em `/attendance/history` (tabela data/turma-atividade/quem lançou/presentes/ausentes/rotina/situação, filtros instituição/unidade/turma/atividade/situação/período, cursor, abre o detalhe; sem edição); aba Lançamentos retirada do diretório de Rotina (Lançar hoje → Histórico › Lançamentos de rotina); 280 testes verdes, 10 goldens pré-existentes (C1).",
+    "be": "BE local-green: `20260916180000_attendance_call_history_v1` (leitor por cursor com escopo do painel, só agregados) + pgTAP 44/44 no espelho; NÃO aplicada em produção.",
+    "e2e": "Pendente: aplicar a migration, rota real autenticada, reload e negativa cross-tenant (bloqueio: incidente PostgREST 504).",
+    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B2: nova tela Acompanhamento › Assiduidade › Histórico (tabela de chamadas, filtros, abre detalhe, sem edição); retirar Lançamentos do diretório de Rotina.",
+    "nextGate": "Aplicar `20260916180000` pelo rito (espelho verde) após o fim do incidente; provar `/attendance/history` com `qa-r06-operacoes`, reload e negativa; decidir se Publicar lançamento fica no Histórico ou volta a Rotinas (spec 052 §3).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

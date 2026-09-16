@@ -44,9 +44,11 @@ void main() {
     await tester.pumpAndSettle();
   }
 
-  testWidgets('launch tab has a real empty state distinct from models and applications', (
+  testWidgets('directory offers only Modelos and Rotinas; Lançamentos moved to the history', (
     tester,
   ) async {
+    // ADR 0041 B2 (spec 052 §3): "Lançamentos" saiu deste diretório e vive em
+    // Assiduidade › Histórico › Lançamentos de rotina.
     final requestedKinds = <RoutineEntryKind>[];
     await pumpPage(
       tester,
@@ -67,12 +69,12 @@ void main() {
     expect(find.byKey(const Key('daily-routine-type-tabs')), findsOneWidget);
     expect(find.text('Modelos'), findsOneWidget);
     expect(find.text('Rotinas'), findsOneWidget);
-    expect(find.text('Lançamentos'), findsOneWidget);
-    await tester.tap(find.text('Lançamentos'));
+    expect(find.text('Lançamentos'), findsNothing);
+    await tester.tap(find.text('Rotinas'));
     await tester.pumpAndSettle();
 
-    expect(requestedKinds.last, RoutineEntryKind.launch);
-    expect(find.byKey(const Key('daily-routine-launches-empty')), findsOneWidget);
+    expect(requestedKinds, isNot(contains(RoutineEntryKind.launch)));
+    expect(find.byKey(const Key('daily-routine-empty')), findsOneWidget);
   });
 
   testWidgets('opening a directory entry preserves its entry kind for typed deep links', (

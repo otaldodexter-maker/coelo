@@ -89,6 +89,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final fromModel = <RoutineDirectoryItem>[];
     final launched = <RoutineDirectoryItem>[];
+    var launchCreatedNavigations = 0;
     final archived = <RoutineDirectoryItem>[];
     await tester.pumpWidget(
       MaterialApp(
@@ -103,6 +104,7 @@ void main() {
             launched.add(item);
             return true;
           },
+          onLaunchCreated: () => launchCreatedNavigations++,
           onArchive: (item) async {
             archived.add(item);
             return true;
@@ -139,17 +141,14 @@ void main() {
     await tester.pumpAndSettle();
     expect(fromModel.length, 2);
 
-    // Rotina aplicada: Lançar hoje cria o rascunho e leva a Lançamentos.
+    // Rotina aplicada: Lançar hoje cria o rascunho e leva ao Histórico
+    // (Assiduidade › Histórico › Lançamentos de rotina, spec 052 §3); a aba
+    // Lançamentos não existe mais neste diretório.
     await tester.tap(find.byKey(const Key('daily-routine-launch-app-1-row')));
     await tester.pumpAndSettle();
     expect(launched.single.id, 'app-1');
-    expect(find.text('Criar lançamento'), findsOneWidget, reason: 'aba Lançamentos aberta');
-
-    // Lançamentos vazio ainda mostra Criar e o seletor de rotina.
-    await tester.tap(find.text('Criar lançamento'));
-    await tester.pumpAndSettle();
-    await tester.tap(find.byKey(const Key('daily-routine-origin-app-1')));
-    await tester.pumpAndSettle();
-    expect(launched.length, 2);
+    expect(launchCreatedNavigations, 1);
+    expect(find.text('Lançamentos'), findsNothing);
+    expect(find.text('Criar lançamento'), findsNothing);
   });
 }

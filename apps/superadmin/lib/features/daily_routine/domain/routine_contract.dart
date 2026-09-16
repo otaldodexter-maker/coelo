@@ -409,6 +409,7 @@ final class RoutineDirectoryItem {
     required this.version,
     this.originLabel,
     this.effectiveLabel,
+    this.applicationId,
   });
 
   final String id;
@@ -418,6 +419,9 @@ final class RoutineDirectoryItem {
   final int version;
   final String? originLabel;
   final String? effectiveLabel;
+
+  /// Rotina aplicada de origem de um lançamento (spec 052 §3).
+  final String? applicationId;
 }
 
 final class RoutineDirectoryPage {
