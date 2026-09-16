@@ -75,9 +75,12 @@ Artefatos da fatia 3: `specs/053-superadmin-medication-in-app-notifications.md`;
    (`AttendanceRoutineRef`); o repositório de Assiduidade mapeia `PT409` → conflito (OQ-047).
 4. Goldens de Assiduidade/Rotina continuam falhando por deriva do cabeçalho (C1); a remoção da aba
    muda os 3 goldens do diretório de Rotina (já vermelhos). Não regravei.
-5. Spec numerada **052** (051 era a maior em `dev` e em todas as `origin/r14/*` em 16/09 18:00 UTC).
-   Se a Sessão 9 criou 052, renumerar a minha para 053 na integração (referências: spec 052 em
-   `R14-pendencias.md` linha r12-04, evidência e handoff).
+5. Specs numeradas **052** (Histórico + snapshot) e **053** (sino de Medicação); 051 era a maior em
+   `dev` e em todas as `origin/r14/*` em 16/09 18:00 UTC. Se a Sessão 9 usou 052/053, renumerar
+   as minhas na integração (referências nas linhas r12-04/r12-06/r12-33 de `R14-pendencias.md`,
+   evidências e este handoff).
+6. Espelho `coelo_mirror_r14_historico` parado ao fim da sessão (`supabase stop`); a pasta
+   `Coelo-backups/mirror-r14-historico` fica para retomada.
 
 ## Sobra para a R15 (sugestão)
 
