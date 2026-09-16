@@ -296,10 +296,15 @@
 # confirmado por `supabase migration list --linked`.
 20260915203000_forms_question_media_expire_audit_v1.sql
 
-# PENDENTE (16/09) - nao usar para reconstruir espelho sem confirmar:
-# - 20260916152000_child_safety_lifecycle_timeout_fix_v1.sql (R14 Sessao 8, ADR 0041 D4): versionada, pgTAP 15/15 no espelho
-#   coelo_mirror_r14_seguranca, dump previo em Coelo-backups/schema-producao-20260916-s8-child-safety-before.sql (SHA-256 D0B36E45),
-#   NAO aplicada em producao (db push inviavel: 51 versoes remotas sem arquivo local; db query -f negado pelo executor).
-#   Evidencia: docs/reviews/evidence/etapa-2/r14-sessao-8/child-safety-lifecycle-504-20260916.md. Aplicar e registrar como lote.
-# - 20260916154500_attendance_context_options_activity_scope_v1.sql (R14 Sessao 8, ADR 0041 D3): versionada, pgTAP 11/11 no
-#   espelho, mesmo bloqueio de aplicacao. Evidencia: r14-sessao-8/attendance-context-activity-scope-20260916.md.
+# lote 74 (16/09 17:40) - R15 abertura / coordenacao, com autorizacao nominal do Owner em 16/09 (ADR 0041 D3/D4 e ADR 0042):
+# seis migrations forward-only revisadas contra o dump de producao (f1f677ca), pgTAP verdes nos espelhos das Sessoes 8/9/10
+# (15/15, 11/11, 44/44, 43/43, 29/29, 63/63), dump previo Coelo-backups/schema-producao-20260916-lote74-before.sql (SHA-256 D0B36E45),
+# aplicadas uma a uma por `supabase db query --linked -f`, ledger remoto 302-309 confirmado por `supabase migration list --linked`.
+# A primeira (PT409 no lugar de 40001) encerrou o laco de retentativa do PostgREST: backends cairam de 6-9 em laco para 2 idle e a API
+# voltou a responder (OQ-047 segue para a correcao sistemica autorizada pelo Owner).
+20260916152000_child_safety_lifecycle_timeout_fix_v1.sql
+20260916154500_attendance_context_options_activity_scope_v1.sql
+20260916180000_attendance_call_history_v1.sql
+20260916183000_attendance_routine_snapshot_v1.sql
+20260916190000_medication_in_app_notifications_v1.sql
+20260916193000_archive_models_v1.sql

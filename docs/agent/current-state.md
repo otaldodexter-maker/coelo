@@ -20,20 +20,22 @@ audience: "team"
   BE 171/219 (78,1%), E2E 162/186 (87,1%), Owner 21/53 (39,6%). Fila: 27
   ações não terminais (22 executáveis), 32 Owner items abertos/parciais (27
   executáveis), 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
-- **Bloqueios de abertura que só o Owner destrava** (detalhe em
-  `R15-pendencias.md › Desbloqueios`): (1) incidente do PostgREST de produção
-  desde ~12:28 BRT de 16/09 — laços de retentativa em SQLSTATE 40001 esgotam o
-  pool (OQ-047); (2) permissão de escrita em produção para a coordenação —
-  seis migrations verdes no espelho aguardam aplicação
-  (`20260916152000/154500/180000/183000/190000/193000`); (3) decisões enviadas
-  em artefato: correção sistêmica 40001 → PT409, massa mínima autorizada,
-  contrato do Chat (r12-52), goldens em massa, CORS das Edge por porta.
-- Ordem proposta da R15: Bloco A (rota real já pronta na R14: Perfis
+- **Desbloqueios de 16/09 (fim do dia)**: o Owner liberou a escrita em
+  produção para a coordenação; as seis migrations da R14 foram aplicadas (lote
+  74, ledger 302–309) e o incidente do PostgREST terminou com a primeira delas
+  (`PT409` no lugar de 40001). Mesa R15 respondida (ADR 0042 E1–E7): OQ-047
+  sistêmica autorizada; massa mínima `QA R15` autorizada (responsável + 2
+  crianças + admin/educador); Chat passa a aceitar vários anexos por mensagem
+  (contrato novo); goldens regravam suíte a suíte; B2 publica no Histórico;
+  sino de Medicação inclui o responsável. CORS das Edge por porta aplicado
+  (`127.0.0.1:3014–3024` nas seis `*_ALLOWED_ORIGINS`); sem pendência de ambiente.
+- Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
   Bloco B (após migrations: Segurança da criança, contexto Atividade,
   `agora.remove`, B1/B2/B3/B8) → Bloco C (contratos novos: B5/B6/B9, specs
   OQ-044/§5/OQ-033/OQ-034/OQ-032, H08/H13/H23, r12-38).
-- Execução paralela: as seis worktrees `Coelo.worktrees14-*` continuam
+- Execução paralela: as seis worktrees `Coelo.worktrees
+14-*` continuam
   protegidas (integradas por cherry-pick) e podem ser reaproveitadas pelas
   sessões da R15; regra: filhas commitam na própria branch, a coordenadora
   integra. Nunca `git add -A`/`stash`.

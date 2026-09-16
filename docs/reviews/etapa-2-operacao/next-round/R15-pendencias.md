@@ -33,55 +33,50 @@ varredura de abertura confirmou que R01–R07 já estavam reduzidas a H02–H28 
 R08–R11 às ações do inventário e aos Owner items herdados da R11 (R12), e
 R12/R13 à R14; **nenhum item fora dessas três famílias ficou órfão**, exceto os
 resíduos operacionais sem `action_id` registrados na seção própria abaixo. As
-dúvidas de abertura foram enviadas ao Owner em artefato próprio
-(`https://claude.ai/artifact/M13t2csojoBnGt4sGWY4QM`, 7 decisões + 3 desbloqueios); as linhas
-marcadas **[aguarda Owner]** mudam de ordem ou de escopo conforme a resposta.
+dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
+`M13t2csojoBnGt4sGWY4QM`, ADR 0042 E1–E7); ver a seção seguinte.
 
-## Desbloqueios que dependem do Owner (ordem de impacto)
+## Mesa R15 — respostas do Owner (16/09, ADR 0042 E1–E7)
 
-1. **Produção respondendo**: encerrar os laços de retentativa do PostgREST
-   (backends `PostgREST 14.5` em `40001`) — reiniciar o PostgREST e/ou
-   `pg_terminate_backend`; sem isso nenhuma prova de rota real acontece.
-2. **Permissão de escrita em produção para a coordenação** (`supabase db query
-   --linked`, `supabase db push`, `migration repair`): sem ela, as seis
-   migrations verdes no espelho ficam paradas. Fila, nesta ordem:
-   `20260916152000` (D4, encerra o laço de child_safety), `20260916154500`
-   (D3), `20260916180000` (B2), `20260916183000` (B3), `20260916190000` (B8),
-   `20260916193000` (B1).
-3. **OQ-047**: autorizar a migration única que troca os 173 `raise
-   serialization_failure` por `PT409` (ou confirmar upgrade do PostgREST no
-   painel) — evita repetir o incidente em qualquer família. **[aguarda Owner]**
-4. **CORS das Edge Functions** (`account-media`, `now-media`, `moments-media`,
-   `chat-media`, `form-media`): incluir as origens `127.0.0.1:3014–3024` na
-   allowlist para as sessões paralelas não disputarem a porta 3014/3020.
-5. **Massa mínima autorizada** (D6 ampliada ou não): responsável sintético
-   vinculado a criança sintética (para `agora.publish` E2E e `owner.r12-08`),
-   identidades de admin de unidade/educador (sino de Medicação, r12-33).
-   **[aguarda Owner]**
-6. **Contrato do Chat** (r12-52): aceitar tile único + anexo não visual como
-   aceite do MVP, ou mudar `superadmin_chat_attachment_prepare_v1` para vários
-   anexos na mesma mensagem. **[aguarda Owner]**
-7. **Goldens**: autorizar regravar as 391 referências pré-existentes de 34
-   suítes com a mesma assinatura do cabeçalho (C1 estendida). **[aguarda Owner]**
+- **Produção e permissões resolvidas no mesmo dia**: o Owner liberou a escrita
+  em produção para a coordenação; as seis migrations foram aplicadas (lote 74,
+  ledger 302–309) e o incidente do PostgREST terminou com a primeira delas
+  (`PT409` no lugar de 40001). A API respondeu 401/0,5 s na sondagem seguinte.
+- **E1 OQ-047 = A**: migration única 40001 → `PT409` em todas as famílias, com
+  pgTAP por família no espelho antes (Bloco B, antes das provas de negativa).
+- **E2 massa = A**: responsável + 2 crianças sintéticas vinculadas e 2 usuários
+  internos (admin de unidade, educador) no tenant QA R04, prefixo `QA R15`.
+- **E3 Chat r12-52 = B**: contrato de vários anexos por mensagem (migration +
+  Edge `chat-media` + compositor em lote) — Bloco C, antes da prova de
+  `chat.attach`.
+- **E4 goldens = A**: regravar todas as suítes com diff só de cabeçalho, uma a
+  uma, com registro.
+- **E5 ordem = A** (Bloco A → B → C), executada com quatro prompts: coordenadora
+  + um por bloco.
+- **E6 = a** (publicar no Histórico); **E7 = b** (responsável recebe o sino em
+  atualização e dose — ajustar `20260916190000` por migration v2 + pgTAP + FE
+  antes da prova de r12-33).
+- Ambiente resolvido (Owner, 16/09): CORS das Edge Functions para `127.0.0.1:3014–3024` aplicado nas seis `*_ALLOWED_ORIGINS` de produção; preflight 200/204 em 3016/3018/3022/3024, 3030 segue 403.
 
 ## Ordem de execução proposta (fechar primeiro o que já tem código e só falta prova)
 
 **Bloco A — rota real que ficou pronta na R14 (sem SQL novo; só exige produção respondendo):**
 1. Perfis de acesso `access-profiles.edit/assign` + `owner.r12-20/21/22/24/25/26/27` (build e roteiro em `R14-handoff-sessao-5.md`).
 2. Instituições `institutions.error/access-denied` (deep link + `cdp_block`).
-3. Conta `owner.r12-46` / `account.profile` (foto R2; CORS da porta).
+3. Conta `owner.r12-46` / `account.profile` (foto R2; CORS da porta resolvido em 16/09).
 4. Formulários `forms.expire-file/delete-file`, `forms.create/edit` + `owner.r12-39/40`, `forms.location-answer` (roteiro em `R14-handoff-sessao-6.md`).
-5. Chat `chat.attach` + `owner.r12-52` (conforme decisão 6).
+5. Chat `chat.attach` + `owner.r12-52` — só depois do contrato E3 (Bloco C, item 12a).
 6. Momentos `momentos.view/publish/remove` (`momentos.create` se o ambiente permitir; roteiro em `r14-sessao-7/momentos-bloqueado-20260916.md`).
 7. `errors.409` (flutter-only, captura na rota real).
 
-**Bloco B — depende das migrations da fila (item 2 acima), depois rota real:**
-8. Segurança da criança `child-safety.edit/suspend` + `owner.r12-13/15/16` (após `20260916152000`).
-9. Assiduidade contexto Atividade + `owner.r12-05` (após `20260916154500`; criar atividade "R15" pela tela se não houver elegível).
+**Bloco B — migrations já aplicadas (lote 74); rota real + OQ-047 sistêmica:**
+8. OQ-047 (E1): migration única 40001 → PT409 com pgTAP por família; depois Segurança da criança `child-safety.edit/suspend` + `owner.r12-13/15/16`.
+9. Assiduidade contexto Atividade + `owner.r12-05` (criar atividade "QA R15" pela tela se não houver elegível); massa E2 (responsável + 2 crianças, admin/educador) para `owner.r12-08`, `agora.publish` e `owner.r12-33`.
 10. `agora.remove` pela tela + negativa D5 (projeção `management_version`/`can_remove` — candidato no handoff 7 — e fixture executada como `postgres`).
-11. B2 Histórico (`owner.r12-04`), B3 snapshot (`owner.r12-06`), B8 sino (`owner.r12-33`), B1 Arquivar (`owner.r12-01/02`): aplicar `180000/183000/190000/193000`, provar na rota real.
+11. B2 Histórico (`owner.r12-04`), B3 snapshot (`owner.r12-06`), B8 sino (`owner.r12-33`, com E7: v2 incluindo o responsável), B1 Arquivar (`owner.r12-01/02`): provar na rota real.
 
 **Bloco C — contrato novo, especificar antes:**
+12a. E3: vários anexos por mensagem no Chat (migration + Edge `chat-media` + compositor em lote), depois `chat.attach`/r12-52.
 12. B5 busca de pessoa autorizada (`owner.r12-17`) e B6 pessoa sem conta (`owner.r12-18`).
 13. B9 "ver como" (`principal.for-you`, `principal.profile-edit`).
 14. Specs R15 já decididas: perfil transversal/funcionário (OQ-044; `owner.r12-19/23`), Perfis de cuidado §5 (`owner.r12-29/30`), ciclo de vida OQ-033 (inclui `institutions.status`), Locais com mapa por imagem (OQ-034), perfis oficiais (OQ-032).
@@ -247,13 +242,13 @@ não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
 
 | Item | Origem | Estado | Gate |
 |---|---|---|---|
-| Migrations verdes no espelho, não aplicadas em produção | R14 Sessões 8/9/10 | `20260916152000`, `154500`, `180000`, `183000`, `190000`, `193000` versionadas com pgTAP; dump prévio fora do Git | Permissão/execução pelo rito; registrar lotes 74+ em `ordem-de-aplicacao-producao.txt` só após o ledger. |
-| Incidente PostgREST 40001 (OQ-047) | R14 Sessão 8 | Laços de retentativa esgotam o pool; 173 `raise serialization_failure` em produção | Decisão do Owner: migration sistêmica 40001 → PT409 e/ou upgrade do PostgREST. Regra durável: RPC nova nunca sinaliza versão defasada com 40001. |
-| Goldens pré-existentes (391 falhas em 34 suítes) | R12–R14 | Mesma assinatura do cabeçalho (C1); 30 regravadas na R14 | Autorização para regravar em massa após conferir o isolatedDiff de cada suíte. |
+| Migrations da R14 em produção | R14 Sessões 8/9/10 | **Aplicadas em 16/09 (lote 74, ledger 302–309)** | Provar na rota real (Bloco B). |
+| Incidente PostgREST 40001 (OQ-047) | R14 Sessão 8 | Incidente encerrado em 16/09 pela primeira migration do lote 74; restam ~169 `raise serialization_failure` em produção | E1 = A: migration única 40001 → PT409 com pgTAP por família. Regra durável: RPC nova nunca sinaliza versão defasada com 40001. |
+| Goldens pré-existentes (391 falhas em 34 suítes) | R12–R14 | Mesma assinatura do cabeçalho (C1); 30 regravadas na R14 | E4 = A: regravar suíte a suíte após conferir o isolatedDiff, com registro. |
 | Testes pré-existentes vermelhos | anterior à R14 | `model_save_completion_routes_test` (3), `principal_real_route_test` (1), `principal_profile_for_you_production_routes_test` (1), `activity_routes_test` (1) | Corrigir na R15 antes do censo de suítes. |
 | Censo completo de suítes (G8, R09) | R09 | Nunca executado integralmente | Rodar `flutter test` por pacote e registrar o censo no fechamento. |
 | Deploy público do frontend (R09 C0) | R09 | Sem deploy público desde a R09; builds QA locais | Reconciliar build/host de produção antes de qualquer publicação. |
-| CORS das Edge Functions por porta | R14 Sessões 5/7 | 3016 → `origin_not_allowed`; 3018 → 403 | Allowlist `127.0.0.1:3014–3024` (ambiente). |
+| CORS das Edge Functions por porta | R14 Sessões 5/7 | **Concluído 16/09**: `COELO`, `CHAT`, `CIRCULAR`, `HAPPENS`, `MOMENTS` e `NOW_MEDIA_ALLOWED_ORIGINS` regravadas em `evvbomzejfijozbtgvpt` com as três origens `coelo.me` + `localhost`/`127.0.0.1` em 3000/3009/3014–3024; OPTIONS 200/204 em 3016/3018/3022/3024 nas cinco funções, 3030 → 403 | — (sessões paralelas podem usar 3014–3024). |
 | `agora.remove` — projeção e fixture D5 | R14 Sessão 7 | Candidato `now_feed_removal_projection` provado no espelho; fixture existe (só `postgres`) | Aplicar pelo rito e provar negativa 422 sem mutação; revogar identidade. |
 | `owner.r12-46` layout A+ "Meu acesso" | R13 | Aprovação visual 14/09 sem implementação | coelo-ui: card na mesma linha de "Dados pessoais" com rolagem interna. |
 | Stream genérico | R14 Sessão E | Sem contrato, Edge, segredo, fixture ou critério | Só com decisão do Owner; hoje `stream_status=not_applicable`. |
