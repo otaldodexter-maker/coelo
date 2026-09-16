@@ -1,0 +1,235 @@
+NOTICE:  extension "pgtap" already exists, skipping
+ plan  
+-------
+ 1..34
+(1 row)
+
+                                                 ok                                                 
+----------------------------------------------------------------------------------------------------
+ ok 1 - grants: authenticated prepara/resolve/exclui; service_role finaliza/expira/limpa; anon nada
+(1 row)
+
+                     ok                      
+---------------------------------------------
+ ok 2 - tabelas privadas sem grant a cliente
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+          is           
+-----------------------
+ ok 3 - prepare aceito
+(1 row)
+
+                                 ok                                  
+---------------------------------------------------------------------
+ ok 4 - object_key na convencao do catalogo, bucket privado, pending
+(1 row)
+
+                        is                         
+---------------------------------------------------
+ ok 5 - binding question-image criado na posicao 0
+(1 row)
+
+                 ok                  
+-------------------------------------
+ ok 6 - replay devolve o mesmo asset
+(1 row)
+
+                       is                       
+------------------------------------------------
+ ok 7 - request_id com outro arquivo e recusado
+(1 row)
+
+                         ok                         
+----------------------------------------------------
+ ok 8 - acima de 4 MiB e PDF sao FORM_MEDIA_INVALID
+(1 row)
+
+             is              
+-----------------------------
+ ok 9 - pendente nao resolve
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000103", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000203"}
+(1 row)
+
+                                            ok                                             
+-------------------------------------------------------------------------------------------
+ ok 10 - outro tenant: prepare, authorize, resolve e delete respondem FORM_MEDIA_NOT_FOUND
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+               ok               
+--------------------------------
+ ok 11 - autora recebe o ticket
+(1 row)
+
+        set_config        
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+                     is                      
+---------------------------------------------
+ ok 12 - sha diferente e FORM_MEDIA_MISMATCH
+(1 row)
+
+                   is                    
+-----------------------------------------
+ ok 13 - asset com mismatch vira deleted
+(1 row)
+
+                   is                   
+----------------------------------------
+ ok 14 - chave entra na fila de limpeza
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+                         is                          
+-----------------------------------------------------
+ ok 15 - posicao reaproveitada apos o asset deletado
+(1 row)
+
+        set_config        
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+                  is                  
+--------------------------------------
+ ok 16 - finalize correto deixa ready
+(1 row)
+
+                                     ok                                      
+-----------------------------------------------------------------------------
+ ok 17 - finalize identico reconcilia resposta perdida sem duplicar variante
+(1 row)
+
+                         ok                          
+-----------------------------------------------------
+ ok 18 - variante original registrada com as medidas
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+                                      is                                      
+------------------------------------------------------------------------------
+ ok 19 - prepare aceita autoria people-based do mesmo ator interno autorizado
+(1 row)
+
+        set_config        
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+                              is                               
+---------------------------------------------------------------
+ ok 20 - question-image produtiva finaliza no catalogo privado
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+                                      ok                                      
+------------------------------------------------------------------------------
+ ok 21 - editor interno expoe somente ids/status da question-image autorizada
+(1 row)
+
+                            is                             
+-----------------------------------------------------------
+ ok 22 - salvar texto depois do upload preserva o rascunho
+(1 row)
+
+                                       ok                                       
+--------------------------------------------------------------------------------
+ ok 23 - reorder preserva binding pelo item_id autoritativo, nunca pela posicao
+(1 row)
+
+                              throws_like                              
+-----------------------------------------------------------------------
+ ok 24 - remover pergunta com imagem falha fechado ate excluir a midia
+(1 row)
+
+                                    ok                                    
+--------------------------------------------------------------------------
+ ok 25 - falha de remocao preserva item e binding sem associacao indevida
+(1 row)
+
+                              is                               
+---------------------------------------------------------------
+ ok 26 - editor sem working version devolve media_context nulo
+(1 row)
+
+                         ok                         
+----------------------------------------------------
+ ok 27 - resolve devolve chave e ttl para o gateway
+(1 row)
+
+                        ok                         
+---------------------------------------------------
+ ok 28 - delete exclui e a repeticao e idempotente
+(1 row)
+
+           is           
+------------------------
+ ok 29 - asset excluido
+(1 row)
+
+                                                                  set_config                                                                   
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f060000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f060000-0000-4000-8000-000000000202"}
+(1 row)
+
+        set_config        
+--------------------------
+ {"role": "service_role"}
+(1 row)
+
+                   is                    
+-----------------------------------------
+ ok 30 - expire marca o pendente vencido
+(1 row)
+
+                                    is                                    
+--------------------------------------------------------------------------
+ ok 31 - fila de limpeza entrega as 3 chaves (mismatch, deleted, expired)
+(1 row)
+
+                       throws_like                       
+---------------------------------------------------------
+ ok 32 - authenticated nao expira (negado no privilegio)
+(1 row)
+
+                          ok                           
+-------------------------------------------------------
+ ok 33 - prepare, finalize, resolve e delete auditados
+(1 row)
+
+                                 ok                                  
+---------------------------------------------------------------------
+ ok 34 - expire registra o ciclo autoritativo no diario de auditoria
+(1 row)
+
+ finish 
+--------
+(0 rows)
+

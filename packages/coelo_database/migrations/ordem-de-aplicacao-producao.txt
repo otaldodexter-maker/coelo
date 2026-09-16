@@ -287,9 +287,16 @@
 20260915120000_account_avatar_private_r2_v1.sql
 20260915130100_chat_media_asset_binding_v1.sql
 
+# lote 73 (16/09 13:05) - R14 Sessao 6 (Formularios > Arquivos): auditoria da expiracao automatica de question-image
+# (form_media_expire_question_r2_v1 grava forms.media.expire em audit.audit_logs; service_role apenas). Correcao forward-only
+# ja versionada em 0481384f5 dentro do escopo de Formularios do MVP (ADR 0031). Espelho proprio mirror-r14-formularios
+# (schema f1f677ca + catalogos), pgTAP forms_question_media_r2_v1 34/34 (plan corrigido 33->34), terminal_unbind 7/7,
+# retry_delete 9/9; dump de schema previo Coelo-backups/schema-producao-20260916-r14-s6-forms-expire-audit-before.sql
+# (SHA-256 f1f677ca, identico ao da coordenacao); `db push --dry-run` listou somente esta migration; ledger remoto 304
+# confirmado por `supabase migration list --linked`.
+20260915203000_forms_question_media_expire_audit_v1.sql
+
 # PENDENTE (16/09) - nao usar para reconstruir espelho sem confirmar:
-# - 20260915203000_forms_question_media_expire_audit_v1.sql: versionada em 0481384f5, suites locais
-#   verdes, NAO aplicada em producao (ausente do ledger); liberada para R15 com forms.expire-file.
 # - 20260916152000_child_safety_lifecycle_timeout_fix_v1.sql (R14 Sessao 8, ADR 0041 D4): versionada, pgTAP 15/15 no espelho
 #   coelo_mirror_r14_seguranca, dump previo em Coelo-backups/schema-producao-20260916-s8-child-safety-before.sql (SHA-256 D0B36E45),
 #   NAO aplicada em producao (db push inviavel: 51 versoes remotas sem arquivo local; db query -f negado pelo executor).

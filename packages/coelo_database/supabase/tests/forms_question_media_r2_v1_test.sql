@@ -2,7 +2,7 @@
 -- expire, fila de limpeza, cross-tenant e grants.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(33);
+select plan(34);
 
 insert into public.institution_types(id,code,name,status) values
  ('9f060000-0000-4000-8000-000000000001','qa-r05-fmedia','QA R05 forms media','active');
