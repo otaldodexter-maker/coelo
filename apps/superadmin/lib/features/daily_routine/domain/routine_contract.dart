@@ -24,7 +24,7 @@ enum RoutineDirectoryStatus {
   unavailable,
 }
 
-enum RoutineRepositoryFailureKind { unauthorized, notFound, conflict, unavailable }
+enum RoutineRepositoryFailureKind { unauthorized, notFound, conflict, invalidState, unavailable }
 
 final class RoutineRepositoryException implements Exception {
   const RoutineRepositoryException(
@@ -410,6 +410,7 @@ final class RoutineDirectoryItem {
     this.originLabel,
     this.effectiveLabel,
     this.applicationId,
+    this.managementVersion = 0,
   });
 
   final String id;
@@ -422,6 +423,41 @@ final class RoutineDirectoryItem {
 
   /// Rotina aplicada de origem de um lançamento (spec 052 §3).
   final String? applicationId;
+  /// `management_version` do registro (expected_version de Arquivar/Restaurar,
+  /// spec 052). `version` continua sendo a versão da definição publicada.
+  final int managementVersion;
+
+  bool get isArchived => status == 'archived';
+}
+
+/// Arquivar/Restaurar modelo de rotina (ADR 0041 B1, spec 052): comandos
+/// próprios com `expected_version` (PT409 em versão defasada), recibo por
+/// `requestId` e auditoria; separado de [RoutineRepository] para não obrigar
+/// os repositórios de preview/teste a implementá-los.
+abstract interface class RoutineModelLifecycleRepository {
+  Future<RoutineModelLifecycleResult> archiveModel(
+    String modelId, {
+    required int expectedVersion,
+    required String requestId,
+  });
+
+  Future<RoutineModelLifecycleResult> restoreModel(
+    String modelId, {
+    required int expectedVersion,
+    required String requestId,
+  });
+}
+
+final class RoutineModelLifecycleResult {
+  const RoutineModelLifecycleResult({
+    required this.id,
+    required this.status,
+    required this.managementVersion,
+  });
+
+  final String id;
+  final String status;
+  final int managementVersion;
 }
 
 final class RoutineDirectoryPage {

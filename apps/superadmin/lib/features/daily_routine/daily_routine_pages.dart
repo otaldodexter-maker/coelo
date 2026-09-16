@@ -91,6 +91,10 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
   var _display = _RoutineDisplay.cards;
   var _selectedType = RoutineEntryKind.model;
 
+  /// Filtro de status (spec 052): sem filtro o servidor já exclui arquivados;
+  /// "Arquivados" pede `status = archived`.
+  String? _selectedStatus;
+
   /// Publicação em voo, por item: o botão do próprio item fica desabilitado
   /// enquanto o comando não volta, para um toque repetido não virar duas
   /// publicações da mesma rotina.
@@ -141,6 +145,7 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
     query: RoutineDirectoryQuery(
       kind: _selectedType,
       search: _search.text.trim(),
+      status: _selectedStatus,
       page: page,
       pageSize: _display == _RoutineDisplay.cards ? 11 : 8,
     ),
@@ -148,8 +153,13 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
 
   void clearFilters() {
     _search.clear();
+    _selectedStatus = null;
     _load();
   }
+
+  static const _statusFilterOptions = ['Todos', 'active', 'draft', 'inactive', 'archived'];
+
+  String _statusFilterLabel(String value) => value == 'Todos' ? 'Todos' : routineStatusLabel(value);
 
   /// D7: publicar um lançamento é o comando `daily-routine.publish`, e nada
   /// mais. Confirma antes porque publicar entrega a rotina às famílias e não
@@ -408,7 +418,21 @@ class _DailyRoutineDirectoryPageState extends State<DailyRoutineDirectoryPage> {
             onChanged: (_) => updateDirectory(() {}),
           ),
         ),
-        filters: const [],
+        filters: [
+          if (_selectedType != RoutineEntryKind.launch)
+            CoeloAdminSingleSelectField<String>(
+              key: const Key('daily-routine-status-filter'),
+              isFilter: true,
+              unselectedValue: 'Todos',
+              label: 'Status',
+              value: _selectedStatus ?? 'Todos',
+              options: _statusFilterOptions,
+              optionLabel: _statusFilterLabel,
+              searchable: false,
+              onChanged: (value) =>
+                  updateDirectory(() => _selectedStatus = value == 'Todos' ? null : value),
+            ),
+        ],
         actions: [
           SuperadminDirectoryViewToggle<_RoutineTableView>(
             cardsSelected: _display == _RoutineDisplay.cards,

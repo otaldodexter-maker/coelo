@@ -24,11 +24,22 @@ enum CoeloAdminDirectoryStatusTab {
   all('Todos'),
   active('Ativos'),
   draft('Rascunhos'),
-  inactive('Inativos');
+  inactive('Inativos'),
+
+  /// Registros arquivados (inativação reversível, ADR 0041 B1). Fica fora de
+  /// [defaults]: só os diretórios que arquivam a expõem, passando `tabs`
+  /// explicitamente; "Todos" desses diretórios não inclui arquivados.
+  archived('Arquivados');
 
   const CoeloAdminDirectoryStatusTab(this.label);
 
   final String label;
+
+  /// Abas padrão dos diretórios (sem Arquivados).
+  static const defaults = [all, active, draft, inactive];
+
+  /// Abas dos diretórios com arquivamento reversível.
+  static const withArchived = [all, active, draft, inactive, archived];
 }
 
 /// Ação Criar do diretório (CRIAR): card em grade, banner acima da tabela.
@@ -145,7 +156,7 @@ final class CoeloAdminDirectoryStatusTabs extends StatelessWidget {
   const CoeloAdminDirectoryStatusTabs({
     required this.selected,
     required this.onSelected,
-    this.tabs = CoeloAdminDirectoryStatusTab.values,
+    this.tabs = CoeloAdminDirectoryStatusTab.defaults,
     super.key,
   });
 

@@ -312,8 +312,49 @@ final class UnavailableActivityCommandRepository implements ActivityCommandRepos
   }) => _unavailable();
 }
 
+/// Arquivar/Restaurar modelo de atividade (ADR 0041 B1, spec 052): inativação
+/// reversível com `expected_version`, idempotente por `requestId`.
+abstract interface class ActivityTemplateLifecycleRepository {
+  Future<ActivityTemplateLifecycleResult> archiveTemplate(ActivityTemplateLifecycleCommand command);
+  Future<ActivityTemplateLifecycleResult> restoreTemplate(ActivityTemplateLifecycleCommand command);
+}
+
+final class ActivityTemplateLifecycleCommand {
+  const ActivityTemplateLifecycleCommand({
+    required this.requestId,
+    required this.templateId,
+    required this.expectedVersion,
+  });
+
+  final String requestId;
+  final String templateId;
+  final int expectedVersion;
+}
+
+final class ActivityTemplateLifecycleResult {
+  const ActivityTemplateLifecycleResult({
+    required this.id,
+    required this.status,
+    required this.managementVersion,
+  });
+
+  final String id;
+  final ActivityStatus status;
+  final int managementVersion;
+}
+
 final class ActivityCommandUnauthorizedException implements Exception {
   const ActivityCommandUnauthorizedException();
+}
+
+/// O modelo não existe ou está fora do escopo do ator (o servidor não enumera).
+final class ActivityCommandNotFoundException implements Exception {
+  const ActivityCommandNotFoundException();
+}
+
+/// O modelo já está no estado pedido (arquivar arquivado / restaurar ativo).
+final class ActivityCommandInvalidStateException implements Exception {
+  const ActivityCommandInvalidStateException();
 }
 
 final class ActivityCommandConflictException implements Exception {

@@ -15,7 +15,8 @@ import '../domain/routine_contract.dart';
 /// para um id que não existe e para um id que existe fora do escopo, porque
 /// distinguir os dois confirmaria a existência do segundo. Aqui isso vira
 /// [RoutineRepositoryFailureKind.notFound] nos dois casos.
-final class SupabaseRoutineRepository implements RoutineRepository {
+final class SupabaseRoutineRepository
+    implements RoutineRepository, RoutineModelLifecycleRepository {
   const SupabaseRoutineRepository(this._client);
 
   final SupabaseClient _client;
@@ -267,6 +268,48 @@ final class SupabaseRoutineRepository implements RoutineRepository {
     });
   }
 
+  @override
+  Future<RoutineModelLifecycleResult> archiveModel(
+    String modelId, {
+    required int expectedVersion,
+    required String requestId,
+  }) => _lifecycle('superadmin_routine_model_archive_v1', modelId, expectedVersion, requestId);
+
+  @override
+  Future<RoutineModelLifecycleResult> restoreModel(
+    String modelId, {
+    required int expectedVersion,
+    required String requestId,
+  }) => _lifecycle('superadmin_routine_model_restore_v1', modelId, expectedVersion, requestId);
+
+  Future<RoutineModelLifecycleResult> _lifecycle(
+    String function,
+    String modelId,
+    int expectedVersion,
+    String requestId,
+  ) async {
+    final payload = _map(
+      await _rpc(function, {
+        'p_request_id': requestId,
+        'p_model_id': modelId,
+        'p_expected_version': expectedVersion,
+      }),
+    );
+    final id = payload['id'];
+    final status = payload['status'];
+    if (id is! String || id != modelId || status is! String) {
+      throw const RoutineRepositoryException(
+        RoutineRepositoryFailureKind.unavailable,
+        'Resposta inválida ao arquivar/restaurar o modelo.',
+      );
+    }
+    return RoutineModelLifecycleResult(
+      id: id,
+      status: status,
+      managementVersion: _asInt(payload['management_version']),
+    );
+  }
+
   Future<Object?> _rpc(String function, Map<String, Object?> params) async {
     try {
       return await _client.rpc<Object?>(function, params: params);
@@ -288,10 +331,17 @@ final class SupabaseRoutineRepository implements RoutineRepository {
         'Rotina indisponível.',
       );
     }
-    if (error.code == '40001' || error.code == '55P03') {
+    // PT409: versão defasada sem retentativa do PostgREST (spec 052, OQ-047).
+    if (error.code == 'PT409' || error.code == '40001' || error.code == '55P03') {
       return const RoutineRepositoryException(
         RoutineRepositoryFailureKind.conflict,
         'A rotina foi alterada. Atualize e tente novamente.',
+      );
+    }
+    if (error.code == '55000') {
+      return const RoutineRepositoryException(
+        RoutineRepositoryFailureKind.invalidState,
+        'O modelo já está nesse estado. Atualize a lista.',
       );
     }
     return RoutineRepositoryException(RoutineRepositoryFailureKind.unavailable, error.message);
@@ -340,6 +390,7 @@ RoutineDirectoryItem _directoryItem(RoutineEntryKind kind, Map<String, Object?> 
       },
       status: row['status'] as String? ?? '',
       version: _asInt(row['version'] ?? row['management_version']),
+      managementVersion: _asInt(row['management_version']),
       originLabel: row['origin_unit_id'] as String?,
       effectiveLabel: switch (row['inheritance_mode'] as String?) {
         'inherited' => 'Herdada da origem',

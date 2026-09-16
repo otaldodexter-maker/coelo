@@ -344,6 +344,7 @@ Future<bool> _createRoutineLaunch(
         RoutineRepositoryFailureKind.notFound => 'Rotina indisponivel.',
         RoutineRepositoryFailureKind.conflict =>
           'A rotina mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.invalidState ||
         RoutineRepositoryFailureKind.unavailable => error.message,
       }, icon: Icons.error_outline_rounded);
     }
@@ -361,8 +362,18 @@ Future<bool> _archiveRoutineEntry(
   try {
     switch (item.kind) {
       case RoutineEntryKind.model:
-        final model = await repository.fetchModel(item.id);
-        await repository.saveModel(model.archived(), requestId: newRoutineRequestId());
+        // spec 052: comando próprio com expected_version (PT409) e auditoria;
+        // o save antigo continua só onde não há repositório de ciclo de vida.
+        if (repository case final RoutineModelLifecycleRepository lifecycle) {
+          await lifecycle.archiveModel(
+            item.id,
+            expectedVersion: item.managementVersion,
+            requestId: newRoutineRequestId(),
+          );
+        } else {
+          final model = await repository.fetchModel(item.id);
+          await repository.saveModel(model.archived(), requestId: newRoutineRequestId());
+        }
       case RoutineEntryKind.application:
         final application = await repository.fetchApplication(item.id);
         await repository.saveApplication(application.archived(), requestId: newRoutineRequestId());
@@ -380,6 +391,49 @@ Future<bool> _archiveRoutineEntry(
         RoutineRepositoryFailureKind.notFound => 'Item indisponivel.',
         RoutineRepositoryFailureKind.conflict =>
           'O item mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.invalidState => error.message,
+        RoutineRepositoryFailureKind.unavailable => error.message,
+      }, icon: Icons.error_outline_rounded);
+    }
+    return false;
+  }
+}
+
+/// spec 052: Restaurar devolve o modelo arquivado à lista padrão. Só modelos
+/// têm o comando; rotinas aplicadas arquivadas ficam para a spec de ciclo de vida.
+Future<bool> _restoreRoutineEntry(
+  BuildContext context,
+  RoutineRepository repository,
+  RoutineDirectoryItem item,
+) async {
+  if (item.kind != RoutineEntryKind.model || repository is! RoutineModelLifecycleRepository) {
+    if (context.mounted) {
+      showSuperadminNotice(
+        context,
+        'Restaurar ainda não está disponível para este item.',
+        icon: Icons.info_outline_rounded,
+      );
+    }
+    return false;
+  }
+  try {
+    await (repository as RoutineModelLifecycleRepository).restoreModel(
+      item.id,
+      expectedVersion: item.managementVersion,
+      requestId: newRoutineRequestId(),
+    );
+    if (context.mounted) {
+      showSuperadminNotice(context, 'Item restaurado.', icon: Icons.check_circle_outline_rounded);
+    }
+    return true;
+  } on RoutineRepositoryException catch (error) {
+    if (context.mounted) {
+      showSuperadminNotice(context, switch (error.kind) {
+        RoutineRepositoryFailureKind.unauthorized => 'Seu acesso nao permite restaurar este item.',
+        RoutineRepositoryFailureKind.notFound => 'Item indisponivel.',
+        RoutineRepositoryFailureKind.conflict =>
+          'O item mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.invalidState => error.message,
         RoutineRepositoryFailureKind.unavailable => error.message,
       }, icon: Icons.error_outline_rounded);
     }
@@ -414,6 +468,7 @@ Future<bool> _publishRoutineLaunch(
         RoutineRepositoryFailureKind.notFound => 'Lancamento indisponivel.',
         RoutineRepositoryFailureKind.conflict =>
           'O lancamento mudou desde que a lista foi carregada. Atualize e tente de novo.',
+        RoutineRepositoryFailureKind.invalidState ||
         RoutineRepositoryFailureKind.unavailable => error.message,
       }, icon: Icons.error_outline_rounded);
     }
@@ -1053,6 +1108,56 @@ GoRouter createSuperadminRouter({
       governance: draft.governance,
     ),
   );
+
+  /// spec 052 (ADR 0041 B1): Arquivar/Restaurar modelo de atividade pelo
+  /// comando v1 com `expected_version`; a página confirma antes e recarrega
+  /// depois. Só repositórios que implementam o ciclo de vida expõem a ação.
+  Future<bool> Function(ActivityTemplateOption template)? activityTemplateLifecycle(
+    BuildContext context,
+    ActivityCommandRepository repository, {
+    required bool archive,
+  }) {
+    if (repository is! ActivityTemplateLifecycleRepository) return null;
+    final lifecycle = repository as ActivityTemplateLifecycleRepository;
+    return (template) async {
+      final command = ActivityTemplateLifecycleCommand(
+        requestId: _activityRequestId(),
+        templateId: template.id,
+        expectedVersion: template.managementVersion,
+      );
+      try {
+        if (archive) {
+          await lifecycle.archiveTemplate(command);
+        } else {
+          await lifecycle.restoreTemplate(command);
+        }
+        if (context.mounted) {
+          showSuperadminNotice(
+            context,
+            archive ? 'Modelo arquivado.' : 'Modelo restaurado.',
+            icon: Icons.check_circle_outline_rounded,
+          );
+        }
+        return true;
+      } on Exception catch (error) {
+        if (context.mounted) {
+          showSuperadminNotice(context, switch (error) {
+            ActivityCommandUnauthorizedException() =>
+              'Seu acesso nao permite ${archive ? 'arquivar' : 'restaurar'} este modelo.',
+            ActivityCommandNotFoundException() => 'Modelo indisponivel.',
+            ActivityCommandConflictException() =>
+              'O modelo mudou desde que a lista foi carregada. Atualize e tente de novo.',
+            ActivityCommandInvalidStateException() =>
+              'O modelo ja esta nesse estado. Atualize a lista.',
+            _ => 'Nao foi possivel ${archive ? 'arquivar' : 'restaurar'} o modelo agora.',
+          }, icon: Icons.error_outline_rounded);
+        }
+        // Conflito/estado: a lista deve recarregar para mostrar a versão real.
+        return error is ActivityCommandConflictException ||
+            error is ActivityCommandInvalidStateException;
+      }
+    };
+  }
 
   Future<List<ActivityFormLocationOption>> createActivityLocations(
     ActivityLocationDraft draft,
@@ -2483,6 +2588,12 @@ GoRouter createSuperadminRouter({
               onCreateTemplate: hasStructureMutationCapability()
                   ? (draft) => createActivityTemplate(draft, activityCommandRepository)
                   : null,
+              onArchiveTemplate: hasStructureMutationCapability()
+                  ? activityTemplateLifecycle(context, activityCommandRepository, archive: true)
+                  : null,
+              onRestoreTemplate: hasStructureMutationCapability()
+                  ? activityTemplateLifecycle(context, activityCommandRepository, archive: false)
+                  : null,
               onEdit: hasStructureMutationCapability()
                   ? (id) => context.goNamed(
                       SuperadminRoutes.activityEditName,
@@ -2987,6 +3098,7 @@ GoRouter createSuperadminRouter({
                 queryParameters: const {'segment': 'launches'},
               ),
               onArchive: (item) => _archiveRoutineEntry(context, dailyRoutineRepository, item),
+              onRestore: (item) => _restoreRoutineEntry(context, dailyRoutineRepository, item),
             ),
           ),
           GoRoute(

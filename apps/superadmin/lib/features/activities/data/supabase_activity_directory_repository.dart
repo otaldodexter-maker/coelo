@@ -5,7 +5,8 @@ import '../domain/activity_directory.dart';
 /// Directory and editor reads use the nominal internal v2 contract; no legacy
 /// fallback is used. `fetchById` projects `superadmin_activity_detail_v2` and
 /// leaves in a declared default whatever that RPC does not expose.
-final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepository {
+final class SupabaseActivityDirectoryRepository
+    implements ActivityDirectoryRepository, ActivityTemplateDirectoryReader {
   const SupabaseActivityDirectoryRepository(this._client);
 
   final SupabaseClient _client;
@@ -209,13 +210,17 @@ final class SupabaseActivityDirectoryRepository implements ActivityDirectoryRepo
   }
 
   @override
-  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async {
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) =>
+      _templateCatalog('superadmin_activity_template_options', institutionId: institutionId);
+
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateDirectory({String? institutionId}) =>
+      _templateCatalog('superadmin_activity_template_directory_v1', institutionId: institutionId);
+
+  Future<ActivityTemplateOptions> _templateCatalog(String rpc, {String? institutionId}) async {
     try {
       final payload = _asMap(
-        await _client.rpc<Object?>(
-          'superadmin_activity_template_options',
-          params: {'p_institution_id': institutionId},
-        ),
+        await _client.rpc<Object?>(rpc, params: {'p_institution_id': institutionId}),
       );
       return ActivityTemplateOptions(
         institutions: _rows(payload['institutions'])
@@ -658,6 +663,11 @@ List<ActivityTemplateOption> _templateOptions(Object? value) => _rows(value)
           row['governance_kind'] as String? ?? 'optional',
         ),
         status: ActivityStatus.fromDatabase(row['status'] as String? ?? 'active'),
+        managementVersion: switch (row['management_version']) {
+          final int version => version,
+          final num version => version.toInt(),
+          _ => 0,
+        },
       ),
     )
     .toList(growable: false);

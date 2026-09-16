@@ -293,6 +293,102 @@ void main() {
     );
   });
 
+  // spec 052 (ADR 0041 B1): Arquivar/Restaurar modelo pelos comandos v1.
+  test('arquivar e restaurar modelo chamam os comandos v1 com expected_version', () async {
+    final backend = _Backend({
+      'superadmin_routine_model_archive_v1': {
+        'id': 'model-1',
+        'status': 'archived',
+        'management_version': 4,
+      },
+      'superadmin_routine_model_restore_v1': {
+        'id': 'model-1',
+        'status': 'active',
+        'management_version': 5,
+      },
+    });
+    final client = _clientFor(backend);
+    addTearDown(client.dispose);
+    final repository = SupabaseRoutineRepository(client);
+
+    final archived = await repository.archiveModel(
+      'model-1',
+      expectedVersion: 3,
+      requestId: 'req-archive',
+    );
+    expect(backend.paramsOf('superadmin_routine_model_archive_v1'), {
+      'p_request_id': 'req-archive',
+      'p_model_id': 'model-1',
+      'p_expected_version': 3,
+    });
+    expect(archived.status, 'archived');
+    expect(archived.managementVersion, 4);
+
+    final restored = await repository.restoreModel(
+      'model-1',
+      expectedVersion: 4,
+      requestId: 'req-restore',
+    );
+    expect(backend.paramsOf('superadmin_routine_model_restore_v1')['p_expected_version'], 4);
+    expect(restored.status, 'active');
+    expect(restored.managementVersion, 5);
+  });
+
+  test('o diretório projeta management_version separado da versão da definição', () async {
+    final backend = _Backend({
+      'superadmin_routine_directory': {
+        'items': [
+          {
+            'id': 'model-1',
+            'name': 'Modelo',
+            'status': 'archived',
+            'version': 2,
+            'management_version': 7,
+          },
+        ],
+        'total': 1,
+        'limit': 20,
+        'offset': 0,
+        'can_manage': true,
+      },
+    });
+    final client = _clientFor(backend);
+    addTearDown(client.dispose);
+
+    final page = await SupabaseRoutineRepository(
+      client,
+    ).fetchPage(const RoutineDirectoryQuery(kind: RoutineEntryKind.model, status: 'archived'));
+    expect(backend.paramsOf('superadmin_routine_directory')['status'], 'archived');
+    expect(page.items.single.version, 2);
+    expect(page.items.single.managementVersion, 7);
+    expect(page.items.single.isArchived, isTrue);
+  });
+
+  test(
+    'versão defasada (PT409) e estado inválido (55000) dos comandos viram falhas próprias',
+    () async {
+      for (final (code, kind) in <(String, RoutineRepositoryFailureKind)>[
+        ('PT409', RoutineRepositoryFailureKind.conflict),
+        ('55000', RoutineRepositoryFailureKind.invalidState),
+        ('P0002', RoutineRepositoryFailureKind.notFound),
+        ('42501', RoutineRepositoryFailureKind.unauthorized),
+      ]) {
+        final backend = _Backend({})
+          ..errors['superadmin_routine_model_archive_v1'] = (status: 409, code: code);
+        final client = _clientFor(backend);
+        addTearDown(client.dispose);
+
+        await expectLater(
+          SupabaseRoutineRepository(
+            client,
+          ).archiveModel('model-1', expectedVersion: 1, requestId: 'req'),
+          throwsA(isA<RoutineRepositoryException>().having((error) => error.kind, 'kind', kind)),
+          reason: 'código $code',
+        );
+      }
+    },
+  );
+
   test('cada recusa do servidor vira o tipo de falha certo', () async {
     for (final (code, kind) in <(String, RoutineRepositoryFailureKind)>[
       ('42501', RoutineRepositoryFailureKind.unauthorized),

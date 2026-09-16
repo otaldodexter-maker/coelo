@@ -77,6 +77,7 @@ RoutineDirectoryStatus _statusForRepositoryFailure(RoutineRepositoryFailureKind 
     switch (kind) {
       RoutineRepositoryFailureKind.unauthorized => RoutineDirectoryStatus.unauthorized,
       RoutineRepositoryFailureKind.notFound => RoutineDirectoryStatus.notFound,
-      RoutineRepositoryFailureKind.conflict => RoutineDirectoryStatus.conflict,
+      RoutineRepositoryFailureKind.conflict ||
+      RoutineRepositoryFailureKind.invalidState => RoutineDirectoryStatus.conflict,
       RoutineRepositoryFailureKind.unavailable => RoutineDirectoryStatus.unavailable,
     };

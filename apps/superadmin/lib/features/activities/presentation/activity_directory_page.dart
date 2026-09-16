@@ -48,6 +48,10 @@ typedef ActivityTemplateDuplicator =
     );
 typedef ActivityTemplateCreator = Future<void> Function(ActivityTemplateCreateDraft draft);
 
+/// Arquivar/Restaurar um modelo (ADR 0041 B1): o servidor valida permissão,
+/// escopo e `expected_version`; devolve `true` quando a lista deve recarregar.
+typedef ActivityTemplateLifecycleAction = Future<bool> Function(ActivityTemplateOption template);
+
 final class ActivityTemplateCreateDraft {
   const ActivityTemplateCreateDraft({
     required this.institutionId,
@@ -72,7 +76,7 @@ Set<ActivityStatus> _statusesForTab(CoeloAdminDirectoryStatusTab tab) => switch 
   CoeloAdminDirectoryStatusTab.all => const {},
   CoeloAdminDirectoryStatusTab.active => const {ActivityStatus.active},
   CoeloAdminDirectoryStatusTab.draft => const {ActivityStatus.draft},
-  CoeloAdminDirectoryStatusTab.inactive => const {
+  CoeloAdminDirectoryStatusTab.inactive || CoeloAdminDirectoryStatusTab.archived => const {
     ActivityStatus.inactive,
     ActivityStatus.suspended,
     ActivityStatus.archived,
@@ -90,6 +94,18 @@ CoeloAdminDirectoryStatusTab _tabForStatuses(Set<ActivityStatus> statuses) {
   return CoeloAdminDirectoryStatusTab.inactive;
 }
 
+/// Filtro de status dos modelos (spec 052): "Todos" e "Inativos" não incluem
+/// arquivados; "Arquivados" mostra só eles.
+bool _templateMatchesTab(ActivityTemplateOption template, CoeloAdminDirectoryStatusTab tab) =>
+    switch (tab) {
+      CoeloAdminDirectoryStatusTab.all => !template.isArchived,
+      CoeloAdminDirectoryStatusTab.active => template.status == ActivityStatus.active,
+      CoeloAdminDirectoryStatusTab.draft => template.status == ActivityStatus.draft,
+      CoeloAdminDirectoryStatusTab.inactive =>
+        template.status == ActivityStatus.inactive || template.status == ActivityStatus.suspended,
+      CoeloAdminDirectoryStatusTab.archived => template.isArchived,
+    };
+
 final class ActivityDirectoryPage extends StatefulWidget {
   const ActivityDirectoryPage({
     required this.repository,
@@ -102,6 +118,8 @@ final class ActivityDirectoryPage extends StatefulWidget {
     this.onCreateFromTemplate,
     this.onDuplicateTemplate,
     this.onCreateTemplate,
+    this.onArchiveTemplate,
+    this.onRestoreTemplate,
     this.onDestinationSelected,
     this.onBugReportSubmitted,
     super.key,
@@ -117,6 +135,8 @@ final class ActivityDirectoryPage extends StatefulWidget {
   final ActivityTemplateStarter? onCreateFromTemplate;
   final ActivityTemplateDuplicator? onDuplicateTemplate;
   final ActivityTemplateCreator? onCreateTemplate;
+  final ActivityTemplateLifecycleAction? onArchiveTemplate;
+  final ActivityTemplateLifecycleAction? onRestoreTemplate;
   final ValueChanged<String>? onDestinationSelected;
   final ValueChanged<SupportReportDraft>? onBugReportSubmitted;
 
@@ -204,6 +224,8 @@ final class _ActivityDirectoryPageState extends State<ActivityDirectoryPage> {
       onCreateFromTemplate: widget.onCreateFromTemplate,
       onDuplicateTemplate: widget.onDuplicateTemplate,
       onCreateTemplate: widget.onCreateTemplate,
+      onArchiveTemplate: widget.onArchiveTemplate,
+      onRestoreTemplate: widget.onRestoreTemplate,
       onFooterHeightChanged: (height) {
         if ((_footerHeight - height).abs() >= .5) {
           setState(() => _footerHeight = height);
@@ -230,6 +252,8 @@ final class _ActivityDirectoryContent extends StatefulWidget {
     required this.onCreateFromTemplate,
     required this.onDuplicateTemplate,
     required this.onCreateTemplate,
+    required this.onArchiveTemplate,
+    required this.onRestoreTemplate,
     required this.onFooterHeightChanged,
   });
 
@@ -248,6 +272,8 @@ final class _ActivityDirectoryContent extends StatefulWidget {
   final ActivityTemplateStarter? onCreateFromTemplate;
   final ActivityTemplateDuplicator? onDuplicateTemplate;
   final ActivityTemplateCreator? onCreateTemplate;
+  final ActivityTemplateLifecycleAction? onArchiveTemplate;
+  final ActivityTemplateLifecycleAction? onRestoreTemplate;
   final ValueChanged<double> onFooterHeightChanged;
 
   @override
@@ -302,7 +328,12 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
     _templatesRequested = true;
     setState(() => _templatesFailed = false);
     try {
-      final options = await repository.fetchTemplateOptions(institutionId: institutionId);
+      // spec 052: o diretório lê todos os status (com management_version);
+      // o formulário continua no leitor de opções (só ativos).
+      final Object reader = repository;
+      final options = reader is ActivityTemplateDirectoryReader
+          ? await reader.fetchTemplateDirectory(institutionId: institutionId)
+          : await repository.fetchTemplateOptions(institutionId: institutionId);
       if (!_isCurrentTemplateLoad(generation, repository)) return false;
       setState(() => _templateOptions = options);
       return true;
@@ -337,6 +368,56 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
         'A cópia foi criada, mas os modelos não puderam ser atualizados.',
         icon: Icons.error_outline_rounded,
       );
+    }
+  }
+
+  final Set<String> _lifecycleBusy = {};
+
+  Future<void> _requestLifecycle(ActivityTemplateOption template, {required bool archive}) async {
+    final action = archive ? widget.onArchiveTemplate : widget.onRestoreTemplate;
+    if (action == null || _lifecycleBusy.contains(template.id)) return;
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: Key(archive ? 'activity-template-archive-dialog' : 'activity-template-restore-dialog'),
+        title: Text(archive ? 'Arquivar ${template.name}?' : 'Restaurar ${template.name}?'),
+        content: Text(
+          archive
+              ? 'O modelo sai da lista padrão e fica em Arquivados; atividades já criadas a partir dele continuam válidas.'
+              : 'O modelo volta à lista padrão com a mesma configuração.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Cancelar'),
+          ),
+          FilledButton(
+            key: Key(
+              archive ? 'activity-template-archive-confirm' : 'activity-template-restore-confirm',
+            ),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: Text(archive ? 'Arquivar' : 'Restaurar'),
+          ),
+        ],
+      ),
+    );
+    if (confirmed != true || !mounted) return;
+    setState(() => _lifecycleBusy.add(template.id));
+    try {
+      final changed = await action(template);
+      if (!mounted) return;
+      if (changed) {
+        final refreshed = await _loadTemplates(institutionId: template.institutionId);
+        if (!refreshed && mounted) {
+          showSuperadminNotice(
+            context,
+            'O modelo foi atualizado, mas a lista não pôde ser recarregada.',
+            icon: Icons.error_outline_rounded,
+          );
+        }
+      }
+    } finally {
+      if (mounted) setState(() => _lifecycleBusy.remove(template.id));
     }
   }
 
@@ -804,6 +885,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
       tabs: CoeloAdminDirectoryStatusTabs(
         key: const Key('activity-template-status-tabs'),
         selected: _templateStatus,
+        tabs: CoeloAdminDirectoryStatusTab.withArchived,
         onSelected: (value) => setState(() {
           _templateStatus = value;
           _templatePage = 0;
@@ -826,8 +908,15 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
             _ActivityTemplateCard(
               template: template,
               taxonomy: options.taxonomy,
-              onStart: widget.onCreateFromTemplate,
-              onDuplicate: canDuplicate ? _requestDuplicate : null,
+              onStart: template.isArchived ? null : widget.onCreateFromTemplate,
+              onDuplicate: canDuplicate && !template.isArchived ? _requestDuplicate : null,
+              onArchive: widget.onArchiveTemplate == null || template.isArchived
+                  ? null
+                  : (item) => _requestLifecycle(item, archive: true),
+              onRestore: widget.onRestoreTemplate == null || !template.isArchived
+                  ? null
+                  : (item) => _requestLifecycle(item, archive: false),
+              busy: _lifecycleBusy.contains(template.id),
             ),
       ],
       table: options == null
@@ -837,6 +926,13 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
               taxonomy: options.taxonomy,
               onStart: widget.onCreateFromTemplate,
               onDuplicate: canDuplicate ? _requestDuplicate : null,
+              onArchive: widget.onArchiveTemplate == null
+                  ? null
+                  : (item) => _requestLifecycle(item, archive: true),
+              onRestore: widget.onRestoreTemplate == null
+                  ? null
+                  : (item) => _requestLifecycle(item, archive: false),
+              busy: _lifecycleBusy,
             ),
       pagination: pageCount > 1
           ? CoeloAdminDirectoryPagination(
@@ -865,9 +961,8 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
         _ => true,
       },
     );
-    final statuses = _statusesForTab(_templateStatus);
     final statusTemplates = originTemplates.where(
-      (template) => statuses.isEmpty || statuses.contains(template.status),
+      (template) => _templateMatchesTab(template, _templateStatus),
     );
     final normalizedSearch = _templateSearch.toLowerCase();
     return normalizedSearch.isEmpty
@@ -897,12 +992,18 @@ final class _ActivityTemplateCard extends StatelessWidget {
     required this.taxonomy,
     required this.onStart,
     required this.onDuplicate,
+    required this.onArchive,
+    required this.onRestore,
+    required this.busy,
   });
 
   final ActivityTemplateOption template;
   final List<ActivityTaxonomyOption> taxonomy;
   final ActivityTemplateStarter? onStart;
   final ValueChanged<ActivityTemplateOption>? onDuplicate;
+  final ValueChanged<ActivityTemplateOption>? onArchive;
+  final ValueChanged<ActivityTemplateOption>? onRestore;
+  final bool busy;
 
   @override
   Widget build(BuildContext context) => CoeloAdminInteractiveCard(
@@ -936,13 +1037,40 @@ final class _ActivityTemplateCard extends StatelessWidget {
           ],
           const SizedBox(height: CoeloSpacing.space1),
           Text(_taxonomyLabel(taxonomy, template.taxonomyId)),
-          if (onStart != null)
-            TextButton.icon(
-              key: Key('activity-template-start-${template.id}'),
-              onPressed: () => onStart!(template),
-              icon: const Icon(Icons.playlist_add_rounded),
-              label: const Text('Começar a partir deste modelo'),
+          if (template.isArchived) ...[
+            const SizedBox(height: CoeloSpacing.space1),
+            Text('Arquivado', key: Key('activity-template-archived-${template.id}')),
+          ],
+          if (onStart != null || onArchive != null || onRestore != null) ...[
+            const SizedBox(height: CoeloSpacing.space2),
+            Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                if (onStart != null)
+                  TextButton.icon(
+                    key: Key('activity-template-start-${template.id}'),
+                    onPressed: () => onStart!(template),
+                    icon: const Icon(Icons.playlist_add_rounded),
+                    label: const Text('Começar a partir deste modelo'),
+                  ),
+                if (onArchive != null)
+                  TextButton.icon(
+                    key: Key('activity-template-archive-${template.id}'),
+                    onPressed: busy ? null : () => onArchive!(template),
+                    icon: const Icon(Icons.archive_outlined),
+                    label: const Text('Arquivar'),
+                  ),
+                if (onRestore != null)
+                  TextButton.icon(
+                    key: Key('activity-template-restore-${template.id}'),
+                    onPressed: busy ? null : () => onRestore!(template),
+                    icon: const Icon(Icons.unarchive_outlined),
+                    label: const Text('Restaurar'),
+                  ),
+              ],
             ),
+          ],
         ],
       ),
     ),
@@ -956,12 +1084,18 @@ final class _ActivityTemplateRows extends StatelessWidget {
     required this.taxonomy,
     required this.onStart,
     required this.onDuplicate,
+    required this.onArchive,
+    required this.onRestore,
+    required this.busy,
   });
 
   final List<ActivityTemplateOption> templates;
   final List<ActivityTaxonomyOption> taxonomy;
   final ActivityTemplateStarter? onStart;
   final ValueChanged<ActivityTemplateOption>? onDuplicate;
+  final ValueChanged<ActivityTemplateOption>? onArchive;
+  final ValueChanged<ActivityTemplateOption>? onRestore;
+  final Set<String> busy;
 
   @override
   Widget build(BuildContext context) => CoeloAdminResizableTable<ActivityTemplateOption>(
@@ -1001,19 +1135,33 @@ final class _ActivityTemplateRows extends StatelessWidget {
         maxWidth: 220,
         cellBuilder: (context, template) => Row(
           children: [
-            if (onDuplicate != null)
+            if (onDuplicate != null && !template.isArchived)
               IconButton(
                 key: Key('activity-template-table-duplicate-${template.id}'),
                 tooltip: 'Duplicar ${template.name}',
                 onPressed: () => onDuplicate!(template),
                 icon: const Icon(Icons.content_copy_rounded),
               ),
-            if (onStart != null)
+            if (onStart != null && !template.isArchived)
               IconButton(
                 key: Key('activity-template-table-start-${template.id}'),
                 tooltip: 'Começar atividade de ${template.name}',
                 onPressed: () => onStart!(template),
                 icon: const Icon(Icons.playlist_add_rounded),
+              ),
+            if (onArchive != null && !template.isArchived)
+              IconButton(
+                key: Key('activity-template-table-archive-${template.id}'),
+                tooltip: 'Arquivar ${template.name}',
+                onPressed: busy.contains(template.id) ? null : () => onArchive!(template),
+                icon: const Icon(Icons.archive_outlined),
+              ),
+            if (onRestore != null && template.isArchived)
+              IconButton(
+                key: Key('activity-template-table-restore-${template.id}'),
+                tooltip: 'Restaurar ${template.name}',
+                onPressed: busy.contains(template.id) ? null : () => onRestore!(template),
+                icon: const Icon(Icons.unarchive_outlined),
               ),
           ],
         ),

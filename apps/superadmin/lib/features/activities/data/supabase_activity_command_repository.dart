@@ -13,7 +13,8 @@ import '../domain/activity_directory.dart';
 /// approved internal transaction. Template creation and the aggregate draft
 /// save (create and edit through `superadmin_activity_save_v2`) have that
 /// equivalence; publishing is still closed on the client.
-final class SupabaseActivityCommandRepository implements ActivityCommandRepository {
+final class SupabaseActivityCommandRepository
+    implements ActivityCommandRepository, ActivityTemplateLifecycleRepository {
   const SupabaseActivityCommandRepository(
     this._client, {
     this.activityLocationCreateAvailable = false,
@@ -252,6 +253,49 @@ final class SupabaseActivityCommandRepository implements ActivityCommandReposito
       throw _mapError(error);
     }
   }
+
+  @override
+  Future<ActivityTemplateLifecycleResult> archiveTemplate(
+    ActivityTemplateLifecycleCommand command,
+  ) => _lifecycle('superadmin_activity_template_archive_v1', command);
+
+  @override
+  Future<ActivityTemplateLifecycleResult> restoreTemplate(
+    ActivityTemplateLifecycleCommand command,
+  ) => _lifecycle('superadmin_activity_template_restore_v1', command);
+}
+
+extension on SupabaseActivityCommandRepository {
+  Future<ActivityTemplateLifecycleResult> _lifecycle(
+    String rpc,
+    ActivityTemplateLifecycleCommand command,
+  ) async {
+    try {
+      final response = _asMap(
+        await _client.rpc<Object?>(
+          rpc,
+          params: {
+            'p_template_id': command.templateId,
+            'p_expected_version': command.expectedVersion,
+            'p_idempotency_key': _normalizeRequestId(command.requestId),
+          },
+        ),
+      );
+      final id = response['id'];
+      final status = response['status'];
+      final version = response['management_version'];
+      if (id is! String || id != command.templateId || status is! String || version is! int) {
+        throw const ActivityCommandUnavailableException();
+      }
+      return ActivityTemplateLifecycleResult(
+        id: id,
+        status: ActivityStatus.fromDatabase(status),
+        managementVersion: version,
+      );
+    } on PostgrestException catch (error) {
+      throw _mapError(error);
+    }
+  }
 }
 
 const _activityCapabilities = ['attendance', 'chat', 'happens', 'moments', 'now'];
@@ -391,8 +435,12 @@ Map<String, dynamic> _asMap(Object? value) {
 
 Exception _mapError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' => const ActivityCommandUnauthorizedException(),
+  // PT409: versão defasada sinalizada sem retentativa do PostgREST (OQ-047).
+  'PT409' => const ActivityCommandConflictException(),
   '40001' || 'P0001' when error.message.toLowerCase().contains('version') =>
     const ActivityCommandConflictException(),
+  'P0002' => const ActivityCommandNotFoundException(),
+  '55000' => const ActivityCommandInvalidStateException(),
   _ => const ActivityCommandUnavailableException(),
 };
 

@@ -457,6 +457,7 @@ final class ActivityTemplateOption {
     this.unitId,
     this.governance = ActivityGovernance.optional,
     this.status = ActivityStatus.active,
+    this.managementVersion = 0,
   });
 
   final String id;
@@ -469,6 +470,20 @@ final class ActivityTemplateOption {
   final String? unitId;
   final ActivityGovernance governance;
   final ActivityStatus status;
+
+  /// `management_version` do modelo (spec 052); `expected_version` de
+  /// Arquivar/Restaurar. Só o diretório v1 devolve o valor real.
+  final int managementVersion;
+
+  bool get isArchived => status == ActivityStatus.archived;
+}
+
+/// Leitor do diretório de modelos (spec 052): mesmo envelope das opções, mas
+/// com **todos** os status (inclusive arquivados) e `management_version`.
+/// Separado de [ActivityDirectoryRepository] para não alterar o leitor de
+/// opções que o formulário usa (só modelos ativos).
+abstract interface class ActivityTemplateDirectoryReader {
+  Future<ActivityTemplateOptions> fetchTemplateDirectory({String? institutionId});
 }
 
 final class ActivityFormLocationOption {
