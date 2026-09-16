@@ -1,6 +1,6 @@
 ---
 title: "Estado atual do trabalho do Coelo"
-source: "Owner em 2026-09-14 e 2026-09-15; docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R14-pendencias.md; RODADAS.md; decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md; decisions/0040-agora-immediate-removal.md"
+source: "Owner em 2026-09-14, 2026-09-15 e 2026-09-16 (ADR 0042); docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md; R15-pendencias.md; RODADAS.md; decisions/0042-r14-closure-r15-opening-20260916.md; decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md; decisions/0040-agora-immediate-removal.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -12,134 +12,75 @@ audience: "team"
 
 ## Agora
 
-- A Etapa 2 está na R14, aberta em 14/09/2026 por decisão do Owner como **fila única
-  consolidada** (R12/R13 congeladas como histórico; IDs preservados; itens `done`
-  não retornam).
-- A fila vive em um só lugar: `docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`
-  (Owner items, resíduos H, itens da ADR 0038 e ações não terminais por família).
-- Último corte publicado: 16/09/2026, após a Mesa do Owner (ADR 0041)
-  — FE 186/232, BE 168/219, E2E 159/186 ativo, Owner 21/53. Corte anterior
-  (15/09, Sessões C/D/E): FE 186/232, BE 168/225, E2E 159/193. O Bloco A está 10/10 certificado;
-  o Bloco B aplicou a reclassificação autorizada de sete ações; Cardápios tem
-  prova FE/BE/E2E publicada, mas os quatro Owner items aguardam aceite central.
-  Owner: 21/53 concluídos e 32 abertos/parciais.
-- Entregas recentes ainda não alteram os quatro números certificados acima,
-  exceto o delta oficial de Avaliações: `assessments.close/reopen` agora está
-  certificado. Perfis de acesso não foi confirmado; Segurança infantil continua
-  bloqueada por 504/sessão/CORS/massa; e Expirar/Excluir de Formulários tem
-  somente avanço local e foi liberado para R15. A Sessão D foi
-  integrada seletivamente ao `dev` (`0ab6abd8f`, `7797a8cad`, `2cd0da7c2`,
-  `b135c8f20`, com dump produtivo preservado fora do Git). A Sessão E foi
-  integrada no pacote coordenado `b023b4ccb`/`382c3b975`; `agora.remove` teve o
-  contrato local reforçado em `2707086cf`, mas a negativa produtiva permanece
-  bloqueada. Os números certificados permanecem inalterados fora do delta
-  oficial de Avaliações.
-- Bloqueios conhecidos durante a execução: o `504` de
-  `child_safety_change_lifecycle` continua sem solução certificada. A entrega
-  D não deve ser promovida por contador enquanto seus artefatos não estiverem
-  reconciliados no corte central; o dump produtivo permanece fora do Git.
-  O browser visível não é pré-requisito para o avanço automatizado.
-- 15/09: a R14 executa em **paralelo** com a Sessão 1 encerrada (Blocos A–B),
-  Sessões C/D/E entregues e reconciliadas no checkout coordenador; a coordenadora Codex atualiza
-  os MDs na pasta principal. Papéis, portas, fluxo git e handoffs estão em
-  `docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`.
-  As worktrees R14 existentes permanecem protegidas até o fechamento da rodada.
-  Não reabrir decisões já registradas nas ADRs atuais.
-- Decisão adicional do Owner em 15/09
-  (`decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md`): Planos comerciais
-  não entram no MVP; o reader de Planos fica para V1/V2, o reader self da Conta
-  permanece no MVP/R14 e `auth.recover`/`auth.reset` ficam reservados à Etapa 3.
-  Planos de medicação não são afetados.
-- Decisão adicional do Owner em 15/09 (`decisions/0040-agora-immediate-removal.md`):
-  a expiração automática do Agora continua em 24 horas, mas a remoção explícita
-  passa a ser imediata. O `action_id` oficial `agora.remove` já tem pacote
-  migration/Edge e prova produtiva integrado; a negativa cross-tenant específica
-  foi tentada e bloqueada por fixture/helper ausente no schema remoto, com
-  identidades temporárias removidas. O inventário permanece sem promoção.
-- A negativa cross-tenant de `agora.remove` recebeu assertions de contrato e
-  pgTAP comportamental local nos commits `2707086cf` e `5ae79bef1`; ambos
-  preservam a não-mutação esperada, mas o Postgres local e o helper/fixture
-  remoto seguem indisponíveis. O aceite produtivo continua preparado em R16.
-- Decisão operacional do Owner em 15/09: Perfis de cuidado aceitam vários
-  registros independentes de alergias e orientações. A validação da rota real
-  deve cobrir adicionar/remover/reload sem reduzir o caso a dois registros; o
-  backend deve aplicar limite defensivo de 100 registros por coleção/entidade,
-  rejeitando o excesso sem deixar a proteção apenas no cliente.
-- Fechamento de coordenação de 15/09: Forms `expire-file/delete-file` passou
-  as suítes direcionadas, sem E2E remoto, e foi liberado para R15; o contexto
-  Atividade de `attendance.create` foi isolado como bloqueio de RPC/massa em
-  `14f6facab`. R16 permanece preparada, não aberta, para os resíduos da Sessão
-  E e contratos sem action_id.
-- **Mesa do Owner, 16/09 (ADR 0041)**: as 27 pendências que dependiam do Owner
-  foram decididas. Aceites: Cardápios (`r12-34/35/36/37`), `r12-09`, `r12-11`,
-  OQ-031 e reader self da Conta → Owner 21/53. Reclassificações autorizadas:
-  `institutions.files` → pós-MVP; `errors.*` → `flutter-only`; E2E ativo
-  193 → 186, BE aplicável 225 → 219, sem estado terminal novo. Contratos B1–B9
-  fixados nos gates da fila; H11 → V1; duas specs novas preparadas para R15
-  (perfil transversal OQ-044; Perfis de cuidado §5). Autorizações de produção
-  D1–D5 concedidas (leitura OQ-046, carimbo do Chat, RPC de contexto de
-  chamada, 504 de Segurança infantil, fixture do Agora); D6 negada. Credenciais
-  QA existem em `Coelo-backups/qa-r06-*.env` e `supabase/usuario/` (local,
-  ignorado pelo Git). Corte: FE 186/232, BE 168/219, E2E 159/186, Owner 21/53.
-- Auditoria de 16/09 sobre o fechamento `525844e61`: contadores, trackers,
-  knowledge (77) e gate reconfirmados; nenhuma skill precisou mudar (são portas
-  sem estado de rodada). Achado: a ordem real de migrations em produção estava
-  desalinhada com o ledger remoto — corrigida (lote 71) e o resíduo registrado
-  em `docs/open-questions.md` OQ-046; nada altera os números certificados.
-- **16/09, coordenação da segunda onda (`dbe518101`)**: OQ-046 resolvida com as
-  autorizações D1/D2 — dump de schema de produção fora do Git confirmou
-  `person_avatar_assets`, o binding `asset_id` do Chat e a fixture
-  `app_private.seed_qa_r14_chat_cross_tenant_user` (chamável só como
-  `postgres`); carimbo do Chat renomeado para `20260915130100` e ledger
-  remoto reparado (lote 72). Quatro sessões filhas em worktrees próprias
-  (`r14/acessos-instituicoes`, `r14/formularios-chat`, `r14/agora-momentos`,
-  `r14/seguranca-assiduidade`; tabela em `R14-execucao-paralela.md`) executam
-  Perfis/Instituições/Conta, Formulários/Chat, Agora/Momentos e Segurança
-  infantil/Assiduidade (D3/D4) com integração por cherry-pick na coordenadora.
-  Integração feita em `6ddf6a72e`: FE 189/232, BE 171/219, E2E 162/186,
-  Owner 21/53 (`access-profiles.create`, `agora.create`, `agora.view` →
-  verified-e2e). Pendentes de aplicação em produção, por bloqueio de permissão
-  do executor: `20260916152000` (504 de Segurança da criança, D4) e
-  `20260916154500` (escopo de atividades, D3). **Incidente**: desde ~12:28 BRT
-  o PostgREST de produção responde 504 `PGRST003` (pool esgotado por laços de
-  retentativa de RPCs que sinalizam versão defasada com SQLSTATE 40001); as
-  provas de rota real das Sessões 5/6/7 pararam por ambiente; correção
-  sistêmica em OQ-047.
+- A Etapa 2 está na **R15**, aberta em 16/09/2026 pelo Owner (ADR 0042) como
+  fila única consolidada com **tudo o que ficou pendente de R01 a R14** (IDs
+  preservados; itens `done` não retornam). R14 fechou no mesmo dia
+  (`R14-fechamento.md`); R12/R13/R14 são históricos congelados.
+- Corte de abertura (validate-trackers em `8334d3695`): FE 189/232 (81,5%),
+  BE 171/219 (78,1%), E2E 162/186 (87,1%), Owner 21/53 (39,6%). Fila: 27
+  ações não terminais (22 executáveis), 32 Owner items abertos/parciais (27
+  executáveis), 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
+- **Bloqueios de abertura que só o Owner destrava** (detalhe em
+  `R15-pendencias.md › Desbloqueios`): (1) incidente do PostgREST de produção
+  desde ~12:28 BRT de 16/09 — laços de retentativa em SQLSTATE 40001 esgotam o
+  pool (OQ-047); (2) permissão de escrita em produção para a coordenação —
+  seis migrations verdes no espelho aguardam aplicação
+  (`20260916152000/154500/180000/183000/190000/193000`); (3) decisões enviadas
+  em artefato: correção sistêmica 40001 → PT409, massa mínima autorizada,
+  contrato do Chat (r12-52), goldens em massa, CORS das Edge por porta.
+- Ordem proposta da R15: Bloco A (rota real já pronta na R14: Perfis
+  edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
+  Bloco B (após migrations: Segurança da criança, contexto Atividade,
+  `agora.remove`, B1/B2/B3/B8) → Bloco C (contratos novos: B5/B6/B9, specs
+  OQ-044/§5/OQ-033/OQ-034/OQ-032, H08/H13/H23, r12-38).
+- Execução paralela: as seis worktrees `Coelo.worktrees14-*` continuam
+  protegidas (integradas por cherry-pick) e podem ser reaproveitadas pelas
+  sessões da R15; regra: filhas commitam na própria branch, a coordenadora
+  integra. Nunca `git add -A`/`stash`.
+- Regra durável (OQ-047): nenhuma RPC nova sinaliza versão defasada com
+  SQLSTATE 40001; usar `PT409`.
+- Decisões vigentes do Owner: ADR 0038 (Etapa 2), 0039 (Planos/Auth → V1/Etapa
+  3), 0040 (remoção imediata do Agora), 0041 (Mesa da R14: aceites,
+  contratos B1–B10, visual C1–C4, autorizações D1–D8), 0042 (R14 → R15). Não
+  reabrir.
+- Histórico detalhado da R14 (ondas, sessões, incidente): `R14-fechamento.md`,
+  `R14-checkpoint-20260916.md`, `R14-execucao-paralela.md` (histórico).
 
 ## Fonte da fila atual
 
 Use, nesta ordem:
 
-1. [Fila única R14](../reviews/etapa-2-operacao/next-round/R14-pendencias.md) — Owner
-   items (fonte do sync), H, itens da ADR 0038 e ações não terminais;
+1. [Fila única R15](../reviews/etapa-2-operacao/next-round/R15-pendencias.md) — Owner
+   items (fonte do sync), H, itens da ADR 0038, ações não terminais e resíduos operacionais;
 2. [Estado atual da Etapa 2](../reviews/etapa-2-operacao/ETAPA-2-estado-atual.md) —
    percentuais canônicos;
 3. [Inventário por action_id](../reviews/inventario-etapa-2.json) — detalhe e
    certificação por ação (estados só mudam por `apply-tracker-delta.cjs`);
-4. [Checkpoint corrente da R14](../reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md)
-   — apenas para o delta do corte atual; checkpoints anteriores são históricos.
+4. [Fechamento da R14](../reviews/etapa-2-operacao/next-round/R14-fechamento.md) e
+   [checkpoint de 16/09](../reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md)
+   — apenas para o delta do último corte; checkpoints anteriores são históricos.
 
 Os três rastreadores grandes são projeções do inventário para auditoria; não são a
-entrada inicial. `R12-pendencias.md`, `R13-pendencias.md`, `R14-catalogo.md`,
+entrada inicial. `R12-pendencias.md`, `R13-pendencias.md`, `R14-pendencias.md`, `R14-catalogo.md`,
 `R13-projecao-atual.md` e `R13-owner-items-atual.json` são históricos/derivados.
 
-## Regra de passagem entre rodadas (aplicada em 14/09 na R13 → R14)
+## Regra de passagem entre rodadas (aplicada em 14/09 na R13 → R14 e em 16/09 na R14 → R15)
 
 A cada fechamento de rodada:
 
 - itens `done` ou aceitos não são transferidos nem reabertos;
-- itens `open`, `partial`, bloqueados ou sem prova são levados para a R14 com o
+- itens `open`, `partial`, bloqueados ou sem prova são levados para a rodada nova com o
   mesmo `action_id`/Owner ID e nova referência de rodada;
-- não criar cópia concorrente em R12, R13 ou R14;
+- não criar cópia concorrente em R12, R13, R14 ou R15;
 - atualizar este arquivo, `RODADAS.md`, o catálogo corrente, o inventário e os
   rastreadores no mesmo ciclo;
-- somente depois registrar que a R14 está aberta.
+- somente depois registrar que a rodada nova está aberta.
 
 ## Fora do trabalho corrente
 
-Etapa 3, V1, V2, pós-MVP, históricos R01–R13 e artefatos de execução não são
+Etapa 3, V1, V2, pós-MVP, históricos R01–R14 e artefatos de execução não são
 trabalho corrente. Consulte [backlog.md](backlog.md) apenas quando a tarefa
 explicitamente tratar desses horizontes.
 
 Para uma tarefa explícita de limpeza, use o
-[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R14.
+[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R15.

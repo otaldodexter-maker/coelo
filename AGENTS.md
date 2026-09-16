@@ -13,10 +13,11 @@ históricos.
    pós-MVP ou pendências gerais.
 4. Leia a spec, ADR, contrato ou skill específica apontada pelo índice.
 
-Em 2026-09-14, o Owner encerrou a R13 e abriu a R14 como fila única consolidada
-(`docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md`): Owner items, H e
-itens da ADR 0038 num só arquivo, IDs preservados, itens concluídos fora da fila.
-R12/R13 são históricos congelados. Não crie pendências em outro arquivo.
+Em 2026-09-16, o Owner encerrou a R14 e abriu a R15 como fila única consolidada
+(`docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md`, ADR 0042): Owner
+items, H, itens da ADR 0038, ações não terminais e resíduos operacionais num só
+arquivo, IDs preservados, itens concluídos fora da fila. R12/R13/R14 são
+históricos congelados. Não crie pendências em outro arquivo.
 
 ## Produto e arquitetura
 

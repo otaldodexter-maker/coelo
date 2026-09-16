@@ -1,14 +1,17 @@
 ---
 title: "R14 — execução paralela: duas sessões executoras e uma coordenadora"
 source: "Owner em 2026-09-15 (artefato 89AVWHKEnq5hrvYN6SFv6M, 7 decisões); R14-pendencias.md; ADR 0038; review-scope.md (rota real 14/09)"
-status: "active"
-lifecycle: "current"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-15"
 updated_at: "2026-09-16"
 audience: "team"
 ---
 
 # R14 — execução paralela
+
+> Histórico: a R14 fechou em 16/09/2026 (ADR 0042). As worktrees `r14-*` ficam
+> protegidas até a disposição registrada na R15.
 
 A fila continua sendo só `R14-pendencias.md`. Este arquivo define **quem faz o quê,
 onde e como as sessões se comunicam** enquanto a R14 roda com duas sessões

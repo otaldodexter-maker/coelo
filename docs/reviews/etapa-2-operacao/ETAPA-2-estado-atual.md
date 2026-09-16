@@ -1,31 +1,31 @@
 ---
-title: "Etapa 2 — estado atual e fila vigente R14"
-source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/0040-agora-immediate-removal.md; R14-pendencias.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
-status: "active; fila vigente R14; R01–R13 históricos"
+title: "Etapa 2 — estado atual e fila vigente R15"
+source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/0040-agora-immediate-removal.md; R15-pendencias.md; decisions/0042-r14-closure-r15-opening-20260916.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
+status: "active; fila vigente R15; R01–R14 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-16"
 base: "dev"
-revision: "6ddf6a72e (integração das Sessões 5–8, 16/09)"
+revision: "8334d3695 (fechamento da R14 / abertura da R15, 16/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
 # Etapa 2 — estado atual
 
 Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
-operacional vigente é a R14: os itens não terminais foram consolidados a partir
-da R13 e, após vinte e um aceites `done` registrados até 16/09, 32 permanecem não
-terminais, além dos resíduos H02–H28 herdados de R01–R07. H01 está resolvido e
-não volta para a fila. R01–R13 permanecem como fontes
-históricas; seus itens pendentes não devem continuar apontando para uma rodada
-anterior como destino executável.
+operacional vigente é a **R15** (aberta em 16/09/2026, ADR 0042): tudo o que
+ficou não terminal de R01 a R14 foi consolidado nela — 32 Owner items
+abertos/parciais (21 `done` não retornam), resíduos H02–H28 de R01–R07, itens
+da ADR 0038, 27 ações não terminais do inventário e os resíduos operacionais
+da varredura. R01–R14 permanecem como fontes históricas; seus itens pendentes
+não devem continuar apontando para uma rodada anterior como destino executável.
 
 Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
 o último estado canônico por `action_id`; a decisão do Owner de 15/09 acrescenta
-o novo `agora.remove` como ação formal pendente. A separação abaixo distingue a fila R14 das fontes
+o novo `agora.remove` como ação formal pendente. A separação abaixo distingue a fila R15 das fontes
 históricas e das 29 ações formalmente adiadas para pós-MVP.
 
-Detalhamento operacional: [`R14-pendencias.md`](next-round/R14-pendencias.md) e
+Detalhamento operacional: [`R15-pendencias.md`](next-round/R15-pendencias.md) e
 índice das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint final da
 R13 permanece apenas como proveniência do corte que abriu a R14.
 
@@ -34,7 +34,7 @@ partir do inventário; não replique aqui uma união manual de ações não term
 As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
-> Fila viva desde 14/09/2026: `next-round/R14-pendencias.md` (R12/R13 congeladas).
+> Fila viva desde 16/09/2026: `next-round/R15-pendencias.md` (R12/R13/R14 congeladas).
 
 ## Snapshot de 16/09 — Mesa do Owner (ADR 0041)
 
@@ -46,6 +46,16 @@ páginas de erro → `flutter-only` (BE `not-applicable`). O denominador E2E
 ativo passa de 193 para 186 e o BE aplicável de 225 para 219 **por
 reclassificação autorizada**, não por certificação nova; os numeradores
 não mudaram. `r12-29/30` não foram aceitos e viram spec na R15.
+
+## Snapshot de 16/09 — fechamento da R14 e abertura da R15
+
+A R14 fechou em `8334d3695` (`next-round/R14-fechamento.md`): +3 E2E no dia
+(`access-profiles.create`, `agora.create`, `agora.view`), OQ-046, lotes 72/73,
+causa do 504 de Segurança da criança observada (OQ-047), cabeçalho global
+estabilizado (C1), B1/B2/B3/B8 implementados localmente. Seis migrations
+verdes no espelho aguardam aplicação em produção e o PostgREST segue em
+incidente; por isso o Owner abriu a R15 com toda a sobra (ADR 0042). Os
+percentuais abaixo são o corte de abertura da R15.
 
 ## Snapshot de 16/09 — segunda onda integrada (Sessões 5–8)
 
@@ -107,7 +117,7 @@ Os denominadores são por camada e não devem ser somados entre si.
 O denominador de BE é 219 nesta versão do inventário. A métrica combinada é
 `174/232`; para aceite integrado, a base correta continua sendo `162/186`.
 
-## Fila vigente R14 — pendências herdadas
+## Fila vigente R15 — pendências herdadas
 
 O detalhe completo permanece na fila única R14 e nas seções de auditoria dos três
 rastreadores. A tabela abaixo é o índice operacional mínimo;

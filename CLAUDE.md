@@ -15,5 +15,5 @@ generated_at: "2026-09-14"
   `.claude/skills` são junctions. Edite sempre a origem compartilhada.
 - O estado do trabalho está em `docs/agent/current-state.md`; não trate
   sessões, caches, backups, worktrees ou artefatos como fonte do produto.
-- Não abra uma nova rodada automaticamente: R14 é a vigente (fila única em
-  `R14-pendencias.md`); uma R15 exige fechamento e abertura explícita do Owner.
+- Não abra uma nova rodada automaticamente: R15 é a vigente (fila única em
+  `R15-pendencias.md`, ADR 0042); uma R16 exige fechamento e abertura explícita do Owner.

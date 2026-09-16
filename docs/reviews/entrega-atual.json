@@ -4,9 +4,9 @@
   "reportType": "current-cut-reconciliation",
   "completion": "partial",
   "asOf": {
-    "round": "R14",
+    "round": "R15",
     "roundStatus": "active",
-    "nextRound": "R15 not opened",
+    "nextRound": "R16 not opened",
     "branch": "dev",
     "head": "88edcde5c751ead260160295fd895867f935db23",
     "worktree": "source checkout at report generation; report commit follows"
@@ -15,7 +15,7 @@
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
     "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
-    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
+    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "ownerQueueProjection": null,
     "inventory": "docs/reviews/inventario-etapa-2.json",
     "artifactInventory": "docs/agent/artifact-inventory-20260914.json",
@@ -26,7 +26,7 @@
     ]
   },
   "currentQueue": {
-    "scope": "R14 vigente; R15 não aberta",
+    "scope": "R15 vigente (ADR 0042); R16 não aberta",
     "ownerTotal": 53,
     "ownerPendingCount": 38,
     "ownerDoneCount": 15,
@@ -60,7 +60,7 @@
       "H28"
     ],
     "inheritedOriginCount": 27,
-    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
+    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
         "local-green": 13,
@@ -2362,7 +2362,10 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "specs/054-archive-activity-routine-models.md"
+    "specs/054-archive-activity-routine-models.md",
+    "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+    "decisions/0042-r14-closure-r15-opening-20260916.md"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2609,8 +2612,8 @@
   },
   "r14Status": {
     "round": "R14",
-    "status": "active",
-    "source": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+    "status": "closed-2026-09-16",
+    "source": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
     "completedOwnerItems": [
       "owner.r12-03",
       "owner.r12-07",

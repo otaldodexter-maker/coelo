@@ -4,7 +4,7 @@ source: "AGENTS.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md;
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 audience: "team"
 ---
 
@@ -48,7 +48,8 @@ Overlays operacionais prioritários nesta fase: ADR 0031 (importação/exportaç
 ADR 0032 (mídia privada), ADR 0034 (aplicação remota e régua de aceite), ADR
 0037 (host/contexto do Principal), ADR 0038 (decisões do Owner da Etapa 2,
 registradas no fechamento da R13), ADR 0039 (escopo de Planos comerciais e
-Auth) e ADR 0040 (remoção imediata do Agora). `docs/knowledge` é índice
+Auth), ADR 0040 (remoção imediata do Agora), ADR 0041 (Mesa do Owner da R14)
+e ADR 0042 (fechamento da R14 e abertura da R15). `docs/knowledge` é índice
 projetado e não sobe nessa precedência.
 
 Os baselines canônicos agora exibem um overlay datado no topo; esse overlay

@@ -1,20 +1,20 @@
 ---
-title: "Etapa 2 — índice das rodadas R01–R14"
+title: "Etapa 2 — índice das rodadas R01–R15"
 source: "ETAPA-2-estado-atual.md; R01–R13 fechamentos, planos e pendências; R14-catalogo.md; AGENTS.md"
-status: "active index; R14 vigente (fila única consolidada); R01–R13 históricos"
+status: "active index; R15 vigente (fila única consolidada); R01–R14 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 ---
 
 # Etapa 2 — índice das rodadas
 
 Este índice separa a fila operacional das fontes históricas. A fila vigente é
-a R14, em [`R14-pendencias.md`](R14-pendencias.md), reunindo os itens não
-terminais da R13 e os resíduos H/ADR incorporados de R01–R07. R01–R13
-continuam como fontes de proveniência; nenhum item é duplicado ou renumerado.
-R14 foi aberta em 14/09/2026 por decisão do Owner como fila única consolidada;
-R13 foi encerrada e congelada.
+a R15, em [`R15-pendencias.md`](R15-pendencias.md), reunindo tudo o que ficou
+não terminal de R01 a R14 (Owner items, H, itens da ADR 0038, ações do
+inventário e resíduos operacionais). R01–R14 continuam como fontes de
+proveniência; nenhum item é duplicado ou renumerado. R15 foi aberta em
+16/09/2026 por decisão do Owner (ADR 0042); R14 foi encerrada e congelada.
 
 | Rodada | Estado documental | Uso atual | Fonte principal |
 |---|---|---|---|
@@ -31,7 +31,8 @@ R13 foi encerrada e congelada.
 | R11 | histórica, fora da fila vigente | preservar herança e transferência | `R11-fechamento.md` e `R11-pendencias.md` |
 | R12 | histórica, origem dos 53 Owner IDs | os 3 concluídos não voltam; 50 foram para R13 | `R12-fechamento.md`, `R12-pendencias.md`, `R12-owner-items.json` |
 | R13 | histórica (encerrada em 14/09/2026) | 9 Owner done, H06/H17/OQ-028 e anexos fechados; os não terminais foram consolidados na R14 | `R13-checkpoint-20260914-1800.md`, `R13-pendencias.md` (congelado) |
-| R14 | vigente — fila única consolidada | executar pela ordem de `R14-pendencias.md`; itens `done` não retornam | `R14-pendencias.md` (fonte), `R14-catalogo.md` (proveniência) |
+| R14 | histórica (encerrada em 16/09/2026) | +3 E2E, OQ-046, lotes 72/73, C1, B1/B2/B3/B8 locais; não terminais consolidados na R15 | `R14-fechamento.md`, `R14-checkpoint-20260916.md`, `R14-pendencias.md` (congelado) |
+| R15 | vigente — fila única consolidada | executar pela ordem de `R15-pendencias.md`; itens `done` não retornam | `R15-pendencias.md` (fonte), ADR 0042 |
 
 ## Regra de reconciliação
 
@@ -44,8 +45,9 @@ R13 foi encerrada e congelada.
   pertencem à fila R14, sem novo action_id.
 - Nenhuma rodada é reaberta pela leitura de um arquivo histórico. Um novo
   trabalho exige abertura explícita, recorte e primeiro gate documentados.
-- R14 herda somente itens não terminais confirmados no fechamento da R13; a
-  fila consolidada em `R14-pendencias.md` é a única fila corrente de trabalho.
+- R15 herda todos os itens não terminais confirmados no fechamento da R14 e os
+  resíduos operacionais da varredura R01–R14; `R15-pendencias.md` é a única
+  fila corrente de trabalho.
 
 ## Navegação rápida
 
@@ -54,5 +56,5 @@ R13 foi encerrada e congelada.
 - [R07 varredura R01–R07](R07-varredura-r01-r07.md)
 - [R12 pendências — origem histórica](R12-pendencias.md)
 - [R13 pendências — histórico](R13-pendencias.md)
-- [R14 fila única — vigente](R14-pendencias.md)
-- [R14 catálogo — proveniência](R14-catalogo.md)
+- [R14 pendências — histórico](R14-pendencias.md) e [R14 fechamento](R14-fechamento.md)
+- [R15 fila única — vigente](R15-pendencias.md)

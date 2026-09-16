@@ -1,171 +1,96 @@
 ---
-title: "R14 — fila única consolidada da Etapa 2"
-source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); Owner em 2026-09-15 (ADR 0039 e ADR 0040); R12-pendencias.md (tabela Owner, 53 IDs); R13-pendencias.md (H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-catalogo.md"
-status: "historical"
-lifecycle: "historical"
-generated_at: "2026-09-14"
+title: "R15 — fila única consolidada da Etapa 2"
+source: "Owner em 2026-09-16 (fechar a R14 e levar tudo o que ficou pendente para a R15; decisions/0042-r14-closure-r15-opening-20260916.md); R14-pendencias.md (congelado; 53 Owner IDs, H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-checkpoint-20260916.md; R14-fechamento.md; varredura R01–R14"
+status: "active"
+lifecycle: "current"
+generated_at: "2026-09-16"
 updated_at: "2026-09-16"
 audience: "team"
 ---
 
-# R14 — fila única consolidada (congelada em 16/09/2026)
+# R15 — fila única consolidada
 
-> **Histórico.** R14 foi encerrada em 16/09/2026 (ADR 0042) e toda a fila não terminal foi consolidada em `R15-pendencias.md`, que passa a ser o único arquivo vivo. Não editar este arquivo.
-
-> **(Texto original da R14.)** `R12-pendencias.md` e
-> `R13-pendencias.md` estão congelados como histórico. A tabela de Owner items abaixo
-> é a fonte lida por `sync-r12-owner-records.cjs` (53 linhas, IDs preservados);
-> `docs/reviews/inventario-etapa-2.json` continua a fonte dos estados por `action_id`.
-> Regra: item `done` fica registrado aqui apenas para contagem e não volta à execução;
+> **Este é o único arquivo vivo de pendências da Etapa 2.** `R14-pendencias.md`
+> passa a histórico congelado (como R12/R13). A tabela de Owner items abaixo é a
+> fonte lida por `sync-r12-owner-records.cjs` (53 linhas, IDs preservados);
+> `docs/reviews/inventario-etapa-2.json` continua a fonte dos estados por
+> `action_id`. Item `done` fica aqui só para contagem e não volta à execução;
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
-Contadores certificados pelo inventário e `validate-trackers.cjs` em
-16/09/2026, após a integração da segunda onda (Sessões 5–8, coordenação):
-FE 189/232 (81,47%), BE 171/219 (78,08%), E2E 162/186 (87,10%), Owner 21/53
-(39,62%). Delta desta onda: `access-profiles.create` (Sessão 5) e
-`agora.create`/`agora.view` (Sessão 7) → `verified-e2e`; `agora.publish`/
-`agora.expire` com BE `done`. Corte anterior (Mesa do Owner, ADR 0041): FE
-186/232, BE 168/219, E2E 159/186. O denominador integrado ativo continua 186
-(`institutions.files` pós-MVP; seis páginas de erro `flutter-only`).
+Contadores certificados pelo inventário e `validate-trackers.cjs` no fechamento
+da R14 (16/09/2026): FE 189/232 (81,47%), BE 171/219 (78,08%), E2E 162/186
+(87,10%), Owner 21/53 (39,62%). Fila herdada: 27 ações não terminais (22
+executáveis + 3 MFA `gate-formal-mvp` + 2 Auth reservadas à Etapa 3), 32 Owner
+items abertos/parciais (27 executáveis + 5 fora por decisão), 19 resíduos H,
+2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
+renumerado; nenhum estado mudou na abertura.
 
-## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
+## Abertura (Owner, 16/09/2026 — ADR 0042)
 
-**Bloco A — concluído (10/10 na rota real; FE/BE/E2E certificados conforme aplicável):**
-1. Circulares › Anexos (`circulars.attach`) → Circulares 11/11.
-2. Agenda › Solicitar (`agenda.request`) → Agenda 7/7.
-3. Assiduidade › Nova chamada (`attendance.create`) → Assiduidade 5/5.
-4. Rotina › Aplicar (`daily-routine.apply`) → Rotina 5/5.
-5. Acontece › Criar (`acontece.create`) → Acontece 4/4.
-6. Shell › Troca de contexto (`shell.switch-context`, flutter-only) → Shell 5/5.
-7. Atividades › Diretório + Publicar (`activities.list/publish`) → Atividades 7/7.
-8. Convites › Lista + Reenviar (`invites.list/resend`) → Convites 5/5.
-9. Chat › Criar grupo (`chat.create-group`).
-10. Unidades › Erro + Acesso negado (`units.error/access-denied`) → Unidades 10/10.
+O Owner encerrou a R14 no fim de 16/09 e determinou que **tudo o que ficou
+pendente de R01 a R14** seja levado para a R15, para acelerar o fechamento. A
+varredura de abertura confirmou que R01–R07 já estavam reduzidas a H02–H28 (R07),
+R08–R11 às ações do inventário e aos Owner items herdados da R11 (R12), e
+R12/R13 à R14; **nenhum item fora dessas três famílias ficou órfão**, exceto os
+resíduos operacionais sem `action_id` registrados na seção própria abaixo. As
+dúvidas de abertura foram enviadas ao Owner em artefato próprio; as linhas
+marcadas **[aguarda Owner]** mudam de ordem ou de escopo conforme a resposta.
 
-**Bloco B — reclassificação autorizada pelo Owner em 15/09 (alvo: E2E ativo 199 → 192; a formalização posterior de `agora.remove` leva a base a 193):**
-O delta controlado já foi aplicado ao inventário certificado; o denominador
-ativo agora é 193, sendo 192 após o Bloco B e mais uma ação formalizada pela
-ADR 0040. As sete ações foram marcadas `deferred-post-mvp` no escopo
-autorizado e não bloqueiam a execução do MVP.
-11. `plans.assign`, `institutions.status`, `institutions.locations-map`, `auth/account/internal-users.mfa`
-    → `deferred-post-mvp`/`gate-formal-mvp`; Catálogo de UI (`catalog.*`) → V1/Etapa 3.
-    Fecha Planos 4/4 e Usuários internos 4/4.
+## Desbloqueios que dependem do Owner (ordem de impacto)
 
-**Bloco C — uma tela com SQL pequeno + rota real:**
-12. Cardápios (`meal-plans.create/edit/model-create/model-edit/publish`) → FE/BE/E2E provados pela Sessão 2; `owner.r12-34/35/36/37` aguardam aceite central, sem repetir a prova.
-13. Avaliações › Fechar/Reabrir (`assessments.close/reopen`) — certificado pela
-    delta oficial da Sessão C, com rota real, sessão autenticada, reload e
-    negativa publicados; não repetir.
-14. Perfis de acesso (`access-profiles.create/edit/assign`) + `owner.r12-19` a `27`.
-15. Segurança infantil (`child-safety.child/edit/suspend`, BE done) — sem r12-18.
-16. Arquivos de Formulários › Upload + Resolver já têm prova publicada e não
-    devem ser repetidos; Expirar/Excluir permanecem como fatia separada (BE + FE)
-    e foram liberados para R15 sem aceite E2E remoto.
+1. **Produção respondendo**: encerrar os laços de retentativa do PostgREST
+   (backends `PostgREST 14.5` em `40001`) — reiniciar o PostgREST e/ou
+   `pg_terminate_backend`; sem isso nenhuma prova de rota real acontece.
+2. **Permissão de escrita em produção para a coordenação** (`supabase db query
+   --linked`, `supabase db push`, `migration repair`): sem ela, as seis
+   migrations verdes no espelho ficam paradas. Fila, nesta ordem:
+   `20260916152000` (D4, encerra o laço de child_safety), `20260916154500`
+   (D3), `20260916180000` (B2), `20260916183000` (B3), `20260916190000` (B8),
+   `20260916193000` (B1).
+3. **OQ-047**: autorizar a migration única que troca os 173 `raise
+   serialization_failure` por `PT409` (ou confirmar upgrade do PostgREST no
+   painel) — evita repetir o incidente em qualquer família. **[aguarda Owner]**
+4. **CORS das Edge Functions** (`account-media`, `now-media`, `moments-media`,
+   `chat-media`, `form-media`): incluir as origens `127.0.0.1:3014–3024` na
+   allowlist para as sessões paralelas não disputarem a porta 3014/3020.
+5. **Massa mínima autorizada** (D6 ampliada ou não): responsável sintético
+   vinculado a criança sintética (para `agora.publish` E2E e `owner.r12-08`),
+   identidades de admin de unidade/educador (sino de Medicação, r12-33).
+   **[aguarda Owner]**
+6. **Contrato do Chat** (r12-52): aceitar tile único + anexo não visual como
+   aceite do MVP, ou mudar `superadmin_chat_attachment_prepare_v1` para vários
+   anexos na mesma mensagem. **[aguarda Owner]**
+7. **Goldens**: autorizar regravar as 391 referências pré-existentes de 34
+   suítes com a mesma assinatura do cabeçalho (C1 estendida). **[aguarda Owner]**
 
-**Bloco D — integrado seletivamente no `dev`; aceite técnico preservado:**
-17. OQ-031 catálogos de tipo, reader self da Conta e `owner.r12-29/30` foram
-    provados pela Sessão D em produção, no branch `r14/bloco-cd`, SHA
-    `b135c8f20`: pgTAP remoto 11/11, 6/6 e 6/6, respectivamente. As coleções
-    aceitam registros independentes e rejeitam o 101º por entidade/coleção.
-    Os artefatos foram integrados seletivamente ao `dev`; a evidência continua
-    registrada sem novo delta de contador. H08/H13/H23 foram transferidos para
-    R15 por decisão do Owner, sem inventar contrato ausente. Reader de Planos
-    comerciais e recuperação/reset de Auth não entram na R14.
+## Ordem de execução proposta (fechar primeiro o que já tem código e só falta prova)
 
-**Bloco E — mais caros (contrato novo ou reconstrução):**
-18. Conta: A+ do layout "Meu acesso" + foto R2 (`account.profile`). O pacote
-    técnico da Sessão E foi integrado; o residual produtivo de `owner.r12-46`
-    permanece sem captura adicional de cabeçalho/avatar em nova sessão. Recuperação/
-    redefinição (`auth.recover/reset`) ficam reservadas para a Etapa 3.
-19. Circular `H04` (host + goldens); Formulários `H10` (+ `H11` só se >60% pronto); Principal `H27/P54/H02`.
-20. Chat › Anexar (`chat.attach`: asset_id + Edge Function); Agora e Momentos (mídia R2/Stream real); Agora › Remover (`agora.remove`: remoção imediata);
-    `owner.r12-33` medicação; `owner.r12-18` pessoa sem conta; páginas de erro (BE/E2E).
-21. Gates de medição: `H03`, `H07`, `H09`, `H12`, `H14`, `H16`, `H18`–`H20`, `H22`, `H24`–`H26`, `H28`.
+**Bloco A — rota real que ficou pronta na R14 (sem SQL novo; só exige produção respondendo):**
+1. Perfis de acesso `access-profiles.edit/assign` + `owner.r12-20/21/22/24/25/26/27` (build e roteiro em `R14-handoff-sessao-5.md`).
+2. Instituições `institutions.error/access-denied` (deep link + `cdp_block`).
+3. Conta `owner.r12-46` / `account.profile` (foto R2; CORS da porta).
+4. Formulários `forms.expire-file/delete-file`, `forms.create/edit` + `owner.r12-39/40`, `forms.location-answer` (roteiro em `R14-handoff-sessao-6.md`).
+5. Chat `chat.attach` + `owner.r12-52` (conforme decisão 6).
+6. Momentos `momentos.view/publish/remove` (`momentos.create` se o ambiente permitir; roteiro em `r14-sessao-7/momentos-bloqueado-20260916.md`).
+7. `errors.409` (flutter-only, captura na rota real).
 
-`agora.remove` foi formalizado pela ADR 0040 como ação MVP separada: remoção
-explícita imediata, revogação no catálogo/gateway e purge idempotente do objeto
-R2 e da cópia Stream, preservando catálogo/recibo/auditoria. O pacote e a prova
-produtiva positiva foram integrados; o contrato local da negativa foi reforçado
-em `2707086cf`, mas a negativa produtiva cross-tenant segue bloqueada pelo
-helper/fixture ausente no schema remoto. O action_id permanece
-`pending-verification`.
+**Bloco B — depende das migrations da fila (item 2 acima), depois rota real:**
+8. Segurança da criança `child-safety.edit/suspend` + `owner.r12-13/15/16` (após `20260916152000`).
+9. Assiduidade contexto Atividade + `owner.r12-05` (após `20260916154500`; criar atividade "R15" pela tela se não houver elegível).
+10. `agora.remove` pela tela + negativa D5 (projeção `management_version`/`can_remove` — candidato no handoff 7 — e fixture executada como `postgres`).
+11. B2 Histórico (`owner.r12-04`), B3 snapshot (`owner.r12-06`), B8 sino (`owner.r12-33`), B1 Arquivar (`owner.r12-01/02`): aplicar `180000/183000/190000/193000`, provar na rota real.
 
-## Lote de coordenação — 16/09/2026 (Mesa do Owner, ADR 0041)
+**Bloco C — contrato novo, especificar antes:**
+12. B5 busca de pessoa autorizada (`owner.r12-17`) e B6 pessoa sem conta (`owner.r12-18`).
+13. B9 "ver como" (`principal.for-you`, `principal.profile-edit`).
+14. Specs R15 já decididas: perfil transversal/funcionário (OQ-044; `owner.r12-19/23`), Perfis de cuidado §5 (`owner.r12-29/30`), ciclo de vida OQ-033 (inclui `institutions.status`), Locais com mapa por imagem (OQ-034), perfis oficiais (OQ-032).
+15. H08/H13/H23 (Avisos: duplicar, CTA, visual) e demais H com gate de medição.
+16. `owner.r12-38` Cardápios imagem R2 (migrar adapter para Media Gateway).
 
-- Aceites: `owner.r12-34/35/36/37` (Cardápios), `owner.r12-09` e
-  `owner.r12-11` → `done`; OQ-031 e reader self da Conta → concluídos na
-  ADR 0038. `owner.r12-29/30` **não** aceitos: contrato redesenhado (§5 da
-  ADR) vai para R15.
-- Reclassificações aplicadas por `deltas-mesa-owner-20260916.json`:
-  `institutions.files` → `deferred-post-mvp` (flyout fica e avisa "em
-  desenvolvimento"); `errors.*` (6) → `flutter-only`. `institutions.error` e
-  `institutions.access-denied` ficam no MVP e precisam de prova.
-- Contratos decididos (B1–B9) entram nos gates das linhas de Owner abaixo;
-  H11 (autosave) sai do MVP para V1 (B10).
-- Autorizações de produção concedidas: leitura OQ-046 (D1), renomear carimbo do
-  Chat (D2), migration de escopo de `attendance_context_options` (D3),
-  diagnóstico + correção do 504 de Segurança infantil (D4), fixture cross-tenant
-  do Agora (D5). Negada: massa fictícia de alunos (D6).
-- Ambiente: credenciais QA existem em `Coelo-backups/qa-r06-*.env` e
-  `supabase/usuario/` (local, ignorado pelo Git); Docker ficará ligado (D8).
-- Goldens: falhas de Segurança da criança/Perfis/Rotina são deriva do cabeçalho
-  global; regravar referências só após estabilizar o cabeçalho (C1).
-- 16/09, coordenação: OQ-046 **resolvida** (D1/D2 executadas; lote 72 em
-  `ordem-de-aplicacao-producao.txt`; evidência em
-  `r14-coordenacao/oq-046-ledger-reconciliacao-20260916.md`). Segunda onda
-  aberta com quatro sessões filhas (5–8) em worktrees próprias; ver
-  `R14-execucao-paralela.md`.
-- 16/09, integração da segunda onda (cherry-pick em `dev`): Sessão 5
-  (`access-profiles.create` verified-e2e; FE de Perfis traduz módulo › tela ›
-  ação e desdobra ações repetidas; flyout Arquivos de Instituições avisa "em
-  desenvolvimento" — A4), Sessão 6 (lote 73: `20260915203000` aplicada em
-  produção pelo rito; nenhum action_id), Sessão 7 (`agora.create`/`agora.view`
-  verified-e2e; `agora.publish`/`expire` BE done; rota de remoção no FE
-  local-green), Sessão 8 (causa do 504 de `child_safety_change_lifecycle`
-  observada: `raise serialization_failure` 40001 reexecutado sem limite pelo
-  PostgREST 14.5; migrations D3/D4 prontas com pgTAP verde no espelho,
-  **não aplicadas** — `db query --linked` negado pelo executor; OQ-047).
-- **Incidente de produção (16/09, ~12:28 BRT em diante)**: PostgREST devolve
-  `504 PGRST003` (pool esgotado) para todas as RPCs; `pg_stat_activity` (leitura
-  D1) mostra as conexões ocupadas por laços de retentativa de
-  `child_safety_change_lifecycle`, remoção/purge do Agora e Momentos. Bloqueou
-  as provas de rota real das Sessões 5, 6 e 7 (causa: ambiente). Mitigação
-  depende do Owner: aplicar `20260916152000` (encerra o laço de child_safety)
-  e/ou reiniciar o PostgREST; correção sistêmica em OQ-047.
-
-## Lote de coordenação — 15/09/2026
-
-- `assessments.close` e `assessments.reopen`: delta oficial aplicado pela
-  Sessão C; inventário agora registra `verified-e2e` e a dupla não deve ser
-  repetida.
-- `access-profiles.create/edit/assign`, `child-safety.create/edit/suspend` e
-  `owner.r12-13/15/16/19–27`: testes/diagnósticos das Sessões C e C contínua
-  não obtiveram rota produtiva certificável; 504, sessão/CORS/CDP, drift de
-  massa e ausência de autorização continuam bloqueios. Permanecem fora dos
-  contadores e são liberados para a próxima rodada conforme R15/R16 abaixo.
-- `forms.expire-file`/`forms.delete-file`: commits `0481384f5` e `ca4bf4cd3`
-  corrigem/auditam a lógica e passam as suítes direcionadas (Deno 56/56 e
-  Flutter 89/89), mas não houve sessão autenticada, persistência remota,
-  reload e negativa produtiva. Liberados para R15; não promover.
-- `owner.r12-05` no contexto Atividade: `14f6facab` registrou o bloqueio
-  isolado da RPC/massa; o contexto Turma já certificado não foi repetido. R15
-  precisa alinhar a massa QA ou corrigir a RPC com contrato antes da prova.
-- Sessão E: `agora.remove` teve o contrato local reforçado em `2707086cf`, sem
-  substituir a prova produtiva negativa. Stream genérico continua sem contrato
-  próprio. Nenhum desses pontos altera o inventário sem delta oficial.
-
-## Aprovação visual do Owner — 14/09/2026 (artefato 5218230f, SHA a952f3ff9) — 6/6 decididas: 5 A, 1 A+
-
-| Tela | action_ids | Decisão | Observação / gate |
-|---|---|---|---|
-| Estrutura › Turmas › Diretório | groups.list | **A** | — |
-| Atividades › Lançar avaliações | assessments.entry/gradebook/detail | **A** | — |
-| Saúde e Cuidado › Planos de medicação | medication.list/create/detail/edit | **A** | — |
-| Cabeçalho › Meu perfil | account.profile | **A+** | Owner: "o contêiner do Meu Acesso pode ficar na mesma linha que Dados pessoais e ter a rolagem para ir descendo" → correção de layout obrigatória (coelo-ui), entra em `owner.r12-46`. |
-| Atividades › Configuração avaliativa | activities.assessment | **A** | — |
-| Saúde e Cuidado › Perfis de cuidado | health-care.create/detail/edit | **A** | — |
+**Fora da R15:** `auth.recover/reset` e allowlist de redirect (Etapa 3, ADR 0039); MFA ×3 (`gate-formal-mvp`); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
 
 ## Owner items — abertos/parciais e atualizações da execução (32)
+
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|
@@ -204,6 +129,7 @@ helper/fixture ausente no schema remoto. O action_id permanece
 
 ## Owner items — concluídos (21; não voltam à execução)
 
+
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
 |---|---|---|---|---|
 | owner.r12-34 | meal-plans.model-create, meal-plans.model-edit | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md; decisions/0041-owner-decisions-r14-mesa-20260916.md | Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2; imagem R2 segue em owner.r12-38. |
@@ -228,81 +154,8 @@ helper/fixture ausente no schema remoto. O action_id permanece
 | owner.r12-50 | groups.list | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Concluído 14/09 (rota real): /groups com Alunos 1 e Atividades 3 na turma 4214106c, busca "R05" (hotfix lote 64), reload mantém, negativa por instituição alheia. Capturas em r13-coordenacao/capturas. |
 | owner.r12-51 | gate/mapeamento pendente | done / Não aplicável. / Done (lote 63, 14/09): quatro candidatos aplicados em produção com dump SHA-256, espelho e pgTAP verdes, ledger 283→287. / Não aplicável. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova. |
 
-## Sobra preparada para a R15 (R15 ainda não aberta)
-
-Esta seção é uma transferência preparada, não uma nova fila executável. Os itens
-continuam visíveis para não serem confundidos com referências vigentes nem
-reexecutados sem nova abertura do Owner:
-
-- `owner.r12-05`: corrigir a inconsistência de escopo em
-  `superadmin_attendance_context_options` e provar o contexto Atividade;
-- `owner.r12-06`: definir o contrato de leitura da rotina efetiva, versão e
-  snapshot em `superadmin_attendance_call_detail`;
-- `owner.r12-08`: ampliar a massa para pelo menos dois alunos e repetir o fluxo;
-- `owner.r12-15`, `r12-13` e `r12-16`: diagnosticar o 504 de
-  `child_safety_change_lifecycle`, depois provar create/edit/suspend;
-- `owner.r12-19` a `r12-27`: executar Perfis de acesso após a reivindicação da
-  Sessão C, preservando as rotas reais `/profiles` e
-  `/internal-users/:id/edit`;
-- Formulários: `forms.upload` e `forms.resolve-file` têm prova publicada e não
-  devem ser repetidos. `forms.expire-file` e `forms.delete-file` estão
-  explicitamente liberados para R15 após os commits `0481384f5`/`ca4bf4cd3`,
-  sem promoção E2E;
-- Principal: corrigir a indicação de contexto ativo após “Ver como”;
-- `owner.r12-38` e `owner.r12-46`: migrar/provar imagem privada R2 de Cardápios
-  e Conta, incluindo o layout A+ do “Meu acesso”;
-- ADR 0041 (16/09): spec própria de perfil transversal/funcionário no Principal
-  (`owner.r12-19/23`, OQ-044) e spec redesenhada de Perfis de cuidado
-  (`owner.r12-29/30`, §5 da ADR) — ambas R15, sem execução na R14;
-- demais H, `chat.attach`, `owner.r12-33` e os gates de medição seguem
-  na ordem da R14. Não abrir Planos comerciais, reader de Planos ou Auth
-  recovery/reset; estes continuam fora da R14 conforme ADR 0039.
-
-## R16 preparado — não aberto
-
-Registro de bloqueios e itens sem certificação após a Sessão E. R16 não está
-aberta, não cria `action_id` e não autoriza novas provas.
-
-- `agora.remove`: a negativa cross-tenant foi tentada e bloqueada porque o
-  helper remoto de fixture não existe no schema vinculado e a preparação SQL
-  falhou antes da publicação; identidades temporárias foram removidas. O
-  contrato local foi reforçado no commit `2707086cf` e o pgTAP comportamental
-  local de não-mutação foi adicionado em `5ae79bef1`, mas nenhum dos dois é
-  prova produtiva. Evidência em `agora-remove-cross-tenant-blocked-20260915.md`,
-  commit `8ac946b3a`, e em `agora-remove-cross-tenant-local-behavior-20260915.md`.
-  Stream genérico permanece sem contrato, Edge, segredo, fixture e critério de
-  aceite; o pacote atual comprova R2 privado e `stream_status=not_applicable`.
-- `owner.r12-46`: pacote técnico e prova local existem, mas falta captura
-  produtiva explícita do cabeçalho/avatar em nova sessão, com reload e save
-  confirmado.
-- H10/H11: regras de audiência preservadas, porém sem aceite remoto; autosave
-  não tem prova remota acima de 60% e permanece V1 se esse limiar não for
-  demonstrado.
-- Circular, Principal, páginas de erro e H03, H04, H07, H09, H12, H14, H16,
-  H18–H20, H22, H24–H26 e H28 continuam sem combinação executável de
-  `action_id`, contrato e evidência. H08, H13 e H23 continuam transferidos sem
-  contrato produtivo do item relacionado e sem `action_id` próprio.
-- Resíduos da Sessão C ainda não certificados para redistribuição:
-  `access-profiles.create/edit/assign`, `child-safety.create/edit/suspend` e
-  `owner.r12-13/15/16/19–27`. Evidências bloqueadas foram integradas em
-  `82d1efbad` (Segurança infantil) e `d65840efe` (Perfis). O 504 de
-  `child_safety_change_lifecycle`, sessão QA/CORS/CDP indisponíveis, drift de
-  massa e ausência de autorização permanecem bloqueios. Forms
-  `expire-file/delete-file` foi liberado para R15 após `ca4bf4cd3`; não é
-  resíduo aberto de R16.
-- `owner.r12-05` no contexto Atividade foi isolado em `14f6facab` e liberado
-  para R15; o caminho certificado de Turma permanece intacto.
-- `auth.recover`, `auth.reset`, SMTP, provedor e allowlist de recuperação seguem
-  fora da R14/R15/R16 até a abertura da Etapa 3.
-- Gate de reconciliação do ledger (16/09, OQ-046): `ordem-de-aplicacao-producao.txt`
-  recebeu o lote 71 (fixture QA Chat + `agora.remove`, ledger 297–301) e perdeu
-  a linha não aplicada de `forms_question_media_expire_audit_v1`. Account
-  `20260915120000` e Chat `20260915130000` (carimbo colidindo com o lote 70)
-  seguem declarados pela Sessão E sem linha própria no ledger; e a função de
-  fixture consta aplicada mas foi reportada ausente do schema remoto. Confirmar
-  por metadados antes de qualquer espelho, R16 ou nova negativa do Agora.
-
 ## Resíduos H (herdados de R01–R07) — abertos (19)
+
 
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
@@ -328,6 +181,7 @@ aberta, não cria `action_id` e não autoriza novas provas.
 
 ## Resíduos H — transferidos (4: H08/H13/H23 → R15; H11 → V1)
 
+
 | ID | Origem | Motivo da transferência |
 |---|---|---|
 | H11 | noturna/R01 | **V1** por decisão do Owner em 16/09 (ADR 0041 B10): autosave de autoria de Formulários sai do MVP sem medir o limiar de 60%; testes locais preservados, nenhum aceite remoto exigido. |
@@ -337,6 +191,7 @@ aberta, não cria `action_id` e não autoriza novas provas.
 
 ## Resíduos H — concluídos (4)
 
+
 | ID | Origem | Escopo pendente | Próximo gate |
 |---|---|---|---|
 | H05 | noturna/R01 | Denominador histórico de recibos do Chat | Decidido (ADR 0038): recibos contam participantes ativos atuais. Fechado sem mudança; aceite MVP mantido. |
@@ -344,16 +199,17 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | H17 | R06 | Papel fixo versus capacidade em cuidado | **Concluído em 14/09 (lote 66)**: capacidade `care_policies.manage` nos catálogos Superadmin (Owner) e Admin (Administrador da instituição); `superadmin_unit_care_policy_set_v1` exige só a capacidade; pgTAP 15/15 + base 20/20; get/set/reload em produção na unidade f5284f2f e negativa por unidade alheia. Sem action_id próprio no inventário (sem tela no cliente); sem delta de estado. |
 | H15 | R06 | Atribuição de Plano | **Concluído por decisão de escopo:** `plans.assign` fica fora do MVP; botão e operação permanecem honestamente indisponíveis. |
 
-## Itens da ADR 0038 sem ID H nem Owner item — abertos (2) e transferidos (2)
+## Itens da ADR 0038 sem ID H nem Owner item — aberto (1) e transferidos (2)
+
 
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
-| Identidade da mídia do Chat (`asset_id` no envelope) | Aberto | Pacote SQL aditivo em `authorize_read` + deploy da Edge Function `chat-media`; re-provar E2E do chat. |
 | Reader de Planos comerciais no Principal (039) | Transferido para V1/V2 | Não executar na R14; preservar contrato e IDs como preparação futura. `units_with_override` só deve ser calculado quando o Owner abrir o escopo. |
 | Local interno em Formulários (IDs fixados na publicação; revisão conserva valor) | Aberto | Verificar contrato atual de `form_publish`/resposta; pacote só se faltar. |
 | Auth: localhost na allowlist de redirect (R12-47) | Transferido para Etapa 3 | Não executar na R14; pertence ao contrato futuro de recuperação/reset, com ambiente e prova próprios. |
 
-## Itens da ADR 0038 — concluídos (4)
+## Itens da ADR 0038 — concluídos (5)
+
 
 | Item (ADR 0038) | Estado | Gate / evidência |
 |---|---|---|
@@ -361,11 +217,12 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | Reader self da Conta (039) | Concluído 16/09 (aceite do Owner, ADR 0041 A3) | Sessão D aplicou a migration `20260915133000` em produção e confirmou pgTAP remoto 6/6, sessão autenticada e ausência de sobrecarga por UUID; evidência no branch `origin/r14/bloco-cd` (`b135c8f20`). |
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
+| Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
 ## Ações não terminais por família (inventário: 27 ações; FE/BE/E2E)
 
-Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` após a
-integração das Sessões 5–8: ações `mvp`/`gate-formal-mvp` cujo estado integrado
+
+Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` no fechamento da R14 (16/09): ações `mvp`/`gate-formal-mvp` cujo estado integrado
 não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
 `errors.409` (flutter-only, FE local-green) ainda deve provar FE na rota real.
 
@@ -385,7 +242,25 @@ não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
 | momentos | 4 | `momentos.view` (verified/done/pending-verification), `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification) |
 | principal_profile | 2 | `principal.for-you` (verified/blocked-decision/pending-verification), `principal.profile-edit` (local-green/blocked-decision/pending-verification) |
 
-## Decisões de escopo do Owner (14/09 e 15/09, ver `docs/agent/backlog.md`)
+## Resíduos operacionais sem action_id (varredura R01–R14, 16/09)
+
+| Item | Origem | Estado | Gate |
+|---|---|---|---|
+| Migrations verdes no espelho, não aplicadas em produção | R14 Sessões 8/9/10 | `20260916152000`, `154500`, `180000`, `183000`, `190000`, `193000` versionadas com pgTAP; dump prévio fora do Git | Permissão/execução pelo rito; registrar lotes 74+ em `ordem-de-aplicacao-producao.txt` só após o ledger. |
+| Incidente PostgREST 40001 (OQ-047) | R14 Sessão 8 | Laços de retentativa esgotam o pool; 173 `raise serialization_failure` em produção | Decisão do Owner: migration sistêmica 40001 → PT409 e/ou upgrade do PostgREST. Regra durável: RPC nova nunca sinaliza versão defasada com 40001. |
+| Goldens pré-existentes (391 falhas em 34 suítes) | R12–R14 | Mesma assinatura do cabeçalho (C1); 30 regravadas na R14 | Autorização para regravar em massa após conferir o isolatedDiff de cada suíte. |
+| Testes pré-existentes vermelhos | anterior à R14 | `model_save_completion_routes_test` (3), `principal_real_route_test` (1), `principal_profile_for_you_production_routes_test` (1), `activity_routes_test` (1) | Corrigir na R15 antes do censo de suítes. |
+| Censo completo de suítes (G8, R09) | R09 | Nunca executado integralmente | Rodar `flutter test` por pacote e registrar o censo no fechamento. |
+| Deploy público do frontend (R09 C0) | R09 | Sem deploy público desde a R09; builds QA locais | Reconciliar build/host de produção antes de qualquer publicação. |
+| CORS das Edge Functions por porta | R14 Sessões 5/7 | 3016 → `origin_not_allowed`; 3018 → 403 | Allowlist `127.0.0.1:3014–3024` (ambiente). |
+| `agora.remove` — projeção e fixture D5 | R14 Sessão 7 | Candidato `now_feed_removal_projection` provado no espelho; fixture existe (só `postgres`) | Aplicar pelo rito e provar negativa 422 sem mutação; revogar identidade. |
+| `owner.r12-46` layout A+ "Meu acesso" | R13 | Aprovação visual 14/09 sem implementação | coelo-ui: card na mesma linha de "Dados pessoais" com rolagem interna. |
+| Stream genérico | R14 Sessão E | Sem contrato, Edge, segredo, fixture ou critério | Só com decisão do Owner; hoje `stream_status=not_applicable`. |
+| Espelho CLI `supabase/migrations` com cópias não rastreadas | R14 coordenação | 206 arquivos no espelho ignorado pelo Git | `Sync-SupabaseCliMigrations.ps1 -Mode Clean` antes de qualquer `db push`; corrigir o script (tracked ≠ canonical). |
+| Worktrees/branches `r14/*` | R14 | Seis worktrees integradas por cherry-pick, protegidas | Remover com manifesto no fechamento da R15 ou reaproveitar para as sessões da R15. |
+
+## Decisões de escopo do Owner (14/09, 15/09 e 16/09; ver `docs/agent/backlog.md`)
+
 
 Fora do MVP: operações de Planos comerciais (listar/criar/editar/arquivar/restaurar/
 atribuir/vincular/entitlements), `plans.assign`, Financeiro, `institutions.status`,
@@ -402,6 +277,6 @@ Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em
 
 - Estado por `action_id`: só via `apply-tracker-delta.cjs` com evidência certificada (inventário → três rastreadores).
 - Owner items: editar a linha aqui e rodar `node docs/reviews/etapa-2-operacao/next-round/sync-r12-owner-records.cjs`.
-- H e itens da ADR: editar a linha aqui. Nunca editar R12/R13 (históricos).
+- H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
-- Execução paralela (sessões, worktrees, handoffs): `R14-execucao-paralela.md`. Handoffs `R14-handoff-sessao-1.md`/`-2.md` são comunicação, não fila.
+- Execução paralela (sessões, worktrees, handoffs): `R15-execucao-paralela.md` quando aberta; handoffs são comunicação, não fila.
