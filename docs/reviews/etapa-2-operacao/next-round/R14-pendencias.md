@@ -4,7 +4,7 @@ source: "Owner em 2026-09-14 (consolidar R12/R13 numa única fila); Owner em 202
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 audience: "team"
 ---
 
@@ -233,7 +233,7 @@ aberta, não cria `action_id` e não autoriza novas provas.
   H18–H20, H22, H24–H26 e H28 continuam sem combinação executável de
   `action_id`, contrato e evidência. H08, H13 e H23 continuam transferidos sem
   contrato produtivo do item relacionado e sem `action_id` próprio.
-- Resíduos da Sessão C ainda não certificados para redistribuição: 
+- Resíduos da Sessão C ainda não certificados para redistribuição:
   `access-profiles.create/edit/assign`, `child-safety.create/edit/suspend` e
   `owner.r12-13/15/16/19–27`. Evidências bloqueadas foram integradas em
   `82d1efbad` (Segurança infantil) e `d65840efe` (Perfis). O 504 de
@@ -245,6 +245,13 @@ aberta, não cria `action_id` e não autoriza novas provas.
   para R15; o caminho certificado de Turma permanece intacto.
 - `auth.recover`, `auth.reset`, SMTP, provedor e allowlist de recuperação seguem
   fora da R14/R15/R16 até a abertura da Etapa 3.
+- Gate de reconciliação do ledger (16/09, OQ-046): `ordem-de-aplicacao-producao.txt`
+  recebeu o lote 71 (fixture QA Chat + `agora.remove`, ledger 297–301) e perdeu
+  a linha não aplicada de `forms_question_media_expire_audit_v1`. Account
+  `20260915120000` e Chat `20260915130000` (carimbo colidindo com o lote 70)
+  seguem declarados pela Sessão E sem linha própria no ledger; e a função de
+  fixture consta aplicada mas foi reportada ausente do schema remoto. Confirmar
+  por metadados antes de qualquer espelho, R16 ou nova negativa do Agora.
 
 ## Resíduos H (herdados de R01–R07) — abertos (20)
 

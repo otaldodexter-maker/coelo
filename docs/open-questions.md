@@ -3,7 +3,7 @@ title: "Perguntas abertas e conflitos"
 source: "AGENTS.md; documentos oficiais, ADRs e specs citados em cada item"
 status: "open"
 generated_at: "2026-08-11"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 lifecycle: "current"
 reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038"
 ---
@@ -16,6 +16,38 @@ reconciled_with: "decisions/0031; decisions/0032; decisions/0034; decisions/0038
 > abaixo preservam proveniência e não reabrem a fila.
 
 # Perguntas abertas e conflitos
+
+## OQ-046 — Ledger remoto × ordem real de aplicação após a Sessão E (2026-09-16)
+
+Conflito encontrado na auditoria de 16/09 do fechamento coordenado da R14
+(`525844e61`), lendo `supabase migration list --linked` (somente leitura):
+
+- `20260915185048` (fixture QA Chat) e as quatro migrations de `agora.remove`
+  (`194620`, `195203`, `200003`, `201349`) estão no ledger remoto (linhas
+  297–301), mas não estavam em `ordem-de-aplicacao-producao.txt`; adicionadas
+  como lote 71 em 16/09.
+- `20260915120000_account_avatar_private_r2_v1` e
+  `20260915130000_chat_media_asset_binding_v1` são declaradas aplicadas em
+  produção pelo handoff da Sessão E, porém não têm linha própria no ledger. O
+  carimbo `20260915130000` **colide** com `health_care_collection_limit_v1`
+  (lote 70, Sessão D); a CLI trata os dois como a mesma versão, o que impede
+  `db push`/`repair` de distingui-los.
+- `20260915203000_forms_question_media_expire_audit_v1` estava listada no
+  lote 57 (12/09) sem ter sido aplicada; removida da ordem e marcada pendente.
+- A tentativa de negativa cross-tenant do Agora reportou que
+  `app_private.seed_qa_r14_chat_cross_tenant_user` **não existe** no schema
+  remoto, embora `20260915185048` conste como aplicada. Ou a função foi
+  removida após a prova do Chat, ou o ledger foi marcado sem execução.
+
+Fontes: `R14-handoff-sessao-4.md`; `agora-remove-cross-tenant-blocked-20260915.md`;
+`ordem-de-aplicacao-producao.txt`; ledger remoto de 16/09.
+
+Decisão necessária (coordenação/Owner, antes de reconstruir espelho ou abrir R16):
+(1) confirmar por consulta de metadados, sem mutação, se `person_avatar_assets`
+(Account), o binding `asset_id` do Chat e a função de fixture existem em produção;
+(2) renomear o carimbo do Chat (forward-only, sem reaplicar) ou registrar a
+exceção na ordem real; (3) só então decidir se a negativa `agora.remove` em R16
+usa essa fixture ou outra rota autorizada.
 
 ## OQ-033 — Ciclo de vida ativar/inativar/excluir em todas as entidades (2026-09-15)
 

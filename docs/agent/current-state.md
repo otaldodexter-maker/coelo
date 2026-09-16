@@ -4,7 +4,7 @@ source: "Owner em 2026-09-14 e 2026-09-15; docs/reviews/etapa-2-operacao/ETAPA-2
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 audience: "team"
 ---
 
@@ -69,6 +69,11 @@ audience: "team"
   Atividade de `attendance.create` foi isolado como bloqueio de RPC/massa em
   `14f6facab`. R16 permanece preparada, não aberta, para os resíduos da Sessão
   E e contratos sem action_id.
+- Auditoria de 16/09 sobre o fechamento `525844e61`: contadores, trackers,
+  knowledge (77) e gate reconfirmados; nenhuma skill precisou mudar (são portas
+  sem estado de rodada). Achado: a ordem real de migrations em produção estava
+  desalinhada com o ledger remoto — corrigida (lote 71) e o resíduo registrado
+  em `docs/open-questions.md` OQ-046; nada altera os números certificados.
 
 ## Fonte da fila atual
 
