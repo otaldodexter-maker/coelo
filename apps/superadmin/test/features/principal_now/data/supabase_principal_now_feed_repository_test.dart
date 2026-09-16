@@ -337,6 +337,106 @@ void main() {
     expect(rpcCalls, 2);
     expect(edgeTickets, ['ticket-active-consumed', 'ticket-active-renewed']);
   });
+
+  // R14 S7 / ADR 0040: projecao opcional de remocao e comando pela Edge.
+  test('projecao de remocao e opcional e fail-closed quando ausente', () async {
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient(
+        (request) async => http.Response(
+          jsonEncode([
+            {
+              ..._row(
+                id: 'plain',
+                publishedAt: now.subtract(const Duration(hours: 1)),
+                expiresAt: now.add(const Duration(hours: 23)),
+              ),
+            },
+            {
+              ..._row(
+                id: 'removable',
+                publishedAt: now.subtract(const Duration(hours: 1)),
+                expiresAt: now.add(const Duration(hours: 23)),
+              ),
+              'management_version': 2,
+              'can_remove': true,
+            },
+          ]),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        ),
+      ),
+    );
+    addTearDown(client.dispose);
+
+    final stories = await SupabasePrincipalNowFeedRepository(
+      client,
+      now: () => now,
+    ).listVisibleStories(scope);
+    expect(stories, hasLength(2));
+    expect(stories[0].canRemove, isFalse);
+    expect(stories[0].managementVersion, isNull);
+    expect(stories[1].canRemove, isTrue);
+    expect(stories[1].managementVersion, 2);
+  });
+
+  test('remove pela Edge com request id retido ate o recibo e mapeia 409/422', () async {
+    final bodies = <Map<String, dynamic>>[];
+    var status = 422;
+    final client = SupabaseClient(
+      'https://coelo.test',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        expect(request.url.path, endsWith('/functions/v1/now-media'));
+        bodies.add(Map<String, dynamic>.from(jsonDecode(request.body) as Map));
+        return http.Response(
+          jsonEncode(switch (status) {
+            200 => {
+              'id': 'removable',
+              'status': 'removed',
+              'management_version': 3,
+              'purge_status': 'purged',
+            },
+            409 => {'error': 'expected_version_conflict'},
+            _ => {'error': 'publication_remove_denied'},
+          }),
+          status,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabasePrincipalNowFeedRepository(client, now: () => now);
+
+    await expectLater(
+      repository.removeStory(publicationId: 'removable', expectedVersion: 2),
+      throwsA(isA<PrincipalNowRemovalDenied>()),
+    );
+    status = 409;
+    await expectLater(
+      repository.removeStory(publicationId: 'removable', expectedVersion: 2),
+      throwsA(isA<PrincipalNowRemovalConflict>()),
+    );
+    status = 200;
+    final receipt = await repository.removeStory(publicationId: 'removable', expectedVersion: 2);
+    expect(receipt.managementVersion, 3);
+    expect(receipt.purgeStatus, 'purged');
+    expect(bodies, hasLength(3));
+    expect(bodies.map((body) => body['action']).toSet(), {'remove'});
+    expect(bodies.map((body) => body['expected_version']).toSet(), {2});
+    // A mesma intencao reapresenta o mesmo request_id ate ser aceita.
+    expect(bodies.map((body) => body['request_id']).toSet(), hasLength(1));
+    expect(
+      bodies.first['request_id'],
+      matches(RegExp(r'^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$')),
+    );
+    // Depois do recibo a chave e descartada: uma nova remocao e outra intencao.
+    await repository.removeStory(publicationId: 'removable', expectedVersion: 3);
+    expect(bodies.last['request_id'], isNot(bodies.first['request_id']));
+  });
 }
 
 Map<String, dynamic> _row({

@@ -19,6 +19,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.feedRepository,
     this.feedScope,
     this.refreshSignal,
+    this.removalRepository,
     this.data = PrincipalNowPreviewData.demo,
     super.key,
   });
@@ -33,6 +34,7 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
     this.onReply,
     this.onShare,
     this.refreshSignal,
+    this.removalRepository,
     super.key,
   }) : assert(feedRepository != null),
        assert(feedScope != null),
@@ -47,6 +49,10 @@ final class PrincipalNowPreviewPage extends StatefulWidget {
   final PrincipalNowFeedRepository? feedRepository;
   final PrincipalNowFeedScope? feedScope;
   final PrincipalNowFeedRefreshSignal? refreshSignal;
+
+  /// Costura opcional de remocao imediata (ADR 0040, `agora.remove`). A opcao
+  /// so aparece para itens que o servidor projetou como removiveis pelo ator.
+  final PrincipalNowRemovalRepository? removalRepository;
   final PrincipalNowPreviewData data;
 
   @override
@@ -65,8 +71,9 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
   var _holding = false;
   var _focusPaused = false;
   var _overlayPaused = false;
-  ModalBottomSheetRoute<bool>? _optionsRoute;
+  ModalBottomSheetRoute<String>? _optionsRoute;
   var _optionsGeneration = 0;
+  String? _removingPublicationId;
   var _feedLoading = false;
   var _feedRequest = 0;
   PrincipalNowFeedFailure? _feedFailure;
@@ -247,15 +254,29 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
     _syncProgress();
   }
 
+  PrincipalNowFeedItem? get _currentRemoteItem {
+    final items = _remoteItems;
+    if (!_usesRemoteFeed || items == null || _index >= items.length) return null;
+    return items[_index];
+  }
+
+  bool _canRemove(PrincipalNowFeedItem? item) =>
+      widget.removalRepository != null &&
+      item != null &&
+      item.canRemove &&
+      item.managementVersion != null &&
+      _removingPublicationId == null;
+
   Future<void> _showOptions() async {
     if (!mounted || _optionsRoute != null) return;
     final generation = _optionsGeneration;
     final onCreate = widget.onCreate;
+    final removable = _canRemove(_currentRemoteItem) ? _currentRemoteItem : null;
     final navigator = Navigator.of(context);
     _overlayPaused = true;
     _syncProgress();
-    late final ModalBottomSheetRoute<bool> route;
-    route = ModalBottomSheetRoute<bool>(
+    late final ModalBottomSheetRoute<String> route;
+    route = ModalBottomSheetRoute<String>(
       isScrollControlled: false,
       capturedThemes: InheritedTheme.capture(from: context, to: navigator.context),
       backgroundColor: Theme.of(context).colorScheme.surface,
@@ -282,11 +303,24 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
                       FilledButton.icon(
                         onPressed: () {
                           if (mounted && generation == _optionsGeneration && route.isCurrent) {
-                            navigator.pop(true);
+                            navigator.pop('create');
                           }
                         },
                         icon: const Icon(Icons.add_rounded),
                         label: const Text('Publicar no Agora'),
+                      ),
+                    ],
+                    if (removable != null) ...[
+                      const SizedBox(height: CoeloSpacing.space3),
+                      OutlinedButton.icon(
+                        key: const Key('principal-now-remove-option'),
+                        onPressed: () {
+                          if (mounted && generation == _optionsGeneration && route.isCurrent) {
+                            navigator.pop('remove');
+                          }
+                        },
+                        icon: const Icon(Icons.delete_outline_rounded),
+                        label: const Text('Remover este Agora'),
                       ),
                     ],
                   ],
@@ -295,14 +329,99 @@ final class _PrincipalNowPreviewPageState extends State<PrincipalNowPreviewPage>
             ),
     );
     _optionsRoute = route;
-    final createRequested = await navigator.push(route);
+    final requested = await navigator.push(route);
     if (!mounted || generation != _optionsGeneration) return;
     if (identical(_optionsRoute, route)) _optionsRoute = null;
     _overlayPaused = false;
     _syncProgress();
-    if (createRequested ?? false) {
+    if (requested == 'create') {
       onCreate?.call();
+    } else if (requested == 'remove' && removable != null) {
+      await _confirmRemoval(removable);
     }
+  }
+
+  /// Remocao imediata pela rota normal (ADR 0040). A confirmacao e assincrona:
+  /// o item confirmado pertence ao feed em tela; se o feed mudou (troca de
+  /// contexto, revisao de autorizacao ou nova carga), a confirmacao perde o
+  /// sentido e nao e aplicada. Mesma guarda da retirada de Momentos.
+  Future<void> _confirmRemoval(PrincipalNowFeedItem item) async {
+    final repository = widget.removalRepository;
+    final expectedVersion = item.managementVersion;
+    if (repository == null || expectedVersion == null || !item.canRemove) return;
+    if (_removingPublicationId != null) return;
+    final requestAtOpen = _feedRequest;
+    final itemsAtOpen = _remoteItems;
+    bool stillTheSameFeed() =>
+        mounted &&
+        _feedRequest == requestAtOpen &&
+        identical(_remoteItems, itemsAtOpen) &&
+        identical(widget.removalRepository, repository);
+
+    _overlayPaused = true;
+    _syncProgress();
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (dialogContext) => AlertDialog(
+        key: const Key('principal-now-remove-dialog'),
+        title: const Text('Remover este Agora?'),
+        content: const Text(
+          'Ele sai do feed imediatamente para todos e a mídia é apagada. '
+          'A remoção fica registrada.',
+        ),
+        actions: [
+          TextButton(
+            key: const Key('principal-now-remove-cancel'),
+            onPressed: () => Navigator.of(dialogContext).pop(false),
+            child: const Text('Manter publicado'),
+          ),
+          FilledButton(
+            key: const Key('principal-now-remove-confirm'),
+            onPressed: () => Navigator.of(dialogContext).pop(true),
+            child: const Text('Remover'),
+          ),
+        ],
+      ),
+    );
+    if (!mounted) return;
+    if (confirmed != true || !stillTheSameFeed()) {
+      _overlayPaused = false;
+      _syncProgress();
+      return;
+    }
+    setState(() => _removingPublicationId = item.publicationId);
+    try {
+      await repository.removeStory(
+        publicationId: item.publicationId,
+        expectedVersion: expectedVersion,
+      );
+      if (!mounted) return;
+      _removingPublicationId = null;
+      _overlayPaused = false;
+      _announce('Agora removido.');
+      await _loadFeed();
+    } on PrincipalNowRemovalFailure catch (failure) {
+      if (!mounted) return;
+      _removingPublicationId = null;
+      _overlayPaused = false;
+      _announce(switch (failure) {
+        PrincipalNowRemovalDenied() => 'Você não tem permissão para remover este Agora.',
+        PrincipalNowRemovalConflict() =>
+          'Este Agora mudou antes da remoção. Recarregue e tente novamente.',
+        PrincipalNowRemovalUnavailable() => 'Não foi possível remover agora. Tente novamente.',
+      });
+      _syncProgress();
+    } on Object {
+      if (!mounted) return;
+      _removingPublicationId = null;
+      _overlayPaused = false;
+      _announce('Não foi possível remover agora. Tente novamente.');
+      _syncProgress();
+    }
+  }
+
+  void _announce(String message) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(message)));
   }
 
   void _dismissOptions() {

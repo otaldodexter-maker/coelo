@@ -1505,6 +1505,11 @@ GoRouter createSuperadminRouter({
                   return PrincipalNowPreviewPage.authorized(
                     embedded: true,
                     feedRepository: repository,
+                    // ADR 0040: a remocao imediata usa a mesma composicao
+                    // produtiva do feed; sem implementacao, a opcao nao existe.
+                    removalRepository: repository is PrincipalNowRemovalRepository
+                        ? repository as PrincipalNowRemovalRepository
+                        : null,
                     feedScope: PrincipalNowFeedScope(
                       institutionId: runtimeContext.institutionId,
                       unitId: runtimeContext.unitId,

@@ -43,6 +43,8 @@ final class PrincipalNowFeedItem {
     this.cropX = 0,
     this.cropY = 0,
     this.coverPosition = 0,
+    this.managementVersion,
+    this.canRemove = false,
   });
 
   final String publicationId;
@@ -59,6 +61,14 @@ final class PrincipalNowFeedItem {
   final double cropX;
   final double cropY;
   final double coverPosition;
+
+  /// Versao de gerenciamento projetada pelo servidor; exigida pela trava
+  /// otimista de `agora.remove`. Nula quando o feed nao a projeta.
+  final int? managementVersion;
+
+  /// Affordance calculada no servidor (autor com capacidade contextual). E
+  /// apenas um sinal de UI: a autorizacao real acontece na RPC de remocao.
+  final bool canRemove;
 }
 
 enum PrincipalNowMediaKind { media, audio }
@@ -101,6 +111,45 @@ abstract interface class PrincipalNowFeedRepository {
     required String publicationId,
     required PrincipalNowMediaDescriptor media,
   });
+}
+
+/// Remocao imediata (ADR 0040, `agora.remove`). O servidor revalida ator,
+/// tenant, contexto, autoria/capacidade e versao; o cliente apenas solicita.
+abstract interface class PrincipalNowRemovalRepository {
+  Future<PrincipalNowRemovalReceipt> removeStory({
+    required String publicationId,
+    required int expectedVersion,
+    String? reason,
+  });
+}
+
+@immutable
+final class PrincipalNowRemovalReceipt {
+  const PrincipalNowRemovalReceipt({
+    required this.publicationId,
+    required this.managementVersion,
+    required this.purgeStatus,
+  });
+
+  final String publicationId;
+  final int managementVersion;
+  final String purgeStatus;
+}
+
+sealed class PrincipalNowRemovalFailure implements Exception {
+  const PrincipalNowRemovalFailure();
+}
+
+final class PrincipalNowRemovalDenied extends PrincipalNowRemovalFailure {
+  const PrincipalNowRemovalDenied();
+}
+
+final class PrincipalNowRemovalConflict extends PrincipalNowRemovalFailure {
+  const PrincipalNowRemovalConflict();
+}
+
+final class PrincipalNowRemovalUnavailable extends PrincipalNowRemovalFailure {
+  const PrincipalNowRemovalUnavailable();
 }
 
 final class PrincipalNowFeedRefreshSignal extends ChangeNotifier {

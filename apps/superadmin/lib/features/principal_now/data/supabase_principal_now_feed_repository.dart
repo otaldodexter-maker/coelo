@@ -1,10 +1,13 @@
+import 'dart:math';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/principal_now_feed_repository.dart';
 
 typedef PrincipalNowClock = DateTime Function();
 
-final class SupabasePrincipalNowFeedRepository implements PrincipalNowFeedRepository {
+final class SupabasePrincipalNowFeedRepository
+    implements PrincipalNowFeedRepository, PrincipalNowRemovalRepository {
   SupabasePrincipalNowFeedRepository(this._client, {PrincipalNowClock? now})
     : _now = now ?? DateTime.now;
 
@@ -12,7 +15,62 @@ final class SupabasePrincipalNowFeedRepository implements PrincipalNowFeedReposi
   final PrincipalNowClock _now;
   final _ticketIssuedAt = <String, DateTime>{};
 
+  /// Chave de idempotencia por intencao de remocao (ADR 0040): repetir a MESMA
+  /// remocao reapresenta o mesmo request_id e recebe o recibo; a chave e
+  /// descartada quando a remocao e aceita.
+  final _removalRequestIds = <String, String>{};
+
   static const _ticketLifetime = Duration(minutes: 2);
+
+  @override
+  Future<PrincipalNowRemovalReceipt> removeStory({
+    required String publicationId,
+    required int expectedVersion,
+    String? reason,
+  }) async {
+    final requestId = _removalRequestIds.putIfAbsent(publicationId, _uuidV4);
+    try {
+      final response = await _client.functions.invoke(
+        'now-media',
+        body: {
+          'action': 'remove',
+          'request_id': requestId,
+          'publication_id': publicationId,
+          'expected_version': expectedVersion,
+          'reason': reason,
+        },
+      );
+      return _removalReceipt(response.status, response.data, publicationId);
+    } on FunctionException catch (error) {
+      return _removalReceipt(error.status, error.details, publicationId);
+    } on PrincipalNowRemovalFailure {
+      rethrow;
+    } on Object {
+      throw const PrincipalNowRemovalUnavailable();
+    }
+  }
+
+  PrincipalNowRemovalReceipt _removalReceipt(int status, Object? data, String publicationId) {
+    if (status == 409) throw const PrincipalNowRemovalConflict();
+    if (status == 401 || status == 403 || status == 422) {
+      throw const PrincipalNowRemovalDenied();
+    }
+    if (status < 200 || status >= 300 || data is! Map) {
+      throw const PrincipalNowRemovalUnavailable();
+    }
+    final json = Map<String, dynamic>.from(data);
+    final id = json['id']?.toString();
+    final version = json['management_version'];
+    if (id != publicationId || json['status'] != 'removed' || version is! num) {
+      throw const PrincipalNowRemovalUnavailable();
+    }
+    _removalRequestIds.remove(publicationId);
+    return PrincipalNowRemovalReceipt(
+      publicationId: id!,
+      managementVersion: version.toInt(),
+      purgeStatus: json['purge_status']?.toString() ?? 'unknown',
+    );
+  }
 
   @override
   Future<List<PrincipalNowFeedItem>> listVisibleStories(PrincipalNowFeedScope scope) async {
@@ -196,7 +254,21 @@ PrincipalNowFeedItem _itemFromJson(Map<String, dynamic> json, DateTime current) 
             mimeType: _requiredText(audio, 'mime_type'),
             kind: PrincipalNowMediaKind.audio,
           ),
+    // Projecao opcional (ADR 0040): sem ela a UI nao oferece remocao.
+    managementVersion: json['management_version'] is num
+        ? (json['management_version'] as num).toInt()
+        : null,
+    canRemove: json['can_remove'] == true,
   );
+}
+
+String _uuidV4() {
+  final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+  bytes[6] = (bytes[6] & 0x0f) | 0x40;
+  bytes[8] = (bytes[8] & 0x3f) | 0x80;
+  final hex = bytes.map((value) => value.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-${hex.substring(12, 16)}-'
+      '${hex.substring(16, 20)}-${hex.substring(20)}';
 }
 
 String _requiredText(Map<String, dynamic> json, String key) {
