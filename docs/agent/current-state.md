@@ -96,7 +96,15 @@ audience: "team"
   `r14/seguranca-assiduidade`; tabela em `R14-execucao-paralela.md`) executam
   Perfis/Instituições/Conta, Formulários/Chat, Agora/Momentos e Segurança
   infantil/Assiduidade (D3/D4) com integração por cherry-pick na coordenadora.
-  Os números certificados só mudam quando cada fatia for integrada em `dev`.
+  Integração feita em `6ddf6a72e`: FE 189/232, BE 171/219, E2E 162/186,
+  Owner 21/53 (`access-profiles.create`, `agora.create`, `agora.view` →
+  verified-e2e). Pendentes de aplicação em produção, por bloqueio de permissão
+  do executor: `20260916152000` (504 de Segurança da criança, D4) e
+  `20260916154500` (escopo de atividades, D3). **Incidente**: desde ~12:28 BRT
+  o PostgREST de produção responde 504 `PGRST003` (pool esgotado por laços de
+  retentativa de RPCs que sinalizam versão defasada com SQLSTATE 40001); as
+  provas de rota real das Sessões 5/6/7 pararam por ambiente; correção
+  sistêmica em OQ-047.
 
 ## Fonte da fila atual
 

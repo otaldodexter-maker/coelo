@@ -4,9 +4,9 @@ source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/00
 status: "active; fila vigente R14; R01–R13 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 base: "dev"
-revision: "655a86a75 + Mesa do Owner 16/09 (ADR 0041)"
+revision: "6ddf6a72e (integração das Sessões 5–8, 16/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -47,6 +47,19 @@ ativo passa de 193 para 186 e o BE aplicável de 225 para 219 **por
 reclassificação autorizada**, não por certificação nova; os numeradores
 não mudaram. `r12-29/30` não foram aceitos e viram spec na R15.
 
+## Snapshot de 16/09 — segunda onda integrada (Sessões 5–8)
+
+Integração por cherry-pick em `dev` (`6ddf6a72e`): `access-profiles.create`,
+`agora.create` e `agora.view` → `verified-e2e` (E2E 159 → 162);
+`agora.publish`/`agora.expire` → BE `done` (BE 168 → 171); FE de Perfis e do
+Agora (rota de remoção) → 189. OQ-046 resolvida (lote 72) e lote 73
+(`20260915203000`) aplicado pelo rito. Segurança da criança: causa do 504
+observada (SQLSTATE 40001 reexecutado sem limite pelo PostgREST 14.5),
+correção D4 e escopo D3 versionados com pgTAP verde, **aguardando aplicação em
+produção** (permissão do executor). Incidente de produção a partir de ~12:28
+BRT (pool do PostgREST esgotado por laços de retentativa) bloqueou as demais
+provas de rota real; registrado na fila e em OQ-047.
+
 ## Snapshot de execução da R14 — C residual, D/E integrados, R15/R16 preparados
 
 O corte publicado e os percentuais canônicos acima permanecem inalterados fora
@@ -82,17 +95,17 @@ Os denominadores são por camada e não devem ser somados entre si.
 
 | Indicador | Resultado | Percentual | Leitura |
 |---|---:|---:|---|
-| FE verificado | 186 / 232 | 80,17% | terminal FE da base inteira |
-| FE local-green | 13 / 232 | 5,60% | avanço local; não é aceite E2E |
-| BE concluído/verificado | 168 / 219 | 76,71% | somente ações aplicáveis ao BE (219 após `errors.*` → not-applicable) |
-| BE local-green | 11 / 219 | 5,02% | avanço local; não é prova remota |
-| E2E verificado | 159 / 186 | 85,48% | base integrada ativa após ADR 0041 (`institutions.files` pós-MVP; `errors.*` flutter-only) |
-| E2E + flutter-only | 171 / 232 | 73,71% | 159 E2E + 12 flutter-only com FE verificado; `errors.409` (flutter-only, FE local-green) não conta até a rota real |
+| FE verificado | 189 / 232 | 81,47% | terminal FE da base inteira |
+| FE local-green | 12 / 232 | 5,17% | avanço local; não é aceite E2E |
+| BE concluído/verificado | 171 / 219 | 78,08% | somente ações aplicáveis ao BE (219 após `errors.*` → not-applicable) |
+| BE local-green | 8 / 219 | 3,65% | avanço local; não é prova remota |
+| E2E verificado | 162 / 186 | 87,10% | base integrada ativa após ADR 0041 (`institutions.files` pós-MVP; `errors.*` flutter-only) |
+| E2E + flutter-only | 174 / 232 | 75,00% | 162 E2E + 12 flutter-only com FE verificado; `errors.409` (flutter-only, FE local-green) não conta até a rota real |
 | Owner items done | 21 / 53 | 39,62% | IDs de Owner, não action IDs |
 | Owner items abertos/parciais | 38 / 53 | 71,70% | complemento dos 15 concluídos |
 
 O denominador de BE é 219 nesta versão do inventário. A métrica combinada é
-`171/232`; para aceite integrado, a base correta continua sendo `159/186`.
+`174/232`; para aceite integrado, a base correta continua sendo `162/186`.
 
 ## Fila vigente R14 — pendências herdadas
 

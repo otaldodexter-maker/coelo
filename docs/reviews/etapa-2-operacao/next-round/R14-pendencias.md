@@ -18,13 +18,13 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` em
-16/09/2026, após a Mesa do Owner (ADR 0041): FE 186/232 (80,17%),
-BE 168/219 (76,71%), E2E 159/186 (85,48%), Owner 21/53 (39,62%). O
-denominador integrado ativo caiu de 193 para 186 pela reclassificação
-autorizada de `institutions.files` (pós-MVP) e das seis páginas de erro
-(`flutter-only`); nenhum estado terminal novo foi certificado. Cardápios
-(`owner.r12-34/35/36/37`), `owner.r12-09` e `owner.r12-11` receberam aceite
-central do Owner e saíram da execução.
+16/09/2026, após a integração da segunda onda (Sessões 5–8, coordenação):
+FE 189/232 (81,47%), BE 171/219 (78,08%), E2E 162/186 (87,10%), Owner 21/53
+(39,62%). Delta desta onda: `access-profiles.create` (Sessão 5) e
+`agora.create`/`agora.view` (Sessão 7) → `verified-e2e`; `agora.publish`/
+`agora.expire` com BE `done`. Corte anterior (Mesa do Owner, ADR 0041): FE
+186/232, BE 168/219, E2E 159/186. O denominador integrado ativo continua 186
+(`institutions.files` pós-MVP; seis páginas de erro `flutter-only`).
 
 ## Ordem de execução (decisão do Owner de 14/09, ajustada: fechar primeiro o mais fácil e rápido)
 
@@ -112,7 +112,24 @@ helper/fixture ausente no schema remoto. O action_id permanece
   `ordem-de-aplicacao-producao.txt`; evidência em
   `r14-coordenacao/oq-046-ledger-reconciliacao-20260916.md`). Segunda onda
   aberta com quatro sessões filhas (5–8) em worktrees próprias; ver
-  `R14-execucao-paralela.md`. Nenhum contador muda neste registro.
+  `R14-execucao-paralela.md`.
+- 16/09, integração da segunda onda (cherry-pick em `dev`): Sessão 5
+  (`access-profiles.create` verified-e2e; FE de Perfis traduz módulo › tela ›
+  ação e desdobra ações repetidas; flyout Arquivos de Instituições avisa "em
+  desenvolvimento" — A4), Sessão 6 (lote 73: `20260915203000` aplicada em
+  produção pelo rito; nenhum action_id), Sessão 7 (`agora.create`/`agora.view`
+  verified-e2e; `agora.publish`/`expire` BE done; rota de remoção no FE
+  local-green), Sessão 8 (causa do 504 de `child_safety_change_lifecycle`
+  observada: `raise serialization_failure` 40001 reexecutado sem limite pelo
+  PostgREST 14.5; migrations D3/D4 prontas com pgTAP verde no espelho,
+  **não aplicadas** — `db query --linked` negado pelo executor; OQ-047).
+- **Incidente de produção (16/09, ~12:28 BRT em diante)**: PostgREST devolve
+  `504 PGRST003` (pool esgotado) para todas as RPCs; `pg_stat_activity` (leitura
+  D1) mostra as conexões ocupadas por laços de retentativa de
+  `child_safety_change_lifecycle`, remoção/purge do Agora e Momentos. Bloqueou
+  as provas de rota real das Sessões 5, 6 e 7 (causa: ambiente). Mitigação
+  depende do Owner: aplicar `20260916152000` (encerra o laço de child_safety)
+  e/ou reiniciar o PostgREST; correção sistêmica em OQ-047.
 
 ## Lote de coordenação — 15/09/2026
 
@@ -343,27 +360,27 @@ aberta, não cria `action_id` e não autoriza novas provas.
 | Anexos por mensagem no Chat (10 por envio) | **Concluído em 14/09 (lote 67)** | `superadmin_chat_attachment_prepare_v1` recusa o 11º pendente com `CHAT_ATTACHMENT_LIMIT` (422); pgTAP 9/9 + base 28/28; produção: 10 aceitos e 11º recusado na conversa 355a3403 (sintéticos arquivados); cliente mapeia `chat_attachment_limit` (243 testes do chat verdes). |
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 
-## Ações não terminais por família (inventário: 30 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 27 ações; FE/BE/E2E)
 
 Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` após a
-Mesa do Owner (ADR 0041): ações `mvp`/`gate-formal-mvp` cujo estado integrado
+integração das Sessões 5–8: ações `mvp`/`gate-formal-mvp` cujo estado integrado
 não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
 `errors.409` (flutter-only, FE local-green) ainda deve provar FE na rota real.
 
 | Família | Qtd | action_ids |
 |---|---:|---|
-| access_profiles | 3 | `access-profiles.assign` (pending-verification/done/pending-verification), `access-profiles.create` (local-green/done/pending-verification), `access-profiles.edit` (local-green/done/pending-verification) |
-| account | 2 | `account.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp), `account.profile` (verified/remote-green/pending-verification) |
-| agora | 5 | `agora.create` (local-green/local-green/pending-verification), `agora.expire` (pending-verification/local-green/pending-verification), `agora.publish` (pending-verification/local-green/pending-verification), `agora.remove` (pending-verification/pending-verification/pending-verification), `agora.view` (verified/done/pending-verification) |
-| auth | 3 | `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp), `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
+| access_profiles | 2 | `access-profiles.edit` (local-green/done/pending-verification), `access-profiles.assign` (pending-verification/done/pending-verification) |
+| account | 2 | `account.profile` (verified/remote-green/pending-verification), `account.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
+| agora | 3 | `agora.publish` (verified/done/pending-verification), `agora.expire` (pending-verification/done/pending-verification), `agora.remove` (local-green/pending-verification/pending-verification) |
+| auth | 3 | `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification), `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
 | chat | 1 | `chat.attach` (local-green/local-green/pending-verification) |
 | child_safety | 2 | `child-safety.edit` (local-green/done/pending-verification), `child-safety.suspend` (local-green/done/blocked-backend) |
 | forms_authoring | 2 | `forms.create` (local-green/done/pending-verification), `forms.edit` (local-green/done/pending-verification) |
-| forms_files | 2 | `forms.delete-file` (pending-verification/local-green/pending-verification), `forms.expire-file` (pending-verification/local-green/pending-verification) |
+| forms_files | 2 | `forms.expire-file` (pending-verification/local-green/pending-verification), `forms.delete-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
-| institutions | 2 | `institutions.access-denied` (pending-verification/local-green/pending-verification), `institutions.error` (pending-verification/local-green/pending-verification) |
+| institutions | 2 | `institutions.error` (pending-verification/local-green/pending-verification), `institutions.access-denied` (pending-verification/local-green/pending-verification) |
 | internal_users | 1 | `internal-users.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
-| momentos | 4 | `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification), `momentos.view` (verified/done/pending-verification) |
+| momentos | 4 | `momentos.view` (verified/done/pending-verification), `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification) |
 | principal_profile | 2 | `principal.for-you` (verified/blocked-decision/pending-verification), `principal.profile-edit` (local-green/blocked-decision/pending-verification) |
 
 ## Decisões de escopo do Owner (14/09 e 15/09, ver `docs/agent/backlog.md`)
