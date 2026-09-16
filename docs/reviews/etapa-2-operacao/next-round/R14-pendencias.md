@@ -108,6 +108,11 @@ helper/fixture ausente no schema remoto. O action_id permanece
   `supabase/usuario/` (local, ignorado pelo Git); Docker ficará ligado (D8).
 - Goldens: falhas de Segurança da criança/Perfis/Rotina são deriva do cabeçalho
   global; regravar referências só após estabilizar o cabeçalho (C1).
+- 16/09, coordenação: OQ-046 **resolvida** (D1/D2 executadas; lote 72 em
+  `ordem-de-aplicacao-producao.txt`; evidência em
+  `r14-coordenacao/oq-046-ledger-reconciliacao-20260916.md`). Segunda onda
+  aberta com quatro sessões filhas (5–8) em worktrees próprias; ver
+  `R14-execucao-paralela.md`. Nenhum contador muda neste registro.
 
 ## Lote de coordenação — 15/09/2026
 

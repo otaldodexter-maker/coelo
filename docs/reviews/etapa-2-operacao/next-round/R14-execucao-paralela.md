@@ -4,7 +4,7 @@ source: "Owner em 2026-09-15 (artefato 89AVWHKEnq5hrvYN6SFv6M, 7 decisões); R14
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-15"
-updated_at: "2026-09-15"
+updated_at: "2026-09-16"
 audience: "team"
 ---
 
@@ -108,6 +108,29 @@ rebase ou prova; a remoção exige o manifesto final da coordenadora.
 
 Sessão 1, se fechar A e B com folga, só pega do Bloco C o que não precisa de SQL e ainda não foi
 reivindicado pela Sessão 2 (Segurança infantil; Arquivos › Upload/Resolver), avisando no handoff.
+
+## Segunda onda — 16/09/2026 (após a Mesa do Owner, ADR 0041)
+
+Coordenadora: sessão principal (Claude) na pasta principal, branch `dev`. Quatro
+sessões filhas em worktrees próprias criadas a partir de `dev` `dbe518101`
+(OQ-046 resolvida). As filhas **não** fazem push em `dev` nem rebase: commitam
+na própria branch, publicam `origin/r14/<fatia>` como backup e a coordenadora
+integra por cherry-pick/fast-forward, reaplicando deltas em caso de conflito no
+inventário. Handoffs `R14-handoff-sessao-5..8.md` (um por filha).
+
+| Sessão | Worktree / branch | Fatias | Área QA | Servidor / CDP | Produção |
+|---|---|---|---|---|---|
+| 5 | `Coelo.worktrees14-acessos-instituicoes` / `r14/acessos-instituicoes` | Perfis de acesso (create/edit/assign; owner.r12-20/21/22/24/25/26/27), Instituições (error/access-denied; aviso A4 do flyout Arquivos), Conta (owner.r12-46 foto R2), errors.409 | acessos, estrutura | 3016 / 9416 | somente leitura |
+| 6 | `Coelo.worktrees14-formularios-chat` / `r14/formularios-chat` | Formulários expire/delete-file (migration 20260915203000 se necessária), create/edit (owner.r12-39/40), location-answer; Chat attach (owner.r12-52) | formularios, publicacoes | 3017 / 9417 | migration de Formulários pelo rito; espelho 616xx |
+| 7 | `Coelo.worktrees14-agora-momentos` / `r14/agora-momentos` | Agora view/create/publish/expire, agora.remove (fixture D5, revogada ao fim), Momentos view/publish/remove | publicacoes, principal | 3018 / 9418 | fixture D5 pelo rito; espelho 618xx |
+| 8 | `Coelo.worktrees14-seguranca-assiduidade` / `r14/seguranca-assiduidade` | 504 de `child_safety_change_lifecycle` (D4) + child-safety.edit/suspend (owner.r12-13/15/16); escopo de `superadmin_attendance_context_options` (D3) + owner.r12-05 | operacoes, acessos | 3019 / 9419 | migrations D3/D4 pelo rito; espelho 617xx |
+
+Regras adicionais desta onda: toda escrita em produção segue espelho próprio
+restaurado do dump de schema de 16/09 (`Coelo-backups/schema-producao-20260916-r14-coord-before.sql`),
+pgTAP verde, dump prévio fora do Git, `db push --dry-run` antes do push real,
+confirmação no ledger remoto e só então registro na `ordem-de-aplicacao-producao.txt`.
+D6 (massa fictícia de alunos) permanece negado. Perfil transversal (r12-19/23),
+Perfis de cuidado §5 (r12-29/30), H11 e Planos ficam fora.
 
 ## Cota e fechamento
 

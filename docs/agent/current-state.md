@@ -86,6 +86,17 @@ audience: "team"
   sem estado de rodada). Achado: a ordem real de migrations em produção estava
   desalinhada com o ledger remoto — corrigida (lote 71) e o resíduo registrado
   em `docs/open-questions.md` OQ-046; nada altera os números certificados.
+- **16/09, coordenação da segunda onda (`dbe518101`)**: OQ-046 resolvida com as
+  autorizações D1/D2 — dump de schema de produção fora do Git confirmou
+  `person_avatar_assets`, o binding `asset_id` do Chat e a fixture
+  `app_private.seed_qa_r14_chat_cross_tenant_user` (chamável só como
+  `postgres`); carimbo do Chat renomeado para `20260915130100` e ledger
+  remoto reparado (lote 72). Quatro sessões filhas em worktrees próprias
+  (`r14/acessos-instituicoes`, `r14/formularios-chat`, `r14/agora-momentos`,
+  `r14/seguranca-assiduidade`; tabela em `R14-execucao-paralela.md`) executam
+  Perfis/Instituições/Conta, Formulários/Chat, Agora/Momentos e Segurança
+  infantil/Assiduidade (D3/D4) com integração por cherry-pick na coordenadora.
+  Os números certificados só mudam quando cada fatia for integrada em `dev`.
 
 ## Fonte da fila atual
 
