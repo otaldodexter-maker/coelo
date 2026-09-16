@@ -33,7 +33,8 @@ varredura de abertura confirmou que R01–R07 já estavam reduzidas a H02–H28 
 R08–R11 às ações do inventário e aos Owner items herdados da R11 (R12), e
 R12/R13 à R14; **nenhum item fora dessas três famílias ficou órfão**, exceto os
 resíduos operacionais sem `action_id` registrados na seção própria abaixo. As
-dúvidas de abertura foram enviadas ao Owner em artefato próprio; as linhas
+dúvidas de abertura foram enviadas ao Owner em artefato próprio
+(`https://claude.ai/artifact/M13t2csojoBnGt4sGWY4QM`, 7 decisões + 3 desbloqueios); as linhas
 marcadas **[aguarda Owner]** mudam de ordem ou de escopo conforme a resposta.
 
 ## Desbloqueios que dependem do Owner (ordem de impacto)
