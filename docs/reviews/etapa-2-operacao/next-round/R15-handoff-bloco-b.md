@@ -30,8 +30,10 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 - Fatia 4 — Assiduidade: `ACTIVITY_INVALID_REFERENCE` **resolvido** — dois defeitos de FE (participantes enviados com
   turma em modo `all`; repositório recusava `status active` na criação com publicar), corrigidos com testes 50/50;
   atividade "QA R15 Atividade Assiduidade" `1bd6bc74-d0bd-4a9b-af89-7c51347d18c0` criada e publicada pela tela em
-  produção (`atividade-qa-r15-criacao-20260917.md`). **r12-05/r12-08/B2/B3 não provados**: `/attendance/new` ficou em
-  branco no Chrome de `qa-r06-operacoes` após o rebuild (reload sem efeito; não diagnosticado por prazo do Owner 16:20).
+  produção (`atividade-qa-r15-criacao-20260917.md`). **r12-05 avançou (partial)**: contexto Atividade exercitado na rota
+  real — atividade selecionável, chamada `bcd47ba2…` criada com `activity_id`, reload (`attendance-contexto-atividade-20260917.md`);
+  falta a negativa e esclarecer `participants []` (chamada em contexto Atividade nasce sem alunos, modo `all`).
+  **r12-08/B2/B3 não provados** (prazo do Owner 16:20).
 - Fatia 5 — Medicação (r12-33/E7): **não iniciada** (prazo).
 - **Fatia 6 — Arquivar B1 (`owner.r12-01`/`r12-02`) LIBERADA para o Bloco C1** (17/09 14:05 BRT, a pedido da
   coordenadora): só tela, migration `20260916193000_archive_models_v1` já em produção (lote 74); rotas Atividades ›
