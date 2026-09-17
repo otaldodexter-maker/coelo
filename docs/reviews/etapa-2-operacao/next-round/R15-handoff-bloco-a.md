@@ -82,7 +82,7 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 ## Bloqueios
 
-- `forms.location-answer` — massa: respondente com conta dentro da audiência (ver acima).
+- `forms.location-answer` — massa/decisão: leitura D1 da coordenadora (17/09 14:20 BRT) mostra **0** `person_auth_links` ativos em produção — nenhuma conta `qa-*` resolve `current_person_id()`, então `require_forms_actor` nunca encontra participação (criar membership pela tela não resolve). Exige a primeira conta com vínculo pessoa↔auth: `qa-r15-responsavel@coelo.me` (fixture AP-1 do B′, aplicada pelo Owner) + incluir essa pessoa na audiência do form `4555ba07…` pela tela e responder pelo deep link. Tudo o mais está pronto (ocorrência `open` de hoje `7256b047…`, pergunta Local com a opção "[R04-QA] Local Sala Azul").
 - `auth.recover/reset` — Owner (caixa de e-mail e senha nova).
 
 ## Contadores
