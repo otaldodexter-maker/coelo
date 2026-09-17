@@ -1,0 +1,1188 @@
+{
+  "generatedAt": "2026-09-17T15:20:41-03:00",
+  "authorization": "Owner em 17/09/2026: unificar tudo em dev e apagar branches e tags do GitHub, sem perder nada",
+  "recovery": {
+    "bundle": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r15-fechamento\\coelo-all-refs-20260917-pre-limpeza.bundle",
+    "bundleHeads": 667,
+    "extraFiles": [
+      "C:\\Users\\adrie\\Documents\\Coelo-backups\\r15-fechamento\\production-r14-schema-20260915-r14-bloco-cd.sql"
+    ],
+    "howToRestore": "git fetch <bundle> refs/remotes/origin/<branch>:refs/heads/<branch> (ou refs/tags/<tag>)"
+  },
+  "devHead": "35684db944221ec8e0b6d819060567779b95ae04",
+  "branches": [
+    {
+      "branch": "origin",
+      "sha": "35684db944221ec8e0b6d819060567779b95ae04",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "codex/e2-r02-d01-autenticacao",
+      "sha": "dc44df9e139302985fa47896cc9d794bc8843af2",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 30,
+      "notPatchEquivalent": 20,
+      "disposition": "superseded",
+      "successor": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-d02-estrutura",
+      "sha": "40ec50d7244881be153e61e0ad7bfa7237d97619",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 81,
+      "notPatchEquivalent": 39,
+      "disposition": "superseded",
+      "successor": "cb9eb15a5bd9568f675b0fec389fe468e35cbd48",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-d03-acompanhamento",
+      "sha": "0a2ecb34ece5e642102f106d50e0ccd9dfecaef7",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 46,
+      "notPatchEquivalent": 29,
+      "disposition": "superseded",
+      "successor": "9554aaa3de3fdd2a19d89d4fa02af957f2f70c6f",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-d04-acessos",
+      "sha": "375e0a62a41cb28cb4c9ef20818e0ad11b1010e5",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 34,
+      "notPatchEquivalent": 32,
+      "disposition": "superseded",
+      "successor": "ecc8eae2b6a80e114a108166be284f6fbf98bd60",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-l00-coordenacao-claude",
+      "sha": "bdef0f55993b4a21d1a74079ecbbc68f16fd6336",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 50,
+      "notPatchEquivalent": 50,
+      "disposition": "superseded",
+      "successor": "0d212729bdb4097583694534e23f38ae2de4fdc3",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-l01-publicacoes",
+      "sha": "3697dd49e6441f1614a16ebf9d555fde0ee1ebc8",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 40,
+      "notPatchEquivalent": 40,
+      "disposition": "superseded",
+      "successor": "1e39b2fcf30942ff927c74be5837d5d9eb4e7f43",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-l02-chat-comunicacoes",
+      "sha": "45d92b9c1826bc0c66d4d4b07e40648278ff68ff",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 49,
+      "notPatchEquivalent": 35,
+      "disposition": "superseded",
+      "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "codex/e2-r02-l03-perfil-para-voce",
+      "sha": "b209b4e0f47df8f1a39835a09b8e17191412b969",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "main",
+      "sha": "57d9525745b77bcf8b29cceed57508df5edc57da",
+      "lastCommit": "2026-06-22",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "r14/acessos-instituicoes",
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 4,
+      "notPatchEquivalent": 1,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r14/agora-momentos",
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 4,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r14/assiduidade-historico",
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 4,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r14/bloco-cd",
+      "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22",
+      "lastCommit": "2026-09-15",
+      "exclusiveCommits": 5,
+      "notPatchEquivalent": 1,
+      "disposition": "superseded",
+      "successor": "8334d3695",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "reason": "Sessão 2 da R14 (blocos C/D): código integrado em dev; resíduo é o mapeamento 40001 (substituído por PT409 no lote 75) e o dump production-r14-schema-20260915.sql, preservado em Coelo-backups/r15-fechamento e no bundle."
+    },
+    {
+      "branch": "r14/bloco-e",
+      "sha": "31503be0538422593492819b39d3c27c199e3e82",
+      "lastCommit": "2026-09-15",
+      "exclusiveCommits": 19,
+      "notPatchEquivalent": 19,
+      "disposition": "superseded",
+      "successor": "8334d3695",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "reason": "Sessão E da R14: código (account-media, chat asset_id, remoção imediata do Agora) integrado em dev por patch na R14; resíduo só cosmético (comentário, plan() de teste) e 3 planos em docs/superpowers trazidos para dev em 17/09; dump preservado no bundle Coelo-backups/r15-fechamento."
+    },
+    {
+      "branch": "r14/formularios-chat",
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 2,
+      "notPatchEquivalent": 1,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r14/seguranca-assiduidade",
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 3,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r14/visual-arquivar",
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+      "lastCommit": "2026-09-16",
+      "exclusiveCommits": 4,
+      "notPatchEquivalent": 3,
+      "disposition": "patch-equivalent",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch."
+    },
+    {
+      "branch": "r15/bloco-a",
+      "sha": "947cf5485bcbe81a8a1199aef52171abeb27b302",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 16,
+      "notPatchEquivalent": 10,
+      "disposition": "patch-equivalent",
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent)."
+    },
+    {
+      "branch": "r15/bloco-b",
+      "sha": "dedcd83ee0142792447fc9cabdf0965974095d07",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 9,
+      "notPatchEquivalent": 4,
+      "disposition": "patch-equivalent",
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent)."
+    },
+    {
+      "branch": "r15/bloco-b-apoio",
+      "sha": "e828f17e18f3f164761338394e8efe92f6966270",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 7,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent)."
+    },
+    {
+      "branch": "r15/bloco-c1",
+      "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 11,
+      "notPatchEquivalent": 5,
+      "disposition": "patch-equivalent",
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent)."
+    },
+    {
+      "branch": "r15/bloco-c2",
+      "sha": "5ea5984c644cbbd9533191cdb0daabec0e3469cb",
+      "lastCommit": "2026-09-17",
+      "exclusiveCommits": 8,
+      "notPatchEquivalent": 5,
+      "disposition": "patch-equivalent",
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent)."
+    },
+    {
+      "branch": "wip/fase0-arquivo-chat",
+      "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 1,
+      "notPatchEquivalent": 1,
+      "disposition": "superseded",
+      "successor": "d0fd94c07eeccc627dd748ed90b59db13538e6a1",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "work/etapa2-noturna-acessos-pessoas",
+      "sha": "992f3530d0f74a332343c3153a9a2226cb22bf60",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-alunos-rotina",
+      "sha": "c73f7b526a95db6a75606320d311102df15a8187",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-avisos-chave-de-linha",
+      "sha": "cb0a386d8334ff5c0ce99a04c101c52e971a69b1",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-chat-comunicacoes",
+      "sha": "c1e6756c7ce65743ced91a4a23fdfc5b45182244",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-chat-comunicacoes-router",
+      "sha": "c2127823f73543004bcd4317e4817040fed37941",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-chat-comunicacoes-router-from",
+      "sha": "48d15d8df49e9f63a3db0d9d974263088b2cad15",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-chat-volta-mobile",
+      "sha": "fb31e11dc058a9502f2a6dc235c8d65746ef2cfb",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-copia-previa",
+      "sha": "80f160599a30d0c4fbae10197b36f42022e17ff3",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 1,
+      "notPatchEquivalent": 1,
+      "disposition": "superseded",
+      "successor": "03f8bc0b815f5b48c36fb0116b910b4a093d4775",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
+    },
+    {
+      "branch": "work/etapa2-noturna-estrutura",
+      "sha": "6709f1473e3c730b30683d096d4efc1fa8d5677f",
+      "lastCommit": "2026-09-09",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-noturna-formularios-cuidado",
+      "sha": "55f4b59102718122efb7d0ed6b0dee6be3cf5d1d",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 5,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "git cherry origin/dev has no new patch; successor is integrated base"
+    },
+    {
+      "branch": "work/etapa2-noturna-import-orfao",
+      "sha": "8a09d66acc321127676520bf0cebedd082c204bb",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 1,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "git cherry origin/dev has no new patch; successor is integrated base"
+    },
+    {
+      "branch": "work/etapa2-noturna-operacoes-sistema",
+      "sha": "dd1a95bcd83ba47da1a5091d47a3b8624adfaa4b",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 2,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "git cherry origin/dev has no new patch; successor is integrated base"
+    },
+    {
+      "branch": "work/etapa2-noturna-perfil-para-voce",
+      "sha": "1d46746ff7d8e70f06287e362571af3a3dd682e0",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 2,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "git cherry origin/dev has no new patch; successor is integrated base"
+    },
+    {
+      "branch": "work/etapa2-noturna-publicacoes-midia",
+      "sha": "69e377f3ec471c4b6e83ff87fe21aec8d8839220",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 3,
+      "notPatchEquivalent": 0,
+      "disposition": "patch-equivalent",
+      "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "git cherry origin/dev has no new patch; successor is integrated base"
+    },
+    {
+      "branch": "work/etapa2-r03-acessos-pessoas",
+      "sha": "d47e168397e6ddd3f9f1563c575fd8514b9c4f48",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-coordenacao",
+      "sha": "2efda8b000235cdfdfa5c045a5f346ca7a72baea",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-estrutura",
+      "sha": "63be8a474b263226e8d0be9e7ac86055502dab6e",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-formularios-cuidado-rotina",
+      "sha": "fdc89c48816940a1c47490ff6620322f0a7acfb4",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-operacoes",
+      "sha": "3fa07edd0118a4a0c0261aff80fe5fea5e7c4eb0",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-principal-chat-sistema",
+      "sha": "a9faabd0149718f15e190bda30508ffb06b56318",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r03-publicacoes-agenda",
+      "sha": "3b21db6963e2f938282ec56abbc6b2d15ed2ad5c",
+      "lastCommit": "2026-09-10",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-acessos-pessoas",
+      "sha": "3b499860fb65edf11be29e36dfe7f8547f492b74",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-estrutura",
+      "sha": "189cbb85237d55e25b273f851e6f3e2784cfcd99",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-formularios-cuidado-rotina",
+      "sha": "508d9e8427c96ea129429913df588ce2543c2a9d",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-operacoes",
+      "sha": "a71928c7c38a6fb68c8f42d0ea1b240cb596e027",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-principal-chat-sistema",
+      "sha": "4ddef877fc25f1fdb1548878426858d079212b34",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-publicacoes-agenda",
+      "sha": "3895238a504284b3694346f85a903a0065f8660d",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r04-realm-interno",
+      "sha": "d89c236de529eca300f33b4396d86f333d087e50",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-acessos-pessoas",
+      "sha": "d6ceff4be8d53699bdcccaef36ab3b9284e67baf",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-coordenacao",
+      "sha": "ca60b096bb5cbeb34e8e6be11d0165406a0c9433",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-estrutura",
+      "sha": "48fb00f067de84a8d743377a73e489d6daffa24a",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-formularios-cuidado-rotina",
+      "sha": "395f4552f69b1fa0c6c06173b8f31b6036d66e4e",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-operacoes",
+      "sha": "4c9101fe5b68bcfa251d2e710515fe6fc20505bc",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-principal-chat-sistema",
+      "sha": "45d3e681d9e46e76e468dc4f1719a45e7faf869f",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-publicacoes-agenda",
+      "sha": "a371fce6dc8d95652628cff5b004090e75c5c5ba",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r05-realm-interno",
+      "sha": "f30516f31888624ab398f32990b0a869ec8a72d7",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-acessos-pessoas",
+      "sha": "bf98ecb739425dcae4b7ebdc30bd4d21eede4303",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-estrutura",
+      "sha": "001a33e063e04748a50a76d7166ac938c1e9612a",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-formularios-cuidado-rotina",
+      "sha": "67e04fb10ddb6769155196d2530bedb616df7db0",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-operacoes",
+      "sha": "7b1a83caacf46c61cb6410129dc99bcf88364318",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-principal-chat-sistema",
+      "sha": "2be3ed6b71fa0bb5227cd8c51eb0fc7362fe1f4d",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-publicacoes-agenda",
+      "sha": "c813becfe44f70d96aae2fdb9b256537d3c31286",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r06-realm-interno",
+      "sha": "04da3e59b1568555c023977ee387722cf0e196b0",
+      "lastCommit": "2026-09-11",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-acessos-pessoas",
+      "sha": "72980497bca9e6659a7b54ae290b22904c1c648b",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-coordenacao",
+      "sha": "b3b1bb34d21af1d45e54ce887552daefe47be96a",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-estrutura",
+      "sha": "84a84e2a17b02fbd2683353aec02bb1620bd9f11",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-formularios-cuidado-rotina",
+      "sha": "c105bff1d818a0978f4cfaab3879074ed100c6a6",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-operacoes",
+      "sha": "ff0e2338d04a37ac0c19957ecbc9484844f5058b",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-principal-chat-sistema",
+      "sha": "30ba45a803c3aac6dc8b86351c7e82d4c057bf92",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-publicacoes-agenda",
+      "sha": "7bdb38a098fc1afd555c6925b1002a110e320328",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-realm-interno",
+      "sha": "d25d1ddcbd270759ab9bea0ee9cf0b75fb473dd9",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r07-suites",
+      "sha": "d4a62918ca2c4a2fc7698afec3cface29f09c3ff",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-acessos-pessoas",
+      "sha": "942955410699007fd86515fd34fb804b6b96903d",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-ambiente-runtime",
+      "sha": "2d4f5e5b77880e55d04ac028b321ae8089c205e5",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-coordenacao",
+      "sha": "917d509d8f65a23f3821035c4f13fe707f79f073",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-estrutura",
+      "sha": "558b3d35715e83a8f29699b6bea64cdf450acacf",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-formularios-cuidado-rotina",
+      "sha": "1baa84f5e8f1661c14cd940b951738494430c6b2",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-operacoes",
+      "sha": "4c300f550cd81c0ff53b4cb50aaa07d9d2eca51a",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-principal-chat-sistema",
+      "sha": "113361425ef9248aa11388ccd8fb06075fc2a912",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-publicacoes-agenda",
+      "sha": "aa3fedf7128a6b4d7fa1c23d505c9297235df3b9",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-realm-interno",
+      "sha": "2a7609507414e3aca77fdfa63895478a9f51fa15",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r08-suites",
+      "sha": "9d5a2f88a855edb50f2d656c4f16490d50b610d0",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-acessos-pessoas-20260912-1542",
+      "sha": "722cf260d1c062c950cff24610c21c3072e92d36",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-ambiente-runtime-20260912-1542",
+      "sha": "ae6a7c41d2c8a78d659c385f59235cab7e0d3168",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-coordenacao-20260912-1534",
+      "sha": "d2ed31572b42beae20f7656afcae806c8b5389ae",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-estrutura-20260912-1542",
+      "sha": "4e03d076e26583818e3dee1fbf9ed3d2ffae0c7f",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-formularios-cuidado-rotina-20260912-1542",
+      "sha": "98e49f39a1fd66b1e3baf6118ddace4a45637fc3",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-operacoes-20260912-1542",
+      "sha": "4164ec98befab68ed5931738458877ce6bc343d5",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-principal-chat-sistema-20260912-1542",
+      "sha": "d422268b16c90f296abbdf8a209df35875c9d081",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-publicacoes-agenda-20260912-1542",
+      "sha": "1e18b61860c815f185ed60f5fd350017c00e737d",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-realm-interno-20260912-1542",
+      "sha": "646b69ec4f4304180b37463020ab0abd7b6392ea",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r09-suites-20260912-1542",
+      "sha": "0986fd2a0214fdfa21f16b80e92d382245a51176",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 0,
+      "notPatchEquivalent": 0,
+      "disposition": "merged-in-dev",
+      "successor": null,
+      "evidence": null,
+      "reason": null
+    },
+    {
+      "branch": "work/etapa2-r10-chat-upload-first-delivery",
+      "sha": "df90f05b0daac2753cd8935efbdd6575b1eb0a37",
+      "lastCommit": "2026-09-12",
+      "exclusiveCommits": 1,
+      "notPatchEquivalent": 1,
+      "disposition": "superseded",
+      "successor": "b5a0fe8e7ff5f3d0022f6ff5f805557efa9a3e0c",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "reason": "Successor adds legacy replay and rejection guards; first delivery must not replace it"
+    }
+  ],
+  "tags": [
+    {
+      "tag": "archive/2026-09-09/c07-c04ro",
+      "sha": "479d1bd1771b13e0cd96084d244fc2cdc6b0e556",
+      "reachableFromDev": true
+    },
+    {
+      "tag": "archive/2026-09-09/claude/e2-r01-c04-estruturas",
+      "sha": "59867239c39afacdf6e6830334d1ae8503fa4984",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/claude/e2-r01-c05-comunicacao",
+      "sha": "42f8ef995a3e41a8aa1999c325e085208d874946",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/claude/e2-r01-c06-coordenacao",
+      "sha": "27dfccf0525f789a50b2d1243bb79470a2018166",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/claude/e2-r01-c07-validacao",
+      "sha": "cea29b1f881d806bdf1e88fa3a5fb416d8f0fb5c",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/claude/e2-r01-c07-validacao-visual",
+      "sha": "b9be43f438124be61ce4537b6db0a985ac1caaf3",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e1-a01-client-20260908",
+      "sha": "f0be734ac3210c84523a61700f73feaba5150368",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e1-replay-harness-20260907",
+      "sha": "97769124011c26d337a4dfb3921c15a875a69d9f",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2-r01-c00-integration",
+      "sha": "ed37c04dbfb7a8722ba6cee312a206d6c52d5e3f",
+      "reachableFromDev": true
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2-r01-c01-identidade",
+      "sha": "8899f3c211555c252ed5da5374b48871c4fd5bd6",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2-r01-c02-forms-midia",
+      "sha": "99f7283a20c78112c323786533975db5ce7947ce",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2-r01-c03-operacoes",
+      "sha": "bfdd5f0e6c0085f93ca32bcd812f32e91fe124a8",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2e-agenda-operacoes",
+      "sha": "ca4c82abc6c1604db6798c35d6381af8e8e56403",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2e-comunicacao-midia-principal",
+      "sha": "943a69aeec929b743c5477494ea7a2860410f4d6",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2e-estruturas-pessoas-locais",
+      "sha": "9e689374ec186b50bf38885a014a335844a6c4da",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2e-formularios-cuidado",
+      "sha": "f84d1dd70f0aaa0e09558845341b65e4190aaa7c",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/e2e-identidade-acessos",
+      "sha": "58ef983ad219c61721b0c64374ca05b17c878127",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/codex/pre-consolidation-wip-20260908",
+      "sha": "07e6e837371a2fba3d29e9803866be9ddf43e071",
+      "reachableFromDev": false
+    },
+    {
+      "tag": "archive/2026-09-09/stash-etapa2-denominadores",
+      "sha": "2961c1a7dd6ae1de4922ea8b68a14c27d75a440a",
+      "reachableFromDev": false
+    }
+  ],
+  "counts": {
+    "branches": 97,
+    "tags": 19,
+    "byDisposition": {
+      "merged-in-dev": 69,
+      "superseded": 12,
+      "patch-equivalent": 16
+    }
+  }
+}
