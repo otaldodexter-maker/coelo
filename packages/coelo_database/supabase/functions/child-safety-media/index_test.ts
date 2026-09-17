@@ -105,6 +105,49 @@ Deno.test("prepare returns only the signed window, never bucket or object key", 
   assertEquals("object_key" in body, false);
 });
 
+Deno.test("finalize accepts the ticket descriptor without storage_provider (documents are always R2)", async () => {
+  // Regressao da rota real de 17/09: authorize_finalize nao devolve
+  // storage_provider e o gateway respondia media_descriptor_invalid.
+  const deps = dependencies();
+  const base = deps.createClient as unknown as () => { rpc: (name: string) => Promise<{ data: unknown; error: unknown }> };
+  const client = base();
+  const withFinalize = {
+    ...deps,
+    createClient: (() => ({
+      auth: { getUser: async () => ({ data: { user: { id: "u" } }, error: null }) },
+      rpc: async (name: string) => {
+        if (name === "child_safety_person_document_authorize_finalize_v1") {
+          return {
+            data: {
+              finalize_ticket: "f1e00000-0000-4000-8000-000000000001",
+              document_id: "d0c00000-0000-4000-8000-000000000001",
+              bucket_id: "coelo-documents-prod",
+              object_key: "tenants/x/child_safety/authorized_person/y/identity-document/d/original/o.jpg",
+              mime_type: "image/jpeg",
+              byte_size: 3,
+            },
+            error: null,
+          };
+        }
+        if (name === "child_safety_person_document_finalize_v1") {
+          return { data: { document_id: "d0c00000-0000-4000-8000-000000000001", status: "ready" }, error: null };
+        }
+        return client.rpc(name);
+      },
+    })) as unknown as ChildSafetyMediaDependencies["createClient"],
+  } as ChildSafetyMediaDependencies;
+  const response = await handleChildSafetyMediaRequest(
+    new Request("http://edge.local/child-safety-media", {
+      method: "POST",
+      headers: { authorization: "Bearer jwt", "content-type": "application/json" },
+      body: JSON.stringify({ action: "finalize", document_id: "d0c00000-0000-4000-8000-000000000001" }),
+    }),
+    withFinalize,
+  );
+  assertEquals(response.status, 200);
+  assertEquals((await response.json()).status, "ready");
+});
+
 Deno.test("unknown origin and missing bearer are rejected before any RPC", async () => {
   const foreign = await handleChildSafetyMediaRequest(
     new Request("http://edge.local/child-safety-media", {

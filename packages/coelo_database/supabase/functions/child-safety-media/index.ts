@@ -248,7 +248,9 @@ export async function handleChildSafetyMediaRequest(
       if (ticketed.error) {
         return respond(origin, 403, { error: "document_finalize_denied" });
       }
-      const descriptor = ticketed.data as Json;
+      // O bilhete de finalize nao repete storage_provider: documentos sao
+      // sempre R2 (constraint authorized_person_documents_provider_ck).
+      const descriptor = { storage_provider: "r2", ...(ticketed.data as Json) };
       const expectedSize = Number(descriptor.byte_size);
       const expectedMime = String(descriptor.mime_type);
       const transport = transportFor(dependencies, descriptorBucket(descriptor));
