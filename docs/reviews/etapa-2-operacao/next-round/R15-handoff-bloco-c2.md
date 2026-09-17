@@ -28,7 +28,8 @@ do dump `schema-producao-20260917-r15-c2-before.sql` (SHA-256 `c87f4d67…`).
 | `650297873` | B5 — `superadmin_person_search_v1` (spec 061) + FE do wizard | migration validada no espelho (pgTAP 33/33), FE local-green (safety 192/192, analyze limpo); **não aplicada em produção** | `r15-bloco-c2/person-search-and-person-without-account-20260917.md` |
 | `4e96c8840` | B6 — pessoa sem conta (spec 062): migration + pgTAP 40/40 + Edge `child-safety-media` (deno 6/6) | BE validado no espelho; Edge não implantada | idem |
 | `1a43b0435` | B6 FE — cadastro no wizard, upload do documento pelo gateway, `authorized_person_id` no comando | local-green (safety 196/196) | idem |
-| (este commit) | r12-38 — Cardápios imagem R2 (spec 063): migration + pgTAP 26/26, Edge `meal-plan-media` (7/7) + ramo R2 no cleanup, adapter FE pelo gateway (9/9), envio habilitado nas rotas produtivas, prévia após reload | local-green; não aplicada/implantada | idem |
+| `13f4a8c9b` | r12-38 — Cardápios imagem R2 (spec 063): migration + pgTAP 26/26, Edge `meal-plan-media` (7/7) + ramo R2 no cleanup, adapter FE pelo gateway (9/9), envio habilitado nas rotas produtivas, prévia após reload | local-green; não aplicada/implantada | idem |
+| (este commit) | Fatia 4 — specs decididas sem prova: 064 perfil transversal/funcionário no Principal (OQ-044, r12-19/23, `draft-for-review`), 065 Perfis de cuidado §5 (r12-29/30), 066 ciclo de vida OQ-033 (+ `institutions.status`), 067 Locais OQ-034, 068 perfis oficiais OQ-032 (`draft-for-review`, lista a escolher), 069 Avisos H08/H13/H23 | só spec; nenhuma migration/tela | — |
 
 Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
 
@@ -56,6 +57,14 @@ Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
    legado; hoje não há ativos legados em produção, pois o envio estava desabilitado).
 5. Bloco B (OQ-047, lote 75) já cobriu `serialization_failure` nas famílias; as
    minhas migrations não contêm 40001 (postcheck).
+6. Numeração das specs da fatia 4 (064–069) passa da faixa 061–064 informada pela
+   coordenadora; nenhuma colisão em `origin/r15/bloco-a|b|c1` na hora do commit.
+   Renumerar na integração se outra sessão reservar 065+.
+7. Espelho `coelo_mirror_r15_c2` parado ao fim (`supabase stop`); a pasta
+   `Coelo-backups/mirror-r15-c2` e o dump prévio permanecem para reexecutar os
+   três pgTAP (`docker exec -i supabase_db_coelo_mirror_r15_c2 psql … -f -`).
+8. Porta 3017/CDP 9417 não foram usados: nenhuma tela foi executada na rota real
+   (todas as provas dependem da aplicação em produção).
 
 ## Contadores
 
