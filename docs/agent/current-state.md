@@ -23,6 +23,11 @@ audience: "team"
   Etapa 3 (apresentar todas as telas ao Owner; ele aprova ou manda para a Etapa 3).
   Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
   abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
+- **17/09 ~20:15 BRT — execução paralela da R16 em curso** (`R16-execucao.md`): sessão
+  FORMS (`Coelo.worktrees16-forms`, `r16/forms-location-answer`, 3014/9414) e sessão
+  AGORA (`…16-agora`, `r16/agora-publish`, 3015/9415, espelho `mirror-r16-agora`,
+  lote 81 reservado); a coordenadora integra em `dev` por cherry-pick. Handoffs
+  `R16-handoff-forms.md` / `R16-handoff-agora.md`.
 - Produção em 17/09: lotes 75–80 (PT409 sistêmico, Chat multi-anexo, "Para você",
   B5/B6/Cardápios R2, projeção do Agora, fixture QA R15) e Edges `chat-media`,
   `child-safety-media` v2, `meal-plan-media`, `meal-plan-image-cleanup`, `now-media`,

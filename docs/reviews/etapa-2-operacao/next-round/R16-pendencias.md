@@ -354,5 +354,5 @@ Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em
 - Owner items: editar a linha aqui e rodar `node docs/reviews/etapa-2-operacao/next-round/sync-r12-owner-records.cjs`.
 - H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14/R15 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
-- Execução paralela: modelo em `R15-execucao-paralela.md` (histórico); uma R16 paralela exige arquivo próprio.
+- Execução paralela: `R16-execucao.md` (duas sessões, FORMS e AGORA, + coordenadora; aberta em 17/09 ~20:15 BRT); modelo histórico em `R15-execucao-paralela.md`.
 - Recuperação/redefinição de senha: `auth.recover` E2E pela tela e `auth.reset` por decisão E10 (17/09); prova detalhada do link na Etapa 3.

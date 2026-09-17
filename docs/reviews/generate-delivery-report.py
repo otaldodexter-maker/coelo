@@ -93,11 +93,20 @@ def current_protected_worktrees() -> dict:
         raw_path = values.get("worktree")
         branch = values.get("branch", "")
         if not raw_path or not (
-            branch.startswith("refs/heads/r14/") or branch.startswith("refs/heads/r15/")
+            branch.startswith("refs/heads/r14/")
+            or branch.startswith("refs/heads/r15/")
+            or branch.startswith("refs/heads/r16/")
         ):
             continue
         path = str(Path(raw_path).resolve())
-        if branch.startswith("refs/heads/r15/"):
+        if branch.startswith("refs/heads/r16/"):
+            disposition = "retained-session"
+            reason = (
+                "Worktree de sessão executora da R16 (17/09; R16-execucao.md); "
+                "a coordenadora integra por cherry-pick; remover só no fechamento da R16 "
+                "após bundle em Coelo-backups/r16-fechamento."
+            )
+        elif branch.startswith("refs/heads/r15/"):
             disposition = "retained-session"
             reason = (
                 "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); "
@@ -206,6 +215,7 @@ def main() -> None:
         "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
         "decisions/0043-r15-closure-r16-opening-20260917.md",
         "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+        "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
         "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     }
     evidence.update(item["evidence"] for item in owner_items)
