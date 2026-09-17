@@ -24,6 +24,7 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 | Coelo (Principal) › Conversas › thread › anexos (`/communication/conversations`) | `chat.attach`, `owner.r12-52` (E3) | 17/09 08:50 BRT | **fechada** 10:05 BRT |
 | Principal hospedado › "ver como" / Para você / Editar perfil | `principal.for-you`, `principal.profile-edit`, H02 (B9) | 17/09 08:50 BRT | **fechada** 12:15 BRT |
 | Coelo (Principal) › Momentos (`/principal-moments`, `/principal-moments/publish`) — liberada pelo Bloco A via coordenadora | `momentos.view`, `momentos.publish`, `momentos.remove`, `momentos.create` | 17/09 12:40 BRT | **fechada** 13:40 BRT |
+| Atividades › Modelos e Rotina › Modelos (Arquivar B1) — liberada pelo Bloco B (bdad37376) via coordenadora | `owner.r12-01`, `owner.r12-02` (só tela; lote 74 já em produção) | 17/09 14:15 BRT | em andamento |
 
 ## Fatias entregues
 
