@@ -6018,15 +6018,15 @@
       "family": "agora",
       "screen": "Agora / Publicar",
       "scope": "mvp",
-      "done": "R15 B: massa completa (responsavel ativa com conta, guardian_links, lote 80) e story de audiencia families publicada em producao (d9580375); leitura pela responsavel por PostgREST -> 403 42501 now_permission_denied (now_actor exige permissao/membership de equipe); staff ve [] (isolamento correto). Bloqueado por contrato (RPC), OQ-048 para a R16.",
+      "done": "R16 AGORA (producao, 23:39-23:41 UTC): story de Familias d9580375 lida por qa-r15-responsavel com a propria sessao (200, can_remove false, ticket de midia; Edge now-media read 200 com URL assinada; ticket de uso unico), segunda chamada estavel; outra instituicao real e inexistente -> 403 42501 now_permission_denied; equipe qa-r06-principal -> []. Sem membership/override/massa nova. Tela nao capturada (OQ-048: conta so-responsavel nao abre o Principal).",
       "fe": "R14 S7 rota real: Publicar agora exige publico marcado (validacao Escolha o publico e o contexto), publica e volta ao feed; audiencia fixa Familias impede o autor staff de ver a propria publicacao (observacao de produto para R15).",
-      "be": "R14 S7 producao: publish_now 200 (status published, expires_at = publish_at + 24h) apos prepare/PUT R2/finalize; negativa 403 publication_not_authorized para publicacao inexistente; feed de outra instituicao 403.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart, caso do Agora (PASS); suites de principal_now_publication sem regressao; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md; docs/reviews/evidence/etapa-2/r15-bloco-b/agora-publish-20260917.md",
+      "be": "R16 AGORA: lote 81 (20260917203000_now_guardian_reader_v1, spec 070, OQ-048): app_private.now_reader_actor (leitura) reconhece o responsavel por guardian_links + can_view sem membership; list_visible_now_publications e redeem_now_media_read_ticket usam esse caminho; now_actor (escrita) inalterado. pgTAP now_guardian_reader_v1_test 21/21 no espelho fiel; suites do Agora sem regressao; leitura da responsavel em producao 200.",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 728aebecf; principal_publication_idempotency_test.dart, caso do Agora (PASS); suites de principal_now_publication sem regressao; 2026-09-09, local; coordenacao.json R04 rev 20 (lote9); docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/agora-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md; docs/reviews/evidence/etapa-2/r15-bloco-b/agora-publish-20260917.md; docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -6046,10 +6046,16 @@
           "recordedAt": "2026-09-16T12:20:00-03:00"
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-          "revision": "dbe518101",
+          "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+          "revision": "c539fc40d",
           "environment": "producao",
-          "recordedAt": "2026-09-16T12:20:00-03:00"
+          "recordedAt": "2026-09-17T20:41:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+          "revision": "c539fc40d",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T20:41:00-03:00"
         }
       }
     },
@@ -9711,7 +9717,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T20:08:33.188Z",
+  "updatedAt": "2026-09-17T23:43:19.860Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

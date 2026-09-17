@@ -371,3 +371,17 @@
 # person_auth_link created, pessoa draft->active, 2 guardian_links, 2 guardian_context_permissions, unit_links ja ativos (0 aceitos).
 # JSON completo em docs/reviews/evidence/etapa-2/r15-bloco-b/massa-qa-r15-20260917.md.
 20260917110000_qa_r15_guardian_fixture_v1.sql
+# lote 81 (17/09 23:33 UTC) - R16 Sessao AGORA (origin/r16/agora-publish c539fc40d; ADR 0044, OQ-048, spec 070): leitor do Agora
+# reconhece o responsavel por vinculo. app_private.now_reader_actor (funcao irma de now_actor so para leitura): equipe como antes
+# (now.publications.read + membership ativa); sem permissao institucional, caminho de responsavel (guardian_links ativo +
+# child_contexts ativo + guardian_context_permissions.can_view via now_viewer_role_class com membership null) -> classe guardian,
+# membership_id null. list_visible_now_publications passa a usar now_reader_actor (assinatura, projecao e grants iguais);
+# redeem_now_media_read_ticket deixa de exigir membership como juncao (resolve a membership ativa, nula para o responsavel).
+# now_actor (criar/publicar/remover) INALTERADO; nenhuma membership/override criada; candidato 20260917113000 continua NAO aplicado.
+# Espelho coelo_mirror_r16_agora restaurado do dump novo (ACL fiel + catalogo): pgTAP now_guardian_reader_v1_test 21/21;
+# now_publication_removal 18/18(19), now_feed_removal_projection_v1 9/9, happens_post_withdrawal 33/33 identicos a linha de base.
+# Dump previo Coelo-backups/schema-producao-20260917-r16-agora-before.sql (SHA-256 0c6c6468). Aplicada por `supabase db query
+# --linked -f` (23:33:53-23:33:58 UTC); pos-verificacao em producao: now_reader_actor sem execute a anon/authenticated,
+# list_visible_now_publications usa now_reader_actor (authenticated execute), now_actor intacto; ledger 20260917203000 reparado
+# (`migration repair --status applied`) e listado local+remoto. Autorizacao nominal do Owner em R16-execucao.md (17/09 ~20:35 BRT).
+20260917203000_now_guardian_reader_v1.sql

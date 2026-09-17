@@ -1,0 +1,10 @@
+[
+ {"action_id":"agora.publish","camada":"backend","estado_proposto":"done",
+  "delta":"R16 AGORA: lote 81 (20260917203000_now_guardian_reader_v1, spec 070, OQ-048): app_private.now_reader_actor (leitura) reconhece o responsavel por guardian_links + can_view sem membership; list_visible_now_publications e redeem_now_media_read_ticket usam esse caminho; now_actor (escrita) inalterado. pgTAP now_guardian_reader_v1_test 21/21 no espelho fiel; suites do Agora sem regressao; leitura da responsavel em producao 200.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md","revision":"c539fc40d","environment":"producao","recordedAt":"2026-09-17T20:41:00-03:00"}},
+ {"action_id":"agora.publish","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R16 AGORA (producao, 23:39-23:41 UTC): story de Familias d9580375 lida por qa-r15-responsavel com a propria sessao (200, can_remove false, ticket de midia; Edge now-media read 200 com URL assinada; ticket de uso unico), segunda chamada estavel; outra instituicao real e inexistente -> 403 42501 now_permission_denied; equipe qa-r06-principal -> []. Sem membership/override/massa nova. Tela nao capturada (OQ-048: conta so-responsavel nao abre o Principal).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md","revision":"c539fc40d","environment":"producao","recordedAt":"2026-09-17T20:41:00-03:00"}}
+]
