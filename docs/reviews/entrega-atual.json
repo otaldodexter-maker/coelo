@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "b6fffd51546b2ebb3483b96600250893e006ae92",
+    "head": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -228,11 +228,11 @@
         "attendance.finish"
       ],
       "fe": "verified",
-      "be": "done",
-      "e2e": "verified-e2e",
+      "be": "not-applicable",
+      "e2e": "flutter-only",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
+      "nextGate": "Ajuste visual entregue; não refazer",
       "sourceRound": "R15"
     },
     {
@@ -284,12 +284,12 @@
       "id": "owner.r12-11",
       "status": "done",
       "actionIds": [],
-      "fe": "verified",
-      "be": "done",
-      "e2e": "verified-e2e",
+      "fe": "Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS.",
+      "be": "Contrato preservado; nenhum SQL/RPC novo.",
+      "e2e": "Visual golden pendente de reconciliação; sem action_id novo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1). Detalhe da prova (R15 Bloco A, 17/09): Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS. / Contrato preservado; nenhum SQL/RPC novo. / Visual golden pendente de reconciliação; sem action_id novo.",
+      "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1).",
       "sourceRound": "R15"
     },
     {
@@ -731,11 +731,11 @@
         "forms.list"
       ],
       "fe": "verified",
-      "be": "done",
-      "e2e": "verified-e2e",
+      "be": "not-applicable",
+      "e2e": "flutter-only",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
+      "nextGate": "Ajuste visual entregue; não refazer",
       "sourceRound": "R15"
     },
     {
@@ -759,11 +759,11 @@
         "chat.open"
       ],
       "fe": "verified",
-      "be": "done",
-      "e2e": "verified-e2e",
+      "be": "not-applicable",
+      "e2e": "flutter-only",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
+      "nextGate": "Ajuste visual entregue; não refazer",
       "sourceRound": "R15"
     },
     {
@@ -874,12 +874,12 @@
       "id": "owner.r12-51",
       "status": "done",
       "actionIds": [],
-      "fe": "verified",
-      "be": "done",
-      "e2e": "verified-e2e",
+      "fe": "Não aplicável.",
+      "be": "Done (lote 63, 14/09): quatro candidatos aplicados em produção com dump SHA-256, espelho e pgTAP verdes, ledger 283→287.",
+      "e2e": "Não aplicável.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova. Detalhe da prova (R15 Bloco A, 17/09): Não aplicável. / Done (lote 63, 14/09): quatro candidatos aplicados em produção com dump SHA-256, espelho e pgTAP verdes, ledger 283→287. / Não aplicável.",
+      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
       "sourceRound": "R15"
     },
     {
@@ -1073,7 +1073,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-a",
-      "sha": "2240c32ba7a4e2cc30ce3821624e242e30a12225"
+      "sha": "776f512aa12a215d830a5a53674eb3b8e80a8bdc"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b": {
       "disposition": "retained-session",
@@ -1639,15 +1639,16 @@
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
     "r15/bloco-a": {
-      "sha": "2240c32ba7a4e2cc30ce3821624e242e30a12225",
+      "sha": "776f512aa12a215d830a5a53674eb3b8e80a8bdc",
       "exclusive": [
+        "776f512aa12a215d830a5a53674eb3b8e80a8bdc",
         "2240c32ba7a4e2cc30ce3821624e242e30a12225",
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "r15/bloco-b": {
       "sha": "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -1658,7 +1659,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -1670,7 +1671,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "r15/bloco-c1": {
       "sha": "c0482aeddc81e093d0c5a95aa6222908ef358f54",
@@ -1683,7 +1684,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -1697,7 +1698,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2328,15 +2329,16 @@
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
     "origin/r15/bloco-a": {
-      "sha": "2240c32ba7a4e2cc30ce3821624e242e30a12225",
+      "sha": "776f512aa12a215d830a5a53674eb3b8e80a8bdc",
       "exclusive": [
+        "776f512aa12a215d830a5a53674eb3b8e80a8bdc",
         "2240c32ba7a4e2cc30ce3821624e242e30a12225",
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "origin/r15/bloco-b": {
       "sha": "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -2347,7 +2349,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -2359,7 +2361,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "origin/r15/bloco-c1": {
       "sha": "c0482aeddc81e093d0c5a95aa6222908ef358f54",
@@ -2372,7 +2374,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2386,7 +2388,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
+      "successor": "7b79e6fa3403d69e67ac68828c10d0aa3f4d45ff"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
