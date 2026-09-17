@@ -1454,7 +1454,11 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
 
   String? _validateContent() {
     if (_isSimple) {
-      if (_simpleImage == null) return 'Anexe a imagem do cardápio simples.';
+      // r12-38 (rota real 17/09): a imagem escolhida ainda nao enviada conta
+      // como anexo; o upload pelo gateway acontece ao salvar.
+      if (_simpleImage == null && _pendingSimpleImage == null) {
+        return 'Anexe a imagem do cardápio simples.';
+      }
       if (_simpleImageAlt.text.trim().isEmpty) return 'Descreva a imagem para acessibilidade.';
       return null;
     }
