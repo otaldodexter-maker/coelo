@@ -83,12 +83,11 @@
     "actionIds": [
       "attendance.create"
     ],
-    "fe": "FE verified (rota real 15/09): cascata Instituição/Unidade/Turma/Contexto com contexto real, data, chamada criada e relida.",
-    "be": "BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa.",
-    "e2e": "verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+    "fe": "FE verified: R15 B 17/09 — contexto **Atividade** exercitado na rota real com atividade real (\"QA R15 Atividade Assiduidade\" `1bd6bc74…`, criada pela tela após 2 defeitos de FE corrigidos): seleção, chamada criada (`bcd47ba2…`, open, `activity_id` preenchido) e reload.",
+    "be": "BE done; `superadmin_attendance_create_call` aceita `p_activity_id`; **achado**: chamada em contexto Atividade nasce com `participants []` (turma com 3 crianças ativas, atividade em modo `all`).",
+    "e2e": "verified-e2e (contexto Turma, R14); contexto Atividade: negativa não executada (prazo).",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 D3: autorizada migration forward-only alinhando escopo de activities ao de groups em superadmin_attendance_context_options (espelho + pgTAP antes); depois provar seleção, criação, reload e negativa do contexto Atividade.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -315,17 +314,17 @@
   },
   {
     "id": "owner.r12-17",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "child-safety.create",
       "child-safety.edit"
     ],
-    "fe": "Diagnóstico: campo atual ainda aceita identificador/UUID técnico; não existe contrato de busca autorizada por nome, CPF, e-mail ou celular.",
-    "be": "Sem alteração backend; não criar busca fake.",
-    "e2e": "Contract decision pending.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
+    "nextGate": "Concluído 17/09 (R15 C2, lote 78, ADR 0041 B5): busca única com mínimo por tipo (22023 abaixo do mínimo), resultado minimizado sem CPF, seleção preenche criança + pessoa, autorização pendente criada e relida no detalhe da criança, limite de taxa 422 na 31ª chamada, escopo vazio fora do ator. Resíduo (massa): celular/CPF e responsável → crianças provados só por pgTAP 33/33.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -335,16 +334,16 @@
   },
   {
     "id": "owner.r12-18",
-    "status": "open",
+    "status": "partial",
     "actionIds": [
       "child-safety.create"
     ],
-    "fe": "Diagnóstico: pessoa global sem conta e campos mínimos/deduplicação não têm contrato definido.",
-    "be": "Nenhuma tabela/RPC criada.",
-    "e2e": "Contract decision pending.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
+    "fe": "FE verified (R15 C2, 17/09): cadastro de pessoa sem conta no wizard com CPF mascarado, contato e documento obrigatório; wizard percorrido na 3016 até a revisão.",
+    "be": "BE done (lote 78): tabela/RPC com dedupe por (instituição, CPF) provado pela tela e por RPC, documento em R2 privado `ready` pelo gateway (prepare/PUT/finalize/read 200 com `child-safety-media` v2), pgTAP 40/40.",
+    "e2e": "E2E parcial: envio com `authorized_person_id` provado pela RPC com o payload exato do wizard (pendente b729f6b8 relido); o clique final \"Enviar\" pela tela não concluiu (aba do Chrome parou no CDP) e o upload do documento pelo navegador depende do CORS de `coelo-documents-prod` (E13).",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
+    "nextGate": "R16: repetir o envio final pela tela e o upload pelo navegador quando o CORS do bucket existir; PERSON_HAS_ACCOUNT só por pgTAP (massa).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -732,19 +731,19 @@
   },
   {
     "id": "owner.r12-38",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "meal-plans.create",
       "meal-plans.edit",
       "meal-plans.publish",
       "meal-plans.model-edit"
     ],
-    "fe": "FE mantém envio desabilitado.",
-    "be": "Adapter composto ainda usa Supabase Storage em upload/leitura, incompatível com R2 privado.",
-    "e2e": "E2E não executado.",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
+    "nextGate": "Concluído 17/09 (R15 C2, lote 78, ADR 0032): imagem enviada pelo Media Gateway R2 a partir do navegador (3016), defeito `simpleImageMeta` corrigido, prévia após reload real, cardápio publicado (revisão 8), model-edit sem regressão; pgTAP 26/26. Resíduo: 2 ativos órfãos em cardápio publicado (imutável) para limpeza na R16.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
