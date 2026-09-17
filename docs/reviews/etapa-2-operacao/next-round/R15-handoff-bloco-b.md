@@ -22,8 +22,9 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
   na QA R04 e turma `368a5cea`); contas/vínculo de responsável dependem do Owner (abaixo). Blocos A e C2: ver
   "Avisos" 8.
 - Fatia 3 — Segurança da criança: **entregue** (`child-safety.edit`/`suspend` verified-e2e; r12-13/15/16 done).
-- Fatia 7 — Agora: `agora.expire` **entregue** (verified-e2e); `agora.remove` em andamento (projeção pelo rito, lote 79,
-  deploy `now-media`, tela, negativa D5); `agora.publish` aguarda a conta `qa-r15-responsavel` + AP-1.
+- Fatia 7 — Agora: `agora.expire` e `agora.remove` **entregues** (verified-e2e; lote 79 + Edge `now-media` deployada);
+  `agora.publish` **bloqueado por massa/decisão** (audiência Famílias exige responsável com conta e vínculo: conta
+  `qa-r15-responsavel` não confirmada pelo Owner; AP-1 de B′ pronto) — quem tiver a conta aplica AP-1 e prova.
 - **Fatia 6 — Arquivar B1 (`owner.r12-01`/`r12-02`) LIBERADA para o Bloco C1** (17/09 14:05 BRT, a pedido da
   coordenadora): só tela, migration `20260916193000_archive_models_v1` já em produção (lote 74); rotas Atividades ›
   Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivados), negativas PT409/`P0002`. O Bloco B não toca.
@@ -35,7 +36,8 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 
 | SHA | Fatia | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|---|
-| (este commit) | `agora.expire` — expiração real de 24 h observada em produção: antes (13:54 UTC) feed do leitor com `655e437b`, depois (16:49 UTC) feed `[]` e `a4e65c73`/`655e437b` `expired` v3 pelo worker; FE pela combinação das capturas de 16/09 (S7) e 17/09 | `agora.expire` → verified / verified-e2e | nenhum | `r15-bloco-b/agora-expire-20260917.md`; `deltas-agora-expire-20260917.json` |
+| (este commit) | `agora.remove` — lote 79 (projeção `management_version`/`can_remove` em `list_visible_now_publications`, pgTAP 9/9, guard 58) + Edge `now-media` deployada (PT409 → 409) + remoção pela tela em produção (`ab13104e` removed v3, mídia purgada, auditoria) + reload + negativa 409 (356 ms) | `agora.remove` → verified / done / verified-e2e | nenhum | `r15-bloco-b/agora-remove-20260917.md`; `deltas-agora-remove-20260917.json` |
+| bdad37376 | `agora.expire` — expiração real de 24 h observada em produção: antes (13:54 UTC) feed do leitor com `655e437b`, depois (16:49 UTC) feed `[]` e `a4e65c73`/`655e437b` `expired` v3 pelo worker; FE pela combinação das capturas de 16/09 (S7) e 17/09 | `agora.expire` → verified / verified-e2e | nenhum | `r15-bloco-b/agora-expire-20260917.md`; `deltas-agora-expire-20260917.json` |
 | 0e46a7609 | Segurança da criança pela tela (`qa-r06-acessos`): autorização `3f3650b0-9738-4014-b183-7ec18fd13a81` criada (v1), editada (v2), aprovada (v3) e suspensa (v4); reload; negativas PT409 (1,4 s / 0,14 s / 0,11 s) e P0002 sem mutação; defeito FE corrigido (Avó/Avô → `grandmother`/`grandfather`, testes 176/176) | `child-safety.edit` → verified / verified-e2e; `child-safety.suspend` → verified / verified-e2e | `owner.r12-13`, `owner.r12-15`, `owner.r12-16` → done | `r15-bloco-b/child-safety-edit-suspend-20260917.md`; `deltas-child-safety-20260917.json` |
 | bcf47d636 | Massa `QA R15` (E2) pela tela `/people/new` (`qa-r06-acessos`): responsável `da915f98-bfad-49f6-9914-fe57a30584c9`; Criança 1 pessoa `93457405-a4eb-4273-9579-ef84136a794b` / contexto `1a6158fe-6cab-427c-9496-96e4273ab184`; Criança 2 pessoa `14d70a25-244f-409f-a164-71d87b491650` / contexto `519ef941-3edb-41b6-94c4-55ed4638aefd`; ambas com `child_group_links` ativos na turma `368a5cea` e `child_unit_links` pendentes na Unidade QA R04 | nenhum | nenhum | `r15-bloco-b/massa-qa-r15-20260917.md` |
 | 6c2f02ee0 | OQ-047 (E1) — migration única `20260917090000_pt409_stale_version_v1` (126 funções, 175 raises 40001 → PT409, 18 handlers de envelope, 28 famílias) + pgTAP `pt409_stale_version_v1_test` 37/37 + 8 suítes ajustadas + 22 repositórios FE e Edge `now-media` mapeando PT409; **aplicada em produção às 12:30 UTC, ledger `20260917090000` confirmado, lote 75** | nenhum estado alterado (nenhum delta JSON) | nenhum | `r15-bloco-b/oq047-pt409-20260917.md` |
@@ -70,7 +72,14 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
    das pendências "Para o Owner" abaixo; enquanto isso, B5/B6 podem usar as crianças novas (contexto + turma) e
    `agora.publish` a audiência de staff. As identidades `qa-r06-*` já contam como "equipe da unidade" para o sino
    de Medicação (membership `owner` de escopo `institution`).
-9. `agora.expire` — estado "antes" capturado às 13:54–13:55 UTC (`list_visible_now_publications` como
+9. **Achado de composição no Agora** (evidência `agora-remove` §3): a RPC de remoção aceita qualquer ator com
+   `now.publications.remove` no contexto (capacidade `institution_admin`, lote 71) — `qa-r06-principal` removeu a
+   story `ff93ef01` pela Edge —, mas o feed só oferece "Remover este Agora" ao autor (`can_remove` = autor ∧ permissão,
+   candidato da S7). Decisão para Owner/coordenadora: ampliar `can_remove` para "permissão no contexto" ou manter só autor.
+10. **D5 (negativa cross-tenant pela fixture) não executada**: a senha de `qa-r14-chat-cross-tenant@coelo.me` não está
+   em `Coelo-backups` (sessão). Coberta por pgTAP `42501` (cross-tenant 6/6 + projeção 9/9). Se o Owner definir a senha
+   (painel) e guardar em `Coelo-backups/qa-r14-chat-cross-tenant.env`, a negativa pela Edge leva ~5 min.
+11. `agora.expire` — estado "antes" capturado às 13:54–13:55 UTC (`list_visible_now_publications` como
    `qa-r06-principal` devolve `655e437b`, expira 15:16:28 UTC; `a4e65c73` expira 15:06:48 UTC, ambas
    `published` v2). Observação: a linha "Agora" em `/principal-happens` (para onde `/principal-now` redireciona no
    build atual) mostrou só "Publicar agora" para o leitor, apesar da RPC devolver a story — a investigar na fatia 7.
@@ -105,4 +114,4 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 
 ## Contadores
 
-`node docs/reviews/validate-trackers.cjs` → PASS após `agora.expire`: FE 192/232, BE 172/219, E2E 165/186 (ativo 186), Owner 24/53.
+`node docs/reviews/validate-trackers.cjs` → PASS após `agora.remove`: FE 193/232, BE 173/219, E2E 166/186 (ativo 186), Owner 24/53.

@@ -60,8 +60,8 @@ select ok(position('status=''draft''' in replace(pg_get_functiondef('public.auth
 select ok(position('authorize_now_asset_read' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))=0,'public feed never reuses author preview authorization');
 select ok(
   pg_get_function_result('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure)
-    = 'TABLE(publication_id uuid, author_name text, author_initials text, context_label text, caption text, overlay_text text, crop_scale numeric, crop_x numeric, crop_y numeric, cover_position numeric, published_at timestamp with time zone, expires_at timestamp with time zone, media jsonb)',
-  'Agora feed exposes only its minimum presentation projection'
+    = 'TABLE(publication_id uuid, author_name text, author_initials text, context_label text, caption text, overlay_text text, crop_scale numeric, crop_x numeric, crop_y numeric, cover_position numeric, published_at timestamp with time zone, expires_at timestamp with time zone, media jsonb, management_version bigint, can_remove boolean)',
+  'Agora feed exposes its minimum presentation projection plus the removal projection (management_version, can_remove; ADR 0040, R15 lote 79)'
 );
 select is(app_private.now_audience_matches_role('guardian','families'),true,'guardian receives family Agora publications');
 select is(app_private.now_audience_matches_role('guardian','guardians_only'),true,'guardian receives guardian-only Agora publications');

@@ -6058,22 +6058,42 @@
       "family": "agora",
       "screen": "Agora / Remover",
       "scope": "mvp",
-      "done": "R14 S7: candidato de projecao do feed e negativa D5 bloqueados por permissao da sessao (criar migration / db query recusados) e senha da identidade sintetica indisponivel; ver agora-remove-20260916.md.",
-      "fe": "R14 S7: opcao Remover este Agora na folha de opcoes (autor com can_remove + management_version projetados), confirmacao, estados sucesso/negado/conflito/indisponivel e releitura do feed; 67/67 testes; sem rota real porque producao ainda nao projeta management_version/can_remove.",
-      "be": "Implementar contrato server-side de agora.remove com autoria/capacidade contextual, tenant/ownership, expected_version, idempotência, auditoria minimizada, revogação no catálogo/gateway, purge idempotente do objeto R2 e da cópia Stream; preservar catálogo/recibo/auditoria.",
-      "evidence": "decisions/0040-agora-immediate-removal.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/036-principal-now-publication-mvp.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
+      "done": "R15 B: remocao imediata pela tela em producao (ab13104e: removed v3, midia purgada, auditoria), feed do leitor [] e reload; negativa versao defasada -> 409 expected_version_conflict pela Edge (356 ms, sem mutacao); D5 por fixture pendente (sessao: senha de qa-r14-chat-cross-tenant ausente), coberta por pgTAP 42501.",
+      "fe": "R15 B rota real: /principal-now como autora -> Opcoes deste Agora -> Remover este Agora (so com can_remove true, lote 79) -> confirmacao -> 'Agora removido.' e viewer 'Nada novo no Agora'; reload sem a story.",
+      "be": "R15 B: lote 79 (list_visible_now_publications projeta management_version/can_remove; pgTAP 9/9 + guard 58; ledger 20260917140000) e Edge now-media deployada (PT409 -> 409); remove_now_publication em producao com status removed v3, asset deleted, purge purged, auditoria publication_removed.",
+      "evidence": "decisions/0040-agora-immediate-removal.md; decisions/0032-mvp-private-media-r2.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md; specs/036-principal-now-publication-mvp.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md; docs/reviews/evidence/etapa-2/r15-bloco-b/agora-remove-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "formalCommitment": {
         "status": "open",
         "owner": "Owner/C0/E",
         "evidence": "decisions/0040-agora-immediate-removal.md",
         "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
       },
-      "documentationReconciledAt": "2026-09-15"
+      "documentationReconciledAt": "2026-09-15",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-remove-20260917.md",
+          "revision": "bdad37376",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T14:20:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-remove-20260917.md",
+          "revision": "bdad37376",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T14:20:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-remove-20260917.md",
+          "revision": "bdad37376",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T14:20:00-03:00"
+        }
+      }
     },
     {
       "id": "momentos.view",
@@ -9652,7 +9672,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T16:56:40.743Z",
+  "updatedAt": "2026-09-17T17:19:39.796Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
