@@ -37,7 +37,7 @@ com `packages/coelo_database/supabase/.temp` do link):
 3. `supabase db query --linked --workdir packages/coelo_database -f packages/coelo_database/migrations/20260917170000_child_safety_person_without_account_v1.sql`
 3b. `supabase db query --linked --workdir packages/coelo_database -f packages/coelo_database/migrations/20260917180000_meal_plan_images_r2_v1.sql`
 4. `supabase migration repair --status applied 20260917160000 20260917170000 20260917180000 --linked --workdir packages/coelo_database`
-5. `supabase migration list --linked --workdir packages/coelo_database` (ledger) e lote **77** (próximo livre; 75 = Bloco B OQ-047, 76 = reservado pelo C1) em `ordem-de-aplicacao-producao.txt`;
+5. `supabase migration list --linked --workdir packages/coelo_database` (ledger) e lote **78** (o 77 ficou com a C1; renumerado pela coordenadora) (próximo livre; 75 = Bloco B OQ-047, 76 = reservado pelo C1) em `ordem-de-aplicacao-producao.txt`;
 6. `supabase functions deploy child-safety-media --project-ref evvbomzejfijozbtgvpt`, `supabase functions deploy meal-plan-media --project-ref evvbomzejfijozbtgvpt` e `supabase functions deploy meal-plan-image-cleanup --project-ref evvbomzejfijozbtgvpt` (CORS lê `CHILD_SAFETY_MEDIA_ALLOWED_ORIGINS`/`MEAL_PLAN_MEDIA_ALLOWED_ORIGINS` ou, na ausência, `COELO_ALLOWED_ORIGINS`, já com `127.0.0.1:3014–3024`; R2 por `COELO_R2_*` já existentes).
 
 Sem a aplicação/deploy, `owner.r12-38` também fica bloqueado por ambiente/permissão
@@ -55,3 +55,24 @@ Sem a aplicação, as provas de rota real de `owner.r12-17` e `owner.r12-18`
   único já existente `(institution_id, document_fingerprint)`; CPF de pessoa
   com conta → `PERSON_HAS_ACCOUNT` (usar a busca B5).
 - Documento obrigatório (`ready`) para a autorização da pessoa sem conta.
+
+## Aplicação em produção (coordenadora, 17/09/2026 — lote 78)
+
+Autorização nominal do Owner em 17/09 (sessão coordenadora). Executado a partir de `dev`
+(`ecf08e4f2`), cujos três arquivos de migration e as três Edges são idênticos a `r15/bloco-c2`:
+
+- dump prévio `Coelo-backups/schema-producao-20260917-lote78-before.sql` — SHA-256
+  `933d7289c599c340fe25b88d749b7b3ce129f3579243ed3c9856c11a719e86ce`;
+- `supabase db query --linked --workdir packages/coelo_database -f migrations/<arquivo>` na ordem
+  `20260917160000`, `20260917170000`, `20260917180000` (sem erro);
+- `supabase migration repair --status applied 20260917160000 20260917170000 20260917180000 --linked`
+  → `Migration history repaired`; `migration list --linked` mostra as três como `local = remote`;
+- funções confirmadas em produção por `pg_proc`: `public.superadmin_person_search_v1`,
+  `public.child_safety_register_person_without_account_v1`, `public.meal_plan_image_read_descriptor_v2`,
+  `public.meal_plan_image_download_descriptor` e as auxiliares em `app_private`;
+- Edge Functions implantadas (`supabase functions deploy … --project-ref evvbomzejfijozbtgvpt`), todas
+  `ACTIVE`, `verify_jwt=true`, versão 1: `child-safety-media` (`6ea53119…`), `meal-plan-media`
+  (`973d9595…`), `meal-plan-image-cleanup` (`e42122c1…`).
+
+Estados por `action_id` e Owner items **não** mudam por esta aplicação: r12-17/18/38 seguem
+`open` até a prova E2E na rota real pela C2.

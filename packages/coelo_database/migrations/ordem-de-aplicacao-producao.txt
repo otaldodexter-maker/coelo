@@ -334,3 +334,14 @@
 # Coelo-backups/schema-producao-20260917-r15-c1-b9-before.sql (SHA-256 66f8bacc, ja com o lote 75 do Bloco B e o lote 76); aplicada por
 # `supabase db query --linked -f`, `migration repair --status applied 20260917130000`, ledger remoto confirmado por `migration list --linked`.
 20260917130000_principal_for_you_reader_v1.sql
+
+# lote 78 (17/09 ~14:00 UTC) - R15 Bloco C2 (B5 busca de pessoa autorizada, B6 pessoa sem conta, r12-38 imagens de Cardapios em R2;
+# ADR 0041 B5/B6, ADR 0032; specs 061/062/063), aplicado pela coordenadora a partir de dev ecf08e4f2 com autorizacao nominal do Owner em 17/09.
+# Espelho coelo_mirror_r15_c2 (portas 624xx, dump c87f4d67): pgTAP child_safety_person_search_v1 33/33, child_safety_person_without_account_v1 40/40,
+# meal_plan_images_r2_v1 26/26; dump previo Coelo-backups/schema-producao-20260917-lote78-before.sql (SHA-256 933d7289);
+# aplicadas por `supabase db query --linked --workdir packages/coelo_database -f migrations/<arquivo>`, ledger reparado por
+# `migration repair --status applied 20260917160000 20260917170000 20260917180000 --linked` e confirmado por `migration list --linked`;
+# Edges child-safety-media, meal-plan-media e meal-plan-image-cleanup implantadas (versao 1, verify_jwt=true) por `functions deploy --project-ref evvbomzejfijozbtgvpt`.
+20260917160000_child_safety_person_search_v1.sql
+20260917170000_child_safety_person_without_account_v1.sql
+20260917180000_meal_plan_images_r2_v1.sql

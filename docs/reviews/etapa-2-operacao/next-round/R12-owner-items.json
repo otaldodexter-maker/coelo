@@ -325,7 +325,7 @@
     "e2e": "Contract decision pending.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE.",
+    "nextGate": "ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -344,7 +344,7 @@
     "e2e": "Contract decision pending.",
     "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar.",
+    "nextGate": "ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -744,7 +744,7 @@
     "e2e": "E2E não executado.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
     "owner": "C0 R12",
-    "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag.",
+    "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag. Backend em produção desde 17/09 (lote 78, coordenadora; specs 061/062/063 da C2); falta a prova E2E na rota real.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

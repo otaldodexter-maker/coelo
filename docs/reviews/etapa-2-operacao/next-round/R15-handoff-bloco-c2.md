@@ -37,7 +37,7 @@ Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
 
 | Gate | Causa | Detalhe |
 |---|---|---|
-| Aplicar `20260917160000`, `20260917170000` e `20260917180000` em produção; deploy `child-safety-media`, `meal-plan-media`, `meal-plan-image-cleanup` | **ambiente (permissão do executor)** | `supabase db query --linked -f` negado pelo classificador ("Production Deploy"); não contornado. Rito e ordem completos na evidência; lote sugerido **77**. O Owner decide como entram. |
+| Aplicar `20260917160000`, `20260917170000` e `20260917180000` em produção; deploy `child-safety-media`, `meal-plan-media`, `meal-plan-image-cleanup` | **ambiente (permissão do executor)** | `supabase db query --linked -f` negado pelo classificador ("Production Deploy"); não contornado. Rito e ordem completos na evidência; lote **78** — **aplicado em produção pela coordenadora em 17/09** (migrations 160000/170000/180000 + 3 Edges; ver a evidência, seção "Aplicação em produção"). O Owner decide como entram. |
 | E2E `owner.r12-17` / `owner.r12-18` | ambiente (depende da aplicação) + massa `QA R15` (Bloco B) | tela preparada; nada certificado |
 | E2E `owner.r12-38` (`meal-plans.create/edit/publish/model-edit`) | ambiente (depende da aplicação + deploy) | adapter e rotas prontos; nada certificado; as 4 ações seguem verified-e2e (sem regressão local) |
 | Goldens `meal_plan_pages_golden_test` (5 do diretório) | deriva do cabeçalho (E4), já falham em `dev` | não regravados nesta sessão |
