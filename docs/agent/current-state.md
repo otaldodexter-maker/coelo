@@ -40,7 +40,10 @@ audience: "team"
   como local-green: Chat E3 (spec 058, C1), busca de pessoa B5 (spec 061) e
   pessoa sem conta B6 (spec 062, C2); as migrations de B5/B6 aguardam aplicação
   em produção (classificador negou `db query --linked` à C2 e à coordenadora;
-  decisão do Owner). Contadores certificados inalterados até este corte.
+  decisão do Owner). **Corte de 17/09 (integrações do dia)**: FE 192/232, BE 173/219, E2E 165/186, Owner
+  29/53 — certificados em produção `chat.attach` (C1, lote 76 + Edge `chat-media`),
+  `access-profiles.edit` e `access-profiles.assign` (A); Owner items r12-20/21/22/24/25/26/27
+  e r12-52 → done.
 - Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
   Bloco B (após migrations: Segurança da criança, contexto Atividade,
