@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "1d941e5d1498357de154ec196d4bd9fc015d5f10",
+    "head": "bc16f20fe74ad02995453d8b74039d5d7ae32fcf",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1070,7 +1070,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-b-apoio",
-      "sha": "1d941e5d1498357de154ec196d4bd9fc015d5f10"
+      "sha": "1f5772a946f08251d8dd35f293bc660e5ab7ab9d"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c1": {
       "disposition": "retained-session",
@@ -1625,16 +1625,26 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
-    "r15/bloco-c1": {
-      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+    "r15/bloco-b-apoio": {
+      "sha": "1f5772a946f08251d8dd35f293bc660e5ab7ab9d",
       "exclusive": [
-        "4d98ce26ea995451d274d11a7a4123727aef137b"
+        "1f5772a946f08251d8dd35f293bc660e5ab7ab9d"
       ],
       "disposition": "retained-review",
       "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "owner": "C0",
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "r15/bloco-c1": {
+      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+      "exclusive": [
+        "4d98ce26ea995451d274d11a7a4123727aef137b"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Branch da Sessão C1 (R15); commits integrados em dev por cherry-pick (patch-equivalent).",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "successor": "bc16f20fe74ad02995453d8b74039d5d7ae32fcf"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2266,16 +2276,26 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
-    "origin/r15/bloco-c1": {
-      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+    "origin/r15/bloco-b-apoio": {
+      "sha": "1f5772a946f08251d8dd35f293bc660e5ab7ab9d",
       "exclusive": [
-        "4d98ce26ea995451d274d11a7a4123727aef137b"
+        "1f5772a946f08251d8dd35f293bc660e5ab7ab9d"
       ],
       "disposition": "retained-review",
       "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "owner": "C0",
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "origin/r15/bloco-c1": {
+      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+      "exclusive": [
+        "4d98ce26ea995451d274d11a7a4123727aef137b"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Branch da Sessão C1 (R15); commits integrados em dev por cherry-pick (patch-equivalent).",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
+      "successor": "bc16f20fe74ad02995453d8b74039d5d7ae32fcf"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2399,6 +2419,7 @@
     "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
