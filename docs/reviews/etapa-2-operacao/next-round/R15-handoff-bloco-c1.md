@@ -33,7 +33,8 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 | 57ffe51e8 + c0482aedd | **lote 76** em produção (`20260917120000`, ledger reparado) + Edge `chat-media` implantada; rota real `qa-r06-publicacoes`: `chat.attach` local-green/local-green/pending-verification → **verified/done/verified-e2e** | `owner.r12-52` → **done** | r15-bloco-c1/chat-attach-e3-20260917.md + deltas-chat-attach-20260917.json + capturas/ |
 | 6e9234c87 | B9 local-green: migration `20260917130000_principal_for_you_reader_v1` (**lote 77**, aplicada pelo rito) + pgTAP 21/21; FE: `PrincipalGlobalHeader.contextLabel` + avatar do contexto após "Ver como" (sem faixa), `PrincipalForYouReader` (`list_my_principal_for_you`) na página/router, H02 ligado no `PrincipalProfileEditPage`; spec 059. Nenhum estado alterado. | — | specs/059; r15-bloco-c1/pgtap-principal_for_you_reader_v1-mirror-20260917.txt |
 | b1664470f | rota real `qa-r06-principal`: `principal.for-you` verified/blocked-decision/pending-verification → **verified/done/verified-e2e**; `principal.profile-edit` local-green/blocked-decision/pending-verification → **verified/done/verified-e2e** | — (B9 não tem `owner.r12-*` próprio) | r15-bloco-c1/principal-b9-20260917.md + deltas-principal-b9-20260917.json + capturas/ |
-| (este commit) | Momentos na rota real (sem SQL novo): `momentos.create` local-green/local-green/blocked-environment → **verified/done/verified-e2e**; `momentos.publish` e `momentos.remove` pending/local-green/pending → **verified/done/verified-e2e**; `momentos.view` → **verified-e2e** | — | r15-bloco-c1/momentos-20260917.md + deltas-momentos-20260917.json + capturas/momentos-* |
+| a23d5be49 | Momentos na rota real (sem SQL novo): `momentos.create` local-green/local-green/blocked-environment → **verified/done/verified-e2e**; `momentos.publish` e `momentos.remove` pending/local-green/pending → **verified/done/verified-e2e**; `momentos.view` → **verified-e2e** | — | r15-bloco-c1/momentos-20260917.md + deltas-momentos-20260917.json + capturas/momentos-* |
+| (este commit) | Goldens E4: `principal_for_you_preview_golden_test` e `principal_profile_preview_golden_test` regravadas (25 referências; diff isolado só nas iniciais do avatar do cabeçalho, medido por imagem); `notice_directory_golden_test` **não** regravada (diff no filtro "Estado", não é cabeçalho). Nenhum estado por action_id alterado. | — | r15-bloco-c1/goldens-e4-principal-20260917.md |
 
 ## Avisos para as outras sessões e para a coordenadora
 
@@ -83,8 +84,9 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
   `d0c40000…0001`, mídia sintética em R2. UX pré-existente para quem cuidar da tela: o publicador
   não bloqueia um segundo toque em "Publicar agora" durante o envio (gerou duas publicações) e o
   feed mostra "Curtido por Maria e outras 531 pessoas"/contadores de demonstração.
-- E4: regravar os goldens de cabeçalho das suítes do Principal/avisos (diff isolado só nas
-  iniciais do avatar) — quem consolidar as regravações pode incluir estas.
+- E4: as suítes do Principal foram regravadas nesta branch; `notice_directory_golden_test`
+  continua falhando por mudança de texto do filtro "Estado" (não é cabeçalho) — decisão de quem
+  cuida de Comunicações, não E4.
 - Owner (se quiser): decidir o fluxo de aprovação institucional do H02 e se `get_profile_about`
   deve projetar os valores oficiais (sugestões) para o editor.
 
