@@ -759,12 +759,12 @@
       "forms.edit",
       "forms.create"
     ],
-    "fe": "FE verified na rota real (Bloco A 17/09): pergunta movida por botão (B antes de A), rascunho salvo, carga completa preserva a ordem (position 0/1 no servidor).",
-    "be": "BE done (form_save_draft).",
-    "e2e": "E2E verified-e2e via forms.create/edit (409 PT409 em versão defasada).",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Concluído 17/09 (Bloco A). Arraste não exercitado por CDP; botão de mover prova a posição final.",
+    "nextGate": "Concluído 17/09 (Bloco A). Arraste não exercitado por CDP; botão de mover prova a posição final. Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): pergunta movida por botão (B antes de A), rascunho salvo, carga completa preserva a ordem (position 0/1 no servidor). / BE done (form_save_draft). / E2E verified-e2e via forms.create/edit (409 PT409 em versão defasada).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -779,12 +779,12 @@
       "forms.edit",
       "forms.create"
     ],
-    "fe": "FE verified na rota real (Bloco A 17/09): \"Renomear seção\" por diálogo (contador /120), nome na lista, no título da seção, no editor após reload e na prévia.",
-    "be": "BE done (form_save_draft).",
-    "e2e": "E2E verified-e2e via forms.create/edit.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Concluído 17/09 (Bloco A).",
+    "nextGate": "Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): \"Renomear seção\" por diálogo (contador /120), nome na lista, no título da seção, no editor após reload e na prévia. / BE done (form_save_draft). / E2E verified-e2e via forms.create/edit.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
