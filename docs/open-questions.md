@@ -541,3 +541,9 @@ preservado); 22 repositórios FE e a Edge `now-media` mapeiam PT409. Pós-verifi
 `serialization_failure`/`40001`; negativa por PostgREST responde 409 em < 1 s sem laço. Evidência:
 `docs/reviews/evidence/etapa-2/r15-bloco-b/oq047-pt409-20260917.md`. Regra durável: nenhuma RPC sinaliza
 versão defasada com 40001 (pendente só a projeção em `coelo-supabase`/`docs/knowledge`).
+
+## OQ-048 — Contexto do Principal para responsável sem vínculo institucional (17/09/2026)
+
+- **Observado (D1, produção)**: `list_my_principal_contexts` exige `institution_memberships` ativa; uma conta só de responsável (`person_auth_links` + `guardian_links` + `guardian_context_permissions`, fixture AP-1) recebe 0 contextos, e o shell do Superadmin nega o bootstrap a identidades não internas (`SAI_INTERNAL_CONTEXT_DENIED`, sem fallback). Logo, hoje nenhuma tela abre para um responsável puro; o feed do Agora (`list_visible_now_publications`) já o classifica como `guardian` sem membership.
+- **Por que não se resolve com membership**: qualquer `institution_memberships` (mesmo escopo `group`) coloca a pessoa entre os destinatários de cuidado como equipe (`child_care_notification_recipients_v1`, `medication_notification_recipients_v1`), o que confunde a prova E7 ("responsável vê o sino por ser responsável"). Candidato `20260917113000_qa_r15_guardian_membership_v1` (B′, AP-2) fica versionado e **não aplicado**.
+- **Encaminhamento**: lacuna de contrato do Principal — leitor de contextos de responsável derivado de `guardian_links`/permissões, sem membership; entra na spec 064 (perfil transversal, OQ-044) / Etapa 3. Provas de leitura por responsável na R15 usam PostgREST com a sessão do responsável.
