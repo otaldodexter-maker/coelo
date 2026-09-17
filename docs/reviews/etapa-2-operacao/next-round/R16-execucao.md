@@ -157,6 +157,7 @@ docs/reviews/entrega-atual.json` (PASS).
 | 20:1x | Identificação das sessões | `coelo-2a` = FORMS (dona de `r16-forms`); `coelo-5a` = AGORA (dona de `r16-agora`); `coelo-02`/`coelo-38` fora da R16 |
 | 20:2x | `.env.local` + `.temp` copiados para `r16-agora` pela coordenadora | FORMS copiou os seus |
 | 20:3x | Owner autoriza lote 81 antecipado, pgTAP mínimo na AGORA e RPC como rota principal na FORMS | seção acima; repassado às duas sessões; Docker Desktop já ligado |
+| 20:5x | Integração AGORA fatias 1–2: `c539fc40d` → `dev` `b9f7258b5` (cherry-pick) | spec 070, migration `20260917203000_now_guardian_reader_v1`, pgTAP 21/21 no espelho fiel (removal 18/18, projection 9/9, happens 33/33 sem regressão); dump prévio `schema-producao-20260917-r16-agora-before.sql` SHA-256 `0c6c6468…`; sessão iniciou o rito do lote 81 |
 
 ## Cota e fechamento
 

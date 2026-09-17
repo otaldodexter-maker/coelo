@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "cd5b7493eb2252f414d836a66ee75a20c75e02e2",
+    "head": "b9f7258b5ea673682f9d11f12001aab6d5decbe9",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1322,7 +1322,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R16 (17/09; R16-execucao.md); a coordenadora integra por cherry-pick; remover só no fechamento da R16 após bundle em Coelo-backups/r16-fechamento.",
       "branch": "r16/agora-publish",
-      "sha": "cd5b7493eb2252f414d836a66ee75a20c75e02e2"
+      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r16-forms": {
       "disposition": "retained-session",
@@ -1332,7 +1332,28 @@
     }
   },
   "preservedStash": {},
-  "residualBranches": {},
+  "residualBranches": {
+    "r16/agora-publish": {
+      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae",
+      "exclusive": [
+        "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Branch da sessão AGORA (R16); commit c539fc40d integrado em dev por cherry-pick (b9f7258b5): spec 070 + migration now_guardian_reader_v1 + pgTAP. Apagar no fechamento da R16.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
+      "successor": "b9f7258b5ea673682f9d11f12001aab6d5decbe9"
+    },
+    "origin/r16/agora-publish": {
+      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae",
+      "exclusive": [
+        "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Branch da sessão AGORA (R16); commit c539fc40d integrado em dev por cherry-pick (b9f7258b5): spec 070 + migration now_guardian_reader_v1 + pgTAP. Apagar no fechamento da R16.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
+      "successor": "b9f7258b5ea673682f9d11f12001aab6d5decbe9"
+    }
+  },
   "evidenceFiles": [
     "decisions/0040-agora-immediate-removal.md",
     "decisions/0041-owner-decisions-r14-mesa-20260916.md",
