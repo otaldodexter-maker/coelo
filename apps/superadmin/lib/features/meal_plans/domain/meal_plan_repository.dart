@@ -346,9 +346,7 @@ final class MealPlan {
     sourceTemplateVersion: _int(j['sourceTemplateVersion'] ?? j['source_template_version']),
     sourceTemplateName: j['sourceTemplateName'] as String? ?? j['source_template_name'] as String?,
     scopeRules: _map(j['scopeRules'] ?? j['scope_rules']),
-    simpleImage: (j['simpleImage'] ?? j['simple_image_meta']) is Map
-        ? MealPlanAttachmentMeta.fromJson(_map(j['simpleImage'] ?? j['simple_image_meta']))
-        : null,
+    simpleImage: _simpleImageFromJson(j),
     simpleImageAlt: j['simpleImageAlt'] as String? ?? j['simple_image_alt'] as String?,
     simpleNotes: j['simpleNotes'] as String? ?? j['simple_notes'] as String?,
     isTemplate: _bool(j['isTemplate'] ?? j['is_template']) ?? false,
@@ -476,6 +474,9 @@ final class MealPlanDraft {
     'sourceTemplateVersion': sourceTemplateVersion,
     'scopeRules': scopeRules,
     'simpleImage': simpleImage?.toJson(),
+    // `meal_plan_create_or_update_draft` persiste `simpleImageMeta`
+    // (coalesce com o valor existente); `{}` limpa a imagem removida.
+    'simpleImageMeta': simpleImage?.toJson() ?? const <String, Object?>{},
     'simpleImageAlt': simpleImageAlt,
     'simpleNotes': simpleNotes,
     'saveAsTemplate': saveAsTemplate,
@@ -591,6 +592,15 @@ final class MealPlanTemplateDraft {
     'planVariant': planVariant.name,
     'audienceSegment': audienceSegment.name,
   };
+}
+
+// `meal_plan_get` devolve `simpleImageMeta` (`{}` quando nao ha imagem);
+// modelos e payloads locais usam `simpleImage`.
+MealPlanAttachmentMeta? _simpleImageFromJson(Map<String, Object?> j) {
+  final raw = j['simpleImageMeta'] ?? j['simpleImage'] ?? j['simple_image_meta'];
+  if (raw is! Map || raw.isEmpty) return null;
+  final meta = MealPlanAttachmentMeta.fromJson(_map(raw));
+  return meta.reference.isEmpty ? null : meta;
 }
 
 // SQL stores the whole command as payload. Read one unambiguous historical
