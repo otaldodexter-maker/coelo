@@ -175,7 +175,7 @@ import '../../features/invites/presentation/invite_detail_page.dart';
 import '../../features/invites/presentation/invite_directory_page.dart';
 import '../../features/invites/presentation/invite_form_page.dart';
 import '../../features/notices/domain/notice_repository.dart'
-    show NoticeRepository, UnavailableNoticeRepository;
+    show NoticeRepository, PrincipalForYouReader, UnavailableNoticeRepository;
 import '../../features/notices/data/development_notice_repository.dart';
 import '../../features/notices/presentation/notice_directory_page.dart';
 import '../../features/notices/presentation/notice_form_page.dart';
@@ -1717,6 +1717,10 @@ GoRouter createSuperadminRouter({
                 return PrincipalForYouRoutePage(
                   embedded: true,
                   repository: noticeRepository,
+                  // B9: leitor com o contexto real do ator (list_my_principal_for_you).
+                  reader: noticeRepository is PrincipalForYouReader
+                      ? noticeRepository as PrincipalForYouReader
+                      : null,
                   audienceScope: PrincipalForYouAudienceScope.fromRuntimeContext(runtimeContext),
                   supportingData: PrincipalForYouPreviewData.contextual(
                     id: runtimeContext.membershipId,
@@ -1832,6 +1836,11 @@ GoRouter createSuperadminRouter({
                 return PrincipalProfileEditPage(
                   runtimeContext: runtimeContext,
                   repository: repository,
+                  // H02 (ADR 0038): a atualização oficial a partir do Sobre exige
+                  // `profiles.about.update_official_data` com AAL2 no servidor;
+                  // MFA está fora do MVP (ADR 0042 E9), então o consumidor fica
+                  // ligado e a capacidade chega desligada.
+                  canUpdateOfficialData: false,
                   onClose: () => context.goNamed(SuperadminRoutes.principalProfileName),
                 );
               },

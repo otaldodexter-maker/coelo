@@ -1,0 +1,225 @@
+BEGIN
+psql:/tmp/t4.sql:4: NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..21
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 2
+INSERT 0 3
+INSERT 0 2
+INSERT 0 2
+CREATE FUNCTION
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+ notice
+--------
+
+(1 row)
+
+CREATE TABLE
+GRANT
+CREATE FUNCTION
+GRANT
+                          ok
+-------------------------------------------------------
+ ok 1 - authenticated executa; anon e service_role nao
+(1 row)
+
+         throws_like
+------------------------------
+ ok 2 - sem sessao e recusado
+(1 row)
+
+                                set_config
+--------------------------------------------------------------------------
+ {"sub": "9f160000-0000-4000-8000-000000000101", "role": "authenticated"}
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+RESET
+         is
+--------------------
+ ok 3 - envelope ok
+(1 row)
+
+                                                                 is
+------------------------------------------------------------------------------------------------------------------------------------
+ ok 4 - web: ve plataforma, instituicao A e unidade A; nao ve B, excluida, popup, so mobile, rascunho, vencida, so guardian, futura
+(1 row)
+
+             is
+-----------------------------
+ ok 5 - urgente vem primeiro
+(1 row)
+
+                   is
+----------------------------------------
+ ok 6 - mobile: ganha o aviso so mobile
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 7 - vinculo proprio explicito: mesma lista
+(1 row)
+
+                              is
+--------------------------------------------------------------
+ ok 8 - vinculo de outra pessoa: lista vazia (nao enumeravel)
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 9 - vinculo inexistente: lista vazia
+(1 row)
+
+             is
+----------------------------
+ ok 10 - p_limit respeitado
+(1 row)
+
+                               ok
+-----------------------------------------------------------------
+ ok 11 - itens no envelope do diretorio (superadmin_notice_json)
+(1 row)
+
+                       ok
+-------------------------------------------------
+ ok 12 - nenhum popup/notice/critical_notice sai
+(1 row)
+
+SET
+                 throws_like
+----------------------------------------------
+ ok 13 - destino fora da allowlist e recusado
+(1 row)
+
+           throws_like
+---------------------------------
+ ok 14 - destino nulo e recusado
+(1 row)
+
+         throws_like
+-----------------------------
+ ok 15 - limite 0 e recusado
+(1 row)
+
+          throws_like
+-------------------------------
+ ok 16 - limite 101 e recusado
+(1 row)
+
+RESET
+                                set_config
+--------------------------------------------------------------------------
+ {"sub": "9f160000-0000-4000-8000-000000000102", "role": "authenticated"}
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+RESET
+                                                  is
+-------------------------------------------------------------------------------------------------------
+ ok 17 - B: ve plataforma, instituicao B, a excluida so para A e a de guardian; nao ve A nem unidade A
+(1 row)
+
+                   is
+-----------------------------------------
+ ok 18 - B pedindo o vinculo de A: vazio
+(1 row)
+
+                                set_config
+--------------------------------------------------------------------------
+ {"sub": "9f160000-0000-4000-8000-000000000103", "role": "authenticated"}
+(1 row)
+
+SET
+           throws_like
+---------------------------------
+ ok 19 - auth sem pessoa: negado
+(1 row)
+
+RESET
+INSERT 0 1
+                                set_config
+--------------------------------------------------------------------------
+ {"sub": "9f160000-0000-4000-8000-000000000101", "role": "authenticated"}
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                           is
+---------------------------------------------------------
+ ok 20 - notice_rules exclude retira a plataforma para A
+(1 row)
+
+        ok
+-------------------
+ ok 21 - reservado
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

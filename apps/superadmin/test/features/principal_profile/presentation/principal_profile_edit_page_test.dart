@@ -60,6 +60,92 @@ void main() {
     await tester.pumpAndSettle();
   }
 
+  ProfileAboutPage pageWithPhone(String phone) => ProfileAboutPage(
+    subject: const ProfileAboutSubjectRef(
+      type: ProfileAboutSubjectType.institution,
+      institutionId: 'institution-1',
+    ),
+    version: 1,
+    fields: [ProfileAboutField(key: ProfileAboutFieldKey.phone, value: phone)],
+    sections: const [],
+  );
+  const officialPhone = ProfileAboutSuggestion(
+    key: ProfileAboutFieldKey.phone,
+    value: '11 1111-1111',
+    sourceLabel: 'Cadastro',
+  );
+
+  testWidgets(
+    'H02: with the capability, a diverging field asks before updating the official record',
+    (tester) async {
+      final repository = _StubAboutRepository(page: pageWithPhone('11 2222-2222'));
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: CoeloTheme.light,
+          home: PrincipalProfileEditPage(
+            runtimeContext: context,
+            repository: repository,
+            canUpdateOfficialData: true,
+            officialSuggestions: const [officialPhone],
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('principal-profile-edit-save')));
+      await tester.pumpAndSettle();
+      expect(find.byKey(const Key('profile-about-official-update-dialog')), findsOneWidget);
+      expect(repository.saved, isEmpty);
+      await tester.tap(find.text('Sim, atualizar'));
+      await tester.pumpAndSettle();
+      expect(repository.saved, hasLength(1));
+      expect(repository.officialUpdates.single, {ProfileAboutFieldKey.phone: '11 2222-2222'});
+    },
+  );
+
+  testWidgets('H02: "Agora não" saves the About alone', (tester) async {
+    final repository = _StubAboutRepository(page: pageWithPhone('11 2222-2222'));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: context,
+          repository: repository,
+          canUpdateOfficialData: true,
+          officialSuggestions: const [officialPhone],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-profile-edit-save')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Agora não'));
+    await tester.pumpAndSettle();
+    expect(repository.saved, hasLength(1));
+    expect(repository.officialUpdates.single, isEmpty);
+  });
+
+  testWidgets('H02: without the capability there is no prompt and no official update', (
+    tester,
+  ) async {
+    final repository = _StubAboutRepository(page: pageWithPhone('11 2222-2222'));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalProfileEditPage(
+          runtimeContext: context,
+          repository: repository,
+          officialSuggestions: const [officialPhone],
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('principal-profile-edit-save')));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('profile-about-official-update-dialog')), findsNothing);
+    expect(repository.saved, hasLength(1));
+    expect(repository.officialUpdates.single, isEmpty);
+  });
+
   testWidgets('loads the About page of the authorized subject', (tester) async {
     final repository = _StubAboutRepository(page: pageWith('Conteúdo autorizado'));
     await pump(tester, repository);
@@ -407,6 +493,7 @@ final class _StubAboutRepository implements ProfileAboutRepository {
   final List<ProfileAboutSubjectRef> loaded = [];
   final List<ProfileAboutPage> saved = [];
   final List<String> requestIds = [];
+  final List<Map<ProfileAboutFieldKey, String>> officialUpdates = [];
 
   @override
   Future<ProfileAboutPage?> load(
@@ -431,10 +518,7 @@ final class _StubAboutRepository implements ProfileAboutRepository {
     if (failure != null) throw failure;
     saved.add(page);
     requestIds.add(requestId);
-    return ProfileAboutSaveResult(
-      pageId: 'page-1',
-      version: page.version + 1,
-      official: const [],
-    );
+    this.officialUpdates.add(officialUpdates);
+    return ProfileAboutSaveResult(pageId: 'page-1', version: page.version + 1, official: const []);
   }
 }

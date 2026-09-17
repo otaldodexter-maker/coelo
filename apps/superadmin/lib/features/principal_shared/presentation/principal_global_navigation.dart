@@ -73,6 +73,7 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
     this.avatarImage,
     this.avatarBackgroundColor,
     this.avatarForegroundColor,
+    this.contextLabel,
     this.notificationAction,
     this.keyPrefix = 'principal-happens',
     super.key,
@@ -87,6 +88,10 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
   final ImageProvider? avatarImage;
   final Color? avatarBackgroundColor;
   final Color? avatarForegroundColor;
+
+  /// Nome do perfil em exibição ("ver como", ADR 0041 B9). Só o avatar e este
+  /// nome mudam no cabeçalho; não há faixa fixa "Vendo como".
+  final String? contextLabel;
   final Widget? notificationAction;
   final String keyPrefix;
 
@@ -141,6 +146,20 @@ final class PrincipalGlobalHeader extends StatelessWidget implements PreferredSi
                   tooltip: 'Notificações',
                   onPressed: onOpenNotifications,
                   icon: const Icon(Icons.notifications_none_rounded, size: 22),
+                ),
+              if (contextLabel != null)
+                ConstrainedBox(
+                  constraints: const BoxConstraints(maxWidth: 180),
+                  child: Padding(
+                    padding: const EdgeInsets.only(left: 4),
+                    child: Text(
+                      contextLabel!,
+                      key: ValueKey('$keyPrefix-context-label'),
+                      maxLines: 1,
+                      overflow: TextOverflow.ellipsis,
+                      style: Theme.of(context).textTheme.labelLarge,
+                    ),
+                  ),
                 ),
               if (onChooseContexts != null)
                 Theme(

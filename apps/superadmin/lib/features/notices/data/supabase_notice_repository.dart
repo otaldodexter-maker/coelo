@@ -1,13 +1,43 @@
+import 'package:flutter/foundation.dart' show kIsWeb;
 import 'package:http/http.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../domain/notice_repository.dart';
 import '../domain/platform_notice.dart';
 
-final class SupabaseNoticeRepository implements NoticeRepository {
-  SupabaseNoticeRepository(this._client);
+final class SupabaseNoticeRepository implements NoticeRepository, PrincipalForYouReader {
+  SupabaseNoticeRepository(this._client, {String? targetDevice})
+    : _targetDevice = targetDevice ?? (kIsWeb ? 'web' : 'mobile');
 
   final SupabaseClient _client;
+
+  /// Destino declarado ao servidor (allowlist all/web/mobile/tablet); o
+  /// servidor decide o que sai, o cliente nunca recebe `target_device` para
+  /// filtrar sozinho.
+  final String _targetDevice;
+
+  @override
+  Future<List<PlatformNotice>> readForYou({String? membershipId}) async {
+    try {
+      final response = _map(
+        _unwrap(
+          await _client.rpc(
+            'list_my_principal_for_you',
+            params: {
+              'p_target_device': _targetDevice,
+              'p_membership_id': membershipId,
+              'p_limit': 100,
+            },
+          ),
+        ),
+      );
+      return _list(response['items']).map((item) => _notice(_map(item))).toList(growable: false);
+    } on PostgrestException catch (error) {
+      throw _error(error);
+    } on ClientException {
+      throw const NoticeUnavailableException();
+    }
+  }
 
   @override
   Future<NoticePage> fetchPage(NoticeDirectoryQuery query) async {

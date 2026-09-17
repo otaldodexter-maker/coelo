@@ -1,5 +1,6 @@
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
+import 'package:flutter/foundation.dart' show visibleForTesting;
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
@@ -52,6 +53,13 @@ final class PrincipalRuntimeContextRoute extends StatefulWidget {
 /// dentro da mesma sessão; não é autorização, só preferência de filtro.
 String? _selectedMembershipId;
 Set<String> _selectedMembershipIds = {};
+
+/// Limpa a preferência de "ver como" da sessão (só para testes de widget).
+@visibleForTesting
+void resetPrincipalContextSelectionForTests() {
+  _selectedMembershipId = null;
+  _selectedMembershipIds = {};
+}
 
 final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeContextRoute> {
   late Future<List<PrincipalRuntimeContext>> _load;
@@ -126,16 +134,30 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
           .where((item) => _selectedMembershipIds.contains(item.membershipId))
           .toList();
       final selectedContexts = chosenContexts.isEmpty ? [selected] : chosenContexts;
+      // ADR 0041 B9: "ver como" só troca avatar/nome no cabeçalho, sem faixa
+      // fixa. Sem escolha explícita o cabeçalho segue a conta autenticada.
+      final viewingAs = _selectedMembershipId != null || _selectedMembershipIds.isNotEmpty;
+      final scheme = Theme.of(context).colorScheme;
+      final viewAsLabel = !viewingAs
+          ? null
+          : selectedContexts.length > 1
+          ? '${selectedContexts.length} perfis'
+          : selected.label;
       return Column(
         children: [
           PrincipalGlobalHeader(
             notificationAction: widget.notificationAction,
             onReportProblem: () => widget.onReportProblem?.call(context),
             keyPrefix: 'principal-context-header',
-            avatarInitials: widget.avatarInitials,
-            avatarImage: widget.avatarImage,
-            avatarBackgroundColor: widget.avatarBackgroundColor,
-            avatarForegroundColor: widget.avatarForegroundColor,
+            avatarInitials: viewingAs ? _initials(selected.label) : widget.avatarInitials,
+            avatarImage: viewingAs ? null : widget.avatarImage,
+            avatarBackgroundColor: viewingAs
+                ? scheme.primaryContainer
+                : widget.avatarBackgroundColor,
+            avatarForegroundColor: viewingAs
+                ? scheme.onPrimaryContainer
+                : widget.avatarForegroundColor,
+            contextLabel: viewAsLabel,
             onOpenMenu: () {
               final host = Scaffold.maybeOf(context);
               if (host?.hasDrawer ?? false) {

@@ -327,3 +327,10 @@
 # `supabase db query --linked -f`, `migration repair --status applied 20260917120000`, ledger remoto confirmado por `migration list --linked`
 # (a 20260917090000 do Bloco B ja constava no ledger no momento da listagem; numeracao 75 reservada a ela, coordenadora renumera se preciso).
 20260917120000_chat_attachment_batch_v2.sql
+
+# lote 77 (17/09 11:20) - R15 Bloco C1 (Principal / Para voce, ADR 0041 B9): leitor do ator public.list_my_principal_for_you(text,uuid,integer)
+# promovido da proposta plans/2026-09-09-principal-for-you-read-rpc.sql (audiencia, tipo, destino e vigencia no servidor; vinculo proprio;
+# itens no envelope app_private.superadmin_notice_json). pgTAP principal_for_you_reader_v1 21/21 no espelho mirror-r15-c1; dump previo
+# Coelo-backups/schema-producao-20260917-r15-c1-b9-before.sql (SHA-256 66f8bacc, ja com o lote 75 do Bloco B e o lote 76); aplicada por
+# `supabase db query --linked -f`, `migration repair --status applied 20260917130000`, ledger remoto confirmado por `migration list --linked`.
+20260917130000_principal_for_you_reader_v1.sql

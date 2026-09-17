@@ -19,6 +19,8 @@ final class PrincipalProfileEditPage extends StatefulWidget {
     required this.repository,
     this.onClose,
     this.onSaved,
+    this.canUpdateOfficialData = false,
+    this.officialSuggestions = const [],
     super.key,
   });
 
@@ -26,6 +28,14 @@ final class PrincipalProfileEditPage extends StatefulWidget {
   final ProfileAboutRepository repository;
   final VoidCallback? onClose;
   final VoidCallback? onSaved;
+
+  /// H02: quando verdadeiro, o autor pode escolher atualizar também o cadastro
+  /// oficial; o servidor ainda exige a capacidade própria (AAL2).
+  final bool canUpdateOfficialData;
+
+  /// Valores oficiais conhecidos para comparar com o Sobre (H02). Vazio quando
+  /// a leitura não os projeta.
+  final List<ProfileAboutSuggestion> officialSuggestions;
 
   @override
   State<PrincipalProfileEditPage> createState() => _PrincipalProfileEditPageState();
@@ -143,7 +153,12 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
       final page = await widget.repository.load(_subject);
       if (!mounted || generation != _generation) return false;
       _replace(
-        _Editing(ProfileAboutEditorController(page: page ?? ProfileAboutPage.empty(_subject))),
+        _Editing(
+          ProfileAboutEditorController(
+            page: page ?? ProfileAboutPage.empty(_subject),
+            suggestions: widget.officialSuggestions,
+          ),
+        ),
       );
       return true;
     } on ProfileAboutUnauthorizedException {
@@ -162,10 +177,37 @@ final class _PrincipalProfileEditPageState extends State<PrincipalProfileEditPag
   Future<void> _save(ProfileAboutEditorController controller) async {
     if (controller.status == ProfileAboutEditorStatus.saving) return;
     final generation = _generation;
+    // H02 (ADR 0038): campos do Sobre que divergem do cadastro oficial viram
+    // ProfileAboutOfficialUpdateRequest; só com a capacidade o autor decide,
+    // e a decisão viaja junto do save (auditada e validada no servidor).
+    final requests = [
+      for (final entry in controller.officialChanges.entries)
+        ProfileAboutOfficialUpdateRequest(
+          field: entry.key,
+          aboutValue: entry.value,
+          canUpdateOfficialData: widget.canUpdateOfficialData,
+        ),
+    ];
+    final officialUpdates = requests.isEmpty
+        ? const <ProfileAboutFieldKey, String>{}
+        : await confirmProfileAboutOfficialUpdate(
+            context,
+            changes: {for (final request in requests) request.field: request.aboutValue},
+            canUpdateOfficialData: requests.every(
+              (request) => request.availableDecisions.contains(
+                ProfileAboutOfficialUpdateDecision.aboutAndOfficial,
+              ),
+            ),
+          );
+    if (!mounted || generation != _generation) return;
     controller.status = ProfileAboutEditorStatus.saving;
     setState(() => _conflictMessage = null);
     try {
-      await widget.repository.save(controller.page, requestId: newProfileAboutRequestId());
+      await widget.repository.save(
+        controller.page,
+        requestId: newProfileAboutRequestId(),
+        officialUpdates: officialUpdates,
+      );
       if (!mounted || generation != _generation) return;
       // Confirm only when this reload was accepted. A denial, read failure
       // or context swap must not announce success in the current context.

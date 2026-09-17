@@ -112,6 +112,33 @@ void main() {
     await tester.pumpWidget(const SizedBox.shrink());
   });
 
+  testWidgets('B9: reads through the actor reader with the active membership, not the directory', (
+    tester,
+  ) async {
+    final directory = _ControlledNoticeRepository();
+    final reader = _ActorReader([communication(CommunicationType.forYou)]);
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: PrincipalForYouRoutePage(
+          repository: directory,
+          reader: reader,
+          audienceScope: const PrincipalForYouAudienceScope(
+            institutionId: 'institution-1',
+            membershipId: 'membership-1',
+          ),
+          supportingData: PrincipalForYouPreviewData.demo,
+          now: () => now,
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(reader.memberships, ['membership-1']);
+    expect(directory.calls, 0);
+    expect(find.text('Orientação real'), findsOneWidget);
+    await tester.pumpWidget(const SizedBox.shrink());
+  });
+
   testWidgets('old validity timer cannot replace a pending context load', (tester) async {
     var current = now;
     final first = _ControlledNoticeRepository();
@@ -346,9 +373,7 @@ void main() {
     expect(repository.calls, 1);
 
     await tester.pumpWidget(
-      routeWith(
-        const PrincipalForYouAudienceScope(institutionId: 'i-1', groupId: 'group-outra'),
-      ),
+      routeWith(const PrincipalForYouAudienceScope(institutionId: 'i-1', groupId: 'group-outra')),
     );
     await tester.pumpAndSettle();
 
@@ -419,9 +444,7 @@ void main() {
     expect(find.text('Bom dia!'), findsOneWidget);
   });
 
-  testWidgets('offers no context switch when there is a single authorized context', (
-    tester,
-  ) async {
+  testWidgets('offers no context switch when there is a single authorized context', (tester) async {
     // The selector refuses to open below two contexts, so both triggers would
     // be controls that answer nothing. The card naming the resolved context
     // stays: that one carries information.
@@ -451,9 +474,7 @@ void main() {
     expect(find.text('Unidade Centro'), findsWidgets);
   });
 
-  testWidgets('keeps the greeting name and the context switch where they are real', (
-    tester,
-  ) async {
+  testWidgets('keeps the greeting name and the context switch where they are real', (tester) async {
     // The preview fixture names the actor and carries three contexts, so both
     // survive exactly as the approved composition has them.
     await tester.pumpWidget(
@@ -467,6 +488,17 @@ void main() {
     expect(find.text('Bom dia, Fernanda!'), findsOneWidget);
     expect(find.byKey(const Key('principal-for-you-context-trigger')), findsWidgets);
   });
+}
+
+final class _ActorReader implements PrincipalForYouReader {
+  _ActorReader(this.items);
+  final List<PlatformNotice> items;
+  final List<String?> memberships = [];
+  @override
+  Future<List<PlatformNotice>> readForYou({String? membershipId}) async {
+    memberships.add(membershipId);
+    return items;
+  }
 }
 
 final class _ControlledNoticeRepository implements NoticeRepository {

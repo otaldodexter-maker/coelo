@@ -15,6 +15,7 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
     required this.repository,
     required this.supportingData,
     required this.audienceScope,
+    this.reader,
     this.embedded = false,
     this.now = DateTime.now,
     this.onOpenHappens,
@@ -27,6 +28,12 @@ final class PrincipalForYouRoutePage extends StatefulWidget {
   });
 
   final NoticeRepository repository;
+
+  /// Leitor com audiência resolvida no servidor (B9). Quando presente, a
+  /// página lê por ele com o vínculo ativo do ator; o diretório administrativo
+  /// fica só como legado/fixture. A projeção local continua como segunda
+  /// barreira, nunca como fonte de autorização.
+  final PrincipalForYouReader? reader;
   final PrincipalForYouPreviewData supportingData;
 
   /// Server-authorized scope of the actor. Audience eligibility is evaluated
@@ -90,6 +97,7 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     // whenever anything above it rebuilt. Only a different actor, repository or
     // clock is a reason to ask the server again.
     if (!identical(oldWidget.repository, widget.repository) ||
+        !identical(oldWidget.reader, widget.reader) ||
         oldWidget.audienceScope != widget.audienceScope ||
         !identical(oldWidget.now, widget.now)) {
       _load();
@@ -114,17 +122,28 @@ final class _PrincipalForYouRoutePageState extends State<PrincipalForYouRoutePag
     final repository = widget.repository;
     final supportingData = widget.supportingData;
     final now = widget.now;
+    final reader = widget.reader;
     setState(() => _state = const _Loading());
     try {
-      final page = await repository.fetchPage(
-        const NoticeDirectoryQuery(
-          types: {CommunicationType.highlight, CommunicationType.content, CommunicationType.forYou},
-          statuses: {NoticeStatus.active},
-          pageSize: 100,
-        ),
-      );
+      final List<PlatformNotice> items;
+      if (reader != null) {
+        items = await reader.readForYou(membershipId: widget.audienceScope.membershipId);
+      } else {
+        final page = await repository.fetchPage(
+          const NoticeDirectoryQuery(
+            types: {
+              CommunicationType.highlight,
+              CommunicationType.content,
+              CommunicationType.forYou,
+            },
+            statuses: {NoticeStatus.active},
+            pageSize: 100,
+          ),
+        );
+        items = page.items;
+      }
       if (!mounted || generation != _loadGeneration) return;
-      _project(List.unmodifiable(page.items), supportingData, now, generation);
+      _project(List.unmodifiable(items), supportingData, now, generation);
     } on NoticeUnauthorizedException {
       if (mounted && generation == _loadGeneration) {
         setState(() => _state = const _Unauthorized());

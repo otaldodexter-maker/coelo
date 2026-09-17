@@ -44,6 +44,14 @@ final class NoticeAudienceOptionsPage {
   final String? nextCursorId;
 }
 
+/// Leitor do hub Principal / Para você com audiência resolvida no servidor
+/// (`list_my_principal_for_you`, B9). Diferente de [NoticeRepository], nunca
+/// usa o gateway administrativo: o servidor aplica tipo, destino, vigência e
+/// audiência ao vínculo ativo do próprio ator.
+abstract interface class PrincipalForYouReader {
+  Future<List<PlatformNotice>> readForYou({String? membershipId});
+}
+
 abstract interface class NoticeRepository {
   Future<NoticePage> fetchPage(NoticeDirectoryQuery query);
 
