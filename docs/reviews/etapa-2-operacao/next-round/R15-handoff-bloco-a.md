@@ -64,9 +64,26 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
   detalhe em produção com títulos/textos "demonstrativo"/"nesta demonstração"; edição demora vários
   segundos em "Carregando o cadastro interno protegido".
 
+## Em andamento (17/09 ~14:15 BRT)
+
+- `forms.expire-file`: asset `9e437fa9…` (question-image do form `90b905a1…`) deixado **pendente** às 16:53Z
+  (PUT do R2 bloqueado por CDP); tela mostra "Imagem 1 não confirmada" após reload; `form-media resolve` →
+  409 FORM_MEDIA_NOT_READY. Aguardando o worker do cron (ticket 30 min + 5 min) para provar 404 + reload sem
+  a imagem; rascunho da evidência em `r15-bloco-a/forms-expire-file-20260917.md`.
+- `forms.location-answer`: form `4555ba07…` ("[R04-QA] Formulario Local editado", v4 com pergunta Local)
+  ganhou ocorrências novas pela tela (agendamento existente trocado para "Diário" → 31 ocorrências; a de
+  17/09 é `7256b047-9e17-443d-b943-731243971f95`, `open`, 11 elegíveis). **Bloqueio de massa**: nenhuma das
+  11 pessoas da audiência tem conta e a pessoa de `qa-r06-formularios` não é participante → `form_get_occurrence_for_response`
+  devolve "unavailable"; não há tela que liste ocorrências ao respondente (deep link apenas) e
+  `form_occurrences` nega 42501 via PostgREST (correto). Pedido à coordenadora: leitura D1 do vínculo
+  pessoa↔conta QA para criar o vínculo pela tela Pessoas, ou usar a conta do responsável QA R15 (AP-1).
+- `auth.recover`/`auth.reset` (E8): servidor QA também em `127.0.0.1:8765` (allowlist já contém
+  `http://127.0.0.1:8765/reset-password`); aguarda o Owner na caixa `adrieldasbc@live.com` e a senha nova.
+
 ## Bloqueios
 
-- Nenhum aberto no fechamento desta fatia.
+- `forms.location-answer` — massa: respondente com conta dentro da audiência (ver acima).
+- `auth.recover/reset` — Owner (caixa de e-mail e senha nova).
 
 ## Contadores
 
