@@ -61,6 +61,11 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 - **E6 = a** (publicar no Histórico); **E7 = b** (responsável recebe o sino em
   atualização e dose — ajustar `20260916190000` por migration v2 + pgTAP + FE
   antes da prova de r12-33).
+- **17/09 (adendo ADR 0042, E10–E13)**: reset de senha aceito por decisão do Owner
+  (prova detalhada do link → Etapa 3; `auth.recover` fecha pela tela + entrega real);
+  conta `qa-r15-responsavel@coelo.me` criada (fixture AP-1 pelo rito, lote 80); lote 78 e
+  redeploy de `child-safety-media` (v2) autorizados e aplicados; CORS de
+  `coelo-documents-prod` só com origens locais de QA no MVP.
 - Ambiente resolvido (Owner, 16/09): CORS das Edge Functions para `127.0.0.1:3014–3024` aplicado nas seis `*_ALLOWED_ORIGINS` de produção; preflight 200/204 em 3016/3018/3022/3024, 3030 segue 403.
 
 ## Ordem de execução proposta (fechar primeiro o que já tem código e só falta prova)

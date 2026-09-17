@@ -44,6 +44,10 @@ audience: "team"
   36/53 — certificados em produção `chat.attach` (C1, lote 76 + Edge `chat-media`),
   `access-profiles.edit` e `access-profiles.assign` (A); Owner items r12-20/21/22/24/25/26/27
   e r12-52 → done.
+- **Decisões do Owner em 17/09 (adendo ADR 0042, E10–E13)**: reset de senha aceito
+  por decisão (prova detalhada → Etapa 3); conta `qa-r15-responsavel` criada
+  (AP-1 pelo rito); lote 78 + redeploy `child-safety-media` v2 aplicados pela
+  coordenadora; CORS de `coelo-documents-prod` só origens locais no MVP.
 - Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
   Bloco B (após migrations: Segurança da criança, contexto Atividade,
