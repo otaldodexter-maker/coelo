@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "03d979a607b570cf1c125f61b492c3122fabc766",
+    "head": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -28,8 +28,8 @@
   "currentQueue": {
     "scope": "R15 vigente (ADR 0042); R16 não aberta",
     "ownerTotal": 53,
-    "ownerPendingCount": 19,
-    "ownerDoneCount": 34,
+    "ownerPendingCount": 17,
+    "ownerDoneCount": 36,
     "inheritedOriginIds": [
       "H02",
       "H03",
@@ -63,22 +63,22 @@
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
-        "local-green": 3,
+        "local-green": 2,
         "pending-verification": 24,
-        "verified": 205
+        "verified": 206
       },
       "backend": {
         "deferred-post-mvp": 33,
-        "done": 182,
+        "done": 183,
         "local-green": 1,
         "not-applicable": 13,
-        "pending-verification": 3
+        "pending-verification": 2
       },
       "integrated": {
         "deferred-post-mvp": 33,
         "flutter-only": 13,
-        "pending-verification": 6,
-        "verified-e2e": 180
+        "pending-verification": 5,
+        "verified-e2e": 181
       }
     },
     "deferredPostMvpActionCount": 33,
@@ -88,6 +88,8 @@
       "owner.r12-43"
     ],
     "completedInR14OrPriorOwnerIds": [
+      "owner.r12-01",
+      "owner.r12-02",
       "owner.r12-03",
       "owner.r12-09",
       "owner.r12-11",
@@ -122,14 +124,14 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "205/232 (88.36%)",
-    "frontendLocalGreen": "3/232 (1.29%)",
-    "backendDone": "182/219 (83.11%)",
+    "frontendVerified": "206/232 (88.79%)",
+    "frontendLocalGreen": "2/232 (0.86%)",
+    "backendDone": "183/219 (83.56%)",
     "backendLocalGreen": "1/219 (0.46%)",
-    "e2eVerified": "180/186 (96.77%)",
-    "e2ePlusFlutterOnly": "193/232 (83.19%)",
-    "ownerDone": "34/53 (64.15%)",
-    "ownerNonTerminal": "19/53 (35.85%)"
+    "e2eVerified": "181/186 (97.31%)",
+    "e2ePlusFlutterOnly": "194/232 (83.62%)",
+    "ownerDone": "36/53 (67.92%)",
+    "ownerNonTerminal": "17/53 (32.08%)"
   },
   "firstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
   "ownerItems": [
@@ -143,7 +145,7 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
-      "owner": "C0 R15",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 17/09 (R15 C1, ADR 0041 C3): cards de Modelos de rotina na rota real em 1440 com altura uniforme, \"Efetivo: —\" e Arquivar em todos; reload.",
       "sourceRound": "R15"
     },
@@ -158,7 +160,7 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
-      "owner": "C0 R15",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 17/09 (R15 C1, ADR 0041 B1): lote 74 em produção; Arquivar/Restaurar pela tela em Atividades › Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivado), reload, negativas PT409/P0002/55000 por PostgREST. Sobra: diretório de Atividades do Owner de plataforma não alcança modelos institucionais (observação FE).",
       "sourceRound": "R15"
     },
@@ -1143,7 +1145,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-b",
-      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2"
+      "sha": "3b5c881b57ede16a6a575d771d92425d71d6013b"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b-apoio": {
       "disposition": "retained-session",
@@ -1155,7 +1157,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-c1",
-      "sha": "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14"
+      "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c2": {
       "disposition": "retained-session",
@@ -1719,11 +1721,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "r15/bloco-b": {
-      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
+      "sha": "3b5c881b57ede16a6a575d771d92425d71d6013b",
       "exclusive": [
+        "3b5c881b57ede16a6a575d771d92425d71d6013b",
         "bdad37376af93c7143ae52c873cae8d326909bb2",
         "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
         "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -1733,7 +1736,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -1747,11 +1750,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "r15/bloco-c1": {
-      "sha": "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14",
+      "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
       "exclusive": [
+        "1c199f14c8073df0a451413a4b59a42f8c9c0433",
         "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14",
         "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
         "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
@@ -1766,7 +1770,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "r15/bloco-c2": {
       "sha": "a90f5bbd4da38e4e258144bf15c15e7ae295c75d",
@@ -1782,7 +1786,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2429,11 +2433,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "origin/r15/bloco-b": {
-      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
+      "sha": "3b5c881b57ede16a6a575d771d92425d71d6013b",
       "exclusive": [
+        "3b5c881b57ede16a6a575d771d92425d71d6013b",
         "bdad37376af93c7143ae52c873cae8d326909bb2",
         "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
         "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -2443,7 +2448,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -2457,11 +2462,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "origin/r15/bloco-c1": {
-      "sha": "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14",
+      "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
       "exclusive": [
+        "1c199f14c8073df0a451413a4b59a42f8c9c0433",
         "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14",
         "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
         "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
@@ -2476,7 +2482,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2490,7 +2496,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "03d979a607b570cf1c125f61b492c3122fabc766"
+      "successor": "511f5ab9dc9a93fd3bf8568e775a397803fa9b28"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2633,8 +2639,6 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
@@ -2643,30 +2647,12 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
-    "docs/reviews/evidence/etapa-2/r14-coordenacao/attendance-activity-blocked-20260915.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
-    "specs/053-superadmin-medication-in-app-notifications.md",
-    "specs/058-superadmin-chat-multi-attachment-message.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
-    "specs/054-archive-activity-routine-models.md"
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2916,6 +2902,8 @@
     "status": "active",
     "source": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
     "completedOwnerItems": [
+      "owner.r12-01",
+      "owner.r12-02",
       "owner.r12-03",
       "owner.r12-07",
       "owner.r12-09",
@@ -2952,8 +2940,6 @@
       "owner.r12-52"
     ],
     "openOwnerItems": [
-      "owner.r12-01",
-      "owner.r12-02",
       "owner.r12-04",
       "owner.r12-05",
       "owner.r12-06",
@@ -2984,14 +2970,14 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "205/232 (88.36%)",
-      "frontendLocalGreen": "3/232 (1.29%)",
-      "backendDone": "182/219 (83.11%)",
+      "frontendVerified": "206/232 (88.79%)",
+      "frontendLocalGreen": "2/232 (0.86%)",
+      "backendDone": "183/219 (83.56%)",
       "backendLocalGreen": "1/219 (0.46%)",
-      "e2eVerified": "180/186 (96.77%)",
-      "e2ePlusFlutterOnly": "193/232 (83.19%)",
-      "ownerDone": "34/53 (64.15%)",
-      "ownerNonTerminal": "19/53 (35.85%)"
+      "e2eVerified": "181/186 (97.31%)",
+      "e2ePlusFlutterOnly": "194/232 (83.62%)",
+      "ownerDone": "36/53 (67.92%)",
+      "ownerNonTerminal": "17/53 (32.08%)"
     },
     "deployment": "none for this documentation reconciliation",
     "memory": "no-op"

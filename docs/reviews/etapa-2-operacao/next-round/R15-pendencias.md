@@ -18,11 +18,11 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
-coordenadora R15, 17/09/2026, após as integrações do dia): FE 205/232 (88,36%),
-BE 182/219 (83,11%), E2E 180/186 (96,77%), Owner 34/53 (64,15%).
+coordenadora R15, 17/09/2026, após as integrações do dia): FE 206/232 (88,79%),
+BE 183/219 (83,56%), E2E 181/186 (97,31%), Owner 36/53 (67,92%).
 Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
-Fila: 6 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
-pela E8); meta do Owner: **186/186**, 19 Owner
+Fila: 5 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
+pela E8); meta do Owner: **186/186**, 17 Owner
 items abertos/parciais, 19 resíduos H,
 2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
 renumerado; nenhum estado mudou na abertura.
@@ -91,7 +91,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 
 **Fora da R15:** SMTP próprio (Etapa 3, E8); MFA ×3 (`deferred-post-mvp`, E9); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
 
-## Owner items — abertos/parciais e atualizações da execução (19)
+## Owner items — abertos/parciais e atualizações da execução (17)
 
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
@@ -124,7 +124,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | owner.r12-52 | chat.attach | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md; specs/058-superadmin-chat-multi-attachment-message.md; docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md | Concluído 17/09 (R15 C1, ADR 0042 E3 = B): FE verified (rota real 17/09, R15 C1): seletor múltiplo, diálogo de lote com progresso e falha tratada, mosaico 3 e 3+1 (+N), tile único (PDF e imagem), reload. / BE done (lote 76): contrato E3 `superadmin_chat_attachment_prepare_v2`/`finalize_v2`/`discard_v1` — uma mensagem por lote de 1–10, 11º recusado (422), publicação só quando todos terminam; Edge `chat-media` em lote; pgTAP 51/51 + 28/28 + 9/9. / E2E verified-e2e em produção: mídia R2 real, reload por `thread_v2`, negativas 404/422/409 por PostgREST. Mosaico alcançável pela rota normal com vários anexos na mesma mensagem. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema. |
 
-## Owner items — concluídos (34; não voltam à execução)
+## Owner items — concluídos (36; não voltam à execução)
 
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
@@ -221,7 +221,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
-## Ações não terminais por família (inventário: 6 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 5 ações; FE/BE/E2E)
 
 
 Projeção regenerada em 17/09/2026 a partir de `inventario-etapa-2.json` (coordenadora R15): ações `mvp`/`gate-formal-mvp` cujo estado integrado
@@ -230,7 +230,7 @@ não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA �
 
 | Família | Qtd | action_ids |
 |---|---:|---|
-| agora | 2 | `agora.publish` (verified/done/pending-verification), `agora.remove` (local-green/pending-verification/pending-verification) |
+| agora | 1 | `agora.publish` (verified/done/pending-verification) |
 | auth | 2 | `auth.recover` (verified/done/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
 | forms_files | 1 | `forms.expire-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
