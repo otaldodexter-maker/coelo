@@ -6,7 +6,7 @@ lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-17"
 base: "dev"
-revision: "37d762976 (fechamento da R15 / abertura da R16, 17/09)"
+revision: "560a154aa (R16 em execução: agora.publish certificado, lote 81, 17/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -36,13 +36,21 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 17/09/2026: `next-round/R16-pendencias.md` (R12–R15 congeladas).
 
-## Snapshot de 17/09 — Mesa R16 (ADR 0044): percentuais do MVP
+## Snapshot de 17/09 ~21:00 BRT — R16 em execução (lote 81): percentuais do MVP
+
+`agora.publish` certificado em produção pela sessão AGORA (`R16-execucao.md`,
+`R16-handoff-agora.md`): lote 81 `now_guardian_reader_v1` (spec 070, OQ-048) e leitura
+pela responsável provada por PostgREST. **Percentuais canônicos atuais**: FE **198/199
+(99,5%)**, BE **185/186 (99,5%)**, E2E **185/186 (99,5%)**, Owner 39/53. Resta
+`forms.location-answer` (sessão FORMS, em execução).
+
+## Snapshot de 17/09 — Mesa R16 (ADR 0044): percentuais do MVP (histórico)
 
 O Owner decidiu que a Etapa 2 se mede pelo **E2E do MVP** e mandou as 33 ações fora do
 MVP para a **V1** (escopo `v1`, fora dos denominadores FE/BE). **Percentuais canônicos
 atuais**: FE **198/199 (99,5%)**, BE **185/186 (99,5%)**,
-E2E **184/186 (98,9%)**, Owner 39/53 (7 na R16, 7 na Etapa 3). FE/BE
-passam a code review contínuo e revisão tela a tela na Etapa 3.
+E2E 184/186 (98,9%), Owner 39/53 (7 na R16, 7 na Etapa 3). FE/BE
+passam a code review contínuo e revisão tela a tela na Etapa 3. Substituído pelo snapshot acima.
 
 ## Snapshot de 17/09 — fechamento da R15 e abertura da R16
 

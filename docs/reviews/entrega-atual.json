@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "b9f7258b5ea673682f9d11f12001aab6d5decbe9",
+    "head": "560a154aa4405a9741c8959cbe58893793cf0015",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -75,9 +75,9 @@
       },
       "integrated": {
         "flutter-only": 13,
-        "pending-verification": 2,
+        "pending-verification": 1,
         "v1": 33,
-        "verified-e2e": 184
+        "verified-e2e": 185
       }
     },
     "deferredPostMvpActionCount": 0,
@@ -130,8 +130,8 @@
     "frontendLocalGreen": "1/199 (0.50%)",
     "backendDone": "185/186 (99.46%)",
     "backendLocalGreen": "0/186 (0.00%)",
-    "e2eVerified": "184/186 (98.92%)",
-    "e2ePlusFlutterOnly": "197/199 (98.99%)",
+    "e2eVerified": "185/186 (99.46%)",
+    "e2ePlusFlutterOnly": "198/199 (99.50%)",
     "ownerDone": "39/53 (73.58%)",
     "ownerNonTerminal": "14/53 (26.42%)"
   },
@@ -945,10 +945,10 @@
     },
     {
       "id": "agora.publish",
-      "status": "open",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "E2E: leitor responsavel na audiencia Familias nao existe no QA (D6); provar quando houver massa autorizada."
+      "status": "done",
+      "owner": "Sessão AGORA (R16) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+      "nextGate": "verified-e2e em 17/09 (lote 81, spec 070): leitor de Famílias reconhece o responsável por vínculo; qa-r15-responsavel lê a story d9580375 por PostgREST (200, can_remove false, ticket de mídia único), 2ª chamada estável, cross-tenant 42501, equipe []."
     },
     {
       "id": "agora.remove",
@@ -1322,7 +1322,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R16 (17/09; R16-execucao.md); a coordenadora integra por cherry-pick; remover só no fechamento da R16 após bundle em Coelo-backups/r16-fechamento.",
       "branch": "r16/agora-publish",
-      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
+      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r16-forms": {
       "disposition": "retained-session",
@@ -1334,24 +1334,26 @@
   "preservedStash": {},
   "residualBranches": {
     "r16/agora-publish": {
-      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae",
+      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d",
       "exclusive": [
+        "daddde1a0b060b61f36e2b316cb086643a89dd0d",
         "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch da sessão AGORA (R16); commit c539fc40d integrado em dev por cherry-pick (b9f7258b5): spec 070 + migration now_guardian_reader_v1 + pgTAP. Apagar no fechamento da R16.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
-      "successor": "b9f7258b5ea673682f9d11f12001aab6d5decbe9"
+      "reason": "Branch da sessão AGORA (R16): c539fc40d → dev b9f7258b5 (spec 070, migration, pgTAP) e daddde1a0 → dev 560a154aa (lote 81, prova em produção, delta agora.publish verified-e2e, handoff). Bundle em Coelo-backups/r16-fechamento; apagar no fechamento.",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+      "successor": "560a154aa4405a9741c8959cbe58893793cf0015"
     },
     "origin/r16/agora-publish": {
-      "sha": "c539fc40dc42684291c8d013dc9c7e15e59c8aae",
+      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d",
       "exclusive": [
+        "daddde1a0b060b61f36e2b316cb086643a89dd0d",
         "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch da sessão AGORA (R16); commit c539fc40d integrado em dev por cherry-pick (b9f7258b5): spec 070 + migration now_guardian_reader_v1 + pgTAP. Apagar no fechamento da R16.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
-      "successor": "b9f7258b5ea673682f9d11f12001aab6d5decbe9"
+      "reason": "Branch da sessão AGORA (R16): c539fc40d → dev b9f7258b5 (spec 070, migration, pgTAP) e daddde1a0 → dev 560a154aa (lote 81, prova em produção, delta agora.publish verified-e2e, handoff). Bundle em Coelo-backups/r16-fechamento; apagar no fechamento.",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+      "successor": "560a154aa4405a9741c8959cbe58893793cf0015"
     }
   },
   "evidenceFiles": [
@@ -1405,6 +1407,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+    "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
     "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
@@ -1728,8 +1731,8 @@
       "frontendLocalGreen": "1/199 (0.50%)",
       "backendDone": "185/186 (99.46%)",
       "backendLocalGreen": "0/186 (0.00%)",
-      "e2eVerified": "184/186 (98.92%)",
-      "e2ePlusFlutterOnly": "197/199 (98.99%)",
+      "e2eVerified": "185/186 (99.46%)",
+      "e2ePlusFlutterOnly": "198/199 (99.50%)",
       "ownerDone": "39/53 (73.58%)",
       "ownerNonTerminal": "14/53 (26.42%)"
     },

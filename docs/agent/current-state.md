@@ -24,11 +24,18 @@ audience: "team"
   Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
   abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
 - **17/09 ~20:15 BRT — execução paralela da R16 em curso** (`R16-execucao.md`): sessão
-  FORMS (`Coelo.worktrees16-forms`, `r16/forms-location-answer`, 3014/9414) e sessão
-  AGORA (`…16-agora`, `r16/agora-publish`, 3015/9415, espelho `mirror-r16-agora`,
+  FORMS (`Coelo.worktrees
+16-forms`, `r16/forms-location-answer`, 3014/9414) e sessão
+  AGORA (`…
+16-agora`, `r16/agora-publish`, 3015/9415, espelho `mirror-r16-agora`,
   lote 81 reservado); a coordenadora integra em `dev` por cherry-pick. Handoffs
   `R16-handoff-forms.md` / `R16-handoff-agora.md`.
-- Produção em 17/09: lotes 75–80 (PT409 sistêmico, Chat multi-anexo, "Para você",
+- **Corte de 17/09 ~21:00 BRT (R16 em execução)**: `agora.publish` certificado em produção —
+  **lote 81** (`20260917203000_now_guardian_reader_v1`, spec 070: `app_private.now_reader_actor`
+  reconhece o responsável por `guardian_links` + `can_view` sem membership; `now_actor` de
+  escrita inalterado); leitura pela responsável `qa-r15-responsavel` provada por PostgREST.
+  **FE 198/199, BE 185/186, E2E 185/186 (99,5%)**; resta `forms.location-answer` (sessão FORMS).
+- Produção em 17/09: lotes 75–81 (PT409 sistêmico, Chat multi-anexo, "Para você",
   B5/B6/Cardápios R2, projeção do Agora, fixture QA R15) e Edges `chat-media`,
   `child-safety-media` v2, `meal-plan-media`, `meal-plan-image-cleanup`, `now-media`,
   `form-media` v23 (`verify_jwt=false`). Conta `qa-r15-responsavel@coelo.me` existe
