@@ -72,6 +72,24 @@ chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10
   retorno na evidência) → lote novo no ledger + aviso no handoff. Posso executar os passos 4–6 eu mesma se o
   Owner/coordenadora preferir, com a ressalva do aviso 7 (classificador).
 
+### AP-2 — membership de responsável para o Principal abrir (achado D1 da coordenadora) — candidato pronto, EM ESPERA
+
+- **Origem**: pedido antecipado da coordenadora (`coelo-85`), não do handoff B; depois posto em espera:
+  só abre se o B registrar que `list_visible_now_publications` com a sessão `qa-r15-responsavel` devolve
+  vazio por falta de `institution_memberships`.
+- **Causa observada**: o Principal abre só por `list_my_principal_contexts` (join obrigatório em
+  `institution_memberships` ativa; `person.status='active'`); não há leitor de contextos de responsável;
+  o cliente espera `role_code='guardian'` (`PrincipalRuntimeContext.isGuardianRole`); não existe papel de
+  sistema de responsável. Teste reproduz: após o AP-1, 0 contextos; com a membership, 1.
+- **Candidato** (não aplicado): migration `20260917113000_qa_r15_guardian_membership_v1` →
+  `app_private.seed_qa_r15_guardian_membership_v1()` cria uma membership `guardian`, escopo `group` na
+  turma `368a5cea` (unidade `d0c4…0002`), sem permissões de equipe; fail-closed e idempotente; pgTAP
+  `qa_r15_guardian_membership_v1_test.sql` **16/16** no espelho; `now_viewer_role_class` continua
+  `guardian`. Evidência: `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/ap-2-membership-responsavel-20260917.md`.
+- **Para decidir antes de aplicar** (ver "Para o Owner"): qualquer membership faz a responsável contar
+  como equipe/educadora nos destinatários de cuidado (`child_care_notification_recipients_v1`,
+  `medication_notification_recipients_v1`), o que confunde a prova E7.
+
 ## Avisos para o Bloco B e para a coordenadora
 
 1. **Drift de ACL do espelho (afeta pgTAP de grants por família, OQ-047).** Num espelho restaurado de
@@ -122,10 +140,16 @@ chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10
 
 ## Para o Owner
 
-Nenhuma pergunta pendente.
+- **AP-2 (só se for aberto)**: para o Principal abrir para um responsável, a única rota hoje é uma
+  `institution_memberships` com `role_code='guardian'`. Isso faz o responsável entrar também nos
+  destinatários de cuidado como equipe/educador (RPCs acima). Pergunta fechada: (a) aceitar esse efeito na
+  massa QA R15 (prova E7 fica ambígua) ou (b) tratar como lacuna de contrato do Principal (leitor de
+  contextos de responsável sem membership) para uma spec própria? Sem resposta, o candidato fica só no
+  espelho.
 
 ## Estado dos pedidos
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
+| AP-2 | 7 — `agora.publish` (Principal da responsável) | pedido antecipado da coordenadora, 17/09 ~15:1x BRT; em espera | candidato: migration `20260917113000_qa_r15_guardian_membership_v1` + pgTAP 16/16 (não aplicado) | **em espera** — abre só se o B registrar leitura vazia por falta de membership; decisão do Owner sobre o efeito colateral |
 | AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue e aplicada pelo B**: cherry-pick `6b06a3381`, migration em produção como **lote 80** (`ded7c006f`); **fechado**: conta criada pelo Owner (`ff3682a1…`) e função executada pelo B em produção (`dedcd83ee`: responsável ativo com login, 2 `guardian_links`, 2 permissões, vínculos de unidade aceitos); antes disso respondeu `P0002 qa_auth_user_missing` (fail-closed, como projetado) |
