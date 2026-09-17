@@ -158,6 +158,8 @@ docs/reviews/entrega-atual.json` (PASS).
 | 20:2x | `.env.local` + `.temp` copiados para `r16-agora` pela coordenadora | FORMS copiou os seus |
 | 20:3x | Owner autoriza lote 81 antecipado, pgTAP mínimo na AGORA e RPC como rota principal na FORMS | seção acima; repassado às duas sessões; Docker Desktop já ligado |
 | 20:5x | Integração AGORA fatias 1–2: `c539fc40d` → `dev` `b9f7258b5` (cherry-pick) | spec 070, migration `20260917203000_now_guardian_reader_v1`, pgTAP 21/21 no espelho fiel (removal 18/18, projection 9/9, happens 33/33 sem regressão); dump prévio `schema-producao-20260917-r16-agora-before.sql` SHA-256 `0c6c6468…`; sessão iniciou o rito do lote 81 |
+| 20:33 | **Lote 81 aplicado em produção pela sessão AGORA** (23:33:53–58 UTC, 0 erros; `migration repair` + `migration list` OK; `20260917113000` só local) | Pós-verificação D1: `now_reader_actor` sem execute a `anon`/`authenticated`; `list_visible_now_publications` usa `now_reader_actor`; `now_actor` intacto. Prova PostgREST 23:39Z: `qa-r15-responsavel` → 200 com `d9580375` (`can_remove false`), 2ª chamada idêntica; instituição inexistente → 403 42501; `qa-r06-principal` → `[]` |
+| 20:41 | Leitura D1 para a FORMS (v4 publicada às 23:30Z pela tela; agendamento "Uma vez") | form `4555ba07` mv5, `published_version_id e0107c9d` (v2, itens short_text + location `90d33a71`); ocorrência nova `c42cf334` open (23:00Z–24/09 23:00Z, versão nova); cron `coelo-forms-occurrences` reconciliou às 23:40Z: 11 participações, pessoa `9f944691` elegível (participation `12aa895e`). Resíduo: as 24 ocorrências diárias 18/09–11/10 continuam `scheduled` (item `form-diario`, fora do foco). Nenhuma ocorrência de outro tenant existe em produção (negativa alheia = "sem massa") |
 
 ## Cota e fechamento
 
