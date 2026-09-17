@@ -848,16 +848,25 @@ final class ChildSafetyWizardPage extends StatefulWidget {
 final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   final childSearch = TextEditingController(),
       personId = TextEditingController(),
+      personSearch = TextEditingController(),
       relationshipDetail = TextEditingController(),
       requestReason = TextEditingController();
   var step = 0,
       searching = false,
+      searchingPeople = false,
       relationship = 'mother',
       pickup = true,
       emergency = false,
       transport = false;
   var options = const <ChildSafetyChildOption>[];
   ChildSafetyChildOption? child;
+  // B5 (spec 061): busca de pessoa autorizada conforme digita. O UUID tecnico
+  // continua no comando (personId), mas nunca e digitado nem exibido.
+  var people = const <ChildSafetyPersonMatch>[];
+  ChildSafetyPersonMatch? selectedPerson;
+  String? personSearchHint;
+  Timer? _personSearchTimer;
+  bool _suppressPersonSearch = false;
   DateTimeRange? validity;
   var validityOpenEnded = false;
   String? error;
@@ -921,6 +930,15 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     child = null;
     childSearch.clear();
     personId.clear();
+    _personSearchTimer?.cancel();
+    _personSearchTimer = null;
+    _suppressPersonSearch = true;
+    personSearch.clear();
+    _suppressPersonSearch = false;
+    people = const [];
+    selectedPerson = null;
+    searchingPeople = false;
+    personSearchHint = null;
     relationshipDetail.clear();
     requestReason.clear();
     relationship = 'mother';
@@ -1005,6 +1023,9 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         childSearch.text = record.childName;
         if (authorization != null) {
           personId.text = authorization.personId ?? '';
+          _suppressPersonSearch = true;
+          personSearch.text = authorization.name;
+          _suppressPersonSearch = false;
           relationship = _relationshipCode(authorization.relationship);
           relationshipDetail.text = relationship == 'other' ? authorization.relationship : '';
           requestReason.text = authorization.requestReason ?? '';
@@ -1048,6 +1069,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   void dispose() {
     childSearch.dispose();
     personId.dispose();
+    _personSearchTimer?.cancel();
+    personSearch.dispose();
     relationshipDetail.dispose();
     requestReason.dispose();
     widget.controller.removeListener(_controllerChanged);
@@ -1212,6 +1235,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   Widget _section() => _panel(labels[step], switch (step) {
     0 => [
       CoeloFormTextField(
+        fieldKey: const Key('safety-child-search'),
         controller: childSearch,
         enabled: widget.authorizationId == null,
         labelText: 'Buscar criança',
@@ -1270,15 +1294,17 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         ),
         const SizedBox(height: CoeloSpacing.space2),
       ],
+      if (widget.authorizationId == null) ...[
+        const SizedBox(height: CoeloSpacing.space4),
+        Text('Ou busque pelo responsável', style: Theme.of(context).textTheme.titleSmall),
+        const SizedBox(height: CoeloSpacing.space1),
+        const Text('Selecionar uma criança vinculada preenche a criança e a pessoa autorizada.'),
+        const SizedBox(height: CoeloSpacing.space3),
+        ..._personSearchSection(),
+      ],
     ],
     1 => [
-      CoeloFormTextField(
-        controller: personId,
-        enabled: widget.authorizationId == null,
-        labelText: 'Identificador da pessoa global',
-        hintText: 'UUID da pessoa selecionada',
-        prefixIcon: Icons.person_search_outlined,
-      ),
+      ..._personSearchSection(),
       const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
         controller: requestReason,
@@ -1358,7 +1384,11 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         label: 'Contexto',
         value: '${child?.institutionName ?? '—'} · ${child?.unitName ?? '—'}',
       ),
-      _Review(label: 'Pessoa global', value: personId.text.trim()),
+      _Review(
+        label: 'Pessoa autorizada',
+        value: selectedPerson?.displayName ??
+            (personSearch.text.trim().isEmpty ? 'Não selecionada' : personSearch.text.trim()),
+      ),
       _Review(label: 'Capacidades', value: _capabilities().join(', ')),
       const SizedBox(height: CoeloSpacing.space4),
       Text(
@@ -1463,6 +1493,197 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     );
   }
 
+  /// Campo unico de busca de pessoa autorizada (B5) com o resultado
+  /// minimizado; usado na etapa Crianca (atalho pelo responsavel) e na etapa
+  /// Pessoa autorizada. Na edicao vira somente leitura com o nome atual.
+  List<Widget> _personSearchSection() => [
+    CoeloFormTextField(
+      fieldKey: const Key('safety-person-search'),
+      controller: personSearch,
+      enabled: widget.authorizationId == null,
+      labelText: widget.authorizationId == null ? 'Buscar pessoa autorizada' : 'Pessoa autorizada',
+      hintText: 'Nome, @, e-mail, celular ou CPF',
+      prefixIcon: Icons.person_search_outlined,
+      onChanged: widget.authorizationId == null ? _onPersonSearchChanged : null,
+      suffixIcon: searchingPeople
+          ? const Padding(
+              padding: EdgeInsets.all(CoeloSpacing.space3),
+              child: SizedBox.square(
+                dimension: CoeloSize.iconSm,
+                child: CircularProgressIndicator(strokeWidth: 2),
+              ),
+            )
+          : selectedPerson != null
+          ? Icon(Icons.check_circle_rounded, color: Theme.of(context).colorScheme.primary)
+          : null,
+    ),
+    if (personSearchHint != null && widget.authorizationId == null) ...[
+      const SizedBox(height: CoeloSpacing.space2),
+      Text(personSearchHint!, style: Theme.of(context).textTheme.bodySmall),
+    ],
+    if (widget.authorizationId == null) ...[
+      const SizedBox(height: CoeloSpacing.space2),
+      for (final match in people) ...[
+        _personMatchCard(match),
+        const SizedBox(height: CoeloSpacing.space2),
+      ],
+    ],
+  ];
+
+  void _onPersonSearchChanged(String value) {
+    if (_suppressPersonSearch) return;
+    _personSearchTimer?.cancel();
+    final readiness = childSafetyPersonSearchReadiness(value);
+    setState(() {
+      if (selectedPerson != null && value.trim() != selectedPerson!.displayName) {
+        selectedPerson = null;
+        personId.clear();
+      }
+      people = const [];
+      error = null;
+      personSearchHint = value.trim().isEmpty
+          ? null
+          : readiness.ready
+          ? null
+          : switch (readiness.kind) {
+              ChildSafetyPersonSearchKind.digits =>
+                'Digite ao menos 4 dígitos do celular ou o CPF completo.',
+              ChildSafetyPersonSearchKind.handle => 'Digite ao menos 3 caracteres após o @.',
+              _ => 'Digite ao menos 3 caracteres.',
+            };
+    });
+    if (!readiness.ready) return;
+    _personSearchTimer = Timer(const Duration(milliseconds: 300), _searchPeople);
+  }
+
+  Future<void> _searchPeople() async {
+    if (!mounted ||
+        widget.authorizationId != null ||
+        _contextUnavailable ||
+        _loadingContext ||
+        _initialContextFailed ||
+        widget.controller.isSaving ||
+        _confirmedSaveCommand != null ||
+        _saveNeedsReload) {
+      return;
+    }
+    final version = _contextVersion;
+    final query = personSearch.text.trim();
+    final controller = widget.controller;
+    setState(() {
+      searchingPeople = true;
+      personSearchHint = null;
+    });
+    try {
+      final result = await controller.searchPeople(query);
+      if (!mounted || version != _contextVersion || personSearch.text.trim() != query) return;
+      setState(() {
+        people = result;
+        personSearchHint = result.isEmpty ? 'Nenhuma pessoa encontrada no escopo autorizado.' : null;
+      });
+    } on ChildSafetyRateLimitException {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Muitas buscas em sequência. Aguarde um minuto.');
+      }
+    } on ChildSafetyUnauthorizedException {
+      if (mounted && version == _contextVersion) {
+        setState(() {
+          _clearContext();
+          _lookupDenied = true;
+          error = 'Não foi possível buscar pessoas.';
+        });
+      }
+    } catch (_) {
+      if (mounted && version == _contextVersion) {
+        setState(() {
+          people = const [];
+          error = 'Não foi possível buscar pessoas.';
+        });
+      }
+    } finally {
+      if (mounted && version == _contextVersion) setState(() => searchingPeople = false);
+    }
+  }
+
+  void _selectPerson(ChildSafetyPersonMatch match, {ChildSafetyChildOption? linkedChild}) {
+    _personSearchTimer?.cancel();
+    setState(() {
+      selectedPerson = match;
+      personId.text = match.personId;
+      _suppressPersonSearch = true;
+      personSearch.text = match.displayName;
+      _suppressPersonSearch = false;
+      people = const [];
+      personSearchHint = null;
+      error = null;
+      _pendingSaveCommand = null;
+      if (linkedChild != null) {
+        child = linkedChild;
+        options = [linkedChild];
+        childSearch.text = linkedChild.name;
+      }
+    });
+  }
+
+  Widget _personMatchCard(ChildSafetyPersonMatch match) {
+    final theme = Theme.of(context);
+    final details = [
+      ?match.handle,
+      if (match.phoneLast4 case final last4?) '•••• $last4',
+      if (!match.hasAccount) 'sem conta',
+    ].join(' · ');
+    return CoeloAdminInteractiveCard(
+      surfaceKey: Key('safety-person-${match.personId}'),
+      semanticLabel: 'Selecionar ${match.displayName}',
+      onPressed: () => _selectPerson(match),
+      child: Padding(
+        padding: const EdgeInsets.all(CoeloSpacing.space4),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            Row(
+              children: [
+                CoeloAvatar(
+                  initials: match.initials.isEmpty ? '?' : match.initials,
+                  semanticLabel: 'Avatar de ${match.displayName}',
+                  size: CoeloAvatarSize.medium,
+                ),
+                const SizedBox(width: CoeloSpacing.space3),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(match.displayName, style: theme.textTheme.titleMedium),
+                      if (details.isNotEmpty) Text(details, style: theme.textTheme.bodySmall),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+            if (match.children.isNotEmpty) ...[
+              const SizedBox(height: CoeloSpacing.space3),
+              Text('Crianças vinculadas no escopo', style: theme.textTheme.labelLarge),
+              const SizedBox(height: CoeloSpacing.space2),
+              Wrap(
+                spacing: CoeloSpacing.space2,
+                runSpacing: CoeloSpacing.space2,
+                children: [
+                  for (final linked in match.children)
+                    OutlinedButton.icon(
+                      key: Key('safety-person-child-${match.personId}-${linked.id}'),
+                      onPressed: () => _selectPerson(match, linkedChild: linked),
+                      icon: const Icon(Icons.child_care_outlined),
+                      label: Text('Selecionar ${linked.name} · ${linked.unitName}'),
+                    ),
+                ],
+              ),
+            ],
+          ],
+        ),
+      ),
+    );
+  }
+
   Future<void> _search() async {
     if (widget.authorizationId != null ||
         _contextUnavailable ||
@@ -1529,7 +1750,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         (personId.text.trim().isEmpty ||
             requestReason.text.trim().length < 3 ||
             (relationship == 'other' && relationshipDetail.text.trim().isEmpty))) {
-      setState(() => error = 'Selecione a pessoa global e informe relação e motivo.');
+      setState(() => error = 'Busque e selecione a pessoa autorizada e informe relação e motivo.');
       return;
     }
     if (step == 2 && _capabilities().isEmpty) {

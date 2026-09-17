@@ -192,6 +192,98 @@ abstract interface class ChildSafetyMutationSupport {
   bool get mutationsEnabled;
 }
 
+/// Busca de pessoa autorizada (ADR 0041 B5, spec 061): leitor unico,
+/// resultado minimizado pelo servidor. Adapters sem o contrato nao a expoem e o
+/// controlador falha fechado.
+abstract interface class ChildSafetyPersonSearchSupport {
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query);
+}
+
+/// Pessoa candidata devolvida por `superadmin_person_search_v1`: nome,
+/// iniciais, `@handle`, ultimos 4 digitos do celular e as criancas vinculadas
+/// dentro do escopo do ator. CPF, e-mail e celular inteiro nunca chegam aqui.
+final class ChildSafetyPersonMatch {
+  const ChildSafetyPersonMatch({
+    required this.personId,
+    required this.displayName,
+    required this.initials,
+    required this.matchedBy,
+    this.handle,
+    this.phoneLast4,
+    this.hasAccount = false,
+    this.children = const [],
+  });
+
+  final String personId;
+  final String displayName;
+  final String initials;
+  final String matchedBy;
+  final String? handle;
+  final String? phoneLast4;
+  final bool hasAccount;
+  final List<ChildSafetyChildOption> children;
+}
+
+enum ChildSafetyPersonSearchKind { name, handle, email, digits }
+
+/// Deteccao do tipo e do minimo de caracteres, espelhando a regra do servidor
+/// (nome/@/e-mail >= 3 caracteres; celular/CPF >= 4 digitos, com ou sem
+/// mascara). A tela so consulta o servidor quando `ready` e verdadeiro.
+final class ChildSafetyPersonSearchReadiness {
+  const ChildSafetyPersonSearchReadiness({
+    required this.kind,
+    required this.ready,
+    required this.minimum,
+    required this.length,
+  });
+
+  final ChildSafetyPersonSearchKind kind;
+  final bool ready;
+  final int minimum;
+  final int length;
+
+  int get remaining => ready ? 0 : minimum - length;
+}
+
+final _digitsOnlyQuery = RegExp(r'^[0-9\s().+\-]+$');
+final _nonDigit = RegExp(r'\D');
+
+ChildSafetyPersonSearchReadiness childSafetyPersonSearchReadiness(String raw) {
+  final value = raw.trim();
+  final digits = value.replaceAll(_nonDigit, '');
+  if (value.startsWith('@')) {
+    final needle = value.substring(1).trim();
+    return ChildSafetyPersonSearchReadiness(
+      kind: ChildSafetyPersonSearchKind.handle,
+      ready: needle.length >= 3,
+      minimum: 3,
+      length: needle.length,
+    );
+  }
+  if (value.contains('@')) {
+    return ChildSafetyPersonSearchReadiness(
+      kind: ChildSafetyPersonSearchKind.email,
+      ready: value.length >= 3,
+      minimum: 3,
+      length: value.length,
+    );
+  }
+  if (value.isNotEmpty && digits.isNotEmpty && _digitsOnlyQuery.hasMatch(value)) {
+    return ChildSafetyPersonSearchReadiness(
+      kind: ChildSafetyPersonSearchKind.digits,
+      ready: digits.length >= 4,
+      minimum: 4,
+      length: digits.length,
+    );
+  }
+  return ChildSafetyPersonSearchReadiness(
+    kind: ChildSafetyPersonSearchKind.name,
+    ready: value.length >= 3,
+    minimum: 3,
+    length: value.length,
+  );
+}
+
 abstract interface class ChildSafetyRepository {
   Future<ChildSafetyDirectoryPage> fetchDirectory(ChildSafetyDirectoryQuery query);
   Future<ChildSafetyRecord?> fetchChild(String childId);
@@ -231,6 +323,11 @@ final class ChildSafetyValidationException implements Exception {
 
 final class ChildSafetyUnavailableException implements Exception {
   const ChildSafetyUnavailableException();
+}
+
+/// Limite de taxa da busca de pessoa (SQLSTATE PT422, PERSON_SEARCH_RATE_LIMIT).
+final class ChildSafetyRateLimitException implements Exception {
+  const ChildSafetyRateLimitException();
 }
 
 final class UnavailableChildSafetyRepository implements ChildSafetyRepository {

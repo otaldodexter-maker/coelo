@@ -3,7 +3,8 @@ import '../../domain/child_safety_contract.dart';
 import '../../domain/child_safety.dart';
 
 /// Stateful, deterministic repository used only by development previews.
-final class DevChildSafetyRepository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+final class DevChildSafetyRepository
+    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
   @override
   bool get mutationsEnabled => true;
   DevChildSafetyRepository({
@@ -86,6 +87,33 @@ final class DevChildSafetyRepository implements ChildSafetyRepository, ChildSafe
         )
         .take(limit)
         .toList();
+  }
+
+  /// Massa sintetica de preview: um responsavel por crianca conhecida, com o
+  /// mesmo formato minimizado do servidor (sem CPF, e-mail ou celular inteiro).
+  @override
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async {
+    final readiness = childSafetyPersonSearchReadiness(query);
+    if (!readiness.ready) return const [];
+    final needle = query.trim().toLowerCase().replaceFirst('@', '');
+    return [
+      for (final child in _children)
+        ChildSafetyPersonMatch(
+          personId: 'guardian-${child.id}',
+          displayName: 'Responsável de ${child.name}',
+          initials: 'R${child.name.isEmpty ? '' : child.name[0].toUpperCase()}',
+          matchedBy: readiness.kind.name,
+          handle: '@resp.${child.id}',
+          phoneLast4: '0000',
+          hasAccount: true,
+          children: [child],
+        ),
+    ].where((match) {
+      final haystack = '${match.displayName} ${match.handle} ${match.phoneLast4}'.toLowerCase();
+      return readiness.kind == ChildSafetyPersonSearchKind.digits ||
+          readiness.kind == ChildSafetyPersonSearchKind.email ||
+          haystack.contains(needle);
+    }).toList();
   }
 
   @override

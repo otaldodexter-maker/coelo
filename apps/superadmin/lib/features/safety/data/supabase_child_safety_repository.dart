@@ -8,7 +8,7 @@ import '../domain/child_safety_contract.dart';
 import 'child_safety_response_decoder.dart';
 
 final class SupabaseChildSafetyRepository
-    implements ChildSafetyRepository, ChildSafetyMutationSupport {
+    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
   const SupabaseChildSafetyRepository(this._client);
 
   final SupabaseClient _client;
@@ -46,6 +46,14 @@ final class SupabaseChildSafetyRepository
       'p_limit': limit,
     });
     return decodeChildSafetyOptions(payload);
+  }
+
+  /// B5 (spec 061): leitor unico com deteccao de tipo no servidor; o cliente
+  /// so envia o texto e recebe o resultado minimizado (CPF nunca).
+  @override
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async {
+    final payload = await _rpc('superadmin_person_search_v1', {'p_query': query.trim()});
+    return decodeChildSafetyPersonMatches(payload);
   }
 
   @override
@@ -118,6 +126,8 @@ final class SupabaseChildSafetyRepository
         // PT409: conflito de versao sinalizado pelas RPCs de child_safety desde
         // 20260916152000 (40001 fazia o PostgREST reexecutar ate o 504).
         '23505' || '40001' || 'PT409' => const ChildSafetyConflictException(),
+        // PT422: limite de taxa da busca de pessoa (PERSON_SEARCH_RATE_LIMIT).
+        'PT422' => const ChildSafetyRateLimitException(),
         '22023' || '23514' => const ChildSafetyValidationException(),
         _ => const ChildSafetyUnavailableException(),
       };

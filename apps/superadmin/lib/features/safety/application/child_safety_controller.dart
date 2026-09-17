@@ -88,6 +88,27 @@ final class ChildSafetyController extends ChangeNotifier {
     return _replaceAndLoad(_replaceQuery(pageSize: value));
   }
 
+  /// Busca de pessoa autorizada (spec 061). Sem o contrato no adapter a chamada
+  /// falha fechada; a tela so chama quando o minimo do tipo foi atingido.
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async {
+    _checkLookupAllowed();
+    final Object repository = _repository;
+    if (repository is! ChildSafetyPersonSearchSupport) {
+      throw const ChildSafetyUnavailableException();
+    }
+    final version = _requestVersion;
+    final normalized = query.trim();
+    if (!childSafetyPersonSearchReadiness(normalized).ready) return const [];
+    final result = await repository.searchPeople(normalized);
+    if (_disposed ||
+        version != _requestVersion ||
+        _state == ChildSafetyLoadState.unauthorized ||
+        _state == ChildSafetyLoadState.error) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return result;
+  }
+
   Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
     _checkLookupAllowed();
     final version = _requestVersion;

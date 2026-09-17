@@ -92,6 +92,41 @@ List<ChildSafetyChildOption> decodeChildSafetyOptions(Object? payload) {
   }).toList();
 }
 
+/// Payload de `superadmin_person_search_v1` (spec 061): `{ok, kind, results}`.
+/// Somente os campos minimizados sao lidos; qualquer chave extra e ignorada.
+List<ChildSafetyPersonMatch> decodeChildSafetyPersonMatches(Object? payload) {
+  final envelope = _map(payload);
+  return _list(envelope['results']).map((item) {
+    final person = _map(item);
+    final personId = _string(person['person_id']);
+    final displayName = _string(person['display_name']);
+    if (personId.isEmpty || displayName.isEmpty) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return ChildSafetyPersonMatch(
+      personId: personId,
+      displayName: displayName,
+      initials: _string(person['initials']),
+      matchedBy: _string(person['matched_by']),
+      handle: _nullableString(person['handle']),
+      phoneLast4: _nullableString(person['phone_last4']),
+      hasAccount: person['has_account'] == true,
+      children: _list(person['children']).map((value) {
+        final child = _map(value);
+        return ChildSafetyChildOption(
+          id: _string(child['child_id']),
+          name: _string(child['child_name']),
+          childContextId: _nullableString(child['child_context_id']),
+          institutionId: _nullableString(child['institution_id']),
+          institutionName: _string(child['institution_name']),
+          unitId: _nullableString(child['unit_id']),
+          unitName: _string(child['unit_name']),
+        );
+      }).toList(),
+    );
+  }).toList();
+}
+
 Map<String, Object?> _map(Object? value) =>
     value is Map ? value.map((key, item) => MapEntry(key.toString(), item)) : const {};
 List<Object?> _list(Object? value) => value is List ? value : const [];

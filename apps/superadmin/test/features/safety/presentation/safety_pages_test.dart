@@ -502,7 +502,8 @@ void main() {
   testWidgets('wizard searches server-side and requires child selection', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
-    final controller = ChildSafetyController(_Repository());
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
     await tester.pumpWidget(
       _app(
         ChildSafetyWizardPage(
@@ -529,12 +530,99 @@ void main() {
     await tester.tap(find.byKey(const Key('safety-wizard-primary')));
     await tester.pump();
     expect(find.text('Pessoa autorizada'), findsWidgets);
-    await tester.enterText(find.byType(TextFormField).at(0), 'person-1');
+    // B5: sem pessoa selecionada o passo nao avanca; o UUID nunca e digitado.
     await tester.enterText(find.byType(TextFormField).at(1), 'Solicitação familiar');
     await tester.tap(find.byKey(const Key('safety-wizard-primary')));
     await tester.pump();
+    expect(find.textContaining('Busque e selecione a pessoa autorizada'), findsOneWidget);
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Ma');
+    await tester.pump(const Duration(milliseconds: 400));
+    expect(find.text('Digite ao menos 3 caracteres.'), findsOneWidget);
+    expect(repository.personSearches, isEmpty);
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Maria');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(repository.personSearches, ['Maria']);
+    expect(find.text('Maria Responsável'), findsOneWidget);
+    expect(find.text('@maria.resp · •••• 1234'), findsOneWidget);
+    expect(find.textContaining('123.456'), findsNothing);
+    await tester.tap(find.bySemanticsLabel('Selecionar Maria Responsável'));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
     expect(find.byType(CoeloDateRangeField), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Maria Responsável'), findsOneWidget);
+    expect(find.text('person-1'), findsNothing);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    expect(repository.savedCommand?.personId, 'person-1');
+    expect(repository.savedCommand?.childId, 'child-1');
     expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('wizard person search fills child and person from a linked child', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository();
+    final controller = ChildSafetyController(repository);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    await tester.enterText(find.byKey(const Key('safety-person-search')), '99-1234');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(repository.personSearches, ['99-1234']);
+    await tester.tap(find.byKey(const Key('safety-person-child-person-1-child-1')));
+    await tester.pump();
+    expect(find.text('Ana Criança'), findsWidgets);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Pessoa autorizada'), findsWidgets);
+    expect(find.byIcon(Icons.check_circle_rounded), findsOneWidget);
+    await tester.enterText(find.byType(TextFormField).at(1), 'Solicitação familiar');
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    expect(repository.savedCommand?.personId, 'person-1');
+    expect(repository.savedCommand?.childId, 'child-1');
+    expect(repository.savedCommand?.childContextId, 'context-1');
+    expect(repository.savedCommand?.unitId, 'unit-1');
+  });
+
+  testWidgets('wizard person search shows the rate limit message', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository(personSearchRateLimited: true);
+    final controller = ChildSafetyController(repository);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Maria');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(find.text('Muitas buscas em sequência. Aguarde um minuto.'), findsOneWidget);
   });
 
   testWidgets('wizard preselects deep-linked child and loads edit version', (tester) async {
@@ -681,18 +769,50 @@ Widget _app(
 );
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
-final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+final class _Repository
+    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
   _Repository({
     this.unauthorized = false,
     this.totalCount = 3,
     this.canCreate = true,
     this.editPending = false,
     this.mutationsEnabled = true,
+    this.personSearchRateLimited = false,
   });
   @override
   final bool mutationsEnabled;
   final bool editPending;
+  final bool personSearchRateLimited;
+  final personSearches = <String>[];
   bool unauthorized;
+
+  @override
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async {
+    personSearches.add(query);
+    if (personSearchRateLimited) throw const ChildSafetyRateLimitException();
+    return const [
+      ChildSafetyPersonMatch(
+        personId: 'person-1',
+        displayName: 'Maria Responsável',
+        initials: 'MR',
+        matchedBy: 'name',
+        handle: '@maria.resp',
+        phoneLast4: '1234',
+        hasAccount: true,
+        children: [
+          ChildSafetyChildOption(
+            id: 'child-1',
+            name: 'Ana Criança',
+            childContextId: 'context-1',
+            institutionId: 'institution-1',
+            institutionName: 'Instituição Aurora',
+            unitId: 'unit-1',
+            unitName: 'Unidade Centro',
+          ),
+        ],
+      ),
+    ];
+  }
   final int totalCount;
   final bool canCreate;
   SavePickupAuthorizationCommand? savedCommand;

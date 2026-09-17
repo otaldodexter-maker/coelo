@@ -577,7 +577,7 @@ void main() {
     addTearDown(oldController.dispose);
     addTearDown(controller.dispose);
     await tester.pumpWidget(_wizard(oldController, null));
-    await tester.enterText(find.byType(TextField).last, 'Criança');
+    await tester.enterText(find.byKey(const Key('safety-child-search')), 'Criança');
     await tester.tap(find.byTooltip('Buscar'));
     await tester.pump();
     await tester.pumpWidget(_wizard(controller, null));
@@ -647,7 +647,11 @@ void main() {
       final primary = find.byKey(const Key('safety-wizard-primary'));
       await tester.tap(primary);
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).at(1), 'person-a');
+      await tester.enterText(find.byKey(const Key('safety-person-search')), 'Pessoa A');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('Selecionar Pessoa A'));
+      await tester.pump();
       await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
       await tester.tap(primary);
       await tester.pumpAndSettle();
@@ -700,7 +704,11 @@ void main() {
     final primary = find.byKey(const Key('safety-wizard-primary'));
     await tester.tap(primary);
     await tester.pumpAndSettle();
-    await tester.enterText(find.byType(TextField).at(1), 'person-a');
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Pessoa A');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Selecionar Pessoa A'));
+    await tester.pump();
     await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
     await tester.tap(primary);
     await tester.pumpAndSettle();
@@ -728,7 +736,14 @@ Future<void> _prepareSave(WidgetTester tester) async {
   final primary = find.byKey(const Key('safety-wizard-primary'));
   await tester.tap(primary);
   await tester.pumpAndSettle();
-  await tester.enterText(find.byType(TextField).at(1), 'person-a');
+  // Na edicao a pessoa e somente leitura; na criacao ela vem da busca B5.
+  if (tester.widget<TextFormField>(find.byKey(const Key('safety-person-search'))).enabled) {
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Pessoa A');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    await tester.tap(find.bySemanticsLabel('Selecionar Pessoa A'));
+    await tester.pump();
+  }
   await tester.enterText(find.byType(TextField).last, 'Solicitação sintética');
   await tester.tap(primary);
   await tester.pumpAndSettle();
@@ -760,9 +775,21 @@ Widget _wizard(ChildSafetyController controller, String? childId, {VoidCallback?
       ),
     );
 
-final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+final class _Repository
+    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
   @override
   bool get mutationsEnabled => true;
+
+  // B5 (spec 055): a pessoa e escolhida pela busca; o UUID nunca e digitado.
+  @override
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async => const [
+    ChildSafetyPersonMatch(
+      personId: 'person-a',
+      displayName: 'Pessoa A',
+      initials: 'PA',
+      matchedBy: 'name',
+    ),
+  ];
   _Repository(this.scope);
   final String scope;
   final childReads = <String>[];

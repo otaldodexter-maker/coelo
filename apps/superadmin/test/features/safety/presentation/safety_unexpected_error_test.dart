@@ -20,7 +20,7 @@ void main() {
       final controller = ChildSafetyController(repository);
       addTearDown(controller.dispose);
       await tester.pumpWidget(_wizard(controller));
-      await tester.enterText(find.byType(TextField).last, 'Ana');
+      await tester.enterText(find.byKey(const Key('safety-child-search')), 'Ana');
       await tester.tap(find.byTooltip('Buscar'));
       await tester.pumpAndSettle();
       final card = tester.widget<CoeloAdminInteractiveCard>(
@@ -33,7 +33,7 @@ void main() {
       final oldSelection = card.onPressed!;
       oldSelection();
       repository.searchFailure = failure;
-      await tester.enterText(find.byType(TextField).last, 'Bia');
+      await tester.enterText(find.byKey(const Key('safety-child-search')), 'Bia');
       await tester.tap(find.byTooltip('Buscar'));
       await tester.pumpAndSettle();
       expect(tester.takeException(), isNull);
@@ -61,7 +61,7 @@ void main() {
     final controller = ChildSafetyController(repository);
     addTearDown(controller.dispose);
     await tester.pumpWidget(_wizard(controller));
-    await tester.enterText(find.byType(TextField).last, 'Criança');
+    await tester.enterText(find.byKey(const Key('safety-child-search')), 'Criança');
     await tester.tap(find.byTooltip('Buscar'));
     await tester.pumpAndSettle();
     final pending = Completer<List<ChildSafetyChildOption>>();
@@ -173,7 +173,7 @@ void main() {
     final controller = ChildSafetyController(repository);
     addTearDown(controller.dispose);
     await tester.pumpWidget(_wizard(controller));
-    await tester.enterText(find.byType(TextField).last, 'Criança');
+    await tester.enterText(find.byKey(const Key('safety-child-search')), 'Criança');
     await tester.tap(find.byTooltip('Buscar'));
     await tester.pumpAndSettle();
     repository.searchFailure = null;
@@ -237,7 +237,11 @@ void main() {
       final primary = find.byKey(const Key('safety-wizard-primary'));
       await tester.tap(primary);
       await tester.pumpAndSettle();
-      await tester.enterText(find.byType(TextField).at(1), 'person-a');
+      await tester.enterText(find.byKey(const Key('safety-person-search')), 'Pessoa A');
+      await tester.pump(const Duration(milliseconds: 400));
+      await tester.pumpAndSettle();
+      await tester.tap(find.bySemanticsLabel('Selecionar Pessoa A'));
+      await tester.pump();
       await tester.enterText(find.byType(TextField).last, 'Motivo sintético');
       await tester.tap(primary);
       await tester.pumpAndSettle();
@@ -307,9 +311,21 @@ Widget _wizard(ChildSafetyController controller, {String? childId, VoidCallback?
       ),
     );
 
-final class _Repository implements ChildSafetyRepository, ChildSafetyMutationSupport {
+final class _Repository
+    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
   @override
   bool get mutationsEnabled => true;
+
+  // B5 (spec 055): a pessoa e escolhida pela busca; o UUID nunca e digitado.
+  @override
+  Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async => const [
+    ChildSafetyPersonMatch(
+      personId: 'person-a',
+      displayName: 'Pessoa A',
+      initials: 'PA',
+      matchedBy: 'name',
+    ),
+  ];
   final queries = <String>[];
   Object? searchFailure, childFailure, directoryFailure;
   Future<List<ChildSafetyChildOption>>? searchResult;
