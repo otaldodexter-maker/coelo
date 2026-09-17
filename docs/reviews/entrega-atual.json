@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "fd36197254a58c2930b9a4fb5a0b0608908b5898",
+    "head": "4b116e93a3d6d772c377ee16a226d101b16d853d",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1120,7 +1120,6 @@
   "evidenceFiles": [
     "decisions/0040-agora-immediate-removal.md",
     "decisions/0041-owner-decisions-r14-mesa-20260916.md",
-    "decisions/0044-owner-decisions-mesa-r16-20260917.md",
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
@@ -1402,9 +1401,8 @@
     "circulars.attach"
   ],
   "memory": {
-    "status": "captured",
-    "reason": "Mesa R16 (ADR 0044): Etapa 2 medida pelo E2E do MVP; 33 ações fora do MVP com escopo v1; regras duráveis da R15 projetadas em docs/knowledge e skills.",
-    "evidence": "docs/knowledge/team/stale-version-pt409-and-production-rite.md"
+    "status": "no-op",
+    "reason": "Reconciliacao documental e de harness; regras de produto continuam nas ADRs. Nenhum conhecimento novo de produto foi inventado."
   },
   "deployment": {
     "status": "pending",
