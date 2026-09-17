@@ -47,7 +47,8 @@ audience: "team"
 - **Decisões do Owner em 17/09 (adendo ADR 0042, E10–E13)**: reset de senha aceito
   por decisão (prova detalhada → Etapa 3); conta `qa-r15-responsavel` criada
   (AP-1 pelo rito); lote 78 + redeploy `child-safety-media` v2 aplicados pela
-  coordenadora; CORS de `coelo-documents-prod` só origens locais no MVP.
+  coordenadora; CORS de `coelo-documents-prod` só origens locais no MVP; `form-media` v23
+  com `verify_jwt=false` (E14) para o cron de expiração voltar a executar.
 - Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
   Bloco B (após migrations: Segurança da criança, contexto Atividade,
