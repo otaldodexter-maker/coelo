@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "560a154aa4405a9741c8959cbe58893793cf0015",
+    "head": "e2bbffe0813c14c3e998053db404c467ccbb6dd9",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1318,12 +1318,6 @@
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {
-    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r16-agora": {
-      "disposition": "retained-session",
-      "reason": "Worktree de sessão executora da R16 (17/09; R16-execucao.md); a coordenadora integra por cherry-pick; remover só no fechamento da R16 após bundle em Coelo-backups/r16-fechamento.",
-      "branch": "r16/agora-publish",
-      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d"
-    },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r16-forms": {
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R16 (17/09; R16-execucao.md); a coordenadora integra por cherry-pick; remover só no fechamento da R16 após bundle em Coelo-backups/r16-fechamento.",
@@ -1332,30 +1326,7 @@
     }
   },
   "preservedStash": {},
-  "residualBranches": {
-    "r16/agora-publish": {
-      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d",
-      "exclusive": [
-        "daddde1a0b060b61f36e2b316cb086643a89dd0d",
-        "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
-      ],
-      "disposition": "patch-equivalent",
-      "reason": "Branch da sessão AGORA (R16): c539fc40d → dev b9f7258b5 (spec 070, migration, pgTAP) e daddde1a0 → dev 560a154aa (lote 81, prova em produção, delta agora.publish verified-e2e, handoff). Bundle em Coelo-backups/r16-fechamento; apagar no fechamento.",
-      "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
-      "successor": "560a154aa4405a9741c8959cbe58893793cf0015"
-    },
-    "origin/r16/agora-publish": {
-      "sha": "daddde1a0b060b61f36e2b316cb086643a89dd0d",
-      "exclusive": [
-        "daddde1a0b060b61f36e2b316cb086643a89dd0d",
-        "c539fc40dc42684291c8d013dc9c7e15e59c8aae"
-      ],
-      "disposition": "patch-equivalent",
-      "reason": "Branch da sessão AGORA (R16): c539fc40d → dev b9f7258b5 (spec 070, migration, pgTAP) e daddde1a0 → dev 560a154aa (lote 81, prova em produção, delta agora.publish verified-e2e, handoff). Bundle em Coelo-backups/r16-fechamento; apagar no fechamento.",
-      "evidence": "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
-      "successor": "560a154aa4405a9741c8959cbe58893793cf0015"
-    }
-  },
+  "residualBranches": {},
   "evidenceFiles": [
     "decisions/0040-agora-immediate-removal.md",
     "decisions/0041-owner-decisions-r14-mesa-20260916.md",
