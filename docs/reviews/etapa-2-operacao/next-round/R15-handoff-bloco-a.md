@@ -23,7 +23,8 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 | Instituições › Erro / Acesso negado | institutions.error, institutions.access-denied | A4 (aviso Arquivos) | 17/09 10:20 BRT |
 | Conta (`/profile`) | account.profile | r12-46 | 17/09 11:00 BRT |
 | Formulários (create/edit, delete-file, expire-file, location-answer) | forms.* | r12-39, r12-40 | 17/09 11:20 BRT |
-| errors.409, auth.recover/reset (E8) | errors.409, auth.recover/reset | r12-47 | depois |
+| errors.409 | errors.409 | — | 17/09 11:30 BRT |
+| auth.recover/reset (E8) | auth.recover, auth.reset | r12-47 | depois |
 | (liberado para a C1 em 17/09 ~12:10 BRT, a pedido da coordenadora) | momentos.view/publish/remove/create | — | — |
 
 ## Fatias entregues
@@ -35,6 +36,8 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 | (este) | institutions.access-denied e institutions.error: FE verified, BE done, E2E verified-e2e (deep link inexistente → Acesso não autorizado sem dado + reload; RPC bloqueada por CDP → Não foi possível carregar + Tentar novamente recupera; 403 SAI_PERMISSION_DENIED por PostgREST sem enumeração); ADR 0041 A4 capturado (aviso "Arquivos em desenvolvimento") | — | r15-bloco-a/institutions-error-access-denied-20260917.md; deltas-institutions-20260917.json; deltas-institutions-backend-20260917.json; capturas institutions-00–06 |
 | (este) | account.profile: BE done + E2E verified-e2e (FE já verified): foto PNG real via seletor nativo (CDP) → R2 privado (account-media), avatar do cabeçalho após confirmação, reload, nova sessão, remover foto, sigla, celular inválido/válido, asset alheio/removido → denied | r12-46 → partial (só máscara/normalização do Celular pendente) | r15-bloco-a/account-profile-20260917.md; deltas-account-20260917.json; capturas account-00–07 |
 | (este) | forms.create e forms.edit FE verified + E2E verified-e2e (BE já done): editor real, renomear seção, mover pergunta, salvar, reload, prévia; 409 PT409 FORMS_STALE_VERSION, 400 23514 instituição alheia; forms.delete-file FE verified + BE done + E2E verified-e2e (upload real → excluir → reload sem imagem; 404 FORM_MEDIA_NOT_FOUND) | r12-39, r12-40 → done | r15-bloco-a/forms-create-edit-delete-file-20260917.md; deltas-forms-20260917.json; capturas forms-00–07 |
+| 0a853525b / ab96072de | (código) sincroniza de dev os 22 repositórios com `PT409` (6c2f02ee0) e cobre `PT409 → conflict` no teste do cliente de Formulários; `notices` fica na versão da base + PT409 (a de dev exige `PrincipalForYouReader`, ausente aqui) | — | apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart |
+| (este) | errors.409 FE verified (flutter-only): conflito real 409 PT409 pela tela; antes do mapeamento a tela mostrava o genérico "Não foi possível concluir a ação" (00), depois "O formulário foi alterado em outra sessão. Recarregue…" (01) | — | r15-bloco-a/errors-409-20260917.md; deltas-errors-409-20260917.json |
 
 ## Avisos para as outras sessões
 
@@ -54,6 +57,7 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 - Perfis: tooltip aberto por foco de teclado não fecha ao avançar o foco (empilha); rótulo "Excluir" na
   matriz × nome "Inativar modelos Admin." no catálogo; `reason` da auditoria vem `[redacted]` no detalhe.
+- errors.409/OQ-047: qualquer tela cujo repositório não mapeie `PT409` mostra o genérico "Não foi possível concluir a ação" em conflito real; dev já cobre 22 repositórios (6c2f02ee0); conferir mapeadores fora de `data/` ao adicionar RPCs.
 - Formulários: rótulos padrão do formulário novo parecem estado de erro ("Seção sem dados disponíveis"); campo Instituição do editor quebra em coluna estreita; URL fica em `/forms/new` após o primeiro save; `superadmin_forms_editor_v2`/`save_draft_v2` negam (403) a identidade QA via PostgREST enquanto a tela usa `form_get_editor`/`form_save_draft`; `form_get_editor` com id inexistente → 500 P0002.
 - Conta: Celular sem máscara/normalização (só 7–40 caracteres; servidor grava como digitado); Edge `account-media` responde 422 (não 403) para asset alheio; avatar do cabeçalho fica vazio ~1 s após login novo até a leitura assinada.
 - Usuários internos: chip flutuante "Mensagens" cobre o botão "Continuar" do assistente em 1424×1125;
@@ -66,6 +70,6 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 ## Contadores
 
-`validate-trackers.cjs` PASS após os deltas: FE 196/232, BE 176/219, E2E 170/186, Owner 30/53
+`validate-trackers.cjs` PASS após os deltas: FE 197/232, BE 176/219, E2E 170/186, Owner 30/53
 (r12-20/21/22/24/25/26/27/39/40 → done; r12-46 partial). `entrega-atual.json` e `R12-owner-items.json` regravados pelo
 `sync-r12-owner-records.cjs` (projeção).

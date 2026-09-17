@@ -1,0 +1,15 @@
+[
+ {
+  "action_id": "errors.409",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 Bloco A rota real (17/09): conflito real (editor de Formularios em versao defasada, versao avancada por PostgREST) -> 409 PT409 apresentado como 'O formulario foi alterado em outra sessao. Recarregue e tente novamente.' sem falso sucesso; antes do mapeamento PT409 (base 57162cee4) a tela mostrava o generico 'Nao foi possivel concluir a acao' (defeito corrigido em dev 6c2f02ee0, sincronizado, + teste PT409).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
+   "revision": "ab96072de",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T11:50:00-03:00"
+  }
+ }
+]

@@ -8873,16 +8873,24 @@
       "screen": "Erros / 409",
       "scope": "flutter-only",
       "done": "Owner 16/09/2026 (ADR 0041, A5): reclassificada flutter-only; aceite terminal e FE na rota real",
-      "fe": "R04 coordenacao (11/09): Owner aprovou P26 (A); goldens error_409_light/dark criados a partir dos candidatos aprovados, skip removido, suite de paginas de erro 10/10. Sem prova de rota real ainda.",
+      "fe": "R15 Bloco A rota real (17/09): conflito real (editor de Formularios em versao defasada, versao avancada por PostgREST) -> 409 PT409 apresentado como 'O formulario foi alterado em outra sessao. Recarregue e tente novamente.' sem falso sucesso; antes do mapeamento PT409 (base 57162cee4) a tela mostrava o generico 'Nao foi possivel concluir a acao' (defeito corrigido em dev 6c2f02ee0, sincronizado, + teste PT409).",
       "be": "Owner 16/09/2026 (ADR 0041, A5): pagina de erro e so tela; sem endpoint/RLS proprios",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar errors.409); archive/2026-09-08/coelo-supabase-pendencias.md (buscar errors.409); commit 0626c7655; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md; decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar errors.409); archive/2026-09-08/coelo-supabase-pendencias.md (buscar errors.409); commit 0626c7655; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md; decisions/0041-owner-decisions-r14-mesa-20260916.md; docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "not-applicable",
       "integratedStatus": "flutter-only",
       "lastHandoffRevision": 51,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
+          "revision": "ab96072de",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:50:00-03:00"
+        }
+      }
     },
     {
       "id": "errors.500",
@@ -9632,7 +9640,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T14:38:53.902Z",
+  "updatedAt": "2026-09-17T14:47:37.551Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
