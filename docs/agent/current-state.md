@@ -29,7 +29,7 @@ audience: "team"
   (contrato novo); goldens regravam suíte a suíte; B2 publica no Histórico;
   sino de Medicação inclui o responsável. E8: reset de senha no MVP, provado
   com a caixa do Owner (`auth.recover` BE done; SMTP próprio → Etapa 3). E9:
-  MFA ×3 → pós-MVP. Corte: FE 189/232, BE 172/219, E2E 162/186. CORS das Edge por porta aplicado
+  MFA ×3 → pós-MVP. Corte: FE 207/232, BE 185/219, E2E 184/186. CORS das Edge por porta aplicado
   (`127.0.0.1:3014–3024` nas seis `*_ALLOWED_ORIGINS`); sem pendência de ambiente.
 - **17/09 — execução paralela em curso** (`R15-execucao-paralela.md`): cinco
   sessões do Owner em worktrees `r15-bloco-a|b|b-apoio|c1|c2`; a coordenadora
@@ -40,7 +40,7 @@ audience: "team"
   como local-green: Chat E3 (spec 058, C1), busca de pessoa B5 (spec 061) e
   pessoa sem conta B6 (spec 062, C2); **lote 78 aplicado em produção pela coordenadora** (autorização nominal do
   Owner, ~14:00 UTC): migrations de B5/B6/r12-38 + Edges `child-safety-media`,
-  `meal-plan-media`, `meal-plan-image-cleanup`; falta só a prova E2E da C2. **Corte de 17/09 (integrações do dia)**: FE 206/232, BE 184/219, E2E 183/186, Owner
+  `meal-plan-media`, `meal-plan-image-cleanup`; falta só a prova E2E da C2. **Corte de 17/09 (integrações do dia)**: FE 207/232, BE 185/219, E2E 184/186, Owner
   37/53 — certificados em produção `chat.attach` (C1, lote 76 + Edge `chat-media`),
   `access-profiles.edit` e `access-profiles.assign` (A); Owner items r12-20/21/22/24/25/26/27
   e r12-52 → done.

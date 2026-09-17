@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd",
+    "head": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -64,21 +64,20 @@
     "actionStatusCounts": {
       "frontend": {
         "local-green": 2,
-        "pending-verification": 24,
-        "verified": 206
+        "pending-verification": 23,
+        "verified": 207
       },
       "backend": {
         "deferred-post-mvp": 33,
-        "done": 184,
-        "local-green": 1,
+        "done": 185,
         "not-applicable": 13,
         "pending-verification": 1
       },
       "integrated": {
         "deferred-post-mvp": 33,
         "flutter-only": 13,
-        "pending-verification": 3,
-        "verified-e2e": 183
+        "pending-verification": 2,
+        "verified-e2e": 184
       }
     },
     "deferredPostMvpActionCount": 33,
@@ -125,12 +124,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "206/232 (88.79%)",
+    "frontendVerified": "207/232 (89.22%)",
     "frontendLocalGreen": "2/232 (0.86%)",
-    "backendDone": "184/219 (84.02%)",
-    "backendLocalGreen": "1/219 (0.46%)",
-    "e2eVerified": "183/186 (98.39%)",
-    "e2ePlusFlutterOnly": "196/232 (84.48%)",
+    "backendDone": "185/219 (84.47%)",
+    "backendLocalGreen": "0/219 (0.00%)",
+    "e2eVerified": "184/186 (98.92%)",
+    "e2ePlusFlutterOnly": "197/232 (84.91%)",
     "ownerDone": "37/53 (69.81%)",
     "ownerNonTerminal": "16/53 (30.19%)"
   },
@@ -1034,6 +1033,13 @@
       "nextGate": "verified-e2e em 17/09 (rota real: exclusão de imagem de pergunta via form-media, reload, negativa)."
     },
     {
+      "id": "forms.expire-file",
+      "status": "done",
+      "owner": "Sessão A (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+      "nextGate": "verified-e2e em 17/09: ticket vencido → worker do cron (após form-media v23, verify_jwt=false) marcou o asset deleted, auditoria forms.media.expire 18:10:00Z, resolve 404, reload sem a imagem."
+    },
+    {
       "id": "institutions.access-denied",
       "status": "done",
       "owner": "Sessão A (R15) / coordenadora",
@@ -1147,7 +1153,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-a",
-      "sha": "178b605851701abf422291f30db569da2563994b"
+      "sha": "947cf5485bcbe81a8a1199aef52171abeb27b302"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b": {
       "disposition": "retained-session",
@@ -1159,7 +1165,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-b-apoio",
-      "sha": "375ae8ec4642ce05655c503a9bbfb45c9eecf4fc"
+      "sha": "e828f17e18f3f164761338394e8efe92f6966270"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c1": {
       "disposition": "retained-session",
@@ -1713,8 +1719,9 @@
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
     "r15/bloco-a": {
-      "sha": "178b605851701abf422291f30db569da2563994b",
+      "sha": "947cf5485bcbe81a8a1199aef52171abeb27b302",
       "exclusive": [
+        "947cf5485bcbe81a8a1199aef52171abeb27b302",
         "178b605851701abf422291f30db569da2563994b",
         "a1873802ffe464a9345d544269f8e54ce944b4ca",
         "8f36a7649410af1f2c5287d7a4b3480479a7f9a5",
@@ -1734,7 +1741,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "r15/bloco-b": {
       "sha": "dedcd83ee0142792447fc9cabdf0965974095d07",
@@ -1752,11 +1759,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "r15/bloco-b-apoio": {
-      "sha": "375ae8ec4642ce05655c503a9bbfb45c9eecf4fc",
+      "sha": "e828f17e18f3f164761338394e8efe92f6966270",
       "exclusive": [
+        "e828f17e18f3f164761338394e8efe92f6966270",
         "375ae8ec4642ce05655c503a9bbfb45c9eecf4fc",
         "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
         "6401cace9f408c1e1110e0bf5da4fd4974ea3a3c",
@@ -1767,7 +1775,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -1787,7 +1795,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "r15/bloco-c2": {
       "sha": "ece99cc3abce2edd8b2c72f34c375676f2055385",
@@ -1806,7 +1814,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2437,8 +2445,9 @@
       "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
     },
     "origin/r15/bloco-a": {
-      "sha": "178b605851701abf422291f30db569da2563994b",
+      "sha": "947cf5485bcbe81a8a1199aef52171abeb27b302",
       "exclusive": [
+        "947cf5485bcbe81a8a1199aef52171abeb27b302",
         "178b605851701abf422291f30db569da2563994b",
         "a1873802ffe464a9345d544269f8e54ce944b4ca",
         "8f36a7649410af1f2c5287d7a4b3480479a7f9a5",
@@ -2458,7 +2467,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "origin/r15/bloco-b": {
       "sha": "dedcd83ee0142792447fc9cabdf0965974095d07",
@@ -2476,11 +2485,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "origin/r15/bloco-b-apoio": {
-      "sha": "375ae8ec4642ce05655c503a9bbfb45c9eecf4fc",
+      "sha": "e828f17e18f3f164761338394e8efe92f6966270",
       "exclusive": [
+        "e828f17e18f3f164761338394e8efe92f6966270",
         "375ae8ec4642ce05655c503a9bbfb45c9eecf4fc",
         "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
         "6401cace9f408c1e1110e0bf5da4fd4974ea3a3c",
@@ -2491,7 +2501,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "origin/r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -2511,7 +2521,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "origin/r15/bloco-c2": {
       "sha": "5ea5984c644cbbd9533191cdb0daabec0e3469cb",
@@ -2528,7 +2538,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "364897c3742e8a8ddb2c9b03e3c30462e021fdfd"
+      "successor": "ae2a2b14ec8b1cd0d1fd899dc039852a07b7d611"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2677,6 +2687,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
@@ -3003,12 +3014,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "206/232 (88.79%)",
+      "frontendVerified": "207/232 (89.22%)",
       "frontendLocalGreen": "2/232 (0.86%)",
-      "backendDone": "184/219 (84.02%)",
-      "backendLocalGreen": "1/219 (0.46%)",
-      "e2eVerified": "183/186 (98.39%)",
-      "e2ePlusFlutterOnly": "196/232 (84.48%)",
+      "backendDone": "185/219 (84.47%)",
+      "backendLocalGreen": "0/219 (0.00%)",
+      "e2eVerified": "184/186 (98.92%)",
+      "e2ePlusFlutterOnly": "197/232 (84.91%)",
       "ownerDone": "37/53 (69.81%)",
       "ownerNonTerminal": "16/53 (30.19%)"
     },

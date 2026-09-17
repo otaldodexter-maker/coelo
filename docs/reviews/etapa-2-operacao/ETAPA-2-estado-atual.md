@@ -42,8 +42,8 @@ Cinco sessões em worktrees `r15-bloco-*` (`next-round/R15-execucao-paralela.md`
 integração em `dev` por cherry-pick. Lote 75 em produção (OQ-047: 40001 → PT409
 em 126 RPCs, Bloco B). Integradas local-green: Chat E3 (spec 058), B5 (spec 061)
 e B6 (spec 062); B5/B6 aguardam aplicação em produção. Certificados em produção
-em 17/09: `chat.attach` (lote 76), `access-profiles.edit/assign`; corte: FE 206/232
-(88,79%), BE 184/219 (84,02%), E2E 183/186 (98,39%), Owner 37/53. Os percentuais
+em 17/09: `chat.attach` (lote 76), `access-profiles.edit/assign`; corte: FE 207/232
+(89,22%), BE 185/219 (84,47%), E2E 184/186 (98,92%), Owner 37/53. Os percentuais
 das seções antigas abaixo são o corte de abertura da R15 (16/09).
 
 ## Snapshot de 16/09 — Mesa do Owner (ADR 0041)
