@@ -19,7 +19,7 @@ audience: "team"
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
 coordenadora R15, 17/09/2026, após as integrações do dia): FE 194/232 (83,62%),
-BE 176/219 (80,37%), E2E 168/186 (90,32%), Owner 29/53 (54.72%).
+BE 176/219 (80,37%), E2E 168/186 (90,32%), Owner 29/53 (54,72%).
 Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
 Fila: 18 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
 pela E8); meta do Owner: **186/186**, 24 Owner

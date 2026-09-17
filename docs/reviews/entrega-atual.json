@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "c0be2e561009a95d9210e06b9334ab22f88905df",
+    "head": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1015,6 +1015,20 @@
       "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
     },
     {
+      "id": "institutions.access-denied",
+      "status": "done",
+      "owner": "Sessão A (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+      "nextGate": "verified-e2e em 17/09 (rota real: deep link inexistente → acesso negado sem enumeração; RPC bloqueada → painel de erro + Recarregar; 403 por PostgREST; aviso A4 do flyout Arquivos). Nada a fazer."
+    },
+    {
+      "id": "institutions.error",
+      "status": "done",
+      "owner": "Sessão A (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+      "nextGate": "verified-e2e em 17/09 (rota real: deep link inexistente → acesso negado sem enumeração; RPC bloqueada → painel de erro + Recarregar; 403 por PostgREST; aviso A4 do flyout Arquivos). Nada a fazer."
+    },
+    {
       "id": "institutions.files",
       "status": "deferred",
       "owner": "Owner (ADR 0041 A4)",
@@ -1648,7 +1662,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -1660,7 +1674,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -1672,7 +1686,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "r15/bloco-c1": {
       "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
@@ -1686,7 +1700,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -1700,7 +1714,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2341,7 +2355,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "origin/r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -2353,7 +2367,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -2365,7 +2379,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "origin/r15/bloco-c1": {
       "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
@@ -2379,7 +2393,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2393,7 +2407,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
+      "successor": "4c6a2f3fcad148f36e2d8526d71f7c23e1b48e85"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2543,6 +2557,7 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
     "docs/reviews/inventario-etapa-2.json"
