@@ -18,7 +18,7 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
-coordenadora R15, 17/09/2026, após as integrações do dia): FE 203/232 (87,50%),
+coordenadora R15, 17/09/2026, após as integrações do dia): FE 204/232 (87,93%),
 BE 182/219 (83,11%), E2E 179/186 (96,24%), Owner 34/53 (64,15%).
 Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
 Fila: 7 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
@@ -226,7 +226,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 
 Projeção regenerada em 17/09/2026 a partir de `inventario-etapa-2.json` (coordenadora R15): ações `mvp`/`gate-formal-mvp` cujo estado integrado
 não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA ×3, E9) ficam fora;
-`errors.409` (flutter-only, FE local-green) ainda deve provar FE na rota real.
+`errors.409` (flutter-only) provado na rota real em 17/09 (Sessão A).
 
 | Família | Qtd | action_ids |
 |---|---:|---|
