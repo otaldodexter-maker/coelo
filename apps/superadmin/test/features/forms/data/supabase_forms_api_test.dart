@@ -234,6 +234,12 @@ void main() {
         FormApiFailureKind.conflict,
         'O formulário foi alterado em outra sessão. Recarregue e tente novamente.',
       ),
+      // OQ-047 (lote 75): a versao defasada passou a chegar como PT409 (HTTP 409).
+      (
+        'PT409',
+        FormApiFailureKind.conflict,
+        'O formulário foi alterado em outra sessão. Recarregue e tente novamente.',
+      ),
       ('503', FormApiFailureKind.unavailable, 'O serviço está indisponível. Tente novamente.'),
       // Falha de transporte: a requisicao nao chegou ao backend, entao nao ha
       // codigo do Postgres nem corpo. Cair em desconhecido diria a pessoa que
