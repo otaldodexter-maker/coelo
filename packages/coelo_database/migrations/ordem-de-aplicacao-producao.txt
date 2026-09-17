@@ -357,3 +357,14 @@
 # 20260917140000 confirmado por `migration repair --status applied` + `migration list --linked`; pos-verificacao pela RPC
 # como qa-r06-publicacoes (200). Edge now-media (PT409 -> 409 na remocao) deployada no mesmo lote apos deno test 16/16.
 20260917140000_now_feed_removal_projection_v1.sql
+
+# lote 80 (17/09 17:43 UTC) - R15 Bloco B (AP-1 de B', origin/r15/bloco-b-apoio 6401cace9): migration que SO cria a funcao privada
+# app_private.seed_qa_r15_guardian_fixture_v1 (sem grants; invisivel ao PostgREST) para a massa QA R15 — conta do responsavel
+# (person_auth_links), ativacao da pessoa, guardian_links + guardian_context_permissions para as duas criancas e aceite dos
+# child_unit_links. pgTAP qa_r15_guardian_fixture_v1_test 22/22 no espelho fiel de B' (no espelho r15-b a suite para na fixture
+# de unit_types; a migration aplica sem erro). Dump previo Coelo-backups/schema-producao-20260917-r15-b-lote80-before.sql
+# (SHA-256 872d6f9d); aplicada por `supabase db query --linked -f`; ledger 20260917110000 reparado e listado. A EXECUCAO da funcao
+# (`select app_private.seed_qa_r15_guardian_fixture_v1();` como postgres) e um passo separado: em 17/09 17:44 UTC respondeu
+# P0002 qa_auth_user_missing (fail-closed, nada gravado) porque auth.users ainda nao tinha qa-r15-responsavel@coelo.me;
+# reexecutar quando a conta existir e registrar o JSON de retorno em r15-bloco-b/massa-qa-r15-20260917.md.
+20260917110000_qa_r15_guardian_fixture_v1.sql
