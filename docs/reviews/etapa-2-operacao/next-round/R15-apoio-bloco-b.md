@@ -42,7 +42,7 @@ worktree nem a branch do B; toda escrita em produção segue o rito e fica regis
 `origin/r15/bloco-b` foi publicado às 09:4x (`6c2f02ee0`, fatia 1 OQ-047 → lote 75) sem pedidos; o AP-1
 chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10:2x BRT.
 
-### AP-1 — fixture pós-contas da massa `QA R15` (fatia 2) — entregue (b), aguardando a conta do Owner
+### AP-1 — fixture pós-contas da massa `QA R15` (fatia 2) — entregue (b) e fechado (executada pelo B, lote 80)
 
 - **Causa observada** (dump pós-lote 75, texto das funções): a tela cria o responsável em `draft` sem
   login; nenhuma função em `pg_proc` insere em `guardian_links`; só `superadmin_student_link` aceita
@@ -128,4 +128,4 @@ Nenhuma pergunta pendente.
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
-| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue e aplicada pelo B**: cherry-pick `6b06a3381`, migration em produção como **lote 80** (`ded7c006f`); execução da função aguarda a conta Auth do Owner (em produção respondeu `P0002 qa_auth_user_missing`, fail-closed como projetado) |
+| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue e aplicada pelo B**: cherry-pick `6b06a3381`, migration em produção como **lote 80** (`ded7c006f`); **fechado**: conta criada pelo Owner (`ff3682a1…`) e função executada pelo B em produção (`dedcd83ee`: responsável ativo com login, 2 `guardian_links`, 2 permissões, vínculos de unidade aceitos); antes disso respondeu `P0002 qa_auth_user_missing` (fail-closed, como projetado) |
