@@ -1,0 +1,8 @@
+# r12-38 — selecionar QA R04 Cuidado (sintetico), Aplicar, Continuar, mapear a etapa 2 (periodo)
+clickxy 628 493
+sleep 400
+clickxy 880 598
+sleep 800
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-05-etapa2.png

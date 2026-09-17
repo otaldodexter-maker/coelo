@@ -1,0 +1,7 @@
+# r12-38 — descricao acessivel, revisao, salvar rascunho (upload pelo gateway no salvar)
+clickxy 984 401
+sleep 300
+enter 'Capa sintetica QA R15'
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-11-revisao.png

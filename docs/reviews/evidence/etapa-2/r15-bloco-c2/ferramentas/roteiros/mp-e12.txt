@@ -1,0 +1,9 @@
+# r12-38 (3016) — previa presente (key do widget), revisao, Enviar e publicar
+waitkey meal-plan-image-preview-362777eb-2404-4aee-98c6-246b3abad755 10000
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e12-revisao.png
+clickxy 1288 840
+sleep 10000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e12-apos-publicar.png

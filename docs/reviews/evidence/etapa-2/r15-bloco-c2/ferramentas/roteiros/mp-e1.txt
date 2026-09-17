@@ -1,0 +1,5 @@
+# r12-38 (3016) — abrir o rascunho na rota de edicao e mapear
+pushroute /meal-plans/6272879e-9a52-4ce5-8922-5777c18ea82b/edit
+sleep 7000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e1-edit-aberto.png

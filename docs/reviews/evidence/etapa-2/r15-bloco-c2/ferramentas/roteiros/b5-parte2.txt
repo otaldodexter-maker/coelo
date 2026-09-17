@@ -1,0 +1,22 @@
+# B5 — parte 2: busca por @handle, seleção, motivo, revisão, envio e detalhe da criança
+typekey safety-person-search '@qar04'
+sleep 3000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-05-pessoa-handle.png
+taptext 'QA R04 Responsavel'
+sleep 800
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-06-pessoa-selecionada.png
+taptext 'Informe o motivo auditável'
+enter 'R15 C2 B5 busca por nome e @ pela tela'
+tapkey safety-wizard-primary
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-07-validade.png
+tapkey safety-wizard-primary
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-08-revisao.png
+tapkey safety-wizard-primary
+sleep 6000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-09-apos-envio.png
+pushroute /safety/children/d0c40000-0000-4000-8000-000000000003
+sleep 6000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-10-detalhe-crianca.png

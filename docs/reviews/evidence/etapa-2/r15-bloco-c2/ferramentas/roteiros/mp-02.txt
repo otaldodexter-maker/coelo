@@ -1,0 +1,7 @@
+# r12-38 — etapa 0: nome + abrir o seletor de tipo
+clickxy 984 309
+sleep 300
+enter 'QA R15 Cardapio imagem R2'
+clickxy 984 373
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-02-tipo-menu.png

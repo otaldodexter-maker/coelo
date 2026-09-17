@@ -1,0 +1,5 @@
+# r12-38 (3016) — Salvar rascunho (upload pelo gateway meal-plan-media a partir do navegador)
+clickxy 1142 840
+sleep 10000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e5-apos-salvar.png

@@ -1,0 +1,4 @@
+# r12-38 — abrir o seletor de instituicoes e mapear as opcoes
+clickxy 786 393
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-04-instituicoes-menu.png

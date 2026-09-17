@@ -1,0 +1,16 @@
+# B6 por coordenadas: upload real (interceptador armado), revisao, envio, detalhe
+clickxy 725 451
+sleep 15000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-04-documento-enviado.png
+clickxy 1310 840
+sleep 1500
+clickxy 1310 840
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-05-revisao.png
+clickxy 1270 840
+sleep 7000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-05b-apos-envio.png
+pushroute /safety/children/d0c40000-0000-4000-8000-000000000003
+sleep 7000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-06-detalhe-crianca.png

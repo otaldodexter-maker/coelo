@@ -1,0 +1,12 @@
+# B6 por coordenadas (viewport 1424x905): crianca ja selecionada na etapa 0
+clickxy 1310 840
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-xy-etapa1.png
+clickxy 980 273
+sleep 300
+enter 'QA R15 Tio'
+sleep 3500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-01-busca-vazia.png
+clickxy 984 354
+sleep 1000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-xy-form.png

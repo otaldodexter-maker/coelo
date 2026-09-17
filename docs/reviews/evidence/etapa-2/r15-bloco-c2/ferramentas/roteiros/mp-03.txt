@@ -1,0 +1,6 @@
+# r12-38 — escolher Simples, Continuar, mapear a etapa 1 (vinculos contextuais)
+clickxy 634 425
+sleep 800
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-03-etapa1.png

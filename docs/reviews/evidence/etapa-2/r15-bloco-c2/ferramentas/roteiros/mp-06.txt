@@ -1,0 +1,4 @@
+# r12-38 — reabrir instituicoes (layout com banner), marcar QA R04 Cuidado e capturar antes de aplicar
+clickxy 786 569
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-06-menu.png

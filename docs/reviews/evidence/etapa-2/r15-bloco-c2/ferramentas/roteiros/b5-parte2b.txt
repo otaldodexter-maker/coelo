@@ -1,0 +1,18 @@
+# B5 — parte 2b: motivo, validade, revisão, envio e detalhe da criança
+clickxy 980 346
+sleep 400
+enter 'R15 C2 B5 busca por nome e @ pela tela'
+sleep 400
+tapkey safety-wizard-primary
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-07-validade.png
+tapkey safety-wizard-primary
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-08-revisao.png
+tapkey safety-wizard-primary
+sleep 6000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-09-apos-envio.png
+pushroute /safety/children/d0c40000-0000-4000-8000-000000000003
+sleep 6000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-10-detalhe-crianca.png

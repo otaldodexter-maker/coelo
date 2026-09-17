@@ -1,0 +1,4 @@
+# r12-38 — Continuar para Periodo e recorrencia e mapear
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-08-etapa2.png

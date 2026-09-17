@@ -1,0 +1,10 @@
+# r12-38 (3016) — esperar o carregamento e avancar ate Cardapio
+sleep 8000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e9-etapa1-carregada.png
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 8000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e11-previa-apos-reload.png

@@ -1,0 +1,16 @@
+# B5 — busca de pessoa autorizada no wizard (parte 1: criança + busca por nome)
+typekey safety-child-search 'QA R04'
+taptooltip Buscar
+sleep 3000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-02-crianca-busca.png
+taptext 'QA R04 Cuidado (sintetico) · Unidade QA R04'
+sleep 800
+tapkey safety-wizard-primary
+sleep 1200
+waitkey safety-person-search 15000
+typekey safety-person-search 'QA'
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-03-pessoa-minimo.png
+typekey safety-person-search 'QA R04 Resp'
+sleep 3000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-04-pessoa-nome.png

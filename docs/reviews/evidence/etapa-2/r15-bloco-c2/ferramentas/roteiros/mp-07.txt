@@ -1,0 +1,7 @@
+# r12-38 — marcar QA R04 Cuidado (clique no texto), capturar, Aplicar, capturar
+clickxy 748 669
+sleep 600
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-07-marcado.png
+clickxy 880 774
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-07-aplicado.png

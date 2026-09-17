@@ -11,61 +11,95 @@ audience: "team"
 # R15 — handoff do Bloco C2
 
 Worktree `C:\Users\adrie\Documents\Coelo.worktrees\r15-bloco-c2`, branch
-`r15/bloco-c2` (base `dev` `57162cee4`). Porta 3017 / CDP 9417 reservados
-(nenhuma tela executada ainda). Espelho `coelo_mirror_r15_c2` (624xx) restaurado
-do dump `schema-producao-20260917-r15-c2-before.sql` (SHA-256 `c87f4d67…`).
+`r15/bloco-c2` (base `dev` `57162cee4`, `dev` mergeado até `315887f5d`). Porta
+3017 / CDP 9417; build QA servido também em `127.0.0.1:3016` (única origem
+local livre permitida no CORS de `coelo-media-prod`, liberada pela coordenadora
+após o C1 encerrar). Espelho `coelo_mirror_r15_c2` (624xx) restaurado do dump
+`schema-producao-20260917-r15-c2-before.sql` (SHA-256 `c87f4d67…`).
 
 ## Reivindicações
 
 - Segurança da criança › wizard Criar/Editar (`child-safety.create/edit`) — apenas o
   campo de pessoa autorizada (B5/B6); o Bloco B mantém `edit/suspend` e a massa.
-- Cardápios (`meal-plans.create/edit/publish/model-edit`) — imagem R2 (r12-38), a seguir.
+- Cardápios (`meal-plans.create/edit/publish/model-edit`) — imagem R2 (r12-38).
 
 ## Fatias entregues
 
 | SHA | Fatia | Estado | Evidência |
 |---|---|---|---|
-| `650297873` | B5 — `superadmin_person_search_v1` (spec 061) + FE do wizard | migration validada no espelho (pgTAP 33/33), FE local-green (safety 192/192, analyze limpo); **não aplicada em produção** | `r15-bloco-c2/person-search-and-person-without-account-20260917.md` |
-| `4e96c8840` | B6 — pessoa sem conta (spec 062): migration + pgTAP 40/40 + Edge `child-safety-media` (deno 6/6) | BE validado no espelho; Edge não implantada | idem |
-| `1a43b0435` | B6 FE — cadastro no wizard, upload do documento pelo gateway, `authorized_person_id` no comando | local-green (safety 196/196) | idem |
-| `13f4a8c9b` | r12-38 — Cardápios imagem R2 (spec 063): migration + pgTAP 26/26, Edge `meal-plan-media` (7/7) + ramo R2 no cleanup, adapter FE pelo gateway (9/9), envio habilitado nas rotas produtivas, prévia após reload | local-green; não aplicada/implantada | idem |
-| (este commit) | Fatia 4 — specs decididas sem prova: 064 perfil transversal/funcionário no Principal (OQ-044, r12-19/23, `draft-for-review`), 065 Perfis de cuidado §5 (r12-29/30), 066 ciclo de vida OQ-033 (+ `institutions.status`), 067 Locais OQ-034, 068 perfis oficiais OQ-032 (`draft-for-review`, lista a escolher), 069 Avisos H08/H13/H23 | só spec; nenhuma migration/tela | — |
+| `650297873` | B5 — `superadmin_person_search_v1` (spec 061) + FE do wizard | pgTAP 33/33; **produção (lote 78)**; rota real provada | `person-search-and-person-without-account-20260917.md`, `rota-real-b5-b6-r12-38-20260917.md` |
+| `4e96c8840` / `1a43b0435` | B6 — pessoa sem conta (spec 062): migration + pgTAP 40/40 + Edge `child-safety-media` + FE | **produção (lote 78)**, Edge v2 (`5ea5984c6`); rota real provada (documento pelo gateway em Node; wizard com documento `ready`) | idem |
+| `13f4a8c9b` | r12-38 — Cardápios imagem R2 (spec 063): migration + pgTAP 26/26, Edge `meal-plan-media` + cleanup R2, adapter FE pelo gateway | **produção (lote 78)**; rota real provada na 3016 (upload pelo navegador, prévia após reload, publicar, model-edit) | `rota-real-b5-b6-r12-38-20260917.md` |
+| `09edfde35` | Fatia 4 — specs sem prova: 064 (OQ-044, `draft-for-review`), 065 (§5), 066 (OQ-033), 067 (OQ-034), 068 (OQ-032, `draft-for-review`), 069 (H08/H13/H23) | só spec | — |
+| `5ea5984c6` | Edge `child-safety-media`: `finalize` aceita o bilhete sem `storage_provider` (422 na rota real) | integrado em `dev` `315887f5d`; v2 implantada | rota real |
+| `4c89d3065` | Wizard de Cardápios: arquivo pendente satisfaz "Anexe a imagem" | rota real | rota real |
+| `ece99cc3a` | Cardápios: FE persiste/relê `simpleImageMeta` (chave do backend); antes a imagem salva nunca voltava no reload | rota real (revisão 5 do cardápio 6272879e) + teste de contrato | rota real |
+| (este commit) | Evidência da rota real, ferramentas (`qa_drive.dart`, `edge_probe.mjs`, roteiros), capturas, deltas propostos | — | `deltas-r15-c2-b5-b6-r12-38.json` |
 
-Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
+## Deltas propostos (não aplicados — a coordenadora aplica)
 
-## Bloqueios
+`docs/reviews/etapa-2-operacao/next-round/deltas-r15-c2-b5-b6-r12-38.json`:
+`meal-plans.create/edit/publish/model-edit` e `child-safety.create/edit` →
+`integrated verified-e2e` (com certificação em produção). `validate-trackers`
+PASS antes da aplicação (`actions 232, frontendCompleted 204, backendCompleted 182,
+e2eCompleted 179, activeE2E 186`, contadores da `dev` mergeada).
+
+Linhas de Owner propostas (R15-pendencias.md, tokens exatos):
+
+- `owner.r12-17` → **done**: B5 provado na rota real em 17/09 (mínimo por tipo,
+  nome/@ com resultado minimizado sem CPF, seleção, autorização criada e relida,
+  rate limit 422 PT422, escopo vazio fora do ator). Resíduo sem prova de tela:
+  celular/CPF (massa sem celular/CPF; pgTAP) e "responsável lista crianças"
+  (depende de `guardian_links` da fixture AP-1 do B; pgTAP).
+- `owner.r12-18` → **done** (limites aceitos): cadastro com CPF mascarado, documento obrigatório
+  em R2 privado `ready` (gateway), dedupe por (instituição, CPF) pela tela e por
+  RPC, wizard até a revisão com a pessoa sem conta, envio com
+  `authorized_person_id` (RPC com o payload do wizard → pendente `b729f6b8`) e
+  releitura no detalhe (RPC). Limites: upload do documento pelo navegador (CORS,
+  Owner 17/09); `PERSON_HAS_ACCOUNT` só pgTAP; o clique final "Enviar" pela
+  tela não concluiu (aba travada) — se o Owner exigir esse clique, **partial**
+  por esse único motivo.
+- `owner.r12-38` → **done**: upload pelo gateway a partir do navegador (3016),
+  prévia após reload, publicar e model-edit sem regressão; sem 409 legado.
+  Resíduo: dois ativos órfãos `active` (`35dd7c74`, `2541d4b5`) no cardápio
+  publicado — `request_image_delete` devolve 22023 (cardápio imutável); limpeza
+  exige revisão aberta ou o cleanup do Owner.
+
+## Bloqueios e limites (por causa)
 
 | Gate | Causa | Detalhe |
 |---|---|---|
-| Aplicar `20260917160000`, `20260917170000` e `20260917180000` em produção; deploy `child-safety-media`, `meal-plan-media`, `meal-plan-image-cleanup` | **ambiente (permissão do executor)** | `supabase db query --linked -f` negado pelo classificador ("Production Deploy"); não contornado. Rito e ordem completos na evidência; lote **78** — **aplicado em produção pela coordenadora em 17/09** (migrations 160000/170000/180000 + 3 Edges; ver a evidência, seção "Aplicação em produção"). O Owner decide como entram. |
-| E2E `owner.r12-17` / `owner.r12-18` | ambiente (depende da aplicação) + massa `QA R15` (Bloco B) | tela preparada; nada certificado |
-| E2E `owner.r12-38` (`meal-plans.create/edit/publish/model-edit`) | ambiente (depende da aplicação + deploy) | adapter e rotas prontos; nada certificado; as 4 ações seguem verified-e2e (sem regressão local) |
-| Goldens `meal_plan_pages_golden_test` (5 do diretório) | deriva do cabeçalho (E4), já falham em `dev` | não regravados nesta sessão |
+| Upload do documento B6 pelo navegador | **ambiente (CORS R2)** — decisão do Owner 17/09 | `coelo-documents-prod` sem origem CORS; `coelo-media-prod` só 3014/3016/superadmin.coelo.me. Prova pelo gateway em Node + wizard com documento `ready`. |
+| `PERSON_HAS_ACCOUNT` | **massa** | nenhuma pessoa com conta do tenant tem CPF em `person_identity_identifiers`; só pgTAP. |
+| Busca por celular/CPF com resultado; responsável listando crianças | **massa** (AP-1 do B) | só pgTAP até a fixture entrar. |
+| Negativa cross-tenant do descritor de imagem | **massa** | todos os atores QA são do tenant QA R04 com `meal_plans.read`; só pgTAP. |
+| Limpeza dos ativos órfãos | **regra de produto** | cardápio publicado é imutável para imagens (`20260910190100`). |
+| Goldens `meal_plan_pages_golden_test` (5) | deriva do cabeçalho (E4), já falham em `dev` | não regravados. |
+
+## Massa residual em produção (prefixo QA R15, tenant QA R04 Cuidado)
+
+- `authorized_people` `e9f02f4b-1dd5-4287-bf92-034e8aa3e807` (QA R15 Tio Sem Conta, CPF só HMAC) + documento `9a01711e-1bf9-49d3-ab7a-de930d11aa2e` (`ready`, `coelo-documents-prod`).
+- Autorização pendente B5 para a Crianca QA R04 (QA R04 Responsavel · Mãe) e autorização pendente B6 `b729f6b8-ac69-4201-b289-27d87c1a7c86` (QA R15 Tio Sem Conta · other/Tio · pickup).
+- Cardápio `6272879e-9a52-4ce5-8922-5777c18ea82b` (`published`, imagem `362777eb-2404-4aee-98c6-246b3abad755`) + ativos órfãos `35dd7c74…`, `2541d4b5…` (`coelo-media-prod`).
+- `app_private.person_search_hits` com as buscas do dia (rate limit).
 
 ## Avisos
 
-1. Alguém renumerou, na minha worktree, `specs/055` → `061` e a migration
-   `20260917103000` → `20260917160000` (09:02–09:12); adotei os nomes finais e
-   as referências internas estão consistentes.
-2. Bloco B aplicou OQ-047 como lote 75 (PT409 em 126 RPCs); as minhas migrations
-   não tocam funções alteradas por ele (`child_safety_request_authorization` não
-   tinha 40001).
-3. Regra durável (ADR 0041): CPF nunca em claro → busca por CPF só com o número
+1. Specs 064–069 numeradas acima da faixa informada (061–064); sem colisão em
+   `origin/r15/bloco-a|b|c1` no commit. Renumerar na integração se preciso.
+2. Regra durável (ADR 0041): CPF nunca em claro → busca por CPF só com o número
    completo (HMAC). Registrado nas specs 061/062.
-4. Cardápios: ativos legados (`supabase_mvp`) seguem lidos pelo caminho v1 só no
-   servidor; o cliente novo lê pelo gateway (409 `legacy_storage_asset` para
-   legado; hoje não há ativos legados em produção, pois o envio estava desabilitado).
-5. Bloco B (OQ-047, lote 75) já cobriu `serialization_failure` nas famílias; as
-   minhas migrations não contêm 40001 (postcheck).
-6. Numeração das specs da fatia 4 (064–069) passa da faixa 061–064 informada pela
-   coordenadora; nenhuma colisão em `origin/r15/bloco-a|b|c1` na hora do commit.
-   Renumerar na integração se outra sessão reservar 065+.
-7. Espelho `coelo_mirror_r15_c2` parado ao fim (`supabase stop`); a pasta
-   `Coelo-backups/mirror-r15-c2` e o dump prévio permanecem para reexecutar os
-   três pgTAP (`docker exec -i supabase_db_coelo_mirror_r15_c2 psql … -f -`).
-8. Porta 3017/CDP 9417 não foram usados: nenhuma tela foi executada na rota real
-   (todas as provas dependem da aplicação em produção).
+3. Ativos legados (`supabase_mvp`) seguem lidos pelo caminho v1 no servidor; o
+   cliente novo lê pelo gateway (409 `legacy_storage_asset`); não há legados.
+4. Driver web do Flutter: taps por finder travam a fila quando um `waitFor`
+   pendente expira; os roteiros finais usam coordenadas (`clickxy`) + `enter`.
+5. Ao encerrar: espelho parado, Chrome/servidores 3016/3017 encerrados, stash vazio.
 
-## Contadores
+## Sobra para a R16
 
-`validate-trackers` PASS `{"actions":232,"frontendCompleted":189,"backendCompleted":172,"e2eCompleted":162,"activeE2E":186}` — inalterados.
+- Upload do documento B6 pelo navegador quando o Owner liberar CORS (3014–3024).
+- Limpeza dos dois ativos órfãos do cardápio 6272879e; decidir se o cleanup deve
+  cobrir ativos `active` sem referência.
+- Provas dependentes de massa: celular/CPF na busca, responsável com crianças
+  vinculadas (fixture AP-1), `PERSON_HAS_ACCOUNT`, negativa cross-tenant.
+- Specs 064–069: decisão do Owner e implementação.

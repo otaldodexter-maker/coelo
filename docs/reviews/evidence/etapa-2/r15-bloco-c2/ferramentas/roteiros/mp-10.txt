@@ -1,0 +1,4 @@
+# r12-38 — anexar imagem (interceptador armado), descricao acessivel, capturar
+clickxy 984 309
+sleep 6000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-10-imagem-anexada.png

@@ -1,0 +1,8 @@
+# r12-38 (3016) — avancar ate a etapa Cardapio no rascunho existente
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 3500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e2-cardapio-existente.png

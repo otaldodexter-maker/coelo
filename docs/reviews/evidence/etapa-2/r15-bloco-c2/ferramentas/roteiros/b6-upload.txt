@@ -1,0 +1,17 @@
+# B6 — upload real (cdp_filechooser armado antes), revisao, envio e detalhe da crianca
+scrollkey safety-person-document-upload
+tapkey safety-person-document-upload
+sleep 15000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-04-documento-enviado.png
+waitkey safety-person-document-ready 30000
+tapkey safety-wizard-primary
+sleep 1200
+tapkey safety-wizard-primary
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-05-revisao.png
+tapkey safety-wizard-primary
+sleep 6000
+url
+pushroute /safety/children/d0c40000-0000-4000-8000-000000000003
+sleep 6000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-06-detalhe-crianca.png

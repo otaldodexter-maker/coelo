@@ -1,0 +1,5 @@
+# r12-38 — abrir o wizard de novo cardapio e mapear a etapa 0
+pushroute /meal-plans/new
+sleep 6000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-01-etapa0.png

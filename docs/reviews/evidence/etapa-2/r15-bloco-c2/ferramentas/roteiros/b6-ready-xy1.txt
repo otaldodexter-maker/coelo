@@ -1,0 +1,7 @@
+# B6 (3016) por coordenadas — buscar crianca
+clickxy 990 274
+sleep 400
+enter 'QA R04'
+clickxy 1322 274
+sleep 4000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r0-crianca-busca.png

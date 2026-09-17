@@ -1,0 +1,26 @@
+# r12-38 — novo cardapio simples ate a etapa Cardapio (coordenadas do viewport 1424x905)
+pushroute /meal-plans
+sleep 3000
+pushroute /meal-plans/new
+sleep 14000
+clickxy 984 309
+sleep 300
+enter 'QA R15 Cardapio imagem R2'
+clickxy 984 373
+sleep 1200
+clickxy 634 425
+sleep 800
+clickxy 1310 840
+sleep 2500
+clickxy 786 393
+sleep 1500
+clickxy 748 493
+sleep 500
+clickxy 880 598
+sleep 1200
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-a-vinculos.png
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-a-cardapio.png

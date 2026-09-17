@@ -1,0 +1,22 @@
+# B6 — fluxo completo ate o cadastro (sem waitFor/scroll: apenas taps por key/texto e sleeps)
+pushroute /safety/new
+sleep 5000
+typekey safety-child-search 'QA R04'
+taptooltip Buscar
+sleep 3500
+taptext 'QA R04 Cuidado (sintetico) · Unidade QA R04'
+sleep 800
+tapkey safety-wizard-primary
+sleep 1500
+clickxy 980 346
+sleep 300
+enter 'R15 C2 B6 pessoa sem conta pela tela'
+typekey safety-person-search 'QA R15 Tio'
+sleep 3500
+tapkey safety-person-register-toggle
+sleep 800
+typekey safety-register-name 'QA R15 Tio Sem Conta'
+typekey safety-register-cpf '111.444.777-35'
+tapkey safety-register-submit
+sleep 4000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-03b-cadastrada-dedupe.png

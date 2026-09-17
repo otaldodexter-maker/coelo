@@ -1,0 +1,10 @@
+# r12-38 — selecao da instituicao passo a passo com capturas
+clickxy 786 569
+sleep 2000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-sel-1-aberto.png
+clickxy 628 669
+sleep 900
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-sel-2-marcado.png
+clickxy 880 774
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-sel-3-aplicado.png

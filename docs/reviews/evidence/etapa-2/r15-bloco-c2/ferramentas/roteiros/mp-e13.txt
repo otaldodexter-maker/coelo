@@ -1,0 +1,10 @@
+# r12-38 (3016) — model-edit sem regressao: abrir modelo existente e avancar ate a etapa de conteudo
+pushroute /meal-plans/models/bef18a8c-c208-4eea-97bf-a2051e400789/edit
+sleep 9000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e13-model-edit-etapa1.png
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e13-model-edit-conteudo.png

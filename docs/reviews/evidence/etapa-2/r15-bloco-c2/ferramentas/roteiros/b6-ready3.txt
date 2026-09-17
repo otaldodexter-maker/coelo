@@ -1,0 +1,14 @@
+# B6 (3016) por coordenadas — etapas seguintes, envio e detalhe da crianca
+clickxy 1310 840
+sleep 2000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r4-pessoa-autorizada.png
+clickxy 980 346
+sleep 300
+enter 'R15 C2 B6 pessoa sem conta com documento pela tela'
+sleep 500
+clickxy 1310 840
+sleep 2000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r5-validade.png
+clickxy 1310 840
+sleep 2000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r6-revisao.png

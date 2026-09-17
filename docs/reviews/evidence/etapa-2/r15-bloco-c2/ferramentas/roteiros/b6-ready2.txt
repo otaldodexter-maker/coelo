@@ -1,0 +1,12 @@
+# B6 (3016) por coordenadas — preencher nome/CPF e Cadastrar (dedupe devolve documento ready)
+clickxy 984 474
+sleep 300
+enter 'QA R15 Tio Sem Conta'
+clickxy 984 534
+sleep 300
+enter '111.444.777-35'
+sleep 500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r2-formulario.png
+clickxy 668 714
+sleep 5000
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b6-r3-cadastrada-documento-ready.png

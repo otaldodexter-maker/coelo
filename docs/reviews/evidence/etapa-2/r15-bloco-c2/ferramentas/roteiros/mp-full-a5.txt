@@ -1,0 +1,13 @@
+# r12-38 — instituicao (layout com banner: mesmo padrao que funcionou), periodo, Cardapio
+clickxy 786 569
+sleep 1800
+clickxy 748 669
+sleep 700
+clickxy 880 774
+sleep 1500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-a-vinculos.png
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-a-cardapio.png

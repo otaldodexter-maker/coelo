@@ -1,0 +1,11 @@
+# r12-38 (3016, build com o contrato simpleImageMeta) — reload real, reabrir edicao, previa na etapa Cardapio
+pushroute /meal-plans/6272879e-9a52-4ce5-8922-5777c18ea82b/edit
+sleep 12000
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 2500
+clickxy 1310 840
+sleep 7000
+url
+shot docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e8-previa-apos-reload.png

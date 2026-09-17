@@ -1,0 +1,74 @@
+[
+  {
+    "action_id": "meal-plans.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-38): envio de imagem habilitado e feito pelo Media Gateway R2 (meal-plan-media: prepare -> PUT assinado -> finalize) na rota real; cardapio simples 6272879e criado pela tela com imagem em coelo-media-prod (storage_provider r2, chave canonica).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e5-apos-salvar.png",
+      "revision": "ece99cc3a",
+      "environment": "producao, rota real (build web de qa_main servido em 127.0.0.1:3016 + Chrome CDP 9417, sessao qa-r06-operacoes; lote 78)",
+      "recordedAt": "2026-09-17T14:54:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-38): edicao anexa/troca a imagem pelo gateway e a previa reaparece apos reload real (URL assinada curta pelo read do gateway); contrato simpleImageMeta corrigido no FE (antes a imagem salva nunca era relida).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e11-previa-apos-reload.png",
+      "revision": "ece99cc3a",
+      "environment": "producao, rota real (build web de qa_main servido em 127.0.0.1:3016 + Chrome CDP 9417, sessao qa-r06-operacoes; lote 78)",
+      "recordedAt": "2026-09-17T15:10:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.publish",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-38): cardapio com imagem R2 publicado pela tela (status published, revisao 8, simpleImageMeta preservado); sem 409 legado (nenhum ativo supabase_mvp em producao).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e12-apos-publicar.png",
+      "revision": "ece99cc3a",
+      "environment": "producao, rota real (build web de qa_main servido em 127.0.0.1:3016 + Chrome CDP 9417, sessao qa-r06-operacoes; lote 78)",
+      "recordedAt": "2026-09-17T15:12:00-03:00"
+    }
+  },
+  {
+    "action_id": "meal-plans.model-edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-38): sem regressao com o adapter de imagem pelo gateway — modelo bef18a8c da R14 abre e percorre as 3 etapas ate a revisao na rota real.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/mp-e13-model-edit-conteudo.png",
+      "revision": "ece99cc3a",
+      "environment": "producao, rota real (build web de qa_main servido em 127.0.0.1:3016 + Chrome CDP 9417, sessao qa-r06-operacoes; lote 78)",
+      "recordedAt": "2026-09-17T15:14:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.create",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-17/r12-18): campo unico de busca autorizada (superadmin_person_search_v1: minimo por tipo, escopo, rate limit 422, resultado minimizado sem CPF) e cadastro de pessoa sem conta (CPF obrigatorio mascarado, dedupe por instituicao+CPF, documento R2 privado ready) provados na rota real; autorizacao pendente criada e relida no detalhe da crianca (B5); B6 ate a revisao pela tela e envio com authorized_person_id pela RPC com o payload do wizard (200, pendente b729f6b8) relido no detalhe.",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
+    "certificacao": {
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/capturas/b5-10-detalhe-crianca.png",
+      "revision": "ece99cc3a",
+      "environment": "producao, rota real (build web de qa_main servido em 127.0.0.1:3017/3016 + Chrome CDP 9417, sessao qa-r06-acessos; lote 78)",
+      "recordedAt": "2026-09-17T13:30:00-03:00"
+    }
+  },
+  {
+    "action_id": "child-safety.edit",
+    "camada": "integrated",
+    "estado_proposto": "verified-e2e",
+    "delta": "R15 C2 (owner.r12-17): o wizard de edicao usa o mesmo leitor de busca autorizada (sem UUID tecnico); estado mantido da prova do Bloco B (edit/suspend), sem regressao local (safety 196/196).",
+    "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md"
+  }
+]
