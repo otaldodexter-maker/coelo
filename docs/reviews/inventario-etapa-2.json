@@ -7709,15 +7709,15 @@
       "family": "account",
       "screen": "Conta / Perfil",
       "scope": "mvp",
-      "done": "R11: Conta39 testes Flutter únicos PASS;sigla/cor/metadados e isolamento de receipt9/9 pgTAP locais;runtimev1compatível;foto/R2 e aplicação remota pendentes. | Destino Owner: R12-46; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-46 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
+      "done": "R15 Bloco A rota real (17/09): PNG real pelo seletor nativo (CDP) -> Ajustar foto -> salvar; avatar do cabecalho atualizado apos confirmacao do servidor; reload e nova sessao (login novo) mostram a foto do R2; remover foto + sigla QR salvos e relidos; celular invalido bloqueado (7-40) e valido gravado; negativa asset alheio 422 denied. Residuo: celular sem mascara/normalizacao.",
       "fe": "R13 rota real: /profile relê sigla/cor/celular, salva sigla QE→QR e relê após reload; foto R2 continua sem persistência (BE remote-green).",
-      "be": "R13 lote 63: save_v2 sigla/cor/celular e get em produção (contrato avatar v2); foto R2 ainda não implementada, por isso não é done.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.profile); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.profile); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png; docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md; docs/design/account-profile-owner-adjustments-20260913.md; docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md; docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
+      "be": "R15 Bloco A: foto privada em R2 via Edge account-media (prepare/finalize/read/remove) + superadmin_account_profile_save_v2/get em producao: asset e2a00029 criado, lido com URL assinada, removido; asset alheio/inexistente -> account_avatar_read_denied/remove_denied (422, sem vazamento).",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar account.profile); archive/2026-09-08/coelo-supabase-pendencias.md (buscar account.profile); apps/superadmin/test/features/account/presentation/screens/profile_page_test.dart e settings_page_test.dart -> 45 PASS; apps/superadmin/lib/app/router/superadmin_router.dart linhas 356-358 e 5176-5178; apps/superadmin/lib/features/account/data/account_profile_repository.dart; commit 458277400; apps/superadmin/test/features/account/presentation/screens/account_theme_width_matrix_test.dart -> 32 PASS; comunicacao/operacoes.json r6; coordenacao.json R03 rev 15; coordenacao.json R04 rev 21 (lote10); docs/reviews/evidence/etapa-2/r04-operacoes/rota-real/01-profile-open.png, 02-profile-save-click.png, 02b-profile-validation.png, 03-profile-reload.png, 04-profile-restored.png; docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/reviews/evidence/etapa-2/r10-coordenacao/header-two-identities.md; docs/design/account-profile-owner-adjustments-20260913.md; docs/reviews/evidence/etapa-2/r11-coordenacao/account-reproduction.md; docs/reviews/evidence/etapa-2/r11-coordenacao/checkpoint-1136.md; docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md; docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
       "frontendStatus": "verified",
-      "backendStatus": "remote-green",
-      "integratedStatus": "pending-verification",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "ownerVisualApproval": {
@@ -7738,16 +7738,16 @@
           "recordedAt": "2026-09-14T15:30:00-03:00"
         },
         "backend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
-          "revision": "comunicacao/operacoes.json rev 48",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
-          "recordedAt": "2026-09-11T21:05:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:20:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r06-operacoes/rota-real/40-profile-email-service-person.png",
-          "revision": "comunicacao/operacoes.json rev 48",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (qa_main) 1e94633a5 em 127.0.0.1:3021, sessao qa-r06-operacoes@coelo.me, Chrome CDP 9421",
-          "recordedAt": "2026-09-11T21:05:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:20:00-03:00"
         }
       }
     },
@@ -9514,7 +9514,11 @@
       }
     }
   ],
+<<<<<<< HEAD
   "updatedAt": "2026-09-17T13:59:15.535Z",
+=======
+  "updatedAt": "2026-09-17T13:50:25.077Z",
+>>>>>>> ec41ba79f (r15(bloco-a): Conta — foto real em R2 privado, avatar global, nova sessão, remoção e celular provados na rota real)
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
