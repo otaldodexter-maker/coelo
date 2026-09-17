@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "9b5682b8d1439f3146910d902a2b872a87b7d8f6",
+    "head": "30f630db84a3cc47d207f7081fedcfec974729db",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1143,7 +1143,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-b",
-      "sha": "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d"
+      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b-apoio": {
       "disposition": "retained-session",
@@ -1155,13 +1155,13 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-c1",
-      "sha": "a23d5be49da10ca9582896d9803e9f8ac6e09d97"
+      "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c2": {
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-c2",
-      "sha": "f03b9d26c333bdab6f7142721071943a1266e747"
+      "sha": "a90f5bbd4da38e4e258144bf15c15e7ae295c75d"
     }
   },
   "preservedStash": {},
@@ -1715,13 +1715,14 @@
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev, onde PT409 e o leitor coexistem.",
+      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "r15/bloco-b": {
-      "sha": "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
+      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
       "exclusive": [
+        "bdad37376af93c7143ae52c873cae8d326909bb2",
         "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
         "bcf47d63628c1842d03ae31d699a6bec74de9705",
         "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -1730,7 +1731,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -1744,11 +1745,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "r15/bloco-c1": {
-      "sha": "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
+      "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
       "exclusive": [
+        "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
         "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
         "045fa8edc21276e8b7afa2ee2e1c8575e3406e29",
         "b1664470f4bb07df5e891c93039baa4258bf545e",
@@ -1761,11 +1763,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "r15/bloco-c2": {
-      "sha": "f03b9d26c333bdab6f7142721071943a1266e747",
+      "sha": "a90f5bbd4da38e4e258144bf15c15e7ae295c75d",
       "exclusive": [
+        "a90f5bbd4da38e4e258144bf15c15e7ae295c75d",
         "f03b9d26c333bdab6f7142721071943a1266e747",
         "09edfde356ce81a8453c1519bf582be40d098508",
         "13f4a8c9b69099bd2f94ecec907b0d646a7a1ba6",
@@ -1776,7 +1779,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2419,13 +2422,14 @@
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev, onde PT409 e o leitor coexistem.",
+      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "origin/r15/bloco-b": {
-      "sha": "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
+      "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
       "exclusive": [
+        "bdad37376af93c7143ae52c873cae8d326909bb2",
         "0e46a760990fcdacc3ff703a29ebe41e3dbcd97d",
         "bcf47d63628c1842d03ae31d699a6bec74de9705",
         "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -2434,7 +2438,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -2448,11 +2452,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "origin/r15/bloco-c1": {
-      "sha": "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
+      "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
       "exclusive": [
+        "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
         "a23d5be49da10ca9582896d9803e9f8ac6e09d97",
         "045fa8edc21276e8b7afa2ee2e1c8575e3406e29",
         "b1664470f4bb07df5e891c93039baa4258bf545e",
@@ -2465,7 +2470,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2479,7 +2484,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9b5682b8d1439f3146910d902a2b872a87b7d8f6"
+      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2592,6 +2597,7 @@
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
+    "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
@@ -2872,8 +2878,9 @@
     "circulars.attach"
   ],
   "memory": {
-    "status": "no-op",
-    "reason": "Reconciliacao documental e de harness; regras de produto continuam nas ADRs. Nenhum conhecimento novo de produto foi inventado."
+    "status": "captured",
+    "reason": "Regras duráveis da R15 (PT409, rito de produção por lote, B5/B6) projetadas em docs/knowledge e nas skills coelo-supabase/coelo-flutter-review/coelo-flutter-supabase-review.",
+    "evidence": "docs/knowledge/team/stale-version-pt409-and-production-rite.md"
   },
   "deployment": {
     "status": "pending",
