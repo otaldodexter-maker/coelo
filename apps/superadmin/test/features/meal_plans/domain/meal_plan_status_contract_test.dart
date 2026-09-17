@@ -34,10 +34,7 @@ void main() {
       statuses: {MealPlanStatus.draft, MealPlanStatus.published, MealPlanStatus.archived},
     );
 
-    expect(
-      (filter.toJson()['statuses']! as List).toSet(),
-      {'draft', 'published', 'archived'},
-    );
+    expect((filter.toJson()['statuses']! as List).toSet(), {'draft', 'published', 'archived'});
     for (final entry in const {
       'draft': MealPlanStatus.draft,
       'inReview': MealPlanStatus.inReview,

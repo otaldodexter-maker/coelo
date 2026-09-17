@@ -26,7 +26,9 @@ do dump `schema-producao-20260917-r15-c2-before.sql` (SHA-256 `c87f4d67…`).
 | SHA | Fatia | Estado | Evidência |
 |---|---|---|---|
 | `650297873` | B5 — `superadmin_person_search_v1` (spec 061) + FE do wizard | migration validada no espelho (pgTAP 33/33), FE local-green (safety 192/192, analyze limpo); **não aplicada em produção** | `r15-bloco-c2/person-search-and-person-without-account-20260917.md` |
-| (este commit) | B6 — pessoa sem conta (spec 062): migration + pgTAP 40/40 + Edge `child-safety-media` (deno 6/6) | BE validado no espelho; Edge não implantada; FE em andamento | idem |
+| `4e96c8840` | B6 — pessoa sem conta (spec 062): migration + pgTAP 40/40 + Edge `child-safety-media` (deno 6/6) | BE validado no espelho; Edge não implantada | idem |
+| `1a43b0435` | B6 FE — cadastro no wizard, upload do documento pelo gateway, `authorized_person_id` no comando | local-green (safety 196/196) | idem |
+| (este commit) | r12-38 — Cardápios imagem R2 (spec 063): migration + pgTAP 26/26, Edge `meal-plan-media` (7/7) + ramo R2 no cleanup, adapter FE pelo gateway (9/9), envio habilitado nas rotas produtivas, prévia após reload | local-green; não aplicada/implantada | idem |
 
 Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
 
@@ -34,8 +36,10 @@ Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
 
 | Gate | Causa | Detalhe |
 |---|---|---|
-| Aplicar `20260917160000` e `20260917170000` em produção; deploy `child-safety-media` | **ambiente (permissão do executor)** | `supabase db query --linked -f` negado pelo classificador ("Production Deploy"); não contornado. Rito e ordem completos na evidência; lote sugerido **77**. O Owner decide como entram. |
+| Aplicar `20260917160000`, `20260917170000` e `20260917180000` em produção; deploy `child-safety-media`, `meal-plan-media`, `meal-plan-image-cleanup` | **ambiente (permissão do executor)** | `supabase db query --linked -f` negado pelo classificador ("Production Deploy"); não contornado. Rito e ordem completos na evidência; lote sugerido **77**. O Owner decide como entram. |
 | E2E `owner.r12-17` / `owner.r12-18` | ambiente (depende da aplicação) + massa `QA R15` (Bloco B) | tela preparada; nada certificado |
+| E2E `owner.r12-38` (`meal-plans.create/edit/publish/model-edit`) | ambiente (depende da aplicação + deploy) | adapter e rotas prontos; nada certificado; as 4 ações seguem verified-e2e (sem regressão local) |
+| Goldens `meal_plan_pages_golden_test` (5 do diretório) | deriva do cabeçalho (E4), já falham em `dev` | não regravados nesta sessão |
 
 ## Avisos
 
@@ -47,6 +51,11 @@ Nenhum delta JSON aplicado; `validate-trackers` PASS com os contadores do corte.
    tinha 40001).
 3. Regra durável (ADR 0041): CPF nunca em claro → busca por CPF só com o número
    completo (HMAC). Registrado nas specs 061/062.
+4. Cardápios: ativos legados (`supabase_mvp`) seguem lidos pelo caminho v1 só no
+   servidor; o cliente novo lê pelo gateway (409 `legacy_storage_asset` para
+   legado; hoje não há ativos legados em produção, pois o envio estava desabilitado).
+5. Bloco B (OQ-047, lote 75) já cobriu `serialization_failure` nas famílias; as
+   minhas migrations não contêm 40001 (postcheck).
 
 ## Contadores
 

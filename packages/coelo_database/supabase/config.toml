@@ -405,6 +405,10 @@ verify_jwt = true
 [functions.child-safety-media]
 verify_jwt = true
 
+# Imagens de Cardapios em R2 privado (owner.r12-38, spec 063): prepare/finalize/read.
+[functions.meal-plan-media]
+verify_jwt = true
+
 # The handler authenticates user requests and the cleanup worker independently.
 [functions.circular-media]
 verify_jwt = false

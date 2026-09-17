@@ -1,5 +1,6 @@
 import { createClient } from "npm:@supabase/supabase-js@2.57.4";
 import { processMealPlanImageCleanup } from "./worker.ts";
+import { R2Client, validateR2Config } from "../_shared/r2_s3.ts";
 
 function reply(status: number, body: Record<string, unknown>) {
   return Response.json(body, {
@@ -32,7 +33,20 @@ Deno.serve(async (request) => {
         }
         return response.data;
       },
-      async remove(bucket, path) {
+      async remove(bucket, path, storageProvider) {
+        // R2 (spec 063): credenciais so no servidor; delete idempotente.
+        if (storageProvider === "r2") {
+          if (bucket !== "coelo-media-prod") throw new Error("invalid_cleanup_bucket");
+          const r2 = new R2Client(validateR2Config({
+            endpoint: Deno.env.get("COELO_R2_ENDPOINT") ?? "",
+            region: Deno.env.get("COELO_R2_REGION") ?? "auto",
+            accessKeyId: Deno.env.get("COELO_R2_ACCESS_KEY_ID") ?? "",
+            secretAccessKey: Deno.env.get("COELO_R2_SECRET_ACCESS_KEY") ?? "",
+            bucket,
+          }));
+          await r2.delete(path);
+          return;
+        }
         if (bucket !== "coelo-meal-plans-private") {
           throw new Error("invalid_cleanup_bucket");
         }

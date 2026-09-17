@@ -1,6 +1,8 @@
 export interface MealPlanCleanupJob {
   request_id: string;
   asset_id: string;
+  /** 'supabase_mvp' (legado) ou 'r2' (spec 063); ausente = legado. */
+  storage_provider?: string;
   bucket: string;
   path: string;
   attempt: number;
@@ -8,7 +10,7 @@ export interface MealPlanCleanupJob {
 
 export interface MealPlanCleanupStore {
   claim(limit: number): Promise<MealPlanCleanupJob[]>;
-  remove(bucket: string, path: string): Promise<void>;
+  remove(bucket: string, path: string, storageProvider?: string): Promise<void>;
   complete(requestId: string, succeeded: boolean, error?: string): Promise<void>;
 }
 
@@ -24,7 +26,7 @@ export async function processMealPlanImageCleanup(
   let failed = 0;
   for (const job of jobs) {
     try {
-      await store.remove(job.bucket, job.path);
+      await store.remove(job.bucket, job.path, job.storage_provider ?? "supabase_mvp");
       await store.complete(job.request_id, true);
       completed++;
     } catch (error) {

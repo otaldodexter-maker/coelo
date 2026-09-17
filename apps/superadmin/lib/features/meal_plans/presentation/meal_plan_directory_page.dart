@@ -585,8 +585,7 @@ final class _MealPlanDirectoryPageState extends State<MealPlanDirectoryPage> {
         action: 'archive',
         item: item,
         repository: repository,
-        mismatchMessage:
-            'A confirmação do arquivamento não corresponde ao cardápio solicitado.',
+        mismatchMessage: 'A confirmação do arquivamento não corresponde ao cardápio solicitado.',
         isSettled: (receipt) => receipt.status == MealPlanStatus.archived,
         call: (repository, requestId) => repository.archive(item.id, requestId, item.revision),
       ),

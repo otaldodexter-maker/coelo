@@ -615,8 +615,6 @@ final class FakeMealPlanRepository implements MealPlanRepository {
   Future<void> delete(String mealPlanId, String requestId, int expectedRevision) async =>
       throw UnimplementedError('delete nao participa deste caso');
 
-
-
   @override
   Future<List<MealPlanConflict>> checkConflicts({
     required String scopeLevel,

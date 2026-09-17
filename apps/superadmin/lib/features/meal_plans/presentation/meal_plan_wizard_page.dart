@@ -689,6 +689,15 @@ final class _MealPlanWizardPageState extends State<MealPlanWizardPage> {
       if (_simpleImage != null || _pendingSimpleImage != null) ...[
         const SizedBox(height: CoeloSpacing.space2),
         Text('Arquivo: ${_pendingSimpleImage?.fileName ?? _simpleImage!.title}'),
+        if (_pendingSimpleImage == null && widget.imageSelectionEnabled) ...[
+          const SizedBox(height: CoeloSpacing.space2),
+          _MealPlanImagePreview(
+            key: Key('meal-plan-image-preview-${_simpleImage!.reference}'),
+            repository: widget.imageRepository,
+            assetId: _simpleImage!.reference,
+            altText: _simpleImageAlt.text,
+          ),
+        ],
       ],
       const SizedBox(height: CoeloSpacing.space4),
       CoeloFormTextField(
@@ -1970,6 +1979,62 @@ final class _MealEditor {
       controller.dispose();
     }
   }
+}
+
+/// Previa da imagem ja vinculada (owner.r12-38): URL assinada curta pelo
+/// gateway; falha vira texto honesto, nunca URL publica.
+final class _MealPlanImagePreview extends StatefulWidget {
+  const _MealPlanImagePreview({
+    required this.repository,
+    required this.assetId,
+    required this.altText,
+    super.key,
+  });
+  final MealPlanImageRepository repository;
+  final String assetId;
+  final String altText;
+  @override
+  State<_MealPlanImagePreview> createState() => _MealPlanImagePreviewState();
+}
+
+final class _MealPlanImagePreviewState extends State<_MealPlanImagePreview> {
+  late Future<Uri> _url = widget.repository.createSignedReadUrl(widget.assetId);
+
+  @override
+  void didUpdateWidget(covariant _MealPlanImagePreview oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (oldWidget.assetId != widget.assetId ||
+        !identical(oldWidget.repository, widget.repository)) {
+      _url = widget.repository.createSignedReadUrl(widget.assetId);
+    }
+  }
+
+  @override
+  Widget build(BuildContext context) => FutureBuilder<Uri>(
+    future: _url,
+    builder: (context, snapshot) {
+      if (snapshot.hasError) {
+        return const Text('Prévia indisponível no momento.');
+      }
+      final uri = snapshot.data;
+      if (uri == null) {
+        return const SizedBox(
+          height: 24,
+          width: 24,
+          child: CircularProgressIndicator(strokeWidth: 2),
+        );
+      }
+      return ConstrainedBox(
+        constraints: const BoxConstraints(maxHeight: 160, maxWidth: 240),
+        child: Image.network(
+          uri.toString(),
+          fit: BoxFit.contain,
+          semanticLabel: widget.altText.isEmpty ? 'Imagem do cardápio' : widget.altText,
+          errorBuilder: (_, _, _) => const Text('Prévia indisponível no momento.'),
+        ),
+      );
+    },
+  );
 }
 
 final class _PendingImage {

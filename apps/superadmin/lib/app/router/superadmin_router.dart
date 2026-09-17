@@ -952,6 +952,9 @@ GoRouter createSuperadminRouter({
       child: MealPlanWizardPage(
         repository: mealPlanRepository,
         imageRepository: mealPlanImageRepository,
+        // owner.r12-38 (spec 063): imagem pelo Media Gateway R2; o adapter
+        // indisponivel continua falhando fechado no proprio envio.
+        imageSelectionEnabled: mealPlanImageRepository is! UnavailableMealPlanImageRepository,
         tenantId: authorizedTenantId,
         mealPlanId: mealPlanId,
         templatePlanId: templatePlanId,
