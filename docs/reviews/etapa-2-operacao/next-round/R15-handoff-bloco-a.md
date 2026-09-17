@@ -22,8 +22,9 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 | Perfis de acesso (`/profiles`, `/profiles/platform/:id[/edit]`, `/internal-users/:id/edit`) | access-profiles.edit, access-profiles.assign | r12-20, 21, 22, 24, 25, 26, 27 | 17/09 08:50 BRT |
 | Instituições › Erro / Acesso negado | institutions.error, institutions.access-denied | A4 (aviso Arquivos) | 17/09 10:20 BRT |
 | Conta (`/profile`) | account.profile | r12-46 | 17/09 11:00 BRT |
-| Formulários (expire/delete-file, create/edit, location-answer) | forms.* | r12-39, r12-40 | depois |
-| Momentos, errors.409, auth.recover/reset (E8) | momentos.*, errors.409, auth.recover/reset | r12-47 | depois |
+| Formulários (create/edit, delete-file, expire-file, location-answer) | forms.* | r12-39, r12-40 | 17/09 11:20 BRT |
+| errors.409, auth.recover/reset (E8) | errors.409, auth.recover/reset | r12-47 | depois |
+| (liberado para a C1 em 17/09 ~12:10 BRT, a pedido da coordenadora) | momentos.view/publish/remove/create | — | — |
 
 ## Fatias entregues
 
@@ -33,6 +34,7 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 | (este) | access-profiles.edit FE verified + E2E verified-e2e (v1→v2 pela tela, reload, 409 PT409 sem mutação após lote 75, 400 22023 instituição alheia); access-profiles.assign FE verified + E2E verified-e2e (perfil QA atribuído a `bf6008f0…`, memberships relidos, reload, Owner restaurado, 409 SAI_CONCURRENT_CHANGE / 403 SAI_PERMISSION_DENIED) | r12-20, 21, 22, 24, 25, 26, 27 → done | r15-bloco-a/access-profiles-edit-assign-20260917.md; deltas-access-profiles-20260917.json; capturas 00–18 |
 | (este) | institutions.access-denied e institutions.error: FE verified, BE done, E2E verified-e2e (deep link inexistente → Acesso não autorizado sem dado + reload; RPC bloqueada por CDP → Não foi possível carregar + Tentar novamente recupera; 403 SAI_PERMISSION_DENIED por PostgREST sem enumeração); ADR 0041 A4 capturado (aviso "Arquivos em desenvolvimento") | — | r15-bloco-a/institutions-error-access-denied-20260917.md; deltas-institutions-20260917.json; deltas-institutions-backend-20260917.json; capturas institutions-00–06 |
 | (este) | account.profile: BE done + E2E verified-e2e (FE já verified): foto PNG real via seletor nativo (CDP) → R2 privado (account-media), avatar do cabeçalho após confirmação, reload, nova sessão, remover foto, sigla, celular inválido/válido, asset alheio/removido → denied | r12-46 → partial (só máscara/normalização do Celular pendente) | r15-bloco-a/account-profile-20260917.md; deltas-account-20260917.json; capturas account-00–07 |
+| (este) | forms.create e forms.edit FE verified + E2E verified-e2e (BE já done): editor real, renomear seção, mover pergunta, salvar, reload, prévia; 409 PT409 FORMS_STALE_VERSION, 400 23514 instituição alheia; forms.delete-file FE verified + BE done + E2E verified-e2e (upload real → excluir → reload sem imagem; 404 FORM_MEDIA_NOT_FOUND) | r12-39, r12-40 → done | r15-bloco-a/forms-create-edit-delete-file-20260917.md; deltas-forms-20260917.json; capturas forms-00–07 |
 
 ## Avisos para as outras sessões
 
@@ -52,6 +54,7 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 - Perfis: tooltip aberto por foco de teclado não fecha ao avançar o foco (empilha); rótulo "Excluir" na
   matriz × nome "Inativar modelos Admin." no catálogo; `reason` da auditoria vem `[redacted]` no detalhe.
+- Formulários: rótulos padrão do formulário novo parecem estado de erro ("Seção sem dados disponíveis"); campo Instituição do editor quebra em coluna estreita; URL fica em `/forms/new` após o primeiro save; `superadmin_forms_editor_v2`/`save_draft_v2` negam (403) a identidade QA via PostgREST enquanto a tela usa `form_get_editor`/`form_save_draft`; `form_get_editor` com id inexistente → 500 P0002.
 - Conta: Celular sem máscara/normalização (só 7–40 caracteres; servidor grava como digitado); Edge `account-media` responde 422 (não 403) para asset alheio; avatar do cabeçalho fica vazio ~1 s após login novo até a leitura assinada.
 - Usuários internos: chip flutuante "Mensagens" cobre o botão "Continuar" do assistente em 1424×1125;
   detalhe em produção com títulos/textos "demonstrativo"/"nesta demonstração"; edição demora vários
@@ -63,6 +66,6 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 ## Contadores
 
-`validate-trackers.cjs` PASS após os deltas: FE 193/232, BE 175/219, E2E 167/186, Owner 28/53
-(r12-20/21/22/24/25/26/27 → done). `entrega-atual.json` e `R12-owner-items.json` regravados pelo
+`validate-trackers.cjs` PASS após os deltas: FE 196/232, BE 176/219, E2E 170/186, Owner 30/53
+(r12-20/21/22/24/25/26/27/39/40 → done; r12-46 partial). `entrega-atual.json` e `R12-owner-items.json` regravados pelo
 `sync-r12-owner-records.cjs` (projeção).

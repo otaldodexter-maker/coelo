@@ -5026,15 +5026,15 @@
       "family": "forms_authoring",
       "screen": "Criar Formulário",
       "scope": "mvp",
-      "done": "Editor mudou; provar save/reload e posição/nome pela rota normal.",
-      "fe": "R12 C0: editor mantém reordenação e permite renomear seção no draft.",
+      "done": "R15 Bloco A: form_save_draft em producao criou 90b905a1 (draft v1, positions 0/1) relido por form_get_editor e diretorio; reload; negativas: versao defasada -> 409 PT409 FORMS_STALE_VERSION sem mutacao, instituicao alheia -> 400 23514, id inexistente -> P0002.",
+      "fe": "R15 Bloco A rota real (17/09): /forms/new -> nome, pergunta A, Renomear secao por dialogo, catalogo -> Numero inteiro, mover para cima (ordem B,A), Salvar rascunho; reload do editor preserva titulo, secao e ordem; previa mostra a secao renomeada.",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/new: instituicao \"QA R04 Cuidado (sintetico)\" (superadmin_forms_context manage/publish true), titulo, contexto, pergunta Texto curto; form_save_draft -> 200 id 4555ba07-e4a4-4971-8ba7-d81a775169cd, \"Rascunho salvo.\"; reload em /forms/4555ba07.../edit -> form_get_editor 200 com o mesmo conteudo. Dois defeitos do cliente corrigidos nesta prova (f80d26909: id \"\" -> null, 22P02; ee4903912: status/management_version fora do payload, 22023 \"form draft contains unknown keys\"). | Backlog R12 (registro 2026-09-13): R12-39, R12-40. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-39 -> R13, R12-40 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; Fechamento R01 C02/r48; C00173Flutter+110DTO+6domínio PASS em suítes distintas; RED numéricos fora desses aceites; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 94b9fa18 e 4e8bcb227be205fc13266313f52f3e9cab94a32f; forms_editor_authoring_test 74/74; ambiente local Windows; 2026-09-09; commit 49aa6737213627449a0059bc82c5dc06504e6ade; forms_editor_authoring_test 81/81; RED confirmado nos tres tipos antes da correcao; tres perguntas de composicao respondidas SIM; 2026-09-09; commit d4c9973751a; forms_editor_authoring_test 92/92; RED confirmado nos dois casos; 2026-09-09; forms_editor_page.dart em _scheduleAutosave; superadmin_router.dart nas rotas formCreate e formEdit; commit e052aceb960d36e73a5125febef336749eded977 prova os limites pelo caminho de api com salvamento explicito; 2026-09-09; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/19-forms-edit-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; Fechamento R01 C02/r48; C00173Flutter+110DTO+6domínio PASS em suítes distintas; RED numéricos fora desses aceites; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 94b9fa18 e 4e8bcb227be205fc13266313f52f3e9cab94a32f; forms_editor_authoring_test 74/74; ambiente local Windows; 2026-09-09; commit 49aa6737213627449a0059bc82c5dc06504e6ade; forms_editor_authoring_test 81/81; RED confirmado nos tres tipos antes da correcao; tres perguntas de composicao respondidas SIM; 2026-09-09; commit d4c9973751a; forms_editor_authoring_test 92/92; RED confirmado nos dois casos; 2026-09-09; forms_editor_page.dart em _scheduleAutosave; superadmin_router.dart nas rotas formCreate e formEdit; commit e052aceb960d36e73a5125febef336749eded977 prova os limites pelo caminho de api com salvamento explicito; 2026-09-09; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/19-forms-edit-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md; docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
@@ -5056,16 +5056,16 @@
       },
       "certifications": {
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/14-forms-draft-saved.png",
@@ -5119,15 +5119,15 @@
       "family": "forms_authoring",
       "screen": "Formulário / Editar",
       "scope": "mvp",
-      "done": "Editor mudou; provar save/reload e posição/nome pela rota normal.",
-      "fe": "R12 C0: editor mantém reordenação e permite renomear seção no draft.",
+      "done": "R15 Bloco A: edicao do rascunho pela tela persistida em producao (form_save_draft) + reload + 409 PT409 em versao defasada + 400 em troca de instituicao pelo payload.",
+      "fe": "R15 Bloco A rota real (17/09): /forms/90b905a1/edit relido apos carga completa com secao renomeada e ordem B,A; Atualizar perguntas habilita Imagens da pergunta; Salvar rascunho reenvia com a versao atual.",
       "be": "R04 (subagente do coordenador, rota real com qa-r03): backend alinhado ao E2E provado (rota normal + CRUD em producao + reload). R04 (11/09 03:05-03:40, subagente do coordenador, rota real com qa-r03): /forms/4555ba07.../edit: titulo alterado para \"[R04-QA] Formulario Local editado\"; form_save_draft (p_expected_version 1) -> 200 management_version 2; reload -> form_get_editor 200 mantem o titulo; /forms/4555ba07... form_get_overview -> 200. | Backlog R12 (registro 2026-09-13): R12-39, R12-40. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-39 -> R13, R12-40 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; Fechamento R01 C02/r48; C00173Flutter+110DTO+6domínio PASS em suítes distintas; RED numéricos fora desses aceites; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 94b9fa18 e 4e8bcb22; forms_editor_authoring_test 74/74; ambiente local Windows; 2026-09-09; commit 5ec63374c; forms_editor_authoring_test 76/76; 2026-09-09; commit 49aa6737213627449a0059bc82c5dc06504e6ade; forms_editor_authoring_test 81/81; 2026-09-09; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/21-forms-edit-reload2.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/22-forms-overview.png; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
+      "evidence": "commits1178b54e/74b56804/e9e7a282/a4d8be57/c0b20ccd/7ae796ef; evidence/etapa-2/formularios-cuidado/2026-09-08-forms-provenance-guards.md; Fechamento R01 C02/r48; C00173Flutter+110DTO+6domínio PASS em suítes distintas; RED numéricos fora desses aceites; etapa-2-operacao/reports/R01-fechamento-20260909.md; commits 94b9fa18 e 4e8bcb22; forms_editor_authoring_test 74/74; ambiente local Windows; 2026-09-09; commit 5ec63374c; forms_editor_authoring_test 76/76; 2026-09-09; commit 49aa6737213627449a0059bc82c5dc06504e6ade; forms_editor_authoring_test 81/81; 2026-09-09; docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/21-forms-edit-reload2.png, docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/22-forms-overview.png; docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md; docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
@@ -5149,16 +5149,16 @@
       },
       "certifications": {
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 32",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r04-formularios-cuidado-rotina em ee4903912 (cbbb738db + 2 correcoes de Formularios) servido em localhost:3011, sessao qa-r03@coelo.me (pessoa de servico da ponte 220400), Chrome CDP 9411 sob SwiftShader",
-          "recordedAt": "2026-09-11T03:40:53-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md",
-          "revision": "comunicacao/coordenacao.json rev 33",
-          "environment": "local, flutter test SDK 3.44.2",
-          "recordedAt": "2026-09-11T10:25:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r04-formularios-cuidado-rotina/rota-real/20-forms-edit-saved.png",
@@ -5658,19 +5658,39 @@
       "family": "forms_files",
       "screen": "Arquivos de Formulários / Excluir",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Provar remoção autorizada, estado do formulário e reconsulta sem órfão acessível.",
-      "fe": "Revalidar o aceite específico desta ação: Exclusão autoritativa, auditoria, retenção e E2E pendentes. R08: Galeria identificada e pergunta com sessao/read integradas; base8809dafcd422PASS incluindo familias tocadas. Aceite parcial: Foto/camera, anonimato edit_secret e UI real continuam pendentes; nao promover acao inteira.",
-      "be": "R05 realm-interno: superadmin_form_media_delete_v2 (forms.manage, idempotente, auditado) exclui o asset e enfileira as chaves para o worker apagar no R2; pgTAP 25/25. Gate: worker de limpeza. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md",
+      "done": "R15 Bloco A: upload real + exclusao pela tela em producao + reload sem imagem + negativa 404 FORM_MEDIA_NOT_FOUND.",
+      "fe": "R15 Bloco A rota real (17/09): Imagens da pergunta -> seletor nativo (CDP) -> PNG real confirmado -> Excluir imagem 1 -> links somem; apos carga completa o dialogo nao lista imagem.",
+      "be": "R15 Bloco A: Edge form-media prepare/finalize/delete em producao (superadmin_form_media_delete_v2 -> status deleted); asset inexistente/alheio -> 404 FORM_MEDIA_NOT_FOUND; sem orfao acessivel apos reload. Nenhum SQL novo.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:55:00-03:00"
+        }
+      }
     },
     {
       "id": "acontece.feed",
@@ -9546,7 +9566,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T14:04:18.246Z",
+  "updatedAt": "2026-09-17T14:22:59.932Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

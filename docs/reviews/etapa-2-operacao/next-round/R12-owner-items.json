@@ -754,17 +754,17 @@
   },
   {
     "id": "owner.r12-39",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "forms.edit",
       "forms.create"
     ],
-    "fe": "FE local-green: arraste/movimentação e alternativas por botões preservadas.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
+    "fe": "FE verified na rota real (Bloco A 17/09): pergunta movida por botão (B antes de A), rascunho salvo, carga completa preserva a ordem (position 0/1 no servidor).",
+    "be": "BE done (form_save_draft).",
+    "e2e": "E2E verified-e2e via forms.create/edit (409 PT409 em versão defasada).",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Provar save/reload e posição final pela rota normal.",
+    "nextGate": "Concluído 17/09 (Bloco A). Arraste não exercitado por CDP; botão de mover prova a posição final.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -774,17 +774,17 @@
   },
   {
     "id": "owner.r12-40",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "forms.edit",
       "forms.create"
     ],
-    "fe": "FE local-green: seção pode ser renomeada por diálogo e o draft é atualizado.",
-    "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
+    "fe": "FE verified na rota real (Bloco A 17/09): \"Renomear seção\" por diálogo (contador /120), nome na lista, no título da seção, no editor após reload e na prévia.",
+    "be": "BE done (form_save_draft).",
+    "e2e": "E2E verified-e2e via forms.create/edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Provar persistência/reload e nome na prévia pela rota normal.",
+    "nextGate": "Concluído 17/09 (Bloco A).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
