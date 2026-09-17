@@ -31,6 +31,16 @@ acompanha em tempo real (17/09).
 | B | `…\r15-bloco-b` | `r15/bloco-b` | `127.0.0.1:3015` | `9415` | `%TEMP%\coelo-r15-b-chrome` | `Coelo-backups/mirror-r15-b` (`project_id coelo_mirror_r15_b`, portas `622xx`) | `R15-handoff-bloco-b.md` | `…/r15-bloco-b/` |
 | C1 | `…\r15-bloco-c1` | `r15/bloco-c1` | `127.0.0.1:3016` | `9416` | `%TEMP%\coelo-r15-c1-chrome` | `Coelo-backups/mirror-r15-c1` (`coelo_mirror_r15_c1`, portas `623xx`) | `R15-handoff-bloco-c1.md` | `…/r15-bloco-c1/` |
 | C2 | `…\r15-bloco-c2` | `r15/bloco-c2` | `127.0.0.1:3017` | `9417` | `%TEMP%\coelo-r15-c2-chrome` | `Coelo-backups/mirror-r15-c2` (`coelo_mirror_r15_c2`, portas `624xx`) | `R15-handoff-bloco-c2.md` | `…/r15-bloco-c2/` |
+| B′ (apoio ao B; Prompt B′ acrescentado pelo Owner em 17/09, `1d941e5d1`) | `…\r15-bloco-b-apoio` | `r15/bloco-b-apoio` | `127.0.0.1:3018` | `9418` | `%TEMP%\coelo-r15-b-apoio-chrome` | `Coelo-backups/mirror-r15-b-apoio` (`coelo_mirror_r15_b_apoio`, portas `625xx`) | `R15-apoio-bloco-b.md` (saída; pedidos `AP-<n>` vivem em `R15-handoff-bloco-b.md`) | `…/r15-bloco-b-apoio/` |
+
+A worktree `r15-bloco-b-apoio` já existia em `1d941e5d1` quando a coordenadora
+foi criá-la (aberta pela sessão do Owner que acrescentou o Prompt B′); a
+coordenadora só copiou `.env.local` e o vínculo do CLI para dentro dela.
+A sessão B′ não tem fila própria: atende pedidos `AP-<n>` registrados pelo
+Bloco B na seção `## Pedidos de apoio` do handoff B e responde em
+`R15-apoio-bloco-b.md` (passo a passo, commit para cherry-pick ou "assumo a
+fatia"). Como o Owner não acompanha em tempo real em 17/09, a **coordenadora**
+faz o relé: lê o handoff B, aciona a B′ com o pedido e devolve a resposta ao B.
 
 - `apps/superadmin/.env.local` (URL + chave pública) e o vínculo do CLI
   (`packages/coelo_database/supabase/.temp`, ignorado pelo Git) foram copiados

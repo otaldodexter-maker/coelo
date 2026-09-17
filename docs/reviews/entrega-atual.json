@@ -1,6 +1,6 @@
 {
   "schema": "r14-current-delivery-report-v1",
-  "generatedAt": "2026-09-16",
+  "generatedAt": "2026-09-17",
   "reportType": "current-cut-reconciliation",
   "completion": "partial",
   "asOf": {
@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "88edcde5c751ead260160295fd895867f935db23",
+    "head": "1d941e5d1498357de154ec196d4bd9fc015d5f10",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -28,8 +28,8 @@
   "currentQueue": {
     "scope": "R15 vigente (ADR 0042); R16 não aberta",
     "ownerTotal": 53,
-    "ownerPendingCount": 38,
-    "ownerDoneCount": 15,
+    "ownerPendingCount": 32,
+    "ownerDoneCount": 21,
     "inheritedOriginIds": [
       "H02",
       "H03",
@@ -63,31 +63,29 @@
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
-        "local-green": 13,
-        "pending-verification": 33,
-        "verified": 186
+        "local-green": 12,
+        "pending-verification": 31,
+        "verified": 189
       },
       "backend": {
         "blocked-decision": 2,
-        "deferred-post-mvp": 29,
-        "done": 168,
-        "gate-formal-mvp": 3,
-        "local-green": 11,
-        "not-applicable": 7,
-        "pending-verification": 11,
+        "deferred-post-mvp": 33,
+        "done": 172,
+        "local-green": 8,
+        "not-applicable": 13,
+        "pending-verification": 3,
         "remote-green": 1
       },
       "integrated": {
         "blocked-backend": 1,
         "blocked-environment": 1,
-        "deferred-post-mvp": 29,
-        "flutter-only": 7,
-        "gate-formal-mvp": 3,
-        "pending-verification": 32,
-        "verified-e2e": 159
+        "deferred-post-mvp": 33,
+        "flutter-only": 13,
+        "pending-verification": 22,
+        "verified-e2e": 162
       }
     },
-    "deferredPostMvpActionCount": 29,
+    "deferredPostMvpActionCount": 33,
     "excludedCompletedOwnerIds": [
       "owner.r12-07",
       "owner.r12-41",
@@ -95,11 +93,17 @@
     ],
     "completedInR14OrPriorOwnerIds": [
       "owner.r12-03",
+      "owner.r12-09",
+      "owner.r12-11",
       "owner.r12-12",
       "owner.r12-14",
       "owner.r12-28",
       "owner.r12-31",
       "owner.r12-32",
+      "owner.r12-34",
+      "owner.r12-35",
+      "owner.r12-36",
+      "owner.r12-37",
       "owner.r12-42",
       "owner.r12-44",
       "owner.r12-45",
@@ -114,7 +118,7 @@
     "backendDone": "172/219 (78.54%)",
     "backendLocalGreen": "8/219 (3.65%)",
     "e2eVerified": "162/186 (87.10%)",
-    "e2ePlusFlutterOnly": "174/232 (75.00%)",
+    "e2ePlusFlutterOnly": "175/232 (75.43%)",
     "ownerDone": "21/53 (39.62%)",
     "ownerNonTerminal": "32/53 (60.38%)"
   },
@@ -130,9 +134,9 @@
       "be": "Sem SQL/RPC novo nesta fatia; o efeito de Arquivar/Restaurar depende da fatia B1 (owner.r12-02).",
       "e2e": "Pendente: rota real (captura 1440 + reload).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Capturar na rota real quando o PostgREST voltar; B1 (r12-02) dá efeito a Arquivar/Restaurar.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-02",
@@ -145,9 +149,9 @@
       "be": "BE local-green (espelho): spec 054 + migration `20260916193000_archive_models_v1` (RPCs `superadmin_activity_template_archive_v1/_restore_v1/_directory_v1`, `superadmin_routine_model_archive_v1/_restore_v1`, diretório de Rotina exclui arquivados por padrão; PT409, recibo, auditoria, RLS deny-by-default) + pgTAP 63/63; **não aplicada em produção**.",
       "e2e": "Pendente: aplicação em produção pelo rito e rota real dos dois diretórios (Arquivar, Restaurar, filtro, reload, negativa).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Coordenadora: aplicar `20260916183000` pelo rito (espelho verde, dump prévio, dry-run, ledger, lote) e provar na rota real; depois delta FE/BE/E2E. Restaurar de rotinas aplicadas fica para a spec de ciclo de vida (R15).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-03",
@@ -161,7 +165,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): abas \"Modelos de atividade\"/\"Atividades\", busca, filtros, cards/tabela, status, paginação e reload com dados reais; negativa por id inexistente e escopo pgTAP.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-04",
@@ -174,9 +178,9 @@
       "be": "BE local-green: `20260916180000_attendance_call_history_v1` (leitor por cursor com escopo do painel, só agregados) + pgTAP 44/44 no espelho; NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, rota real autenticada, reload e negativa cross-tenant (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Aplicar `20260916180000` pelo rito (espelho verde) após o fim do incidente; provar `/attendance/history` com `qa-r06-operacoes`, reload e negativa; decidir se Publicar lançamento fica no Histórico ou volta a Rotinas (spec 052 §3).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-05",
@@ -188,9 +192,9 @@
       "be": "BE done; `superadmin_attendance_context_options` devolve a única atividade elegível (95b98978) com escopo 190dd028/f5284f2f/4214106c ausente das listas institutions/units/groups — inconsistência de escopo na RPC ou de massa.",
       "e2e": "verified-e2e de attendance.create com contexto Turma; contexto Atividade não exercitável. Bloqueio isolado confirmado em `14f6facab`.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 D3: autorizada migration forward-only alinhando escopo de activities ao de groups em superadmin_attendance_context_options (espelho + pgTAP antes); depois provar seleção, criação, reload e negativa do contexto Atividade.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-06",
@@ -203,9 +207,9 @@
       "be": "BE local-green: `20260916183000_attendance_routine_snapshot_v1` (colunas de snapshot, `attendance_effective_routine`, complete_call grava só na primeira conclusão, call_detail expõe routine_snapshot/routine_current/routine_source, histórico projeta a rotina, 40001 → PT409 na família) + pgTAP 43/43 no espelho; NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, concluir/reabrir chamada real, reload do detalhe e negativa 409 PT409 (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Aplicar `20260916183000` pelo rito após `20260916180000` e o fim do incidente; provar na rota real: concluir grava snapshot, reabrir/concluir preserva, legado mostra a indicação; negativa de versão defasada responde 409 PT409.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-07",
@@ -221,7 +225,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-08",
@@ -236,9 +240,9 @@
       "be": "Contratos preservados; set_participant v2 e complete_call v3 em produção.",
       "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 D6: Owner não autoriza massa fictícia agora; prova com ≥2 alunos fica para depois. Bloqueado por decisão, não por ambiente.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-09",
@@ -250,9 +254,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: Owner aprovou o card atual sem campo alerta/restrição (ADR 0041 B4).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-10",
@@ -264,9 +268,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pendente: rota real da tabela e revisão contra a Table canônica.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Revisar a tabela do diretório contra a Table canônica e capturar na rota real quando o PostgREST voltar; golden não certifica aceite.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-11",
@@ -276,9 +280,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Visual golden pendente de reconciliação; sem action_id novo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-12",
@@ -292,7 +296,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela distingue \"Aprovado · Suspensa\" e mantém validade com dados reais; reload e negativa P0002. Golden 1440 permanece em r12-10.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-13",
@@ -305,9 +309,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Visual/E2E pendente para referência, rota normal, escopo e reload.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504 de child_safety_change_lifecycle; depois provar create/edit pela rota normal.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-14",
@@ -321,7 +325,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): mother/father reais exibidos como Mãe/Pai na tabela e no diálogo, em pt-BR, com dados de produção.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-15",
@@ -335,9 +339,9 @@
       "be": "BE: child_safety_change_lifecycle responde 504 (timeout) em produção — bloqueio para Sessão 2 (SQL/espelho).",
       "e2e": "child verified-e2e; suspend blocked-backend; estados pendente e aprovado-ativo não exercitados.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504; depois criar autorização, aprovar e suspender pela tela para fechar r12-15/13/16.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-16",
@@ -349,9 +353,9 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pending-verification de rota normal e escopo.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 D4: depende do 504; depois provar teclado/rota normal sem salto e sem perda de dados.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-17",
@@ -364,9 +368,9 @@
       "be": "Sem alteração backend; não criar busca fake.",
       "e2e": "Contract decision pending.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 B5: leitor de busca único (nome/@/e-mail ≥3, celular ≥4, CPF ≥6 dígitos, com ou sem máscara), escopo do ator, auditoria, limite de taxa, resultado minimizado sem CPF; responsável lista crianças vinculadas do escopo. Contrato aprovado; implementar BE + FE.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-18",
@@ -378,9 +382,9 @@
       "be": "Nenhuma tabela/RPC criada.",
       "e2e": "Contract decision pending.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 B6: pessoa sem conta com CPF obrigatório, documento + imagem (R2 privado) no MVP, celular/e-mail; autorizada só no contexto pedido; pode virar conta depois. Cadastro só após a busca B5 não encontrar.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-19",
@@ -390,9 +394,9 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-20",
@@ -404,9 +408,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification: negativa de escopo só por id inexistente/capability inválida (perfis Superadmin não têm tenant).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Conferir rolagem da terceira linha de cards em viewport baixo (não rolou por CDP) e registrar a negativa aceita; Owner decide se \"Vínculos 0\" (platform_memberships) é a métrica certa para usuários internos.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-21",
@@ -418,9 +422,9 @@
       "be": "BE inalterado; catálogo devolve rótulos em inglês e `CardÃ¡pios` (resíduo).",
       "e2e": "E2E pending-verification (detalhe bloqueado por PGRST003).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Abrir /profiles/platform/281699f2… no build 63ec6e973, capturar detalhe traduzido e reload.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-22",
@@ -433,9 +437,9 @@
       "be": "BE done (create).",
       "e2e": "E2E verified-e2e para create (S5 16/09); edição bloqueada por PGRST003.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Provar edição pela rota normal (renomear/alterar permissão), persistência/reload.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-23",
@@ -447,9 +451,9 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-24",
@@ -462,9 +466,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Capturar tooltip por foco no build 63ec6e973 na rota real de edição.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-25",
@@ -477,9 +481,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Capturar ~600 px (Emulation.setDeviceMetricsOverride) na rota real e persistência/reload.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-26",
@@ -491,9 +495,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 C4: Owner aceitou a prova de FE em teste; captura na rota real entra junto do lote de Perfis (sessão QA D7).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-27",
@@ -506,9 +510,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Salvar/reload na edição sem perder permissões; capturar revisão com › no build 63ec6e973.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-28",
@@ -522,7 +526,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): edição com o nome real da criança (correção 165d3df8c), sinal salvo (version 1→2) e relido após reload.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-29",
@@ -536,9 +540,9 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-30",
@@ -552,9 +556,9 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-31",
@@ -569,7 +573,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): criação Paracetamol R13 (10 ml, oral, vigência, 08:00, Seg/Qua) e edição da dose 5→7 ml da Dipirona R06, persistidas e relidas. Responsável depende de owner.r12-33 (R14).",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-32",
@@ -586,7 +590,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): diretório lista os planos reais por criança com contexto explícito; detalhe/criação/edição provados e relidos.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-33",
@@ -600,9 +604,9 @@
       "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, editar plano e registrar dose reais e observar o sino com identidade da unidade/educador (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Aplicar `20260916190000` pelo rito após o incidente; provar o sino na rota real com duas identidades (admin da unidade e educador da turma); sem e-mail/push.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-34",
@@ -615,9 +619,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2; imagem R2 segue em owner.r12-38.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-35",
@@ -630,9 +634,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-36",
@@ -646,9 +650,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-37",
@@ -661,9 +665,9 @@
       "be": "done",
       "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
-      "owner": "C0 R14",
+      "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 16/09: aceite do Owner (ADR 0041 A1) sobre a prova da Sessão 2.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-38",
@@ -678,9 +682,9 @@
       "be": "Adapter composto ainda usa Supabase Storage em upload/leitura, incompatível com R2 privado.",
       "e2e": "E2E não executado.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "C0 migrar SupabaseMealPlanImageRepository e contratos de vínculo para Media Gateway R2; depois habilitar composição e provar upload/reload/escopo. Não é apenas flag.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-39",
@@ -693,9 +697,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Provar save/reload e posição final pela rota normal.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-40",
@@ -708,9 +712,9 @@
       "be": "BE inalterado.",
       "e2e": "E2E pending-verification.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Provar persistência/reload e nome na prévia pela rota normal.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-41",
@@ -724,7 +728,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-42",
@@ -738,7 +742,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/agenda-request-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela canônica, decisão aprovar/recusar com justificativa, histórico em diálogo, reload e negativa; defeito de rótulos pós-decisão corrigido (teste vermelho→verde). Golden de calendário loading dark 375 fica fora deste action_id.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-43",
@@ -752,7 +756,7 @@
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Ajuste visual entregue; não refazer",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-44",
@@ -766,7 +770,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): tabela-only, busca/filtros/paginação/Novo convite/ações por linha, reload; convite real expirado e renovado na mesma tabela.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-45",
@@ -780,7 +784,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 15/09 (rota real, Sessão 1): convite expirado real (emitido com 1 h por RPC autorizada), reenviado uma vez pela tela, link de uso único (mascarado), reload e negativas SAI_INVALID_ARGUMENT/SAI_CONCURRENT_CHANGE; sem SMTP.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-46",
@@ -792,9 +796,9 @@
       "be": "BE remote-green (lote 63): sigla/cor/celular em produção; foto R2 ausente.",
       "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. A confirmação deve atualizar também o avatar global do cabeçalho; rascunho local não pode aparentar sucesso quando o servidor não confirmou. O Celular permanece obrigatório e precisa de máscara/formato de entrada, normalização e prova de valor inválido/válido. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-47",
@@ -807,9 +811,9 @@
       "be": "Sem mensagem real na caixa acessível; SMTP próprio ausente e redirect local3000 fora da allowlist.",
       "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Transferido para Etapa 3 pela ADR 0039; não executar na R14. Quando aberto, obter acesso/configuração de caixa/SMTP/redirect e provar link real, nova senha/sessão, expiração e uso único; preservar credencial QA privada.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-48",
@@ -824,7 +828,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): rascunho b04c879e carregado e salvo pela tela (version 2→3), reload relê, negativa por id inexistente; activities.publish já era done. Capturas em r13-coordenacao/capturas.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-49",
@@ -840,9 +844,9 @@
       "be": "BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green.",
       "e2e": "verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-50",
@@ -856,7 +860,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Concluído 14/09 (rota real): /groups com Alunos 1 e Atividades 3 na turma 4214106c, busca \"R05\" (hotfix lote 64), reload mantém, negativa por instituição alheia. Capturas em r13-coordenacao/capturas.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-51",
@@ -868,7 +872,7 @@
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
       "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-52",
@@ -880,9 +884,9 @@
       "be": "Sem mudança backend; R2 privado, ownership e autorização existentes preservados.",
       "e2e": "Pending-verification: faltam rota normal, mídia R2/MP4 real, reload e negativa cross-tenant.",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Abrir rota normal QA, provar mídia privada real, reload e negativa cross-tenant; não promover por fixture.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-53",
@@ -892,25 +896,67 @@
       "be": "Não iniciado.",
       "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
-      "owner": "C0 R14",
+      "owner": "C0 R15",
       "nextGate": "Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema.",
-      "sourceRound": "R14"
+      "sourceRound": "R15"
     }
   ],
   "formalActions": [
     {
+      "id": "account.mfa",
+      "status": "deferred",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "agora.create",
+      "status": "done",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
+    },
+    {
+      "id": "agora.expire",
+      "status": "open",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "E2E: expiracao de 24 h reais observada pela tela apos publicacao; BE done."
+    },
+    {
+      "id": "agora.publish",
+      "status": "open",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "E2E: leitor responsavel na audiencia Familias nao existe no QA (D6); provar quando houver massa autorizada."
+    },
+    {
       "id": "agora.remove",
       "status": "open",
       "owner": "Owner/C0/E",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
-      "nextGate": "Aplicar projecao management_version/can_remove pelo rito, provar remocao pela tela e negativa D5; so entao promover."
+      "evidence": "decisions/0040-agora-immediate-removal.md",
+      "nextGate": "Implementar e provar agora.remove em produção; só então promover o action_id no inventário."
     },
     {
-      "id": "institutions.files",
+      "id": "agora.view",
+      "status": "done",
+      "owner": "Sessao 7 / C0",
+      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
+    },
+    {
+      "id": "auth.mfa",
       "status": "deferred",
-      "owner": "Owner (ADR 0041 A4)",
-      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
-      "nextGate": "Fora do MVP: flyout permanece e avisa 'em desenvolvimento'; reabrir só por decisão do Owner."
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "auth.recover",
+      "status": "open",
+      "owner": "Owner (ADR 0042)",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+      "nextGate": "BE done 16/09 (entrega real); E2E pela tela no Bloco A (E8)."
     },
     {
       "id": "errors.403",
@@ -955,46 +1001,11 @@
       "nextGate": "flutter-only: FE verificado; sem prova de backend por decisão do Owner."
     },
     {
-      "id": "agora.create",
-      "status": "done",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
-    },
-    {
-      "id": "agora.view",
-      "status": "done",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
-    },
-    {
-      "id": "agora.publish",
-      "status": "open",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "E2E: leitor responsavel na audiencia Familias nao existe no QA (D6); provar quando houver massa autorizada."
-    },
-    {
-      "id": "agora.expire",
-      "status": "open",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "E2E: expiracao de 24 h reais observada pela tela apos publicacao; BE done."
-    },
-    {
-      "id": "auth.mfa",
+      "id": "institutions.files",
       "status": "deferred",
-      "owner": "Owner (ADR 0042)",
-      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-      "nextGate": "ADR 0042 E9: MFA fora do MVP."
-    },
-    {
-      "id": "account.mfa",
-      "status": "deferred",
-      "owner": "Owner (ADR 0042)",
-      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-      "nextGate": "ADR 0042 E9: MFA fora do MVP."
+      "owner": "Owner (ADR 0041 A4)",
+      "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+      "nextGate": "Fora do MVP: flyout permanece e avisa 'em desenvolvimento'; reabrir só por decisão do Owner."
     },
     {
       "id": "internal-users.mfa",
@@ -1002,47 +1013,76 @@
       "owner": "Owner (ADR 0042)",
       "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
       "nextGate": "ADR 0042 E9: MFA fora do MVP."
-    },
-    {
-      "id": "auth.recover",
-      "status": "open",
-      "owner": "Owner (ADR 0042)",
-      "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-      "nextGate": "BE done 16/09 (entrega real); E2E pela tela no Bloco A (E8)."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-acessos-instituicoes": {
-      "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-formularios-chat": {
-      "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/acessos-instituicoes",
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-agora-momentos": {
-      "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-seguranca-assiduidade": {
-      "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-visual-arquivar": {
-      "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/agora-momentos",
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-assiduidade-historico": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/assiduidade-historico",
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-formularios-chat": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/formularios-chat",
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-seguranca-assiduidade": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/seguranca-assiduidade",
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r14-visual-arquivar": {
+      "disposition": "retained-active-r14",
+      "reason": "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; protegida até a disposição registrada no fechamento da R15.",
+      "branch": "r14/visual-arquivar",
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-a": {
       "disposition": "retained-session",
-      "reason": "Worktree da segunda onda R14 (16/09); integrada em dev por cherry-pick e preservada para retomada das fatias bloqueadas pelo incidente do PostgREST.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+      "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
+      "branch": "r15/bloco-a",
+      "sha": "1d941e5d1498357de154ec196d4bd9fc015d5f10"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b": {
+      "disposition": "retained-session",
+      "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
+      "branch": "r15/bloco-b",
+      "sha": "b98299d1304e43409111b086c7f1436dd51ff29b"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-b-apoio": {
+      "disposition": "retained-session",
+      "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
+      "branch": "r15/bloco-b-apoio",
+      "sha": "1d941e5d1498357de154ec196d4bd9fc015d5f10"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c1": {
+      "disposition": "retained-session",
+      "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
+      "branch": "r15/bloco-c1",
+      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b"
+    },
+    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c2": {
+      "disposition": "retained-session",
+      "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
+      "branch": "r15/bloco-c2",
+      "sha": "1d941e5d1498357de154ec196d4bd9fc015d5f10"
     }
   },
   "preservedStash": {},
@@ -1454,6 +1494,45 @@
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
     },
+    "r14/acessos-instituicoes": {
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
+      "exclusive": [
+        "b271d178b7e3933e98fd632d422a8a5719c510e6",
+        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
+        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
+        "89be705fa76ac0765ba5f3a07493006c0f68b713"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "r14/agora-momentos": {
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+      "exclusive": [
+        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
+        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
+        "cf8139e8c844d13326507cdb23c70dc54453b011"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "r14/assiduidade-historico": {
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+      "exclusive": [
+        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
+        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
+        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
     "r14/bloco-c": {
       "sha": "8e2f89f4f46c75ec5b91f300049d761ee3740e95",
       "exclusive": [
@@ -1507,6 +1586,53 @@
       "disposition": "retained-review",
       "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "r14/formularios-chat": {
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+      "exclusive": [
+        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "r14/seguranca-assiduidade": {
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+      "exclusive": [
+        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+        "bf606665563160fe7b44db951b8e9b122f601f7e",
+        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "r14/visual-arquivar": {
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+      "exclusive": [
+        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+        "dd72abb8873c274db848fb57d41f40dc18b21520",
+        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
+        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "r15/bloco-c1": {
+      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+      "exclusive": [
+        "4d98ce26ea995451d274d11a7a4123727aef137b"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "owner": "C0",
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
@@ -2021,6 +2147,45 @@
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c"
     },
+    "origin/r14/acessos-instituicoes": {
+      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
+      "exclusive": [
+        "b271d178b7e3933e98fd632d422a8a5719c510e6",
+        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
+        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
+        "89be705fa76ac0765ba5f3a07493006c0f68b713"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "origin/r14/agora-momentos": {
+      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+      "exclusive": [
+        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
+        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
+        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
+        "cf8139e8c844d13326507cdb23c70dc54453b011"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "origin/r14/assiduidade-historico": {
+      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+      "exclusive": [
+        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
+        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
+        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
+        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
     "origin/r14/bloco-cd": {
       "sha": "b135c8f20b15323473c9e13b83469aee92f1ea22",
       "exclusive": [
@@ -2062,6 +2227,53 @@
       "disposition": "retained-review",
       "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "owner": "C0",
+      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+    },
+    "origin/r14/formularios-chat": {
+      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+      "exclusive": [
+        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
+        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "origin/r14/seguranca-assiduidade": {
+      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+      "exclusive": [
+        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
+        "bf606665563160fe7b44db951b8e9b122f601f7e",
+        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "origin/r14/visual-arquivar": {
+      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+      "exclusive": [
+        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
+        "dd72abb8873c274db848fb57d41f40dc18b21520",
+        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
+        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
+      ],
+      "disposition": "patch-equivalent",
+      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa"
+    },
+    "origin/r15/bloco-c1": {
+      "sha": "4d98ce26ea995451d274d11a7a4123727aef137b",
+      "exclusive": [
+        "4d98ce26ea995451d274d11a7a4123727aef137b"
+      ],
+      "disposition": "retained-review",
+      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
       "owner": "C0",
       "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
     },
@@ -2168,160 +2380,11 @@
       "owner": "C0",
       "nextGate": "Compare exclusive patches with current successor and map missing delta to tracker",
       "successor": "b5a0fe8e7ff5f3d0022f6ff5f805557efa9a3e0c"
-    },
-    "r14/acessos-instituicoes": {
-      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
-      "exclusive": [
-        "b271d178b7e3933e98fd632d422a8a5719c510e6",
-        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
-        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
-        "89be705fa76ac0765ba5f3a07493006c0f68b713"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/acessos-instituicoes": {
-      "sha": "b271d178b7e3933e98fd632d422a8a5719c510e6",
-      "exclusive": [
-        "b271d178b7e3933e98fd632d422a8a5719c510e6",
-        "db269f4a01fd854cd8310e6bcf7e03dba704bf3b",
-        "63ec6e97303bd2aee163160c5ad9c242d95948ac",
-        "89be705fa76ac0765ba5f3a07493006c0f68b713"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "r14/formularios-chat": {
-      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
-      "exclusive": [
-        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
-        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/formularios-chat": {
-      "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
-      "exclusive": [
-        "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
-        "9820d5e3bce9a6e0c6edaeaa4ef998c7b2f068a8"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "r14/agora-momentos": {
-      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
-      "exclusive": [
-        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
-        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
-        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
-        "cf8139e8c844d13326507cdb23c70dc54453b011"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/agora-momentos": {
-      "sha": "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
-      "exclusive": [
-        "e177d8107f0f6c4cc2b1025af651d4a4d105074f",
-        "72e1b2f79311c1c84b7a7b7474f77ddc0f15f105",
-        "d0cb90dd4f17d46e1eee33460bba3048614fafbf",
-        "cf8139e8c844d13326507cdb23c70dc54453b011"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "r14/seguranca-assiduidade": {
-      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
-      "exclusive": [
-        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
-        "bf606665563160fe7b44db951b8e9b122f601f7e",
-        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/seguranca-assiduidade": {
-      "sha": "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
-      "exclusive": [
-        "5572bc19b6aa1c5fe8a617fb98315cd78c8425fc",
-        "bf606665563160fe7b44db951b8e9b122f601f7e",
-        "cbd1c32ee161d42d25cdf534f75d9edec2d22ea8"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "r14/visual-arquivar": {
-      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
-      "exclusive": [
-        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
-        "dd72abb8873c274db848fb57d41f40dc18b21520",
-        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
-        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/visual-arquivar": {
-      "sha": "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
-      "exclusive": [
-        "e9233a924c3e0bd8ba45520d1ffb34b5a3ae1f4b",
-        "dd72abb8873c274db848fb57d41f40dc18b21520",
-        "d40eeaa75fec38d6de457ce0644a625d8aadde9c",
-        "cb7a2418ef3edc46da977ccc052ec5e14f8fedf5"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "r14/assiduidade-historico": {
-      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
-      "exclusive": [
-        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
-        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
-        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
-        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
-    },
-    "origin/r14/assiduidade-historico": {
-      "sha": "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
-      "exclusive": [
-        "fa0992d9881ae912ae8376077e7a1d06405cdf8d",
-        "f4b23455eb93e88cb9cbfc491108bed81f87489a",
-        "733ab527a0a036ade286927d6ab8acb3be8da7b0",
-        "1cdab7d5ca18cc23f368a4e590848bfbf4d02dcb"
-      ],
-      "disposition": "patch-equivalent",
-      "successor": "74040c4705bf5bd183dc9b4e40085d631c8b49fa",
-      "reason": "Commits integrados em dev por cherry-pick (809120367..74040c470); conteudo equivalente por patch.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
     }
   },
   "evidenceFiles": [
     "decisions/0040-agora-immediate-removal.md",
+    "decisions/0041-owner-decisions-r14-mesa-20260916.md",
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
@@ -2331,27 +2394,19 @@
     "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-    "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
     "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
     "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-pendencias.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-cards-grid-r12-20.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-detail-labels-r12-21.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/activity-model-actions-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-golden-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/daily-routine-history-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/forms-editor-r12-39-40.md",
     "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/activities-list-publish-20260915.md",
@@ -2359,42 +2414,18 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-1/invites-list-resend-20260915.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-context-r12.md",
-    "docs/reviews/evidence/etapa-2/r14-coordenacao/attendance-activity-blocked-20260915.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-create-routine-inline-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
-    "decisions/0041-owner-decisions-r14-mesa-20260916.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-remove-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-8/child-safety-lifecycle-504-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
-    "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
-    "specs/053-superadmin-medication-in-app-notifications.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-2/meal-plans-20260915.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "specs/054-archive-activity-routine-models.md",
-    "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
-    "decisions/0042-r14-closure-r15-opening-20260916.md",
-    "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
+    "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2637,20 +2668,26 @@
   "deployment": {
     "status": "pending",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
-    "reason": "Lotes 72/73 aplicados em producao pelo rito; migrations D3/D4 (20260916152000, 20260916154500) versionadas e pendentes de aplicacao por bloqueio de permissao do executor; incidente do PostgREST em aberto."
+    "reason": "Lote 74 aplicado em produção pelo rito em 16/09 (seis migrations R14; incidente do PostgREST encerrado). Sessões R15 aplicam lotes seguintes pelo rito e registram no ledger. O relatório não autoriza novo deploy por si só."
   },
   "r14Status": {
-    "round": "R14",
-    "status": "closed-2026-09-16",
-    "source": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+    "round": "R15",
+    "status": "active",
+    "source": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
     "completedOwnerItems": [
       "owner.r12-03",
       "owner.r12-07",
+      "owner.r12-09",
+      "owner.r12-11",
       "owner.r12-12",
       "owner.r12-14",
       "owner.r12-28",
       "owner.r12-31",
       "owner.r12-32",
+      "owner.r12-34",
+      "owner.r12-35",
+      "owner.r12-36",
+      "owner.r12-37",
       "owner.r12-41",
       "owner.r12-42",
       "owner.r12-43",
@@ -2667,9 +2704,7 @@
       "owner.r12-05",
       "owner.r12-06",
       "owner.r12-08",
-      "owner.r12-09",
       "owner.r12-10",
-      "owner.r12-11",
       "owner.r12-13",
       "owner.r12-15",
       "owner.r12-16",
@@ -2687,10 +2722,6 @@
       "owner.r12-29",
       "owner.r12-30",
       "owner.r12-33",
-      "owner.r12-34",
-      "owner.r12-35",
-      "owner.r12-36",
-      "owner.r12-37",
       "owner.r12-38",
       "owner.r12-39",
       "owner.r12-40",
@@ -2712,14 +2743,14 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "186/232 (80.17%)",
-      "frontendLocalGreen": "13/232 (5.60%)",
-      "backendDone": "168/225 (74.67%)",
-      "backendLocalGreen": "11/225 (4.89%)",
-      "e2eVerified": "159/193 (82.38%)",
-      "e2ePlusFlutterOnly": "166/232 (71.55%)",
-      "ownerDone": "15/53 (28.30%)",
-      "ownerNonTerminal": "38/53 (71.70%)"
+      "frontendVerified": "189/232 (81.47%)",
+      "frontendLocalGreen": "12/232 (5.17%)",
+      "backendDone": "172/219 (78.54%)",
+      "backendLocalGreen": "8/219 (3.65%)",
+      "e2eVerified": "162/186 (87.10%)",
+      "e2ePlusFlutterOnly": "175/232 (75.43%)",
+      "ownerDone": "21/53 (39.62%)",
+      "ownerNonTerminal": "32/53 (60.38%)"
     },
     "deployment": "none for this documentation reconciliation",
     "memory": "no-op"

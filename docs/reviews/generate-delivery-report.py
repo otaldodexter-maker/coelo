@@ -92,12 +92,26 @@ def current_protected_worktrees() -> dict:
             values[key] = value
         raw_path = values.get("worktree")
         branch = values.get("branch", "")
-        if not raw_path or not branch.startswith("refs/heads/r14/"):
+        if not raw_path or not (
+            branch.startswith("refs/heads/r14/") or branch.startswith("refs/heads/r15/")
+        ):
             continue
         path = str(Path(raw_path).resolve())
+        if branch.startswith("refs/heads/r15/"):
+            disposition = "retained-session"
+            reason = (
+                "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); "
+                "a coordenadora integra por cherry-pick; remover só com manifesto no fechamento."
+            )
+        else:
+            disposition = "retained-active-r14"
+            reason = (
+                "Worktree da segunda onda R14 (16/09), integrada em dev por cherry-pick; "
+                "protegida até a disposição registrada no fechamento da R15."
+            )
         result[path] = {
-            "disposition": "retained-active-r14",
-            "reason": "Worktree de sessão R14/R15; preservar até o fechamento e manifesto.",
+            "disposition": disposition,
+            "reason": reason,
             "branch": branch.removeprefix("refs/heads/"),
             "sha": values.get("HEAD", ""),
         }
@@ -193,7 +207,6 @@ def main() -> None:
     }
     evidence.update(item["evidence"] for item in owner_items)
     evidence.update(entry["evidence"] for entry in branches.values())
-    evidence = sorted(value for value in evidence if path_exists(value))
 
     actions = inventory["actions"]
     layers = inventory["layerCounts"]
@@ -202,6 +215,16 @@ def main() -> None:
         for action in actions
         if action.get("formalCommitment")
     ]
+    # Compromissos registrados à mão no relatório anterior (ações mudadas fora
+    # de Owner items, ex.: decisões A4/A5/E9) são preservados entre regenerações.
+    known = {entry["id"] for entry in formal_actions}
+    for entry in previous.get("formalActions", []):
+        if entry.get("id") and entry["id"] not in known:
+            formal_actions.append(entry)
+            known.add(entry["id"])
+    formal_actions.sort(key=lambda entry: entry["id"])
+    evidence.update(entry["evidence"] for entry in formal_actions if entry.get("evidence"))
+    evidence = sorted(value for value in evidence if path_exists(value))
 
     def count(field: str, value: str) -> int:
         return sum(1 for action in actions if action.get(field) == value)
@@ -262,7 +285,7 @@ def main() -> None:
             ],
         },
         "currentQueue": {
-            "scope": "R14 vigente; R15 não aberta",
+            "scope": "R15 vigente (ADR 0042); R16 não aberta",
             "ownerTotal": 53,
             "ownerPendingCount": len(pending),
             "ownerDoneCount": len(completed),
@@ -298,7 +321,7 @@ def main() -> None:
         "deployment": {
             "status": "pending",
             "evidence": CHECKPOINT,
-            "reason": "A Sessão D aplicou em produção as migrations de coleções de cuidado, OQ-031 e Account self; a Sessão E ainda tem deploy/prova produtiva de mídia em andamento. O relatório não autoriza novo deploy por si só.",
+            "reason": "Lote 74 aplicado em produção pelo rito em 16/09 (seis migrations R14; incidente do PostgREST encerrado). Sessões R15 aplicam lotes seguintes pelo rito e registram no ledger. O relatório não autoriza novo deploy por si só.",
         },
         "r14Status": {
             "round": "R15",
