@@ -39,9 +39,39 @@ worktree nem a branch do B; toda escrita em produção segue o rito e fica regis
 
 ## Pedidos atendidos
 
-Nenhum pedido recebido até 09:55 BRT de 17/09. `origin/r15/bloco-b` foi publicado às 09:4x
-(`6c2f02ee0`, fatia 1 OQ-047 entregue e aplicada em produção como lote 75) com `## Pedidos de apoio:
-Nenhum até agora`. A coordenadora faz o relé dos pedidos; esta seção recebe um `### AP-<n>` por pedido.
+`origin/r15/bloco-b` foi publicado às 09:4x (`6c2f02ee0`, fatia 1 OQ-047 → lote 75) sem pedidos; o AP-1
+chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10:2x BRT.
+
+### AP-1 — fixture pós-contas da massa `QA R15` (fatia 2) — entregue (b), aguardando a conta do Owner
+
+- **Causa observada** (dump pós-lote 75, texto das funções): a tela cria o responsável em `draft` sem
+  login; nenhuma função em `pg_proc` insere em `guardian_links`; só `superadmin_student_link` aceita
+  `child_unit_links` (`active` + `accepted_by/accepted_at`); a convenção R06 veda `insert em auth.users`.
+  Regras que a fixture respeita: `validate_guardian_link` (adulto/criança), `normalize_guardian_relationship`
+  (tipo `other`), `validate_guardian_context_permission` (mesma criança), `child_unit_links_acceptance_check`,
+  `guard_person_auth_link_internal_realm` (`23505` para conta interna), índices únicos de `person_auth_links`.
+  Dois requisitos que o pedido não citava e a fixture cobre: `child_care_notification_recipients_v1` (sino,
+  E7) e `list_my_principal_contexts` exigem `person.status='active'` → o responsável sai de `draft`;
+  `now_viewer_role_class` (Agora, audiência Famílias) exige `can_view` ativo + unidade/turma ativas → com a
+  fixture responde `guardian`. Fora: `guardian_context_permission_grants` (capacidades do Principal nascem
+  de Perfis de acesso › Atribuir; não são exigidas por Agora, sino, B5/B6).
+- **Entrega (b)** — commit em `r15/bloco-b-apoio` para `git cherry-pick` (SHA no aviso à coordenadora e
+  na tabela abaixo): `packages/coelo_database/migrations/20260917110000_qa_r15_guardian_fixture_v1.sql`
+  cria `app_private.seed_qa_r15_guardian_fixture_v1(p_email default 'qa-r15-responsavel@coelo.me', …)`
+  com os defaults da massa de produção, sem grant a `anon/authenticated/service_role`, fail-closed (conta
+  ausente `P0002 qa_auth_user_missing`, conta interna, pessoa/contexto sem prefixo `QA R15`, tenant fora de
+  `qa-r04-*`), idempotente por e-mail; a migration **não executa** a função. pgTAP
+  `supabase/tests/qa_r15_guardian_fixture_v1_test.sql` **22/22** no meu espelho (dump `66f8bacc`);
+  migration aplicada 2× sem erro; execução descartável: 1ª chamada cria 1 vínculo de conta, ativa a pessoa,
+  2 `guardian_links`, 2 permissões `can_view`, 2 aceites; 2ª chamada relata tudo como existente.
+  Evidência: `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/ap-1-fixture-qa-r15-20260917.md`.
+- **O que falta ao B** (depois de o Owner criar `qa-r15-responsavel@coelo.me`): `git fetch origin && git
+  cherry-pick <sha>`; rito: dump prévio → `Sync-SupabaseCliMigrations.ps1 -Mode Clean` → `supabase db query
+  --linked --workdir packages/coelo_database -f migrations/20260917110000_qa_r15_guardian_fixture_v1.sql` →
+  `migration repair --status applied 20260917110000 --linked` → `migration list --linked` → executar a
+  fixture como `postgres` (`select app_private.seed_qa_r15_guardian_fixture_v1();` via `db query -f`, JSON de
+  retorno na evidência) → lote novo no ledger + aviso no handoff. Posso executar os passos 4–6 eu mesma se o
+  Owner/coordenadora preferir, com a ressalva do aviso 7 (classificador).
 
 ## Avisos para o Bloco B e para a coordenadora
 
@@ -76,6 +106,10 @@ Nenhum até agora`. A coordenadora faz o relé dos pedidos; esta seção recebe 
    papéis de sistema). No meu espelho, com a receita completa, `archive_models_v1` dá 63/63 (no dele,
    61/2) e `child_safety_lifecycle_timeout_fix_v1` 15/15. Se o B pedir (AP), rodo as suítes por família
    aqui e devolvo antes/depois; a receita está em `ferramentas/restaurar-espelho.sh`.
+7. **Classificador do executor nesta sessão**: às 10:2x BRT negou a B′ um `supabase db query --linked` de
+   leitura ("Production Reads"); o `db dump --linked` foi permitido. Logo a aplicação do AP-1 em produção
+   pode ficar com o B (que aplicou o lote 75 pelo mesmo comando) via cherry-pick; tento pelo rito se me
+   pedirem e, se negado, devolvo sem tentar contornar.
 6. **Asserção 8 de `pt409_stale_version_v1_test.sql` está calibrada no drift do espelho do B.** Rodada
    no meu espelho fiel (dump pós-lote 75): 36/37. Comparação mecânica `pt409_props` × `pg_proc`: 0
    diferenças em security definer, `search_path`, dono, volatilidade e retorno; **54 diferenças de ACL**,
@@ -95,4 +129,4 @@ Nenhuma pergunta pendente.
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
-| — | — | — | — | sem pedidos até 09:55 BRT (handoff B `6c2f02ee0`: "Nenhum até agora") |
+| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência, commit para cherry-pick | **entregue**; produção pendente da conta Auth (Owner) e do rito (B ou B′) |
