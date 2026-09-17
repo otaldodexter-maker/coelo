@@ -401,6 +401,10 @@ verify_jwt = true
 [functions.now-media]
 verify_jwt = true
 
+# Documento da pessoa autorizada sem conta (ADR 0041 B6, spec 062): prepare/finalize/read em R2 privado.
+[functions.child-safety-media]
+verify_jwt = true
+
 # The handler authenticates user requests and the cleanup worker independently.
 [functions.circular-media]
 verify_jwt = false
