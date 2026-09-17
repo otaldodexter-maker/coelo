@@ -14,6 +14,7 @@ import '../../../auth/domain/logout_action.dart';
 import '../../../people/domain/person_directory.dart';
 import '../../domain/chat_repository.dart';
 import '../widgets/superadmin_chat_attachment_tile.dart';
+import '../widgets/superadmin_chat_batch_upload_dialog.dart';
 import '../widgets/superadmin_chat_create_group_dialog.dart';
 import '../widgets/superadmin_chat_composer.dart';
 import '../widgets/superadmin_chat_upload_dialog.dart';
@@ -317,39 +318,56 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         _selected?.id == conversation.id;
     _pickingAttachment = true;
     try {
+      // Spec 058: gateways com lote aceitam vários arquivos numa mensagem; o
+      // gateway unitário (legado/fixtures) continua um arquivo por mensagem.
+      final batch = repository is ChatAttachmentBatchRepository;
       final files = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'pdf', 'mp4'],
         withData: true,
+        allowMultiple: batch,
       );
       if (!mounted || !isCurrent() || files == null || files.files.isEmpty) return;
-      final file = files.files.single;
-      final bytes = file.bytes;
-      if (bytes == null) throw const ChatAttachmentInvalidException();
-      final contentType = switch (file.extension?.toLowerCase()) {
-        'jpg' || 'jpeg' => 'image/jpeg',
-        'png' => 'image/png',
-        'webp' => 'image/webp',
-        'pdf' => 'application/pdf',
-        'mp4' => 'video/mp4',
-        _ => '',
-      };
-      final command = ChatAttachmentUpload(
-        conversationId: conversation.id,
-        requestId: _requestId(),
-        fileName: file.name,
-        contentType: contentType,
-        bytes: bytes,
-      );
-      command.validate();
+      final uploads = <ChatAttachmentUpload>[];
+      for (final file in batch ? files.files : [files.files.first]) {
+        final bytes = file.bytes;
+        if (bytes == null) throw const ChatAttachmentInvalidException();
+        final contentType = switch (file.extension?.toLowerCase()) {
+          'jpg' || 'jpeg' => 'image/jpeg',
+          'png' => 'image/png',
+          'webp' => 'image/webp',
+          'pdf' => 'application/pdf',
+          'mp4' => 'video/mp4',
+          _ => '',
+        };
+        final command = ChatAttachmentUpload(
+          conversationId: conversation.id,
+          requestId: _requestId(),
+          fileName: file.name,
+          contentType: contentType,
+          bytes: bytes,
+        );
+        command.validate();
+        uploads.add(command);
+      }
       final route = DialogRoute<String>(
         context: context,
         barrierDismissible: false,
-        builder: (_) => SuperadminChatUploadDialog(
-          repository: repository,
-          command: command,
-          isContextCurrent: isCurrent,
-        ),
+        builder: (_) => repository is ChatAttachmentBatchRepository
+            ? SuperadminChatBatchUploadDialog(
+                repository: repository,
+                command: ChatAttachmentBatchUpload(
+                  conversationId: conversation.id,
+                  requestId: _requestId(),
+                  items: uploads,
+                ),
+                isContextCurrent: isCurrent,
+              )
+            : SuperadminChatUploadDialog(
+                repository: repository,
+                command: uploads.single,
+                isContextCurrent: isCurrent,
+              ),
       );
       _uploadRoute = route;
       final sent = await Navigator.of(context).push(route);
@@ -363,7 +381,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
       setState(() => _thread = thread);
       unawaited(_loadInbox(preserveSelection: true, silent: true));
     } on ChatAttachmentInvalidException {
-      if (isCurrent()) _showNotice('Use uma imagem de até 4 MB, PDF ou vídeo MP4 de até 10 MB.');
+      if (isCurrent()) _showNotice('Use imagens de até 4 MB, PDF ou vídeo MP4 de até 10 MB.');
     } on ChatUnauthorizedException catch (error) {
       if (isCurrent()) _denyAccess(error);
     } catch (_) {

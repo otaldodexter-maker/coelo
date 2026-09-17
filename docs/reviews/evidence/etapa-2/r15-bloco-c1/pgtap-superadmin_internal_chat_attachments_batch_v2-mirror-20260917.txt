@@ -1,0 +1,394 @@
+BEGIN
+psql:/tmp/t3.sql:5: NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+-------
+ 1..51
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+CREATE TABLE
+GRANT
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+CREATE FUNCTION
+GRANT
+                                   ok
+-------------------------------------------------------------------------
+ ok 1 - authenticated prepara/descarta; service_role finaliza; anon nada
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 2 - helpers privados sem grant a cliente
+(1 row)
+
+                            is
+----------------------------------------------------------
+ ok 3 - CHAT_ATTACHMENT_DISCARD_INVALID e 409 no envelope
+(1 row)
+
+ as_owner_a
+------------
+
+(1 row)
+
+INSERT 0 1
+SELECT 1
+GRANT
+         is
+---------------------
+ ok 4 - grupo criado
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                        is
+--------------------------------------------------
+ ok 5 - lote de 3 aceito pelo papel authenticated
+(1 row)
+
+SELECT 3
+GRANT
+             is
+----------------------------
+ ok 6 - 3 itens no envelope
+(1 row)
+
+                      is
+----------------------------------------------
+ ok 7 - os 3 anexos apontam para UMA mensagem
+(1 row)
+
+                is
+----------------------------------
+ ok 8 - a mensagem nasce em draft
+(1 row)
+
+                    is
+------------------------------------------
+ ok 9 - sem legenda, o corpo e "N anexos"
+(1 row)
+
+                            ok
+----------------------------------------------------------
+ ok 10 - object_key opaco por anexo no tenant da conversa
+(1 row)
+
+                  is
+--------------------------------------
+ ok 11 - um finalize_ticket por anexo
+(1 row)
+
+                                  is
+----------------------------------------------------------------------
+ ok 12 - request_id por item derivado (uuid v5) do request_id do lote
+(1 row)
+
+                      is
+-----------------------------------------------
+ ok 13 - envelope informa message_status draft
+(1 row)
+
+                    is
+------------------------------------------
+ ok 14 - itens indexados na ordem enviada
+(1 row)
+
+INSERT 0 1
+                      is
+-----------------------------------------------
+ ok 15 - thread nao mostra a mensagem em draft
+(1 row)
+
+INSERT 0 1
+                                         ok
+------------------------------------------------------------------------------------
+ ok 16 - mesmo request_id e mesmo lote devolvem a mesma mensagem e os mesmos anexos
+(1 row)
+
+                  is
+---------------------------------------
+ ok 17 - replay nao cria mensagem nova
+(1 row)
+
+INSERT 0 1
+                           is
+--------------------------------------------------------
+ ok 18 - mesmo request_id com lote diferente e recusado
+(1 row)
+
+INSERT 0 1
+                          ok
+-------------------------------------------------------
+ ok 19 - 11o anexo do lote e CHAT_ATTACHMENT_LIMIT 422
+(1 row)
+
+                         is
+----------------------------------------------------
+ ok 20 - lote recusado nao cria mensagem nem anexos
+(1 row)
+
+INSERT 0 1
+                            is
+-----------------------------------------------------------
+ ok 21 - 3 pendentes + lote de 8 estoura o teto do lote 67
+(1 row)
+
+INSERT 0 1
+                                 ok
+---------------------------------------------------------------------
+ ok 22 - 3 pendentes + lote de 7 = 10 e aceito, com legenda no corpo
+(1 row)
+
+INSERT 0 3
+                                  ok
+----------------------------------------------------------------------
+ ok 23 - lote vazio, nao-array e legenda >4000 sao CHAT_INVALID_INPUT
+(1 row)
+
+INSERT 0 3
+                                       ok
+---------------------------------------------------------------------------------
+ ok 24 - um item invalido derruba o lote inteiro com CHAT_ATTACHMENT_INVALID 422
+(1 row)
+
+ as_owner_b
+------------
+
+(1 row)
+
+INSERT 0 3
+                                           ok
+-----------------------------------------------------------------------------------------
+ ok 25 - outro tenant: prepare_v2, discard e authorize_finalize respondem CHAT_NOT_FOUND
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 26 - negativa cross-tenant nao muta o anexo
+(1 row)
+
+SET
+                  throws_like
+-----------------------------------------------
+ ok 27 - authenticated nao executa finalize_v2
+(1 row)
+
+RESET
+ as_service
+------------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                                                ok
+--------------------------------------------------------------------------------------------------
+ ok 28 - primeiro anexo ready: mensagem continua draft (irmaos pendentes) e o envelope lista os 3
+(1 row)
+
+                        is
+---------------------------------------------------
+ ok 29 - mensagem segue draft com irmaos pendentes
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+RESET
+                        is
+--------------------------------------------------
+ ok 30 - sha diferente e CHAT_ATTACHMENT_MISMATCH
+(1 row)
+
+                   is
+----------------------------------------
+ ok 31 - anexo com mismatch vira failed
+(1 row)
+
+                         is
+-----------------------------------------------------
+ ok 32 - mismatch de um irmao NAO arquiva a mensagem
+(1 row)
+
+                        is
+--------------------------------------------------
+ ok 33 - ticket de finalizacao nao e reutilizavel
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                                   ok
+-------------------------------------------------------------------------
+ ok 34 - todos terminaram mas um falhou: mensagem espera o autor (draft)
+(1 row)
+
+ as_owner_a
+------------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                                               ok
+------------------------------------------------------------------------------------------------
+ ok 35 - descartar o anexo falho publica a mensagem (active) e devolve object_key do descartado
+(1 row)
+
+                     is
+--------------------------------------------
+ ok 36 - mensagem publicada apos o descarte
+(1 row)
+
+INSERT 0 1
+                                              ok
+-----------------------------------------------------------------------------------------------
+ ok 37 - thread_v2 lista UMA mensagem com os 2 anexos ready (asset_id = id) e sem o descartado
+(1 row)
+
+SET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+RESET
+                       is
+------------------------------------------------
+ ok 38 - mensagem publicada nao aceita descarte
+(1 row)
+
+                             is
+-------------------------------------------------------------
+ ok 39 - authorize_read do anexo ready da mensagem publicada
+(1 row)
+
+                   is
+----------------------------------------
+ ok 40 - anexo descartado nao e legivel
+(1 row)
+
+ as_owner_b
+------------
+
+(1 row)
+
+INSERT 0 1
+                     is
+--------------------------------------------
+ ok 41 - outro tenant nao le o anexo pronto
+(1 row)
+
+ as_owner_a
+------------
+
+(1 row)
+
+INSERT 0 1
+SELECT 2
+GRANT
+SET
+INSERT 0 1
+INSERT 0 1
+INSERT 0 1
+RESET
+                                        ok
+----------------------------------------------------------------------------------
+ ok 42 - descartar o primeiro mantem draft; descartar o ultimo arquiva a mensagem
+(1 row)
+
+                        is
+---------------------------------------------------
+ ok 43 - ticket do anexo descartado esta consumido
+(1 row)
+
+INSERT 0 1
+SELECT 2
+GRANT
+ as_service
+------------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+UPDATE 1
+SET
+INSERT 0 1
+RESET
+                   is
+-----------------------------------------
+ ok 44 - expire marca o pendente vencido
+(1 row)
+
+                                             ok
+---------------------------------------------------------------------------------------------
+ ok 45 - irmao vencido vira failed e a mensagem com um ready continua draft (espera o autor)
+(1 row)
+
+ as_owner_a
+------------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                                is
+------------------------------------------------------------------
+ ok 46 - descartar o vencido publica a mensagem com o irmao ready
+(1 row)
+
+INSERT 0 1
+UPDATE 1
+ as_service
+------------
+
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                       is
+-------------------------------------------------
+ ok 47 - lote de 1 vencido sem ready e arquivado
+(1 row)
+
+                            ok
+-----------------------------------------------------------
+ ok 48 - prepare auditado por anexo (3+7+2+2+1 = 15 >= 12)
+(1 row)
+
+                      ok
+-----------------------------------------------
+ ok 49 - finalize sucesso e mismatch auditados
+(1 row)
+
+            ok
+--------------------------
+ ok 50 - discard auditado
+(1 row)
+
+                    ok
+------------------------------------------
+ ok 51 - negativas cross-tenant auditadas
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK

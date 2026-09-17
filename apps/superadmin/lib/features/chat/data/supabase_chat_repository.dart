@@ -11,7 +11,7 @@ import '../domain/chat_repository.dart';
 ///
 /// It never queries a chat table directly. Conversation ids from the client are
 /// passed only to RPCs that recompute the caller's authorised scope.
-final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepository {
+final class SupabaseChatRepository implements ChatRepository, ChatAttachmentBatchRepository {
   const SupabaseChatRepository(this._client, {http.Client? uploadClient})
     : _uploadClient = uploadClient;
 
@@ -87,6 +87,138 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
   }
 
   @override
+  Future<ChatAttachmentBatchResult> uploadAttachmentBatch(
+    ChatAttachmentBatchUpload command, {
+    ChatAttachmentBatchProgress? onProgress,
+  }) async {
+    command.validate();
+    late final Map<String, dynamic> prepared;
+    try {
+      final caption = command.bodyText?.trim() ?? '';
+      prepared = await _attachmentAction({
+        'action': 'prepare',
+        'request_id': command.requestId,
+        'conversation_id': command.conversationId,
+        if (caption.isNotEmpty) 'body_text': caption,
+        'items': [
+          for (final item in command.items)
+            {
+              'file_name': item.fileName,
+              'content_type': item.contentType,
+              'byte_size': item.bytes.length,
+              'sha256': sha256.convert(item.bytes).toString(),
+            },
+        ],
+      });
+    } catch (error) {
+      throw _mapError(error);
+    }
+    final messageId = _string(prepared, 'message_id');
+    final preparedItems = _rows(prepared['items']);
+    if (preparedItems.length != command.items.length) throw const ChatFailureException();
+    var messageStatus = prepared['message_status'] as String? ?? 'draft';
+    final items = <ChatAttachmentBatchItem>[
+      for (var index = 0; index < command.items.length; index++)
+        ChatAttachmentBatchItem(
+          index: index,
+          fileName: command.items[index].fileName,
+          state: ChatAttachmentBatchItemState.waiting,
+          attachmentId: _string(preparedItems[index], 'attachment_id'),
+        ),
+    ];
+    ChatAttachmentBatchResult snapshot() => ChatAttachmentBatchResult(
+      messageId: messageId,
+      messageStatus: messageStatus,
+      items: List.unmodifiable(items),
+    );
+    void report() => onProgress?.call(snapshot());
+    for (var index = 0; index < command.items.length; index++) {
+      final item = command.items[index];
+      final ticket = preparedItems[index];
+      items[index] = items[index].copyWith(state: ChatAttachmentBatchItemState.sending);
+      report();
+      try {
+        if (ticket['replayed'] == true && ticket['upload_status'] == 'ready') {
+          items[index] = items[index].copyWith(state: ChatAttachmentBatchItemState.ready);
+          report();
+          continue;
+        }
+        await _uploadTicket(item, ticket);
+        final finalized = await _attachmentAction({
+          'action': 'finalize',
+          'attachment_id': items[index].attachmentId,
+        });
+        if (_string(finalized, 'message_id') != messageId ||
+            _string(finalized, 'attachment_id') != items[index].attachmentId) {
+          throw const ChatFailureException();
+        }
+        final status = finalized['message_status'];
+        if (status is String && status.isNotEmpty) messageStatus = status;
+        items[index] = items[index].copyWith(state: ChatAttachmentBatchItemState.ready);
+      } catch (error) {
+        final mapped = _mapError(error);
+        // Sessão perdida ou conversa fechada: o lote inteiro para aqui.
+        if (mapped is ChatUnauthorizedException || mapped is ChatConflictException) throw mapped;
+        items[index] = items[index].copyWith(
+          state: ChatAttachmentBatchItemState.failed,
+          error: mapped,
+        );
+      }
+      report();
+    }
+    return snapshot();
+  }
+
+  @override
+  Future<ChatAttachmentDiscardResult> discardAttachment(String attachmentId) async {
+    try {
+      final data = await _attachmentAction({'action': 'discard', 'attachment_id': attachmentId});
+      if (_string(data, 'attachment_id') != attachmentId) throw const ChatFailureException();
+      return ChatAttachmentDiscardResult(
+        messageId: _string(data, 'message_id'),
+        messageStatus: _string(data, 'message_status'),
+      );
+    } catch (error) {
+      throw _mapError(error);
+    }
+  }
+
+  /// PUT assinado de um item: mesmas defesas do envio unitário.
+  Future<void> _uploadTicket(ChatAttachmentUpload item, Map<String, dynamic> ticket) async {
+    final uploadStatus = ticket['upload_status'];
+    if (uploadStatus != null && uploadStatus != 'pending') throw const ChatFailureException();
+    final expiresAt = _date(ticket, 'expires_at');
+    if (!expiresAt.isAfter(DateTime.now().toUtc())) throw const ChatFailureException();
+    final url = _signedUrl(ticket, 'upload_url');
+    final headers = <String, String>{};
+    final requiredHeaders = ticket['required_headers'];
+    if (requiredHeaders is! Map) throw const ChatFailureException();
+    for (final entry in requiredHeaders.entries) {
+      if (entry.key is! String || entry.value is! String) throw const ChatFailureException();
+      final key = (entry.key as String).toLowerCase();
+      if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
+        throw const ChatFailureException();
+      }
+      headers[key] = entry.value as String;
+    }
+    if (headers['content-type'] != item.contentType) throw const ChatFailureException();
+    // This client never receives the authenticated Supabase client's headers.
+    final upload = _uploadClient ?? http.Client();
+    try {
+      final request = http.Request('PUT', url)
+        ..followRedirects = false
+        ..headers.addAll(headers)
+        ..bodyBytes = item.bytes;
+      final response = await http.Response.fromStream(await upload.send(request));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw const ChatFailureException();
+      }
+    } finally {
+      if (_uploadClient == null) upload.close();
+    }
+  }
+
+  @override
   Future<ChatAttachmentRead> readAttachment(String attachmentId) async {
     try {
       final startedAt = DateTime.now().toUtc();
@@ -114,6 +246,9 @@ final class SupabaseChatRepository implements ChatRepository, ChatAttachmentRepo
       final code = details is Map ? details['error'] : null;
       if (code == 'chat_read_only') throw const ChatConflictException(ChatConflictReason.readOnly);
       if (code == 'chat_attachment_limit') throw const ChatAttachmentLimitException();
+      if (code == 'chat_attachment_invalid' || code == 'invalid_request') {
+        throw const ChatAttachmentInvalidException();
+      }
       if (const {
         'sai_auth_required',
         'sai_session_invalid',
@@ -460,6 +595,7 @@ Exception _mapError(Object error) {
   if (error is ChatFailureException) return error;
   if (error is ChatMemberInvalidException) return error;
   if (error is ChatAttachmentLimitException) return error;
+  if (error is ChatAttachmentInvalidException) return error;
   if (error is PostgrestException &&
       (error.code == '42501' || error.code == 'PGRST301' || error.code == 'PGRST116')) {
     return const ChatUnauthorizedException();

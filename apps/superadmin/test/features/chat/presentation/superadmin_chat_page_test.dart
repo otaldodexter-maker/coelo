@@ -46,6 +46,36 @@ void main() {
     expect(tester.takeException(), isNull);
   });
 
+  testWidgets('batch gateway sends several picked files as one message and shows the mosaic', (
+    tester,
+  ) async {
+    _viewport(tester, 1440);
+    FilePicker.platform = _BatchChatFilePicker();
+    final repository = _BatchUploadingChatRepository();
+    await tester.pumpWidget(_app(repository: repository));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byTooltip('Adicionar imagem'));
+    await tester.pumpAndSettle();
+    expect(repository.pickedMultiple, isTrue);
+    expect(repository.batches, isEmpty);
+    expect(
+      find.text('Os 3 arquivos serão enviados juntos, como uma única mensagem.'),
+      findsOneWidget,
+    );
+    await tester.tap(find.text('Enviar 3 arquivos'));
+    await tester.pumpAndSettle();
+    expect(repository.batches, hasLength(1));
+    expect(repository.batches.single.conversationId, 'conversation-1');
+    expect(repository.batches.single.items.map((i) => i.fileName), ['a.png', 'b.png', 'c.pdf']);
+    expect(
+      find.byKey(const Key('superadmin-chat-attachment-mosaic-message-batch')),
+      findsOneWidget,
+    );
+    expect(find.byKey(const Key('superadmin-chat-attachment-compact-binding-a')), findsOneWidget);
+    expect(find.text('c.pdf'), findsOneWidget);
+    expect(tester.takeException(), isNull);
+  });
+
   testWidgets('page forwards canonical image reader and session without prefetch', (tester) async {
     _viewport(tester, 1024);
     final reader = _ImageReader();
@@ -144,10 +174,30 @@ void main() {
             isMine: false,
             kind: 'image',
             attachments: const [
-              ChatAttachment(id: 'attachment-1', fileName: 'um.png', mediaType: 'image/png', byteSize: 8),
-              ChatAttachment(id: 'attachment-2', fileName: 'dois.png', mediaType: 'image/png', byteSize: 8),
-              ChatAttachment(id: 'attachment-3', fileName: 'tres.png', mediaType: 'image/png', byteSize: 8),
-              ChatAttachment(id: 'attachment-4', fileName: 'quatro.png', mediaType: 'image/png', byteSize: 8),
+              ChatAttachment(
+                id: 'attachment-1',
+                fileName: 'um.png',
+                mediaType: 'image/png',
+                byteSize: 8,
+              ),
+              ChatAttachment(
+                id: 'attachment-2',
+                fileName: 'dois.png',
+                mediaType: 'image/png',
+                byteSize: 8,
+              ),
+              ChatAttachment(
+                id: 'attachment-3',
+                fileName: 'tres.png',
+                mediaType: 'image/png',
+                byteSize: 8,
+              ),
+              ChatAttachment(
+                id: 'attachment-4',
+                fileName: 'quatro.png',
+                mediaType: 'image/png',
+                byteSize: 8,
+              ),
             ],
           ),
         ],
@@ -156,9 +206,18 @@ void main() {
     await tester.pumpWidget(_app(repository: repository));
     await tester.pumpAndSettle();
 
-    expect(find.byKey(const Key('superadmin-chat-attachment-mosaic-message-mosaic')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-chat-attachment-mosaic-count-message-mosaic')), findsOneWidget);
-    expect(find.byKey(const Key('superadmin-chat-attachment-compact-attachment-1')), findsOneWidget);
+    expect(
+      find.byKey(const Key('superadmin-chat-attachment-mosaic-message-mosaic')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('superadmin-chat-attachment-mosaic-count-message-mosaic')),
+      findsOneWidget,
+    );
+    expect(
+      find.byKey(const Key('superadmin-chat-attachment-compact-attachment-1')),
+      findsOneWidget,
+    );
     expect(find.byKey(const Key('superadmin-chat-attachment-attachment-4')), findsNothing);
   });
 
@@ -1384,4 +1443,121 @@ final class _ChatFilePicker extends FilePicker {
       bytes: Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10]),
     ),
   ]);
+}
+
+final class _BatchChatFilePicker extends FilePicker {
+  static bool lastAllowMultiple = false;
+  @override
+  Future<FilePickerResult?> pickFiles({
+    String? dialogTitle,
+    String? initialDirectory,
+    FileType type = FileType.any,
+    List<String>? allowedExtensions,
+    void Function(FilePickerStatus)? onFileLoading,
+    bool allowCompression = false,
+    int compressionQuality = 0,
+    bool allowMultiple = false,
+    bool withData = false,
+    bool withReadStream = false,
+    bool lockParentWindow = false,
+    bool readSequential = false,
+  }) async {
+    lastAllowMultiple = allowMultiple;
+    return FilePickerResult([
+      PlatformFile(
+        name: 'a.png',
+        size: 8,
+        bytes: Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 10]),
+      ),
+      PlatformFile(
+        name: 'b.png',
+        size: 8,
+        bytes: Uint8List.fromList([137, 80, 78, 71, 13, 10, 26, 9]),
+      ),
+      PlatformFile(
+        name: 'c.pdf',
+        size: 8,
+        bytes: Uint8List.fromList([37, 80, 68, 70, 45, 49, 46, 52]),
+      ),
+    ]);
+  }
+}
+
+final class _BatchUploadingChatRepository extends _ChatRepository
+    implements ChatAttachmentBatchRepository {
+  _BatchUploadingChatRepository()
+    : super._(inbox: _ChatRepository.standard().inbox, thread: _ChatRepository.standard().thread);
+  final batches = <ChatAttachmentBatchUpload>[];
+  bool get pickedMultiple => _BatchChatFilePicker.lastAllowMultiple;
+
+  @override
+  Future<ChatAttachmentBatchResult> uploadAttachmentBatch(
+    ChatAttachmentBatchUpload command, {
+    ChatAttachmentBatchProgress? onProgress,
+  }) async {
+    batches.add(command);
+    return ChatAttachmentBatchResult(
+      messageId: 'message-batch',
+      messageStatus: 'active',
+      items: [
+        for (var index = 0; index < command.items.length; index++)
+          ChatAttachmentBatchItem(
+            index: index,
+            fileName: command.items[index].fileName,
+            attachmentId: 'binding-$index',
+            state: ChatAttachmentBatchItemState.ready,
+          ),
+      ],
+    );
+  }
+
+  @override
+  Future<ChatAttachmentDiscardResult> discardAttachment(String attachmentId) =>
+      throw UnimplementedError();
+
+  @override
+  Future<String> uploadAttachment(ChatAttachmentUpload command) => throw UnimplementedError();
+
+  @override
+  Future<ChatAttachmentRead> readAttachment(String attachmentId) => throw UnimplementedError();
+
+  @override
+  Future<ChatThreadPage> fetchThread(ChatThreadQuery query) async => batches.isEmpty
+      ? thread
+      : ChatThreadPage(
+          items: [
+            ChatMessage(
+              id: 'message-batch',
+              conversationId: query.conversationId,
+              body: '3 anexos',
+              authorName: 'Marina',
+              sentAt: DateTime.utc(2026, 9, 17),
+              isMine: true,
+              kind: 'attachment',
+              attachments: const [
+                ChatAttachment(
+                  id: 'binding-a',
+                  assetId: 'binding-a',
+                  fileName: 'a.png',
+                  mediaType: 'image/png',
+                  byteSize: 8,
+                ),
+                ChatAttachment(
+                  id: 'binding-b',
+                  assetId: 'binding-b',
+                  fileName: 'b.png',
+                  mediaType: 'image/png',
+                  byteSize: 8,
+                ),
+                ChatAttachment(
+                  id: 'binding-c',
+                  assetId: 'binding-c',
+                  fileName: 'c.pdf',
+                  mediaType: 'application/pdf',
+                  byteSize: 8,
+                ),
+              ],
+            ),
+          ],
+        );
 }

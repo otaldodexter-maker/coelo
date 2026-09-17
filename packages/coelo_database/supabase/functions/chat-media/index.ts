@@ -7,6 +7,10 @@ import { readStoredBytes } from "./stored_bytes.ts";
 // Contrato de tres tempos: prepare (RPC do usuario + PUT assinado), finalize
 // (ticket do usuario + bytes relidos + RPC service_role) e read (RPC do usuario
 // + GET assinado). expire e chamado por cron com segredo proprio. Sem Stream.
+// R15 E3 (spec 058): prepare com `items[]` usa prepare_v2 (um lote = UMA
+// mensagem, ate 10 itens; o 11o e CHAT_ATTACHMENT_LIMIT); finalize usa
+// finalize_v2 (a mensagem so publica quando todos os irmaos terminam); discard
+// remove um anexo de mensagem ainda em draft e apaga o objeto se ja estava ready.
 
 type Json = Record<string, unknown>;
 const allowedMimeTypes = new Set([
@@ -73,6 +77,45 @@ function unwrap(response: { data: unknown; error: unknown }): Json {
     throw new Error(typeof code === "string" ? code.toLowerCase() : "rpc_denied");
   }
   return envelope.data as Json;
+}
+
+const maximumBatchItems = 10;
+
+/** Um item do lote: mesmas regras do envelope unitario. */
+export function batchItemEnvelope(item: unknown) {
+  if (typeof item !== "object" || item === null) throw new Error("invalid_request");
+  const value = item as Json;
+  if (
+    typeof value.file_name !== "string" || value.file_name.length < 1 ||
+    value.file_name.length > 255 ||
+    typeof value.content_type !== "string" ||
+    !allowedMimeTypes.has(value.content_type) ||
+    typeof value.byte_size !== "number" ||
+    !Number.isSafeInteger(value.byte_size) ||
+    value.byte_size < 1 || value.byte_size > maximumBytes ||
+    typeof value.sha256 !== "string" || !/^[0-9a-f]{64}$/.test(value.sha256)
+  ) throw new Error("invalid_request");
+  return {
+    file_name: value.file_name,
+    content_type: value.content_type,
+    byte_size: value.byte_size,
+    sha256: value.sha256,
+  };
+}
+
+/** Lote: 1..10 itens; o 11o passa para o servidor responder CHAT_ATTACHMENT_LIMIT. */
+export function batchEnvelope(body: Json) {
+  if (
+    typeof body.conversation_id !== "string" || !Array.isArray(body.items) ||
+    body.items.length < 1 || body.items.length > maximumBatchItems + 1 ||
+    (body.body_text !== undefined && body.body_text !== null &&
+      (typeof body.body_text !== "string" || body.body_text.length > 4000))
+  ) throw new Error("invalid_request");
+  return {
+    conversationId: body.conversation_id,
+    bodyText: typeof body.body_text === "string" ? body.body_text : null,
+    items: body.items.map(batchItemEnvelope),
+  };
 }
 
 export function prepareEnvelope(body: Json) {
@@ -159,6 +202,70 @@ Deno.serve(async (request) => {
       });
     }
 
+    if (body.action === "prepare" && Array.isArray(body.items)) {
+      const input = batchEnvelope(body);
+      const prepared = unwrap(
+        await user.rpc("superadmin_chat_attachment_prepare_v2", {
+          p_request_id: uuid(body.request_id),
+          p_conversation_id: input.conversationId,
+          p_items: input.items,
+          p_body_text: input.bodyText,
+        }),
+      );
+      const rawItems = Array.isArray(prepared.items) ? prepared.items as Json[] : [];
+      const items = [];
+      for (const item of rawItems) {
+        const signed = await r2.presignPut(
+          String(item.object_key),
+          String(item.content_type),
+          300,
+        );
+        items.push({
+          index: item.index,
+          attachment_id: item.attachment_id,
+          asset_id: item.attachment_id,
+          object_key: item.object_key,
+          file_name: item.file_name,
+          content_type: item.content_type,
+          byte_size: item.byte_size,
+          upload_url: signed.url.toString(),
+          required_headers: signed.requiredHeaders,
+          expires_at: new Date(Date.now() + 300_000).toISOString(),
+          upload_status: item.upload_status,
+          replayed: item.replayed === true,
+        });
+      }
+      return reply(origin, 200, {
+        message_id: prepared.message_id,
+        message_status: prepared.message_status,
+        body_text: prepared.body_text,
+        replayed: prepared.replayed === true,
+        items,
+      });
+    }
+
+    if (body.action === "discard") {
+      // Dono do ticket, mensagem ainda em draft: o banco decide se a mensagem
+      // publica (irmaos prontos) ou arquiva (nenhum pronto); o objeto R2 de um
+      // anexo que ja subiu e apagado aqui.
+      const discarded = unwrap(
+        await user.rpc("superadmin_chat_attachment_discard_v1", {
+          p_attachment_id: uuid(body.attachment_id),
+        }),
+      );
+      if (discarded.previous_status === "ready" || discarded.previous_status === "failed") {
+        await r2.delete(String(discarded.object_key)).catch(() => {});
+      }
+      return reply(origin, 200, {
+        attachment_id: discarded.attachment_id,
+        asset_id: discarded.attachment_id,
+        message_id: discarded.message_id,
+        upload_status: discarded.upload_status,
+        message_status: discarded.message_status,
+        attachments: discarded.attachments,
+      });
+    }
+
     if (body.action === "prepare") {
       const input = prepareEnvelope(body);
       const prepared = unwrap(
@@ -213,7 +320,7 @@ Deno.serve(async (request) => {
         Number(ticket.byte_size),
         String(ticket.content_type),
       );
-      const finalized = await admin.rpc("superadmin_chat_attachment_finalize_v1", {
+      const finalized = await admin.rpc("superadmin_chat_attachment_finalize_v2", {
         p_attachment_id: ticket.attachment_id,
         p_finalize_ticket: ticket.finalize_ticket,
         p_byte_size: measured.bytes.length,
@@ -221,7 +328,7 @@ Deno.serve(async (request) => {
       });
       const data = (finalized.data as Json | null) ?? {};
       if (finalized.error || data.ok !== true) {
-        // O banco ja marcou failed/archived em caso de mismatch; o objeto sai.
+        // O banco ja marcou o anexo failed (a mensagem espera os irmaos); o objeto sai.
         await r2.delete(String(ticket.object_key)).catch(() => {});
         const code = (data.error as Json | undefined)?.code;
         throw new Error(typeof code === "string" ? code.toLowerCase() : "attachment_finalize_failed");

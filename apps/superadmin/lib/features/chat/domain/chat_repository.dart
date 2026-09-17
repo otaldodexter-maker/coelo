@@ -500,8 +500,13 @@ final class ChatAttachmentUpload {
       'application/pdf' || 'video/mp4' => 10 * 1024 * 1024,
       _ => 4 * 1024 * 1024,
     };
-    if (!const {'image/jpeg', 'image/png', 'image/webp', 'application/pdf', 'video/mp4'}
-            .contains(contentType) ||
+    if (!const {
+          'image/jpeg',
+          'image/png',
+          'image/webp',
+          'application/pdf',
+          'video/mp4',
+        }.contains(contentType) ||
         bytes.isEmpty ||
         bytes.length > limit ||
         fileName.isEmpty ||
@@ -525,4 +530,102 @@ final class ChatAttachmentInvalidException implements Exception {
 /// ADR 0038: o servidor aceita até 10 anexos pendentes por envio.
 final class ChatAttachmentLimitException implements Exception {
   const ChatAttachmentLimitException();
+}
+
+/// Lote de anexos enviados como UMA mensagem (spec 058, ADR 0042 E3).
+///
+/// O servidor cria a mensagem em rascunho e só a publica quando todos os
+/// itens terminam; itens que falham ficam visíveis para o autor remover.
+final class ChatAttachmentBatchUpload {
+  ChatAttachmentBatchUpload({
+    required this.conversationId,
+    required this.requestId,
+    required List<ChatAttachmentUpload> items,
+    this.bodyText,
+  }) : items = List.unmodifiable(items);
+
+  final String conversationId;
+  final String requestId;
+  final List<ChatAttachmentUpload> items;
+  final String? bodyText;
+
+  void validate() {
+    if (items.isEmpty) throw const ChatAttachmentInvalidException();
+    for (final item in items) {
+      if (item.conversationId != conversationId) throw const ChatAttachmentInvalidException();
+      item.validate();
+    }
+  }
+}
+
+enum ChatAttachmentBatchItemState { waiting, sending, ready, failed }
+
+final class ChatAttachmentBatchItem {
+  const ChatAttachmentBatchItem({
+    required this.index,
+    required this.fileName,
+    required this.state,
+    this.attachmentId,
+    this.error,
+  });
+
+  final int index;
+  final String fileName;
+  final ChatAttachmentBatchItemState state;
+
+  /// Binding criado pelo servidor; nulo enquanto o lote não foi preparado.
+  final String? attachmentId;
+  final Object? error;
+
+  ChatAttachmentBatchItem copyWith({
+    ChatAttachmentBatchItemState? state,
+    String? attachmentId,
+    Object? error,
+  }) => ChatAttachmentBatchItem(
+    index: index,
+    fileName: fileName,
+    state: state ?? this.state,
+    attachmentId: attachmentId ?? this.attachmentId,
+    error: error ?? this.error,
+  );
+}
+
+/// Estado do envio em lote conforme relatado pelo servidor.
+final class ChatAttachmentBatchResult {
+  const ChatAttachmentBatchResult({
+    required this.messageId,
+    required this.messageStatus,
+    required this.items,
+  });
+
+  final String messageId;
+
+  /// `draft` enquanto houver item pendente ou falho; `active` quando publicada;
+  /// `archived` quando não sobrou anexo pronto.
+  final String messageStatus;
+  final List<ChatAttachmentBatchItem> items;
+
+  bool get isPublished => messageStatus == 'active';
+  Iterable<ChatAttachmentBatchItem> get failed =>
+      items.where((item) => item.state == ChatAttachmentBatchItemState.failed);
+  Iterable<ChatAttachmentBatchItem> get ready =>
+      items.where((item) => item.state == ChatAttachmentBatchItemState.ready);
+}
+
+final class ChatAttachmentDiscardResult {
+  const ChatAttachmentDiscardResult({required this.messageId, required this.messageStatus});
+  final String messageId;
+  final String messageStatus;
+}
+
+typedef ChatAttachmentBatchProgress = void Function(ChatAttachmentBatchResult snapshot);
+
+/// Gateway com envio em lote (uma mensagem por lote) e descarte de item.
+abstract interface class ChatAttachmentBatchRepository implements ChatAttachmentRepository {
+  Future<ChatAttachmentBatchResult> uploadAttachmentBatch(
+    ChatAttachmentBatchUpload command, {
+    ChatAttachmentBatchProgress? onProgress,
+  });
+
+  Future<ChatAttachmentDiscardResult> discardAttachment(String attachmentId);
 }

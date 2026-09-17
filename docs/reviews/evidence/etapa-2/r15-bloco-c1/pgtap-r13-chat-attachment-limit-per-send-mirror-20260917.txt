@@ -1,0 +1,88 @@
+BEGIN
+psql:/tmp/t2.sql:4: NOTICE:  extension "pgtap" already exists, skipping
+CREATE EXTENSION
+ plan
+------
+ 1..9
+(1 row)
+
+INSERT 0 1
+INSERT 0 2
+INSERT 0 1
+INSERT 0 1
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+INSERT 0 2
+CREATE TABLE
+GRANT
+                                       ok
+--------------------------------------------------------------------------------
+ ok 1 - authenticated prepara/autoriza; service_role finaliza/expira; anon nada
+(1 row)
+
+                               ok
+----------------------------------------------------------------
+ ok 2 - tabela de tickets com RLS forcada e sem grant a cliente
+(1 row)
+
+                                                                  set_config
+-----------------------------------------------------------------------------------------------------------------------------------------------
+ {"aal": "aal1", "sub": "9f050000-0000-4000-8000-000000000102", "role": "authenticated", "session_id": "9f050000-0000-4000-8000-000000000202"}
+(1 row)
+
+INSERT 0 1
+SELECT 1
+GRANT
+         is
+---------------------
+ ok 3 - grupo criado
+(1 row)
+
+SET
+INSERT 0 10
+INSERT 0 1
+RESET
+                 is
+-------------------------------------
+ ok 4 - dez anexos pendentes aceitos
+(1 row)
+
+                       is
+------------------------------------------------
+ ok 5 - decimo primeiro anexo pendente recusado
+(1 row)
+
+             is
+----------------------------
+ ok 6 - limite responde 422
+(1 row)
+
+SET
+INSERT 0 1
+RESET
+                        is
+--------------------------------------------------
+ ok 7 - replay idempotente segue aceito no limite
+(1 row)
+
+UPDATE 1
+SET
+INSERT 0 1
+RESET
+                     is
+---------------------------------------------
+ ok 8 - ticket expirado libera vaga no envio
+(1 row)
+
+                     ok
+---------------------------------------------
+ ok 9 - anexos pendentes permanecem em draft
+(1 row)
+
+ finish
+--------
+(0 rows)
+
+ROLLBACK
