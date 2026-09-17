@@ -8,13 +8,13 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "e2bbffe0813c14c3e998053db404c467ccbb6dd9",
+    "head": "21f4485ad8b9322cfef37cc4c09694d228edab0a",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
-    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
+    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md",
     "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "ownerQueueProjection": null,
     "inventory": "docs/reviews/inventario-etapa-2.json",
@@ -63,21 +63,19 @@
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
-        "local-green": 2,
+        "local-green": 1,
         "pending-verification": 23,
-        "verified": 207
+        "verified": 208
       },
       "backend": {
-        "done": 185,
+        "done": 186,
         "not-applicable": 13,
-        "pending-verification": 1,
         "v1": 33
       },
       "integrated": {
         "flutter-only": 13,
-        "pending-verification": 1,
         "v1": 33,
-        "verified-e2e": 185
+        "verified-e2e": 186
       }
     },
     "deferredPostMvpActionCount": 0,
@@ -126,12 +124,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "198/199 (99.50%)",
-    "frontendLocalGreen": "1/199 (0.50%)",
-    "backendDone": "185/186 (99.46%)",
+    "frontendVerified": "199/199 (100.00%)",
+    "frontendLocalGreen": "0/199 (0.00%)",
+    "backendDone": "186/186 (100.00%)",
     "backendLocalGreen": "0/186 (0.00%)",
-    "e2eVerified": "185/186 (99.46%)",
-    "e2ePlusFlutterOnly": "198/199 (99.50%)",
+    "e2eVerified": "186/186 (100.00%)",
+    "e2ePlusFlutterOnly": "199/199 (100.00%)",
     "ownerDone": "39/53 (73.58%)",
     "ownerNonTerminal": "14/53 (26.42%)"
   },
@@ -1084,6 +1082,13 @@
       "nextGate": "verified-e2e em 17/09: ticket vencido → worker do cron (após form-media v23, verify_jwt=false) marcou o asset deleted, auditoria forms.media.expire 18:10:00Z, resolve 404, reload sem a imagem."
     },
     {
+      "id": "forms.location-answer",
+      "status": "done",
+      "owner": "Sessão FORMS (R16) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+      "nextGate": "verified-e2e em 17/09: v4 publicada pelo editor (item Local), ocorrência única c42cf334, resposta com Local pela rota real como qa-r06-formularios (b1d52e77), reload relendo; negativas 22023/23514/PT409/P0002."
+    },
+    {
       "id": "groups.export",
       "status": "deferred",
       "owner": "Owner (ADR 0044, Mesa R16)",
@@ -1317,14 +1322,7 @@
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
-  "protectedWorktrees": {
-    "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r16-forms": {
-      "disposition": "retained-session",
-      "reason": "Worktree de sessão executora da R16 (17/09; R16-execucao.md); a coordenadora integra por cherry-pick; remover só no fechamento da R16 após bundle em Coelo-backups/r16-fechamento.",
-      "branch": "r16/forms-location-answer",
-      "sha": "cd5b7493eb2252f414d836a66ee75a20c75e02e2"
-    }
-  },
+  "protectedWorktrees": {},
   "preservedStash": {},
   "residualBranches": {},
   "evidenceFiles": [
@@ -1344,6 +1342,7 @@
     "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
+    "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md",
     "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
     "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
@@ -1379,6 +1378,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
     "docs/reviews/evidence/etapa-2/r16-agora/agora-publish-guardian-reader-20260917.md",
+    "docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
     "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
@@ -1622,13 +1622,13 @@
   },
   "deployment": {
     "status": "pending",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md",
     "reason": "Lote 74 aplicado em produção pelo rito em 16/09 (seis migrations R14; incidente do PostgREST encerrado). Sessões R15 aplicam lotes seguintes pelo rito e registram no ledger. O relatório não autoriza novo deploy por si só."
   },
   "r14Status": {
     "round": "R16",
     "status": "active",
-    "source": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
+    "source": "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md",
     "completedOwnerItems": [
       "owner.r12-01",
       "owner.r12-02",
@@ -1698,12 +1698,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "198/199 (99.50%)",
-      "frontendLocalGreen": "1/199 (0.50%)",
-      "backendDone": "185/186 (99.46%)",
+      "frontendVerified": "199/199 (100.00%)",
+      "frontendLocalGreen": "0/199 (0.00%)",
+      "backendDone": "186/186 (100.00%)",
       "backendLocalGreen": "0/186 (0.00%)",
-      "e2eVerified": "185/186 (99.46%)",
-      "e2ePlusFlutterOnly": "198/199 (99.50%)",
+      "e2eVerified": "186/186 (100.00%)",
+      "e2ePlusFlutterOnly": "199/199 (100.00%)",
       "ownerDone": "39/53 (73.58%)",
       "ownerNonTerminal": "14/53 (26.42%)"
     },

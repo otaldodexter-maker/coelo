@@ -33,7 +33,7 @@ proveniência; nenhum item é duplicado ou renumerado. R16 foi aberta em
 | R13 | histórica (encerrada em 14/09/2026) | 9 Owner done, H06/H17/OQ-028 e anexos fechados; os não terminais foram consolidados na R14 | `R13-checkpoint-20260914-1800.md`, `R13-pendencias.md` (congelado) |
 | R14 | histórica (encerrada em 16/09/2026) | +3 E2E, OQ-046, lotes 72/73, C1, B1/B2/B3/B8 locais; não terminais consolidados na R15 | `R14-fechamento.md`, `R14-checkpoint-20260916.md`, `R14-pendencias.md` (congelado) |
 | R15 | histórica (encerrada em 17/09/2026) | +22 E2E, lotes 75–80, PT409 sistêmico, specs 058–069, limpeza do repositório; não terminais consolidados na R16 | `R15-fechamento.md`, `R15-checkpoint-20260917.md`, `R15-pendencias.md` (congelado) |
-| R16 | vigente — fila única consolidada | executar pela ordem de `R16-pendencias.md`; itens `done` não retornam | `R16-pendencias.md` (fonte), ADR 0043 |
+| R16 | vigente — fila única consolidada; **execução FE/BE/E2E concluída em 17/09/2026** (FE 199/199, BE 186/186, E2E 186/186 do MVP; lote 81) | Owner items, H e UI/UX em reserva para a revisão de telas antes da Etapa 3 (decisão do Owner de 17/09); itens `done` não retornam | `R16-pendencias.md` (fonte), ADR 0043, ADR 0044, `R16-checkpoint-20260917.md`, `R16-execucao.md` (histórico) |
 
 ## Regra de reconciliação
 

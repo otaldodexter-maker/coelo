@@ -17,14 +17,15 @@ audience: "team"
 > `action_id`. Item `done` fica aqui só para contagem e não volta à execução;
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
-Contadores certificados pelo inventário e `validate-trackers.cjs` em 17/09/2026 ~21:00 BRT
-(R16 em execução, `agora.publish` certificado em produção — lote 81, `R16-execucao.md`):
-FE 198/199 (99,5%), BE 185/186 (99,5%), E2E **185/186 (99,5%)**, Owner 39/53 (73,58%);
+Contadores certificados pelo inventário e `validate-trackers.cjs` em 17/09/2026 ~21:20 BRT
+(fim da execução da R16: `agora.publish` — lote 81 — e `forms.location-answer` certificados em
+produção; `R16-execucao.md`, `R16-checkpoint-20260917.md`):
+**FE 199/199 (100%), BE 186/186 (100%), E2E 186/186 (100%)**, Owner 39/53 (73,58%);
 após a Mesa R16 (ADR 0044; 33 ações fora do MVP passaram a `v1` e saíram dos denominadores)
 eram FE 198/199, BE 185/186, E2E 184/186;
 no fechamento da R15 os mesmos numeradores eram 207/232, 185/219 e 184/186. Abertura da R15 em
-16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53. Fila: 1 ação não
-terminal no MVP (`forms.location-answer`, em execução), 14 Owner items abertos/parciais, 19 resíduos H, 2 itens da ADR
+16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53. Fila: **0 ações não
+terminais no MVP** (meta FE/BE/E2E da R16 atingida), 14 Owner items abertos/parciais, 19 resíduos H, 2 itens da ADR
 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
 renumerado; nenhum estado mudou na abertura.
 
@@ -303,17 +304,19 @@ genérico (sem contrato); origem pública `superadmin.coelo.me` (Etapa 3).
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
-## Ações não terminais por família (inventário: 1 ação; FE/BE/E2E)
+## Ações não terminais por família (inventário: 0 ações; FE/BE/E2E)
 
 
 Projeção regenerada em 17/09/2026 ~21:00 BRT a partir de `inventario-etapa-2.json` (coordenadora R16): ações `mvp`/`gate-formal-mvp` cujo estado integrado
 não é `verified-e2e` nem `flutter-only`. As 33 ações de escopo `v1` (Mesa R16, ADR 0044) ficam fora dos denominadores;
 `errors.409` (flutter-only) provado na rota real em 17/09 (Sessão A). `agora.publish` certificado em 17/09 (R16 AGORA, lote 81:
-leitor de Famílias reconhece o responsável por vínculo, spec 070; leitura provada por PostgREST com `qa-r15-responsavel`).
+leitor de Famílias reconhece o responsável por vínculo, spec 070; leitura provada por PostgREST com `qa-r15-responsavel`);
+`forms.location-answer` certificado em 17/09 (R16 FORMS: v4 publicada pela tela, ocorrência única `c42cf334`, resposta com Local
+pela rota real como `qa-r06-formularios`, negativas 22023/23514/PT409/P0002). **Nenhuma ação não terminal resta no MVP.**
 
 | Família | Qtd | action_ids |
 |---|---:|---|
-| forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
+| — | 0 | — |
 
 ## Resíduos operacionais sem action_id (varredura R01–R15, 17/09/2026)
 

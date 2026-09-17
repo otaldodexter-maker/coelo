@@ -4,16 +4,22 @@ source: "docs/agent/current-state.md; decisões e PRDs canônicos"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-15"
+updated_at: "2026-09-17"
 audience: "team"
 ---
 
 # Horizontes de trabalho
 
-## Trabalho atual — Etapa 2 / R14
+## Trabalho atual — Etapa 2 / R16
 
 É a única fila executável neste momento. Use [current-state.md](current-state.md)
-e a fila única `R14-pendencias.md` apontada nele.
+e a fila única `R16-pendencias.md` apontada nele. Em 17/09/2026 a execução FE/BE/E2E
+do MVP terminou (FE 199/199, BE 186/186, E2E 186/186; `R16-checkpoint-20260917.md`);
+o que resta na R16 (14 Owner items, resíduos H, dívida técnica da Mesa R16/ADR 0044)
+está em reserva para a revisão de telas antes da Etapa 3, por decisão do Owner.
+
+> As seções seguintes preservam as decisões de 14–16/09 (R13–R15) como proveniência;
+> a fila R14 citada abaixo é histórica.
 
 R16 está somente preparada, não aberta. Seus resíduos estão registrados na
 seção `R16 preparado — não aberto` da fila R14; não criar action_ids ou iniciar

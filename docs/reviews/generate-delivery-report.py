@@ -17,7 +17,7 @@ REPORT = ROOT / "docs/reviews/entrega-atual.json"
 INVENTORY = ROOT / "docs/reviews/inventario-etapa-2.json"
 OWNER_LEDGER = ROOT / "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
 OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md"
-CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md"
+CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md"
 # Last coordination base before the R14 action deltas. This keeps the gate
 # audit anchored to the published cut instead of comparing HEAD with itself.
 BASE_REFERENCE = "9d6636115a15d10f6c44b1ababa4f162fed0ae06"
@@ -216,6 +216,7 @@ def main() -> None:
         "decisions/0043-r15-closure-r16-opening-20260917.md",
         "decisions/0044-owner-decisions-mesa-r16-20260917.md",
         "docs/reviews/etapa-2-operacao/next-round/R16-execucao.md",
+        "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
         "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     }
     evidence.update(item["evidence"] for item in owner_items)

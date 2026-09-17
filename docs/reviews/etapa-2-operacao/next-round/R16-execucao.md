@@ -1,14 +1,18 @@
 ---
 title: "R16 — execução paralela: duas sessões executoras (FORMS, AGORA) e uma coordenadora"
 source: "Owner em 2026-09-17 (ADR 0043, ADR 0044, Foco da R16; meta FE 199/199, BE 186/186, E2E 186/186); R16-prompts.md (Prompts 0, 1 e 2); R16-pendencias.md; R15-execucao-paralela.md (modelo histórico); review-scope.md (retomada entre worktrees, sessão QA D7, rota real 17/09)"
-status: "active"
-lifecycle: "current"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"
 audience: "team"
 ---
 
 # R16 — execução paralela
+
+> Histórico: a execução da R16 terminou em 17/09/2026 ~21:20 BRT com FE 199/199, BE 186/186,
+> E2E 186/186 (`R16-checkpoint-20260917.md`). Worktrees e branches `r16/*` removidas (bundles em
+> `Coelo-backups/r16-fechamento`). Use este arquivo só como modelo.
 
 A fila continua sendo só `R16-pendencias.md` (seção "Foco da R16"). Este arquivo
 define **quem faz o quê, onde e como as sessões se comunicam** enquanto a R16 roda
@@ -162,6 +166,8 @@ docs/reviews/entrega-atual.json` (PASS).
 | 20:41 | Leitura D1 para a FORMS (v4 publicada às 23:30Z pela tela; agendamento "Uma vez") | form `4555ba07` mv5, `published_version_id e0107c9d` (v2, itens short_text + location `90d33a71`); ocorrência nova `c42cf334` open (23:00Z–24/09 23:00Z, versão nova); cron `coelo-forms-occurrences` reconciliou às 23:40Z: 11 participações, pessoa `9f944691` elegível (participation `12aa895e`). Resíduo: as 24 ocorrências diárias 18/09–11/10 continuam `scheduled` (item `form-diario`, fora do foco). Nenhuma ocorrência de outro tenant existe em produção (negativa alheia = "sem massa") |
 | 20:5x | Leitura D1 complementar para a FORMS: resposta `b1d52e77` gravada às 23:43:50Z na `c42cf334` (versão `e0107c9d`); todas as ocorrências futuras já reconciliadas (pessoa participante em todas) → negativa "sem participação" = sem massa; sugerida a `90272261` (scheduled) como negativa de janela fechada | FORMS dispensou ajuda adicional (fecha em ~20 min) |
 | 21:0x | **Integração AGORA final: `daddde1a0` → `dev` `560a154aa`** (cherry-pick limpo) | Ledger lote 81, evidência `r16-agora/agora-publish-guardian-reader-20260917.md`, delta `agora.publish` BE done / integrated **verified-e2e** (certificação produção, revisão `c539fc40d`), handoff AGORA. `validate-trackers` PASS: FE 198/199, BE 185/186, **E2E 185/186**. Espelho parado; worktree limpa. AGORA ofereceu ajuda à FORMS a partir da própria worktree (remoção da worktree adiada até ela liberar) |
+| 21:0x | AGORA encerrada; branch bundlada em `Coelo-backups/r16-fechamento/r16-agora-publish-20260917.bundle`, apagada (remota/local), worktree removida | `215f5904e` |
+| 21:1x | **Integração FORMS: `0479cd56a` → `dev` `21f4485ad`** (conflito em inventário + 3 rastreadores: mantido `dev`, delta da FORMS reaplicado) | `validate-trackers` PASS: **FE 199/199, BE 186/186, E2E 186/186**. FORMS encerrada; branch bundlada (`r16-forms-location-answer-20260917.bundle`), apagada, worktree removida; pasta `Coelo.worktrees` vazia e removida |
 
 ## Cota e fechamento
 

@@ -6,7 +6,7 @@ lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-17"
 base: "dev"
-revision: "560a154aa (R16 em execução: agora.publish certificado, lote 81, 17/09)"
+revision: "21f4485ad (execução da R16 concluída: FE/BE/E2E 100%, 17/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -36,7 +36,16 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 17/09/2026: `next-round/R16-pendencias.md` (R12–R15 congeladas).
 
-## Snapshot de 17/09 ~21:00 BRT — R16 em execução (lote 81): percentuais do MVP
+## Snapshot de 17/09 ~21:20 BRT — execução da R16 concluída: MVP 100% FE/BE/E2E
+
+Fim da execução paralela da R16 (`next-round/R16-checkpoint-20260917.md`): `agora.publish`
+(lote 81, spec 070) e `forms.location-answer` certificados em produção. **Percentuais
+canônicos atuais: FE 199/199 (100%), BE 186/186 (100%), E2E 186/186 (100%)**, Owner 39/53
+(14 em reserva para a revisão de telas antes da Etapa 3, decisão do Owner de 17/09).
+Nenhuma ação não terminal resta no MVP; 33 ações de escopo `v1` ficam fora dos
+denominadores (ADR 0044) e 13 ações `flutter-only` estão certificadas por FE na rota real.
+
+## Snapshot de 17/09 ~21:00 BRT — R16 em execução (lote 81) (histórico)
 
 `agora.publish` certificado em produção pela sessão AGORA (`R16-execucao.md`,
 `R16-handoff-agora.md`): lote 81 `now_guardian_reader_v1` (spec 070, OQ-048) e leitura

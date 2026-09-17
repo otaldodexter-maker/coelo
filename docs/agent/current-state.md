@@ -21,16 +21,22 @@ audience: "team"
   **A Etapa 2 se mede pelo E2E do MVP**; a R16 executa só FE/BE/E2E (`forms.location-answer`,
   `agora.publish`); Owner items, H e UI/UX ficam em reserva para a revisão de telas antes da
   Etapa 3 (apresentar todas as telas ao Owner; ele aprova ou manda para a Etapa 3).
-  Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
-  abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
-- **17/09 ~20:15 BRT — execução paralela da R16 em curso** (`R16-execucao.md`): sessão
+  Fila: 0 ações não terminais (as 2 fecharam em 17/09 à noite), 14 Owner items
+  abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais — em reserva.
+- 17/09 ~20:15 BRT — execução paralela da R16 (`R16-execucao.md`, histórico): sessão
   FORMS (`Coelo.worktrees
 16-forms`, `r16/forms-location-answer`, 3014/9414) e sessão
   AGORA (`…
 16-agora`, `r16/agora-publish`, 3015/9415, espelho `mirror-r16-agora`,
   lote 81 reservado); a coordenadora integra em `dev` por cherry-pick. Handoffs
   `R16-handoff-forms.md` / `R16-handoff-agora.md`.
-- **Corte de 17/09 ~21:00 BRT (R16 em execução)**: `agora.publish` certificado em produção —
+- **Corte de 17/09 ~21:20 BRT — execução da R16 concluída** (`R16-checkpoint-20260917.md`):
+  **FE 199/199 (100%), BE 186/186 (100%), E2E 186/186 (100%)** do MVP; Owner 39/53 (14 em
+  reserva por decisão). `forms.location-answer` certificado pela sessão FORMS (v4 publicada,
+  ocorrência única `c42cf334`, resposta com Local pela rota real). Worktrees e branches `r16/*`
+  removidas (bundles em `Coelo-backups/r16-fechamento`); só `dev`. A R16 segue vigente para a
+  reserva (revisão de telas antes da Etapa 3); R17 exige decisão do Owner.
+- Corte de 17/09 ~21:00 BRT: `agora.publish` certificado em produção —
   **lote 81** (`20260917203000_now_guardian_reader_v1`, spec 070: `app_private.now_reader_actor`
   reconhece o responsável por `guardian_links` + `can_view` sem membership; `now_actor` de
   escrita inalterado); leitura pela responsável `qa-r15-responsavel` provada por PostgREST.
