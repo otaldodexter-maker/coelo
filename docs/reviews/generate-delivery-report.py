@@ -204,6 +204,9 @@ def main() -> None:
         "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
         "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
         "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
+        "decisions/0043-r15-closure-r16-opening-20260917.md",
+        "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+        "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     }
     evidence.update(item["evidence"] for item in owner_items)
     evidence.update(entry["evidence"] for entry in branches.values())
@@ -319,8 +322,9 @@ def main() -> None:
         "evidenceFiles": evidence,
         "trackerActionIds": [item["id"] for item in inventory["actions"]],
         "memory": {
-            "status": "no-op",
-            "reason": "Reconciliacao documental e de harness; regras de produto continuam nas ADRs. Nenhum conhecimento novo de produto foi inventado.",
+            "status": "captured",
+            "reason": "Regras duráveis da R15/R16 (PT409, rito de produção por lote, B5/B6, OQ-048, Mesa R16) projetadas em docs/knowledge e nas skills.",
+            "evidence": "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
         },
         "deployment": {
             "status": "pending",

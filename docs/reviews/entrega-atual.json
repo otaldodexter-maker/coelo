@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "4b116e93a3d6d772c377ee16a226d101b16d853d",
+    "head": "5235c2083ee0817962b244817a093d3f017d1d34",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -965,6 +965,20 @@
       "nextGate": "verified-e2e em 16/09 (Sessao 7); nada a fazer."
     },
     {
+      "id": "attendance.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "audit.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
       "id": "auth.mfa",
       "status": "deferred",
       "owner": "Owner (ADR 0042)",
@@ -984,6 +998,34 @@
       "owner": "Owner (ADR 0042 E10)",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md",
       "nextGate": "Aceito por decisão do Owner em 17/09 (E10): prova detalhada do link/senha nova na Etapa 3; allowlist 127.0.0.1:8765 já em produção."
+    },
+    {
+      "id": "catalog.list",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "catalog.publish",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "catalog.sync",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "catalog.validate",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
     },
     {
       "id": "errors.403",
@@ -1042,6 +1084,69 @@
       "nextGate": "verified-e2e em 17/09: ticket vencido → worker do cron (após form-media v23, verify_jwt=false) marcou o asset deleted, auditoria forms.media.expire 18:10:00Z, resolve 404, reload sem a imagem."
     },
     {
+      "id": "groups.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "groups.import",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.confirm",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.create",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.download",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.list",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.preview",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.status",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "imports.upload",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
       "id": "institutions.access-denied",
       "status": "done",
       "owner": "Sessão A (R15) / coordenadora",
@@ -1056,11 +1161,39 @@
       "nextGate": "verified-e2e em 17/09 (rota real: deep link inexistente → acesso negado sem enumeração; RPC bloqueada → painel de erro + Recarregar; 403 por PostgREST; aviso A4 do flyout Arquivos). Nada a fazer."
     },
     {
+      "id": "institutions.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
       "id": "institutions.files",
       "status": "deferred",
       "owner": "Owner (ADR 0041 A4)",
       "evidence": "decisions/0041-owner-decisions-r14-mesa-20260916.md",
       "nextGate": "Fora do MVP: flyout permanece e avisa 'em desenvolvimento'; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "institutions.import",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "institutions.locations-map",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "institutions.status",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
     },
     {
       "id": "internal-users.mfa",
@@ -1098,6 +1231,13 @@
       "nextGate": "verified-e2e em 17/09 (leitura por qa-r06-principal com mídia real, reload)."
     },
     {
+      "id": "plans.assign",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
       "id": "principal.for-you",
       "status": "done",
       "owner": "Sessão C1 (R15) / coordenadora",
@@ -1110,6 +1250,69 @@
       "owner": "Sessão C1 (R15) / coordenadora",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
       "nextGate": "verified-e2e em 17/09 (rota real: Sobre salvo/relido via save_profile_about; negativas PT409/403; H02 atualização oficial)."
+    },
+    {
+      "id": "profile-files.confirm",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "profile-files.download",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "profile-files.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "profile-files.import",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "profile-files.preview",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "profile-files.status",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "units.export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "units.import",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
+    },
+    {
+      "id": "units.people-export",
+      "status": "deferred",
+      "owner": "Owner (ADR 0044, Mesa R16)",
+      "evidence": "decisions/0044-owner-decisions-mesa-r16-20260917.md",
+      "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
@@ -1120,9 +1323,12 @@
   "evidenceFiles": [
     "decisions/0040-agora-immediate-removal.md",
     "decisions/0041-owner-decisions-r14-mesa-20260916.md",
+    "decisions/0043-r15-closure-r16-opening-20260917.md",
+    "decisions/0044-owner-decisions-mesa-r16-20260917.md",
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
+    "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
@@ -1401,8 +1607,9 @@
     "circulars.attach"
   ],
   "memory": {
-    "status": "no-op",
-    "reason": "Reconciliacao documental e de harness; regras de produto continuam nas ADRs. Nenhum conhecimento novo de produto foi inventado."
+    "status": "captured",
+    "reason": "Regras duráveis da R15/R16 (PT409, rito de produção por lote, B5/B6, OQ-048, Mesa R16) projetadas em docs/knowledge e nas skills.",
+    "evidence": "docs/knowledge/team/stale-version-pt409-and-production-rite.md"
   },
   "deployment": {
     "status": "pending",
