@@ -28,6 +28,9 @@ worktree nem a branch do B; toda escrita em produção segue o rito e fica regis
   dump com **0 erros**, ACL fiel à produção (drift dos default privileges corrigido antes da restauração)
   e catálogo semeado (seed de referência + 49 trechos das migrations + papéis de sistema). As seis suítes
   pgTAP do lote 74 estão verdes nele: 44/44, 43/43, 29/29, 15/15, 11/11, 63/63.
+- **09:48 BRT — espelho atualizado para o lote 75** (dump novo `schema-producao-20260917-b-apoio-pos-lote75.sql`,
+  SHA-256 `66f8bacc…`: 0 `raise serialization_failure`, 0 `errcode='40001'`, 183 `PT409`), mesma receita,
+  seis suítes verdes de novo; a suíte do B `pt409_stale_version_v1_test` dá 36/37 aqui (ver aviso 6).
 - Build QA compilado (`test_driver/qa_main.dart`, 406 s, `build/web/main.dart.js`).
 - Detalhe, comandos e ferramentas reutilizáveis: `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/ambiente-20260917.md`
   e `…/ferramentas/` (`restaurar-espelho.sh`, `extract_catalogo_pos_baseline.py`,
@@ -36,9 +39,9 @@ worktree nem a branch do B; toda escrita em produção segue o rito e fica regis
 
 ## Pedidos atendidos
 
-Nenhum pedido recebido até 09:25 BRT de 17/09: `origin/r15/bloco-b` ainda não foi publicado
-(`git ls-remote --heads origin 'r15/*'` só devolve `r15/bloco-c1`). A coordenadora faz o relé dos
-pedidos; esta seção recebe um `### AP-<n>` por pedido.
+Nenhum pedido recebido até 09:55 BRT de 17/09. `origin/r15/bloco-b` foi publicado às 09:4x
+(`6c2f02ee0`, fatia 1 OQ-047 entregue e aplicada em produção como lote 75) com `## Pedidos de apoio:
+Nenhum até agora`. A coordenadora faz o relé dos pedidos; esta seção recebe um `### AP-<n>` por pedido.
 
 ## Avisos para o Bloco B e para a coordenadora
 
@@ -64,8 +67,24 @@ pedidos; esta seção recebe um `### AP-<n>` por pedido.
    structure_handle_set v1); 8 `PT409` já em produção (lote 74). Os handlers precisam continuar
    capturando o que os corpos passarem a levantar (ou capturar `PT409` também), senão a família perde a
    tradução para `SAI_CONCURRENT_CHANGE`.
-4. Nenhum lote aplicado por B′ até agora; o próximo número livre continua sendo o que o ledger de
-   `ordem-de-aplicacao-producao.txt` mostrar no momento (último registrado: 74).
+4. Nenhum lote aplicado por B′ até agora. Lotes registrados: 75 (B, OQ-047, 12:30 UTC); C1 usa 76 e
+   C2 77+ (aviso 7 do handoff B). B′ só numera um lote se um pedido exigir escrita em produção.
+5. **Bloqueio registrado pelo B** ("prova comportamental por família no espelho — drift do espelho:
+   fixtures param antes da asserção de versão defasada", Formulários/Planos/Suporte/Segurança da
+   criança/Acontece): a causa é a mesma dos avisos 1 e 2 (default privileges locais + catálogo
+   incompleto: o B semeou só `mirror-r14/supabase/seed.sql`, sem os trechos pós-baseline nem a função de
+   papéis de sistema). No meu espelho, com a receita completa, `archive_models_v1` dá 63/63 (no dele,
+   61/2) e `child_safety_lifecycle_timeout_fix_v1` 15/15. Se o B pedir (AP), rodo as suítes por família
+   aqui e devolvo antes/depois; a receita está em `ferramentas/restaurar-espelho.sh`.
+6. **Asserção 8 de `pt409_stale_version_v1_test.sql` está calibrada no drift do espelho do B.** Rodada
+   no meu espelho fiel (dump pós-lote 75): 36/37. Comparação mecânica `pt409_props` × `pg_proc`: 0
+   diferenças em security definer, `search_path`, dono, volatilidade e retorno; **54 diferenças de ACL**,
+   todas do mesmo tipo — o "esperado" do teste traz `anon=X` (e, em 45 funções, `service_role=X`) nas
+   funções `public`, que produção não concede (0 `GRANT … TO "anon"` no dump). A migration preserva ACL;
+   é o teste que falharia contra produção. Bloco corrigido, pronto para substituir o `insert into
+   pt409_props values` original: `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/ferramentas/pt409_props_producao_pos_lote75.sql`
+   (com ele a suíte do B passa 37/37 aqui). Detalhe em `ambiente-20260917.md` §5.1. Não editei a branch
+   do B; cabe ao B (ou à coordenadora na integração) trocar o bloco.
 
 ## Para o Owner
 
@@ -75,4 +94,4 @@ Nenhuma pergunta pendente.
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
-| — | — | — | — | sem pedidos até 09:25 BRT |
+| — | — | — | — | sem pedidos até 09:55 BRT (handoff B `6c2f02ee0`: "Nenhum até agora") |
