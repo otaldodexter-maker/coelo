@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'dart:math';
 
 import 'package:crypto/crypto.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:flutter/foundation.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -832,6 +833,7 @@ final class ChildSafetyWizardPage extends StatefulWidget {
     this.childId,
     this.authorizationId,
     this.onDestinationSelected,
+    this.pickPersonDocument,
     super.key,
   });
   final ChildSafetyController controller;
@@ -841,6 +843,9 @@ final class ChildSafetyWizardPage extends StatefulWidget {
   final String? childId;
   final String? authorizationId;
   final ValueChanged<String>? onDestinationSelected;
+
+  /// Seletor do documento da pessoa sem conta (B6); o padrao usa o file_picker.
+  final Future<ChildSafetyPersonDocumentFile?> Function()? pickPersonDocument;
   @override
   State<ChildSafetyWizardPage> createState() => _ChildSafetyWizardPageState();
 }
@@ -867,6 +872,16 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   String? personSearchHint;
   Timer? _personSearchTimer;
   bool _suppressPersonSearch = false;
+  bool _lastPersonSearchEmpty = false;
+  // B6 (spec 062): pessoa sem conta cadastrada nesta solicitacao.
+  final registerName = TextEditingController(),
+      registerCpf = TextEditingController(),
+      registerPhone = TextEditingController(),
+      registerEmail = TextEditingController();
+  bool registeringPerson = false, registering = false, uploadingDocument = false;
+  String? authorizedPersonId;
+  String? registeredCpfMasked;
+  bool documentReady = false;
   DateTimeRange? validity;
   var validityOpenEnded = false;
   String? error;
@@ -939,6 +954,17 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     selectedPerson = null;
     searchingPeople = false;
     personSearchHint = null;
+    _lastPersonSearchEmpty = false;
+    registeringPerson = false;
+    registering = false;
+    uploadingDocument = false;
+    authorizedPersonId = null;
+    registeredCpfMasked = null;
+    documentReady = false;
+    registerName.clear();
+    registerCpf.clear();
+    registerPhone.clear();
+    registerEmail.clear();
     relationshipDetail.clear();
     requestReason.clear();
     relationship = 'mother';
@@ -1071,6 +1097,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     personId.dispose();
     _personSearchTimer?.cancel();
     personSearch.dispose();
+    registerName.dispose();
+    registerCpf.dispose();
+    registerPhone.dispose();
+    registerEmail.dispose();
     relationshipDetail.dispose();
     requestReason.dispose();
     widget.controller.removeListener(_controllerChanged);
@@ -1386,8 +1416,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       ),
       _Review(
         label: 'Pessoa autorizada',
-        value: selectedPerson?.displayName ??
-            (personSearch.text.trim().isEmpty ? 'Não selecionada' : personSearch.text.trim()),
+        value: authorizedPersonId != null
+            ? '${selectedPerson?.displayName ?? personSearch.text.trim()} · sem conta · ${registeredCpfMasked ?? ''}'
+            : selectedPerson?.displayName ??
+                  (personSearch.text.trim().isEmpty ? 'Não selecionada' : personSearch.text.trim()),
       ),
       _Review(label: 'Capacidades', value: _capabilities().join(', ')),
       const SizedBox(height: CoeloSpacing.space4),
@@ -1527,8 +1559,257 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         _personMatchCard(match),
         const SizedBox(height: CoeloSpacing.space2),
       ],
+      ..._personWithoutAccountSection(),
     ],
   ];
+
+  /// B6: cadastro so quando a busca nao encontra; documento obrigatorio.
+  List<Widget> _personWithoutAccountSection() {
+    final theme = Theme.of(context);
+    if (authorizedPersonId != null) {
+      return [
+        Container(
+          key: const Key('safety-person-without-account-card'),
+          padding: const EdgeInsets.all(CoeloSpacing.space4),
+          decoration: BoxDecoration(
+            borderRadius: BorderRadius.circular(CoeloRadius.lg),
+            border: Border.all(color: theme.colorScheme.outlineVariant),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text('Pessoa sem conta', style: theme.textTheme.labelLarge),
+              Text('${selectedPerson?.displayName ?? ''} · ${registeredCpfMasked ?? ''}'),
+              const SizedBox(height: CoeloSpacing.space3),
+              if (documentReady)
+                const Text('Documento enviado.', key: Key('safety-person-document-ready'))
+              else ...[
+                const Text('Envie a imagem do documento (JPEG, PNG, WebP ou PDF até 10 MiB).'),
+                const SizedBox(height: CoeloSpacing.space2),
+                OutlinedButton.icon(
+                  key: const Key('safety-person-document-upload'),
+                  onPressed: uploadingDocument ? null : _uploadPersonDocument,
+                  icon: uploadingDocument
+                      ? const SizedBox.square(
+                          dimension: CoeloSize.iconSm,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        )
+                      : const Icon(Icons.upload_file_outlined),
+                  label: const Text('Enviar documento'),
+                ),
+              ],
+            ],
+          ),
+        ),
+      ];
+    }
+    if (!registeringPerson) {
+      if (!_lastPersonSearchEmpty) return const [];
+      return [
+        OutlinedButton.icon(
+          key: const Key('safety-person-register-toggle'),
+          onPressed: () => setState(() {
+            registeringPerson = true;
+            error = null;
+          }),
+          icon: const Icon(Icons.person_add_alt_outlined),
+          label: const Text('Cadastrar pessoa sem conta'),
+        ),
+      ];
+    }
+    return [
+      Text('Cadastrar pessoa sem conta', style: theme.textTheme.titleSmall),
+      const SizedBox(height: CoeloSpacing.space1),
+      const Text(
+        'Ela não usa o app: fica autorizada só para esta criança e unidade. CPF é obrigatório e nunca é exibido inteiro.',
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloFormTextField(
+        fieldKey: const Key('safety-register-name'),
+        controller: registerName,
+        labelText: 'Nome completo',
+        prefixIcon: Icons.badge_outlined,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloFormTextField(
+        fieldKey: const Key('safety-register-cpf'),
+        controller: registerCpf,
+        labelText: 'CPF',
+        hintText: 'Com ou sem máscara',
+        prefixIcon: Icons.numbers_outlined,
+        keyboardType: TextInputType.number,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloFormTextField(
+        fieldKey: const Key('safety-register-phone'),
+        controller: registerPhone,
+        labelText: 'Celular (opcional)',
+        prefixIcon: Icons.phone_outlined,
+        keyboardType: TextInputType.phone,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      CoeloFormTextField(
+        fieldKey: const Key('safety-register-email'),
+        controller: registerEmail,
+        labelText: 'E-mail (opcional)',
+        prefixIcon: Icons.alternate_email_outlined,
+        keyboardType: TextInputType.emailAddress,
+      ),
+      const SizedBox(height: CoeloSpacing.space3),
+      Align(
+        alignment: AlignmentDirectional.centerStart,
+        child: FilledButton.tonal(
+          key: const Key('safety-register-submit'),
+          onPressed: registering ? null : _registerPersonWithoutAccount,
+          child: Text(registering ? 'Cadastrando…' : 'Cadastrar'),
+        ),
+      ),
+    ];
+  }
+
+  Future<void> _registerPersonWithoutAccount() async {
+    if (!mounted || registering || _contextUnavailable || widget.controller.isSaving) return;
+    final selected = child;
+    if (selected == null || selected.childContextId == null || selected.unitId == null) {
+      setState(() => error = 'Selecione a criança antes de cadastrar a pessoa.');
+      return;
+    }
+    final name = registerName.text.trim();
+    final cpfDigits = registerCpf.text.replaceAll(RegExp(r'\D'), '');
+    if (name.length < 3 || cpfDigits.length != 11) {
+      setState(() => error = 'Informe o nome completo e um CPF com 11 dígitos.');
+      return;
+    }
+    final version = _contextVersion;
+    final controller = widget.controller;
+    setState(() {
+      registering = true;
+      error = null;
+    });
+    try {
+      final result = await controller.registerPersonWithoutAccount(
+        RegisterPersonWithoutAccountCommand(
+          requestId: _uuid(),
+          childContextId: selected.childContextId!,
+          unitId: selected.unitId!,
+          fullName: name,
+          cpf: cpfDigits,
+          mobilePhone: registerPhone.text.trim().isEmpty ? null : registerPhone.text.trim(),
+          email: registerEmail.text.trim().isEmpty ? null : registerEmail.text.trim(),
+        ),
+      );
+      if (!mounted || version != _contextVersion) return;
+      _personSearchTimer?.cancel();
+      setState(() {
+        authorizedPersonId = result.authorizedPersonId;
+        registeredCpfMasked = result.cpfMasked;
+        documentReady = result.documentReady;
+        selectedPerson = ChildSafetyPersonMatch(
+          personId: '',
+          displayName: result.displayName,
+          initials: _initials(result.displayName),
+          matchedBy: 'document',
+        );
+        personId.clear();
+        _suppressPersonSearch = true;
+        personSearch.text = result.displayName;
+        _suppressPersonSearch = false;
+        people = const [];
+        personSearchHint = result.existing
+            ? 'Pessoa sem conta já cadastrada nesta instituição.'
+            : null;
+        registeringPerson = false;
+        _pendingSaveCommand = null;
+      });
+    } on ChildSafetyPersonHasAccountException {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Essa pessoa já tem conta: busque pelo CPF completo acima.');
+      }
+    } on ChildSafetyValidationException {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Confira o nome, o CPF e os contatos informados.');
+      }
+    } on ChildSafetyUnauthorizedException {
+      if (mounted && version == _contextVersion) {
+        setState(() {
+          _clearContext();
+          _lookupDenied = true;
+          error = 'Não foi possível cadastrar a pessoa.';
+        });
+      }
+    } catch (_) {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Não foi possível cadastrar a pessoa.');
+      }
+    } finally {
+      if (mounted && version == _contextVersion) setState(() => registering = false);
+    }
+  }
+
+  Future<ChildSafetyPersonDocumentFile?> _pickPersonDocumentFile() async {
+    final custom = widget.pickPersonDocument;
+    if (custom != null) return custom();
+    final result = await FilePicker.platform.pickFiles(
+      type: FileType.custom,
+      allowedExtensions: const ['jpg', 'jpeg', 'png', 'webp', 'pdf'],
+      withData: true,
+    );
+    final file = result?.files.firstOrNull;
+    final bytes = file?.bytes;
+    if (file == null || bytes == null) return null;
+    final mimeType = childSafetyPersonDocumentMimeType(file.name);
+    if (mimeType == null) throw const ChildSafetyValidationException();
+    return ChildSafetyPersonDocumentFile(fileName: file.name, mimeType: mimeType, bytes: bytes);
+  }
+
+  Future<void> _uploadPersonDocument() async {
+    final personWithoutAccount = authorizedPersonId;
+    if (!mounted || uploadingDocument || personWithoutAccount == null || _contextUnavailable) {
+      return;
+    }
+    final version = _contextVersion;
+    final controller = widget.controller;
+    setState(() {
+      uploadingDocument = true;
+      error = null;
+    });
+    try {
+      final file = await _pickPersonDocumentFile();
+      if (!mounted || version != _contextVersion) return;
+      if (file == null) return;
+      if (file.bytes.isEmpty || file.bytes.length > 10 * 1024 * 1024) {
+        throw const ChildSafetyValidationException();
+      }
+      final document = await controller.uploadPersonDocument(
+        ChildSafetyPersonDocumentUpload(
+          requestId: _uuid(),
+          authorizedPersonId: personWithoutAccount,
+          file: file,
+        ),
+      );
+      if (!mounted || version != _contextVersion) return;
+      setState(() {
+        documentReady = document.ready;
+        if (!document.ready) {
+          error = 'O documento não foi confirmado. Tente novamente.';
+        }
+      });
+    } on ChildSafetyValidationException {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Use JPEG, PNG, WebP ou PDF com até 10 MiB.');
+      }
+    } on ChildSafetyUnauthorizedException {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Envio do documento não autorizado.');
+      }
+    } catch (_) {
+      if (mounted && version == _contextVersion) {
+        setState(() => error = 'Não foi possível enviar o documento.');
+      }
+    } finally {
+      if (mounted && version == _contextVersion) setState(() => uploadingDocument = false);
+    }
+  }
 
   void _onPersonSearchChanged(String value) {
     if (_suppressPersonSearch) return;
@@ -1538,7 +1819,12 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       if (selectedPerson != null && value.trim() != selectedPerson!.displayName) {
         selectedPerson = null;
         personId.clear();
+        authorizedPersonId = null;
+        registeredCpfMasked = null;
+        documentReady = false;
       }
+      _lastPersonSearchEmpty = false;
+      registeringPerson = false;
       people = const [];
       error = null;
       personSearchHint = value.trim().isEmpty
@@ -1579,7 +1865,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       if (!mounted || version != _contextVersion || personSearch.text.trim() != query) return;
       setState(() {
         people = result;
-        personSearchHint = result.isEmpty ? 'Nenhuma pessoa encontrada no escopo autorizado.' : null;
+        _lastPersonSearchEmpty = result.isEmpty;
+        personSearchHint = result.isEmpty
+            ? 'Nenhuma pessoa encontrada no escopo autorizado. Se ela não tem conta, cadastre abaixo.'
+            : null;
       });
     } on ChildSafetyRateLimitException {
       if (mounted && version == _contextVersion) {
@@ -1608,6 +1897,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
   void _selectPerson(ChildSafetyPersonMatch match, {ChildSafetyChildOption? linkedChild}) {
     _personSearchTimer?.cancel();
     setState(() {
+      authorizedPersonId = null;
+      registeredCpfMasked = null;
+      documentReady = false;
+      registeringPerson = false;
       selectedPerson = match;
       personId.text = match.personId;
       _suppressPersonSearch = true;
@@ -1747,10 +2040,14 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       return;
     }
     if (step == 1 &&
-        (personId.text.trim().isEmpty ||
+        ((personId.text.trim().isEmpty && authorizedPersonId == null) ||
             requestReason.text.trim().length < 3 ||
             (relationship == 'other' && relationshipDetail.text.trim().isEmpty))) {
       setState(() => error = 'Busque e selecione a pessoa autorizada e informe relação e motivo.');
+      return;
+    }
+    if (step == 1 && authorizedPersonId != null && !documentReady) {
+      setState(() => error = 'Envie a imagem do documento para continuar.');
       return;
     }
     if (step == 2 && _capabilities().isEmpty) {
@@ -1794,6 +2091,15 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       });
       return;
     }
+    if (!saved &&
+        authorizedPersonId != null &&
+        controller.commandFailure == ChildSafetyCommandFailure.validation) {
+      setState(() {
+        documentReady = false;
+        error = 'O servidor exige o documento da pessoa sem conta. Envie-o e tente de novo.';
+      });
+      return;
+    }
     if (saved) {
       _finishConfirmedSave();
     } else {
@@ -1807,6 +2113,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
     childContextId: child!.childContextId!,
     unitId: child!.unitId!,
     personId: personId.text.trim(),
+    authorizedPersonId: authorizedPersonId,
     authorizationId: widget.authorizationId,
     expectedVersion: expectedVersion,
     relationshipCode: relationship,
@@ -1825,6 +2132,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       first.childContextId == second.childContextId &&
       first.unitId == second.unitId &&
       first.personId == second.personId &&
+      first.authorizedPersonId == second.authorizedPersonId &&
       first.authorizationId == second.authorizationId &&
       first.expectedVersion == second.expectedVersion &&
       first.relationshipCode == second.relationshipCode &&

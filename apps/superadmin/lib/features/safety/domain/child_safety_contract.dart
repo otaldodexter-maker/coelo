@@ -133,6 +133,7 @@ final class SavePickupAuthorizationCommand {
     required this.relationshipCode,
     required this.capabilityCodes,
     required this.requestReason,
+    this.authorizedPersonId,
     this.authorizationId,
     this.expectedVersion = 1,
     this.relationshipDetail,
@@ -144,6 +145,9 @@ final class SavePickupAuthorizationCommand {
   final String childContextId;
   final String unitId;
   final String personId;
+
+  /// B6 (spec 062): pessoa autorizada sem conta; exclui `personId`.
+  final String? authorizedPersonId;
   final String? authorizationId;
   final int expectedVersion;
   final String relationshipCode;
@@ -328,6 +332,94 @@ final class ChildSafetyUnavailableException implements Exception {
 /// Limite de taxa da busca de pessoa (SQLSTATE PT422, PERSON_SEARCH_RATE_LIMIT).
 final class ChildSafetyRateLimitException implements Exception {
   const ChildSafetyRateLimitException();
+}
+
+/// O CPF informado pertence a uma pessoa com conta (PERSON_HAS_ACCOUNT): usar a busca B5.
+final class ChildSafetyPersonHasAccountException implements Exception {
+  const ChildSafetyPersonHasAccountException();
+}
+
+/// Cadastro de pessoa autorizada sem conta (ADR 0041 B6, spec 062).
+final class RegisterPersonWithoutAccountCommand {
+  const RegisterPersonWithoutAccountCommand({
+    required this.requestId,
+    required this.childContextId,
+    required this.unitId,
+    required this.fullName,
+    required this.cpf,
+    this.mobilePhone,
+    this.email,
+  });
+  final String requestId;
+  final String childContextId;
+  final String unitId;
+  final String fullName;
+  final String cpf;
+  final String? mobilePhone;
+  final String? email;
+}
+
+final class PersonWithoutAccountRegistration {
+  const PersonWithoutAccountRegistration({
+    required this.authorizedPersonId,
+    required this.displayName,
+    required this.cpfMasked,
+    required this.existing,
+    required this.documentStatus,
+  });
+  final String authorizedPersonId;
+  final String displayName;
+  final String cpfMasked;
+  final bool existing;
+  final String documentStatus;
+  bool get documentReady => documentStatus == 'ready';
+}
+
+/// Arquivo escolhido pelo operador para o documento (JPEG/PNG/WebP/PDF).
+final class ChildSafetyPersonDocumentFile {
+  const ChildSafetyPersonDocumentFile({
+    required this.fileName,
+    required this.mimeType,
+    required this.bytes,
+  });
+  final String fileName;
+  final String mimeType;
+  final List<int> bytes;
+}
+
+final class ChildSafetyPersonDocumentUpload {
+  const ChildSafetyPersonDocumentUpload({
+    required this.requestId,
+    required this.authorizedPersonId,
+    required this.file,
+  });
+  final String requestId;
+  final String authorizedPersonId;
+  final ChildSafetyPersonDocumentFile file;
+}
+
+final class ChildSafetyPersonDocument {
+  const ChildSafetyPersonDocument({required this.documentId, required this.status});
+  final String documentId;
+  final String status;
+  bool get ready => status == 'ready';
+}
+
+abstract interface class ChildSafetyPersonWithoutAccountSupport {
+  Future<PersonWithoutAccountRegistration> registerPersonWithoutAccount(
+    RegisterPersonWithoutAccountCommand command,
+  );
+  Future<ChildSafetyPersonDocument> uploadPersonDocument(ChildSafetyPersonDocumentUpload upload);
+}
+
+/// MIME por extensao para o documento; null quando nao permitido.
+String? childSafetyPersonDocumentMimeType(String fileName) {
+  final lower = fileName.toLowerCase();
+  if (lower.endsWith('.jpg') || lower.endsWith('.jpeg')) return 'image/jpeg';
+  if (lower.endsWith('.png')) return 'image/png';
+  if (lower.endsWith('.webp')) return 'image/webp';
+  if (lower.endsWith('.pdf')) return 'application/pdf';
+  return null;
 }
 
 final class UnavailableChildSafetyRepository implements ChildSafetyRepository {

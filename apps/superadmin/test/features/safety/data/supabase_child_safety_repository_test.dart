@@ -47,6 +47,64 @@ void main() {
     });
   }
 
+  test('person without account is sent as authorized_person_id, never as person_id', () async {
+    late Request captured;
+    final client = _client((request) async {
+      captured = request;
+      return _ok(request);
+    });
+    addTearDown(client.dispose);
+    final repository = SupabaseChildSafetyRepository(client);
+
+    await repository.saveAuthorization(
+      SavePickupAuthorizationCommand(
+        requestId: 'request-1',
+        childId: 'child-1',
+        childContextId: 'context-1',
+        unitId: 'unit-1',
+        personId: '',
+        authorizedPersonId: 'no-account-1',
+        relationshipCode: 'other',
+        relationshipDetail: 'Vizinho',
+        capabilityCodes: const {'pickup'},
+        requestReason: 'Solicitação sintética',
+      ),
+    );
+    final payload = (jsonDecode(captured.body) as Map)['p_payload'] as Map;
+    expect(payload['authorized_person_id'], 'no-account-1');
+    expect(payload.containsKey('person_id'), isFalse);
+  });
+
+  test('PERSON_HAS_ACCOUNT detail becomes a dedicated exception', () async {
+    final client = _client(
+      (request) async => Response(
+        jsonEncode({
+          'code': '22023',
+          'message': 'person already has an account',
+          'details': 'PERSON_HAS_ACCOUNT',
+        }),
+        400,
+        request: request,
+        headers: {'content-type': 'application/json'},
+      ),
+    );
+    addTearDown(client.dispose);
+    final repository = SupabaseChildSafetyRepository(client);
+
+    await expectLater(
+      repository.registerPersonWithoutAccount(
+        const RegisterPersonWithoutAccountCommand(
+          requestId: 'request-2',
+          childContextId: 'context-1',
+          unitId: 'unit-1',
+          fullName: 'Tio Sem Conta',
+          cpf: '11144477735',
+        ),
+      ),
+      throwsA(isA<ChildSafetyPersonHasAccountException>()),
+    );
+  });
+
   test('create sends the mandatory audited request reason', () async {
     late Request captured;
     final client = _client((request) async {

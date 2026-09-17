@@ -1,5 +1,7 @@
 import 'dart:convert';
 
+import 'package:crypto/crypto.dart';
+import 'package:http/http.dart' as http;
 import 'package:http/http.dart' show ClientException;
 import 'package:supabase_flutter/supabase_flutter.dart';
 
@@ -8,10 +10,16 @@ import '../domain/child_safety_contract.dart';
 import 'child_safety_response_decoder.dart';
 
 final class SupabaseChildSafetyRepository
-    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
-  const SupabaseChildSafetyRepository(this._client);
+    implements
+        ChildSafetyRepository,
+        ChildSafetyMutationSupport,
+        ChildSafetyPersonSearchSupport,
+        ChildSafetyPersonWithoutAccountSupport {
+  const SupabaseChildSafetyRepository(this._client, {http.Client? mediaClient})
+    : _mediaClient = mediaClient;
 
   final SupabaseClient _client;
+  final http.Client? _mediaClient;
 
   /// O contrato de escrita foi qualificado em producao (child_safety_request_
   /// authorization, edit_pending, decide e change_lifecycle; decisao pelo
@@ -56,13 +64,116 @@ final class SupabaseChildSafetyRepository
     return decodeChildSafetyPersonMatches(payload);
   }
 
+  /// B6 (spec 062): registro da pessoa sem conta; CPF vai so ao servidor, que
+  /// guarda apenas o HMAC e devolve a mascara.
+  @override
+  Future<PersonWithoutAccountRegistration> registerPersonWithoutAccount(
+    RegisterPersonWithoutAccountCommand command,
+  ) async {
+    final payload = await _rpc('child_safety_register_person_without_account_v1', {
+      'p_request_id': command.requestId,
+      'p_payload': {
+        'child_context_id': command.childContextId,
+        'unit_id': command.unitId,
+        'full_name': command.fullName.trim(),
+        'cpf': command.cpf,
+        if (command.mobilePhone case final phone? when phone.trim().isNotEmpty)
+          'mobile_phone': phone.trim(),
+        if (command.email case final email? when email.trim().isNotEmpty) 'email': email.trim(),
+      },
+    });
+    return decodePersonWithoutAccountRegistration(payload);
+  }
+
+  /// Documento em R2 privado pelo gateway child-safety-media: prepare -> PUT
+  /// assinado -> finalize. O cliente nunca ve bucket ou chave.
+  @override
+  Future<ChildSafetyPersonDocument> uploadPersonDocument(
+    ChildSafetyPersonDocumentUpload upload,
+  ) async {
+    final bytes = upload.file.bytes;
+    if (bytes.isEmpty || bytes.length > 10 * 1024 * 1024) {
+      throw const ChildSafetyValidationException();
+    }
+    final prepared = await _mediaAction({
+      'action': 'prepare',
+      'request_id': upload.requestId,
+      'authorized_person_id': upload.authorizedPersonId,
+      'mime_type': upload.file.mimeType,
+      'size_bytes': bytes.length,
+    });
+    final documentId = prepared['document_id'];
+    final uploadUrl = prepared['upload_url'];
+    final requiredHeaders = prepared['required_headers'];
+    final uri = uploadUrl is String ? Uri.tryParse(uploadUrl) : null;
+    if (documentId is! String || uri == null || !uri.hasScheme || uri.userInfo.isNotEmpty) {
+      throw const ChildSafetyUnavailableException();
+    }
+    final headers = <String, String>{};
+    if (requiredHeaders is Map) {
+      for (final entry in requiredHeaders.entries) {
+        final key = entry.key.toString().toLowerCase();
+        if (key == 'authorization' || key == 'apikey' || key == 'cookie') {
+          throw const ChildSafetyUnavailableException();
+        }
+        headers[key] = entry.value.toString();
+      }
+    }
+    final client = _mediaClient ?? http.Client();
+    try {
+      final request = http.Request('PUT', uri)
+        ..followRedirects = false
+        ..headers.addAll(headers)
+        ..bodyBytes = bytes;
+      final response = await http.Response.fromStream(await client.send(request));
+      if (response.statusCode < 200 || response.statusCode >= 300) {
+        throw const ChildSafetyUnavailableException();
+      }
+    } on ClientException {
+      throw const ChildSafetyUnavailableException();
+    } finally {
+      if (_mediaClient == null) client.close();
+    }
+    final finalized = await _mediaAction({
+      'action': 'finalize',
+      'document_id': documentId,
+      'checksum_sha256': sha256.convert(bytes).toString(),
+    });
+    final status = finalized['status'];
+    if (finalized['document_id'] != documentId || status is! String) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return ChildSafetyPersonDocument(documentId: documentId, status: status);
+  }
+
+  Future<Map<String, dynamic>> _mediaAction(Map<String, dynamic> body) async {
+    try {
+      final response = await _client.functions.invoke('child-safety-media', body: body);
+      if (response.status != 200 || response.data is! Map) {
+        throw const ChildSafetyUnavailableException();
+      }
+      return Map<String, dynamic>.from(response.data as Map);
+    } on FunctionException catch (error) {
+      throw switch (error.status) {
+        401 || 403 => const ChildSafetyUnauthorizedException(),
+        _ => const ChildSafetyUnavailableException(),
+      };
+    } on ClientException {
+      throw const ChildSafetyUnavailableException();
+    }
+  }
+
   @override
   Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
     final payload = <String, Object?>{
       'child_id': command.childId,
       'child_context_id': command.childContextId,
       'unit_id': command.unitId,
-      'person_id': command.personId,
+      // B6: pessoa sem conta vai por authorized_person_id; person_id fica ausente.
+      if (command.authorizedPersonId case final withoutAccount?)
+        'authorized_person_id': withoutAccount
+      else
+        'person_id': command.personId,
       'relationship_code': command.relationshipCode,
       'relationship_detail': command.relationshipDetail,
       'capability_codes': command.capabilityCodes.toList()..sort(),
@@ -128,6 +239,8 @@ final class SupabaseChildSafetyRepository
         '23505' || '40001' || 'PT409' => const ChildSafetyConflictException(),
         // PT422: limite de taxa da busca de pessoa (PERSON_SEARCH_RATE_LIMIT).
         'PT422' => const ChildSafetyRateLimitException(),
+        '22023' when error.details?.toString().contains('PERSON_HAS_ACCOUNT') ?? false =>
+          const ChildSafetyPersonHasAccountException(),
         '22023' || '23514' => const ChildSafetyValidationException(),
         _ => const ChildSafetyUnavailableException(),
       };

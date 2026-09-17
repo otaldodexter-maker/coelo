@@ -603,6 +603,117 @@ void main() {
     expect(repository.savedCommand?.unitId, 'unit-1');
   });
 
+  testWidgets('wizard registers a person without account and requires the document', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository(personSearchEmpty: true);
+    final controller = ChildSafetyController(repository);
+    var picks = 0;
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+          pickPersonDocument: () async {
+            picks++;
+            return const ChildSafetyPersonDocumentFile(
+              fileName: 'rg.png',
+              mimeType: 'image/png',
+              bytes: [137, 80, 78, 71, 13, 10, 26, 10],
+            );
+          },
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+
+    // Crianca pela busca; depois a busca de pessoa nao encontra ninguem.
+    await tester.enterText(find.byKey(const Key('safety-child-search')), 'Ana');
+    await tester.tap(find.byTooltip('Buscar'));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Ana Criança'));
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Tio Sem');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const Key('safety-person-register-toggle')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-person-register-toggle')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('safety-register-name')), 'Tio Sem Conta');
+    await tester.enterText(find.byKey(const Key('safety-register-cpf')), '111.444.777-35');
+    await tester.ensureVisible(find.byKey(const Key('safety-register-submit')));
+    await tester.tap(find.byKey(const Key('safety-register-submit')));
+    await tester.pumpAndSettle();
+    expect(repository.registeredCommand?.cpf, '11144477735');
+    expect(repository.registeredCommand?.childContextId, 'context-1');
+    expect(repository.registeredCommand?.unitId, 'unit-1');
+    expect(find.byKey(const Key('safety-person-without-account-card')), findsOneWidget);
+    expect(find.textContaining('***.***.***-35'), findsWidgets);
+    expect(find.textContaining('11144477735'), findsNothing);
+
+    // Sem documento nao avanca; com documento avanca e salva com authorized_person_id.
+    await tester.enterText(find.byType(TextFormField).at(1), 'Solicitação familiar');
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.text('Envie a imagem do documento para continuar.'), findsOneWidget);
+    await tester.ensureVisible(find.byKey(const Key('safety-person-document-upload')));
+    await tester.tap(find.byKey(const Key('safety-person-document-upload')));
+    await tester.pumpAndSettle();
+    expect(picks, 1);
+    expect(repository.uploadedDocument?.authorizedPersonId, 'no-account-1');
+    expect(repository.uploadedDocument?.file.mimeType, 'image/png');
+    expect(find.byKey(const Key('safety-person-document-ready')), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.byType(CoeloDateRangeField), findsOneWidget);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    expect(find.textContaining('sem conta'), findsWidgets);
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pumpAndSettle();
+    expect(repository.savedCommand?.authorizedPersonId, 'no-account-1');
+    expect(repository.savedCommand?.personId, '');
+    expect(tester.takeException(), isNull);
+  });
+
+  testWidgets('wizard explains when the CPF already belongs to an account', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1024, 1400));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final repository = _Repository(personSearchEmpty: true, personHasAccount: true);
+    final controller = ChildSafetyController(repository);
+    await tester.pumpWidget(
+      _app(
+        ChildSafetyWizardPage(
+          childId: 'child-1',
+          controller: controller,
+          logout: _logout,
+          onCancel: () {},
+          onSaved: () {},
+        ),
+      ),
+    );
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('safety-wizard-primary')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('safety-person-search')), 'Tio Sem');
+    await tester.pump(const Duration(milliseconds: 400));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('safety-person-register-toggle')));
+    await tester.pump();
+    await tester.enterText(find.byKey(const Key('safety-register-name')), 'Tio Sem Conta');
+    await tester.enterText(find.byKey(const Key('safety-register-cpf')), '11144477735');
+    await tester.ensureVisible(find.byKey(const Key('safety-register-submit')));
+    await tester.tap(find.byKey(const Key('safety-register-submit')));
+    await tester.pumpAndSettle();
+    expect(find.text('Essa pessoa já tem conta: busque pelo CPF completo acima.'), findsOneWidget);
+    expect(find.byKey(const Key('safety-person-without-account-card')), findsNothing);
+  });
+
   testWidgets('wizard person search shows the rate limit message', (tester) async {
     await tester.binding.setSurfaceSize(const Size(1024, 1000));
     addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -770,7 +881,11 @@ Widget _app(
 Future<LogoutResult> _logout() async => const LogoutResult.success();
 
 final class _Repository
-    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
+    implements
+        ChildSafetyRepository,
+        ChildSafetyMutationSupport,
+        ChildSafetyPersonSearchSupport,
+        ChildSafetyPersonWithoutAccountSupport {
   _Repository({
     this.unauthorized = false,
     this.totalCount = 3,
@@ -778,18 +893,48 @@ final class _Repository
     this.editPending = false,
     this.mutationsEnabled = true,
     this.personSearchRateLimited = false,
+    this.personSearchEmpty = false,
+    this.personHasAccount = false,
   });
   @override
   final bool mutationsEnabled;
   final bool editPending;
   final bool personSearchRateLimited;
+  final bool personSearchEmpty;
+  final bool personHasAccount;
   final personSearches = <String>[];
+  RegisterPersonWithoutAccountCommand? registeredCommand;
+  ChildSafetyPersonDocumentUpload? uploadedDocument;
   bool unauthorized;
+
+  @override
+  Future<PersonWithoutAccountRegistration> registerPersonWithoutAccount(
+    RegisterPersonWithoutAccountCommand command,
+  ) async {
+    registeredCommand = command;
+    if (personHasAccount) throw const ChildSafetyPersonHasAccountException();
+    return const PersonWithoutAccountRegistration(
+      authorizedPersonId: 'no-account-1',
+      displayName: 'Tio Sem Conta',
+      cpfMasked: '***.***.***-35',
+      existing: false,
+      documentStatus: 'missing',
+    );
+  }
+
+  @override
+  Future<ChildSafetyPersonDocument> uploadPersonDocument(
+    ChildSafetyPersonDocumentUpload upload,
+  ) async {
+    uploadedDocument = upload;
+    return const ChildSafetyPersonDocument(documentId: 'doc-1', status: 'ready');
+  }
 
   @override
   Future<List<ChildSafetyPersonMatch>> searchPeople(String query) async {
     personSearches.add(query);
     if (personSearchRateLimited) throw const ChildSafetyRateLimitException();
+    if (personSearchEmpty) return const [];
     return const [
       ChildSafetyPersonMatch(
         personId: 'person-1',
@@ -813,6 +958,7 @@ final class _Repository
       ),
     ];
   }
+
   final int totalCount;
   final bool canCreate;
   SavePickupAuthorizationCommand? savedCommand;

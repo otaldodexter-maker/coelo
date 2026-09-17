@@ -54,6 +54,8 @@ ChildSafetyRecord decodeChildSafetyRecord(Object? payload) {
         institutionName: _string(authorizationContext['institution_name']),
         unitName: _string(authorizationContext['unit_name']),
         personId: _nullableString(authorization['person_id']),
+        // B6: pessoa sem conta = authorized_people sem person_id.
+        hasAppAccount: _nullableString(authorization['person_id']) != null,
         childContextId: _nullableString(authorization['child_context_id']),
         unitId: _nullableString(authorization['unit_id']),
         capabilityCodes: _list(authorization['capability_codes']).whereType<String>().toSet(),
@@ -125,6 +127,19 @@ List<ChildSafetyPersonMatch> decodeChildSafetyPersonMatches(Object? payload) {
       }).toList(),
     );
   }).toList();
+}
+
+PersonWithoutAccountRegistration decodePersonWithoutAccountRegistration(Object? payload) {
+  final json = _map(payload);
+  final id = _string(json['authorized_person_id']);
+  if (id.isEmpty) throw const ChildSafetyUnavailableException();
+  return PersonWithoutAccountRegistration(
+    authorizedPersonId: id,
+    displayName: _string(json['display_name']),
+    cpfMasked: _string(json['cpf_masked']),
+    existing: json['existing'] == true,
+    documentStatus: _string(json['document_status']),
+  );
 }
 
 Map<String, Object?> _map(Object? value) =>

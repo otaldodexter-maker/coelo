@@ -109,6 +109,30 @@ final class ChildSafetyController extends ChangeNotifier {
     return result;
   }
 
+  /// B6 (spec 062): cadastro da pessoa sem conta e upload do documento. Sem o
+  /// contrato no adapter a chamada falha fechada.
+  Future<PersonWithoutAccountRegistration> registerPersonWithoutAccount(
+    RegisterPersonWithoutAccountCommand command,
+  ) async {
+    _checkLookupAllowed();
+    final Object repository = _repository;
+    if (repository is! ChildSafetyPersonWithoutAccountSupport) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return repository.registerPersonWithoutAccount(command);
+  }
+
+  Future<ChildSafetyPersonDocument> uploadPersonDocument(
+    ChildSafetyPersonDocumentUpload upload,
+  ) async {
+    _checkLookupAllowed();
+    final Object repository = _repository;
+    if (repository is! ChildSafetyPersonWithoutAccountSupport) {
+      throw const ChildSafetyUnavailableException();
+    }
+    return repository.uploadPersonDocument(upload);
+  }
+
   Future<List<ChildSafetyChildOption>> searchChildren(String query, {int limit = 20}) async {
     _checkLookupAllowed();
     final version = _requestVersion;

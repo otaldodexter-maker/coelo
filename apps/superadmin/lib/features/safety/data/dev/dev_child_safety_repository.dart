@@ -4,7 +4,11 @@ import '../../domain/child_safety.dart';
 
 /// Stateful, deterministic repository used only by development previews.
 final class DevChildSafetyRepository
-    implements ChildSafetyRepository, ChildSafetyMutationSupport, ChildSafetyPersonSearchSupport {
+    implements
+        ChildSafetyRepository,
+        ChildSafetyMutationSupport,
+        ChildSafetyPersonSearchSupport,
+        ChildSafetyPersonWithoutAccountSupport {
   @override
   bool get mutationsEnabled => true;
   DevChildSafetyRepository({
@@ -115,6 +119,28 @@ final class DevChildSafetyRepository
           haystack.contains(needle);
     }).toList();
   }
+
+  @override
+  Future<PersonWithoutAccountRegistration> registerPersonWithoutAccount(
+    RegisterPersonWithoutAccountCommand command,
+  ) async {
+    final digits = command.cpf.replaceAll(RegExp(r'\D'), '');
+    if (digits.length != 11 || command.fullName.trim().length < 3) {
+      throw const ChildSafetyValidationException();
+    }
+    return PersonWithoutAccountRegistration(
+      authorizedPersonId: 'dev-no-account-$digits',
+      displayName: command.fullName.trim(),
+      cpfMasked: '***.***.***-${digits.substring(9)}',
+      existing: false,
+      documentStatus: 'missing',
+    );
+  }
+
+  @override
+  Future<ChildSafetyPersonDocument> uploadPersonDocument(
+    ChildSafetyPersonDocumentUpload upload,
+  ) async => ChildSafetyPersonDocument(documentId: 'dev-doc-${upload.requestId}', status: 'ready');
 
   @override
   Future<void> saveAuthorization(SavePickupAuthorizationCommand command) async {
