@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5",
+    "head": "c0be2e561009a95d9210e06b9334ab22f88905df",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -64,25 +64,24 @@
     "actionStatusCounts": {
       "frontend": {
         "local-green": 10,
-        "pending-verification": 30,
-        "verified": 192
+        "pending-verification": 28,
+        "verified": 194
       },
       "backend": {
         "blocked-decision": 2,
         "deferred-post-mvp": 33,
-        "done": 173,
-        "local-green": 7,
+        "done": 176,
+        "local-green": 5,
         "not-applicable": 13,
-        "pending-verification": 3,
-        "remote-green": 1
+        "pending-verification": 3
       },
       "integrated": {
         "blocked-backend": 1,
         "blocked-environment": 1,
         "deferred-post-mvp": 33,
         "flutter-only": 13,
-        "pending-verification": 19,
-        "verified-e2e": 165
+        "pending-verification": 16,
+        "verified-e2e": 168
       }
     },
     "deferredPostMvpActionCount": 33,
@@ -121,12 +120,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "192/232 (82.76%)",
+    "frontendVerified": "194/232 (83.62%)",
     "frontendLocalGreen": "10/232 (4.31%)",
-    "backendDone": "173/219 (79.00%)",
-    "backendLocalGreen": "7/219 (3.20%)",
-    "e2eVerified": "165/186 (88.71%)",
-    "e2ePlusFlutterOnly": "178/232 (76.72%)",
+    "backendDone": "176/219 (80.37%)",
+    "backendLocalGreen": "5/219 (2.28%)",
+    "e2eVerified": "168/186 (90.32%)",
+    "e2ePlusFlutterOnly": "181/232 (78.02%)",
     "ownerDone": "29/53 (54.72%)",
     "ownerNonTerminal": "24/53 (45.28%)"
   },
@@ -800,12 +799,12 @@
       "actionIds": [
         "account.profile"
       ],
-      "fe": "FE verified (rota real 14/09): sigla QE→QR salva e relida após reload, celular e cor exibidos.",
-      "be": "BE remote-green (lote 63): sigla/cor/celular em produção; foto R2 ausente.",
-      "e2e": "E2E aberto até a foto privada (R2) existir no BE.",
-      "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+      "fe": "FE verified na rota real (Bloco A 17/09): foto PNG real pelo seletor nativo, avatar do cabeçalho atualizado só após confirmação do servidor, remover foto, sigla QR, celular inválido bloqueado × válido gravado, layout A+ \"Meu acesso\" na mesma linha com rolagem interna.",
+      "be": "BE done: Edge account-media (prepare/finalize/read/remove) + save_v2/get em produção; asset alheio/removido → denied (422).",
+      "e2e": "E2E verified-e2e: reload e nova sessão veem a foto do R2; remoção relida.",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
       "owner": "C0 R15",
-      "nextGate": "Resolver gate SQL; aplicar contrato, implementar foto privada e provar foto/nome/sigla/cor, remover foto, grupos reais, reload e troca de sessão. A confirmação deve atualizar também o avatar global do cabeçalho; rascunho local não pode aparentar sucesso quando o servidor não confirmou. O Celular permanece obrigatório e precisa de máscara/formato de entrada, normalização e prova de valor inválido/válido. Aprovação visual 14/09: A+ — colocar o card \"Meu acesso\" na mesma linha de \"Dados pessoais\" com rolagem interna (coelo-ui), depois foto R2.",
+      "nextGate": "Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403.",
       "sourceRound": "R15"
     },
     {
@@ -1649,7 +1648,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -1661,7 +1660,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -1673,7 +1672,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "r15/bloco-c1": {
       "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
@@ -1687,7 +1686,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -1701,7 +1700,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2342,7 +2341,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "origin/r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -2354,7 +2353,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -2366,7 +2365,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "origin/r15/bloco-c1": {
       "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
@@ -2380,7 +2379,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2394,7 +2393,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "ecf08e4f23b36764a64113e4fd6cf97c45fe0ee5"
+      "successor": "c0be2e561009a95d9210e06b9334ab22f88905df"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2543,6 +2542,7 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
     "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
     "docs/reviews/inventario-etapa-2.json"
@@ -2863,12 +2863,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "192/232 (82.76%)",
+      "frontendVerified": "194/232 (83.62%)",
       "frontendLocalGreen": "10/232 (4.31%)",
-      "backendDone": "173/219 (79.00%)",
-      "backendLocalGreen": "7/219 (3.20%)",
-      "e2eVerified": "165/186 (88.71%)",
-      "e2ePlusFlutterOnly": "178/232 (76.72%)",
+      "backendDone": "176/219 (80.37%)",
+      "backendLocalGreen": "5/219 (2.28%)",
+      "e2eVerified": "168/186 (90.32%)",
+      "e2ePlusFlutterOnly": "181/232 (78.02%)",
       "ownerDone": "29/53 (54.72%)",
       "ownerNonTerminal": "24/53 (45.28%)"
     },

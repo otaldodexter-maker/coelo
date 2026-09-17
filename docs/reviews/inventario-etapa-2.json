@@ -9514,11 +9514,7 @@
       }
     }
   ],
-<<<<<<< HEAD
-  "updatedAt": "2026-09-17T13:59:15.535Z",
-=======
-  "updatedAt": "2026-09-17T13:50:25.077Z",
->>>>>>> ec41ba79f (r15(bloco-a): Conta — foto real em R2 privado, avatar global, nova sessão, remoção e celular provados na rota real)
+  "updatedAt": "2026-09-17T13:59:46.520Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
