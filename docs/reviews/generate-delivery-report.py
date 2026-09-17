@@ -1,4 +1,4 @@
-"""Generate the current R15 delivery-reconciliation report from live sources.
+"""Generate the current R16 delivery-reconciliation report from live sources.
 
 This is a report generator, not a delivery command. It never fetches, commits,
 pushes, deploys, changes trackers or changes product state.
@@ -16,13 +16,13 @@ ROOT = Path(__file__).resolve().parents[2]
 REPORT = ROOT / "docs/reviews/entrega-atual.json"
 INVENTORY = ROOT / "docs/reviews/inventario-etapa-2.json"
 OWNER_LEDGER = ROOT / "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
-OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md"
-CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md"
+OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md"
+CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md"
 # Last coordination base before the R14 action deltas. This keeps the gate
 # audit anchored to the published cut instead of comparing HEAD with itself.
 BASE_REFERENCE = "9d6636115a15d10f6c44b1ababa4f162fed0ae06"
 CURRENT_STATE = "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md"
-PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md"
+PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md"
 ROUND_INDEX = "docs/reviews/etapa-2-operacao/next-round/RODADAS.md"
 EXCLUDED_COMPLETED_OWNER_IDS = {
     "owner.r12-07",
@@ -150,7 +150,7 @@ def current_owner_items(ledger: list) -> list:
                 "be": item.get("be", ""),
                 "e2e": item.get("e2e", ""),
                 "evidence": evidence,
-                "owner": "C0 R15" if status != "done" else "registro histórico R12/R13",
+                "owner": "C0 R16" if status != "done" else "registro histórico R12/R13",
                 "nextGate": normalize_gate(item.get("nextGate", "")),
                 "sourceRound": "R15",
             }
@@ -182,10 +182,10 @@ def main() -> None:
     ids = {item["id"] for item in ledger}
     queue_ids, queue_completed = current_owner_queue(OWNER_QUEUE)
     if queue_ids != ids:
-        raise SystemExit("R15 Owner queue does not enumerate the 53 canonical IDs")
+        raise SystemExit("R16 Owner queue does not enumerate the 53 canonical IDs")
     completed = {item["id"] for item in ledger if item["status"] == "done"}
     if completed != queue_completed:
-        raise SystemExit("R15 Owner queue and canonical Owner ledger disagree on done IDs")
+        raise SystemExit("R16 Owner queue and canonical Owner ledger disagree on done IDs")
     pending = ids - completed
 
     owner_items = current_owner_items(ledger)
@@ -203,7 +203,7 @@ def main() -> None:
         "docs/reviews/etapa-2-operacao/next-round/R13-owner-items-atual.json",
         "docs/reviews/etapa-2-operacao/next-round/R13-prompt-execucao-20260914.md",
         "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
-        "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
+        "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     }
     evidence.update(item["evidence"] for item in owner_items)
     evidence.update(entry["evidence"] for entry in branches.values())
@@ -263,9 +263,9 @@ def main() -> None:
         "reportType": "current-cut-reconciliation",
         "completion": "partial",
         "asOf": {
-            "round": "R15",
+            "round": "R16",
             "roundStatus": "active",
-            "nextRound": "R16 not opened",
+            "nextRound": "R17 not opened",
             "branch": git("branch", "--show-current"),
             "head": git("rev-parse", "HEAD"),
             "worktree": "source checkout at report generation; report commit follows",
@@ -285,7 +285,7 @@ def main() -> None:
             ],
         },
         "currentQueue": {
-            "scope": "R15 vigente (ADR 0042); R16 não aberta",
+            "scope": "R16 vigente (ADR 0043); R17 não aberta",
             "ownerTotal": 53,
             "ownerPendingCount": len(pending),
             "ownerDoneCount": len(completed),
@@ -324,7 +324,7 @@ def main() -> None:
             "reason": "Lote 74 aplicado em produção pelo rito em 16/09 (seis migrations R14; incidente do PostgREST encerrado). Sessões R15 aplicam lotes seguintes pelo rito e registram no ledger. O relatório não autoriza novo deploy por si só.",
         },
         "r14Status": {
-            "round": "R15",
+            "round": "R16",
             "status": "active",
             "source": CHECKPOINT,
             "completedOwnerItems": sorted(completed),

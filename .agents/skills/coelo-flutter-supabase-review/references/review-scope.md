@@ -255,6 +255,16 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
   remove o bloqueio ao terminar. Captura, erro observado e reload devem ficar
   juntos da evidência do action_id; o bloqueio não certifica backend.
 
+## Corte da R16 (17/09/2026)
+
+- Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia).
+- Repositório: só `dev` no GitHub (limpeza com manifesto e bundle em 17/09); worktrees
+  novas nascem de `dev`; a coordenadora integra por cherry-pick e classifica cada
+  branch de sessão como `patch-equivalent` no `entrega-atual.json` antes de apagá-la.
+- Identidades: internas (`qa-r06-*`) resolvem pessoa por `superadmin_internal_actor_people`
+  e podem responder formulários; a responsável `qa-r15-responsavel` tem conta, pessoa
+  ativa e `guardian_links`, mas sem `institution_memberships` (OQ-048).
+
 ## Rota real medida em 17/09/2026 (R15)
 
 - Negativa de versão defasada por PostgREST: esperado HTTP 409 `PT409` sem

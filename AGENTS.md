@@ -13,11 +13,12 @@ históricos.
    pós-MVP ou pendências gerais.
 4. Leia a spec, ADR, contrato ou skill específica apontada pelo índice.
 
-Em 2026-09-16, o Owner encerrou a R14 e abriu a R15 como fila única consolidada
-(`docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md`, ADR 0042): Owner
+Em 2026-09-17, o Owner encerrou a R15 e abriu a R16 como fila única consolidada
+(`docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md`, ADR 0043): Owner
 items, H, itens da ADR 0038, ações não terminais e resíduos operacionais num só
-arquivo, IDs preservados, itens concluídos fora da fila. R12/R13/R14 são
-históricos congelados. Não crie pendências em outro arquivo.
+arquivo, IDs preservados, itens concluídos fora da fila. R12–R15 são
+históricos congelados. Não crie pendências em outro arquivo. O GitHub tem só a
+branch `dev`; trabalho paralelo usa worktrees locais criadas de `dev`.
 
 ## Produto e arquitetura
 

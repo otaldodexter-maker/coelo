@@ -80,6 +80,14 @@ por `functions list`. Autorização de produção é nominal do Owner por lote; 
 classificador do executor pode negar `db query --linked` numa sessão e permitir
 noutra — nunca contornar, registrar o comando no handoff.
 
+Estado da Etapa 2 (backend): Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`
+(ADR 0043). Lotes 75–80 em produção e Edges `chat-media`, `child-safety-media` v2,
+`meal-plan-media`, `meal-plan-image-cleanup`, `now-media`, `form-media` v23. Edge que
+recebe o bearer do pg_cron precisa de `verify_jwt = false` e validar o bearer no
+handler (`form-media`, `circular-media`); com o gateway ligado o worker recebe 401 e o
+cron "sucede" sem efeito. Conta só de responsável não abre tela (OQ-048): provas de
+responsável em produção usam PostgREST com a sessão dele.
+
 ## Coordenação e fechamento
 
 Esta é uma skill folha. Só use `coelo-frontend-backend` quando o aceite da

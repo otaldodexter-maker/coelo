@@ -1,35 +1,43 @@
 ---
-title: "R15 — fila única consolidada da Etapa 2"
-source: "Owner em 2026-09-16 (fechar a R14 e levar tudo o que ficou pendente para a R15; decisions/0042-r14-closure-r15-opening-20260916.md); R14-pendencias.md (congelado; 53 Owner IDs, H02–H28, itens da ADR 0038); inventario-etapa-2.json (estados certificados por action_id); R14-checkpoint-20260916.md; R14-fechamento.md; varredura R01–R14"
-status: "historical"
-lifecycle: "historical"
-generated_at: "2026-09-16"
+title: "R16 — fila única consolidada da Etapa 2"
+source: "Owner em 2026-09-17 (fechar a R15 e abrir a R16 com tudo o que ficou pendente de R01 a R15; decisions/0043-r15-closure-r16-opening-20260917.md); R15-pendencias.md (congelado; 53 Owner IDs, H02–H28, itens da ADR 0038); inventario-etapa-2.json; R15-checkpoint-20260917.md; R15-fechamento.md"
+status: "active"
+lifecycle: "current"
+generated_at: "2026-09-17"
 updated_at: "2026-09-17"
 audience: "team"
 ---
 
-# R15 — fila única consolidada
+# R16 — fila única consolidada
 
-> **Histórico congelado em 17/09/2026** (ADR 0043). A fila viva é `R16-pendencias.md`; nenhum item deste arquivo volta à execução por aqui.
-
-> **Este é o único arquivo vivo de pendências da Etapa 2.** `R14-pendencias.md`
-> passa a histórico congelado (como R12/R13). A tabela de Owner items abaixo é a
+> **Este é o único arquivo vivo de pendências da Etapa 2.** `R15-pendencias.md`
+> passa a histórico congelado (como R12/R13/R14). A tabela de Owner items abaixo é a
 > fonte lida por `sync-r12-owner-records.cjs` (53 linhas, IDs preservados);
 > `docs/reviews/inventario-etapa-2.json` continua a fonte dos estados por
 > `action_id`. Item `done` fica aqui só para contagem e não volta à execução;
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
-Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
-coordenadora R15, 17/09/2026, após as integrações do dia): FE 207/232 (89,22%),
-BE 185/219 (84,47%), E2E 184/186 (98,92%), Owner 37/53 (69,81%).
-Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
-Fila: 2 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
-pela E8); meta do Owner: **186/186**, 16 Owner
-items abertos/parciais, 19 resíduos H,
-2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
+Contadores certificados pelo inventário e `validate-trackers.cjs` no fechamento
+da R15 (17/09/2026, `dev` `37d762976`): FE 207/232 (89,22%), BE 185/219 (84,47%),
+E2E 184/186 (98,92%), Owner 39/53 (73,58%). Abertura da R15 em
+16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53. Fila: 2 ação(ões) não
+terminal(is) no MVP, 14 Owner items abertos/parciais, 19 resíduos H, 2 itens da ADR
+0038 e os resíduos operacionais listados abaixo. Nenhum item foi
 renumerado; nenhum estado mudou na abertura.
 
-## Abertura (Owner, 16/09/2026 — ADR 0042)
+## Abertura (Owner, 17/09/2026 — ADR 0043)
+
+O Owner determinou em 17/09/2026 o fechamento da R15 e a abertura da R16 como fila
+única, levando **tudo o que ficou pendente de R01 a R15** com os mesmos IDs, e a
+unificação do repositório em `dev` (branches e tags remotas apagadas com bundle de
+recuperação e manifesto). A R15 rendeu +22 E2E, +18 FE, +13 BE e +18 Owner
+items num dia, com lotes 75–80 em produção (PT409 sistêmico, Chat multi-anexo,
+leitor "Para você", B5/B6/Cardápios R2, projeção do Agora, fixture QA R15) e
+decisões E10–E14 do Owner (adendo da ADR 0042). O que ficou aberto está nas
+seções abaixo; a ordem de execução proposta considera o que já tem código e só
+falta prova.
+
+## Abertura da R15 (histórico, Owner, 16/09/2026 — ADR 0042)
 
 O Owner encerrou a R14 no fim de 16/09 e determinou que **tudo o que ficou
 pendente de R01 a R14** seja levado para a R15, para acelerar o fechamento. A
@@ -40,7 +48,7 @@ resíduos operacionais sem `action_id` registrados na seção própria abaixo. A
 dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 `M13t2csojoBnGt4sGWY4QM`, ADR 0042 E1–E7); ver a seção seguinte.
 
-## Mesa R15 — respostas do Owner (16/09, ADR 0042 E1–E7)
+## Mesa R15 — respostas do Owner (16/09, ADR 0042 E1–E7; histórico)
 
 - **Produção e permissões resolvidas no mesmo dia**: o Owner liberou a escrita
   em produção para a coordenação; as seis migrations foram aplicadas (lote 74,
@@ -70,7 +78,34 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
   `coelo-documents-prod` só com origens locais de QA no MVP.
 - Ambiente resolvido (Owner, 16/09): CORS das Edge Functions para `127.0.0.1:3014–3024` aplicado nas seis `*_ALLOWED_ORIGINS` de produção; preflight 200/204 em 3016/3018/3022/3024, 3030 segue 403.
 
-## Ordem de execução proposta (fechar primeiro o que já tem código e só falta prova)
+## Ordem de execução proposta (R16)
+
+1. **E2E remanescente** (2): agora: `agora.publish`; forms_responses: `forms.location-answer`. Provar na rota real com a massa `QA R15`
+   (responsável com conta `qa-r15-responsavel`, crianças 93457405…/14d70a25…, turma 368a5cea) — sem
+   contrato novo.
+2. **Owner items abertos/parciais** (14): Assiduidade (`r12-05` contexto Atividade —
+   `ACTIVITY_INVALID_REFERENCE` a isolar; `r12-08` ≥2 alunos; `r12-04` Histórico; `r12-06`
+   snapshot), Medicação `r12-33` (sino do responsável, E7 — provar com `qa-r15-responsavel` por
+   PostgREST), Conta `r12-46` (máscara/normalização do Celular), B5/B6/Cardápios R2
+   (`r12-17/18/38` — backend em produção desde o lote 78; falta a prova E2E completa), Perfis
+   de acesso `r12-20` (rolagem em viewport baixo), Perfis de cuidado §5 (`r12-29/30`, spec
+   065), perfil transversal (`r12-19/23`, spec 064), `r12-49` close/reopen na rota real,
+   `r12-53`/OQ-034 (spec 067), `r12-10` (revisão da Table canônica).
+3. **Specs decididas com implementação pendente**: 064 (OQ-044), 065 (§5), 066 (OQ-033 +
+   `institutions.status`), 067 (OQ-034), 068 (OQ-032), 069 (Avisos H08/H13/H23) — implementar
+   com pgTAP + FE + rota real; OQ-048 (contexto do Principal para responsável sem membership).
+4. **Resíduos H** (19) com gate de medição e os itens da ADR 0038 (Local interno em
+   Formulários; allowlist de redirect → concluída em produção para `127.0.0.1:8765`).
+5. **Operação**: censo completo de suítes (registrado no fechamento da R15 — corrigir as
+   falhas pré-existentes), goldens fora do E4 (notice_directory, forms, invites, meal_plans,
+   platform_users), CORS dos buckets R2 (decisão E13: só na Etapa 3 com a origem pública),
+   deploy público do frontend, espelho CLI de migrations.
+
+**Fora da R16:** SMTP próprio e prova detalhada do link de reset (Etapa 3, E8/E10); MFA ×3
+(`deferred-post-mvp`, E9); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream
+genérico (sem contrato); origem pública `superadmin.coelo.me` (Etapa 3).
+
+## Ordem de execução da R15 (histórico)
 
 **Bloco A — rota real que ficou pronta na R14 (sem SQL novo; só exige produção respondendo):**
 1. Perfis de acesso `access-profiles.edit/assign` + `owner.r12-20/21/22/24/25/26/27` (build e roteiro em `R14-handoff-sessao-5.md`).
@@ -240,24 +275,24 @@ não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA �
 | agora | 1 | `agora.publish` (verified/done/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
 
-## Resíduos operacionais sem action_id (varredura R01–R14, 16/09)
+## Resíduos operacionais sem action_id (varredura R01–R15, 17/09/2026)
 
 | Item | Origem | Estado | Gate |
 |---|---|---|---|
-| Migrations da R14 em produção | R14 Sessões 8/9/10 | **Aplicadas em 16/09 (lote 74, ledger 302–309)** | Provar na rota real (Bloco B). |
-| Incidente PostgREST 40001 (OQ-047) | R14 Sessão 8 | Incidente encerrado em 16/09 pela primeira migration do lote 74; restam ~169 `raise serialization_failure` em produção | E1 = A: migration única 40001 → PT409 com pgTAP por família. Regra durável: RPC nova nunca sinaliza versão defasada com 40001. |
-| Goldens pré-existentes (391 falhas em 34 suítes) | R12–R14 | Mesma assinatura do cabeçalho (C1); 30 regravadas na R14 | E4 = A: regravar suíte a suíte após conferir o isolatedDiff, com registro. |
-| Testes pré-existentes vermelhos | anterior à R14 | `model_save_completion_routes_test` (3), `principal_real_route_test` (1), `principal_profile_for_you_production_routes_test` (1), `activity_routes_test` (1) | Corrigir na R15 antes do censo de suítes. |
-| Censo completo de suítes (G8, R09) | R09 | Nunca executado integralmente | Rodar `flutter test` por pacote e registrar o censo no fechamento. |
-| Deploy público do frontend (R09 C0) | R09 | Sem deploy público desde a R09; builds QA locais | Reconciliar build/host de produção antes de qualquer publicação. |
-| CORS das Edge Functions por porta | R14 Sessões 5/7 | **Concluído 16/09**: `COELO`, `CHAT`, `CIRCULAR`, `HAPPENS`, `MOMENTS` e `NOW_MEDIA_ALLOWED_ORIGINS` regravadas em `evvbomzejfijozbtgvpt` com as três origens `coelo.me` + `localhost`/`127.0.0.1` em 3000/3009/3014–3024; OPTIONS 200/204 em 3016/3018/3022/3024 nas cinco funções, 3030 → 403 | — (sessões paralelas podem usar 3014–3024). |
-| `agora.remove` — projeção e fixture D5 | R14 Sessão 7 | Candidato `now_feed_removal_projection` provado no espelho; fixture existe (só `postgres`) | Aplicar pelo rito e provar negativa 422 sem mutação; revogar identidade. |
-| `owner.r12-46` layout A+ "Meu acesso" | R13 | Aprovação visual 14/09 sem implementação | coelo-ui: card na mesma linha de "Dados pessoais" com rolagem interna. |
-| Stream genérico | R14 Sessão E | Sem contrato, Edge, segredo, fixture ou critério | Só com decisão do Owner; hoje `stream_status=not_applicable`. |
-| Espelho CLI `supabase/migrations` com cópias não rastreadas | R14 coordenação | 206 arquivos no espelho ignorado pelo Git | `Sync-SupabaseCliMigrations.ps1 -Mode Clean` antes de qualquer `db push`; corrigir o script (tracked ≠ canonical). |
-| Worktrees/branches `r14/*` | R14 | Seis worktrees integradas por cherry-pick, protegidas | Remover com manifesto no fechamento da R15 ou reaproveitar para as sessões da R15. |
+| Migrations em produção | R14/R15 | **Lotes 74–80 aplicados** (ledger até `20260917180000`; fixture `20260917110000` executada; candidato AP-2 `20260917113000` versionado e **não aplicado**, OQ-048) | Provas E2E restantes sobre esses lotes (Assiduidade, Medicação, B5/B6/Cardápios). |
+| Incidente PostgREST 40001 (OQ-047) | R14 Sessão 8 | **Encerrada em 17/09 (lote 75)**: 0 `raise serialization_failure`, 0 `errcode='40001'` em produção; regra durável projetada em `docs/knowledge` e skills | — |
+| Goldens pré-existentes | R12–R15 | 55 regravadas (30 na R14, 25 Principal na R15, E4); restam falhas fora do E4: notice_directory (filtro Estado), forms (editor/operations/response), invites (golden + responsive), meal_plans (diretório), platform_users | Regravar só com diff decidido por família; `invite_responsive_test` procura toggle removido na R14 (corrigir o teste). |
+| Testes pré-existentes vermelhos | anterior à R14 | `model_save_completion_routes_test` (3), `principal_real_route_test` (1), `principal_profile_for_you_production_routes_test` (1), `activity_routes_test` (1), testes de router `principal-context-selector` | Corrigir antes do próximo censo. |
+| Censo completo de suítes (G8, R09) | R09 | **Executado em 17/09** no `apps/superadmin` (resultado em `R15-checkpoint-20260917.md`) | Repetir por pacote a cada fechamento. |
+| Deploy público do frontend (R09 C0) | R09 | Sem deploy público; builds QA locais; `superadmin.coelo.me` não existe | Etapa 3: host, allowlist de Auth e CORS dos buckets com a origem pública. |
+| CORS dos buckets R2 | R15 C2 | `coelo-media-prod` só 3014/3016; `coelo-documents-prod` nenhuma origem; Owner decidiu não alterar em 17/09 (E13) | Etapa 3 junto do deploy público; provas locais usam 3014/3016 ou o gateway por Node. |
+| Conta `qa-r15-responsavel` e massa QA R15 | R15 B/B′ | Conta em produção (`ff3682a1…`), fixture AP-1 executada (responsável ativa com login, 2 crianças, permissões `can_view`); sem `institution_memberships` (OQ-048) | Usar nas provas de responsável por PostgREST; não criar membership. |
+| `owner.r12-46` layout A+ "Meu acesso" e máscara do Celular | R13/R15 | Card A+ pendente; Celular sem máscara/normalização (só 7–40 caracteres) | coelo-ui + contrato de normalização; r12-46 permanece partial. |
+| Stream genérico | R14 Sessão E | Sem contrato | Só com decisão do Owner. |
+| Espelho CLI `supabase/migrations` | R14/R15 | Cópias não rastreadas; `migration repair` exige a cópia em `supabase/migrations/` | `Sync-SupabaseCliMigrations.ps1 -Mode Clean`; corrigir o script. |
+| Worktrees/branches/tags | R14/R15 | **Limpeza executada em 17/09/2026** (manifesto `docs/agent/branch-cleanup-manifest-20260917.md`; bundle `Coelo-backups/r15-fechamento/coelo-all-refs-20260917-pre-limpeza.bundle`) | Restam só `dev` remota e a pasta principal; sessões futuras criam worktree nova de `dev`. |
 
-## Decisões de escopo do Owner (14/09, 15/09 e 16/09; ver `docs/agent/backlog.md`)
+## Decisões de escopo do Owner (14/09, 15/09, 16/09 e 17/09; ver `docs/agent/backlog.md`)
 
 
 Fora do MVP: operações de Planos comerciais (listar/criar/editar/arquivar/restaurar/
@@ -271,11 +306,13 @@ Antes do fim do MVP: perfis oficiais do Coelo (OQ-032). R15: OQ-033 (decidido em
 
 **16/09/2026 — Mesa do Owner (artefato Jrsk1XBe97MCLpeUBGAeYz, ADR 0041):** 27 decisões registradas; `institutions.files` fora do MVP; páginas de erro `flutter-only`; H11 → V1; perfil transversal e Perfis de cuidado redesenhados → specs R15; contratos B1–B9 fixados; autorizações D1–D5 concedidas, D6 negada.
 
+**17/09/2026 — execução da R15 e abertura da R16 (adendo ADR 0042 E10–E14; ADR 0043):** reset de senha aceito por decisão (prova detalhada → Etapa 3); conta `qa-r15-responsavel` criada em produção; lotes 78–80 e redeploys (`child-safety-media` v2, `form-media` v23 com `verify_jwt=false`) autorizados; CORS dos buckets R2 mantido (Etapa 3); R15 fechada e R16 aberta com unificação do repositório em `dev`.
+
 ## Como atualizar
 
 - Estado por `action_id`: só via `apply-tracker-delta.cjs` com evidência certificada (inventário → três rastreadores).
 - Owner items: editar a linha aqui e rodar `node docs/reviews/etapa-2-operacao/next-round/sync-r12-owner-records.cjs`.
-- H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14 (históricos).
+- H, itens da ADR e resíduos operacionais: editar a linha aqui. Nunca editar R12/R13/R14/R15 (históricos).
 - Validar sempre com `node docs/reviews/validate-trackers.cjs`.
-- Execução paralela (sessões, worktrees, handoffs): `R15-execucao-paralela.md` (aberta em 17/09; sessões A/B/C1/C2); prompts em `R15-prompts.md` (coordenadora + Blocos A/B/C, E5); handoffs são comunicação, não fila.
-- Recuperação/redefinição de senha (E8): `auth.recover` BE done (entrega real 16/09, `r15-coordenacao/auth-recover-mfa-decisoes-20260916.md`); prova pela tela no Bloco A; allowlist `127.0.0.1:*` preparada (push depende do Owner); SMTP próprio na Etapa 3.
+- Execução paralela: modelo em `R15-execucao-paralela.md` (histórico); uma R16 paralela exige arquivo próprio.
+- Recuperação/redefinição de senha: `auth.recover` E2E pela tela e `auth.reset` por decisão E10 (17/09); prova detalhada do link na Etapa 3.

@@ -1,14 +1,16 @@
 ---
 title: "R15 — prompts de execução (coordenadora + Blocos A, B, B′ apoio, C1 e C2)"
 source: "decisions/0042-r14-closure-r15-opening-20260916.md (E1–E7); R15-pendencias.md; R14-checkpoint-20260916.md; R14-handoff-sessao-5..10.md; Owner em 16/09 (quatro prompts; meta 100% E2E a partir de 17/09)"
-status: "active"
-lifecycle: "current"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-16"
 updated_at: "2026-09-17"
 audience: "team"
 ---
 
 # R15 — prompts de execução
+
+> Histórico: a R15 fechou em 17/09/2026 (ADR 0043). Worktrees e branches `r15-*` foram removidas; use este arquivo só como modelo.
 
 Seis prompts (E5 da ADR 0042, com o Bloco C dividido em C1/C2 e uma sessão
 de apoio ao Bloco B, a pedido do Owner em 16/09): um para a coordenadora (pasta principal, `dev`) e um por

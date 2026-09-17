@@ -12,6 +12,34 @@ audience: "team"
 
 ## Agora
 
+- A Etapa 2 está na **R16**, aberta em 17/09/2026 pelo Owner (ADR 0043) como
+  fila única consolidada com **tudo o que ficou pendente de R01 a R15** (IDs
+  preservados; `done` não retorna). R15 fechou no mesmo dia
+  (`R15-fechamento.md`, `R15-checkpoint-20260917.md`); R12–R15 são históricos.
+- Corte de abertura (validate-trackers em `37d762976`): FE 207/232 (89,2%),
+  BE 185/219 (84,5%), E2E 184/186 (98,9%), Owner 39/53.
+  Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
+  abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
+- Produção em 17/09: lotes 75–80 (PT409 sistêmico, Chat multi-anexo, "Para você",
+  B5/B6/Cardápios R2, projeção do Agora, fixture QA R15) e Edges `chat-media`,
+  `child-safety-media` v2, `meal-plan-media`, `meal-plan-image-cleanup`, `now-media`,
+  `form-media` v23 (`verify_jwt=false`). Conta `qa-r15-responsavel@coelo.me` existe
+  (credencial em `Coelo-backups`), responsável ativa com 2 crianças; sem membership
+  (OQ-048).
+- Repositório: **só `dev`** no GitHub (branches e tags apagadas com manifesto
+  `docs/agent/branch-cleanup-manifest-20260917.md` e bundle em `Coelo-backups/r15-fechamento`);
+  worktrees removidas. Sessões novas criam worktree de `dev`; filhas commitam na própria
+  branch e a coordenadora integra por cherry-pick. Nunca `git add -A`/`stash`.
+- Regras duráveis: PT409 (nunca 40001) para versão defasada; rito de produção por lote
+  (`docs/knowledge/team/stale-version-pt409-and-production-rite.md`); busca de pessoa
+  minimizada (ADR 0041 B5); conta só-responsável não abre tela (OQ-048).
+- Decisões vigentes do Owner: ADR 0038, 0039, 0040, 0041, 0042 (+ adendo E10–E14), 0043.
+  Não reabrir.
+- Histórico da R15: `R15-fechamento.md`, `R15-checkpoint-20260917.md`,
+  `R15-execucao-paralela.md` (histórico), handoffs `R15-handoff-bloco-*.md`.
+
+## Agora (R15, histórico de 16–17/09)
+
 - A Etapa 2 está na **R15**, aberta em 16/09/2026 pelo Owner (ADR 0042) como
   fila única consolidada com **tudo o que ficou pendente de R01 a R14** (IDs
   preservados; itens `done` não retornam). R14 fechou no mesmo dia
@@ -72,37 +100,37 @@ audience: "team"
 
 Use, nesta ordem:
 
-1. [Fila única R15](../reviews/etapa-2-operacao/next-round/R15-pendencias.md) — Owner
+1. [Fila única R16](../reviews/etapa-2-operacao/next-round/R16-pendencias.md) — Owner
    items (fonte do sync), H, itens da ADR 0038, ações não terminais e resíduos operacionais;
 2. [Estado atual da Etapa 2](../reviews/etapa-2-operacao/ETAPA-2-estado-atual.md) —
    percentuais canônicos;
 3. [Inventário por action_id](../reviews/inventario-etapa-2.json) — detalhe e
    certificação por ação (estados só mudam por `apply-tracker-delta.cjs`);
-4. [Fechamento da R14](../reviews/etapa-2-operacao/next-round/R14-fechamento.md) e
-   [checkpoint de 16/09](../reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md)
+4. [Fechamento da R15](../reviews/etapa-2-operacao/next-round/R15-fechamento.md) e
+   [checkpoint de 17/09](../reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md)
    — apenas para o delta do último corte; checkpoints anteriores são históricos.
 
 Os três rastreadores grandes são projeções do inventário para auditoria; não são a
-entrada inicial. `R12-pendencias.md`, `R13-pendencias.md`, `R14-pendencias.md`, `R14-catalogo.md`,
+entrada inicial. `R12-pendencias.md`, `R13-pendencias.md`, `R14-pendencias.md`, `R15-pendencias.md`, `R14-catalogo.md`,
 `R13-projecao-atual.md` e `R13-owner-items-atual.json` são históricos/derivados.
 
-## Regra de passagem entre rodadas (aplicada em 14/09 na R13 → R14 e em 16/09 na R14 → R15)
+## Regra de passagem entre rodadas (aplicada em 14/09, 16/09 e 17/09)
 
 A cada fechamento de rodada:
 
 - itens `done` ou aceitos não são transferidos nem reabertos;
 - itens `open`, `partial`, bloqueados ou sem prova são levados para a rodada nova com o
   mesmo `action_id`/Owner ID e nova referência de rodada;
-- não criar cópia concorrente em R12, R13, R14 ou R15;
+- não criar cópia concorrente em R12, R13, R14, R15 ou R16;
 - atualizar este arquivo, `RODADAS.md`, o catálogo corrente, o inventário e os
   rastreadores no mesmo ciclo;
 - somente depois registrar que a rodada nova está aberta.
 
 ## Fora do trabalho corrente
 
-Etapa 3, V1, V2, pós-MVP, históricos R01–R14 e artefatos de execução não são
+Etapa 3, V1, V2, pós-MVP, históricos R01–R15 e artefatos de execução não são
 trabalho corrente. Consulte [backlog.md](backlog.md) apenas quando a tarefa
 explicitamente tratar desses horizontes.
 
 Para uma tarefa explícita de limpeza, use o
-[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R15.
+[backlog de artefatos](artifact-cleanup-backlog-20260914.md), não a fila R16.

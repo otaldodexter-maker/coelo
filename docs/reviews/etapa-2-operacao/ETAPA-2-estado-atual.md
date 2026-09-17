@@ -1,12 +1,12 @@
 ---
-title: "Etapa 2 — estado atual e fila vigente R15"
+title: "Etapa 2 — estado atual e fila vigente R16"
 source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/0040-agora-immediate-removal.md; R15-pendencias.md; decisions/0042-r14-closure-r15-opening-20260916.md; R01–R13 históricos; coelo-flutter-pendencias.md; coelo-supabase-pendencias.md; coelo-flutter-integrado-supabase-pendencias.md; inventario-etapa-2.json"
-status: "active; fila vigente R15; R01–R14 históricos"
+status: "active; fila vigente R16; R01–R15 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
 updated_at: "2026-09-17"
 base: "dev"
-revision: "8334d3695 (fechamento da R14 / abertura da R15, 16/09)"
+revision: "37d762976 (fechamento da R15 / abertura da R16, 17/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
 ---
 
@@ -34,9 +34,18 @@ partir do inventário; não replique aqui uma união manual de ações não term
 As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
-> Fila viva desde 16/09/2026: `next-round/R15-pendencias.md` (R12/R13/R14 congeladas).
+> Fila viva desde 17/09/2026: `next-round/R16-pendencias.md` (R12–R15 congeladas).
 
-## Snapshot de 17/09 — R15 em execução paralela
+## Snapshot de 17/09 — fechamento da R15 e abertura da R16
+
+A R15 fechou em `37d762976` (`next-round/R15-fechamento.md`, ADR 0043): FE 207/232
+(89,2%), BE 185/219 (84,5%), E2E 184/186 (98,9%), Owner
+39/53 — +22 E2E num dia, lotes 75–80 em produção, PT409 sistêmico, specs 058–069,
+repositório unificado em `dev`. A R16 herda 2 ação(ões) não terminal(is) e
+14 Owner items. **Estes são os percentuais canônicos atuais**; as seções abaixo
+com percentuais anteriores são snapshots históricos.
+
+## Snapshot de 17/09 — R15 em execução paralela (histórico)
 
 Cinco sessões em worktrees `r15-bloco-*` (`next-round/R15-execucao-paralela.md`),
 integração em `dev` por cherry-pick. Lote 75 em produção (OQ-047: 40001 → PT409
@@ -127,7 +136,7 @@ Os denominadores são por camada e não devem ser somados entre si.
 O denominador de BE é 219 nesta versão do inventário. A métrica combinada é
 `174/232`; para aceite integrado, a base correta continua sendo `162/186`.
 
-## Fila vigente R15 — pendências herdadas
+## Fila vigente R16 — pendências herdadas (ver `next-round/R16-pendencias.md`; o texto abaixo descreve a herança na abertura da R15)
 
 O detalhe completo permanece na fila única R14 e nas seções de auditoria dos três
 rastreadores. A tabela abaixo é o índice operacional mínimo;

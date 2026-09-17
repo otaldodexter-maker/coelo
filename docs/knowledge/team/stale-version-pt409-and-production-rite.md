@@ -53,7 +53,13 @@ sem limite, e em 16/09 esses laços esgotaram o pool de conexões da produção
 
 Lotes de 17/09/2026: 75 (PT409 sistêmico), 76 (Chat com vários anexos por
 mensagem, E3), 77 (leitor "Para você" do Principal, B9), 78 (busca de pessoa
-autorizada B5, pessoa sem conta B6 e imagens de Cardápios em R2).
+autorizada B5, pessoa sem conta B6 e imagens de Cardápios em R2), 79 (projeção
+`can_remove` do feed do Agora) e 80 (fixture da massa QA R15). Lotes 79 e 80 fecharam a
+R15; a R16 (ADR 0043) segue o mesmo rito.
+
+Edge Function chamada pelo pg_cron com bearer próprio usa `verify_jwt = false` e valida
+o bearer no handler; com a verificação do gateway ligada o worker recebe 401 e o cron
+"sucede" sem efeito (caso `form-media`, corrigido em 17/09, E14).
 
 ## Busca de pessoa e pessoa sem conta (ADR 0041 B5/B6)
 

@@ -1,14 +1,16 @@
 ---
 title: "R15 — execução paralela: quatro sessões executoras (A, B, C1, C2) e uma coordenadora"
 source: "Owner em 2026-09-16/17 (ADR 0042 E5: quatro prompts; Bloco C dividido em C1/C2; meta E2E 186/186); R15-prompts.md; R15-pendencias.md; R14-execucao-paralela.md (modelo histórico); review-scope.md (retomada entre worktrees, sessão QA D7)"
-status: "active"
-lifecycle: "current"
+status: "historical"
+lifecycle: "historical"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"
 audience: "team"
 ---
 
 # R15 — execução paralela
+
+> Histórico: a R15 fechou em 17/09/2026 (ADR 0043). Worktrees e branches `r15-*` foram removidas; use este arquivo só como modelo.
 
 A fila continua sendo só `R15-pendencias.md`. Este arquivo define **quem faz o
 quê, onde e como as sessões se comunicam** enquanto a R15 roda com quatro

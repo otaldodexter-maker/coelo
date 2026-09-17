@@ -4,18 +4,18 @@
   "reportType": "current-cut-reconciliation",
   "completion": "partial",
   "asOf": {
-    "round": "R15",
+    "round": "R16",
     "roundStatus": "active",
-    "nextRound": "R16 not opened",
+    "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5",
+    "head": "37d762976d2e684a2a16de685d96862cf3b20c97",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
     "currentState": "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "roundIndex": "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
-    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
-    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
+    "latestCheckpoint": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
+    "ownerQueue": "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "ownerQueueProjection": null,
     "inventory": "docs/reviews/inventario-etapa-2.json",
     "artifactInventory": "docs/agent/artifact-inventory-20260914.json",
@@ -26,7 +26,7 @@
     ]
   },
   "currentQueue": {
-    "scope": "R15 vigente (ADR 0042); R16 não aberta",
+    "scope": "R16 vigente (ADR 0043); R17 não aberta",
     "ownerTotal": 53,
     "ownerPendingCount": 14,
     "ownerDoneCount": 39,
@@ -60,7 +60,7 @@
       "H28"
     ],
     "inheritedOriginCount": 27,
-    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
+    "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
         "local-green": 2,
@@ -191,7 +191,7 @@
       "be": "BE local-green: `20260916180000_attendance_call_history_v1` (leitor por cursor com escopo do painel, só agregados) + pgTAP 44/44 no espelho; NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, rota real autenticada, reload e negativa cross-tenant (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Aplicar `20260916180000` pelo rito (espelho verde) após o fim do incidente; provar `/attendance/history` com `qa-r06-operacoes`, reload e negativa; decidir se Publicar lançamento fica no Histórico ou volta a Rotinas (spec 052 §3).",
       "sourceRound": "R15"
     },
@@ -205,9 +205,9 @@
       "be": "BE done; `superadmin_attendance_create_call` aceita `p_activity_id`; **achado**: chamada em contexto Atividade nasce com `participants []` (turma com 3 crianças ativas, atividade em modo `all`).",
       "e2e": "verified-e2e (contexto Turma, R14); contexto Atividade: negativa não executada (prazo).",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
-      "owner": "C0 R15",
-      "sourceRound": "R15",
-      "nextGate": "ADR 0041 D3: falta a negativa do contexto Atividade e esclarecer `participants []` (derivação por `activity_group_participants` vs modo `all`) — R16"
+      "owner": "C0 R16",
+      "nextGate": "ADR 0041 D3: falta a negativa do contexto Atividade e esclarecer `participants []` (derivação por `activity_group_participants` vs modo `all`) — R16",
+      "sourceRound": "R15"
     },
     {
       "id": "owner.r12-06",
@@ -220,7 +220,7 @@
       "be": "BE local-green: `20260916183000_attendance_routine_snapshot_v1` (colunas de snapshot, `attendance_effective_routine`, complete_call grava só na primeira conclusão, call_detail expõe routine_snapshot/routine_current/routine_source, histórico projeta a rotina, 40001 → PT409 na família) + pgTAP 43/43 no espelho; NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, concluir/reabrir chamada real, reload do detalhe e negativa 409 PT409 (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Aplicar `20260916183000` pelo rito após `20260916180000` e o fim do incidente; provar na rota real: concluir grava snapshot, reabrir/concluir preserva, legado mostra a indicação; negativa de versão defasada responde 409 PT409.",
       "sourceRound": "R15"
     },
@@ -253,7 +253,7 @@
       "be": "Contratos preservados; set_participant v2 e complete_call v3 em produção.",
       "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "ADR 0041 D6: Owner não autoriza massa fictícia agora; prova com ≥2 alunos fica para depois. Bloqueado por decisão, não por ambiente.",
       "sourceRound": "R15"
     },
@@ -281,7 +281,7 @@
       "be": "Contrato preservado; nenhum SQL/RPC novo.",
       "e2e": "Pendente: rota real da tabela e revisão contra a Table canônica.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Revisar a tabela do diretório contra a Table canônica e capturar na rota real quando o PostgREST voltar; golden não certifica aceite.",
       "sourceRound": "R15"
     },
@@ -395,7 +395,7 @@
       "be": "BE done (lote 78): tabela/RPC com dedupe por (instituição, CPF) provado pela tela e por RPC, documento em R2 privado `ready` pelo gateway (prepare/PUT/finalize/read 200 com `child-safety-media` v2), pgTAP 40/40.",
       "e2e": "E2E parcial: envio com `authorized_person_id` provado pela RPC com o payload exato do wizard (pendente b729f6b8 relido); o clique final \"Enviar\" pela tela não concluiu (aba do Chrome parou no CDP) e o upload do documento pelo navegador depende do CORS de `coelo-documents-prod` (E13).",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "R16: repetir o envio final pela tela e o upload pelo navegador quando o CORS do bucket existir; PERSON_HAS_ACCOUNT só por pgTAP (massa).",
       "sourceRound": "R15"
     },
@@ -407,7 +407,7 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito.",
       "sourceRound": "R15"
     },
@@ -464,7 +464,7 @@
       "be": "Contrato a verificar; conflito Principal em R12-23.",
       "e2e": "Sem nova prova.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14.",
       "sourceRound": "R15"
     },
@@ -553,7 +553,7 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base.",
       "sourceRound": "R15"
     },
@@ -569,7 +569,7 @@
       "be": "BE done.",
       "e2e": "verified-e2e das ações; aceite central ainda pendente.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15.",
       "sourceRound": "R15"
     },
@@ -617,7 +617,7 @@
       "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); NÃO aplicada em produção.",
       "e2e": "Pendente: aplicar a migration, editar plano e registrar dose reais e observar o sino com identidade da unidade/educador (bloqueio: incidente PostgREST 504).",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Aplicar `20260916190000` pelo rito após o incidente; provar o sino na rota real com duas identidades (admin da unidade e educador da turma); sem e-mail/push.",
       "sourceRound": "R15"
     },
@@ -809,7 +809,7 @@
       "be": "BE done: Edge account-media (prepare/finalize/read/remove) + save_v2/get em produção; asset alheio/removido → denied (422).",
       "e2e": "E2E verified-e2e: reload e nova sessão veem a foto do R2; remoção relida.",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403.",
       "sourceRound": "R15"
     },
@@ -857,7 +857,7 @@
       "be": "BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green.",
       "e2e": "verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real.",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
       "sourceRound": "R15"
     },
@@ -909,7 +909,7 @@
       "be": "Não iniciado.",
       "e2e": "Pendente; transferência documental não certifica execução.",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
-      "owner": "C0 R15",
+      "owner": "C0 R16",
       "nextGate": "Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema.",
       "sourceRound": "R15"
     }
@@ -1746,7 +1746,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "r15/bloco-b": {
       "sha": "b20b202fe2907f7fd5317531cb3548808fb2e8f7",
@@ -1766,7 +1766,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "r15/bloco-b-apoio": {
       "sha": "a3d6bb4a4f0e222baa9e86d4d43896d4915f68c7",
@@ -1787,7 +1787,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -1807,7 +1807,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "r15/bloco-c2": {
       "sha": "bb2efb09e0b92d52d90b39d43e4c7b01e5754b98",
@@ -1827,7 +1827,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2483,7 +2483,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "origin/r15/bloco-b": {
       "sha": "b20b202fe2907f7fd5317531cb3548808fb2e8f7",
@@ -2503,7 +2503,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "a3d6bb4a4f0e222baa9e86d4d43896d4915f68c7",
@@ -2524,7 +2524,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "origin/r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -2544,7 +2544,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "origin/r15/bloco-c2": {
       "sha": "bb2efb09e0b92d52d90b39d43e4c7b01e5754b98",
@@ -2564,7 +2564,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
+      "successor": "37d762976d2e684a2a16de685d96862cf3b20c97"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2688,8 +2688,9 @@
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+    "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-    "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
+    "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
     "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-directory-diagnostic-r12.md",
@@ -2722,31 +2723,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-b/atividade-qa-r15-criacao-20260917.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
-    "specs/053-superadmin-medication-in-app-notifications.md",
-    "specs/058-superadmin-chat-multi-attachment-message.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-c2/person-search-and-person-without-account-20260917.md",
-    "specs/062-superadmin-child-safety-person-without-account.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "specs/054-archive-activity-routine-models.md",
-    "specs/061-superadmin-child-safety-person-search.md",
-    "specs/063-superadmin-meal-plan-images-r2.md"
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
@@ -2988,13 +2965,13 @@
   },
   "deployment": {
     "status": "pending",
-    "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
     "reason": "Lote 74 aplicado em produção pelo rito em 16/09 (seis migrations R14; incidente do PostgREST encerrado). Sessões R15 aplicam lotes seguintes pelo rito e registram no ledger. O relatório não autoriza novo deploy por si só."
   },
   "r14Status": {
-    "round": "R15",
+    "round": "R16",
     "status": "active",
-    "source": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "source": "docs/reviews/etapa-2-operacao/next-round/R15-checkpoint-20260917.md",
     "completedOwnerItems": [
       "owner.r12-01",
       "owner.r12-02",

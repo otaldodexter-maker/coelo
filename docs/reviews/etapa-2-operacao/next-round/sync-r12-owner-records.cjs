@@ -3,7 +3,7 @@
 const fs = require('node:fs');
 const path = require('node:path');
 const root = path.resolve(__dirname, '../../../..');
-const catalog = fs.readFileSync(path.join(__dirname, 'R15-pendencias.md'), 'utf8');
+const catalog = fs.readFileSync(path.join(__dirname, 'R16-pendencias.md'), 'utf8');
 const rows = catalog.split(/\r?\n/).filter(line => /^\| owner\.r12-\d+ \|/.test(line));
 if (rows.length !== 53) throw new Error(`Expected 53 owner rows, found ${rows.length}`);
 const ownerPath = path.join(__dirname, 'R12-owner-items.json');

@@ -74,7 +74,7 @@ Para retomar a limpeza de artefatos, leia
 `docs/agent/artifact-cleanup-backlog-20260914.md`; não coloque inventários ou
 backups dentro desta skill.
 
-Regras duráveis nascidas na R15 (17/09/2026) — `PT409` para versão defasada,
+Regras duráveis nascidas na R15 (17/09/2026; R16 aberta pela ADR 0043) — `PT409` para versão defasada,
 rito de produção por lote, busca minimizada de pessoa (B5), pessoa sem conta
 (B6) — estão projetadas em `docs/knowledge/team/stale-version-pt409-and-production-rite.md`
 e nas skills `coelo-supabase`/`coelo-flutter-review`; a fonte canônica segue
