@@ -61,3 +61,24 @@ Rito de sempre (dump prévio → `db query --linked -f migrations/20260917113000
 → `migration list` → `select app_private.seed_qa_r15_guardian_membership_v1();` como `postgres` → lote
 novo no ledger). Reversão manual: revogar a membership (`status='inactive'`, `revoked_at=now()`).
 Antes de aplicar, o Owner decide o efeito colateral do §1 (audiência dos eventos de cuidado).
+
+## 5. Checagem prévia à aplicação (15:4x BRT) — parada sem escrita em produção
+
+A coordenadora reabriu o AP-2 (B registrou `agora.publish` com 403 `now_permission_denied`) com a
+condição de verificar antes, no espelho, se a responsável lê o feed com a membership. Resultado
+(massa + AP-1 + AP-2, `request.jwt.claims` da conta da responsável, `set local role authenticated`):
+
+```
+has_institution_permission(d0c4…0001,'now.publications.read')                 -> false
+has_institution_permission(d0c4…0001,'now.publications.read', unidade, turma) -> false
+list_visible_now_publications(d0c4…0001,null,null,20) -> ERROR now_permission_denied
+  (app_private.now_actor linha 14; antes de now_viewer_role_class)
+```
+
+Causa observada: `app_private.has_context_permission` só reconhece `institution_role_assignments`
+(papel → `institution_role_permissions`) e `institution_member_permission_overrides` da membership;
+`guardian_links`/`guardian_context_permissions` não concedem nada a `now_actor`. `role_code='guardian'`
+não tem papel de sistema (só `institution_admin`, `coordinator`, `teacher`, `secretary`). Grant que
+falta: override `now.publications.read` (allow, escopo `group` da turma) na membership, ou atribuição a
+um papel de equipe — ambas decisões de contrato (reforçam a OQ-048: o Agora para famílias é barrado
+por `now_actor` antes da classe `guardian`). Parei e reportei; nada aplicado.
