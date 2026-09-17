@@ -1,0 +1,41 @@
+[
+ {
+  "action_id": "chat.attach",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 C1 rota real (E3, spec 058): seletor nativo multiplo via CDP, dialogo de lote com estado por item e progresso, mosaico 3 e 3+1 (+N), tile unico PDF e imagem, falha total com Cancelar envio (discard), reload em /communication/conversations.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+   "revision": "d27a829db",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T10:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "chat.attach",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R15 C1 lote 76: 20260917120000_chat_attachment_batch_v2 (prepare_v2 em lote 1-10, 11o CHAT_ATTACHMENT_LIMIT 422, finalize_v2 por irmaos, discard_v1, expire por irmaos, thread_v2 so ready na ordem do lote) aplicada pelo rito; pgTAP 51/51 + 28/28 + 9/9 no espelho; Edge chat-media (items[], finalize_v2, discard) implantada apos deno test 7/7.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+   "revision": "d27a829db",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T10:05:00-03:00"
+  }
+ },
+ {
+  "action_id": "chat.attach",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R15 C1: producao, conversa 7f54da12 — 3 PNG numa mensagem (mosaico), 4 PNG (+1), PDF, PNG unico, falha de PUT com cancelamento (mensagem archived, anexos deleted), reload por thread_v2; negativas por PostgREST: conversa alheia 404 CHAT_NOT_FOUND, 11 itens 422 CHAT_ATTACHMENT_LIMIT, discard por outra identidade 404, discard repetido 409.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+   "revision": "d27a829db",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T10:05:00-03:00"
+  }
+ }
+]

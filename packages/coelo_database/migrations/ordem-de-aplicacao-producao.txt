@@ -318,3 +318,12 @@
 # 20260917090000 confirmado por `supabase migration repair --status applied` + `migration list --linked`; pos-verificacao em producao:
 # 0 raise serialization_failure, 0 errcode 40001, 134 funcoes com PT409, nenhum backend PostgREST em laco.
 20260917090000_pt409_stale_version_v1.sql
+
+# lote 76 (17/09 09:58) - R15 Bloco C1 (Chat, ADR 0042 E3 / spec 058): varios anexos por mensagem. prepare_v2 em lote (1-10, 11o = CHAT_ATTACHMENT_LIMIT 422,
+# teto do lote 67 preservado, replay por uuid v5 do request_id), finalize_v2 por irmaos (mensagem publica so quando todos terminam), discard_v1,
+# expire_v1 sensivel a irmaos, thread_v2 so com anexos ready na ordem do lote (coluna position), CHAT_ATTACHMENT_DISCARD_INVALID (409).
+# Espelho proprio mirror-r15-c1 (dump c87f4d67 + catalogos de producao), pgTAP batch_v2 51/51 + v1 28/28 + r13 lote 67 9/9; dump previo
+# Coelo-backups/schema-producao-20260917-r15-c1-e3-before.sql (SHA-256 c87f4d67, identico ao das 08:53); aplicada por
+# `supabase db query --linked -f`, `migration repair --status applied 20260917120000`, ledger remoto confirmado por `migration list --linked`
+# (a 20260917090000 do Bloco B ja constava no ledger no momento da listagem; numeracao 75 reservada a ela, coordenadora renumera se preciso).
+20260917120000_chat_attachment_batch_v2.sql

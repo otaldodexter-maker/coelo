@@ -4529,18 +4529,38 @@
       "family": "chat",
       "screen": "Chat / Anexar arquivo",
       "scope": "mvp",
-      "done": "Direção de acabamento registrada, sem novo aceite. Executar prova própria de mídia/compositor e reload/escopo na rodada designada da Etapa 2; não obrigatória na R11. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada. | Destino Owner: R12-52; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-52 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação. Delta f8c209a17 preservado: mídia inline local,29 testes únicos (20+9), sem E2E novo; faltam rota normal/mosaico/compositor/reload/escopo.",
-      "fe": "R12 C0: composição atualizada para agrupar múltiplas mídias visuais da mesma mensagem em mosaico de até três itens com contador de adicionais; tile único e anexos não visuais preservados.",
-      "be": "Referência visual futura preserva R2 privado e autorização. Agrupamento de anexos exige conferir contrato de envio conjunto; nenhum SQL ou mudança remota nesta preparação. Anterior: R10 03:55Z: SQL61 e Edge MP4 implantados. Dois PNG reais inline e R2 privado confirmados. Upload MP4 bloqueado por permissao file URLs da extensao; fixture H264 valida preservada. | Destino Owner: R12-52; pendência herdada, sem mudança de estado; ver R12-pendencias-herdadas-R11.md. | Planejamento Owner por cota: R12-52 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação. Delta f8c209a17 preservado: mídia inline local,29 testes únicos (20+9), sem E2E novo; faltam rota normal/mosaico/compositor/reload/escopo.",
-      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md, preservado na branch codex/e2-r02-l02-chat-comunicacoes; nenhuma implementacao especulativa nesta rodada; packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql, cujo catalog_kind nao inclui chat; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r18 (contratoChatAttach); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/flutter-integrado-ciclo60.jsonl; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md; docs/reviews/evidence/etapa-2/r10-coordenacao/chat-owner.md; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/design/chat-media-composer-owner-reference-20260913.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
+      "done": "R15 C1: producao, conversa 7f54da12 — 3 PNG numa mensagem (mosaico), 4 PNG (+1), PDF, PNG unico, falha de PUT com cancelamento (mensagem archived, anexos deleted), reload por thread_v2; negativas por PostgREST: conversa alheia 404 CHAT_NOT_FOUND, 11 itens 422 CHAT_ATTACHMENT_LIMIT, discard por outra identidade 404, discard repetido 409.",
+      "fe": "R15 C1 rota real (E3, spec 058): seletor nativo multiplo via CDP, dialogo de lote com estado por item e progresso, mosaico 3 e 3+1 (+N), tile unico PDF e imagem, falha total com Cancelar envio (discard), reload em /communication/conversations.",
+      "be": "R15 C1 lote 76: 20260917120000_chat_attachment_batch_v2 (prepare_v2 em lote 1-10, 11o CHAT_ATTACHMENT_LIMIT 422, finalize_v2 por irmaos, discard_v1, expire por irmaos, thread_v2 so ready na ordem do lote) aplicada pelo rito; pgTAP 51/51 + 28/28 + 9/9 no espelho; Edge chat-media (items[], finalize_v2, discard) implantada apos deno test 7/7.",
+      "evidence": "evidence/etapa-2/comunicacao/2026-09-08-media-lifecycle-handoff.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/L02.md, preservado na branch codex/e2-r02-l02-chat-comunicacoes; nenhuma implementacao especulativa nesta rodada; packages/coelo_database/migrations/20260908160000_private_media_catalog_r2_v1.sql, cujo catalog_kind nao inclui chat; evidence/etapa-2/r05-realm-interno/handoff.md; comunicacao/realm-interno.json r18 (contratoChatAttach); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/flutter-integrado-ciclo60.jsonl; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/errors-route-map.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/delivery-summary.md; docs/reviews/evidence/etapa-2/r10-coordenacao/chat-owner.md; docs/reviews/evidence/etapa-2/r10-coordenacao/integration-checkpoint.md; docs/design/chat-media-composer-owner-reference-20260913.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md; docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+          "revision": "d27a829db",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:05:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+          "revision": "d27a829db",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+          "revision": "d27a829db",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:05:00-03:00"
+        }
+      }
     },
     {
       "id": "chat.receipts",
@@ -9436,7 +9456,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-16T20:54:16.929Z",
+  "updatedAt": "2026-09-17T13:07:25.037Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
