@@ -1,0 +1,80 @@
+[
+ {
+  "action_id": "principal.for-you",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 C1 rota real (B9, spec 059): hub le pelo leitor do ator (list_my_principal_for_you) com o vinculo do contexto ativo; Ver como so troca avatar/nome no cabecalho (sem faixa), hub relido para o contexto escolhido; reload.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "principal.for-you",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R15 C1 lote 77: 20260917130000_principal_for_you_reader_v1 (list_my_principal_for_you: ator por auth.uid, vinculo proprio, tipo/status/destino/vigencia/audiencia no servidor, envelope superadmin_notice_json) aplicada pelo rito; pgTAP 21/21 no espelho; prova por PostgREST com qa-r06-principal.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "principal.for-you",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R15 C1: producao, qa-r06-principal — aviso real QA R15 (for_you, audiencia = instituicao A) no hub, reload, Ver como B → hub relido vazio; negativas: destino invalido 400 22023, vinculo alheio/inexistente [] (pgTAP + producao).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "principal.profile-edit",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 C1 rota real (B9, spec 059): Editar perfil do contexto ativo — secao de texto adicionada, aplicada e salva pela tela, 'Sobre salvo.' apos re-leitura; consumidor H02 ligado (ProfileAboutOfficialUpdateRequest → dialogo → p_official_updates) com capacidade desligada no MVP (AAL2/E9).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "principal.profile-edit",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R15 C1: contrato existente get_profile_about/save_profile_about confirmado em producao (versao otimista profile_about_pages.version; PT409 desde o lote 75; p_official_updates exige profiles.about.update_official_data com AAL2); nenhum SQL novo nesta acao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ },
+ {
+  "action_id": "principal.profile-edit",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R15 C1: producao, qa-r06-principal — Sobre salvo pela tela (save_profile_about 200, pagina 1d442fc9 versao 2) e relido; negativas por PostgREST: instituicao alheia 403 42501, versao defasada 409 PT409 PROFILE_ABOUT_STALE_VERSION.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+   "revision": "6e9234c87",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T12:10:00-03:00"
+  }
+ }
+]
