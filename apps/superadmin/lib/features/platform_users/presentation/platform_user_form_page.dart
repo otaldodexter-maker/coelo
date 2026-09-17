@@ -249,9 +249,24 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
         });
         return;
       }
+      // Edição: o catálogo de instituições também precisa existir aqui,
+      // senão perfil e escopos ficam bloqueados ("catálogo indisponível")
+      // e a atribuição de perfil nunca acontece pela rota real. Uma falha
+      // do catálogo não derruba a carga: o acesso existente é preservado.
+      Map<String, String>? institutions;
+      final loadInstitutions = widget.loadInstitutions;
+      if (loadInstitutions != null) {
+        try {
+          institutions = await loadInstitutions();
+        } on Object {
+          institutions = null;
+        }
+        if (!_isCurrent(revision)) return;
+      }
       _populate(record);
       setState(() {
         _loadedRecord = record;
+        if (institutions != null) _loadedInstitutions = Map.unmodifiable(institutions);
         _loading = false;
       });
     } on Object catch (error) {

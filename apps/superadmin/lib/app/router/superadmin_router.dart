@@ -3858,6 +3858,7 @@ GoRouter createSuperadminRouter({
                 ),
                 repository: repository,
                 internalUserId: id,
+                loadInstitutions: loadInternalUserInstitutions,
                 capability: PlatformUserCapability.owner,
                 logout: logout,
                 onCancel: () => context.goNamed(

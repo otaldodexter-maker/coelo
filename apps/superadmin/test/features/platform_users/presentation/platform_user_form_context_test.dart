@@ -198,6 +198,48 @@ void main() {
     expect(find.byKey(const Key('platform-user-scopes')), findsNothing);
   });
 
+  testWidgets('editing loads the institution catalog so profile and scopes can change', (
+    tester,
+  ) async {
+    final repository = _Repository('A', realScope: true);
+    var catalogReads = 0;
+    await tester.pumpWidget(
+      _app(
+        repository,
+        loadInstitutions: () async {
+          catalogReads++;
+          return const {'11111111-1111-4111-8111-111111111111': 'Instituição QA'};
+        },
+      ),
+    );
+    await tester.pumpAndSettle();
+    expect(catalogReads, 1);
+    for (var step = 0; step < 2; step++) {
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Catálogo de instituições indisponível'), findsNothing);
+    expect(find.byKey(const Key('platform-user-scopes')), findsOneWidget);
+    expect(find.text('Instituição QA'), findsWidgets);
+  });
+
+  testWidgets('editing keeps the existing access when the institution catalog fails', (
+    tester,
+  ) async {
+    final repository = _Repository('A', realScope: true);
+    await tester.pumpWidget(
+      _app(repository, loadInstitutions: () async => throw StateError('catalog down')),
+    );
+    await tester.pumpAndSettle();
+    expect(tester.takeException(), isNull);
+    for (var step = 0; step < 2; step++) {
+      await tester.tap(find.text('Continuar'));
+      await tester.pumpAndSettle();
+    }
+    expect(find.text('Catálogo de instituições indisponível'), findsOneWidget);
+    expect(find.byKey(const Key('platform-user-scopes')), findsNothing);
+  });
+
   testWidgets('real unknown membership scopes survive review and identity update', (tester) async {
     final repository = _Repository('A', realScope: true);
     await tester.pumpWidget(_app(repository));
