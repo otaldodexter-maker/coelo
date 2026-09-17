@@ -1,19 +1,19 @@
 ---
-title: "R15 — prompts de execução (coordenadora + Blocos A, B e C)"
+title: "R15 — prompts de execução (coordenadora + Blocos A, B, B′ apoio, C1 e C2)"
 source: "decisions/0042-r14-closure-r15-opening-20260916.md (E1–E7); R15-pendencias.md; R14-checkpoint-20260916.md; R14-handoff-sessao-5..10.md; Owner em 16/09 (quatro prompts; meta 100% E2E a partir de 17/09)"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-16"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 audience: "team"
 ---
 
 # R15 — prompts de execução
 
-Cinco prompts (E5 da ADR 0042, com o Bloco C dividido em C1/C2 a pedido do
-Owner em 16/09): um para a coordenadora (pasta principal, `dev`) e um por
-bloco (worktree própria). Modelo recomendado: Fable na coordenadora, B, C1 e
-C2; Opus basta no A. Cada bloco é uma sessão
+Seis prompts (E5 da ADR 0042, com o Bloco C dividido em C1/C2 e uma sessão
+de apoio ao Bloco B, a pedido do Owner em 16/09): um para a coordenadora (pasta principal, `dev`) e um por
+bloco (worktree própria). Modelo/esforço recomendado: Fable médio na coordenadora, C1 e C2; Fable alto no
+B; Fable extra alto no apoio B′ (ocioso entre pedidos); Opus/Fable leve no A. Cada bloco é uma sessão
 executora; a coordenadora integra por cherry-pick. Copie o prompt inteiro para
 a sessão correspondente. Meta do Owner: **E2E 186/186** (hoje 162): 24 ações, todas com decisão tomada
 (E8 reset de senha no MVP; E9 MFA fora).
@@ -40,7 +40,7 @@ Você é a COORDENADORA da R15 do Coelo (checkout principal, branch `dev`, HEAD 
 
 Entrada obrigatória: AGENTS.md; `docs/agent/current-state.md`; `docs/agent/source-of-truth.md`; `decisions/0041-*` e `decisions/0042-*` inteiras; `docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md` (todas as seções); `R14-checkpoint-20260916.md`; `R14-execucao-paralela.md` (histórico — reaproveitar o modelo); handoffs `R14-handoff-sessao-5..10.md` (roteiros de retomada); `.agents/skills/coelo-flutter-supabase-review/references/review-scope.md`.
 
-Papel: (1) escrever `R15-execucao-paralela.md` (sessões A/B/C1/C2, worktrees `Coelo.worktrees\r15-bloco-a|b|c1|c2` em branches `r15/bloco-a|b|c1|c2` criadas de `dev`, `.env.local` copiado, portas 3014/3015/3016/3017 e CDP 9414/9415/9416/9417, espelhos 621xx/622xx/623xx/624xx, handoffs `R15-handoff-bloco-a|b|c1|c2.md`); (2) lançar as quatro sessões com os Prompts A, B, C1 e C2 deste arquivo; (3) integrar cada entrega em `dev` por cherry-pick (conflito em inventário/rastreadores: manter `dev`, reaplicar o delta JSON, `validate-trackers`; conflito em `R15-pendencias.md`: manter as duas linhas); (4) a cada integração: atualizar cabeçalho/contadores/projeção de `R15-pendencias.md` (projeção de ações não terminais gerada do inventário por `frontendStatus/backendStatus/integratedStatus`), `current-state.md`, `ETAPA-2-estado-atual.md`, `entrega-atual.json` (worktrees protegidas, branches residuais `patch-equivalent` com `successor`, formalActions para ações mudadas fora de Owner items), `node docs/reviews/validate-trackers.cjs`, `powershell -File .agents/skills/coelo-knowledge/scripts/Test-CoeloKnowledge.ps1 -Root <raiz>`, `git diff --check`, commit + `git push origin dev`, `python docs/reviews/delivery_gate.py docs/reviews/entrega-atual.json` (PASS); (5) escritas em produção que uma sessão não conseguir por permissão são feitas por você pelo rito (regra local já liberada); (6) no fim: checkpoint `R15-checkpoint-<data>.md`, contadores antes→depois, action_ids certificados, bloqueios por causa (sessão/massa/RPC/ambiente/decisão), gate PASS, stash vazio, worktrees listadas. Não execute telas você mesma; não edite dentro das worktrees.
+Papel: (1) escrever `R15-execucao-paralela.md` (sessões A/B/B′/C1/C2, worktrees `Coelo.worktrees\r15-bloco-a|b|b-apoio|c1|c2` em branches `r15/bloco-a|b|b-apoio|c1|c2` criadas de `dev`, `.env.local` copiado, portas 3014/3015/3018/3016/3017 e CDP 9414/9415/9418/9416/9417, espelhos 621xx/622xx/625xx/623xx/624xx, handoffs `R15-handoff-bloco-a|b|c1|c2.md` e `R15-apoio-bloco-b.md`); (2) lançar as cinco sessões com os Prompts A, B, B′, C1 e C2 deste arquivo; o Owner cola os avisos entre B e B′; (3) integrar cada entrega em `dev` por cherry-pick (conflito em inventário/rastreadores: manter `dev`, reaplicar o delta JSON, `validate-trackers`; conflito em `R15-pendencias.md`: manter as duas linhas); (4) a cada integração: atualizar cabeçalho/contadores/projeção de `R15-pendencias.md` (projeção de ações não terminais gerada do inventário por `frontendStatus/backendStatus/integratedStatus`), `current-state.md`, `ETAPA-2-estado-atual.md`, `entrega-atual.json` (worktrees protegidas, branches residuais `patch-equivalent` com `successor`, formalActions para ações mudadas fora de Owner items), `node docs/reviews/validate-trackers.cjs`, `powershell -File .agents/skills/coelo-knowledge/scripts/Test-CoeloKnowledge.ps1 -Root <raiz>`, `git diff --check`, commit + `git push origin dev`, `python docs/reviews/delivery_gate.py docs/reviews/entrega-atual.json` (PASS); (5) escritas em produção que uma sessão não conseguir por permissão são feitas por você pelo rito (regra local já liberada); (6) no fim: checkpoint `R15-checkpoint-<data>.md`, contadores antes→depois, action_ids certificados, bloqueios por causa (sessão/massa/RPC/ambiente/decisão), gate PASS, stash vazio, worktrees listadas. Não execute telas você mesma; não edite dentro das worktrees.
 
 Sem decisões pendentes: as 24 ações não terminais do MVP (22 + `auth.recover/reset`, E8) estão distribuídas nos Blocos A/B/C1/C2; MFA ×3 já é `deferred-post-mvp` (E9). Uma ação do Owner ainda em aberto: o `config push` da allowlist de redirect (`scratchpad/auth-redirect`) — sem ela, `auth.reset` só prova em `superadmin.coelo.me`; peça ao Owner quando o Bloco A chegar à fatia 7.
 
@@ -79,7 +79,25 @@ Fatias, nesta ordem:
 6. **Arquivar B1**: Atividades › Modelos e Rotina › Modelos — Arquivar/Restaurar pela tela, aba/filtro Arquivados, reload, negativa PT409 e cross-tenant → r12-02; cards de Rotina (altura uniforme, "Efetivo: —", Arquivar em todos) na rota real → r12-01.
 7. **Agora**: `agora.remove` pela tela — aplicar pelo rito o candidato de projeção `management_version`/`can_remove` em `list_visible_now_publications` (handoff 7 §5; atualizar o guard "minimum projection" no mesmo lote), provar remoção imediata + reload + recibo de purge; negativa D5 com a fixture `app_private.seed_qa_r14_chat_cross_tenant_user` executada como `postgres` via `db query`, 422 `publication_remove_denied` sem mutação, revogação ao fim; `agora.expire` E2E (observar `expires_at` e o worker `expire_due_now_publications` sobre a publicação `a4e65c73` de 16/09, que vence ~24 h depois de publicada — capturar o feed antes/depois).
 
+Apoio: existe uma sessão de APOIO AO BLOCO B (Prompt B′, branch `r15/bloco-b-apoio`, esforço extra alto) que só trabalha por pedido seu. Quando uma fatia travar por mais de ~20 minutos sem rota (RPC que não obedece, pgTAP em cascata, 504/PGRST003, massa que não aparece, fixture invisível, conflito de contrato), não insista: registre em `R15-handoff-bloco-b.md` uma seção `## Pedidos de apoio` com `### AP-<n>` (fatia, erro exato com saída, o que já tentou, o que precisa: diagnóstico / candidato SQL / assumir a fatia), faça commit + push da branch e **siga para a próxima fatia**. A resposta chega em `git show origin/r15/bloco-b-apoio:docs/reviews/etapa-2-operacao/next-round/R15-apoio-bloco-b.md` (o Owner avisa): aplique o passo a passo, ou `git cherry-pick <sha>` da branch de apoio, ou retire a reivindicação se o apoio assumiu a fatia. Nunca edite a branch de apoio; ele nunca edita a sua.
+
 Parada e handoff como no Bloco A.
+
+---
+
+## Prompt B′ — Apoio ao Bloco B (worktree `Coelo.worktrees\r15-bloco-b-apoio`, branch `r15/bloco-b-apoio`, porta 3018, CDP 9418, perfil `%TEMP%\coelo-r15-b-apoio-chrome`, espelho `mirror-r15-b-apoio` portas 625xx, arquivo de saída `R15-apoio-bloco-b.md`, evidências `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/`; esforço extra alto)
+
+Você é a SESSÃO DE APOIO AO BLOCO B da R15 do Coelo. Seu único trabalho é destravar o Bloco B: você não tem fila própria. Leia o conjunto comum (AGENTS.md, `docs/agent/current-state.md`, `source-of-truth.md`, ADR 0041/0042, `R15-pendencias.md`, `review-scope.md`) e tudo o que o Prompt B lista (handoffs 8/9/10, evidências de Segurança da criança e Assiduidade, OQ-047, specs 052/053/054, migrations do lote 74, dump `schema-producao-20260916-lote74-before.sql`), e o Prompt B inteiro em `R15-prompts.md` para conhecer cada fatia. Você tem a mesma permissão de produção do B (rito completo: espelho + pgTAP + dump prévio + `supabase db query --linked -f` + `migration repair` + ledger + lote) e a mesma proibição: nunca `git add -A`/`stash`, nunca credencial em log, PT409 (nunca 40001).
+
+Protocolo:
+1. Ao iniciar: crie a worktree e restaure o espelho `mirror-r15-b-apoio` do dump mais novo de produção (`supabase db dump --linked … -f Coelo-backups/schema-producao-<data>-b-apoio.sql`), rode `flutter pub get` no superadmin e deixe o build QA pronto. Depois **espere**: leia `git show origin/r15/bloco-b:docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-b.md` (seção `## Pedidos de apoio`) a cada aviso do Owner; não invente trabalho enquanto não houver pedido.
+2. Cada pedido tem ID `AP-<n>`, a fatia do B, o erro exato, o que o B já tentou e o que ele precisa (diagnóstico / candidato SQL / assumir a fatia). Atenda na ordem de chegada, um por vez.
+3. Para cada pedido, escreva em `R15-apoio-bloco-b.md` (só você escreve nele): `### AP-<n>` → causa **observada** (comando/saída, nunca inferência), entrega (uma das três: (a) passo a passo que o B executa na worktree dele; (b) commit na sua branch `r15/bloco-b-apoio` com migration/pgTAP/FE prontos, para o B fazer `git cherry-pick <sha>`; (c) "assumo a fatia" — quando o B pedir, você prova e entrega a fatia inteira com md + capturas + deltas + linha de Owner na sua branch, e o B retira a reivindicação), e o que falta ao B fazer. Nunca edite a worktree ou a branch do B.
+4. Escrita em produção só quando o pedido exigir (ex.: candidato de projeção do Agora, migration corretiva descoberta no diagnóstico), sempre pelo rito, registrando o lote e avisando o B e a coordenadora no seu arquivo (para o B não aplicar duas vezes).
+5. Se um pedido esbarrar em decisão do Owner (contrato, massa, escopo), não decida: registre em `## Para o Owner` do seu arquivo com a pergunta fechada e siga para o próximo pedido.
+6. Commits `r15(bloco-b-apoio): AP-<n> — <o que entregou>` + `git push -u origin r15/bloco-b-apoio` a cada entrega (sem push em `dev`, sem rebase). Parada: quando o B declarar "sem pedidos" no handoff e a coordenadora fechar, ou a ~5% de cota — deixe o arquivo de apoio atualizado com o estado de cada AP.
+
+Tipos de bloqueio que você já conhece do histórico e deve reconhecer rápido: 504/timeout em RPC (laço 40001 × PostgREST → PT409), `PGRST003` pool esgotado (`pg_stat_activity`/`pg_terminate_backend` como `postgres`), pgTAP que falha por drift do espelho (restaurar de dump novo antes de concluir causa), fixture/função em `app_private` invisível ao PostgREST (executar como `postgres` via `db query`), atividade/turma fora de escopo por instituição `draft` (verificar `status`/`deleted_at`), CORS por porta (já resolvido: 3014–3024), `tap` do driver travando (usar `clickxy` por coordenada), `dart run` cortando `&` na URL (montar a query em JS).
 
 ---
 
