@@ -93,7 +93,22 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
   `coelo-documents-prod` só com origens locais de QA no MVP.
 - Ambiente resolvido (Owner, 16/09): CORS das Edge Functions para `127.0.0.1:3014–3024` aplicado nas seis `*_ALLOWED_ORIGINS` de produção; preflight 200/204 em 3016/3018/3022/3024, 3030 segue 403.
 
-## Ordem de execução proposta (R16, conforme ADR 0044)
+## Foco da R16 (Owner, 17/09/2026, após a Mesa R16)
+
+**A R16 executa só FE verificado, BE concluído e E2E verificado do MVP.** Owner items
+(14 abertos/parciais), resíduos H e ajustes de UI/UX saem da fila da R16 e ficam em
+reserva para a **revisão de telas antes da Etapa 3**: quando o app estiver fechado, a
+coordenação apresenta todas as telas ao Owner, que aprova ou passa correções para a
+Etapa 3 — a revisão tela a tela zera o que for UI/UX. A reserva fica registrada aqui
+(seções de Owner items e H abaixo) e só é apresentada quando o Owner perguntar.
+
+Fila executável da R16 (2 ações): `forms.location-answer` (FE local-green → verified,
+BE pending → done, E2E) e `agora.publish` (E2E; correção de contrato em `now_actor`,
+OQ-048). Dívida técnica ligada a essas duas (`recipients-bug` não; `oq048-membership`
+sim, se necessário para a leitura) entra junto; o resto da lista R16 da ADR 0044
+aguarda a revisão de telas.
+
+## Ordem de execução proposta (R16, conforme ADR 0044 — reordenada pelo foco acima)
 
 1. **E2E remanescente (2)**: `forms.location-answer` (publicar a v4 do form 4555ba07, ocorrência única, responder como `qa-r06-formularios`) e `agora.publish` (corrigir `now_actor` para reconhecer o responsável por `guardian_links`/`guardian_context_permissions`, OQ-048; provar leitura pela responsável `qa-r15-responsavel`).
 2. **Owner items R16 (7)**: owner.r12-04, owner.r12-05, owner.r12-06, owner.r12-08, owner.r12-18, owner.r12-33, owner.r12-49 — Assiduidade (r12-05 negativa + participantes sintéticos; r12-08 ≥2 alunos; r12-04 Histórico; r12-06 snapshot), Medicação r12-33 (E7, com `recipients-bug` corrigido antes), B6 r12-18 (envio final pela tela; upload do documento quando houver CORS), r12-49 close/reopen.
@@ -156,7 +171,7 @@ genérico (sem contrato); origem pública `superadmin.coelo.me` (Etapa 3).
 
 **Fora da R15:** SMTP próprio (Etapa 3, E8); MFA ×3 (`deferred-post-mvp`, E9); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
 
-## Owner items — abertos/parciais e atualizações da execução (14)
+## Owner items — reserva para a revisão de telas antes da Etapa 3 (14; fora da fila R16 por decisão do Owner em 17/09)
 
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |

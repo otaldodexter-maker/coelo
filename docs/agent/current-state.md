@@ -18,8 +18,9 @@ audience: "team"
   (`R15-fechamento.md`, `R15-checkpoint-20260917.md`); R12–R15 são históricos.
 - Corte após a Mesa R16 (ADR 0044; 33 ações fora do MVP → `v1`, fora dos denominadores):
   FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53.
-  **A Etapa 2 se mede pelo E2E do MVP**; FE/BE por code review e revisão tela a tela na
-  Etapa 3 (BE em revisão quinzenal).
+  **A Etapa 2 se mede pelo E2E do MVP**; a R16 executa só FE/BE/E2E (`forms.location-answer`,
+  `agora.publish`); Owner items, H e UI/UX ficam em reserva para a revisão de telas antes da
+  Etapa 3 (apresentar todas as telas ao Owner; ele aprova ou manda para a Etapa 3).
   Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
   abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
 - Produção em 17/09: lotes 75–80 (PT409 sistêmico, Chat multi-anexo, "Para você",
