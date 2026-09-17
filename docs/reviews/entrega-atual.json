@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "42f1108626d1596077c0b542ef18dbfebdf131e1",
+    "head": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -206,6 +206,7 @@
       "e2e": "verified-e2e (contexto Turma, R14); contexto Atividade: negativa não executada (prazo).",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
       "owner": "C0 R15",
+      "nextGate": "",
       "sourceRound": "R15"
     },
     {
@@ -1745,7 +1746,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "r15/bloco-b": {
       "sha": "b20b202fe2907f7fd5317531cb3548808fb2e8f7",
@@ -1765,7 +1766,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "r15/bloco-b-apoio": {
       "sha": "a3d6bb4a4f0e222baa9e86d4d43896d4915f68c7",
@@ -1786,7 +1787,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -1806,7 +1807,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "r15/bloco-c2": {
       "sha": "bb2efb09e0b92d52d90b39d43e4c7b01e5754b98",
@@ -1826,7 +1827,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2482,7 +2483,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "origin/r15/bloco-b": {
       "sha": "b20b202fe2907f7fd5317531cb3548808fb2e8f7",
@@ -2502,7 +2503,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "a3d6bb4a4f0e222baa9e86d4d43896d4915f68c7",
@@ -2523,7 +2524,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "origin/r15/bloco-c1": {
       "sha": "1c199f14c8073df0a451413a4b59a42f8c9c0433",
@@ -2543,7 +2544,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "origin/r15/bloco-c2": {
       "sha": "bb2efb09e0b92d52d90b39d43e4c7b01e5754b98",
@@ -2563,7 +2564,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "42f1108626d1596077c0b542ef18dbfebdf131e1"
+      "successor": "9f6b002cf838ef4f85df9c43f83acc98f8dd80c5"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2713,6 +2714,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
@@ -2720,32 +2722,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-    "docs/reviews/inventario-etapa-2.json",
-    "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-b/atividade-qa-r15-criacao-20260917.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
-    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
-    "specs/053-superadmin-medication-in-app-notifications.md",
-    "specs/058-superadmin-chat-multi-attachment-message.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
-    "docs/reviews/evidence/etapa-2/r15-bloco-c2/person-search-and-person-without-account-20260917.md",
-    "specs/062-superadmin-child-safety-person-without-account.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
-    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
-    "specs/054-archive-activity-routine-models.md",
-    "specs/061-superadmin-child-safety-person-search.md",
-    "specs/063-superadmin-meal-plan-images-r2.md"
+    "docs/reviews/inventario-etapa-2.json"
   ],
   "trackerActionIds": [
     "auth.login",
