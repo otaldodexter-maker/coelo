@@ -1,0 +1,28 @@
+[
+ {
+  "action_id": "agora.expire",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 B: mesma story 655e437b e mesmo leitor qa-r06-principal — renderizada na linha Agora em 16/09 (r14-sessao-7 agora-view-01/02, '6 min'/'8 min', barra de progresso) e ausente apos expires_at em 17/09 (captura 16:50 UTC); feed filtra por expires_at no cliente e no servidor; sem acao manual (ADR 0040).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+   "revision": "0e46a7609",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T13:50:00-03:00"
+  }
+ },
+ {
+  "action_id": "agora.expire",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R15 B: expiracao real de 24 h observada em producao sem alterar relogio/dados — antes (13:54 UTC) list_visible_now_publications do leitor devolve 655e437b; depois (16:49 UTC) devolve [] e a4e65c73/655e437b estao expired v3 pelo worker expire_due_now_publications.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+   "revision": "0e46a7609",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T13:50:00-03:00"
+  }
+ }
+]

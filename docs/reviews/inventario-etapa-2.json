@@ -6019,15 +6019,15 @@
       "family": "agora",
       "screen": "Agora / Expirar",
       "scope": "mvp",
-      "done": "R14 S7: expiracao automatica de 24h nao observavel dentro da sessao (sem alterar relogio/dados); FE sem superficie propria alem da copy e do filtro por expires_at. Bloqueio: tempo/ambiente.",
-      "fe": "Revalidar o aceite específico desta ação: Expirar/cancelar/falhar e ausência após reload. R01/16h: Ausência de botão manual não prova ausência da expiração aprovada; conferir se retirada manual é critério canônico.",
+      "done": "R15 B: expiracao real de 24 h observada em producao sem alterar relogio/dados — antes (13:54 UTC) list_visible_now_publications do leitor devolve 655e437b; depois (16:49 UTC) devolve [] e a4e65c73/655e437b estao expired v3 pelo worker expire_due_now_publications.",
+      "fe": "R15 B: mesma story 655e437b e mesmo leitor qa-r06-principal — renderizada na linha Agora em 16/09 (r14-sessao-7 agora-view-01/02, '6 min'/'8 min', barra de progresso) e ausente apos expires_at em 17/09 (captura 16:50 UTC); feed filtra por expires_at no cliente e no servidor; sem acao manual (ADR 0040).",
       "be": "R14 S7 producao: expires_at persistido e relido = publish_at + 24h (publish_now e feed); expire_due_now_publications executado pela rota autorizada (200 expired_count) e negado para instituicao alheia (403); cron coelo-now-publications-expire ja certificado no lote 56.",
-      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r9/r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09; coordenacao.json R04 rev 20 (lote9); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
+      "evidence": "commitsa6a51d10/080997f6/7cca9a27; decisions/0032-mvp-private-media-r2.md R01/16h: C05r9/r10; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; branch codex/e2-r02-l01-publicacoes em 3697dd49e; contrato da rodada, que exige pacote nominal autorizado para qualquer mutacao remota; 2026-09-09; coordenacao.json R04 rev 20 (lote9); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/lote56-cron-execucoes.md; docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md; docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -6038,6 +6038,18 @@
           "revision": "dbe518101",
           "environment": "producao",
           "recordedAt": "2026-09-16T12:30:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+          "revision": "0e46a7609",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:50:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+          "revision": "0e46a7609",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:50:00-03:00"
         }
       }
     },
@@ -9640,7 +9652,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T14:47:37.551Z",
+  "updatedAt": "2026-09-17T16:56:40.743Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

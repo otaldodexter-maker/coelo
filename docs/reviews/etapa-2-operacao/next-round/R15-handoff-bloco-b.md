@@ -22,13 +22,21 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
   na QA R04 e turma `368a5cea`); contas/vínculo de responsável dependem do Owner (abaixo). Blocos A e C2: ver
   "Avisos" 8.
 - Fatia 3 — Segurança da criança: **entregue** (`child-safety.edit`/`suspend` verified-e2e; r12-13/15/16 done).
-- Fatias 4–7 (Assiduidade, Medicação B8+E7, Arquivar B1, Agora): reivindicadas pelo Bloco B; fatia 4 em andamento.
+- Fatia 7 — Agora: `agora.expire` **entregue** (verified-e2e); `agora.remove` em andamento (projeção pelo rito, lote 79,
+  deploy `now-media`, tela, negativa D5); `agora.publish` aguarda a conta `qa-r15-responsavel` + AP-1.
+- **Fatia 6 — Arquivar B1 (`owner.r12-01`/`r12-02`) LIBERADA para o Bloco C1** (17/09 14:05 BRT, a pedido da
+  coordenadora): só tela, migration `20260916193000_archive_models_v1` já em produção (lote 74); rotas Atividades ›
+  Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivados), negativas PT409/`P0002`. O Bloco B não toca.
+- Fatias 4 (Assiduidade: r12-05/08/04/06) e 5 (Medicação B8+E7, r12-33): reivindicadas pelo Bloco B, depois do Agora.
+  Fatia 4, estado: atividade "QA R15 Atividade Assiduidade" ainda não criada (o wizard exige sigla de 1–2 letras
+  antes de chamar `superadmin_activity_save_v2`; sem ela mostra "Confira a conexão" sem chamada de rede — achado FE).
 
 ## Fatias entregues
 
 | SHA | Fatia | action_ids → estados | Owner items | Evidência |
 |---|---|---|---|---|
-| (este commit) | Segurança da criança pela tela (`qa-r06-acessos`): autorização `3f3650b0-9738-4014-b183-7ec18fd13a81` criada (v1), editada (v2), aprovada (v3) e suspensa (v4); reload; negativas PT409 (1,4 s / 0,14 s / 0,11 s) e P0002 sem mutação; defeito FE corrigido (Avó/Avô → `grandmother`/`grandfather`, testes 176/176) | `child-safety.edit` → verified / verified-e2e; `child-safety.suspend` → verified / verified-e2e | `owner.r12-13`, `owner.r12-15`, `owner.r12-16` → done | `r15-bloco-b/child-safety-edit-suspend-20260917.md`; `deltas-child-safety-20260917.json` |
+| (este commit) | `agora.expire` — expiração real de 24 h observada em produção: antes (13:54 UTC) feed do leitor com `655e437b`, depois (16:49 UTC) feed `[]` e `a4e65c73`/`655e437b` `expired` v3 pelo worker; FE pela combinação das capturas de 16/09 (S7) e 17/09 | `agora.expire` → verified / verified-e2e | nenhum | `r15-bloco-b/agora-expire-20260917.md`; `deltas-agora-expire-20260917.json` |
+| 0e46a7609 | Segurança da criança pela tela (`qa-r06-acessos`): autorização `3f3650b0-9738-4014-b183-7ec18fd13a81` criada (v1), editada (v2), aprovada (v3) e suspensa (v4); reload; negativas PT409 (1,4 s / 0,14 s / 0,11 s) e P0002 sem mutação; defeito FE corrigido (Avó/Avô → `grandmother`/`grandfather`, testes 176/176) | `child-safety.edit` → verified / verified-e2e; `child-safety.suspend` → verified / verified-e2e | `owner.r12-13`, `owner.r12-15`, `owner.r12-16` → done | `r15-bloco-b/child-safety-edit-suspend-20260917.md`; `deltas-child-safety-20260917.json` |
 | bcf47d636 | Massa `QA R15` (E2) pela tela `/people/new` (`qa-r06-acessos`): responsável `da915f98-bfad-49f6-9914-fe57a30584c9`; Criança 1 pessoa `93457405-a4eb-4273-9579-ef84136a794b` / contexto `1a6158fe-6cab-427c-9496-96e4273ab184`; Criança 2 pessoa `14d70a25-244f-409f-a164-71d87b491650` / contexto `519ef941-3edb-41b6-94c4-55ed4638aefd`; ambas com `child_group_links` ativos na turma `368a5cea` e `child_unit_links` pendentes na Unidade QA R04 | nenhum | nenhum | `r15-bloco-b/massa-qa-r15-20260917.md` |
 | 6c2f02ee0 | OQ-047 (E1) — migration única `20260917090000_pt409_stale_version_v1` (126 funções, 175 raises 40001 → PT409, 18 handlers de envelope, 28 famílias) + pgTAP `pt409_stale_version_v1_test` 37/37 + 8 suítes ajustadas + 22 repositórios FE e Edge `now-media` mapeando PT409; **aplicada em produção às 12:30 UTC, ledger `20260917090000` confirmado, lote 75** | nenhum estado alterado (nenhum delta JSON) | nenhum | `r15-bloco-b/oq047-pt409-20260917.md` |
 
@@ -97,4 +105,4 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 
 ## Contadores
 
-`node docs/reviews/validate-trackers.cjs` → PASS após a fatia 3: FE 191/232, BE 172/219, E2E 164/186 (ativo 186), Owner 24/53.
+`node docs/reviews/validate-trackers.cjs` → PASS após `agora.expire`: FE 192/232, BE 172/219, E2E 165/186 (ativo 186), Owner 24/53.
