@@ -55,8 +55,7 @@ chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10
   `now_viewer_role_class` (Agora, audiência Famílias) exige `can_view` ativo + unidade/turma ativas → com a
   fixture responde `guardian`. Fora: `guardian_context_permission_grants` (capacidades do Principal nascem
   de Perfis de acesso › Atribuir; não são exigidas por Agora, sino, B5/B6).
-- **Entrega (b)** — commit em `r15/bloco-b-apoio` para `git cherry-pick` (SHA no aviso à coordenadora e
-  na tabela abaixo): `packages/coelo_database/migrations/20260917110000_qa_r15_guardian_fixture_v1.sql`
+- **Entrega (b)** — commit `6401cace9` em `r15/bloco-b-apoio` (`git cherry-pick 6401cace9`): `packages/coelo_database/migrations/20260917110000_qa_r15_guardian_fixture_v1.sql`
   cria `app_private.seed_qa_r15_guardian_fixture_v1(p_email default 'qa-r15-responsavel@coelo.me', …)`
   com os defaults da massa de produção, sem grant a `anon/authenticated/service_role`, fail-closed (conta
   ausente `P0002 qa_auth_user_missing`, conta interna, pessoa/contexto sem prefixo `QA R15`, tenant fora de
@@ -129,4 +128,4 @@ Nenhuma pergunta pendente.
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
-| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência, commit para cherry-pick | **entregue**; produção pendente da conta Auth (Owner) e do rito (B ou B′) |
+| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue**; produção pendente da conta Auth (Owner) e do rito (B ou B′) |
