@@ -1,0 +1,14 @@
+[
+ {"action_id":"forms.location-answer","camada":"frontend","estado_proposto":"verified",
+  "delta":"R16 FORMS rota real (17/09): editor publica a v4 (previa com 'Em qual local?'); Visao geral > Distribuir troca o agendamento para 'Uma vez' 17/09 20:00; deep link /forms/4555ba07/occurrences/c42cf334/respond como qa-r06-formularios mostra a pergunta de Local com o chip do catalogo, salva rascunho, revisa, envia; reload reabre 'Resposta enviada' com o Local relido.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md","revision":"cd5b7493e","environment":"producao","recordedAt":"2026-09-17T20:50:00-03:00"}},
+ {"action_id":"forms.location-answer","camada":"backend","estado_proposto":"done",
+  "delta":"R16 FORMS: form_publish promoveu e0107c9d (version 2) com item location 90d33a71 (opcao 0792b3e5 -> location fc446535 ativa); form_save_schedule once + worker generate_occurrences criou c42cf334 na versao publicada nova; cron reconciliou a audiencia (participation 12aa895e); form_submit_response gravou b1d52e77 com option_ids [0792b3e5], relida por form_get_response_detail; negativas: opcao inexistente 400 22023 'answer option unavailable', 2/0 opcoes 400 23514, versao defasada 409 PT409, ocorrencia inexistente/participacao alheia/janela fechada P0002 fail-closed. Nenhum SQL novo; sem massa cross-tenant em producao.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md","revision":"cd5b7493e","environment":"producao","recordedAt":"2026-09-17T20:50:00-03:00"}},
+ {"action_id":"forms.location-answer","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R16 FORMS: publicacao da v4 + ocorrencia unica + resposta com Local pela tela em producao, persistida (b1d52e77) e relida apos reload; negativas por PostgREST com a mesma sessao (22023 / 23514 / PT409 / P0002).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md","revision":"cd5b7493e","environment":"producao","recordedAt":"2026-09-17T20:50:00-03:00"}}
+]

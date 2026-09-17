@@ -5521,18 +5521,38 @@
       "family": "forms_responses",
       "screen": "Formulário / Responder Local interno",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Ocorrência nova com item Local publicado; responder/persistir/reload; decisão ADR9/12 resolvida.",
-      "fe": "Decisão de Local resolvida na ADR0034 (9/12); cobertura local editor/resposta e Local em checkpointR07_0012 (929df845a4). Primeiro gate: ocorrência nova com item Local publicado; responder, persistir e reload; obrigatório sem alternativa bloqueia com aviso.",
-      "be": "ADR0034 exige referência Local atual; não espera nova decisão do Owner. Provar fonte autorizada, ocorrência/participação, negativo de escopo, persistência e reload da resposta.",
-      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/ R01/16h: C02r29;docs/open-questions.md;C02I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; inventario-etapa-2.json na linha da acao; sem prova nova nesta rodada; 2026-09-09; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R16 FORMS: publicacao da v4 + ocorrencia unica + resposta com Local pela tela em producao, persistida (b1d52e77) e relida apos reload; negativas por PostgREST com a mesma sessao (22023 / 23514 / PT409 / P0002).",
+      "fe": "R16 FORMS rota real (17/09): editor publica a v4 (previa com 'Em qual local?'); Visao geral > Distribuir troca o agendamento para 'Uma vez' 17/09 20:00; deep link /forms/4555ba07/occurrences/c42cf334/respond como qa-r06-formularios mostra a pergunta de Local com o chip do catalogo, salva rascunho, revisa, envia; reload reabre 'Resposta enviada' com o Local relido.",
+      "be": "R16 FORMS: form_publish promoveu e0107c9d (version 2) com item location 90d33a71 (opcao 0792b3e5 -> location fc446535 ativa); form_save_schedule once + worker generate_occurrences criou c42cf334 na versao publicada nova; cron reconciliou a audiencia (participation 12aa895e); form_submit_response gravou b1d52e77 com option_ids [0792b3e5], relida por form_get_response_detail; negativas: opcao inexistente 400 22023 'answer option unavailable', 2/0 opcoes 400 23514, versao defasada 409 PT409, ocorrencia inexistente/participacao alheia/janela fechada P0002 fail-closed. Nenhum SQL novo; sem massa cross-tenant em producao.",
+      "evidence": "commits08315450/de51d4e7/21efc6cc; evidence/etapa-2/formularios-cuidado/ R01/16h: C02r29;docs/open-questions.md;C02I008; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; Fechamento R01 C02/r48; C02r48 final; etapa-2-operacao/reports/R01-fechamento-20260909.md; inventario-etapa-2.json na linha da acao; sem prova nova nesta rodada; 2026-09-09; docs/reviews/evidence/etapa-2/r07-coordenacao/verificacao-fechamento.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
       "historicalFrontend": "not-reviewed",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "pending-verification",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
-      "lastEvidenceAt": "2026-09-09T08:20:50-03:00"
+      "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+          "revision": "cd5b7493e",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T20:50:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+          "revision": "cd5b7493e",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T20:50:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r16-forms/forms-location-answer-20260917.md",
+          "revision": "cd5b7493e",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T20:50:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.upload",
@@ -9717,7 +9737,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T23:43:19.860Z",
+  "updatedAt": "2026-09-17T23:52:04.253Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,
