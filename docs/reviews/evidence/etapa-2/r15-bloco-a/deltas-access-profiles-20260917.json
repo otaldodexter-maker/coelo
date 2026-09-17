@@ -1,0 +1,18 @@
+[
+ {"action_id":"access-profiles.edit","camada":"frontend","estado_proposto":"verified",
+  "delta":"R15 Bloco A rota real (17/09): /profiles/platform/281699f2/edit renomear + marcar permissao (Excluir), revisao com modulo > tela > nome e Alteracao sensivel, motivo, Salvar; detalhe relido apos carga completa com v2 e 2 permissoes; tooltip por foco de teclado; matriz em 1424 e 600 px; tema claro.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md","revision":"57162cee4","environment":"producao","recordedAt":"2026-09-17T09:40:00-03:00"}},
+ {"action_id":"access-profiles.edit","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R15 Bloco A: superadmin_access_profile_save (update) em producao: platform_roles 281699f2 v1 -> v2 (nome + capacidade) pela tela, relido por superadmin_access_profile_detail e apos reload; negativas: versao defasada -> 409 PT409 ACCESS_PROFILE_STALE_VERSION sem mutacao (lote 75), instituicao alheia -> 400 22023, id inexistente -> P0002.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md","revision":"57162cee4","environment":"producao","recordedAt":"2026-09-17T09:40:00-03:00"}},
+ {"action_id":"access-profiles.assign","camada":"frontend","estado_proposto":"verified",
+  "delta":"R15 Bloco A rota real (17/09): /internal-users/bf6008f0/edit passo Acesso ao Superadmin com dropdown de perfis reais (defeito corrigido: catalogo de instituicoes nao era carregado na edicao e bloqueava perfil/escopos), perfil R15 A Perfil QA renomeado atribuido, revisao, salvo; detalhe relido apos carga completa; Owner restaurado pela mesma rota.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md","revision":"900608be9","environment":"producao","recordedAt":"2026-09-17T10:05:00-03:00"}},
+ {"action_id":"access-profiles.assign","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R15 Bloco A: superadmin_internal_user_update em producao (bf6008f0 v1 -> v2 com perfil 281699f2; memberships do perfil relidos com 1 vinculo; v3/v4 restaurando Owner, memberships vazios) pela tela + reload; negativas: versao defasada -> SAI_CONCURRENT_CHANGE 409 sem mutacao, id inexistente -> SAI_PERMISSION_DENIED 403, identity incompleta -> SAI_INVALID_INPUT 422.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md","revision":"900608be9","environment":"producao","recordedAt":"2026-09-17T10:05:00-03:00"}}
+]

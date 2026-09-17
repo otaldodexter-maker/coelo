@@ -2054,15 +2054,15 @@
       "family": "access_profiles",
       "screen": "Editar perfil de acesso",
       "scope": "mvp",
-      "done": "A superfície de edição mudou; rota normal, persistência/reload e negativa cross-tenant precisam de prova integrada.",
-      "fe": "R12-24/25: matriz compartilhada preserva colunas e ações próprias/todas; sensibilidade crítica/MFA explicada por tooltip acessível, sem marcador visual repetido.",
+      "done": "R15 Bloco A: superadmin_access_profile_save (update) em producao: platform_roles 281699f2 v1 -> v2 (nome + capacidade) pela tela, relido por superadmin_access_profile_detail e apos reload; negativas: versao defasada -> 409 PT409 ACCESS_PROFILE_STALE_VERSION sem mutacao (lote 75), instituicao alheia -> 400 22023, id inexistente -> P0002.",
+      "fe": "R15 Bloco A rota real (17/09): /profiles/platform/281699f2/edit renomear + marcar permissao (Excluir), revisao com modulo > tela > nome e Alteracao sensivel, motivo, Salvar; detalhe relido apos carga completa com v2 e 2 permissoes; tooltip por foco de teclado; matriz em 1424 e 600 px; tema claro.",
       "be": "R04: apos o 172000 (lote 20), superadmin_access_profile_save (update) persistiu descricao e a concessao people.read no perfil sintetico (version 1->2) com o payload capabilities que o cliente passa a enviar (3682673da); detalhe v3 relido devolve selected=[people.read]. pgTAP do pacote 4/4 + governanca historica. | Backlog R12 (registro 2026-09-13): R12-22, R12-24, R12-25, R12-26, R12-27. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-22 -> R13, R12-24 -> R13, R12-25 -> R13, R12-26 -> R13, R12-27 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md R01/16h: C01r29/f58ac259; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST); comunicacao/acessos-pessoas.json rev 124; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md R01/16h: C01r29/f58ac259; etapa-2-operacao/reports/R01-checkpoint-1600.md; Fechamento R01 C01/r51; C00288PASS/analyzer34limpo; critérios locais, sem autorização remota certificada; etapa-2-operacao/reports/R01-fechamento-20260909.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md; b285a6804; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/handoff.md;c8c8b0fba;docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/models-form-receipt/golden-reconciliation.md; coordenacao.json R04 rev 20 (lote8); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 110, REST + db query somente leitura); docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 111, REST); comunicacao/acessos-pessoas.json rev 124; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-review-r12-27.md; docs/reviews/evidence/etapa-2/r12-coordenacao/access-profile-permission-sensitivity-r12-24-25.md; docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:22:35-03:00",
@@ -2074,10 +2074,16 @@
           "recordedAt": "2026-09-11T03:11:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json",
-          "revision": "80a308394",
-          "environment": "producao, rota real (build web de qa_main + Chrome CDP 9411, sessao qa-r03)",
-          "recordedAt": "2026-09-11T14:25:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+          "revision": "57162cee4",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T09:40:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+          "revision": "57162cee4",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T09:40:00-03:00"
         }
       }
     },
@@ -2086,15 +2092,15 @@
       "family": "access_profiles",
       "screen": "Perfis de acesso / Atribuir",
       "scope": "mvp",
-      "done": "R08 G2 — primeiro gate: Executar a ação canônica pela rota normal no contexto QA, conferir autorização, persistência/releitura e evidência da camada ainda pendente.",
-      "fe": "Conferir UI/contrato específico da ação e evidência visual restante; atribuição não deve ser inferida da listagem.",
+      "done": "R15 Bloco A: superadmin_internal_user_update em producao (bf6008f0 v1 -> v2 com perfil 281699f2; memberships do perfil relidos com 1 vinculo; v3/v4 restaurando Owner, memberships vazios) pela tela + reload; negativas: versao defasada -> SAI_CONCURRENT_CHANGE 409 sem mutacao, id inexistente -> SAI_PERMISSION_DENIED 403, identity incompleta -> SAI_INVALID_INPUT 422.",
+      "fe": "R15 Bloco A rota real (17/09): /internal-users/bf6008f0/edit passo Acesso ao Superadmin com dropdown de perfis reais (defeito corrigido: catalogo de instituicoes nao era carregado na edicao e bloqueava perfil/escopos), perfil R15 A Perfil QA renomeado atribuido, revisao, salvo; detalhe relido apos carga completa; Owner restaurado pela mesma rota.",
       "be": "R04: a atribuicao de perfil no MVP e o profile_id do comando superadmin_internal_user_update (provado em internal-users.edit, version 1->2 com profile_id owner); nao existe RPC de atribuicao separada no cliente.",
-      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109/111); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "evidence": "evidence/etapa-2/identidade-acessos/2026-09-08-profiles-reader-proposal.md; docs/reviews/etapa-2-operacao/comunicacao/acessos-pessoas.json (rev 109/111); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 51,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "certifications": {
@@ -2103,6 +2109,18 @@
           "revision": "1522e6c28",
           "environment": "producao coelo/evvbomzejfijozbtgvpt, sessao qa-r03 via PostgREST (lote 20 aplicado)",
           "recordedAt": "2026-09-11T03:11:00-03:00"
+        },
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:05:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:05:00-03:00"
         }
       }
     },
@@ -9456,7 +9474,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T13:07:25.037Z",
+  "updatedAt": "2026-09-17T13:12:14.108Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

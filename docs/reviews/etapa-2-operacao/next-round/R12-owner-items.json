@@ -371,16 +371,16 @@
   },
   {
     "id": "owner.r12-20",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.list"
     ],
-    "fe": "FE verified na rota real (S5 16/09): 8 cards após reload com Status, Escopo máximo, Vínculos e Tipo (ADR 0041 C2).",
+    "fe": "FE verified na rota real (S5 16/09 e Bloco A 17/09): 8 cards após carga completa em 1424×1125 e após salvar edição.",
     "be": "BE inalterado.",
-    "e2e": "E2E pending-verification: negativa de escopo só por id inexistente/capability inválida (perfis Superadmin não têm tenant).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "e2e": "E2E: negativa aceita = versão defasada 409 PT409 (lote 75) e capability/instituição inválida 400 22023; perfis Superadmin não têm tenant.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Conferir rolagem da terceira linha de cards em viewport baixo (não rolou por CDP) e registrar a negativa aceita; Owner decide se \"Vínculos 0\" (platform_memberships) é a métrica certa para usuários internos.",
+    "nextGate": "Concluído 17/09 (Bloco A). Resíduo BE (não bloqueia): \"Vínculos\" conta platform_memberships.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -390,16 +390,16 @@
   },
   {
     "id": "owner.r12-21",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.detail"
     ],
-    "fe": "FE corrigido (89be705fa/63ec6e973): módulo › tela › ação traduzidos a partir do catálogo real (module_label/screen_label/action_label + tradução local), telas com ações repetidas desdobradas; visto na rota real de criação (S5 16/09).",
-    "be": "BE inalterado; catálogo devolve rótulos em inglês e `CardÃ¡pios` (resíduo).",
-    "e2e": "E2E pending-verification (detalhe bloqueado por PGRST003).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "fe": "FE verified na rota real (Bloco A 17/09): detalhe traduzido módulo › tela › ação (\"Acessos › Modelos de perfil › Ver\"), relido após carga completa com v2 e 2 permissões.",
+    "be": "BE inalterado; catálogo em inglês e CardÃ¡pios (resíduo).",
+    "e2e": "E2E verified-e2e via access-profiles.edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Abrir /profiles/platform/281699f2… no build 63ec6e973, capturar detalhe traduzido e reload.",
+    "nextGate": "Concluído 17/09 (Bloco A). Resíduos BE: rótulo \"Excluir\" × nome \"Inativar modelos Admin.\"; reason mascarado como [redacted] no detalhe.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -409,17 +409,17 @@
   },
   {
     "id": "owner.r12-22",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.create",
       "access-profiles.edit"
     ],
-    "fe": "FE verified: criação pela rota real sem campo Código; identificador gerado pelo servidor (`r14-s5-perfil-qa-46749519`).",
-    "be": "BE done (create).",
-    "e2e": "E2E verified-e2e para create (S5 16/09); edição bloqueada por PGRST003.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "fe": "FE verified: criação (S5) e edição (Bloco A 17/09) sem campo Código; code do servidor preservado ao renomear.",
+    "be": "BE done.",
+    "e2e": "E2E verified-e2e: save v1→v2 relido por PostgREST, reload, 409 PT409 em versão defasada.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Provar edição pela rota normal (renomear/alterar permissão), persistência/reload.",
+    "nextGate": "Concluído 17/09 (Bloco A).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -448,17 +448,17 @@
   },
   {
     "id": "owner.r12-24",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.create",
       "access-profiles.edit"
     ],
-    "fe": "FE: tooltip de sensibilidade visto na rota real por hover (crítica: \"Ação sensível…\"); em 63ec6e973 aparece também por foco de teclado e explica risco elevado (teste de widget).",
+    "fe": "FE verified na rota real (Bloco A 17/09): tooltip de sensibilidade por hover (S5) e por foco de teclado (Tab) em \"Excluir\" (sensível) e \"Criar/Importar\" (risco elevado).",
     "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "e2e": "E2E verified-e2e via access-profiles.edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Capturar tooltip por foco no build 63ec6e973 na rota real de edição.",
+    "nextGate": "Concluído 17/09 (Bloco A). Resíduo visual: tooltip aberto por foco não fecha quando o foco avança (fica empilhado); corrigir em _PermissionActionCell.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -468,17 +468,17 @@
   },
   {
     "id": "owner.r12-25",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.create",
       "access-profiles.edit"
     ],
-    "fe": "FE: matriz alinhada (colunas por ação) e empilhada quando não cabe, agora sem esconder permissões com a mesma ação (desdobra por alvo) e sem estouro do cabeçalho em tela estreita (teste 1440/600). Visto na rota real em 1440 (S5 16/09).",
+    "fe": "FE verified na rota real (Bloco A 17/09): matriz em 1424 (empilhada por tela, cabeçalho sem estouro) e em 600×900 (stepper à esquerda, sem estouro horizontal, rodapé empilhado); persistência/reload.",
     "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "e2e": "E2E verified-e2e via access-profiles.edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Capturar ~600 px (Emulation.setDeviceMetricsOverride) na rota real e persistência/reload.",
+    "nextGate": "Concluído 17/09 (Bloco A).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -488,16 +488,16 @@
   },
   {
     "id": "owner.r12-26",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.edit"
     ],
-    "fe": "FE local-green: Continuar habilitado é FilledButton preenchido também na edição.",
+    "fe": "FE verified na rota real (Bloco A 17/09): Continuar FilledButton laranja preenchido no passo 1 da edição, tema claro; Salvar alterações preenche após motivo.",
     "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-form-r12-22-26.md",
+    "e2e": "E2E verified-e2e via access-profiles.edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 C4: Owner aceitou a prova de FE em teste; captura na rota real entra junto do lote de Perfis (sessão QA D7).",
+    "nextGate": "Concluído 17/09 (Bloco A).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -507,17 +507,17 @@
   },
   {
     "id": "owner.r12-27",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "access-profiles.create",
       "access-profiles.edit"
     ],
-    "fe": "FE: revisão mostra módulo › tela › nome do catálogo (\"Acessos › Modelos de perfil › Consultar modelos Admin.\"), motivo de indisponibilidade e texto configuração × acesso efetivo; visto na rota real de criação (S5 16/09; a seta → era tofu na fonte web, trocada por › em 63ec6e973).",
+    "fe": "FE verified na rota real (Bloco A 17/09): revisão \"Acessos › Modelos de perfil › Inativar modelos Admin.\", texto configuração × acesso efetivo, vínculos impactados, MFA, motivo obrigatório; salvo sem perder permissões e relido.",
     "be": "BE inalterado.",
-    "e2e": "E2E pending-verification.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-5/access-profiles-20260916.md",
+    "e2e": "E2E verified-e2e via access-profiles.edit.",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Salvar/reload na edição sem perder permissões; capturar revisão com › no build 63ec6e973.",
+    "nextGate": "Concluído 17/09 (Bloco A).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
