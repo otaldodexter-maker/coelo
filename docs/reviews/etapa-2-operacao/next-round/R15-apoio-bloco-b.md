@@ -84,7 +84,8 @@ Nenhum até agora`. A coordenadora faz o relé dos pedidos; esta seção recebe 
    é o teste que falharia contra produção. Bloco corrigido, pronto para substituir o `insert into
    pt409_props values` original: `docs/reviews/evidence/etapa-2/r15-bloco-b-apoio/ferramentas/pt409_props_producao_pos_lote75.sql`
    (com ele a suíte do B passa 37/37 aqui). Detalhe em `ambiente-20260917.md` §5.1. Não editei a branch
-   do B; cabe ao B (ou à coordenadora na integração) trocar o bloco.
+   do B. **Fechado às 10:1x BRT**: o B aplicou o bloco em `c59e5ebf3` (0 linhas com `anon=X`) e a suíte
+   dele, lida de `origin/r15/bloco-b`, passa **37/37** no meu espelho fiel (dump pós-lote 75).
 
 ## Para o Owner
 
