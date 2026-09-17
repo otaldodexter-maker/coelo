@@ -23,8 +23,8 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
   "Avisos" 8.
 - Fatia 3 — Segurança da criança: **entregue** (`child-safety.edit`/`suspend` verified-e2e; r12-13/15/16 done).
 - Fatia 7 — Agora: `agora.expire` e `agora.remove` **entregues** (verified-e2e; lote 79 + Edge `now-media` deployada);
-  `agora.publish` **bloqueado por massa/decisão** (audiência Famílias exige responsável com conta e vínculo: conta
-  `qa-r15-responsavel` não confirmada pelo Owner; AP-1 de B′ pronto) — quem tiver a conta aplica AP-1 e prova.
+  `agora.publish` **desbloqueado em 17/09 18:10 UTC**: conta `qa-r15-responsavel` criada (coordenadora/Owner) e fixture
+  AP-1 executada (lote 80; JSON em `massa-qa-r15-20260917.md`) — prova pela tela em andamento nesta sessão.
 - **Fatia 6 — Arquivar B1 (`owner.r12-01`/`r12-02`) LIBERADA para o Bloco C1** (17/09 14:05 BRT, a pedido da
   coordenadora): só tela, migration `20260916193000_archive_models_v1` já em produção (lote 74); rotas Atividades ›
   Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivados), negativas PT409/`P0002`. O Bloco B não toca.
@@ -94,8 +94,9 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 ## Pedidos de apoio
 
 - AP-1: **respondido por B′** (`origin/r15/bloco-b-apoio` 6401cace9, migration `20260917110000_qa_r15_guardian_fixture_v1`
-  com `app_private.seed_qa_r15_guardian_fixture_v1`); aguarda a conta Auth do Owner para o cherry-pick + rito + execução da
-  função (lote novo) por esta sessão.
+  com `app_private.seed_qa_r15_guardian_fixture_v1`); cherry-pick 6b06a3381, rito lote 80 (17:43 UTC) e **execução da
+  função em 17/09 18:10 UTC** após a conta ser criada: responsável `da915f98` ativo com login, 2 `guardian_links`,
+  2 `guardian_context_permissions` (JSON em `massa-qa-r15-20260917.md`). **Encerrado.**
 
 ### AP-1 — fixture pós-contas da massa QA R15 (fatia 2)
 - Situação: pessoas criadas pela tela (IDs na tabela acima); faltam `person_auth_links` (responsável ↔ auth user

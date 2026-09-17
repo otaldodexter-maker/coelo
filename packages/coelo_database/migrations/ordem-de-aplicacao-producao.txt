@@ -367,4 +367,7 @@
 # (`select app_private.seed_qa_r15_guardian_fixture_v1();` como postgres) e um passo separado: em 17/09 17:44 UTC respondeu
 # P0002 qa_auth_user_missing (fail-closed, nada gravado) porque auth.users ainda nao tinha qa-r15-responsavel@coelo.me;
 # reexecutar quando a conta existir e registrar o JSON de retorno em r15-bloco-b/massa-qa-r15-20260917.md.
+# Complemento 17/09 18:10 UTC: conta criada pela coordenadora (Admin API, autorizacao do Owner); funcao executada uma vez:
+# person_auth_link created, pessoa draft->active, 2 guardian_links, 2 guardian_context_permissions, unit_links ja ativos (0 aceitos).
+# JSON completo em docs/reviews/evidence/etapa-2/r15-bloco-b/massa-qa-r15-20260917.md.
 20260917110000_qa_r15_guardian_fixture_v1.sql
