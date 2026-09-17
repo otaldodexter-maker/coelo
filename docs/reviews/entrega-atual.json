@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "30f630db84a3cc47d207f7081fedcfec974729db",
+    "head": "beb5422de84403a64433231fc4e76c526abad88d",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -64,8 +64,8 @@
     "actionStatusCounts": {
       "frontend": {
         "local-green": 3,
-        "pending-verification": 25,
-        "verified": 204
+        "pending-verification": 24,
+        "verified": 205
       },
       "backend": {
         "deferred-post-mvp": 33,
@@ -77,8 +77,8 @@
       "integrated": {
         "deferred-post-mvp": 33,
         "flutter-only": 13,
-        "pending-verification": 7,
-        "verified-e2e": 179
+        "pending-verification": 6,
+        "verified-e2e": 180
       }
     },
     "deferredPostMvpActionCount": 33,
@@ -122,12 +122,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "204/232 (87.93%)",
+    "frontendVerified": "205/232 (88.36%)",
     "frontendLocalGreen": "3/232 (1.29%)",
     "backendDone": "182/219 (83.11%)",
     "backendLocalGreen": "1/219 (0.46%)",
-    "e2eVerified": "179/186 (96.24%)",
-    "e2ePlusFlutterOnly": "192/232 (82.76%)",
+    "e2eVerified": "180/186 (96.77%)",
+    "e2ePlusFlutterOnly": "193/232 (83.19%)",
     "ownerDone": "34/53 (64.15%)",
     "ownerNonTerminal": "19/53 (35.85%)"
   },
@@ -934,10 +934,10 @@
     },
     {
       "id": "agora.expire",
-      "status": "open",
-      "owner": "Sessao 7 / C0",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-7/agora-20260916.md",
-      "nextGate": "E2E: expiracao de 24 h reais observada pela tela apos publicacao; BE done."
+      "status": "done",
+      "owner": "Bloco B (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
+      "nextGate": "verified-e2e em 17/09: expiração real de 24 h observada em produção (feed antes/depois pelo leitor; publicações expired v3 pelo worker)."
     },
     {
       "id": "agora.publish",
@@ -1155,7 +1155,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-c1",
-      "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6"
+      "sha": "78b2c98bd2763b2c0d1510fcb4c7701fd5f33f14"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c2": {
       "disposition": "retained-session",
@@ -1715,9 +1715,9 @@
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev.",
+      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "r15/bloco-b": {
       "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
@@ -1731,7 +1731,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -1745,7 +1745,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "r15/bloco-c1": {
       "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
@@ -1763,7 +1763,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "r15/bloco-c2": {
       "sha": "a90f5bbd4da38e4e258144bf15c15e7ae295c75d",
@@ -1779,7 +1779,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2422,9 +2422,9 @@
         "900608be995fa7ab8714420c1f12c8ecb9805a49"
       ],
       "disposition": "patch-equivalent",
-      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent). Exceção: ab96072de é adaptação local da worktree (restaura notices sem PrincipalForYouReader) e não entra em dev.",
+      "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "origin/r15/bloco-b": {
       "sha": "bdad37376af93c7143ae52c873cae8d326909bb2",
@@ -2438,7 +2438,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "e59ae69f44c745f24dc4cf2e41b1ac50e360f8dd",
@@ -2452,7 +2452,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "origin/r15/bloco-c1": {
       "sha": "f59fd267ad58c52ff4643df5abc1b069c4fd44c6",
@@ -2470,7 +2470,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2484,7 +2484,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "30f630db84a3cc47d207f7081fedcfec974729db"
+      "successor": "beb5422de84403a64433231fc4e76c526abad88d"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2597,7 +2597,6 @@
     "docs/agent/artifact-inventory-20260914.json",
     "docs/agent/current-state.md",
     "docs/agent/source-of-truth.md",
-    "docs/knowledge/team/stale-version-pt409-and-production-rite.md",
     "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md",
     "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
     "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
@@ -2636,6 +2635,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-a/errors-409-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-b/agora-expire-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
@@ -2878,9 +2878,8 @@
     "circulars.attach"
   ],
   "memory": {
-    "status": "captured",
-    "reason": "Regras duráveis da R15 (PT409, rito de produção por lote, B5/B6) projetadas em docs/knowledge e nas skills coelo-supabase/coelo-flutter-review/coelo-flutter-supabase-review.",
-    "evidence": "docs/knowledge/team/stale-version-pt409-and-production-rite.md"
+    "status": "no-op",
+    "reason": "Reconciliacao documental e de harness; regras de produto continuam nas ADRs. Nenhum conhecimento novo de produto foi inventado."
   },
   "deployment": {
     "status": "pending",
@@ -2960,12 +2959,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "204/232 (87.93%)",
+      "frontendVerified": "205/232 (88.36%)",
       "frontendLocalGreen": "3/232 (1.29%)",
       "backendDone": "182/219 (83.11%)",
       "backendLocalGreen": "1/219 (0.46%)",
-      "e2eVerified": "179/186 (96.24%)",
-      "e2ePlusFlutterOnly": "192/232 (82.76%)",
+      "e2eVerified": "180/186 (96.77%)",
+      "e2ePlusFlutterOnly": "193/232 (83.19%)",
       "ownerDone": "34/53 (64.15%)",
       "ownerNonTerminal": "19/53 (35.85%)"
     },

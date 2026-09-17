@@ -18,10 +18,10 @@ audience: "team"
 > item `open`/`partial`/bloqueado é a fila. Não criar cópias em outros arquivos.
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
-coordenadora R15, 17/09/2026, após as integrações do dia): FE 204/232 (87,93%),
-BE 182/219 (83,11%), E2E 179/186 (96,24%), Owner 34/53 (64,15%).
+coordenadora R15, 17/09/2026, após as integrações do dia): FE 205/232 (88,36%),
+BE 182/219 (83,11%), E2E 180/186 (96,77%), Owner 34/53 (64,15%).
 Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
-Fila: 7 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
+Fila: 6 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
 pela E8); meta do Owner: **186/186**, 19 Owner
 items abertos/parciais, 19 resíduos H,
 2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
@@ -221,7 +221,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
-## Ações não terminais por família (inventário: 7 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 6 ações; FE/BE/E2E)
 
 
 Projeção regenerada em 17/09/2026 a partir de `inventario-etapa-2.json` (coordenadora R15): ações `mvp`/`gate-formal-mvp` cujo estado integrado
@@ -230,7 +230,7 @@ não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA �
 
 | Família | Qtd | action_ids |
 |---|---:|---|
-| agora | 3 | `agora.publish` (verified/done/pending-verification), `agora.expire` (pending-verification/done/pending-verification), `agora.remove` (local-green/pending-verification/pending-verification) |
+| agora | 2 | `agora.publish` (verified/done/pending-verification), `agora.remove` (local-green/pending-verification/pending-verification) |
 | auth | 2 | `auth.recover` (verified/done/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
 | forms_files | 1 | `forms.expire-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
