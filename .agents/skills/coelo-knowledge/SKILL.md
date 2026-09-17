@@ -79,7 +79,10 @@ rito de produção por lote, busca minimizada de pessoa (B5), pessoa sem conta
 (B6) — estão projetadas em `docs/knowledge/team/stale-version-pt409-and-production-rite.md`
 e nas skills `coelo-supabase`/`coelo-flutter-review`; a fonte canônica segue
 sendo ADR 0041/0042/0044, OQ-047 e specs 058–063. A Mesa R16 (ADR 0044) fixou que a Etapa 2
-se mede pelo E2E do MVP e moveu 33 ações para a V1 (escopo `v1`).
+se mede pelo E2E do MVP e moveu 33 ações para a V1 (escopo `v1`). Em 17/09/2026 a execução
+da R16 fechou **FE 199/199, BE 186/186, E2E 186/186 (100%)**; a regra durável nascida nela
+(o leitor do Agora para Famílias reconhece o responsável por vínculo, sem membership; spec 070,
+lote 81) está em `docs/knowledge/team/agora-guardian-reader-without-membership.md`.
 
 Não instale dependências silenciosamente. Python 3.10+ e PyYAML são exigidos
 pelos scripts; consulte `scripts/requirements.txt` se o runtime faltar.

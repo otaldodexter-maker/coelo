@@ -255,7 +255,22 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
   remove o bloqueio ao terminar. Captura, erro observado e reload devem ficar
   juntos da evidência do action_id; o bloqueio não certifica backend.
 
-## Corte da R16 (17/09/2026)
+## Fim da execução da R16 (17/09/2026, `dev` `21f4485ad`)
+
+- **FE 199/199 (100%), BE 186/186 (100%), E2E 186/186 (100%)** do MVP; Owner 39/53 (14 em
+  reserva). `agora.publish` (lote 81, spec 070, prova por PostgREST com a responsável) e
+  `forms.location-answer` (v4 publicada, ocorrência única, resposta com Local pela tela)
+  certificados por duas sessões paralelas (`R16-execucao.md`, histórico; `R16-checkpoint-20260917.md`).
+- Lições da R16: pedir identificação nominal às sessões pares por `ListAgents` antes de criar
+  worktree (as sessões podem já ter sido lançadas pelo Owner); autorização nominal prévia do
+  Owner para o lote elimina o bloqueio de permissão no rito; um comando PowerShell combinado
+  pode ser negado pelo classificador enquanto os passos separados passam — separar, nunca
+  contornar; trocar um agendamento "Diário" para "Uma vez" não cancela ocorrências já
+  geradas (`form-diario`); o cron `coelo-forms-occurrences` (*/5) reconcilia a audiência
+  de ocorrência nova — esperar o tick antes de responder.
+- Etapa 3 só abre por decisão explícita do Owner (ADR 0035), após a revisão de telas.
+
+## Corte da R16 (17/09/2026, histórico)
 
 - Após a Mesa R16 (ADR 0044, 17/09/2026): FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53 — 33 ações fora do MVP têm escopo `v1` e ficam fora dos denominadores; a Etapa 2 se mede pelo E2E do MVP e FE/BE seguem por code review e revisão tela a tela na Etapa 3. Escopo `v1` exige `backendStatus`/`integratedStatus` = `v1` e é aceito por `apply-tracker-delta.cjs` (`escopo`).
 - Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia).

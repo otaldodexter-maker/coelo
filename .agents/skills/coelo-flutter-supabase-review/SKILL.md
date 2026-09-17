@@ -5,7 +5,7 @@ metadata:
   source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md; decisions/0041-owner-decisions-r14-mesa-20260916.md"
   status: "active"
   generated_at: "2026-09-14"
-  updated_at: "2026-09-16"
+  updated_at: "2026-09-17"
 ---
 
 # Coelo Front-end + Back-end
@@ -36,7 +36,10 @@ em `docs/agent/current-state.md` e nos rastreadores apontados por ele.
 ## Escopo atual
 
 Na Etapa 2 o app é `apps/superadmin`; Coelo (Principal) é um menu/família
-visual hospedado nele. `apps/admin`, `apps/principal` e `apps/site` só entram
+visual hospedado nele. A execução FE/BE/E2E do MVP terminou em 17/09/2026
+(FE 199/199, BE 186/186, E2E 186/186; `R16-checkpoint-20260917.md`); o que resta
+na R16 é reserva para a revisão de telas antes da Etapa 3, e a Etapa 3 (ADR 0035)
+só abre por decisão explícita do Owner. `apps/admin`, `apps/principal` e `apps/site` só entram
 com recorte explícito. A rodada vigente e o ambiente responsável estão sempre
 em `docs/agent/current-state.md`; não usar uma rodada histórica como fila atual.
 
@@ -55,7 +58,8 @@ Git ou log. Mídia nova do MVP segue ADR 0032; decisões de importação/exporta
 seguem ADR 0031; decisões de produto da R13 seguem ADR 0038; contratos e
 aceites decididos pelo Owner na R14 seguem ADR 0041 (busca de pessoa, pessoa
 sem conta, snapshot de rotina na chamada, arquivar, notificações de medicação,
-"ver como"). Uma decisão do Owner registrada em ADR nunca é reaberta por uma
+"ver como"); fechamento de rodadas e critério de medição seguem ADR 0042/0043/0044
+(Etapa 2 medida pelo E2E do MVP; 33 ações em `v1`). Uma decisão do Owner registrada em ADR nunca é reaberta por uma
 sessão; se a implementação encontrar conflito, registre em `open-questions.md`.
 
 Histórico, handoff, checkpoint, prompt, screenshot, backup e artefato só são

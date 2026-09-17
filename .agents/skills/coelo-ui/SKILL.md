@@ -5,7 +5,7 @@ metadata:
   source: "specs/013-ui-packages-componentization.md; docs/design/design-system.md; specs/050-principal-ui-ux-closure.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; .agents/skills/coelo-ui/references/approved-superadmin-visual-baselines.md; .agents/skills/coelo-ui/references/interactive-state-evidence-matrix.md; .agents/skills/coelo-ui/references/rejected-visual-patterns-inbox.md; .agents/skills/coelo-ui/references/admin-directory-flyout-contracts.md; .agents/skills/coelo-ui/references/weekly-superadmin-ui-review.md"
   status: "active"
   generated_at: "2026-07-29"
-  updated_at: "2026-09-08"
+  updated_at: "2026-09-17"
 ---
 
 # Coelo UI
@@ -16,6 +16,13 @@ não os trate como contexto atual. Limpeza segue
 
 Aplicar o Design System oficial sem transformar propostas em padrões
 silenciosamente.
+
+Estado (17/09/2026): a execução FE/BE/E2E do MVP terminou (FE 199/199, BE 186/186,
+E2E 186/186; `docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md`).
+Os ajustes de UI/UX remanescentes da R16 (14 Owner items, resíduos H — ver
+`R16-pendencias.md`) ficam em reserva para a **revisão de telas antes da Etapa 3**:
+a coordenação apresenta todas as telas ao Owner, que aprova ou manda a correção para a
+Etapa 3. Esta skill é a referência dessa revisão (famílias, baselines, contratos).
 
 ## Fechamento proporcional
 

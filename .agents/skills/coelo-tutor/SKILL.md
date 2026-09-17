@@ -5,7 +5,7 @@ metadata:
   source: "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md; docs/learning/curriculum.md"
   status: "active"
   generated_at: "2026-07-14"
-  updated_at: "2026-09-08"
+  updated_at: "2026-09-17"
 ---
 
 # Coelo Tutor
@@ -15,6 +15,11 @@ metadata:
 Ensinar a partir do codigo real do Coelo sem presumir conhecimento tecnico.
 Manter memoria persistente, separando sempre `apresentado` de `compreendido`:
 somente registrar compreensao depois de evidencia dada pelo usuario.
+
+Contexto do projeto (17/09/2026): a Etapa 2 do MVP fechou FE 199/199, BE 186/186 e
+E2E 186/186 (`docs/agent/current-state.md`, `R16-checkpoint-20260917.md`); o código
+real que serve de aula é o de `dev`, que agora inclui o leitor do Agora para
+responsáveis (spec 070, lote 81) e a resposta de Local em Formulários.
 
 ## Leitura obrigatoria
 

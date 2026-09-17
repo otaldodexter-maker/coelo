@@ -5,7 +5,7 @@ metadata:
   source: "AGENTS.md; docs/agent/current-state.md; docs/agent/review-workflow.md; decisions/0032-mvp-private-media-r2.md; decisions/0041-owner-decisions-r14-mesa-20260916.md"
   status: "active"
   generated_at: "2026-09-14"
-  updated_at: "2026-09-16"
+  updated_at: "2026-09-17"
 ---
 
 # Coelo Back-end
@@ -80,8 +80,11 @@ por `functions list`. Autorização de produção é nominal do Owner por lote; 
 classificador do executor pode negar `db query --linked` numa sessão e permitir
 noutra — nunca contornar, registrar o comando no handoff.
 
-Estado da Etapa 2 (backend): Após a Mesa R16 (ADR 0044, 17/09/2026): FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53 — 33 ações fora do MVP têm escopo `v1` e ficam fora dos denominadores; a Etapa 2 se mede pelo E2E do MVP e FE/BE seguem por code review e revisão tela a tela na Etapa 3. Corte anterior — Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`
-(ADR 0043). Lotes 75–80 em produção e Edges `chat-media`, `child-safety-media` v2,
+Estado da Etapa 2 (backend): **execução FE/BE/E2E do MVP concluída em 17/09/2026 (R16, `R16-checkpoint-20260917.md`): FE 199/199 (100%), BE 186/186 (100%), E2E 186/186 (100%)**, Owner 39/53 (14 em reserva por decisão do Owner). 33 ações fora do MVP têm escopo `v1` e ficam fora dos denominadores (ADR 0044); a Etapa 2 se mede pelo E2E do MVP. O que resta na R16 (Owner items, H, UI/UX, dívida técnica) está em reserva para a revisão de telas antes da Etapa 3; a Etapa 3 só abre por decisão explícita do Owner (ADR 0035). Cortes anteriores: Mesa R16 (17/09) FE 198/199, BE 185/186, E2E 184/186; fechamento da R15 (`dev` `37d762976`) FE 207/232, BE 185/219, E2E 184/186. Fila vigente: `R16-pendencias.md`
+(ADR 0043). Lotes 75–81 em produção (81 = `now_guardian_reader_v1`, spec 070: o leitor do
+Agora reconhece o responsável por `guardian_links` + `can_view` sem membership, via
+`app_private.now_reader_actor`; `now_actor` de escrita continua só de equipe — ver
+`docs/knowledge/team/agora-guardian-reader-without-membership.md`) e Edges `chat-media`, `child-safety-media` v2,
 `meal-plan-media`, `meal-plan-image-cleanup`, `now-media`, `form-media` v23. Edge que
 recebe o bearer do pg_cron precisa de `verify_jwt = false` e validar o bearer no
 handler (`form-media`, `circular-media`); com o gateway ligado o worker recebe 401 e o
