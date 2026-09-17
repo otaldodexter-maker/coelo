@@ -386,9 +386,14 @@ inspector_port = 8083
 # The Deno major version to use.
 deno_version = 2
 
-# Browser clients call this endpoint with their authenticated user JWT.
+# Browser clients call this endpoint with their authenticated user JWT; the
+# handler validates it itself (Supabase client with the caller Authorization)
+# and authenticates the pg_cron worker path by FORMS_OPERATIONS_BEARER_TOKEN.
+# verify_jwt must be false: with the gateway check on, the cron bearer (not a
+# JWT) is rejected with 401 UNAUTHORIZED_INVALID_JWT_FORMAT before the function
+# runs and expire/cleanup never execute (observed in production on 17/09/2026).
 [functions.form-media]
-verify_jwt = true
+verify_jwt = false
 
 # Browser clients invoke the canonical import/export hub with their authenticated JWT.
 [functions.import-export-jobs]
