@@ -1,16 +1,16 @@
 [
   {
     "id": "owner.r12-01",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "daily-routine.list"
     ],
-    "fe": "FE local-green (S9 16/09): cards sobre `CoeloAdminCardGrid` (grade de altura uniforme extraída do composto para coelo_ui_admin), linha \"Efetivo: —\" sempre presente e Arquivar em todos os cards (Restaurar no arquivado, B1); teste de widget 4/4 nos três pontos, pasta 119/119, golden regravado após o cabeçalho (C1).",
-    "be": "Sem SQL/RPC novo nesta fatia; o efeito de Arquivar/Restaurar depende da fatia B1 (owner.r12-02).",
-    "e2e": "Pendente: rota real (captura 1440 + reload).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Capturar na rota real quando o PostgREST voltar; B1 (r12-02) dá efeito a Arquivar/Restaurar.",
+    "nextGate": "Concluído 17/09 (R15 C1, ADR 0041 C3): cards de Modelos de rotina na rota real em 1440 com altura uniforme, \"Efetivo: —\" e Arquivar em todos; reload.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -20,17 +20,17 @@
   },
   {
     "id": "owner.r12-02",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "activities.list",
       "daily-routine.list"
     ],
-    "fe": "FE local-green (S9 16/09): Atividades › Modelos com aba Arquivados, Arquivar/Restaurar com confirmação e recarga (leitor v1); Rotina › Modelos com filtro Arquivados e comandos v1 no router; testes 6/6 + 6/6 + 3 + 1.",
-    "be": "BE local-green (espelho): spec 054 + migration `20260916193000_archive_models_v1` (RPCs `superadmin_activity_template_archive_v1/_restore_v1/_directory_v1`, `superadmin_routine_model_archive_v1/_restore_v1`, diretório de Rotina exclui arquivados por padrão; PT409, recibo, auditoria, RLS deny-by-default) + pgTAP 63/63; **não aplicada em produção**.",
-    "e2e": "Pendente: aplicação em produção pelo rito e rota real dos dois diretórios (Arquivar, Restaurar, filtro, reload, negativa).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Coordenadora: aplicar `20260916183000` pelo rito (espelho verde, dump prévio, dry-run, ledger, lote) e provar na rota real; depois delta FE/BE/E2E. Restaurar de rotinas aplicadas fica para a spec de ciclo de vida (R15).",
+    "nextGate": "Concluído 17/09 (R15 C1, ADR 0041 B1): lote 74 em produção; Arquivar/Restaurar pela tela em Atividades › Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivado), reload, negativas PT409/P0002/55000 por PostgREST. Sobra: diretório de Atividades do Owner de plataforma não alcança modelos institucionais (observação FE).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

@@ -24,7 +24,7 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 | Coelo (Principal) › Conversas › thread › anexos (`/communication/conversations`) | `chat.attach`, `owner.r12-52` (E3) | 17/09 08:50 BRT | **fechada** 10:05 BRT |
 | Principal hospedado › "ver como" / Para você / Editar perfil | `principal.for-you`, `principal.profile-edit`, H02 (B9) | 17/09 08:50 BRT | **fechada** 12:15 BRT |
 | Coelo (Principal) › Momentos (`/principal-moments`, `/principal-moments/publish`) — liberada pelo Bloco A via coordenadora | `momentos.view`, `momentos.publish`, `momentos.remove`, `momentos.create` | 17/09 12:40 BRT | **fechada** 13:40 BRT |
-| Atividades › Modelos e Rotina › Modelos (Arquivar B1) — liberada pelo Bloco B (bdad37376) via coordenadora | `owner.r12-01`, `owner.r12-02` (só tela; lote 74 já em produção) | 17/09 14:15 BRT | em andamento |
+| Atividades › Modelos e Rotina › Modelos (Arquivar B1) — liberada pelo Bloco B (bdad37376) via coordenadora | `owner.r12-01`, `owner.r12-02` (só tela; lote 74 já em produção) | 17/09 14:15 BRT | **fechada** 15:05 BRT |
 
 ## Fatias entregues
 
@@ -35,7 +35,8 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 | 6e9234c87 | B9 local-green: migration `20260917130000_principal_for_you_reader_v1` (**lote 77**, aplicada pelo rito) + pgTAP 21/21; FE: `PrincipalGlobalHeader.contextLabel` + avatar do contexto após "Ver como" (sem faixa), `PrincipalForYouReader` (`list_my_principal_for_you`) na página/router, H02 ligado no `PrincipalProfileEditPage`; spec 059. Nenhum estado alterado. | — | specs/059; r15-bloco-c1/pgtap-principal_for_you_reader_v1-mirror-20260917.txt |
 | b1664470f | rota real `qa-r06-principal`: `principal.for-you` verified/blocked-decision/pending-verification → **verified/done/verified-e2e**; `principal.profile-edit` local-green/blocked-decision/pending-verification → **verified/done/verified-e2e** | — (B9 não tem `owner.r12-*` próprio) | r15-bloco-c1/principal-b9-20260917.md + deltas-principal-b9-20260917.json + capturas/ |
 | a23d5be49 | Momentos na rota real (sem SQL novo): `momentos.create` local-green/local-green/blocked-environment → **verified/done/verified-e2e**; `momentos.publish` e `momentos.remove` pending/local-green/pending → **verified/done/verified-e2e**; `momentos.view` → **verified-e2e** | — | r15-bloco-c1/momentos-20260917.md + deltas-momentos-20260917.json + capturas/momentos-* |
-| (este commit) | Goldens E4: `principal_for_you_preview_golden_test` e `principal_profile_preview_golden_test` regravadas (25 referências; diff isolado só nas iniciais do avatar do cabeçalho, medido por imagem); `notice_directory_golden_test` **não** regravada (diff no filtro "Estado", não é cabeçalho). Nenhum estado por action_id alterado. | — | r15-bloco-c1/goldens-e4-principal-20260917.md |
+| f59fd267a | Goldens E4: `principal_for_you_preview_golden_test` e `principal_profile_preview_golden_test` regravadas (25 referências; diff isolado só nas iniciais do avatar do cabeçalho, medido por imagem); `notice_directory_golden_test` **não** regravada (diff no filtro "Estado", não é cabeçalho). Nenhum estado por action_id alterado. | — | r15-bloco-c1/goldens-e4-principal-20260917.md |
+| (este commit) | Arquivar B1 na rota real (só tela; lote 74): Atividades › Modelos Arquivar/Restaurar + aba Arquivados + reload; Rotina › Modelos Arquivar/Restaurar + filtro Arquivado + reload; cards de Rotina em 1440; negativas PT409/P0002/55000 por PostgREST. Nenhum estado por action_id alterado. | `owner.r12-01` → **done**, `owner.r12-02` → **done** | r15-bloco-c1/arquivar-b1-20260917.md + capturas/arquivar-* |
 
 ## Avisos para as outras sessões e para a coordenadora
 
@@ -85,6 +86,12 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
   `d0c40000…0001`, mídia sintética em R2. UX pré-existente para quem cuidar da tela: o publicador
   não bloqueia um segundo toque em "Publicar agora" durante o envio (gerou duas publicações) e o
   feed mostra "Curtido por Maria e outras 531 pessoas"/contadores de demonstração.
+- Massa: modelo institucional `QA R15 Modelo Arquivar (sintetico)` (`d28ed0a9`) no tenant QA
+  (criado por RPC para a prova; ficou ativo). Observação FE (sobra): para o Owner de plataforma,
+  Atividades › Modelos lê `superadmin_activity_template_directory_v1` sem instituição e "Origem:
+  Institucional" só filtra o que já veio — modelos institucionais não são alcançáveis nesse
+  diretório; decidir seletor de instituição ou leitor v1 incluindo institucionais na visão de
+  plataforma.
 - E4: as suítes do Principal foram regravadas nesta branch; `notice_directory_golden_test`
   continua falhando por mudança de texto do filtro "Estado" (não é cabeçalho) — decisão de quem
   cuida de Comunicações, não E4.
@@ -96,4 +103,4 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 `node docs/reviews/validate-trackers.cjs` após a última fatia: PASS — actions 232,
 FE 194/232, BE 178/219, E2E **169/186** ativo (corte de abertura 162; +7 por este bloco:
 `chat.attach`, `principal.for-you`, `principal.profile-edit`, `momentos.create/publish/view/remove`);
-Owner: `owner.r12-52` done.
+Owner: `owner.r12-52`, `owner.r12-01`, `owner.r12-02` done.
