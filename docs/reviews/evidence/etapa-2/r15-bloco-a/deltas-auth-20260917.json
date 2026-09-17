@@ -1,0 +1,14 @@
+[
+ {"action_id":"auth.recover","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R15 Bloco A rota real (17/09): /forgot-password com o e-mail do Owner -> POST /auth/v1/recover 200 e tela 'Confira seu e-mail' (sem enumeracao); e-mail inexistente -> mesma tela e 200 {}; redirect http://127.0.0.1:8765/reset-password dentro da allowlist; entrega real do e-mail provada em 16/09 (BE done). Sem link/token registrado.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md","revision":"ab96072de","environment":"producao","recordedAt":"2026-09-17T14:50:00-03:00"}},
+ {"action_id":"auth.reset","camada":"backend","estado_proposto":"done",
+  "delta":"R15 Bloco A (17/09): contrato de Auth do Supabase (recovery token -> PUT /auth/v1/user) sem RPC propria; allowlist de redirect 127.0.0.1:8765/reset-password em producao; prova pela caixa de e-mail adiada pelo Owner para a Etapa 3 (ADR 0042 E10) — aceite por decisao.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md","revision":"ab96072de","environment":"producao","recordedAt":"2026-09-17T14:50:00-03:00"}},
+ {"action_id":"auth.reset","camada":"integrated","estado_proposto":"verified-e2e",
+  "delta":"R15 Bloco A (17/09): aceite por decisao do Owner (ADR 0042 E10): redefinicao real pela caixa, nova sessao, expiracao e uso unico verificados em detalhe na Etapa 3 (SMTP proprio); rota /reset-password servida na origem da allowlist e validacao do token no app (FE verified desde R02).",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md","revision":"ab96072de","environment":"producao","recordedAt":"2026-09-17T14:50:00-03:00"}}
+]
