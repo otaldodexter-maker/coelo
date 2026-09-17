@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "bdb9e45373afeda64bb3e39c4062e7f70f36c146",
+    "head": "b6fffd51546b2ebb3483b96600250893e006ae92",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -228,11 +228,11 @@
         "attendance.finish"
       ],
       "fe": "verified",
-      "be": "not-applicable",
-      "e2e": "flutter-only",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer",
+      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
       "sourceRound": "R15"
     },
     {
@@ -284,12 +284,12 @@
       "id": "owner.r12-11",
       "status": "done",
       "actionIds": [],
-      "fe": "Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS.",
-      "be": "Contrato preservado; nenhum SQL/RPC novo.",
-      "e2e": "Visual golden pendente de reconciliação; sem action_id novo.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/access-profiles-cards-diagnostic-r12.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1).",
+      "nextGate": "Concluído 16/09: Owner aprovou a composição atual dos cards (ADR 0041 C2); golden regrava com o cabeçalho (C1). Detalhe da prova (R15 Bloco A, 17/09): Cards já têm situação + Escopo máximo/Vínculos/Tipo em composição compacta; pages 15/15 PASS. / Contrato preservado; nenhum SQL/RPC novo. / Visual golden pendente de reconciliação; sem action_id novo.",
       "sourceRound": "R15"
     },
     {
@@ -412,12 +412,12 @@
       "actionIds": [
         "access-profiles.list"
       ],
-      "fe": "FE verified na rota real (S5 16/09 e Bloco A 17/09): 8 cards após carga completa em 1424×1125 e após salvar edição.",
-      "be": "BE inalterado.",
-      "e2e": "E2E: negativa aceita = versão defasada 409 PT409 (lote 75) e capability/instituição inválida 400 22023; perfis Superadmin não têm tenant.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A). Resíduo BE (não bloqueia): \"Vínculos\" conta platform_memberships.",
+      "nextGate": "Concluído 17/09 (Bloco A). Resíduo BE (não bloqueia): \"Vínculos\" conta platform_memberships. Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (S5 16/09 e Bloco A 17/09): 8 cards após carga completa em 1424×1125 e após salvar edição. / BE inalterado. / E2E: negativa aceita = versão defasada 409 PT409 (lote 75) e capability/instituição inválida 400 22023; perfis Superadmin não têm tenant.",
       "sourceRound": "R15"
     },
     {
@@ -426,12 +426,12 @@
       "actionIds": [
         "access-profiles.detail"
       ],
-      "fe": "FE verified na rota real (Bloco A 17/09): detalhe traduzido módulo › tela › ação (\"Acessos › Modelos de perfil › Ver\"), relido após carga completa com v2 e 2 permissões.",
-      "be": "BE inalterado; catálogo em inglês e CardÃ¡pios (resíduo).",
-      "e2e": "E2E verified-e2e via access-profiles.edit.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A). Resíduos BE: rótulo \"Excluir\" × nome \"Inativar modelos Admin.\"; reason mascarado como [redacted] no detalhe.",
+      "nextGate": "Concluído 17/09 (Bloco A). Resíduos BE: rótulo \"Excluir\" × nome \"Inativar modelos Admin.\"; reason mascarado como [redacted] no detalhe. Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): detalhe traduzido módulo › tela › ação (\"Acessos › Modelos de perfil › Ver\"), relido após carga completa com v2 e 2 permissões. / BE inalterado; catálogo em inglês e CardÃ¡pios (resíduo). / E2E verified-e2e via access-profiles.edit.",
       "sourceRound": "R15"
     },
     {
@@ -441,12 +441,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE verified: criação (S5) e edição (Bloco A 17/09) sem campo Código; code do servidor preservado ao renomear.",
-      "be": "BE done.",
-      "e2e": "E2E verified-e2e: save v1→v2 relido por PostgREST, reload, 409 PT409 em versão defasada.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A).",
+      "nextGate": "Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified: criação (S5) e edição (Bloco A 17/09) sem campo Código; code do servidor preservado ao renomear. / BE done. / E2E verified-e2e: save v1→v2 relido por PostgREST, reload, 409 PT409 em versão defasada.",
       "sourceRound": "R15"
     },
     {
@@ -470,12 +470,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE verified na rota real (Bloco A 17/09): tooltip de sensibilidade por hover (S5) e por foco de teclado (Tab) em \"Excluir\" (sensível) e \"Criar/Importar\" (risco elevado).",
-      "be": "BE inalterado.",
-      "e2e": "E2E verified-e2e via access-profiles.edit.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A). Resíduo visual: tooltip aberto por foco não fecha quando o foco avança (fica empilhado); corrigir em _PermissionActionCell.",
+      "nextGate": "Concluído 17/09 (Bloco A). Resíduo visual: tooltip aberto por foco não fecha quando o foco avança (fica empilhado); corrigir em _PermissionActionCell. Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): tooltip de sensibilidade por hover (S5) e por foco de teclado (Tab) em \"Excluir\" (sensível) e \"Criar/Importar\" (risco elevado). / BE inalterado. / E2E verified-e2e via access-profiles.edit.",
       "sourceRound": "R15"
     },
     {
@@ -485,12 +485,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE verified na rota real (Bloco A 17/09): matriz em 1424 (empilhada por tela, cabeçalho sem estouro) e em 600×900 (stepper à esquerda, sem estouro horizontal, rodapé empilhado); persistência/reload.",
-      "be": "BE inalterado.",
-      "e2e": "E2E verified-e2e via access-profiles.edit.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A).",
+      "nextGate": "Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): matriz em 1424 (empilhada por tela, cabeçalho sem estouro) e em 600×900 (stepper à esquerda, sem estouro horizontal, rodapé empilhado); persistência/reload. / BE inalterado. / E2E verified-e2e via access-profiles.edit.",
       "sourceRound": "R15"
     },
     {
@@ -499,12 +499,12 @@
       "actionIds": [
         "access-profiles.edit"
       ],
-      "fe": "FE verified na rota real (Bloco A 17/09): Continuar FilledButton laranja preenchido no passo 1 da edição, tema claro; Salvar alterações preenche após motivo.",
-      "be": "BE inalterado.",
-      "e2e": "E2E verified-e2e via access-profiles.edit.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A).",
+      "nextGate": "Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): Continuar FilledButton laranja preenchido no passo 1 da edição, tema claro; Salvar alterações preenche após motivo. / BE inalterado. / E2E verified-e2e via access-profiles.edit.",
       "sourceRound": "R15"
     },
     {
@@ -514,12 +514,12 @@
         "access-profiles.create",
         "access-profiles.edit"
       ],
-      "fe": "FE verified na rota real (Bloco A 17/09): revisão \"Acessos › Modelos de perfil › Inativar modelos Admin.\", texto configuração × acesso efetivo, vínculos impactados, MFA, motivo obrigatório; salvo sem perder permissões e relido.",
-      "be": "BE inalterado.",
-      "e2e": "E2E verified-e2e via access-profiles.edit.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/access-profiles-edit-assign-20260917.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Concluído 17/09 (Bloco A).",
+      "nextGate": "Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): revisão \"Acessos › Modelos de perfil › Inativar modelos Admin.\", texto configuração × acesso efetivo, vínculos impactados, MFA, motivo obrigatório; salvo sem perder permissões e relido. / BE inalterado. / E2E verified-e2e via access-profiles.edit.",
       "sourceRound": "R15"
     },
     {
@@ -731,11 +731,11 @@
         "forms.list"
       ],
       "fe": "verified",
-      "be": "not-applicable",
-      "e2e": "flutter-only",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer",
+      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
       "sourceRound": "R15"
     },
     {
@@ -759,11 +759,11 @@
         "chat.open"
       ],
       "fe": "verified",
-      "be": "not-applicable",
-      "e2e": "flutter-only",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-fechamento.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Ajuste visual entregue; não refazer",
+      "nextGate": "Ajuste visual entregue; não refazer Detalhe da prova (R15 Bloco A, 17/09): verified / not-applicable / flutter-only",
       "sourceRound": "R15"
     },
     {
@@ -874,12 +874,12 @@
       "id": "owner.r12-51",
       "status": "done",
       "actionIds": [],
-      "fe": "Não aplicável.",
-      "be": "Done (lote 63, 14/09): quatro candidatos aplicados em produção com dump SHA-256, espelho e pgTAP verdes, ledger 283→287.",
-      "e2e": "Não aplicável.",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
       "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
       "owner": "registro histórico R12/R13",
-      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova.",
+      "nextGate": "Owner resolve exigência PITR da R11 versus ADR0034D8; C0 confirma regra vigente, configuração real, backup atualizado e ordem serial antes de aplicar. Transferir rodada não concede exceção ou autorização nova. Detalhe da prova (R15 Bloco A, 17/09): Não aplicável. / Done (lote 63, 14/09): quatro candidatos aplicados em produção com dump SHA-256, espelho e pgTAP verdes, ledger 283→287. / Não aplicável.",
       "sourceRound": "R15"
     },
     {
@@ -1647,7 +1647,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "r15/bloco-b": {
       "sha": "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -1658,7 +1658,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -1670,7 +1670,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "r15/bloco-c1": {
       "sha": "c0482aeddc81e093d0c5a95aa6222908ef358f54",
@@ -1683,7 +1683,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -1697,7 +1697,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2336,7 +2336,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "origin/r15/bloco-b": {
       "sha": "c59e5ebf3def9409fe27b48d6ca5a0c1a494b238",
@@ -2347,7 +2347,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -2359,7 +2359,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "origin/r15/bloco-c1": {
       "sha": "c0482aeddc81e093d0c5a95aa6222908ef358f54",
@@ -2372,7 +2372,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2386,7 +2386,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "bdb9e45373afeda64bb3e39c4062e7f70f36c146"
+      "successor": "b6fffd51546b2ebb3483b96600250893e006ae92"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
