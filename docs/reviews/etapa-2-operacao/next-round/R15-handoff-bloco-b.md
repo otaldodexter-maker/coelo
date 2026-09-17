@@ -23,8 +23,16 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
   "Avisos" 8.
 - Fatia 3 — Segurança da criança: **entregue** (`child-safety.edit`/`suspend` verified-e2e; r12-13/15/16 done).
 - Fatia 7 — Agora: `agora.expire` e `agora.remove` **entregues** (verified-e2e; lote 79 + Edge `now-media` deployada);
-  `agora.publish` **desbloqueado em 17/09 18:10 UTC**: conta `qa-r15-responsavel` criada (coordenadora/Owner) e fixture
-  AP-1 executada (lote 80; JSON em `massa-qa-r15-20260917.md`) — prova pela tela em andamento nesta sessão.
+  `agora.publish` **bloqueado por contrato (RPC), decisão da coordenadora 17/09 → OQ-048 (R16)**: massa completa
+  (conta + AP-1/lote 80), story Famílias `d9580375…` publicada em produção, leitura pela responsável por PostgREST
+  `403 42501 now_permission_denied` (`now_actor` exige permissão/membership de equipe); staff vê `[]`. FE verified /
+  BE done / E2E pending-verification (`agora-publish-20260917.md`, delta aplicado).
+- Fatia 4 — Assiduidade: `ACTIVITY_INVALID_REFERENCE` **resolvido** — dois defeitos de FE (participantes enviados com
+  turma em modo `all`; repositório recusava `status active` na criação com publicar), corrigidos com testes 50/50;
+  atividade "QA R15 Atividade Assiduidade" `1bd6bc74-d0bd-4a9b-af89-7c51347d18c0` criada e publicada pela tela em
+  produção (`atividade-qa-r15-criacao-20260917.md`). **r12-05/r12-08/B2/B3 não provados**: `/attendance/new` ficou em
+  branco no Chrome de `qa-r06-operacoes` após o rebuild (reload sem efeito; não diagnosticado por prazo do Owner 16:20).
+- Fatia 5 — Medicação (r12-33/E7): **não iniciada** (prazo).
 - **Fatia 6 — Arquivar B1 (`owner.r12-01`/`r12-02`) LIBERADA para o Bloco C1** (17/09 14:05 BRT, a pedido da
   coordenadora): só tela, migration `20260916193000_archive_models_v1` já em produção (lote 74); rotas Atividades ›
   Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivados), negativas PT409/`P0002`. O Bloco B não toca.
@@ -107,6 +115,30 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
   / `20260915185048`), idempotente por e-mail, aplicada pelo rito por B′ assim que o Owner criar a conta; commit na
   branch de apoio para eu cherry-pick ou aplicação direta com aviso do lote.
 
+### AP-2 — `agora.publish` Famílias: leitura pela responsável recusada por `now_actor` (fatia 7) — 17/09 18:36 UTC
+- Situação: conta `qa-r15-responsavel@coelo.me` criada e fixture AP-1 executada (pessoa `da915f98…` ativa, login,
+  `guardian_links` + `guardian_context_permissions` para as crianças `1a6158fe…`/`519ef941…`). Story de audiência
+  **`families`** publicada pelo contrato como `qa-r06-publicacoes` (`d9580375-c81e-4e8a-8086-85e4eef09186`,
+  `published`, expira 18/09 18:34 UTC). Leitura pela responsável (PostgREST, sessão própria):
+  `list_visible_now_publications(p_institution_id d0c40000…0001, null, null, 20)` → **`403 {"code":"42501",
+  "message":"now_permission_denied"}`** (187 ms; idem na segunda chamada, 58 ms). Como `qa-r06-principal` (staff) a
+  mesma chamada devolve `[]` (audiência Famílias isolada de equipe — correto).
+- Causa (dump 17/09): `app_private.now_actor` exige `app_private.has_institution_permission(inst,'now.publications.read',…)`
+  e, em seguida, uma linha ativa em `institution_memberships` (`active_membership_required`). A responsável tem 0
+  memberships; `now_viewer_role_class` responderia `guardian`, mas nunca é alcançado. Logo, hoje **nenhum responsável
+  "puro" (só `guardian_links`) consegue ler o Agora**, mesmo com audiência `families` — lacuna de contrato, não de massa.
+- Já tentei: leitura com `p_unit_id`/`p_group_id` nulos; não inseri membership (a tela de Pessoas cria membership por
+  `update_superadmin_person` só com papel contextual de `institution_roles`; QA R04 Cuidado não tem papel de
+  responsável e a semântica seria inventada).
+- Preciso (decisão da coordenadora/Owner + candidato de B′): **(a)** estender a fixture `seed_qa_r15_guardian_fixture_v1`
+  com `institution_memberships` de responsável (`role_code` a definir, `scope_kind` institution/unit, status active)
+  e a permissão `now.publications.read` para esse papel — prova de massa; ou **(b)** ajustar `now_actor`/
+  `list_visible_now_publications` para aceitar ator responsável via `guardian_links` ativos (ADR do Agora) — prova de
+  contrato. Sem isso `agora.publish` fica **verified FE / done BE / E2E bloqueado por decisão**.
+- **Resposta (coordenadora, 17/09 18:45 UTC)**: B′ verificou no espelho que nem membership `guardian` libera o feed
+  (`now.publications.read` só em papéis de equipe; override só à massa mascararia o defeito). Decisão: bloqueio por
+  **contrato (RPC)**, correção de `now_actor` (reconhecer `guardian_links`) na R16 via **OQ-048**. **Encerrado.**
+
 ## Bloqueios
 
 | Gate | Causa classificada | Detalhe |
@@ -115,4 +147,4 @@ aqui: `qa-r06-publicacoes` (negativa PostgREST), `qa-r06-acessos` (rota real). N
 
 ## Contadores
 
-`node docs/reviews/validate-trackers.cjs` → PASS após `agora.remove`: FE 193/232, BE 173/219, E2E 166/186 (ativo 186), Owner 24/53.
+`node docs/reviews/validate-trackers.cjs` → PASS após `agora.publish` (pending-verification mantido): FE 193/232, BE 173/219, E2E 166/186 (ativo 186), Owner 24/53.

@@ -334,6 +334,114 @@ void main() {
     expect(result.status, ActivityStatus.draft);
   });
 
+  test('sends explicit participants only for groups in selected mode', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-2',
+              'management_version': 7,
+              'status': 'draft',
+              'correlation_id': 'correlation-2',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await SupabaseActivityCommandRepository(client).save(_participantsSaveCommand);
+
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    final payload = body['p_payload'] as Map<String, dynamic>;
+    expect(payload['group_ids'], ['group-all', 'group-selected']);
+    expect(payload['group_participation'], {'group-all': 'all', 'group-selected': 'selected'});
+    // A turma em modo `all` nao envia selecao individual (o servidor recusa com
+    // ACTIVITY_INVALID_REFERENCE); a turma `selected` envia o estado completo.
+    expect(payload['participants'], [
+      {'group_id': 'group-selected', 'child_group_link_id': 'link-3', 'belongs': false},
+      {'group_id': 'group-selected', 'child_group_link_id': 'link-4', 'belongs': true},
+    ]);
+  });
+
+  test('creates and publishes in one aggregate RPC and accepts the active status', () async {
+    Request? captured;
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        captured = request;
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-3',
+              'management_version': 6,
+              'status': 'active',
+              'correlation_id': 'correlation-3',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    final result = await SupabaseActivityCommandRepository(client).save(_createPublishCommand);
+
+    final body = jsonDecode(captured!.body) as Map<String, dynamic>;
+    expect(body['p_activity_id'], isNull);
+    expect(body['p_publish'], isTrue);
+    expect(result.activityId, 'activity-created-3');
+    expect(result.status, ActivityStatus.active);
+  });
+
+  test('create with publish still rejects a draft answer', () async {
+    final client = SupabaseClient(
+      'https://example.supabase.co',
+      'publishable-key',
+      httpClient: MockClient((request) async {
+        return Response(
+          jsonEncode({
+            'ok': true,
+            'data': {
+              'activity_id': 'activity-created-3',
+              'management_version': 6,
+              'status': 'draft',
+              'correlation_id': 'correlation-3',
+              'replayed': false,
+            },
+            'error': null,
+          }),
+          200,
+          headers: {'content-type': 'application/json'},
+          request: request,
+        );
+      }),
+    );
+    addTearDown(client.dispose);
+
+    await expectLater(
+      SupabaseActivityCommandRepository(client).save(_createPublishCommand),
+      throwsA(isA<ActivityCommandUnavailableException>()),
+    );
+  });
+
   test('unsupported activity save variants fail closed before HTTP', () async {
     var requestCount = 0;
     final client = SupabaseClient(
@@ -862,6 +970,64 @@ const _saveCommand = ActivitySaveCommand(
   identity: ActivityCommandIdentity(
     kind: ActivityIdentityKind.initials,
     initials: 'NA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _participantsSaveCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000902',
+  intent: ActivityCommandIntent.saveDraft,
+  name: 'Capoeira',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {'group-selected', 'group-all'},
+  groupParticipation: {
+    'group-all': ActivityParticipation.all,
+    'group-selected': ActivityParticipation.selected,
+  },
+  participants: [
+    ActivityCommandParticipant(groupId: 'group-all', childGroupLinkId: 'link-1', belongs: true),
+    ActivityCommandParticipant(groupId: 'group-all', childGroupLinkId: 'link-2', belongs: true),
+    ActivityCommandParticipant(
+      groupId: 'group-selected',
+      childGroupLinkId: 'link-4',
+      belongs: true,
+    ),
+    ActivityCommandParticipant(
+      groupId: 'group-selected',
+      childGroupLinkId: 'link-3',
+      belongs: false,
+    ),
+  ],
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'CA',
+    color: '#D63C00',
+    icon: 'activity',
+  ),
+);
+
+const _createPublishCommand = ActivitySaveCommand(
+  requestId: '8b200000-0000-4000-8000-000000000903',
+  intent: ActivityCommandIntent.publish,
+  name: 'Judô',
+  description: '',
+  taxonomyId: 'taxonomy-1',
+  taxonomyOtherDescription: '',
+  governance: ActivityGovernance.optional,
+  institutionId: 'institution-1',
+  unitIds: {'unit-1'},
+  groupIds: {},
+  assignments: [],
+  identity: ActivityCommandIdentity(
+    kind: ActivityIdentityKind.initials,
+    initials: 'JU',
     color: '#D63C00',
     icon: 'activity',
   ),

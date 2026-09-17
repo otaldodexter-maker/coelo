@@ -73,10 +73,15 @@ final class SupabaseActivityCommandRepository
       final status = ActivityStatus.values
           .where((item) => item.databaseValue == statusValue)
           .firstOrNull;
-      // A criacao de rascunho devolve `draft`. A edicao devolve o status
+      // A criacao de rascunho devolve `draft`; a criacao com p_publish
+      // ("Criar atividade") devolve `active` (R15, rota real 17/09: o servidor
+      // criava e publicava e a tela mostrava erro). A edicao devolve o status
       // corrente, que o servidor nao altera sem p_publish: um rascunho segue
       // rascunho e uma atividade ativa segue ativa.
-      if (status == null || (expectedActivityId == null && status != ActivityStatus.draft)) {
+      final expectedCreateStatus = command.intent == ActivityCommandIntent.publish
+          ? ActivityStatus.active
+          : ActivityStatus.draft;
+      if (status == null || (expectedActivityId == null && status != expectedCreateStatus)) {
         throw const ActivityCommandUnavailableException();
       }
       return ActivitySaveResult(
@@ -360,11 +365,24 @@ bool _supportsAggregateSave(ActivitySaveCommand command) {
 Map<String, Object?> _activitySavePayload(ActivitySaveCommand command) {
   final groupIds = command.groupIds.toList()..sort();
   final unitIds = command.unitIds.toList()..sort();
-  final participants = command.participants.toList()
-    ..sort((left, right) {
-      final groupOrder = left.groupId.compareTo(right.groupId);
-      return groupOrder != 0 ? groupOrder : left.childGroupLinkId.compareTo(right.childGroupLinkId);
-    });
+  // Contrato v2 (spec 2026-08-31, "Groups `all` nao aceitam entradas"): a
+  // selecao individual so viaja para turmas em modo `selected`; em `all` o
+  // servidor responde ACTIVITY_INVALID_REFERENCE a qualquer participante
+  // explicito (R15, rota real 17/09: o assistente marca todos os alunos como
+  // "pertence" e o snapshot era recusado inteiro).
+  final participants =
+      command.participants
+          .where(
+            (participant) =>
+                command.groupParticipation[participant.groupId] == ActivityParticipation.selected,
+          )
+          .toList()
+        ..sort((left, right) {
+          final groupOrder = left.groupId.compareTo(right.groupId);
+          return groupOrder != 0
+              ? groupOrder
+              : left.childGroupLinkId.compareTo(right.childGroupLinkId);
+        });
   final assignments = command.assignments.toList()
     ..sort((left, right) {
       final groupOrder = (left.groupId ?? '').compareTo(right.groupId ?? '');

@@ -1,0 +1,5 @@
+[
+ {"action_id":"agora.publish","camada":"integrated","estado_proposto":"pending-verification",
+  "delta":"R15 B: massa completa (responsavel ativa com conta, guardian_links, lote 80) e story de audiencia families publicada em producao (d9580375); leitura pela responsavel por PostgREST -> 403 42501 now_permission_denied (now_actor exige permissao/membership de equipe); staff ve [] (isolamento correto). Bloqueado por contrato (RPC), OQ-048 para a R16.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-b/agora-publish-20260917.md"}
+]
