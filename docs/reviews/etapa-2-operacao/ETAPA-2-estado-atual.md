@@ -43,7 +43,7 @@ integração em `dev` por cherry-pick. Lote 75 em produção (OQ-047: 40001 → 
 em 126 RPCs, Bloco B). Integradas local-green: Chat E3 (spec 058), B5 (spec 061)
 e B6 (spec 062); B5/B6 aguardam aplicação em produção. Certificados em produção
 em 17/09: `chat.attach` (lote 76), `access-profiles.edit/assign`; corte: FE 206/232
-(88,79%), BE 183/219 (83,56%), E2E 181/186 (97,31%), Owner 36/53. Os percentuais
+(88,79%), BE 184/219 (84,02%), E2E 183/186 (98,39%), Owner 37/53. Os percentuais
 das seções antigas abaixo são o corte de abertura da R15 (16/09).
 
 ## Snapshot de 16/09 — Mesa do Owner (ADR 0041)

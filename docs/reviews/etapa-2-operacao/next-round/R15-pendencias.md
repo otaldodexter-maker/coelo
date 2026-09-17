@@ -19,10 +19,10 @@ audience: "team"
 
 Contadores certificados pelo inventário e `validate-trackers.cjs` (corte da
 coordenadora R15, 17/09/2026, após as integrações do dia): FE 206/232 (88,79%),
-BE 183/219 (83,56%), E2E 181/186 (97,31%), Owner 36/53 (67,92%).
+BE 184/219 (84,02%), E2E 183/186 (98,39%), Owner 37/53 (69,81%).
 Abertura da R15 em 16/09: FE 189/232, BE 172/219, E2E 162/186, Owner 21/53.
-Fila: 5 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
-pela E8); meta do Owner: **186/186**, 17 Owner
+Fila: 3 ações não terminais no MVP (24 na abertura, com `auth.recover/reset`
+pela E8); meta do Owner: **186/186**, 16 Owner
 items abertos/parciais, 19 resíduos H,
 2 itens da ADR 0038 e os resíduos operacionais listados abaixo. Nenhum item foi
 renumerado; nenhum estado mudou na abertura.
@@ -96,7 +96,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 
 **Fora da R15:** SMTP próprio (Etapa 3, E8); MFA ×3 (`deferred-post-mvp`, E9); Planos comerciais e `catalog.*` (V1/V2); H11 autosave (V1); Stream genérico (sem contrato).
 
-## Owner items — abertos/parciais e atualizações da execução (17)
+## Owner items — abertos/parciais e atualizações da execução (16)
 
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
@@ -124,12 +124,11 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | owner.r12-39 | forms.edit, forms.create | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md | Concluído 17/09 (Bloco A). Arraste não exercitado por CDP; botão de mover prova a posição final. Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): pergunta movida por botão (B antes de A), rascunho salvo, carga completa preserva a ordem (position 0/1 no servidor). / BE done (form_save_draft). / E2E verified-e2e via forms.create/edit (409 PT409 em versão defasada). |
 | owner.r12-40 | forms.edit, forms.create | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-a/forms-create-edit-delete-file-20260917.md | Concluído 17/09 (Bloco A). Detalhe da prova (R15 Bloco A, 17/09): FE verified na rota real (Bloco A 17/09): "Renomear seção" por diálogo (contador /120), nome na lista, no título da seção, no editor após reload e na prévia. / BE done (form_save_draft). / E2E verified-e2e via forms.create/edit. |
 | owner.r12-46 | account.profile | partial / FE verified na rota real (Bloco A 17/09): foto PNG real pelo seletor nativo, avatar do cabeçalho atualizado só após confirmação do servidor, remover foto, sigla QR, celular inválido bloqueado × válido gravado, layout A+ "Meu acesso" na mesma linha com rolagem interna. / BE done: Edge account-media (prepare/finalize/read/remove) + save_v2/get em produção; asset alheio/removido → denied (422). / E2E verified-e2e: reload e nova sessão veem a foto do R2; remoção relida. | docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md | Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403. |
-| owner.r12-47 | auth.recover, auth.reset | done / FE verified (R02/R11) + rota real 17/09: /forgot-password com o e-mail do Owner → 200 e "Confira seu e-mail"; e-mail inexistente → mesma tela e 200 (sem enumeração); redirect 127.0.0.1:8765 na allowlist; nenhum link/token registrado. / BE: auth.recover done (entrega real 16/09); auth.reset done por contrato Auth + allowlist. / E2E verified-e2e: recover pela tela; reset aceito por decisão do Owner de 17/09 (ADR 0042 E10) — verificação detalhada na Etapa 3 com SMTP próprio. | docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md | Concluído 17/09 (Bloco A) por decisão E10; Etapa 3: provar link real, senha nova/nova sessão, expiração e uso único com SMTP próprio. |
 | owner.r12-49 | assessments.entry, assessments.gradebook, assessments.detail, assessments.close, assessments.reopen | partial / FE verified em entry/gradebook/detail (rota real 14/09): participante listada, nota 8.5 salva e relida. / BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green. / verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real. | docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md; docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário. |
 | owner.r12-52 | chat.attach | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md; specs/058-superadmin-chat-multi-attachment-message.md; docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md | Concluído 17/09 (R15 C1, ADR 0042 E3 = B): FE verified (rota real 17/09, R15 C1): seletor múltiplo, diálogo de lote com progresso e falha tratada, mosaico 3 e 3+1 (+N), tile único (PDF e imagem), reload. / BE done (lote 76): contrato E3 `superadmin_chat_attachment_prepare_v2`/`finalize_v2`/`discard_v1` — uma mensagem por lote de 1–10, 11º recusado (422), publicação só quando todos terminam; Edge `chat-media` em lote; pgTAP 51/51 + 28/28 + 9/9. / E2E verified-e2e em produção: mídia R2 real, reload por `thread_v2`, negativas 404/422/409 por PostgREST. Mosaico alcançável pela rota normal com vários anexos na mesma mensagem. |
 | owner.r12-53 | gate/mapeamento pendente | open / Não iniciada; condição de abertura não atendida. / Não iniciado. / Pendente; transferência documental não certifica execução. | docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md | Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema. |
 
-## Owner items — concluídos (36; não voltam à execução)
+## Owner items — concluídos (37; não voltam à execução)
 
 
 | ID | action_ids | Estado (status / FE / BE / E2E) | Evidência | Próximo gate |
@@ -160,6 +159,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | owner.r12-16 | child-safety.create | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md | Concluído 17/09 (rota real, Bloco B): clicar etapa futura (Revisão) na etapa 1 não avança; voltar da Revisão para Pessoa autorizada preserva os dados; sem salto e sem perda. |
 | owner.r12-01 | daily-routine.list | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md; docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md | Concluído 17/09 (R15 C1, ADR 0041 C3): cards de Modelos de rotina na rota real em 1440 com altura uniforme, "Efetivo: —" e Arquivar em todos; reload. |
 | owner.r12-02 | activities.list, daily-routine.list | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-c1/arquivar-b1-20260917.md; docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md; specs/054-archive-activity-routine-models.md | Concluído 17/09 (R15 C1, ADR 0041 B1): lote 74 em produção; Arquivar/Restaurar pela tela em Atividades › Modelos (aba Arquivados) e Rotina › Modelos (filtro Arquivado), reload, negativas PT409/P0002/55000 por PostgREST. Sobra: diretório de Atividades do Owner de plataforma não alcança modelos institucionais (observação FE). |
+| owner.r12-47 | auth.recover, auth.reset | done / verified / done / verified-e2e | docs/reviews/evidence/etapa-2/r15-bloco-a/auth-recover-reset-20260917.md | Concluído 17/09 (Bloco A) por decisão E10; Etapa 3: provar link real, senha nova/nova sessão, expiração e uso único com SMTP próprio. Detalhe (R15 Bloco A, 17/09; E10): FE verified (R02/R11) + rota real 17/09: /forgot-password com o e-mail do Owner → 200 e "Confira seu e-mail"; e-mail inexistente → mesma tela e 200 (sem enumeração); redirect 127.0.0.1:8765 na allowlist; nenhum link/token registrado. / BE: auth.recover done (entrega real 16/09); auth.reset done por contrato Auth + allowlist. / E2E verified-e2e: recover pela tela; reset aceito por decisão do Owner de 17/09 (ADR 0042 E10) — verificação detalhada na Etapa 3 com SMTP próprio. |
 
 ## Resíduos H (herdados de R01–R07) — abertos (19)
 
@@ -226,7 +226,7 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
-## Ações não terminais por família (inventário: 5 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 3 ações; FE/BE/E2E)
 
 
 Projeção regenerada em 17/09/2026 a partir de `inventario-etapa-2.json` (coordenadora R15): ações `mvp`/`gate-formal-mvp` cujo estado integrado
@@ -236,7 +236,6 @@ não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA �
 | Família | Qtd | action_ids |
 |---|---:|---|
 | agora | 1 | `agora.publish` (verified/done/pending-verification) |
-| auth | 2 | `auth.recover` (verified/done/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
 | forms_files | 1 | `forms.expire-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
 
