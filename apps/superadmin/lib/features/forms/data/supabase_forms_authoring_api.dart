@@ -185,7 +185,7 @@ final class SupabaseFormsAuthoringApi implements FormsAuthoringApi {
       '42501' ||
       'PGRST301' => FormApiFailureKind.unauthorized,
       'SAI_INVALID_ARGUMENT' || '22023' => FormApiFailureKind.validation,
-      'SAI_CONCURRENT_CHANGE' || '40001' => FormApiFailureKind.conflict,
+      'SAI_CONCURRENT_CHANGE' || '40001' || 'PT409' => FormApiFailureKind.conflict,
       _ => FormApiFailureKind.unavailable,
     };
     return FormApiException(kind, switch (kind) {

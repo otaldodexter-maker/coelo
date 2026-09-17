@@ -204,7 +204,7 @@ Exception _domainError(String code) => switch (code) {
 
 Exception _transportError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' || 'PGRST302' => const InviteUnauthorizedException(),
-  '40001' || '23505' => const InviteConflictException(),
+  '40001' || 'PT409' || '23505' => const InviteConflictException(),
   '22023' || '23502' || '23503' || '23514' => const InviteValidationException(),
   _ => const InviteUnavailableException(),
 };

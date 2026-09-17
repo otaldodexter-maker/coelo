@@ -515,7 +515,7 @@ Exception _mapError(PostgrestException error) {
   if (text.contains('sai_mfa_required')) {
     return const PlatformUserRuleException('mfa', 'Confirme o segundo fator para continuar.');
   }
-  if (text.contains('sai_concurrent_change') || error.code == '40001') {
+  if (text.contains('sai_concurrent_change') || error.code == '40001' || error.code == 'PT409') {
     return const PlatformUserRuleException(
       'conflict',
       'O cadastro mudou. Recarregue e tente novamente.',

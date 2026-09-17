@@ -205,7 +205,7 @@ select throws_ok(
         'sections', '[]'::jsonb
       )
     )$$,
-  '40001',
+  'PT409',
   'expected_version mismatch',
   'a stale expected_version cannot overwrite a form'
 );

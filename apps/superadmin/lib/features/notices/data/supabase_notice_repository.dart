@@ -420,7 +420,7 @@ int? _parseColor(Object? value) {
 Exception _error(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' || 'PGRST302' => const NoticeUnauthorizedException(),
   'PGRST116' || 'P0002' => const NoticeNotFoundException(),
-  '23505' || '40001' || 'P0003' => const NoticeConflictException(),
+  '23505' || '40001' || 'PT409' || 'P0003' => const NoticeConflictException(),
   '22023' || '23502' || '23503' || '23514' || 'P0001' => const NoticeValidationException(),
   'PGRST000' || 'PGRST001' || 'PGRST002' || 'PGRST003' => const NoticeUnavailableException(),
   _ => const NoticeUnexpectedException(),

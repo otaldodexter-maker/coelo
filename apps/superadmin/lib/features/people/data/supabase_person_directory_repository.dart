@@ -155,7 +155,7 @@ Exception _mapError(PostgrestException error) {
   if (error.code == '42501' || error.code == 'PGRST301') {
     return const PersonDirectoryUnauthorizedException();
   }
-  if (error.code == '40001' || message.contains('version')) {
+  if (error.code == '40001' || error.code == 'PT409' || message.contains('version')) {
     return const PersonDirectoryConflictException();
   }
   if ((error.code == '22023' || error.code == 'P0001') &&

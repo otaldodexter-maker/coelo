@@ -138,7 +138,7 @@ select 'edit', public.superadmin_plan_save('84400000-0000-4000-8000-000000000006
   'Ajuste de nome e limite') from plans_test_responses where label='create';
 select throws_ok(format($$select public.superadmin_plan_save('84400000-0000-4000-8000-000000000007',%L,1,'{"name":"Velho","code":"essencial","description":"x","status":"active"}','motivo')$$,
   (select body->>'id' from plans_test_responses where label='create')),
-  '40001','plan_revision_conflict','stale expected_revision is rejected');
+  'PT409','plan_revision_conflict','stale expected_revision is rejected');
 select throws_ok(format($$select public.superadmin_plan_save('84400000-0000-4000-8000-000000000008',%L,2,'{"name":"Novo","code":"outro","description":"x","status":"active"}','motivo')$$,
   (select body->>'id' from plans_test_responses where label='create')),
   '22023','plan_code_immutable','plan code cannot change on edit');

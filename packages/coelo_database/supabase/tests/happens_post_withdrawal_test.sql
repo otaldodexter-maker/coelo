@@ -235,7 +235,7 @@ select is(
   pg_temp.try_withdraw(
     'a1000000-0000-4000-8000-000000000001','a1600000-0000-4000-8000-000000000001',
     'a1400000-0000-4000-8000-000000000001', null, null),
-  '40001:expected_version_conflict',
+  'PT409:expected_version_conflict',
   'a null expected version is a conflict, not a silently waived optimistic lock'
 );
 
@@ -250,7 +250,7 @@ select is(
   pg_temp.try_withdraw(
     'a1000000-0000-4000-8000-000000000001','a1600000-0000-4000-8000-000000000002',
     'a1400000-0000-4000-8000-000000000001', 1, null),
-  '40001:expected_version_conflict',
+  'PT409:expected_version_conflict',
   'a stale expected version is refused'
 );
 

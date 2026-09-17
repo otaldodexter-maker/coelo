@@ -263,7 +263,7 @@ Exception _domainError(String code) => switch (code) {
 Exception _postgrestError(PostgrestException error) => switch (error.code) {
   '42501' || 'PGRST301' || 'PGRST302' => const CircularUnauthorized(),
   'PGRST116' || 'P0002' => const CircularNotAvailable(),
-  '23505' || '40001' || 'P0003' => const CircularVersionConflict(),
+  '23505' || '40001' || 'PT409' || 'P0003' => const CircularVersionConflict(),
   '22023' || '23502' || '23503' || '23514' || 'P0001' => CircularInvalid(error.code ?? 'invalid'),
   _ => const CircularUnavailable(),
 };

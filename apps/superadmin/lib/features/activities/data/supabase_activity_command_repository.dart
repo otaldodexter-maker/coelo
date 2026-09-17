@@ -192,7 +192,7 @@ final class SupabaseActivityCommandRepository
     } on PostgrestException catch (error) {
       throw switch (error.code) {
         '42501' || 'PGRST301' || 'PGRST302' => const ActivityCommandUnauthorizedException(),
-        '40001' => const ActivityCommandConflictException(),
+        '40001' || 'PT409' => const ActivityCommandConflictException(),
         _ => const ActivityCommandUnavailableException(),
       };
     } on Object {

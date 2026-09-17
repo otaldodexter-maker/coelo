@@ -996,7 +996,7 @@ FormApiException _internalFailure(Object? code) {
     '401' ||
     '403' => FormApiFailureKind.unauthorized,
     'SAI_INVALID_ARGUMENT' || '22023' => FormApiFailureKind.validation,
-    'SAI_CONCURRENT_CHANGE' || '40001' || '409' => FormApiFailureKind.conflict,
+    'SAI_CONCURRENT_CHANGE' || '40001' || 'PT409' || '409' => FormApiFailureKind.conflict,
     _ => FormApiFailureKind.unavailable,
   };
   return FormApiException(kind, _failureMessage(kind));
@@ -1021,7 +1021,7 @@ FormFileJob _fileJob(Map<String, Object?> payload) => FormFileJob(
 FormApiFailureKind _failureKind(String code) => switch (code) {
   '42501' || 'PGRST301' || '401' || '403' || 'unauthorized' => FormApiFailureKind.unauthorized,
   '22023' || '23514' || 'invalid_payload' || 'invalid_envelope' => FormApiFailureKind.validation,
-  '40001' || '409' || '23505' => FormApiFailureKind.conflict,
+  '40001' || 'PT409' || '409' || '23505' => FormApiFailureKind.conflict,
   '502' || '503' || '504' || formsBackendTransportCode => FormApiFailureKind.unavailable,
   _ => FormApiFailureKind.unknown,
 };

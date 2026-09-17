@@ -230,7 +230,7 @@ select set_config('request.jwt.claims','{"sub":"8c023000-0000-4000-8000-00000000
 select throws_ok($$select public.form_edit_response(
   '8c023000-0000-4000-8000-000000009002',3,
   '{"response_id":"8c023000-0000-4000-8000-000000001009","participation_id":"8c023000-0000-4000-8000-000000001008","answers":[]}'
-)$$,'40001','expected_version mismatch','stale edit version is rejected before replacing answers');
+)$$,'PT409','expected_version mismatch','stale edit version is rejected before replacing answers');
 select throws_ok($$select public.form_edit_response(
   '8c023000-0000-4000-8000-000000009003',4,
   '{"response_id":"8c023000-0000-4000-8000-000000002009","participation_id":"8c023000-0000-4000-8000-000000002008","edit_secret":"incorrect-synthetic-secret","answers":[]}'

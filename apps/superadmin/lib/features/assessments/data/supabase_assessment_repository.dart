@@ -267,7 +267,7 @@ final class SupabaseAssessmentRepository implements AssessmentRepository {
       }
       throw AssessmentOfflineException(diagnosticCode: _safeConfigurationSaveDiagnostic(code));
     } on PostgrestException catch (error) {
-      if (error.code == '40001') throw const AssessmentVersionConflictException();
+      if (error.code == '40001' || error.code == 'PT409') throw const AssessmentVersionConflictException();
       if (error.code == '42501') throw const AssessmentUnauthorizedException();
       rethrow;
     } on AssessmentUnauthorizedException {

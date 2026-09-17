@@ -1156,7 +1156,7 @@ begin
         'SAI_INTERNAL_CONTEXT_DENIED','SAI_MEMBERSHIP_SUSPENDED',
         'SAI_MEMBERSHIP_REVOKED','SAI_PERMISSION_DENIED','SAI_MFA_REQUIRED')
         then error_detail
-      when sql_state='40001' then 'SAI_CONCURRENT_CHANGE'
+      when sql_state in('40001','PT409') then 'SAI_CONCURRENT_CHANGE'
       when sql_state in('22023','22P02','23514','23505','22001')
         then 'SAI_INVALID_ARGUMENT'
       when sql_state in('P0002','42501') then 'SAI_PERMISSION_DENIED'
@@ -1547,7 +1547,7 @@ begin
         'SAI_INTERNAL_CONTEXT_DENIED','SAI_MEMBERSHIP_SUSPENDED',
         'SAI_MEMBERSHIP_REVOKED','SAI_PERMISSION_DENIED','SAI_MFA_REQUIRED')
         then error_detail
-      when sql_state='40001' then 'SAI_CONCURRENT_CHANGE'
+      when sql_state in('40001','PT409') then 'SAI_CONCURRENT_CHANGE'
       when sql_state in('22023','22P02','23514','23505','22001')
         then 'SAI_INVALID_ARGUMENT'
       when sql_state in('P0002','42501') then 'SAI_PERMISSION_DENIED'

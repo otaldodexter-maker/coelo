@@ -137,7 +137,7 @@ final class SupabaseGroupLocationCreateRepository implements GroupLocationCreate
     } on PostgrestException catch (error) {
       _fail(switch (error.code) {
         '42501' || 'PGRST301' || 'PGRST302' => GroupLocationCreateFailure.denied,
-        '40001' => GroupLocationCreateFailure.conflict,
+        '40001' || 'PT409' => GroupLocationCreateFailure.conflict,
         _ => GroupLocationCreateFailure.unavailable,
       });
     } on Object {

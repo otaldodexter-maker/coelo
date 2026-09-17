@@ -421,7 +421,7 @@ Exception _mapError(PostgrestException error) {
   if (error.code == '42501' || error.code == 'PGRST301') {
     return const AccessProfileUnauthorizedException();
   }
-  if (error.code == '40001' ||
+  if (error.code == '40001' || error.code == 'PT409' ||
       message.contains('stale profile version') ||
       message.contains('stale access model version')) {
     return const AccessProfileConflictException();

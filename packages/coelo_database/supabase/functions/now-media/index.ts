@@ -433,6 +433,7 @@ export async function handleNowMediaRequest(
       });
       if (removed.error) {
         const conflict = removed.error.code === "40001" ||
+          removed.error.code === "PT409" ||
           removed.error.message?.includes("expected_version_conflict");
         return respond(origin, conflict ? 409 : 422, {
           error: conflict ? "expected_version_conflict" : "publication_remove_denied",

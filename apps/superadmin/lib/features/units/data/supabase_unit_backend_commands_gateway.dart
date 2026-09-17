@@ -697,7 +697,7 @@ UnitFileJobError _fileJobError(Object? value) {
 UnitGatewayException _mapError(PostgrestException error, String operation) => switch (error.code) {
   '42501' || 'PGRST301' || 'PGRST302' => UnitGatewayException.unauthorized(operation: operation),
   'PGRST116' || 'P0002' => UnitGatewayException.notFound(operation: operation),
-  '23505' || '40001' || 'P0003' => UnitGatewayException.conflict(operation: operation),
+  '23505' || '40001' || 'PT409' || 'P0003' => UnitGatewayException.conflict(operation: operation),
   '22023' || '23502' || '23503' || '23514' || 'P0001' => UnitGatewayException.validation(
     operation: operation,
     message: 'The unit data did not pass validation.',

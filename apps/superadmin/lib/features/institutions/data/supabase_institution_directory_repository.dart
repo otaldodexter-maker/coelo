@@ -298,6 +298,7 @@ final class SupabaseInstitutionDirectoryRepository implements InstitutionDirecto
       case 'P0002':
         throw const InstitutionDirectoryNotFoundException();
       case '40001':
+      case 'PT409':
         throw const InstitutionDirectoryConflictException();
       case '22023':
       case '23514':

@@ -48,7 +48,7 @@ select throws_ok(format($$select public.superadmin_access_profile_delete_and_rea
 select set_config('request.jwt.claims',
   jsonb_build_object('sub','a0700000-0000-4000-8000-000000000001','role','authenticated','aal','aal1')::text, true);
 select throws_ok(format($$select public.superadmin_access_profile_delete_and_reassign(gen_random_uuid(),'institution',%L,99,null,'versao errada')$$,
-  (select result->>'profile_id' from r06_profiles where key='model')), '40001', 'stale profile version',
+  (select result->>'profile_id' from r06_profiles where key='model')), 'PT409', 'stale profile version',
   'versao esperada continua obrigatoria');
 select is((public.superadmin_access_profile_delete_and_reassign('a0700000-0000-4000-8000-000000000041','institution',
   (select (result->>'profile_id')::uuid from r06_profiles where key='model'),1,null,'modelo descartado pelo Superadmin (P45)')->>'deleted_profile_id'),

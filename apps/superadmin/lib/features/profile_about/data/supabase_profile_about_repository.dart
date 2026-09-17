@@ -406,7 +406,7 @@ Exception mapProfileAboutFailure(String? code, String message) {
   final text = message.toLowerCase();
   return switch (code) {
     '42501' || 'PGRST301' || '401' || '403' => ProfileAboutUnauthorizedException(),
-    '40001' || '23505' => ProfileAboutConflictException(),
+    '40001' || 'PT409' || '23505' => ProfileAboutConflictException(),
     'P0001' when text.contains('version') => ProfileAboutConflictException(),
     _ =>
       text.contains('insufficient_privilege') || text.contains('required')

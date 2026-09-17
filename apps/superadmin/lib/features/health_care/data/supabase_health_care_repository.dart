@@ -291,7 +291,7 @@ final class SupabaseHealthCareRepository implements HealthCareRepository {
       if (error.code == 'P0002' || error.code == 'PGRST116') {
         throw StateError('Perfil de cuidado indisponível.');
       }
-      if (error.code == '40001' || error.code == '55P03') {
+      if (error.code == '40001' || error.code == 'PT409' || error.code == '55P03') {
         throw StateError('O perfil foi alterado. Atualize e tente novamente.');
       }
       if (error.code == '23514' || error.code == '23502' || error.code == '22023') {

@@ -73,7 +73,7 @@ final class SupabasePlanCatalogRepository implements PlanCatalogRepository {
       throw PlanRepositoryException(
         error.code == '42501'
             ? PlanRepositoryFailureKind.unauthorized
-            : error.code == '40001'
+            : (error.code == '40001' || error.code == 'PT409')
             ? PlanRepositoryFailureKind.conflict
             : error.code == '22023'
             ? PlanRepositoryFailureKind.validation

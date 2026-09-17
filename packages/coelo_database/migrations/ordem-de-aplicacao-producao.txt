@@ -308,3 +308,13 @@
 20260916183000_attendance_routine_snapshot_v1.sql
 20260916190000_medication_in_app_notifications_v1.sql
 20260916193000_archive_models_v1.sql
+
+# lote 75 (17/09 12:30 UTC) - R15 Bloco B / OQ-047 (ADR 0042 E1): migration unica forward-only trocando todo SQLSTATE 40001 de versao
+# defasada/conflito otimista por PT409 (126 funcoes, 175 raises: 169 `raise serialization_failure` + 6 `errcode='40001'`; 18 handlers de
+# envelope passam a capturar tambem PT409; 28 familias), gerada mecanicamente do dump de producao de 17/09 (Coelo-backups/
+# schema-producao-20260917-r15-b-before.sql, SHA-256 c87f4d67); espelho coelo_mirror_r15_b (portas 622xx) restaurado desse dump, pgTAP
+# pt409_stale_version_v1_test 37/37 + antes/depois de todas as suites sem regressao (evidencia r15-bloco-b/oq047-pt409-20260917.md);
+# md5 dos 126 corpos conferido em producao antes de aplicar; aplicada por `supabase db query --linked -f` (13 s), ledger remoto
+# 20260917090000 confirmado por `supabase migration repair --status applied` + `migration list --linked`; pos-verificacao em producao:
+# 0 raise serialization_failure, 0 errcode 40001, 134 funcoes com PT409, nenhum backend PostgREST em laco.
+20260917090000_pt409_stale_version_v1.sql

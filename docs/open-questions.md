@@ -532,3 +532,12 @@ produção (`child_safety_change_lifecycle` e `withdraw_happens_post`) por
 aplicação da migration `20260916152000` e restart da API / `pg_terminate_backend`
 dos backends PostgREST em laço; (c) registrar a regra durável em
 `coelo-supabase`/`docs/knowledge` depois da decisão.
+
+**Resolução (17/09/2026, ADR 0042 E1 = A; R15 Bloco B, lote 75):** migration única forward-only
+`20260917090000_pt409_stale_version_v1` aplicada em produção: 126 funções, 175 raises (169
+`raise serialization_failure` + 6 `errcode='40001'`) passam a `errcode='PT409'` com a mesma message e
+`detail` por família; 18 handlers de envelope capturam também PT409 (envelope `SAI_CONCURRENT_CHANGE`
+preservado); 22 repositórios FE e a Edge `now-media` mapeiam PT409. Pós-verificação em produção: 0
+`serialization_failure`/`40001`; negativa por PostgREST responde 409 em < 1 s sem laço. Evidência:
+`docs/reviews/evidence/etapa-2/r15-bloco-b/oq047-pt409-20260917.md`. Regra durável: nenhuma RPC sinaliza
+versão defasada com 40001 (pendente só a projeção em `coelo-supabase`/`docs/knowledge`).

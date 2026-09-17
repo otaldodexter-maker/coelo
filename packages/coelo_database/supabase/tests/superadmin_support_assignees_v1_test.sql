@@ -83,7 +83,7 @@ select 'get_after', public.superadmin_support_get((body->>'id')::uuid) from supp
 select throws_ok(
   format($f$select public.superadmin_support_set_assignee('84400000-0000-4000-8000-000000000004',%L,1,'84500000-0000-4000-8000-000000000001')$f$,
     (select body->>'id' from support_assign_responses where label='create')),
-  '40001','support_revision_conflict','stale revision is rejected');
+  'PT409','support_revision_conflict','stale revision is rejected');
 select throws_ok(
   format($f$select public.superadmin_support_set_assignee('84400000-0000-4000-8000-000000000005',%L,2,'84500000-0000-4000-8000-0000000000ff')$f$,
     (select body->>'id' from support_assign_responses where label='create')),

@@ -122,7 +122,7 @@ final class SupabaseMedicationPlanRepository implements MedicationPlanRepository
     if (error.code == 'P0002' || error.code == 'PGRST116') {
       return const MedicationPlanNotFoundException();
     }
-    if (error.code == '40001' || error.code == '55P03') {
+    if (error.code == '40001' || error.code == 'PT409' || error.code == '55P03') {
       return const MedicationPlanConflictException();
     }
     if (error.code == '22023' || error.code == '23514' || error.code == '23502') {

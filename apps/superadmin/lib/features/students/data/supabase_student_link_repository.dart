@@ -135,7 +135,7 @@ final class SupabaseStudentLinkRepository implements StudentLinkRepository {
       StudentLinkFailureKind.invalidInput,
       'Revise os dados do vínculo.',
     ),
-    '40001' || '55P03' => const StudentLinkException(
+    '40001' || 'PT409' || '55P03' => const StudentLinkException(
       StudentLinkFailureKind.conflict,
       'O vínculo mudou. Atualize e tente novamente.',
     ),
