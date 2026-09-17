@@ -1,0 +1,41 @@
+[
+ {
+  "action_id": "forms.expire-file",
+  "camada": "frontend",
+  "estado_proposto": "verified",
+  "delta": "R15 Bloco A rota real (17/09): upload de imagem de pergunta com o PUT do R2 bloqueado -> 'Nao foi possivel concluir o envio' (Verificar/Descartar), reload mostra 'Imagem 1 nao confirmada' e nada e servido; apos a expiracao pelo worker o editor deixa de listar a imagem (media_context vazio).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+   "revision": "ab96072de",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T15:15:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.expire-file",
+  "camada": "backend",
+  "estado_proposto": "done",
+  "delta": "R15 Bloco A: ciclo autoritativo em producao — cron coelo-forms-media-expire -> Edge form-media v23 (verify_jwt=false; a v22 barrava o bearer do cron com 401) -> form_media_expire_question_r2_v1: asset 9e437fa9 pending com ticket vencido -> deleted, used_at 18:10:00Z, auditoria forms.media.expire (actor system, outcome success). Nenhum SQL novo nesta sessao.",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+   "revision": "ab96072de",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T15:15:00-03:00"
+  }
+ },
+ {
+  "action_id": "forms.expire-file",
+  "camada": "integrated",
+  "estado_proposto": "verified-e2e",
+  "delta": "R15 Bloco A: upload interrompido pela tela -> asset pendente -> expirado pelo worker em producao (auditoria por D1) -> reload sem a imagem -> negativa: form-media resolve do asset expirado 404 FORM_MEDIA_NOT_FOUND (antes 409 NOT_READY).",
+  "evidencia": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+  "certificacao": {
+   "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+   "revision": "ab96072de",
+   "environment": "producao",
+   "recordedAt": "2026-09-17T15:15:00-03:00"
+  }
+ }
+]

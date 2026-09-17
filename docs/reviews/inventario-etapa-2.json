@@ -5657,19 +5657,39 @@
       "family": "forms_files",
       "screen": "Arquivos de Formulários / Expirar",
       "scope": "mvp",
-      "done": "R08 G3 — primeiro gate: Provar expirado/negado sem servir arquivo e registrar ciclo de expiração.",
-      "fe": "Revalidar o aceite específico desta ação: Comando autoritativo, auditoria remota e E2E pendentes.",
-      "be": "R05 realm-interno: form_media_expire_question_r2_v1 (service_role) marca pendentes com ticket vencido como deleted e enfileira a limpeza fisica (form_media_claim_cleanup_r2_v1 / mark_purged); pgTAP 25/25. Gate: cron de expire e worker de limpeza. R08: lote57 140546..140549 aplicado em producao com ledger, backup e pgTAP225casos unicos finais (9+7+33+17+159). Ponte question-image, retry identico e unbind terminal confirmados; nao certifica runtime ou limpeza fisica.",
-      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md",
+      "done": "R15 Bloco A: upload interrompido pela tela -> asset pendente -> expirado pelo worker em producao (auditoria por D1) -> reload sem a imagem -> negativa: form-media resolve do asset expirado 404 FORM_MEDIA_NOT_FOUND (antes 409 NOT_READY).",
+      "fe": "R15 Bloco A rota real (17/09): upload de imagem de pergunta com o PUT do R2 bloqueado -> 'Nao foi possivel concluir o envio' (Verificar/Descartar), reload mostra 'Imagem 1 nao confirmada' e nada e servido; apos a expiracao pelo worker o editor deixa de listar a imagem (media_context vazio).",
+      "be": "R15 Bloco A: ciclo autoritativo em producao — cron coelo-forms-media-expire -> Edge form-media v23 (verify_jwt=false; a v22 barrava o bearer do cron com 401) -> form_media_expire_question_r2_v1: asset 9e437fa9 pending com ticket vencido -> deleted, used_at 18:10:00Z, auditoria forms.media.expire (actor system, outcome success). Nenhum SQL novo nesta sessao.",
+      "evidence": "decisions/0032-mvp-private-media-r2.md; evidence/etapa-2/formularios-cuidado/; R01/17:40 2f4114d6 resposta enviada96PASS;2fe678e8 cuidado43/186PASS;c742e16a resolver26PASS;e8cf32eb/3d9c0743 operacional23/32PASS;seleção13PASS. Edição5ead9407→f0763a65 com56TAP. Sem consumidor backend completo.; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r36-writer; Fechamento R01 C02/r48; C02r48 final; não contar núcleo comum como cada fluxo concluído; etapa-2-operacao/reports/R01-fechamento-20260909.md; sem execucao remota autorizada; 2026-09-09; evidence/etapa-2/r05-realm-interno/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-coordenacao/ciclo90.md; docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "fail-closed",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
-      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00"
+      "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+          "revision": "ab96072de",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T15:15:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+          "revision": "ab96072de",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T15:15:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/forms-expire-file-20260917.md",
+          "revision": "ab96072de",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T15:15:00-03:00"
+        }
+      }
     },
     {
       "id": "forms.delete-file",
@@ -9690,7 +9710,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T17:53:11.094Z",
+  "updatedAt": "2026-09-17T18:16:11.000Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

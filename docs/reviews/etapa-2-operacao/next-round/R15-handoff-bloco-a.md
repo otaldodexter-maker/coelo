@@ -39,6 +39,7 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 | 0a853525b / ab96072de | (código) sincroniza de dev os 22 repositórios com `PT409` (6c2f02ee0) e cobre `PT409 → conflict` no teste do cliente de Formulários; `notices` fica na versão da base + PT409 (a de dev exige `PrincipalForYouReader`, ausente aqui) | — | apps/superadmin/test/features/forms/data/supabase_forms_api_test.dart |
 | (este) | errors.409 FE verified (flutter-only): conflito real 409 PT409 pela tela; antes do mapeamento a tela mostrava o genérico "Não foi possível concluir a ação" (00), depois "O formulário foi alterado em outra sessão. Recarregue…" (01) | — | r15-bloco-a/errors-409-20260917.md; deltas-errors-409-20260917.json |
 | (este) | auth.recover E2E verified-e2e (rota real em 127.0.0.1:8765/forgot-password: e-mail do Owner → 200 + "Confira seu e-mail"; inexistente → mesma tela + 200 {}, sem enumeração; redirect na allowlist; sem link/token); auth.reset BE done + E2E verified-e2e por decisão do Owner de 17/09 (ADR 0042 E10, prova da caixa adiada para a Etapa 3) | r12-47 → done | r15-bloco-a/auth-recover-reset-20260917.md; deltas-auth-20260917.json; capturas auth-recover-00/01 |
+| (este) | forms.expire-file FE verified + BE done + E2E verified-e2e: upload com R2 bloqueado → asset pendente → "Imagem 1 não confirmada" → worker do cron expirou (auditoria forms.media.expire por D1, asset deleted) → reload sem imagem → resolve 404. Achado de ambiente: Edge form-media v22 com verify_jwt=true barrava o bearer do cron (401); corrigido em dev cd8bbe48d e implantado v23 pela coordenadora | — | r15-bloco-a/forms-expire-file-20260917.md; deltas-forms-expire-20260917.json; capturas forms-expire-00–02 |
 
 ## Avisos para as outras sessões
 
@@ -67,14 +68,6 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 ## Em andamento (17/09 ~14:15 BRT)
 
-- `forms.expire-file`: asset `9e437fa9…` (question-image do form `90b905a1…`) deixado **pendente** às 16:53Z
-  (PUT do R2 bloqueado por CDP); tela mostra "Imagem 1 não confirmada" após reload; `form-media resolve` →
-  409 FORM_MEDIA_NOT_READY. **Bloqueio de ambiente/config**: a Edge `form-media` está publicada com
-  `verify_jwt=true` (v22) e o gateway responde `401 UNAUTHORIZED_INVALID_JWT_FORMAT` ao bearer do cron
-  (`net._http_response`, leitura D1 da coordenadora) — expire/cleanup nunca rodam em produção. Correção em dev
-  (`verify_jwt=false`), deploy aguarda o Owner; sonda de `resolve` a cada 60 s segue armada para fechar a
-  prova (404 + reload) assim que o próximo disparo `*/10` expirar o asset. Evidência:
-  `r15-bloco-a/forms-expire-file-20260917.md`.
 - `forms.location-answer`: form `4555ba07…` ("[R04-QA] Formulario Local editado", v4 com pergunta Local)
   ganhou ocorrências novas pela tela (agendamento existente trocado para "Diário" → 31 ocorrências; a de
   17/09 é `7256b047-9e17-443d-b943-731243971f95`, `open`, 11 elegíveis). **Bloqueio de massa**: nenhuma das
@@ -87,13 +80,12 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 ## Bloqueios
 
-- `forms.expire-file` — ambiente/config: Edge `form-media` com `verify_jwt=true` rejeita o bearer do cron (401); deploy da correção depende do Owner.
 
 - `forms.location-answer` — massa/decisão: leitura D1 da coordenadora (17/09 14:20 BRT) mostra **0** `person_auth_links` ativos em produção — nenhuma conta `qa-*` resolve `current_person_id()`, então `require_forms_actor` nunca encontra participação (criar membership pela tela não resolve). Exige a primeira conta com vínculo pessoa↔auth: `qa-r15-responsavel@coelo.me` (fixture AP-1 do B′, aplicada pelo Owner) + incluir essa pessoa na audiência do form `4555ba07…` pela tela e responder pelo deep link. Tudo o mais está pronto (ocorrência `open` de hoje `7256b047…`, pergunta Local com a opção "[R04-QA] Local Sala Azul").
 - (auth resolvido por decisão E10.)
 
 ## Contadores
 
-`validate-trackers.cjs` PASS após os deltas: FE 197/232, BE 177/219, E2E 172/186, Owner 31/53
+`validate-trackers.cjs` PASS após os deltas: FE 198/232, BE 178/219, E2E 173/186, Owner 31/53
 (r12-20/21/22/24/25/26/27/39/40/47 → done; r12-46 partial). `entrega-atual.json` e `R12-owner-items.json` regravados pelo
 `sync-r12-owner-records.cjs` (projeção).
