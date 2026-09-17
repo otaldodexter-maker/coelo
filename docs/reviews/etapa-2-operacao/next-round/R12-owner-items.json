@@ -93,7 +93,8 @@
     "sourceRounds": [
       "R12",
       "R13"
-    ]
+    ],
+    "nextGate": "ADR 0041 D3: falta a negativa do contexto Atividade e esclarecer `participants []` (derivação por `activity_group_participants` vs modo `all`) — R16"
   },
   {
     "id": "owner.r12-06",

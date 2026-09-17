@@ -206,8 +206,8 @@
       "e2e": "verified-e2e (contexto Turma, R14); contexto Atividade: negativa não executada (prazo).",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
       "owner": "C0 R15",
-      "nextGate": "",
-      "sourceRound": "R15"
+      "sourceRound": "R15",
+      "nextGate": "ADR 0041 D3: falta a negativa do contexto Atividade e esclarecer `participants []` (derivação por `activity_group_participants` vs modo `all`) — R16"
     },
     {
       "id": "owner.r12-06",
@@ -2722,7 +2722,31 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c2/rota-real-b5-b6-r12-38-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
-    "docs/reviews/inventario-etapa-2.json"
+    "docs/reviews/inventario-etapa-2.json",
+    "specs/052-superadmin-attendance-history-and-routine-snapshot.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-b/atividade-qa-r15-criacao-20260917.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/attendance-behavior-diagnostic-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-table-golden-diagnostic-r12.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
+    "specs/053-superadmin-medication-in-app-notifications.md",
+    "specs/058-superadmin-chat-multi-attachment-message.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/chat-attach-mosaic-r12.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-c2/person-search-and-person-without-account-20260917.md",
+    "specs/062-superadmin-child-safety-person-without-account.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/activities-list-tabs-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-authorization-status-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-relationship-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/health-medication-r12-28-32.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/agenda-approvals-r12-42.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-list-table-only-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/invites-resend-discovery-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
+    "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-9/daily-routine-cards-r12-01-20260916.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
+    "specs/054-archive-activity-routine-models.md",
+    "specs/061-superadmin-child-safety-person-search.md",
+    "specs/063-superadmin-meal-plan-images-r2.md"
   ],
   "trackerActionIds": [
     "auth.login",
