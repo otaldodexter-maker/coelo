@@ -150,3 +150,19 @@ chegou no push `bcf47d636` (massa `QA R15`) e foi relé pela coordenadora às 10
 |---|---|---|---|---|
 | AP-2 | 7 — `agora.publish` (Principal da responsável) | pedido antecipado da coordenadora, 17/09 ~15:1x BRT; em espera | candidato: migration `20260917113000_qa_r15_guardian_membership_v1` + pgTAP 16/16 (não aplicado) | **fechado sem aplicação** (coordenadora, 17/09): contaminaria a prova E7 e o shell não abre para conta só-responsável; candidato `3a9ee569d` versionado em `dev`; lacuna registrada como **OQ-048** (contexto do Principal para responsável sem membership → spec 064/Etapa 3) |
 | AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue e aplicada pelo B**: cherry-pick `6b06a3381`, migration em produção como **lote 80** (`ded7c006f`); **fechado**: conta criada pelo Owner (`ff3682a1…`) e função executada pelo B em produção (`dedcd83ee`: responsável ativo com login, 2 `guardian_links`, 2 permissões, vínculos de unidade aceitos); antes disso respondeu `P0002 qa_auth_user_missing` (fail-closed, como projetado) |
+
+## Encerramento (17/09/2026, instrução do Owner via coordenadora: encerrar até 16:20 BRT)
+
+- Pedidos: **AP-1** entregue (b) em `6401cace9`, aplicado pelo B como lote 80 e executado em produção após a
+  conta do Owner; **AP-2** (pedido antecipado da coordenadora) candidato `3a9ee569d` validado no espelho e
+  **não aplicado** por decisão da coordenadora (OQ-048). Nenhum outro AP até o encerramento.
+- Escritas em produção por B′: **nenhuma** (dois `supabase db dump --linked` de leitura; um `db query --linked`
+  de leitura negado pelo classificador e não contornado).
+- Achados reutilizáveis (R16): drift de ACL do espelho e correção antes da restauração
+  (`ferramentas/restaurar-espelho.sh`); catálogo pós-baseline (`extract_catalogo_pos_baseline.py` +
+  `catalogo-pos-baseline.sql`); bloco `pt409_props` com ACLs reais (asserção 8 da suíte PT409); OQ-048
+  (Principal para responsável sem membership); mapa de `ACTIVITY_INVALID_REFERENCE` (taxonomia `outros`
+  recusada; turma exige `activity_unit_links` da sua unidade antes de `set_groups_v2`).
+- Ambiente ao encerrar: espelho `coelo_mirror_r15_b_apoio` parado (`supabase stop`), worktree limpa, stash
+  vazio, último push em `origin/r15/bloco-b-apoio`; pasta `Coelo-backups/mirror-r15-b-apoio` e os dumps
+  `schema-producao-20260917-b-apoio*.sql` ficam como proveniência fora do Git.
