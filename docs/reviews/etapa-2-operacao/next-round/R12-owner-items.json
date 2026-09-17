@@ -236,17 +236,17 @@
   },
   {
     "id": "owner.r12-13",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "child-safety.create",
       "child-safety.edit"
     ],
-    "fe": "Wizard já usa FormFrame, painel único por etapa, grupos e rodapé canônicos; testes funcionais do wizard passam.",
-    "be": "Contrato preservado; nenhum SQL/RPC novo.",
-    "e2e": "Visual/E2E pendente para referência, rota normal, escopo e reload.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-composition-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504 de child_safety_change_lifecycle; depois provar create/edit pela rota normal.",
+    "nextGate": "Concluído 17/09 (rota real, Bloco B): criar e editar pela rota normal com escopo real (busca server-side), revisão, persistência (3f3650b0 v1→v2) e reload; negativa PT409 sem 504 (lotes 74/75).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -275,18 +275,18 @@
   },
   {
     "id": "owner.r12-15",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "child-safety.child",
       "child-safety.edit",
       "child-safety.suspend"
     ],
-    "fe": "FE verified no estado suspenso (rota real 15/09): diálogo com identidade, contexto, relação, capacidades, motivo, decisão, situação, validade e só Concluir.",
-    "be": "BE: child_safety_change_lifecycle responde 504 (timeout) em produção — bloqueio para Sessão 2 (SQL/espelho).",
-    "e2e": "child verified-e2e; suspend blocked-backend; estados pendente e aprovado-ativo não exercitados.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 D4: autorizados diagnóstico e correção forward-only do 504; depois criar autorização, aprovar e suspender pela tela para fechar r12-15/13/16.",
+    "nextGate": "Concluído 17/09 (rota real, Bloco B): diálogo Gerenciar nos três estados — pendente (Aprovar/Rejeitar/Editar/Concluir), aprovado-ativo (Situação Ativa, Suspender, Concluir) e suspenso (só Concluir); aprovar e suspender pela tela (v3/v4), reload, PT409. Observação: o diálogo mostra o contexto do cabeçalho da criança, não o da autorização (composição; tabela e revisão corretas).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -296,16 +296,16 @@
   },
   {
     "id": "owner.r12-16",
-    "status": "open",
+    "status": "done",
     "actionIds": [
       "child-safety.create"
     ],
-    "fe": "FE local-green: stepper bloqueia salto para etapa futura e permite retorno às concluídas; testes do wizard cobrem o fluxo.",
-    "be": "Contrato preservado; nenhum SQL/RPC novo.",
-    "e2e": "Pending-verification de rota normal e escopo.",
-    "evidence": "docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-wizard-gates-r12.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 D4: depende do 504; depois provar teclado/rota normal sem salto e sem perda de dados.",
+    "nextGate": "Concluído 17/09 (rota real, Bloco B): clicar etapa futura (Revisão) na etapa 1 não avança; voltar da Revisão para Pessoa autorizada preserva os dados; sem salto e sem perda.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

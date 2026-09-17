@@ -6527,15 +6527,15 @@
       "family": "child_safety",
       "screen": "Segurança infantil / Editar autorização",
       "scope": "mvp",
-      "done": "A composição contextual do gerenciamento reabre a prova integrada de edição.",
-      "fe": "R12 C0: Editar continua condicionado a solicitação pendente e capacidade; diálogo recebe contexto operacional.",
+      "done": "R15 B: child_safety_edit_pending_authorization em producao pela tela (3f3650b0, v1->v2) + reload + negativa v99 -> 409 PT409 em 1,4 s sem mutacao (lote 74/75).",
+      "fe": "R15 B rota real: Gerenciar (pendente) > Editar abre o wizard com a crianca pre-selecionada; motivo e capacidades editados, revisao, salvo e relido (versao 2).",
       "be": "child_safety_edit_pending_authorization 200 (versao 1->2, pending) com audit child_safety.authorization.edit_pending; decisao pelo Superadmin: child_safety_decide_authorization 200 (34d29829 approved/active, versao 3) com audit ...decide (P32 B, pacote 171800). | Backlog R12 (registro 2026-09-13): R12-13, R12-15, R12-17. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-13 -> R13, R12-15 -> R13, R12-17 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.edit); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.edit) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r38-safety; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r104 (REST e captura 9411-b2-safety-approved-reload); packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql; comunicacao/acessos-pessoas.json rev 114 (ADENDO_03h25); docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/38-child-safety-editada.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.edit); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.edit) R01/16h: C02r28;coelo-c02-safety-wizard-regression.log; etapa-2-operacao/reports/R01-checkpoint-1600.md; etapa-2-operacao/reports/R01-delta-1915.md; C02r39 r38-safety; Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; comunicacao/acessos-pessoas.json r104 (REST e captura 9411-b2-safety-approved-reload); packages/coelo_database/candidatos/acessos-pessoas/20260910172100_child_safety_edit_pending_ambiguity_fix_v1.sql; comunicacao/acessos-pessoas.json rev 114 (ADENDO_03h25); docs/reviews/evidence/etapa-2/r04-coordenacao/lotes-25-27-decisoes-do-owner.md; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/38-child-safety-editada.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md; docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "lastSyncedHandoff": "C02/r39",
       "lastHandoffRevision": 48,
@@ -6549,16 +6549,16 @@
           "recordedAt": "2026-09-11T14:55:00-03:00"
         },
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/37-child-safety-edit.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
+          "revision": "bcf47d636",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:50:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/33-child-safety-aprovada.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
+          "revision": "bcf47d636",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:50:00-03:00"
         }
       }
     },
@@ -6567,25 +6567,25 @@
       "family": "child_safety",
       "screen": "Segurança infantil / Suspender",
       "scope": "mvp",
-      "done": "R14 S1: child_safety_change_lifecycle responde 504 (timeout) em producao; Sessao 2 diagnostica no espelho.",
-      "fe": "R12 C0: Suspender continua exclusivo de autorização aprovada e ativa, com contexto e status explícitos.",
+      "done": "R15 B: child_safety_decide_authorization (v2->v3 approved) e child_safety_change_lifecycle(suspended) (v3->v4) em producao pela tela + reload + negativas v99 -> 409 PT409 (0,14 s / 0,11 s) e id alheio -> P0002, sem mutacao; 504 do 40001 nao ocorre mais.",
+      "fe": "R15 B rota real: Gerenciar (aprovado-ativo) > Suspender autorizacao > confirmacao; linha passa a Aprovado - Suspensa e persiste apos reload.",
       "be": "authorized_person_authorizations 34d29829: status=suspended, suspended_at/by preenchidos, versao 4; audit child_safety.authorization.lifecycle. | Backlog R12 (registro 2026-09-13): R12-15. Contratos/dependências R12 a conferir por item; não presumir falha backend por imagem. Mudanças somente visuais não exigem SQL. Fonte: R12-sincronizacao-rastreadores.md; responsável C0 R12, primeiro gate no item vinculado. | Planejamento Owner por cota: R12-15 -> R13. Ver R12-plano-de-rodada.md/R13-plano-de-rodada.md; estados preservados. | Consolidação Owner13/09: destino único R12 manual/Luna médio; estados reais e primeiro gate em R12-pendencias.md; antiga divisão R12/R13 é histórica, sem nova certificação.",
-      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.suspend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.suspend); Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md",
+      "evidence": "archive/2026-09-08/coelo-flutter-pendencias.md (buscar child-safety.suspend); archive/2026-09-08/coelo-supabase-pendencias.md (buscar child-safety.suspend); Fechamento R01 C02/r48; C02r47/r48; held chain list no manifesto; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; 3a96ca535/1d291711e; docs/reviews/etapa-2-operacao/noturna/acessos-pessoas/safety-composition/handoff.md; comunicacao/acessos-pessoas.json r84; coordenacao.json R03 rev 10; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png; docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png; docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md; docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md; docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md; docs/reviews/evidence/etapa-2/r12-coordenacao/child-safety-manage-context-r12.md; docs/reviews/evidence/etapa-2/r14-sessao-1/child-safety-child-20260915.md; docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
       "historicalFrontend": "audited",
       "historicalBackend": "audited",
-      "frontendStatus": "local-green",
+      "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "blocked-backend",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 48,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T08:20:50-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
       "certifications": {
         "frontend": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/35-child-safety-suspensa.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
+          "revision": "bcf47d636",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:50:00-03:00"
         },
         "backend": {
           "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
@@ -6594,10 +6594,10 @@
           "recordedAt": "2026-09-11T14:55:00-03:00"
         },
         "integrated": {
-          "evidence": "docs/reviews/evidence/etapa-2/r05-formularios-cuidado-rotina/rota-real/36-child-safety-child-reload.png",
-          "revision": "comunicacao/formularios-cuidado-rotina.json rev 38",
-          "environment": "producao Supabase evvbomzejfijozbtgvpt, build web release (flutter build web -t test_driver/qa_main.dart) da branch work/etapa2-r05-formularios-cuidado-rotina (05968beef..a1ca952cc) servido em 127.0.0.1:3014, sessao qa-r03@coelo.me, Chrome CDP 9416..9419 sob SwiftShader",
-          "recordedAt": "2026-09-11T14:55:00-03:00"
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/child-safety-edit-suspend-20260917.md",
+          "revision": "bcf47d636",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T11:50:00-03:00"
         }
       }
     },
@@ -9632,7 +9632,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T14:23:49.328Z",
+  "updatedAt": "2026-09-17T14:38:53.902Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

@@ -1346,11 +1346,14 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
       CoeloAdminSingleSelectField<String>(
         label: 'Relação',
         value: relationship,
-        options: const ['mother', 'father', 'grandparent', 'other'],
+        // Codigos do catalogo family_relationship_types de producao: nao existe
+        // 'grandparent' (a RPC recusava 22023 "invalid relationship"; R15 Bloco B).
+        options: const ['mother', 'father', 'grandmother', 'grandfather', 'other'],
         optionLabel: (value) => switch (value) {
           'mother' => 'Mãe',
           'father' => 'Pai',
-          'grandparent' => 'Avó/Avô',
+          'grandmother' => 'Avó',
+          'grandfather' => 'Avô',
           _ => 'Outros',
         },
         onChanged: (value) => setState(() => relationship = value),
@@ -2152,7 +2155,8 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
 String _relationshipCode(String value) => switch (value.toLowerCase()) {
   'mother' || 'mãe' => 'mother',
   'father' || 'pai' => 'father',
-  'grandparent' || 'avó' || 'avô' => 'grandparent',
+  'grandmother' || 'avó' => 'grandmother',
+  'grandfather' || 'avô' => 'grandfather',
   _ => 'other',
 };
 
@@ -2210,7 +2214,8 @@ String _statusSummary(PickupAuthorization value) {
 String _relationshipLabel(String value) => switch (value.trim().toLowerCase()) {
   'mother' => 'Mãe',
   'father' => 'Pai',
-  'grandparent' => 'Avó/Avô',
+  'grandmother' => 'Avó',
+  'grandfather' => 'Avô',
   'other' => 'Outro',
   _ => value,
 };
