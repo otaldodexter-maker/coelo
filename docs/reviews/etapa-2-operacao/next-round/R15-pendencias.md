@@ -4,7 +4,7 @@ source: "Owner em 2026-09-16 (fechar a R14 e levar tudo o que ficou pendente par
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-16"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 audience: "team"
 ---
 
@@ -220,26 +220,25 @@ dúvidas de abertura foram respondidas pelo Owner no mesmo dia (artefato
 | Status de Suporte (OQ-028) | **Concluído em 14/09 (lote 69)** | `set_status` grava open/pending/resolved conforme o mapeamento A; trigger mantém `ticket_status` coerente (expired/revoked → Concluído); `closure_reason` em get/list; pgTAP 13/13 + bases 23/23, 28/28, 17/17; produção: chamado 6c5eb791 waiting→pending, completed→resolved. Cliente mostra “Concluído · Expirado/Revogado”. |
 | Identidade da mídia do Chat (`asset_id` no envelope) | Concluído 16/09 (OQ-046, lote 72) | `superadmin_chat_thread_v2` devolve `asset_id` em produção (dump de 16/09); Edge `chat-media` publicada pela Sessão E; migration `20260915130100` no ledger remoto. |
 
-## Ações não terminais por família (inventário: 27 ações; FE/BE/E2E)
+## Ações não terminais por família (inventário: 24 ações; FE/BE/E2E)
 
 
-Projeção regenerada em 16/09/2026 a partir de `inventario-etapa-2.json` no fechamento da R14 (16/09): ações `mvp`/`gate-formal-mvp` cujo estado integrado
-não é `verified-e2e` nem `flutter-only`. As 30 `deferred-post-mvp` ficam fora;
+Projeção regenerada em 17/09/2026 a partir de `inventario-etapa-2.json` (coordenadora R15): ações `mvp`/`gate-formal-mvp` cujo estado integrado
+não é `verified-e2e` nem `flutter-only`. As 33 `deferred-post-mvp` (30 + MFA ×3, E9) ficam fora;
 `errors.409` (flutter-only, FE local-green) ainda deve provar FE na rota real.
 
 | Família | Qtd | action_ids |
 |---|---:|---|
 | access_profiles | 2 | `access-profiles.edit` (local-green/done/pending-verification), `access-profiles.assign` (pending-verification/done/pending-verification) |
-| account | 2 | `account.profile` (verified/remote-green/pending-verification), `account.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
+| account | 1 | `account.profile` (verified/remote-green/pending-verification) |
 | agora | 3 | `agora.publish` (verified/done/pending-verification), `agora.expire` (pending-verification/done/pending-verification), `agora.remove` (local-green/pending-verification/pending-verification) |
-| auth | 3 | `auth.recover` (verified/pending-verification/pending-verification), `auth.reset` (verified/pending-verification/pending-verification), `auth.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
+| auth | 2 | `auth.recover` (verified/done/pending-verification), `auth.reset` (verified/pending-verification/pending-verification) |
 | chat | 1 | `chat.attach` (local-green/local-green/pending-verification) |
 | child_safety | 2 | `child-safety.edit` (local-green/done/pending-verification), `child-safety.suspend` (local-green/done/blocked-backend) |
 | forms_authoring | 2 | `forms.create` (local-green/done/pending-verification), `forms.edit` (local-green/done/pending-verification) |
 | forms_files | 2 | `forms.expire-file` (pending-verification/local-green/pending-verification), `forms.delete-file` (pending-verification/local-green/pending-verification) |
 | forms_responses | 1 | `forms.location-answer` (local-green/pending-verification/pending-verification) |
 | institutions | 2 | `institutions.error` (pending-verification/local-green/pending-verification), `institutions.access-denied` (pending-verification/local-green/pending-verification) |
-| internal_users | 1 | `internal-users.mfa` (pending-verification/gate-formal-mvp/gate-formal-mvp) |
 | momentos | 4 | `momentos.view` (verified/done/pending-verification), `momentos.create` (local-green/local-green/blocked-environment), `momentos.publish` (pending-verification/local-green/pending-verification), `momentos.remove` (pending-verification/local-green/pending-verification) |
 | principal_profile | 2 | `principal.for-you` (verified/blocked-decision/pending-verification), `principal.profile-edit` (local-green/blocked-decision/pending-verification) |
 
