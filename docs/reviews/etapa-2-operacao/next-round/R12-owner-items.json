@@ -1013,12 +1013,12 @@
     "actionIds": [
       "chat.attach"
     ],
-    "fe": "FE verified (rota real 17/09, R15 C1): seletor múltiplo, diálogo de lote com progresso e falha tratada, mosaico 3 e 3+1 (+N), tile único (PDF e imagem), reload.",
-    "be": "BE done (lote 76): contrato E3 `superadmin_chat_attachment_prepare_v2`/`finalize_v2`/`discard_v1` — uma mensagem por lote de 1–10, 11º recusado (422), publicação só quando todos terminam; Edge `chat-media` em lote; pgTAP 51/51 + 28/28 + 9/9.",
-    "e2e": "E2E verified-e2e em produção: mídia R2 real, reload por `thread_v2`, negativas 404/422/409 por PostgREST.",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Concluído 17/09 (ADR 0042 E3 = B): mosaico alcançável pela rota normal com vários anexos na mesma mensagem.",
+    "nextGate": "Concluído 17/09 (R15 C1, ADR 0042 E3 = B): FE verified (rota real 17/09, R15 C1): seletor múltiplo, diálogo de lote com progresso e falha tratada, mosaico 3 e 3+1 (+N), tile único (PDF e imagem), reload. / BE done (lote 76): contrato E3 `superadmin_chat_attachment_prepare_v2`/`finalize_v2`/`discard_v1` — uma mensagem por lote de 1–10, 11º recusado (422), publicação só quando todos terminam; Edge `chat-media` em lote; pgTAP 51/51 + 28/28 + 9/9. / E2E verified-e2e em produção: mídia R2 real, reload por `thread_v2`, negativas 404/422/409 por PostgREST. Mosaico alcançável pela rota normal com vários anexos na mesma mensagem.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
