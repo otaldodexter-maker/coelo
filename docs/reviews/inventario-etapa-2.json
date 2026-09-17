@@ -6068,15 +6068,15 @@
       "family": "momentos",
       "screen": "Momentos / Visualizar",
       "scope": "mvp",
-      "done": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R08 G4 — primeiro gate: Provar momentos.view na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
+      "done": "R15 C1: producao, qa-r06-principal (nao autor) em /principal-moments ve o momento 74c56d7c com midia R2 real (moments-media read + GET assinado), sem acao Retirar, reload; negativa list_visible_moments tenant alheio 403.",
       "fe": "Pós-consolidação: Cabeçalho/contêiner compartilhados corrigidos; falta prova produtiva completa de viewer/remoção e seleção múltipla nesta tela. Anterior: rota normal abre apos 130300 com estado vazio honesto (22); antes respondia 'Nao foi possivel carregar' com Tentar novamente (11)",
       "be": "Pós-consolidação: Nenhum SQL ou deploy remoto novo. Acontece comprovou R2/Edge/RPC em origem autorizada3000; contratos/certificações anteriores preservados. Provas específicas de cada ação ainda conforme Principal-pos-R10.md. Anterior: 130300 (list_visible_moments + withdraw_moment) em producao; list_visible_moments 200 [] para qa-r03",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento); 51-principal-moments.png; coordenacao.json R04 rev 30 (lote22); test/features/principal_moments 63 PASS; goldens principal_moments_* regravados; rota real ainda sem contexto (P35), por isso local-green e nao verified; capturas 11/22; pgTAP moments_feed_and_withdrawal 23/23; RPC; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; etapa-2-operacao/reports/R01-Claude-sincronizacao-1550.md R01/16h: C05r8–10; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; SQL5f0e7e29 retido porACL/cursor/envelope/schema/realm/reautorização/audiênciadesconhecida/store eplansTAP incorretos. C05r15 aceitouachados e corrige;sem replay. Fontes completas na assignmentI009.; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 57006c7a7; apps/superadmin/test/app/router/principal_moments_feed_route_test.dart (4 PASS, cobrindo indisponibilidade sem repositorio, negacao sem sessao, escopo real institution/unit/group e releitura por revisao de autorizacao); principal_moments_publication_route_test.dart sem regressao (4 PASS); flutter analyze --no-pub lib sem issues; 2026-09-09, local; coordenacao.json R03 rev 13 (cloudflareFechamento); 51-principal-moments.png; coordenacao.json R04 rev 30 (lote22); test/features/principal_moments 63 PASS; goldens principal_moments_* regravados; rota real ainda sem contexto (P35), por isso local-green e nao verified; capturas 11/22; pgTAP moments_feed_and_withdrawal 23/23; RPC; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md; docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
       "historicalFrontend": "local-green",
       "historicalBackend": "blocked-decision",
       "frontendStatus": "verified",
       "backendStatus": "done",
-      "integratedStatus": "pending-verification",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
@@ -6106,6 +6106,12 @@
           "revision": "principal-chat-sistema r25",
           "environment": "producao coelo (evvbomzejfijozbtgvpt) pela rota real com qa-r03; build release de qa_main 1da47a1cc/servido em 127.0.0.1:3009 e localhost:3000",
           "recordedAt": "2026-09-11T14:53-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
         }
       }
     },
@@ -6114,15 +6120,15 @@
       "family": "momentos",
       "screen": "Momentos / Criar",
       "scope": "mvp",
-      "done": "Pós-consolidação: Pós-R10 documentado por tela: prova UI de publicação PNG Acontece com reload; sem promover estados E2E das outras ações. Negativas históricas não repetidas neste corte. Primeiro gate e responsável em Principal-pos-R10.md. Anterior: R08 G4 — primeiro gate: Provar momentos.create na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
-      "fe": "Pós-consolidação: Card vazio compartilhado implantado no código; falta prova própria de PNG/MP4, publicar/reload no build atual. Anterior: V-4/V-5/V-6 reprovados -> tela reconstruida na familia Publicacao (PrincipalPublicationSheet: Sua publicacao, midia primeiro, blocos em cards, previa lateral, rodape em card, sem etapas); goldens novos regravados e comparados a aprovadas-20260911; rota real abre dentro do conteiner do Superadmin com a barra Vendo como",
-      "be": "Pós-consolidação: Nenhum SQL ou deploy remoto novo. Acontece comprovou R2/Edge/RPC em origem autorizada3000; contratos/certificações anteriores preservados. Provas específicas de cada ação ainda conforme Principal-pos-R10.md. Anterior: R03 (10/09 noite): fundacao em producao (lote 6); moments-media le COELO_R2_* e grava em coelo-media-prod (testes 26/26). Gate para done: deploy da funcao, upload real com sessao e reload.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1f53ec245; apps/superadmin/test/app/router/principal_moments_publication_media_union_test.dart (2 PASS, uma prova exigindo embedded verdadeiro e mediaPicker nao nulo simultaneamente com o shell na tela); suites de principal_moments_publication e da rota, 94 PASS sem regressao; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 559017727; stored_bytes_test.ts com 8 casos, incluindo conteudo disfarcado de imagem recusado E apagado do bucket, tamanho divergente recusado com assinatura correta, objeto ilegivel como falha honesta e leitura limitada ao tamanho esperado; deno check limpo; 12 PASS no modulo; 2026-09-09, local; coordenacao.json R03 rev 13; capturas 15/30/32/33; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); goldens principal_*_publication_*; capturas 12, 16, 17; capturas 13, 14, 15; sonda OPTIONS no upload_url; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "done": "R15 C1: bloqueio de ambiente (CORS) nao se reproduz na origem 3016; rascunho com midia R2 real criado e publicado pela tela (publicacoes 74c56d7c/7a5865ac); negativas por PostgREST 403 moments_permission_denied (tenant alheio).",
+      "fe": "R15 C1 rota real: midia real (PNG) pelo seletor nativo (CDP) em /principal-moments/publish, previa, legenda e chips de publico; upload pela origem 3016 sem preflight recusado.",
+      "be": "R15 C1: save_moments_draft + moments-media prepare/PUT R2/finalize em producao exercitados de ponta a ponta (sem SQL novo).",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commit 1f53ec245; apps/superadmin/test/app/router/principal_moments_publication_media_union_test.dart (2 PASS, uma prova exigindo embedded verdadeiro e mediaPicker nao nulo simultaneamente com o shell na tela); suites de principal_moments_publication e da rota, 94 PASS sem regressao; 2026-09-09, local, branch work/etapa2-noturna-publicacoes-midia; commit 559017727; stored_bytes_test.ts com 8 casos, incluindo conteudo disfarcado de imagem recusado E apagado do bucket, tamanho divergente recusado com assinatura correta, objeto ilegivel como falha honesta e leitura limitada ao tamanho esperado; deno check limpo; 12 PASS no modulo; 2026-09-09, local; coordenacao.json R03 rev 13; capturas 15/30/32/33; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); goldens principal_*_publication_*; capturas 12, 16, 17; capturas 13, 14, 15; sonda OPTIONS no upload_url; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md; docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "local-green",
-      "backendStatus": "local-green",
-      "integratedStatus": "blocked-environment",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -6133,6 +6139,26 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        }
       }
     },
     {
@@ -6140,15 +6166,15 @@
       "family": "momentos",
       "screen": "Momentos / Publicar",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar momentos.publish na tela reconstruída com PNG sintético privado, contexto real e reload; gateway existente não basta.",
-      "fe": "Publicar um Momento passou a sinalizar um refresh compartilhado que faz a leitura recarregar pelo repositorio autorizado, em vez de tratar o recibo do publicador como dado de feed. A prova server-side de publicacao, recibos e midia continua aberta.; R05 17:19: familia visual Publicacao aprovada pelo Owner (publicador atual reprovado como wizard: V-4/V-5/V-6); reconstruir a tela sobre a familia na R06 (G4) comparando o golden novo com docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png e momentos-web-1440.png (no web dentro do conteiner principal do Superadmin); estado funcional mantido pela regua do MVP; aprovacao da proposta nao e ownerVisualApproval",
-      "be": "R03 (10/09 noite): fundacao em producao (lote 6). Gate para done: sessao (P17), publicacao real e reload.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 57006c7a7 e 1f53ec245; principal_moments_feed_route_test.dart e principal_moments_publication_route_test.dart, sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R15 C1: producao, qa-r06-publicacoes publica com Familias + Equipe escolar; leitor qa-r06-principal ve o momento; negativa 403 tenant alheio por PostgREST.",
+      "fe": "R15 C1 rota real: Publicar agora → 'Momento publicado.', volta ao feed; momento no feed do autor com midia R2 e reload.",
+      "be": "R15 C1: publish_moment 200 em producao apos finalize da midia; list_visible_moments projeta o momento com can_withdraw por autor.",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md; Fechamento R01 C05/rfinal; C00 rerun288PASS; initial286PASS/2FAIL eram fluxo de teste desatualizado, não esconder histórico; etapa-2-operacao/reports/R01-fechamento-20260909.md; Fechamento R01 C05/rfinal; C05final/reviewC00; não tratar tudo como bloqueio de integração; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 57006c7a7 e 1f53ec245; principal_moments_feed_route_test.dart e principal_moments_publication_route_test.dart, sem regressao; 2026-09-09, local; coordenacao.json R03 rev 13; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-mobile-375.png; docs/reviews/evidence/etapa-2/referencias/publicacao/aprovadas-20260911/momentos-web-1440.png; coordenacao.json R05 rev 51 (canvasPublicarNoCoelo); docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
@@ -6159,6 +6185,26 @@
         "head": "3697dd49e",
         "note": "FE verificado/entregue pelo autor; Acontece limitado ao escopo com turma. Momentos inclui porta de mídia na branch; integrar unindo mediaPicker e embedded. Não equivale a certificado de dev.",
         "evidence": "etapa-2-operacao/next-round/R02-20260909/ENTREGA-L00-PARA-D00.md"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        }
       }
     },
     {
@@ -6166,19 +6212,39 @@
       "family": "momentos",
       "screen": "Momentos / Remover",
       "scope": "mvp",
-      "done": "R08 G4 — primeiro gate: Provar remoção/escopo e reconsulta da publicação com mídia privada.",
-      "fe": "withdrawMoment gerava uma chave de idempotencia nova a cada chamada, entao repetir a MESMA retirada chegava ao servidor como intencao diferente. A chave passou a pertencer a intencao, retida por publicacao ate a retirada ser aceita. Essa capacidade existia no contrato orfao que foi removido em seguida e teria sido descartada junto. O expected_version nulo do contrato sobrevivente NAO e perda: a propria RPC documenta que superficies que nunca recebem a versao de gerenciamento podem passar nulo, e a projecao do feed e uma delas.",
-      "be": "R08: defeito real403 do autor corrigido pelo lote58 20260912140550, backup/ledger/pós-check e68/68pgTAP. Mesmo registro retirado200, feed ausente, outro consumidor403; autor mantém leitura pelo contrato. Regressão resolvida sem novo done/E2E nem cross-tenant real.",
-      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md R01/16h: C05r9/r10;I007; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado, merge d502350ce) e 57006c7a7; principal_moments_withdrawal_test.dart; principal_moments_feed_route_test.dart prova a passagem do contrato pela rota; 2026-09-09, local; branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09; commit 9737f7777; principal_moments_withdrawal_context_test.dart (2 PASS), com controle negativo: o caso principal FALHA com a guarda revertida e passa com ela; suite principal_moments 48 PASS e 11 FAIL, todas as 11 no golden ja contabilizado na base; 2026-09-09, local; commits 4a40e13aa e db2726df8; supabase_principal_moments_feed_repository_test.dart com dois casos novos, 9 PASS; suite principal_moments_publication 88 PASS; grep de MomentsWithdrawalRepository e MomentsWithdrawal em apps e packages inteiros com zero consumidores; analyze de lib e test limpos; 2026-09-10, local; coordenacao.json R03 rev 13; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/moments-api-proof.md",
+      "done": "R15 C1: producao — retirada de 7a5865ac pela tela, list_visible_moments so com 74c56d7c depois; negativas 403 por PostgREST.",
+      "fe": "R15 C1 rota real: icone Retirar (autor) → confirmacao → 'Momento retirado.' → some do feed; reload relê sem o item.",
+      "be": "R15 C1: withdraw_moment 200 em producao para o autor; nao autor e id inexistente → 403 publication_not_authorized sem mutacao.",
+      "evidence": "commit31bacda3; evidence/etapa-2/comunicacao/2026-09-08-moments-media-lifecycle.md R01/16h: C05r9/r10;I007; etapa-2-operacao/reports/R01-checkpoint-1600.md; R01/17:40 313c43bb19Deno,operações503 semRPC;f413c2dc50PASS/21goldenFAIL,adapterfeed;cea29b1f9aceitação/39AcontecePASS,removercliente failclosed. Quatro subagentes SQLNotices/SQLMomentos/Agora/Chat ativos relatadosr15;não visual.; Fechamento R01 C05/rfinal; C05final declara limites por ação; integração/contratos pendentes; etapa-2-operacao/reports/R01-fechamento-20260909.md; etapa-2-operacao/next-round/R02-20260909/RECONCILIACAO-PENDENCIAS-R01-R02.md; commits 1e39b2fcf (integrado, merge d502350ce) e 57006c7a7; principal_moments_withdrawal_test.dart; principal_moments_feed_route_test.dart prova a passagem do contrato pela rota; 2026-09-09, local; branch codex/e2-r02-l01-publicacoes em 3697dd49e; 2026-09-09; commit 9737f7777; principal_moments_withdrawal_context_test.dart (2 PASS), com controle negativo: o caso principal FALHA com a guarda revertida e passa com ela; suite principal_moments 48 PASS e 11 FAIL, todas as 11 no golden ja contabilizado na base; 2026-09-09, local; commits 4a40e13aa e db2726df8; supabase_principal_moments_feed_repository_test.dart com dois casos novos, 9 PASS; suite principal_moments_publication 88 PASS; grep de MomentsWithdrawalRepository e MomentsWithdrawal em apps e packages inteiros com zero consumidores; analyze de lib e test limpos; 2026-09-10, local; coordenacao.json R03 rev 13; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r08-principal-chat-sistema/moments-api-proof.md; docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
       "historicalFrontend": "blocked-decision",
       "historicalBackend": "blocked-decision",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": "final",
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "lastEvidenceAt": "2026-09-09T05:32:00-03:00",
-      "documentationReconciledAt": "2026-09-09T17:13:51-03:00"
+      "documentationReconciledAt": "2026-09-09T17:13:51-03:00",
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/momentos-20260917.md",
+          "revision": "6e9234c87",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T13:35:00-03:00"
+        }
+      }
     },
     {
       "id": "principal.for-you",
@@ -9566,7 +9632,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T14:22:59.932Z",
+  "updatedAt": "2026-09-17T14:23:49.328Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

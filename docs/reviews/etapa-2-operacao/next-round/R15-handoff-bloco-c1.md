@@ -23,7 +23,7 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 |---|---|---|---|
 | Coelo (Principal) › Conversas › thread › anexos (`/communication/conversations`) | `chat.attach`, `owner.r12-52` (E3) | 17/09 08:50 BRT | **fechada** 10:05 BRT |
 | Principal hospedado › "ver como" / Para você / Editar perfil | `principal.for-you`, `principal.profile-edit`, H02 (B9) | 17/09 08:50 BRT | **fechada** 12:15 BRT |
-| Coelo (Principal) › Momentos (`/principal-moments`, `/principal-moments/publish`) — liberada pelo Bloco A via coordenadora | `momentos.view`, `momentos.publish`, `momentos.remove`, `momentos.create` | 17/09 12:40 BRT | em andamento |
+| Coelo (Principal) › Momentos (`/principal-moments`, `/principal-moments/publish`) — liberada pelo Bloco A via coordenadora | `momentos.view`, `momentos.publish`, `momentos.remove`, `momentos.create` | 17/09 12:40 BRT | **fechada** 13:40 BRT |
 
 ## Fatias entregues
 
@@ -32,7 +32,8 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 | d27a829db | E3 local-green: migration `20260917120000_chat_attachment_batch_v2` + pgTAP 51/51 (v1 28/28, lote 67 9/9 no espelho), Edge `chat-media` em lote (deno 7/7), FE lote (`ChatAttachmentBatchRepository`, `SuperadminChatBatchUploadDialog`, chat 254/254), spec 058. Nenhum estado alterado. | — | specs/058; r15-bloco-c1/pgtap-*.txt |
 | 57ffe51e8 + c0482aedd | **lote 76** em produção (`20260917120000`, ledger reparado) + Edge `chat-media` implantada; rota real `qa-r06-publicacoes`: `chat.attach` local-green/local-green/pending-verification → **verified/done/verified-e2e** | `owner.r12-52` → **done** | r15-bloco-c1/chat-attach-e3-20260917.md + deltas-chat-attach-20260917.json + capturas/ |
 | 6e9234c87 | B9 local-green: migration `20260917130000_principal_for_you_reader_v1` (**lote 77**, aplicada pelo rito) + pgTAP 21/21; FE: `PrincipalGlobalHeader.contextLabel` + avatar do contexto após "Ver como" (sem faixa), `PrincipalForYouReader` (`list_my_principal_for_you`) na página/router, H02 ligado no `PrincipalProfileEditPage`; spec 059. Nenhum estado alterado. | — | specs/059; r15-bloco-c1/pgtap-principal_for_you_reader_v1-mirror-20260917.txt |
-| (este commit) | rota real `qa-r06-principal`: `principal.for-you` verified/blocked-decision/pending-verification → **verified/done/verified-e2e**; `principal.profile-edit` local-green/blocked-decision/pending-verification → **verified/done/verified-e2e** | — (B9 não tem `owner.r12-*` próprio) | r15-bloco-c1/principal-b9-20260917.md + deltas-principal-b9-20260917.json + capturas/ |
+| b1664470f | rota real `qa-r06-principal`: `principal.for-you` verified/blocked-decision/pending-verification → **verified/done/verified-e2e**; `principal.profile-edit` local-green/blocked-decision/pending-verification → **verified/done/verified-e2e** | — (B9 não tem `owner.r12-*` próprio) | r15-bloco-c1/principal-b9-20260917.md + deltas-principal-b9-20260917.json + capturas/ |
+| (este commit) | Momentos na rota real (sem SQL novo): `momentos.create` local-green/local-green/blocked-environment → **verified/done/verified-e2e**; `momentos.publish` e `momentos.remove` pending/local-green/pending → **verified/done/verified-e2e**; `momentos.view` → **verified-e2e** | — | r15-bloco-c1/momentos-20260917.md + deltas-momentos-20260917.json + capturas/momentos-* |
 
 ## Avisos para as outras sessões e para a coordenadora
 
@@ -78,8 +79,10 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 
 ## Sobra
 
-- Fatia 3 opcional (`momentos.*` do Bloco A) não iniciada: não combinada pelo handoff A antes do
-  fim desta sessão.
+- Momentos: massa residual `74c56d7c` (publicado) e `7a5865ac` (retirado) na instituição
+  `d0c40000…0001`, mídia sintética em R2. UX pré-existente para quem cuidar da tela: o publicador
+  não bloqueia um segundo toque em "Publicar agora" durante o envio (gerou duas publicações) e o
+  feed mostra "Curtido por Maria e outras 531 pessoas"/contadores de demonstração.
 - E4: regravar os goldens de cabeçalho das suítes do Principal/avisos (diff isolado só nas
   iniciais do avatar) — quem consolidar as regravações pode incluir estas.
 - Owner (se quiser): decidir o fluxo de aprovação institucional do H02 e se `get_profile_about`
@@ -88,5 +91,6 @@ produção), evidências em `docs/reviews/evidence/etapa-2/r15-bloco-c1/`.
 ## Contadores
 
 `node docs/reviews/validate-trackers.cjs` após a última fatia: PASS — actions 232,
-FE 191/232, BE 175/219, E2E **165/186** ativo (corte de abertura 162; +3 por este bloco:
-`chat.attach`, `principal.for-you`, `principal.profile-edit`); Owner: `owner.r12-52` done.
+FE 194/232, BE 178/219, E2E **169/186** ativo (corte de abertura 162; +7 por este bloco:
+`chat.attach`, `principal.for-you`, `principal.profile-edit`, `momentos.create/publish/view/remove`);
+Owner: `owner.r12-52` done.
