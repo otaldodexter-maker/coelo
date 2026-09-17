@@ -1554,11 +1554,10 @@
         "7797a8cadb41acb813d8c21863421323e9322310",
         "0ab6abd8f7dfcf754774fc6d42248f111275de8e"
       ],
-      "disposition": "retained-review",
-      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-      "owner": "C0",
-      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+      "disposition": "superseded",
+      "reason": "Sessão 2 da R14 (blocos C/D): código integrado em dev; resíduo é o mapeamento 40001 (substituído por PT409 no lote 75) e o dump production-r14-schema-20260915.sql, preservado em Coelo-backups/r15-fechamento e no bundle.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "successor": "8334d3695"
     },
     "r14/bloco-e": {
       "sha": "31503be0538422593492819b39d3c27c199e3e82",
@@ -1583,11 +1582,10 @@
         "4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a",
         "7e6af350512988492fc8ac56c5e5ef1bfe09f200"
       ],
-      "disposition": "retained-review",
-      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-      "owner": "C0",
-      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+      "disposition": "superseded",
+      "reason": "Sessão E da R14: código (account-media, chat asset_id, remoção imediata do Agora) integrado em dev por patch na R14; resíduo só cosmético (comentário, plan() de teste) e 3 planos em docs/superpowers trazidos para dev em 17/09; dump preservado no bundle Coelo-backups/r15-fechamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "successor": "8334d3695"
     },
     "r14/formularios-chat": {
       "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
@@ -2230,11 +2228,10 @@
         "7797a8cadb41acb813d8c21863421323e9322310",
         "0ab6abd8f7dfcf754774fc6d42248f111275de8e"
       ],
-      "disposition": "retained-review",
-      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-      "owner": "C0",
-      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+      "disposition": "superseded",
+      "reason": "Sessão 2 da R14 (blocos C/D): código integrado em dev; resíduo é o mapeamento 40001 (substituído por PT409 no lote 75) e o dump production-r14-schema-20260915.sql, preservado em Coelo-backups/r15-fechamento e no bundle.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "successor": "8334d3695"
     },
     "origin/r14/bloco-e": {
       "sha": "31503be0538422593492819b39d3c27c199e3e82",
@@ -2259,11 +2256,10 @@
         "4f2b31d73db0f385b7d9fc0e92a17da7db79ad7a",
         "7e6af350512988492fc8ac56c5e5ef1bfe09f200"
       ],
-      "disposition": "retained-review",
-      "reason": "Branch preservada para revisão de conteúdo; não é fila operacional.",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
-      "owner": "C0",
-      "nextGate": "Revisar conteúdo antes de qualquer integração ou remoção."
+      "disposition": "superseded",
+      "reason": "Sessão E da R14: código (account-media, chat asset_id, remoção imediata do Agora) integrado em dev por patch na R14; resíduo só cosmético (comentário, plan() de teste) e 3 planos em docs/superpowers trazidos para dev em 17/09; dump preservado no bundle Coelo-backups/r15-fechamento.",
+      "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
+      "successor": "8334d3695"
     },
     "origin/r14/formularios-chat": {
       "sha": "5bc59127adcfd2fab97bf607d7efbf7fd38879e3",
@@ -2469,6 +2465,7 @@
     "docs/reviews/etapa-2-operacao/next-round/R14-catalogo.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
     "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260916.md",
+    "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
     "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "docs/reviews/etapa-2-operacao/next-round/RODADAS.md",
