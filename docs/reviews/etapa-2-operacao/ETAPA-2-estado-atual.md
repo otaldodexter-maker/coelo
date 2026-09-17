@@ -4,7 +4,7 @@ source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md; decisions/00
 status: "active; fila vigente R15; R01–R14 históricos"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 base: "dev"
 revision: "8334d3695 (fechamento da R14 / abertura da R15, 16/09)"
 environment: "checkout consolidado local; sem deploy ou mutação remota"
@@ -35,6 +35,14 @@ As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
 fora do trabalho corrente do MVP.
 
 > Fila viva desde 16/09/2026: `next-round/R15-pendencias.md` (R12/R13/R14 congeladas).
+
+## Snapshot de 17/09 — R15 em execução paralela
+
+Cinco sessões em worktrees `r15-bloco-*` (`next-round/R15-execucao-paralela.md`),
+integração em `dev` por cherry-pick. Lote 75 em produção (OQ-047: 40001 → PT409
+em 126 RPCs, Bloco B). Integradas local-green: Chat E3 (spec 058), B5 (spec 061)
+e B6 (spec 062); B5/B6 aguardam aplicação em produção. Os percentuais abaixo
+continuam sendo o corte de abertura da R15 até nova certificação por delta.
 
 ## Snapshot de 16/09 — Mesa do Owner (ADR 0041)
 

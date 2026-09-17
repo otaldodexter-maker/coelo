@@ -4,7 +4,7 @@ source: "Owner em 2026-09-14, 2026-09-15 e 2026-09-16 (ADR 0042); docs/reviews/e
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 audience: "team"
 ---
 
@@ -31,6 +31,16 @@ audience: "team"
   com a caixa do Owner (`auth.recover` BE done; SMTP próprio → Etapa 3). E9:
   MFA ×3 → pós-MVP. Corte: FE 189/232, BE 172/219, E2E 162/186. CORS das Edge por porta aplicado
   (`127.0.0.1:3014–3024` nas seis `*_ALLOWED_ORIGINS`); sem pendência de ambiente.
+- **17/09 — execução paralela em curso** (`R15-execucao-paralela.md`): cinco
+  sessões do Owner em worktrees `r15-bloco-a|b|b-apoio|c1|c2`; a coordenadora
+  integra em `dev` por cherry-pick. **Lote 75 aplicado em produção (12:30 UTC,
+  Bloco B)**: `20260917090000_pt409_stale_version_v1` troca os 175 `40001`
+  restantes por `PT409` em 126 RPCs (OQ-047 encerrada; negativas de versão
+  defasada por PostgREST são seguras em todas as famílias). Integradas em `dev`
+  como local-green: Chat E3 (spec 058, C1), busca de pessoa B5 (spec 061) e
+  pessoa sem conta B6 (spec 062, C2); as migrations de B5/B6 aguardam aplicação
+  em produção (classificador negou `db query --linked` à C2 e à coordenadora;
+  decisão do Owner). Contadores certificados inalterados até este corte.
 - Ordem da R15 (E5): quatro prompts — coordenadora + um por bloco. Bloco A (rota real já pronta na R14: Perfis
   edit/assign, Instituições, Conta, Formulários, Chat, Momentos, errors.409) →
   Bloco B (após migrations: Segurança da criança, contexto Atividade,
