@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R16 not opened",
     "branch": "dev",
-    "head": "36392404578b89c48323bd1b009826c486b4bf72",
+    "head": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -63,14 +63,13 @@
     "inheritedStateSource": "docs/reviews/etapa-2-operacao/next-round/R15-pendencias.md",
     "actionStatusCounts": {
       "frontend": {
-        "local-green": 10,
+        "local-green": 9,
         "pending-verification": 28,
-        "verified": 194
+        "verified": 195
       },
       "backend": {
-        "blocked-decision": 2,
         "deferred-post-mvp": 33,
-        "done": 176,
+        "done": 178,
         "local-green": 5,
         "not-applicable": 13,
         "pending-verification": 3
@@ -80,8 +79,8 @@
         "blocked-environment": 1,
         "deferred-post-mvp": 33,
         "flutter-only": 13,
-        "pending-verification": 16,
-        "verified-e2e": 168
+        "pending-verification": 14,
+        "verified-e2e": 170
       }
     },
     "deferredPostMvpActionCount": 33,
@@ -120,12 +119,12 @@
     ]
   },
   "metrics": {
-    "frontendVerified": "194/232 (83.62%)",
-    "frontendLocalGreen": "10/232 (4.31%)",
-    "backendDone": "176/219 (80.37%)",
+    "frontendVerified": "195/232 (84.05%)",
+    "frontendLocalGreen": "9/232 (3.88%)",
+    "backendDone": "178/219 (81.28%)",
     "backendLocalGreen": "5/219 (2.28%)",
-    "e2eVerified": "168/186 (90.32%)",
-    "e2ePlusFlutterOnly": "181/232 (78.02%)",
+    "e2eVerified": "170/186 (91.40%)",
+    "e2ePlusFlutterOnly": "183/232 (78.88%)",
     "ownerDone": "29/53 (54.72%)",
     "ownerNonTerminal": "24/53 (45.28%)"
   },
@@ -1041,6 +1040,20 @@
       "owner": "Owner (ADR 0042)",
       "evidence": "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
       "nextGate": "ADR 0042 E9: MFA fora do MVP."
+    },
+    {
+      "id": "principal.for-you",
+      "status": "done",
+      "owner": "Sessão C1 (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+      "nextGate": "verified-e2e em 17/09 (rota real: Para você lê list_my_principal_for_you com aviso real; reload; ver como só troca avatar/nome, ADR 0041 B9)."
+    },
+    {
+      "id": "principal.profile-edit",
+      "status": "done",
+      "owner": "Sessão C1 (R15) / coordenadora",
+      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
+      "nextGate": "verified-e2e em 17/09 (rota real: Sobre salvo/relido via save_profile_about; negativas PT409/403; H02 atualização oficial)."
     }
   ],
   "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
@@ -1104,7 +1117,7 @@
       "disposition": "retained-session",
       "reason": "Worktree de sessão executora da R15 (17/09; R15-execucao-paralela.md); a coordenadora integra por cherry-pick; remover só com manifesto no fechamento.",
       "branch": "r15/bloco-c1",
-      "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373"
+      "sha": "b1664470f4bb07df5e891c93039baa4258bf545e"
     },
     "C:\\Users\\adrie\\Documents\\Coelo.worktrees\\r15-bloco-c2": {
       "disposition": "retained-session",
@@ -1662,7 +1675,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -1674,7 +1687,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -1686,11 +1699,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "r15/bloco-c1": {
-      "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
+      "sha": "b1664470f4bb07df5e891c93039baa4258bf545e",
       "exclusive": [
+        "b1664470f4bb07df5e891c93039baa4258bf545e",
         "6e9234c87718df186cf0812eec0cf6af9f1cd373",
         "c0482aeddc81e093d0c5a95aa6222908ef358f54",
         "57ffe51e80374dff26d4393ae7104f498fd0663e",
@@ -1700,7 +1714,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -1714,7 +1728,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2355,7 +2369,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-a); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "origin/r15/bloco-b": {
       "sha": "bcf47d63628c1842d03ae31d699a6bec74de9705",
@@ -2367,7 +2381,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "origin/r15/bloco-b-apoio": {
       "sha": "76282c36c037ab2fafa699fc3bf8dafdcd0a4ed1",
@@ -2379,11 +2393,12 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-b-apoio); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "origin/r15/bloco-c1": {
-      "sha": "6e9234c87718df186cf0812eec0cf6af9f1cd373",
+      "sha": "b1664470f4bb07df5e891c93039baa4258bf545e",
       "exclusive": [
+        "b1664470f4bb07df5e891c93039baa4258bf545e",
         "6e9234c87718df186cf0812eec0cf6af9f1cd373",
         "c0482aeddc81e093d0c5a95aa6222908ef358f54",
         "57ffe51e80374dff26d4393ae7104f498fd0663e",
@@ -2393,7 +2408,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c1); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "origin/r15/bloco-c2": {
       "sha": "09edfde356ce81a8453c1519bf582be40d098508",
@@ -2407,7 +2422,7 @@
       "disposition": "patch-equivalent",
       "reason": "Branch de sessão da R15 (r15/bloco-c2); commits integrados em dev por cherry-pick (patch-equivalent).",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R15-execucao-paralela.md",
-      "successor": "36392404578b89c48323bd1b009826c486b4bf72"
+      "successor": "3f4943f0dbf6aebd0893e76ee57b26e90f1b4fb2"
     },
     "origin/wip/fase0-arquivo-chat": {
       "sha": "91e011dc640dd1186b0accd203f6fce633311a62",
@@ -2559,6 +2574,7 @@
     "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-bloco-c1/chat-attach-e3-20260917.md",
+    "docs/reviews/evidence/etapa-2/r15-bloco-c1/principal-b9-20260917.md",
     "docs/reviews/evidence/etapa-2/r15-coordenacao/auth-recover-mfa-decisoes-20260916.md",
     "docs/reviews/inventario-etapa-2.json"
   ],
@@ -2878,12 +2894,12 @@
     ],
     "openFirstGate": "Avaliações › Fechar/Reabrir (assessments.close/reopen)",
     "metrics": {
-      "frontendVerified": "194/232 (83.62%)",
-      "frontendLocalGreen": "10/232 (4.31%)",
-      "backendDone": "176/219 (80.37%)",
+      "frontendVerified": "195/232 (84.05%)",
+      "frontendLocalGreen": "9/232 (3.88%)",
+      "backendDone": "178/219 (81.28%)",
       "backendLocalGreen": "5/219 (2.28%)",
-      "e2eVerified": "168/186 (90.32%)",
-      "e2ePlusFlutterOnly": "181/232 (78.02%)",
+      "e2eVerified": "170/186 (91.40%)",
+      "e2ePlusFlutterOnly": "183/232 (78.88%)",
       "ownerDone": "29/53 (54.72%)",
       "ownerNonTerminal": "24/53 (45.28%)"
     },
