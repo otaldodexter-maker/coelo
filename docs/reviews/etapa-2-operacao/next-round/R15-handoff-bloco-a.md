@@ -69,8 +69,12 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
 
 - `forms.expire-file`: asset `9e437fa9…` (question-image do form `90b905a1…`) deixado **pendente** às 16:53Z
   (PUT do R2 bloqueado por CDP); tela mostra "Imagem 1 não confirmada" após reload; `form-media resolve` →
-  409 FORM_MEDIA_NOT_READY. Aguardando o worker do cron (ticket 30 min + 5 min) para provar 404 + reload sem
-  a imagem; rascunho da evidência em `r15-bloco-a/forms-expire-file-20260917.md`.
+  409 FORM_MEDIA_NOT_READY. **Bloqueio de ambiente/config**: a Edge `form-media` está publicada com
+  `verify_jwt=true` (v22) e o gateway responde `401 UNAUTHORIZED_INVALID_JWT_FORMAT` ao bearer do cron
+  (`net._http_response`, leitura D1 da coordenadora) — expire/cleanup nunca rodam em produção. Correção em dev
+  (`verify_jwt=false`), deploy aguarda o Owner; sonda de `resolve` a cada 60 s segue armada para fechar a
+  prova (404 + reload) assim que o próximo disparo `*/10` expirar o asset. Evidência:
+  `r15-bloco-a/forms-expire-file-20260917.md`.
 - `forms.location-answer`: form `4555ba07…` ("[R04-QA] Formulario Local editado", v4 com pergunta Local)
   ganhou ocorrências novas pela tela (agendamento existente trocado para "Diário" → 31 ocorrências; a de
   17/09 é `7256b047-9e17-443d-b943-731243971f95`, `open`, 11 elegíveis). **Bloqueio de massa**: nenhuma das
@@ -82,6 +86,8 @@ Sessão A escreve aqui; a coordenadora integra por cherry-pick.
   pela coordenadora para anexar à evidência.
 
 ## Bloqueios
+
+- `forms.expire-file` — ambiente/config: Edge `form-media` com `verify_jwt=true` rejeita o bearer do cron (401); deploy da correção depende do Owner.
 
 - `forms.location-answer` — massa/decisão: leitura D1 da coordenadora (17/09 14:20 BRT) mostra **0** `person_auth_links` ativos em produção — nenhuma conta `qa-*` resolve `current_person_id()`, então `require_forms_actor` nunca encontra participação (criar membership pela tela não resolve). Exige a primeira conta com vínculo pessoa↔auth: `qa-r15-responsavel@coelo.me` (fixture AP-1 do B′, aplicada pelo Owner) + incluir essa pessoa na audiência do form `4555ba07…` pela tela e responder pelo deep link. Tudo o mais está pronto (ocorrência `open` de hoje `7256b047…`, pergunta Local com a opção "[R04-QA] Local Sala Azul").
 - (auth resolvido por decisão E10.)
