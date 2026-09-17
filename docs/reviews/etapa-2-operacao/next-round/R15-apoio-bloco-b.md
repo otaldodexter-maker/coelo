@@ -128,4 +128,4 @@ Nenhuma pergunta pendente.
 
 | AP | Fatia do B | Recebido | Entrega | Estado |
 |---|---|---|---|---|
-| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue**; produção pendente da conta Auth (Owner) e do rito (B ou B′) |
+| AP-1 | 2 — massa `QA R15` (E2): vínculos do responsável | `bcf47d636` (10:2x BRT, relé da coordenadora) | (b) commit `6401cace9` (`git cherry-pick 6401cace9`): migration `20260917110000_qa_r15_guardian_fixture_v1` + pgTAP 22/22 + evidência | **entregue e aplicada pelo B**: cherry-pick `6b06a3381`, migration em produção como **lote 80** (`ded7c006f`); execução da função aguarda a conta Auth do Owner (em produção respondeu `P0002 qa_auth_user_missing`, fail-closed como projetado) |
