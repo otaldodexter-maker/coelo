@@ -1184,5 +1184,18 @@
       "superseded": 12,
       "patch-equivalent": 16
     }
+  },
+  "execution": {
+    "executedAt": "2026-09-17T16:09:33-03:00",
+    "deletedRemoteBranches": 97,
+    "deletedRemoteTags": 19,
+    "deletedLocalBranches": 105,
+    "removedWorktrees": 11,
+    "remainingRemoteRefs": [
+      "dev"
+    ],
+    "finalBundle": "C:\\Users\\adrie\\Documents\\Coelo-backups\\r15-fechamento\\coelo-all-refs-20260917-final.bundle",
+    "finalBundleHeads": 668,
+    "devHeadAtExecution": "91eda43aaf9e1cd4b4632f7191c9e1ea9d6b74ec"
   }
 }

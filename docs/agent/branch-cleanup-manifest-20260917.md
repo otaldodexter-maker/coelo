@@ -138,3 +138,10 @@ Regra: `merged-in-dev` (nenhum commit exclusivo), `patch-equivalent` (commits re
 | `archive/2026-09-09/codex/e2e-identidade-acessos` | `58ef983ad` | não |
 | `archive/2026-09-09/codex/pre-consolidation-wip-20260908` | `07e6e8373` | não |
 | `archive/2026-09-09/stash-etapa2-denominadores` | `2961c1a7d` | não |
+
+## Execução (17/09/2026, ~16:10 local)
+
+- Bundle final com **668 refs** gravado antes da remoção: `C:\Users\adrie\Documents\Coelo-backups\r15-fechamento\coelo-all-refs-20260917-final.bundle` (o pré-limpeza das 10:05 também foi preservado).
+- Apagadas **97 branches remotas** (todas menos `dev`) e **19 tags remotas**; 105 branches locais e todas as tags locais removidas; 11 worktrees (`r14-*`, `r15-*`) removidas após conferência de árvore limpa.
+- Estado final: `origin` tem só `dev` (`91eda43aa`); `git worktree list` mostra só a pasta principal.
+- Recuperar qualquer ref: `git fetch <bundle> refs/remotes/origin/<branch>:refs/heads/<branch>` (ou `refs/tags/<tag>`).
