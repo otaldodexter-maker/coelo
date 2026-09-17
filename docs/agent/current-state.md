@@ -16,8 +16,10 @@ audience: "team"
   fila única consolidada com **tudo o que ficou pendente de R01 a R15** (IDs
   preservados; `done` não retorna). R15 fechou no mesmo dia
   (`R15-fechamento.md`, `R15-checkpoint-20260917.md`); R12–R15 são históricos.
-- Corte de abertura (validate-trackers em `37d762976`): FE 207/232 (89,2%),
-  BE 185/219 (84,5%), E2E 184/186 (98,9%), Owner 39/53.
+- Corte após a Mesa R16 (ADR 0044; 33 ações fora do MVP → `v1`, fora dos denominadores):
+  FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53.
+  **A Etapa 2 se mede pelo E2E do MVP**; FE/BE por code review e revisão tela a tela na
+  Etapa 3 (BE em revisão quinzenal).
   Fila: 2 ação(ões) não terminal(is) (`forms.location-answer`, `agora.publish`), 14 Owner items
   abertos/parciais, 19 resíduos H, 2 itens da ADR 0038 e resíduos operacionais.
 - Produção em 17/09: lotes 75–80 (PT409 sistêmico, Chat multi-anexo, "Para você",
@@ -33,7 +35,7 @@ audience: "team"
 - Regras duráveis: PT409 (nunca 40001) para versão defasada; rito de produção por lote
   (`docs/knowledge/team/stale-version-pt409-and-production-rite.md`); busca de pessoa
   minimizada (ADR 0041 B5); conta só-responsável não abre tela (OQ-048).
-- Decisões vigentes do Owner: ADR 0038, 0039, 0040, 0041, 0042 (+ adendo E10–E14), 0043.
+- Decisões vigentes do Owner: ADR 0038, 0039, 0040, 0041, 0042 (+ adendo E10–E14), 0043, 0044 (Mesa R16).
   Não reabrir.
 - Histórico da R15: `R15-fechamento.md`, `R15-checkpoint-20260917.md`,
   `R15-execucao-paralela.md` (histórico), handoffs `R15-handoff-bloco-*.md`.

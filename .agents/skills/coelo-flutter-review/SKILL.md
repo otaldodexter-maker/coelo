@@ -61,7 +61,7 @@ fica com quem cuida da família. Registrar cada regravação na evidência com a
 suíte, o número de referências e a reexecução verde. Ver
 `references/golden-failure-triage.md`.
 
-Estado da Etapa 2 (frontend): Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`. Restam
+Estado da Etapa 2 (frontend): Após a Mesa R16 (ADR 0044, 17/09/2026): FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53 — 33 ações fora do MVP têm escopo `v1` e ficam fora dos denominadores; a Etapa 2 se mede pelo E2E do MVP e FE/BE seguem por code review e revisão tela a tela na Etapa 3. Corte anterior — Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`. Restam
 goldens fora do E4 (notice_directory, forms, invites, meal_plans, platform_users) e
 testes pré-existentes (`invite_responsive_test` procura um toggle removido na R14;
 routers do Principal). O shell do Superadmin só aceita identidade interna

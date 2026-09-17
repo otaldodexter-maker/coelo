@@ -181,7 +181,7 @@
   },
   {
     "id": "owner.r12-10",
-    "status": "partial",
+    "status": "deferred",
     "actionIds": [
       "child-safety.list"
     ],
@@ -190,7 +190,7 @@
     "e2e": "Pendente: rota real da tabela e revisão contra a Table canônica.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-9/goldens-cabecalho-global-20260916.md",
     "owner": "C0 R12",
-    "nextGate": "Revisar a tabela do diretório contra a Table canônica e capturar na rota real quando o PostgREST voltar; golden não certifica aceite.",
+    "nextGate": "Revisar a tabela do diretório contra a Table canônica e capturar na rota real quando o PostgREST voltar; golden não certifica aceite. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -354,14 +354,14 @@
   },
   {
     "id": "owner.r12-19",
-    "status": "open",
+    "status": "deferred",
     "actionIds": [],
     "fe": "Planejado R12, não implementado.",
     "be": "Contrato a verificar; conflito Principal em R12-23.",
     "e2e": "Sem nova prova.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito.",
+    "nextGate": "ADR 0041 B7: perfil transversal/funcionário no Principal vira spec própria na R15 (OQ-044). Na R14, provar somente o diretório atual (r12-20/21) sem tocar no conflito. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -429,7 +429,7 @@
   },
   {
     "id": "owner.r12-23",
-    "status": "open",
+    "status": "deferred",
     "actionIds": [
       "access-profiles.create"
     ],
@@ -438,7 +438,7 @@
     "e2e": "Sem nova prova.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14.",
+    "nextGate": "ADR 0041 B7: transferido para spec própria na R15 (OQ-044). Não executar na R14. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -546,7 +546,7 @@
   },
   {
     "id": "owner.r12-29",
-    "status": "partial",
+    "status": "deferred",
     "actionIds": [
       "health-care.create",
       "health-care.edit",
@@ -557,7 +557,7 @@
     "e2e": "verified-e2e das ações; aceite central ainda pendente.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base.",
+    "nextGate": "ADR 0041 A2/§5: não aceito ainda — Owner quer prova com mais registros e redesenhou o contrato (wizard Alimentos × Restrições, nome de lista categorizada, reordenar, \"O que fazer se consumido?\"). Spec para R15; coleção + limite 100 já em produção são a base. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -567,7 +567,7 @@
   },
   {
     "id": "owner.r12-30",
-    "status": "partial",
+    "status": "deferred",
     "actionIds": [
       "health-care.create",
       "health-care.edit",
@@ -578,7 +578,7 @@
     "e2e": "verified-e2e das ações; aceite central ainda pendente.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-2/block-d-20260915.md",
     "owner": "C0 R12",
-    "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15.",
+    "nextGate": "ADR 0041 A2/§5: idem r12-29 para orientações de cuidado (lista pré-definida, reordenar). Spec para R15. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -891,7 +891,7 @@
   },
   {
     "id": "owner.r12-46",
-    "status": "partial",
+    "status": "deferred",
     "actionIds": [
       "account.profile"
     ],
@@ -900,7 +900,7 @@
     "e2e": "E2E verified-e2e: reload e nova sessão veem a foto do R2; remoção relida.",
     "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
     "owner": "C0 R12",
-    "nextGate": "Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403.",
+    "nextGate": "Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -1028,14 +1028,14 @@
   },
   {
     "id": "owner.r12-53",
-    "status": "open",
+    "status": "deferred",
     "actionIds": [],
     "fe": "Não iniciada; condição de abertura não atendida.",
     "be": "Não iniciado.",
     "e2e": "Pendente; transferência documental não certifica execução.",
     "evidence": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
     "owner": "C0 R12",
-    "nextGate": "Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema.",
+    "nextGate": "Não promover `institutions.status` ou `institutions.locations-map` na R14: estão fora do MVP/escopo ativo. OQ-034 (Locais com mapa por imagem) fica preparado para a R15, sem abrir outro macrotema. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

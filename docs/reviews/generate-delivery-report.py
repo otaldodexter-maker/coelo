@@ -227,6 +227,10 @@ def main() -> None:
     evidence = sorted(value for value in evidence if path_exists(value))
 
     def count(field: str, value: str) -> int:
+        # ações de escopo v1 (Mesa R16, ADR 0044) ficam fora dos denominadores FE/BE
+        return sum(1 for action in actions if action.get(field) == value and action.get("scope") != "v1")
+
+    def count_all(field: str, value: str) -> int:
         return sum(1 for action in actions if action.get(field) == value)
 
     def metric(done: int, total: int) -> str:

@@ -36,6 +36,14 @@ fora do trabalho corrente do MVP.
 
 > Fila viva desde 17/09/2026: `next-round/R16-pendencias.md` (R12–R15 congeladas).
 
+## Snapshot de 17/09 — Mesa R16 (ADR 0044): percentuais do MVP
+
+O Owner decidiu que a Etapa 2 se mede pelo **E2E do MVP** e mandou as 33 ações fora do
+MVP para a **V1** (escopo `v1`, fora dos denominadores FE/BE). **Percentuais canônicos
+atuais**: FE **198/199 (99,5%)**, BE **185/186 (99,5%)**,
+E2E **184/186 (98,9%)**, Owner 39/53 (7 na R16, 7 na Etapa 3). FE/BE
+passam a code review contínuo e revisão tela a tela na Etapa 3.
+
 ## Snapshot de 17/09 — fechamento da R15 e abertura da R16
 
 A R15 fechou em `37d762976` (`next-round/R15-fechamento.md`, ADR 0043): FE 207/232

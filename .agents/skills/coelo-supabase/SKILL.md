@@ -80,7 +80,7 @@ por `functions list`. Autorização de produção é nominal do Owner por lote; 
 classificador do executor pode negar `db query --linked` numa sessão e permitir
 noutra — nunca contornar, registrar o comando no handoff.
 
-Estado da Etapa 2 (backend): Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`
+Estado da Etapa 2 (backend): Após a Mesa R16 (ADR 0044, 17/09/2026): FE 198/199 (99,5%), BE 185/186 (99,5%), E2E 184/186 (98,9%), Owner 39/53 — 33 ações fora do MVP têm escopo `v1` e ficam fora dos denominadores; a Etapa 2 se mede pelo E2E do MVP e FE/BE seguem por code review e revisão tela a tela na Etapa 3. Corte anterior — Corte da R16 (17/09/2026, `dev` `37d762976`): FE 207/232, BE 185/219, E2E 184/186, Owner 39/53 (R15: +18 FE, +13 BE, +22 E2E, +18 Owner num dia). Fila vigente: `R16-pendencias.md`
 (ADR 0043). Lotes 75–80 em produção e Edges `chat-media`, `child-safety-media` v2,
 `meal-plan-media`, `meal-plan-image-cleanup`, `now-media`, `form-media` v23. Edge que
 recebe o bearer do pg_cron precisa de `verify_jwt = false` e validar o bearer no

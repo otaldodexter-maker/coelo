@@ -36,7 +36,7 @@ function applyDeltas(data, deltas) {
     const index = layers.indexOf(entry.camada);
     if (index < 0) throw new Error('camada invalida em ' + entry.action_id + ': ' + entry.camada);
     if (entry.escopo) {
-      if (!['mvp', 'gate-formal-mvp', 'flutter-only', 'deferred-post-mvp'].includes(entry.escopo)) {
+      if (!['mvp', 'gate-formal-mvp', 'flutter-only', 'deferred-post-mvp', 'v1'].includes(entry.escopo)) {
         throw new Error('escopo invalido em ' + entry.action_id + ': ' + entry.escopo);
       }
       action.scope = entry.escopo;
@@ -64,21 +64,22 @@ function applyDeltas(data, deltas) {
 
 function headerFields(data) {
   const actions = data.actions;
-  const be = actions.filter(a => a.backendStatus !== 'not-applicable');
+  const fe = actions.filter(a => a.scope !== 'v1');
+  const be = actions.filter(a => a.backendStatus !== 'not-applicable' && a.scope !== 'v1');
   const integrated = actions.filter(a => a.integratedStatus !== 'flutter-only');
   const active = integrated.filter(a => a.scope === 'mvp');
   const formal = integrated.filter(a => a.scope === 'gate-formal-mvp');
-  const counts = { mvp: 0, 'gate-formal-mvp': 0, 'flutter-only': 0, 'deferred-post-mvp': 0 };
+  const counts = { mvp: 0, 'gate-formal-mvp': 0, 'flutter-only': 0, 'deferred-post-mvp': 0, v1: 0 };
   for (const a of actions) counts[a.scope]++;
   data.counts = counts;
   data.layerCounts = {
-    frontendApplicable: actions.length,
+    frontendApplicable: fe.length,
     backendApplicable: be.length,
     integratedActiveApplicable: active.length,
     backendNotApplicable: actions.length - be.length,
     integratedNotApplicable: actions.length - integrated.length,
   };
-  const completed = actions.filter(a => a.frontendStatus === 'verified').length;
+  const completed = fe.filter(a => a.frontendStatus === 'verified').length;
   const beCompleted = be.filter(a => a.backendStatus === 'done').length;
   const e2eCompleted = active.filter(a => a.integratedStatus === 'verified-e2e').length;
   return {
@@ -91,9 +92,10 @@ function headerFields(data) {
       backend_applicable_action_count: be.length,
       formal_mvp_gate_action_count: counts['gate-formal-mvp'],
       deferred_post_mvp_action_count: counts['deferred-post-mvp'],
+      v1_action_count: counts.v1,
       flutter_only_action_count: counts['flutter-only'],
     },
-    summary: 'Conclusão certificada no inventário: Front-end ' + completed + '/' + actions.length +
+    summary: 'Conclusão certificada no inventário: Front-end ' + completed + '/' + fe.length +
       ', backend ' + beCompleted + '/' + be.length + ' ações aplicáveis e integração ' +
       e2eCompleted + '/' + active.length + ' ativas (também ' + e2eCompleted + '/' +
       (active.length + formal.length) + ' incluindo o gate formal)',

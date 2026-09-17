@@ -8,8 +8,8 @@ const terminals = ['verified', 'done', 'verified-e2e'];
 const common = ['pending-verification', 'audited', 'fail-closed', 'blocked-decision', 'blocked-environment', 'local-green', 'regressed'];
 const states = [
   new Set([...common, 'verified']),
-  new Set([...common, 'remote-green', 'done', 'not-applicable', 'deferred-post-mvp', 'gate-formal-mvp']),
-  new Set([...common, 'blocked-flutter', 'blocked-supabase', 'blocked-backend', 'ready-for-e2e', 'verified-e2e', 'flutter-only', 'deferred-post-mvp', 'gate-formal-mvp']),
+  new Set([...common, 'remote-green', 'done', 'not-applicable', 'deferred-post-mvp', 'gate-formal-mvp', 'v1']),
+  new Set([...common, 'blocked-flutter', 'blocked-supabase', 'blocked-backend', 'ready-for-e2e', 'verified-e2e', 'flutter-only', 'deferred-post-mvp', 'gate-formal-mvp', 'v1']),
 ];
 
 function validate(data, trackers) {
@@ -18,7 +18,7 @@ function validate(data, trackers) {
   const ids = actions.map(a => a.id);
   assert.equal(new Set(ids).size, ids.length, 'Duplicate action IDs');
   assert.equal(trackers.length, 3, 'Three trackers required');
-  const counts = { mvp: 0, 'gate-formal-mvp': 0, 'flutter-only': 0, 'deferred-post-mvp': 0 };
+  const counts = { mvp: 0, 'gate-formal-mvp': 0, 'flutter-only': 0, 'deferred-post-mvp': 0, v1: 0 };
   for (const a of actions) {
     assert(Object.hasOwn(counts, a.scope), 'Unknown scope: ' + a.id);
     counts[a.scope]++;
@@ -26,7 +26,7 @@ function validate(data, trackers) {
     const clientOnly = a.scope === 'flutter-only' || ['account.settings', 'account.theme'].includes(a.id);
     assert.equal(a.backendStatus === 'not-applicable', clientOnly, 'Backend applicability: ' + a.id);
     assert.equal(a.integratedStatus === 'flutter-only', clientOnly, 'E2E applicability: ' + a.id);
-    if (['gate-formal-mvp', 'deferred-post-mvp'].includes(a.scope)) {
+    if (['gate-formal-mvp', 'deferred-post-mvp', 'v1'].includes(a.scope)) {
       assert.equal(a.backendStatus, a.scope, 'Backend scope state: ' + a.id);
       assert.equal(a.integratedStatus, a.scope, 'E2E scope state: ' + a.id);
     }
@@ -45,19 +45,20 @@ function validate(data, trackers) {
     });
   }
   assert.deepEqual(data.counts, counts, 'Scope counts');
-  const be = actions.filter(a => a.backendStatus !== 'not-applicable');
+  const fe = actions.filter(a => a.scope !== 'v1');
+  const be = actions.filter(a => a.backendStatus !== 'not-applicable' && a.scope !== 'v1');
   const integrated = actions.filter(a => a.integratedStatus !== 'flutter-only');
   const active = integrated.filter(a => a.scope === 'mvp');
   const formal = integrated.filter(a => a.scope === 'gate-formal-mvp');
   assert.deepEqual(data.layerCounts, {
-    frontendApplicable: ids.length, backendApplicable: be.length,
+    frontendApplicable: fe.length, backendApplicable: be.length,
     integratedActiveApplicable: active.length, backendNotApplicable: ids.length - be.length,
     integratedNotApplicable: ids.length - integrated.length,
   }, 'Layer counts');
-  const completed = actions.filter(a => a.frontendStatus === 'verified').length;
+  const completed = fe.filter(a => a.frontendStatus === 'verified').length;
   const beCompleted = be.filter(a => a.backendStatus === 'done').length;
   const e2eCompleted = active.filter(a => a.integratedStatus === 'verified-e2e').length;
-  const summary = 'Conclusão certificada no inventário: Front-end ' + completed + '/' + ids.length +
+  const summary = 'Conclusão certificada no inventário: Front-end ' + completed + '/' + fe.length +
     ', backend ' + beCompleted + '/' + be.length + ' ações aplicáveis e integração ' +
     e2eCompleted + '/' + active.length + ' ativas (também ' + e2eCompleted + '/' +
     (active.length + formal.length) + ' incluindo o gate formal)';
@@ -66,7 +67,7 @@ function validate(data, trackers) {
     active_mvp_action_count: counts.mvp, active_e2e_action_count: active.length,
     client_only_mvp_action_count: actions.filter(a => a.scope === 'mvp' && a.backendStatus === 'not-applicable').length,
     backend_applicable_action_count: be.length, formal_mvp_gate_action_count: counts['gate-formal-mvp'],
-    deferred_post_mvp_action_count: counts['deferred-post-mvp'], flutter_only_action_count: counts['flutter-only'],
+    deferred_post_mvp_action_count: counts['deferred-post-mvp'], v1_action_count: counts.v1, flutter_only_action_count: counts['flutter-only'],
   };
   trackers.forEach((text, i) => {
     const marker = '## Matriz vigente por ação';

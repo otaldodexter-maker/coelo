@@ -1,0 +1,497 @@
+[
+ {
+  "action_id": "groups.import",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "groups.import",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "groups.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "groups.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.upload",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.upload",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.preview",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.preview",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.confirm",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.confirm",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.status",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.status",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.download",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.download",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.list",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.list",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.create",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "imports.create",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.import",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.import",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.import",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.import",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.people-export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "units.people-export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.import",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.import",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.preview",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.preview",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.confirm",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.confirm",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.status",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.status",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.download",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "profile-files.download",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "attendance.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "attendance.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "audit.export",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "audit.export",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.files",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.files",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "auth.mfa",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "auth.mfa",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "account.mfa",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "account.mfa",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "internal-users.mfa",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "internal-users.mfa",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.list",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.list",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.validate",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.validate",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.sync",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.sync",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.publish",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "catalog.publish",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "plans.assign",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "plans.assign",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.status",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.status",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.locations-map",
+  "camada": "backend",
+  "estado_proposto": "v1",
+  "escopo": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): fora do MVP, vai para a V1; sai dos denominadores FE/BE da Etapa 2.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ },
+ {
+  "action_id": "institutions.locations-map",
+  "camada": "integrated",
+  "estado_proposto": "v1",
+  "delta": "Mesa R16 (Owner, 17/09/2026, ADR 0044): V1.",
+  "evidencia": "decisions/0044-owner-decisions-mesa-r16-20260917.md"
+ }
+]
