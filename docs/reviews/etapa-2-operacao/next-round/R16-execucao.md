@@ -129,12 +129,34 @@ famílias tocadas. Depois: cabeçalho/contadores/projeção de `R16-pendencias.m
 `r16(coord): …`, `git push origin dev`, `python docs/reviews/delivery_gate.py
 docs/reviews/entrega-atual.json` (PASS).
 
+## Autorizações do Owner durante a execução (17/09, ~20:35 BRT)
+
+1. **Lote 81 autorizado nominalmente antes do rito**: a migration
+   `now_guardian_reader_v1` (leitor do Agora reconhece o responsável, spec 070) pode
+   ser aplicada em produção pelo rito pela sessão AGORA ou pela coordenadora. Se
+   o classificador negar o `supabase db query --linked` à sessão, ela registra o
+   comando no handoff e a coordenadora aplica (dump prévio + SHA-256 registrados).
+   Continua valendo: espelho + pgTAP verdes antes;
+   `20260917113000_qa_r15_guardian_membership_v1` **não** se aplica.
+2. **pgTAP da AGORA no mínimo que prova o contrato**: os 5 cenários novos da
+   suíte `now_guardian_reader_v1_test` são obrigatórios; as três suítes existentes
+   (`now_publication_removal_test`, `now_feed_removal_projection_v1_test`,
+   `happens_post_withdrawal_test`) rodam uma vez, depois da migration, no
+   espelho (sem antes/depois).
+3. **FORMS — prova por RPC vale como rota principal se o Chrome travar**: se o
+   login pelo driver travar (SwiftShader) mais de uma vez, a prova de
+   `forms.location-answer` por PostgREST com a sessão QA
+   (`form_get_occurrence_for_response`/`form_submit_response`, `r13-rpc-proof.mjs`)
+   certifica o E2E; a tela vira complemento (capturas se possível). A publicação da
+   v4 e a troca para "Uma vez" continuam pela tela do editor.
+
 ## Registro de integrações e leituras D1
 
 | Hora (BRT) | Evento | Detalhe |
 |---|---|---|
 | 20:1x | Identificação das sessões | `coelo-2a` = FORMS (dona de `r16-forms`); `coelo-5a` = AGORA (dona de `r16-agora`); `coelo-02`/`coelo-38` fora da R16 |
 | 20:2x | `.env.local` + `.temp` copiados para `r16-agora` pela coordenadora | FORMS copiou os seus |
+| 20:3x | Owner autoriza lote 81 antecipado, pgTAP mínimo na AGORA e RPC como rota principal na FORMS | seção acima; repassado às duas sessões; Docker Desktop já ligado |
 
 ## Cota e fechamento
 
