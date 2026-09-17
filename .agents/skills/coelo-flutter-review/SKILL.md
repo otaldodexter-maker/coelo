@@ -48,6 +48,19 @@ Use `coelo-ui` para distinguir família administrativa, Principal e Site.
 Use `coelo-knowledge` somente quando uma regra durável mudar; atualize a fonte
 canônica antes da projeção.
 
+Mapeamento de conflito no cliente: repositórios e mapeadores de erro tratam
+`PT409` ao lado de `40001`/`SAI_CONCURRENT_CHANGE` (o backend passou a
+responder `PT409` em 17/09/2026, lote 75). Sem isso a tela mostra o genérico
+"Não foi possível concluir a ação" em vez da mensagem de conflito com
+Recarregar; `errors.409` foi provado na rota real exatamente por essa via.
+
+Goldens (E4, ADR 0042): regravar só quando o `isolatedDiff` medido por imagem
+ficar restrito ao cabeçalho global (iniciais do avatar, canto superior
+direito); diff em filtro, rótulo ou página inteira em `text_200` não é E4 e
+fica com quem cuida da família. Registrar cada regravação na evidência com a
+suíte, o número de referências e a reexecução verde. Ver
+`references/golden-failure-triage.md`.
+
 ## Coordenação e fechamento
 
 Esta é uma skill folha. Só use `coelo-frontend-backend` quando o aceite da

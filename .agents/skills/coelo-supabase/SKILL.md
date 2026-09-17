@@ -56,6 +56,30 @@ credencial real. `ordem-de-aplicacao-producao.txt` só registra o que o ledger
 remoto confirma; uma migration versionada e não aplicada fica anotada como
 pendente, nunca dentro de um lote.
 
+Versão defasada e conflito otimista sinalizam **SQLSTATE `PT409`**, nunca
+`40001` (`serialization_failure`): o PostgREST reexecuta 40001 sem limite e
+esgota o pool (incidente de 16/09/2026, OQ-047; lote 75 de 17/09 trocou os 175
+raises restantes). Toda RPC nova usa `raise exception using errcode = 'PT409',
+detail = '<FAMÍLIA>_STALE_VERSION'` (ou o código já existente da família);
+wrappers de envelope tratam `PT409` ao lado de `23505`. Nenhuma migration
+recria uma função com 40001.
+
+Rito de produção (fixado na R15, 17/09/2026): dump de schema novo em
+`Coelo-backups` com SHA-256 → espelho Docker próprio restaurado desse dump
+(revogar `default privileges` de `postgres` em `public` antes da restauração
+para a ACL ficar igual à produção; semear catálogos, pois o dump é schema-only)
+→ pgTAP verde → `supabase db query --linked --workdir packages/coelo_database
+-f migrations/<arquivo>` (caminho relativo ao workdir) → `supabase migration
+repair --status applied <carimbo> --linked` (exige cópia em
+`supabase/migrations/`) → `migration list --linked` → lote numerado na ordem
+real de aplicação em `ordem-de-aplicacao-producao.txt` (sessões paralelas
+conferem as branches `r15/*` antes de numerar). Edge Functions:
+`supabase functions deploy <nome> --project-ref evvbomzejfijozbtgvpt --workdir
+packages/coelo_database` só após teste local; versão e `verify_jwt` conferidos
+por `functions list`. Autorização de produção é nominal do Owner por lote; o
+classificador do executor pode negar `db query --linked` numa sessão e permitir
+noutra — nunca contornar, registrar o comando no handoff.
+
 ## Coordenação e fechamento
 
 Esta é uma skill folha. Só use `coelo-frontend-backend` quando o aceite da

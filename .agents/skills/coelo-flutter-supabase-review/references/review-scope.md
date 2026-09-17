@@ -254,3 +254,33 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
   `cdp_block.dart`, que habilita `Network.setBlockedURLs` por tempo limitado e
   remove o bloqueio ao terminar. Captura, erro observado e reload devem ficar
   juntos da evidência do action_id; o bloqueio não certifica backend.
+
+## Rota real medida em 17/09/2026 (R15)
+
+- Negativa de versão defasada por PostgREST: esperado HTTP 409 `PT409` sem
+  mutação (lote 75). Antes desse lote cada tentativa abria um laço de
+  reexecução no PostgREST que sobrevivia ao 504; se uma família ainda responder
+  504 em vez de 409, parar e tratar como incidente, não repetir a chamada.
+- Execução paralela: uma worktree por sessão, criada de `dev`; `.env.local`
+  e `packages/coelo_database/supabase/.temp` (vínculo do CLI) não são herdados
+  e devem ser copiados. Filhas commitam na própria branch (`r15/bloco-*`) e
+  publicam; só a coordenadora integra em `dev`, por cherry-pick. Conflito em
+  inventário/rastreadores: manter `dev`, reaplicar o delta JSON da filha,
+  `validate-trackers`; conflito em `R15-pendencias.md`: manter as duas linhas.
+  Uma sessão duplicada na mesma worktree/espelho contamina a outra (17/09,
+  09:00–09:06): antes de escrever, conferir se a worktree já tem dono.
+- Linhas de Owner item `done` usam os tokens exatos
+  `done / verified / done / verified-e2e` no estado; detalhe da prova vai na
+  coluna de gate. O `delivery_gate` recusa `done` com camada aberta.
+- Reset de senha (E8): a allowlist de produção já contém
+  `http://127.0.0.1:8765/reset-password`; servir o build QA também em 8765
+  dispensa `config push`. A prova exige a caixa do Owner e a senha nova só ele
+  conhece; nunca registrar link/token.
+- Massa `QA R15` (E2): a tela de Pessoas cria adultos em `draft`, sem login e
+  sem `guardian_links`; conta Auth só pelo painel do Owner; vínculos por fixture
+  versionada (`app_private.seed_qa_r15_guardian_fixture_v1`, fail-closed,
+  executada como `postgres` pelo rito). Pessoa autorizada em Segurança da
+  criança precisa ser adulto `active`.
+- Aplicação em produção negada pelo classificador numa sessão não se contorna
+  por outra sessão: o Owner autoriza nominalmente o lote e a coordenadora (ou
+  ele) aplica pelo rito, com dump prévio e SHA-256 registrados.

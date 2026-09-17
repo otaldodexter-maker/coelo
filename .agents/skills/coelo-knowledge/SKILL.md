@@ -74,5 +74,11 @@ Para retomar a limpeza de artefatos, leia
 `docs/agent/artifact-cleanup-backlog-20260914.md`; não coloque inventários ou
 backups dentro desta skill.
 
+Regras duráveis nascidas na R15 (17/09/2026) — `PT409` para versão defasada,
+rito de produção por lote, busca minimizada de pessoa (B5), pessoa sem conta
+(B6) — estão projetadas em `docs/knowledge/team/stale-version-pt409-and-production-rite.md`
+e nas skills `coelo-supabase`/`coelo-flutter-review`; a fonte canônica segue
+sendo ADR 0041/0042, OQ-047 e specs 058–063.
+
 Não instale dependências silenciosamente. Python 3.10+ e PyYAML são exigidos
 pelos scripts; consulte `scripts/requirements.txt` se o runtime faltar.
