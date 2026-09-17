@@ -736,15 +736,15 @@
       "family": "institutions",
       "screen": "Instituições / Erro e retry",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
-      "fe": "Revalidar o aceite específico desta ação: Erro real, mensagem segura, retry idempotente, foco e ação Criar preservada quando autorizada.",
-      "be": "R04: envelope SAI_* das RPCs v2 de Instituicoes em producao (230001/230002/180330/180340).",
-      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R15 Bloco A: falha de transporte (RPC bloqueada) -> unavailable com retry que recupera os dados reais de producao (d0c40000...0001, Identidade visual completa) pela tela; negativa do servidor (403) continua sendo o estado denied, nao error.",
+      "fe": "R15 Bloco A rota real (17/09): com superadmin_institution_detail_v2 bloqueada por CDP, abrir QA R04 Cuidado pelo diretorio -> painel Nao foi possivel carregar / Verifique sua conexao (Tentar novamente) sem dado residual; apos desbloqueio, Tentar novamente carrega o formulario real; flyout Arquivos com aviso Arquivos em desenvolvimento (ADR 0041 A4).",
+      "be": "R15 Bloco A: contrato de envelope em producao (superadmin_institution_detail_v2 ok:true/ok:false); a falha de transporte e tratada fail-closed no cliente (unavailable) e a negativa do servidor continua 403 SAI_PERMISSION_DENIED. Nenhum SQL novo.",
+      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "ownerVisualApproval": {
@@ -755,6 +755,26 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        }
       }
     },
     {
@@ -762,15 +782,15 @@
       "family": "institutions",
       "screen": "Instituições / Acesso negado",
       "scope": "mvp",
-      "done": "R08 G1 — primeiro gate: Provocar falha/negação da ação com contexto válido e verificar ausência de vazamento/retorno.",
-      "fe": "Revalidar o aceite específico desta ação: 403, deep link, zero dado residual, teclado/foco e ausência de criação.",
-      "be": "R04: require_superadmin_internal_context nega e audita nas RPCs v2 em producao; negativas cobertas por pgTAP (institution_detail 25/25, create 26/26).",
-      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "done": "R15 Bloco A: superadmin_institution_detail_v2 em producao devolve {ok:false, error:{SAI_PERMISSION_DENIED, http_status 403}} para uuid inexistente e para id sintetico ...0099 (sem enumeracao); a tela mostra Acesso nao autorizado sem dado e mantem apos reload; id real ...0001 -> ok:true.",
+      "fe": "R15 Bloco A rota real (17/09): deep link /institutions/<uuid inexistente>/edit -> painel Acesso nao autorizado (Voltar as instituicoes) sem nenhum dado renderizado; mantido apos carga completa; tema claro.",
+      "be": "R15 Bloco A: superadmin_institution_detail_v2 em producao nega uuid inexistente e id fora de escopo com o mesmo envelope {ok:false, SAI_PERMISSION_DENIED, http_status 403} (sem enumeracao); id real -> ok:true. Nenhum SQL novo.",
+      "evidence": "evidence/etapa-2/estruturas/; evidence/etapa-2/coordenador/rodada-2026-09-07.md; evidence/etapa-2/r04-estrutura/handoff.md; docs/reviews/etapa-2-operacao/next-round/R08-backlog.md; docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
       "historicalFrontend": "audited",
       "historicalBackend": "local-green",
-      "frontendStatus": "pending-verification",
-      "backendStatus": "local-green",
-      "integratedStatus": "pending-verification",
+      "frontendStatus": "verified",
+      "backendStatus": "done",
+      "integratedStatus": "verified-e2e",
       "lastHandoffRevision": 61,
       "lastHandoffReceivedAt": "2026-09-09T08:41:13-03:00",
       "ownerVisualApproval": {
@@ -781,6 +801,26 @@
         "referencia": 1,
         "atual": 0,
         "fonte": "goldens-claro-decisoes-2026-09-10"
+      },
+      "certifications": {
+        "frontend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        },
+        "integrated": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        },
+        "backend": {
+          "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+          "revision": "900608be9",
+          "environment": "producao",
+          "recordedAt": "2026-09-17T10:35:00-03:00"
+        }
       }
     },
     {
@@ -9474,7 +9514,7 @@
       }
     }
   ],
-  "updatedAt": "2026-09-17T13:12:14.108Z",
+  "updatedAt": "2026-09-17T13:59:15.535Z",
   "closureCodeBaseline": "af73c5f9e8e70b9ae40548900fc5b8832d3e8ec0",
   "handoffSync": {
     "C01": 51,

@@ -1,0 +1,10 @@
+[
+ {"action_id":"institutions.access-denied","camada":"backend","estado_proposto":"done",
+  "delta":"R15 Bloco A: superadmin_institution_detail_v2 em producao nega uuid inexistente e id fora de escopo com o mesmo envelope {ok:false, SAI_PERMISSION_DENIED, http_status 403} (sem enumeracao); id real -> ok:true. Nenhum SQL novo.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md","revision":"900608be9","environment":"producao","recordedAt":"2026-09-17T10:35:00-03:00"}},
+ {"action_id":"institutions.error","camada":"backend","estado_proposto":"done",
+  "delta":"R15 Bloco A: contrato de envelope em producao (superadmin_institution_detail_v2 ok:true/ok:false); a falha de transporte e tratada fail-closed no cliente (unavailable) e a negativa do servidor continua 403 SAI_PERMISSION_DENIED. Nenhum SQL novo.",
+  "evidencia":"docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md",
+  "certificacao":{"evidence":"docs/reviews/evidence/etapa-2/r15-bloco-a/institutions-error-access-denied-20260917.md","revision":"900608be9","environment":"producao","recordedAt":"2026-09-17T10:35:00-03:00"}}
+]
