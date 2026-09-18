@@ -4,6 +4,20 @@ Este arquivo é um mapa curto, não um histórico. Para qualquer tarefa, comece
 pelo estado atual e siga os links; não procure requisitos em arquivos de
 `archive/`, evidências, handoffs antigos ou backups.
 
+## Modo de construção (Owner, 18/09/2026 — vale sobre todo o resto deste arquivo)
+
+- O foco é entregar para o cliente ver. Faça a mudança, rode os testes, mostre
+  a tela. Não escreva spec, ADR, evidência, handoff, checkpoint, rodada, Owner
+  item nem delta de inventário para trabalho de MVP/V1.
+- UI/UX: decida e mostre; o Owner aprova ou corrige olhando a tela.
+- Golden vermelha nunca bloqueia: a tela atual é a referência; regrave e siga.
+- Produção: migration com pgTAP verde aplica direto (`supabase db query --linked`
+  + `migration repair`). Rito completo só em code review, quando o Owner pedir.
+- Branch é `dev`. Sem worktree, branch de sessão ou cherry-pick, salvo pedido
+  explícito do Owner. Commit pequeno, push em `dev`.
+- Invariantes de segurança abaixo continuam valendo.
+- Só o que ficar pendente vai para `docs/agent/pendentes.md`, uma linha por item.
+
 ## Entrada obrigatória
 
 1. `docs/agent/current-state.md` — o que está sendo trabalhado e o que está em
@@ -84,10 +98,8 @@ mudam só por `docs/reviews/apply-tracker-delta.cjs` com certificação;
 rito por lote (`docs/knowledge/team/stale-version-pt409-and-production-rite.md`)
 com autorização nominal do Owner.
 
-Antes de concluir, rode os testes pertinentes, confira o diff e separe avanço
-local de aceite FE/BE/E2E. Quando o escopo incluir integração, publicação ou
-entrega formal, execute `python docs/reviews/delivery_gate.py
-docs/reviews/entrega-atual.json` após commit/push.
+Antes de concluir, rode os testes pertinentes e confira o diff. `delivery_gate.py`
+e os rastreadores só quando o Owner pedir revisão formal.
 
 Conhecimento do produto: `.agents/skills/coelo-knowledge/SKILL.md`. UI:
 `coelo-ui`. Aprendizado: `coelo-tutor`. Skills compartilhadas vivem em
