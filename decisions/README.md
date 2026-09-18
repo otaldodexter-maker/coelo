@@ -9,6 +9,7 @@ Ordem de precedência: `docs/agent/source-of-truth.md`.
 
 | Tema | ADR | Regra de leitura |
 | --- | --- | --- |
+| Definição do MVP e corte Etapa 3 × Etapa 4 | `0045-mvp-definition-etapa3-etapa4-20260918.md` | Etapa 2 fechada; Etapa 3 = correções, tour, acesso contextual, specs 065–069; Etapa 4 = publicação, apps próprios, push preparado, IA; importação/MFA/lojas na V1. |
 | Estado da Etapa 2 e critério de medição | `0044-owner-decisions-mesa-r16-20260917.md` | Etapa 2 medida pelo E2E do MVP; 33 ações em `v1`; destinos R16 / Etapa 3 / V1 dos 91 itens. |
 | Rodadas (R15 → R16) e repositório só com `dev` | `0043-r15-closure-r16-opening-20260917.md` | R16 vigente; R17 exige decisão do Owner. |
 | Contratos e aceites da Mesa R14/R15 | `0041-owner-decisions-r14-mesa-20260916.md`, `0042-r14-closure-r15-opening-20260916.md` | B1–B10, D1–D8, E1–E14 (PT409, massa QA R15, reset por decisão). |
@@ -66,6 +67,7 @@ Ordem de precedência: `docs/agent/source-of-truth.md`.
 | `0042-r14-closure-r15-opening-20260916.md` | Fechamento da R14 e abertura da R15 como fila única (16/09/2026) | accepted | **current** |
 | `0043-r15-closure-r16-opening-20260917.md` | Fechamento da R15 e abertura da R16 como fila única (17/09/2026) | accepted | **current** |
 | `0044-owner-decisions-mesa-r16-20260917.md` | Decisões do Owner na Mesa R16 (17/09/2026) | accepted | **current** |
+| `0045-mvp-definition-etapa3-etapa4-20260918.md` | Definição do MVP e corte entre Etapa 3 e Etapa 4 (18/09/2026) | accepted | **current** |
 
 `0001`–`0009` são a base arquitetural (monorepo, superfícies, tenancy, permissões,
 dados, Flutter/Astro, design). ADRs `superseded` permanecem como proveniência.

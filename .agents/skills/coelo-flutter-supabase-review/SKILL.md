@@ -39,7 +39,7 @@ Na Etapa 2 o app é `apps/superadmin`; Coelo (Principal) é um menu/família
 visual hospedado nele. A execução FE/BE/E2E do MVP terminou em 17/09/2026
 (FE 199/199, BE 186/186, E2E 186/186; `R16-checkpoint-20260917.md`); o que resta
 na R16 é reserva para a revisão de telas antes da Etapa 3, e a Etapa 3 (ADR 0035)
-só abre por decisão explícita do Owner. `apps/admin`, `apps/principal` e `apps/site` só entram
+só abre por decisão explícita do Owner; **em 18/09/2026 a ADR 0045 definiu o MVP e o corte Etapa 3 × Etapa 4 com regra de trabalho leve (§7)**. `apps/admin`, `apps/principal` e `apps/site` só entram
 com recorte explícito. A rodada vigente e o ambiente responsável estão sempre
 em `docs/agent/current-state.md`; não usar uma rodada histórica como fila atual.
 

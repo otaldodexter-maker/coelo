@@ -1,7 +1,7 @@
 ---
 title: "Perfis oficiais do Coelo seguidos automaticamente no Principal (OQ-032)"
 source: "docs/open-questions.md (OQ-032, 2026-09-14); ADR 0034 P35 (handle `coelo` reservado; pessoa técnica Coelo `c0e10000-…0001`); decisions/0037-* (Principal hospedado); dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.follow_links (gatilho global de follows), public.people, public.person_handles, reserved_handles (`coelo`, `coelo.me`)"
-status: "draft-for-review"
+status: "approved-for-implementation (Owner 18/09/2026, ADR 0045; Etapa 3)"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"
 lifecycle: "current"

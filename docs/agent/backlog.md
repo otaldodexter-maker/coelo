@@ -4,11 +4,19 @@ source: "docs/agent/current-state.md; decisions/0035-etapa3-mvp-contextual-acces
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-17"
+updated_at: "2026-09-18"
 audience: "team"
 ---
 
 # Horizontes de trabalho
+
+> **18/09/2026 — ADR 0045 manda.** Etapa 2 fechada. Etapa 3 = correções da
+> revisão de telas (com a reserva R16), tour, acesso contextual, specs 065–069
+> (064 e 068 aprovadas; 064 vai para a Etapa 4). Etapa 4 = publicação (host,
+> Auth, CORS, SMTP), `apps/admin`, `apps/principal`, push e app instalado
+> preparados (lojas na V1), analytics, home com IA (reavaliar → V1). Importação e
+> MFA: V1. As seções abaixo são a leitura de 17/09 e valem onde não conflitam.
+
 
 ## Trabalho atual — Etapa 2 / R16 (reserva)
 

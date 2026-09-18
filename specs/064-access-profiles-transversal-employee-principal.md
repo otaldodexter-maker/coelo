@@ -1,7 +1,7 @@
 ---
 title: "Perfil transversal e perfil de funcionário no Principal (OQ-044, owner.r12-19/23)"
 source: "docs/open-questions.md (OQ-044); decisions/0041-owner-decisions-r14-mesa-20260916.md (B7); docs/reviews/archive/rounds/R12/R12-perfis-permissoes-owner.md (R12-19, R12-23); specs/018-profiles-permissions-superadmin.md; docs/archive/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md; dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.access_profile_templates (+ _platform_permissions, _institution_permissions, _principal_capabilities), public.platform_roles, public.institution_roles, public.platform_memberships, public.institution_memberships, public.guardian_permission_capabilities"
-status: "draft-for-review"
+status: "approved-for-implementation (Owner 18/09/2026, ADR 0045; Etapa 4)"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"
 lifecycle: "current"

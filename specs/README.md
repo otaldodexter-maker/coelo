@@ -9,7 +9,7 @@ vigentes (`decisions/README.md`) mandam. `status` é a qualidade editorial;
 
 Índice gerado em 17/09/2026 a partir do frontmatter (após o fechamento FE/BE/E2E
 da Etapa 2). Specs `current` com status `draft-for-review` aguardam decisão do
-Owner; as specs 064–069 estão destinadas à Etapa 3 (ADR 0044) e a 070 foi
+Owner; as specs 065–069 são Etapa 3 e a 064 Etapa 4 (ADR 0045; 064 e 068 aprovadas em 18/09) e a 070 foi
 implementada na R16 (lote 81).
 
 ## Vigentes (`current`) — 49
@@ -58,11 +58,11 @@ implementada na R16 (lote 81).
 | `061-superadmin-child-safety-person-search.md` | Busca de pessoa autorizada no wizard de Segurança da criança (B5) | approved-for-implementation | **current** |
 | `062-superadmin-child-safety-person-without-account.md` | Pessoa autorizada sem conta no wizard de Segurança da criança (B6) | approved-for-implementation | **current** |
 | `063-superadmin-meal-plan-images-r2.md` | Imagens de Cardápios em R2 privado pelo Media Gateway (r12-38) | approved-for-implementation | **current** |
-| `064-access-profiles-transversal-employee-principal.md` | Perfil transversal e perfil de funcionário no Principal (OQ-044, owner.r12-19/23) | draft-for-review | **current** |
+| `064-access-profiles-transversal-employee-principal.md` | Perfil transversal e perfil de funcionário no Principal (OQ-044, owner.r12-19/23) | approved-for-implementation (ADR 0045, Etapa 4) | **current** |
 | `065-superadmin-care-profile-collections-redesign.md` | Perfis de cuidado — coleções redesenhadas (ADR 0041 §5, owner.r12-29/30) | approved-for-implementation | **current** |
 | `066-entity-lifecycle-activate-inactivate-delete.md` | Ciclo de vida ativar / inativar / excluir (OQ-033 opção B) e institutions.status | approved-for-implementation | **current** |
 | `067-superadmin-locations-map-image.md` | Operação › Locais — mapa por imagem, mídia com visibilidade e hierarquia (OQ-034) | approved-for-implementation | **current** |
-| `068-principal-official-profiles-auto-follow.md` | Perfis oficiais do Coelo seguidos automaticamente no Principal (OQ-032) | draft-for-review | **current** |
+| `068-principal-official-profiles-auto-follow.md` | Perfis oficiais do Coelo seguidos automaticamente no Principal (OQ-032) | approved-for-implementation (ADR 0045, Etapa 3) | **current** |
 | `069-superadmin-notices-duplicate-cta-refresh.md` | Avisos — duplicar (H08), destino do CTA de Comunicação (H13) e atualização sem sumir a lista (H23) | approved-for-implementation | **current** |
 | `070-now-guardian-reader.md` | Leitor do Agora para Famílias reconhece o responsável por vínculo (OQ-048) | approved-for-implementation | **current** |
 

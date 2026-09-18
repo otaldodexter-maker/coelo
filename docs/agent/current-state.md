@@ -4,13 +4,28 @@ source: "Owner em 2026-09-17 (ADR 0043, ADR 0044, Foco da R16, fechamento da exe
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-17"
+updated_at: "2026-09-18"
 audience: "team"
 ---
 
 # Estado atual
 
-## Agora (17/09/2026, noite)
+## Agora (18/09/2026)
+
+- **Etapa 2 fechada; foco no MVP inteiro (ADR 0045).** O Owner dividiu o que
+  falta em **Etapa 3** (correções da revisão tela a tela com a reserva R16, tour,
+  acesso contextual de funcionários, specs 065–069) e **Etapa 4** (publicação,
+  `apps/admin`, `apps/principal` com spec 064, push preparado, analytics, IA).
+  Importação, MFA e lojas: V1. Regra de trabalho leve da Etapa 3 na ADR 0045 §7.
+- Em 18/09 a Sessão RESERVA fechou owner.r12-04/05/06/08/33/49 (Owner 45/53),
+  lotes **82 e 83** em produção (sino v2 com responsável, Celular E.164, fixtures
+  QA R15, `can_remove` segue a RPC), 21 testes funcionais corrigidos (0 vermelhos
+  funcionais; só goldens). "Publicar lançamento" fica no Histórico (spec 052 §3).
+- Sessão TOUR em execução (tour do menu e cabeçalho, `R16-prompt-tour-20260918.md`).
+- Próximo: o Owner abre o app e monta o bloco de notas da revisão de telas; as
+  correções seguem a regra de trabalho da Etapa 3.
+
+## Estado de 17/09/2026 (noite, histórico)
 
 - **Etapa 2 do MVP concluída em FE/BE/E2E**: FE 199/199 (100%), BE 186/186
   (100%), E2E 186/186 (100%), provados na rota real em produção
@@ -29,7 +44,7 @@ audience: "team"
   Owner, com proposta consolidada (escopo, ordem, dependências, aceites,
   estimativa). O que já está predefinido e o que falta decidir estão em
   `backlog.md`.
-- Produção em 17/09: lotes 75–81 aplicados; Edges `chat-media`,
+- Produção: lotes 75–83 aplicados (82/83 em 18/09); Edges `chat-media`,
   `child-safety-media` v2, `meal-plan-media`, `meal-plan-image-cleanup`,
   `now-media`, `form-media` v23. Conta `qa-r15-responsavel@coelo.me` (responsável
   ativa com 2 crianças, sem membership — OQ-048). Candidato
@@ -44,7 +59,7 @@ audience: "team"
   (OQ-048); leitor do Agora reconhece responsável por vínculo
   (`docs/knowledge/team/agora-guardian-reader-without-membership.md`).
 - Decisões vigentes do Owner: ADR 0038, 0039, 0040, 0041, 0042 (+ adendo
-  E10–E14), 0043, 0044. Não reabrir.
+  E10–E14), 0043, 0044, **0045**. Não reabrir.
 
 ## Fonte da fila atual
 

@@ -268,7 +268,7 @@ recebem declaração e evidências próprias quando fizerem parte do pedido.
   contornar; trocar um agendamento "Diário" para "Uma vez" não cancela ocorrências já
   geradas (`form-diario`); o cron `coelo-forms-occurrences` (*/5) reconcilia a audiência
   de ocorrência nova — esperar o tick antes de responder.
-- Etapa 3 só abre por decisão explícita do Owner (ADR 0035), após a revisão de telas.
+- Etapa 3 só abre por decisão explícita do Owner (ADR 0035), após a revisão de telas. Em 18/09/2026 a ADR 0045 definiu o MVP, o corte Etapa 3 × Etapa 4 e a regra de trabalho leve da Etapa 3 (§7).
 
 ## Corte da R16 (17/09/2026, histórico)
 

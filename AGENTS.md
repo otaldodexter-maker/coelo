@@ -14,7 +14,15 @@ pelo estado atual e siga os links; não procure requisitos em arquivos de
 4. A spec (`specs/README.md`), a ADR (`decisions/README.md`), o contrato ou a
    skill apontada pelo índice.
 
-## Estado em 17/09/2026
+## Estado em 18/09/2026
+
+- **ADR 0045 (18/09)**: Etapa 2 fechada; MVP = Etapa 3 (correções da revisão
+  de telas com a reserva R16, tour, acesso contextual, specs 065–069) + Etapa 4
+  (publicação, `apps/admin`, `apps/principal`/spec 064, push preparado,
+  analytics, IA). Importação, MFA e lojas: V1. Regra de trabalho leve da Etapa 3
+  em ADR 0045 §7. Lotes 82–83 em produção; Owner 45/53.
+
+### Leitura de 17/09/2026 (histórico)
 
 - **Etapa 2 do MVP: FE 199/199, BE 186/186, E2E 186/186 (100%)**, provados na
   rota real em produção (`docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md`).
