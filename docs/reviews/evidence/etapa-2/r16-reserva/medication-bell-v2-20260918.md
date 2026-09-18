@@ -37,15 +37,22 @@ ações seguintes foram pela tela). A responsável da criança é `qa-r15-respon
 | Sino das seis identidades internas `qa-r06-*` (mesma leitura) | 0 itens do plano — a atriz nunca se notifica; as demais são pessoas de serviço | — |
 | Leitura (só leitura, `db query --linked`) dos destinatários gravados para os 3 eventos | apenas "QA R15 Responsavel" (`is_guardian true`, sem membership) | — |
 
-## 3. Limite da prova: admin da unidade e educador da turma
+## 3. Admin da unidade e educador da turma — lote 83 (autorizado pelo Owner em 18/09)
 
-As 11 memberships ativas da instituição sintética QA R04 Cuidado são todas `owner/institution` de **pessoas de serviço**
-(`person_type = 'service'`: Operador interno …, Dextec SaaS), que por regra nunca são destinatárias de sino. Não existe
-pessoa adulta humana com membership de unidade/turma nesse tenant, logo o caminho "admin da unidade e educador da
-turma recebem" **não pode ser observado em produção** sem uma fixture de membership (SQL fora dos itens a–d
-autorizados) — fica como bloqueio registrado no handoff. Esse caminho está provado no espelho fiel (pgTAP v2 27/27,
-v1 29/29) e é o mesmo predicado da v1, apenas com a exclusão de família.
+O tenant sintético não tinha pessoa humana de equipe (as 11 memberships eram pessoas de serviço). O Owner autorizou a
+fixture: `20260918170000_qa_r15_care_staff_fixture_v1` (lote 83, 16:13 UTC; dump prévio `7968c13a`; pgTAP
+`qa_r15_care_staff_fixture_v1_test` **14/14**) criou "QA R15 Admin Unidade" (`086a70e1…`, `institution_admin/unit` na
+Unidade QA R04) e "QA R15 Educadora Turma" (`bf68aea5…`, `teacher/group` na Turma QA R04 Estrutura), adultas ativas, sem
+conta de login (contas são criadas só pelo Owner na Auth Admin).
 
-**Resultado:** `owner.r12-33` → **partial** (FE verified: sino lê os eventos; BE done: v2 em produção no lote 82;
-E2E: responsável observada em produção; admin/educador só no espelho por falta de massa humana de equipe).
-`recipients-bug` → concluído (lote 82). Nenhum `action_id` muda.
+| Passo | Resultado |
+|---|---|
+| Editar plano `2ecf267e` (dose 7 → **8 ml**, `superadmin_medication_plan_save`, mesmo contrato da tela) | `version 3`, `management_version 3`; evento `medication.plan.updated` 16:14:21 UTC |
+| Registrar dose (`superadmin_medication_plan_record_evidence`, `refused`) | evidência `a96ac881…`; evento `medication.dose.recorded` 16:14:22 UTC |
+| Destinatários gravados em produção (leitura como postgres) para os dois eventos | **QA R15 Admin Unidade** (`institution_admin/unit`), **QA R15 Educadora Turma** (`teacher/group`) e **QA R15 Responsavel** (guardian) — cada uma em `plan.updated` e `dose.recorded`; a atriz (`qa-r06-operacoes`) ausente |
+
+Leitura pelo sino com as sessões da admin/educadora não é possível sem conta de login (não criada; fora da convenção do
+projeto); a leitura por policies está provada no pgTAP v2 e, em produção, pela responsável.
+
+**Resultado:** `owner.r12-33` → **done** (FE verified; BE done — lotes 82 e 83; E2E: os três destinatários observados em
+produção, responsável também pelo sino via RLS). `recipients-bug` concluído.

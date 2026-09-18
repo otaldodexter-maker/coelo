@@ -630,7 +630,7 @@
   },
   {
     "id": "owner.r12-33",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "medication.create",
       "medication.edit",
@@ -638,10 +638,10 @@
     ],
     "fe": "verified",
     "be": "done",
-    "e2e": "verified-e2e (responsável)",
+    "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/medication-bell-v2-20260918.md",
     "owner": "C0 R12",
-    "nextGate": "18/09 (Sessão RESERVA): v1 em produção desde o lote 74; **v2 `20260918120000` aplicada no lote 82** (E7 = b: responsável destinatária; `recipients-bug` corrigido nos dois leitores); pgTAP 27/27 + 29/29 no espelho fiel. Rota real: plano `2ecf267e` (QA R15 Crianca 1) editado (v2, dose 7) e dose registrada pela tela; `qa-r15-responsavel` vê `plan.created`, `plan.updated` e `dose.recorded` no sino (PostgREST, OQ-048). **Resíduo:** admin da unidade / educador da turma não observáveis em produção — as 11 memberships do tenant QA R04 Cuidado são pessoas de serviço (nunca destinatárias); exigiria fixture de membership (SQL fora da autorização a–d). Decisão do Owner: aceitar a prova do espelho ou autorizar a fixture.",
+    "nextGate": "Concluído 18/09 (Sessão RESERVA): v1 em produção desde o lote 74; v2 `20260918120000` no lote 82 (E7 = b + `recipients-bug`); fixture de equipe `20260918170000` no lote 83 (autorizada pelo Owner). Rota real: plano `2ecf267e` editado (v2, v3) e doses registradas; responsável vê `created/updated/dose` no sino (PostgREST); admin da unidade e educadora da turma gravadas como destinatárias de `plan.updated` e `dose.recorded` em produção (sem conta de login: leitura por RLS provada no pgTAP 27/27).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

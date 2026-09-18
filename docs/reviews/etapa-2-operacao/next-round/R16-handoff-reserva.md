@@ -40,7 +40,7 @@ As migrations `20260916180000`, `20260916183000` e `20260916190000` estão em pr
 | 9 | `5de8028bf` | 5 (D7) | 21 testes funcionais vermelhos corrigidos: 19 de referência velha (teste) e 2 regressões reais (código): `directory_composition_test` (renomear `_CallsDirectory/_CallsTable` → `_CallsSection/_CallsRows` no Histórico) e `superadmin_circular_pages_test` (`CoeloCreateAction` tile estourava 16 px a 375/200%: rótulo `Flexible` em `coelo_ui_core` + altura mínima no compositor). Goldens intocados. |
 | 10 | (este) | fechamento | Handoff final, `testes-vermelhos` na fila, censo antes/depois. |
 
-Owner: **44/53** (r12-04, r12-05, r12-06, r12-08, r12-49 `done` em 18/09; eram 39/53). `validate-trackers.cjs` **PASS**
+Owner: **45/53** (r12-04, r12-05, r12-06, r12-08, r12-33, r12-49 `done` em 18/09; eram 39/53). `validate-trackers.cjs` **PASS**
 a cada commit. Nenhum `action_id` mudou de estado (todos já `verified-e2e`); nenhum delta de inventário.
 
 ## Censo `flutter test` (apps/superadmin)
@@ -56,7 +56,7 @@ a cada commit. Nenhum `action_id` mudou de estado (todos já `verified-e2e`); ne
 ## Avisos para a coordenadora
 
 1. **Lote 82 aplicado em produção** (autorização nominal do Owner de 18/09, itens a/b/c + ajuste de projeção D6). Item
-   (d) não teve SQL. Candidato `20260917113000_qa_r15_guardian_membership_v1` continua **não aplicado**. Espelho do CLI:
+   (d) não teve SQL. **Lote 83** (fixture de equipe) aplicado às 16:13 UTC. Candidato `20260917113000_qa_r15_guardian_membership_v1` continua **não aplicado**. Espelho do CLI:
    `-Mode Prepare` falha pelo drift conhecido (226 ≠ 209) mas copia as migrations; `-Mode Clean` executado (árvore limpa).
 2. **Massa de produção alterada** (tela/RPC com identidade QA, além da fixture do lote): rotina aplicada `8b317b01` (escopo
    instituição QA R04 Cuidado, **Ativa**); chamada `98f6796c` (v6, 2 presentes/1 falta, snapshot); chamada nova `de250fe0`
@@ -64,8 +64,7 @@ a cada commit. Nenhum `action_id` mudou de estado (todos já `verified-e2e`); ne
    Ibuprofeno R16" (QA R15 Crianca 1, v2 dose 7 ml, 1 dose administrada); story do Agora `fcfe2865` publicada e
    **removida** (purga enfileirada; asset `15b914e7` segue o ciclo); Celular de `qa-r06-operacoes` = `+5521987654321`;
    crianças "QA R15 Crianca 3/4" (`b2843b9d`, `3500fe7b`) na Turma QA R06 Transferencia.
-3. **Decisão do Owner pendente (não tomada):** "Publicar lançamento" no Histórico › Lançamentos de rotina ou de volta em
-   Rotinas (spec 052 §3).
+3. "Publicar lançamento": **decidido** em 18/09 (delegação do Owner) — fica no Histórico › Lançamentos de rotina (spec 052 §3).
 4. **Formato do Celular para spec/ADR (via coordenadora):** E.164 brasileiro `+55DDD9NNNNNNNN` no servidor; máscara
    `+55 (DD) 9NNNN-NNNN` na exibição; inválido → 22023 `invalid_account_mobile_phone`.
 5. **Resíduos UX/FE sem action_id (para a revisão de telas):** editor de Rotina aplicada fica em
@@ -81,14 +80,16 @@ a cada commit. Nenhum `action_id` mudou de estado (todos já `verified-e2e`); ne
 7. Os três arquivos não rastreados da coordenadora (`R16-prompt-reserva-20260918.md`, `R16-levantamento-…`,
    `MVP-definicao-…`) foram copiados para a worktree só para leitura e **não** entram nos commits.
 
+## Decisões do Owner recebidas após o fechamento (18/09, tarde) — executadas
+
+| # | Commit | Conteúdo |
+|---|---|---|
+| 11 | `0bd896ecb` + `9ed7dedac` | "Publicar lançamento" **decidido** (Owner delegou): fica no Histórico › Lançamentos de rotina — spec 052 §3 e linha de r12-04 atualizadas. 8 goldens da Conta **regravadas** (profile ×4: máscara do Celular; settings ×4: só o avatar do cabeçalho, E4); `test/features/account` 139/139. |
+| 12 | (este) | **Lote 83** (fixture de equipe autorizada): `20260918170000_qa_r15_care_staff_fixture_v1` (pgTAP 14/14; dump prévio `7968c13a`; ledger reparado/listado) executada → "QA R15 Admin Unidade" e "QA R15 Educadora Turma" (sem login). Prova: plano `2ecf267e` v3 + dose → `plan.updated` e `dose.recorded` gravados para admin, educadora e responsável. `owner.r12-33` → **done**; Owner **45/53**. |
+
 ## Bloqueios (com causa)
 
-- **`owner.r12-33` (sino v2) — observação do admin da unidade e do educador da turma em produção:** as 11 memberships
-  ativas do tenant sintético QA R04 Cuidado são pessoas de serviço (`person_type = 'service'`), que por regra nunca são
-  destinatárias; não existe pessoa humana de equipe para receber o sino. Provar esse caminho em produção exige uma
-  fixture de membership (SQL fora dos itens a–d autorizados) → **parado, sem contornar**. O caminho está provado no
-  espelho fiel (pgTAP 27/27) e a responsável foi observada em produção (E7 = b). Decisão do Owner: aceitar a prova do
-  espelho ou autorizar a fixture.
+- Nenhum. (O bloqueio de r12-33 foi resolvido pela fixture autorizada, lote 83.)
 
 ## Sobra (não executado nesta sessão)
 
@@ -99,7 +100,7 @@ a cada commit. Nenhum `action_id` mudou de estado (todos já `verified-e2e`); ne
 
 ## Contadores
 
-`node docs/reviews/validate-trackers.cjs` **PASS** — FE 199/199, BE 186/186, E2E 186/186; Owner **44/53**.
+`node docs/reviews/validate-trackers.cjs` **PASS** — FE 199/199, BE 186/186, E2E 186/186; Owner **45/53**.
 
 ## Censo depois
 

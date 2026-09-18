@@ -415,3 +415,14 @@
 20260918130000_account_profile_mobile_phone_e164_v1.sql
 20260918123000_qa_r15_attendance_group_fixture_v1.sql
 20260918140000_now_feed_can_remove_follows_rpc_v1.sql
+# lote 83 (18/09 16:13 UTC) - R16 Sessao RESERVA (branch r16/reserva-20260918; autorizacao do Owner em 18/09 em resposta ao
+# bloqueio de owner.r12-33 do R16-handoff-reserva.md: "autorizar a fixture"). Dump previo
+# Coelo-backups/schema-producao-20260918-r16-reserva-lote83-before.sql (SHA-256 7968c13a). Funcao privada
+# app_private.seed_qa_r15_care_staff_fixture_v1 (sem grants a clientes; idempotente; fail-closed a qa-r04-* e nomes "QA R15");
+# pgTAP qa_r15_care_staff_fixture_v1_test 14/14 no espelho mirror-r16-reserva (aplicada 2x). EXECUTADA uma vez em 18/09 16:13:59 UTC
+# como postgres: pessoas adultas ativas "QA R15 Admin Unidade" (086a70e1, membership 08fad04d institution_admin/unit na Unidade QA R04)
+# e "QA R15 Educadora Turma" (bf68aea5, membership f3691168 teacher/group na Turma QA R04 Estrutura), sem conta de login.
+# Prova em producao logo apos (16:14 UTC): plano 2ecf267e editado (v3) e dose registrada -> medication.plan.updated e
+# medication.dose.recorded gravados para admin da unidade, educadora da turma e responsavel (audiencia v2, lote 82).
+# Ledger 20260918170000 reparado e listado local+remoto; candidato 20260917113000 continua NAO aplicado.
+20260918170000_qa_r15_care_staff_fixture_v1.sql
