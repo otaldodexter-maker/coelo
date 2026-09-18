@@ -385,3 +385,33 @@
 # list_visible_now_publications usa now_reader_actor (authenticated execute), now_actor intacto; ledger 20260917203000 reparado
 # (`migration repair --status applied`) e listado local+remoto. Autorizacao nominal do Owner em R16-execucao.md (17/09 ~20:35 BRT).
 20260917203000_now_guardian_reader_v1.sql
+# lote 82 (18/09 14:45-14:46 UTC) - R16 Sessao RESERVA (branch r16/reserva-20260918; decisoes D2/D4/D5/D6 do Owner em 18/09,
+# autorizacao nominal em docs/reviews/etapa-2-operacao/next-round/R16-prompt-reserva-20260918.md, itens a/b/c + ajuste de
+# projecao D6). Espelho coelo_mirror_r16_reserva (Coelo-backups/mirror-r16-reserva, 627xx) restaurado do dump novo
+# Coelo-backups/schema-producao-20260918-r16-reserva-before.sql (SHA-256 9bb98a47), ACL fiel; dump previo do lote
+# schema-producao-20260918-r16-reserva-lote82-before.sql byte a byte identico (mesmo SHA). Cada migration aplicada 2x no
+# espelho sem erro e por `supabase db query --linked -f` em producao, uma a uma, na ordem abaixo; ledger reparado
+# (`migration repair --status applied`) e listado local+remoto; candidato 20260917113000 continua NAO aplicado.
+# (a) medication_in_app_notifications_v2 (ADR 0042 E7 = b; recipients-bug): recipients_v2 inclui o responsavel por
+#     guardian_links (sujeito a notify_other_guardians) e memberships guardian/student deixam de contar como equipe/educador,
+#     tambem em child_care_notification_recipients_v1 (mesma assinatura); medication_notify_v1 usa a v2; triggers intactos.
+#     pgTAP medication_in_app_notifications_v2_test 27/27, v1 29/29 (alinhada), unit_care_policies_notifications_v1 20/20.
+# (b) account_profile_mobile_phone_e164_v1 (D5): app_private.normalize_mobile_phone_e164 (pura, sem grants) e
+#     superadmin_account_profile_save_v2 grava +55DDD9NNNNNNNN e responde 22023 invalid_account_mobile_phone
+#     (detail ACCOUNT_MOBILE_PHONE_E164_REQUIRED). pgTAP account_profile_mobile_phone_e164_v1_test 22/22.
+# (c) qa_r15_attendance_group_fixture_v1 (D4): funcao privada seed_qa_r15_attendance_group_fixture_v1 (idempotente,
+#     fail-closed a qa-r04-*/turma "QA"/nomes "QA R15"); pgTAP 16/16. EXECUTADA uma vez em 18/09 ~14:47 UTC como postgres:
+#     "QA R15 Crianca 3/4" (people b2843b9d, 3500fe7b) com contexto, vinculo de unidade ativo (accepted_by Coelo Sistema) e
+#     vinculo de turma na Turma QA R06 Transferencia 1a247741 (Unidade QA R05 Transferencia cce78909); JSON de retorno em
+#     docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md.
+# (D6) now_feed_can_remove_follows_rpc_v1: list_visible_now_publications com o corpo vigente (lote 81) e so a projecao
+#     can_remove := actor_can_remove (permissao no escopo, sem exigir autoria; nenhum direito novo). pgTAP
+#     now_feed_can_remove_follows_rpc_v1_test 11/11; now_feed_removal_projection_v1 9/9; now_guardian_reader_v1 21/21.
+# Pos-verificacao em producao: recipients_v2 existe e e usada; care recipients exclui familia; normalize_e164 OK;
+# save_v2 normaliza; feed can_remove segue a RPC com now_reader_actor; funcoes privadas novas sem execute a anon/authenticated;
+# 0 ocorrencias de 40001 nas funcoes tocadas; Turma QA R06 Transferencia com 2 criancas ativas.
+# Item (d) de r12-49 nao teve SQL: review/return_gradebook ja estavam em producao (20260910180350); so prova na rota real.
+20260918120000_medication_in_app_notifications_v2.sql
+20260918130000_account_profile_mobile_phone_e164_v1.sql
+20260918123000_qa_r15_attendance_group_fixture_v1.sql
+20260918140000_now_feed_can_remove_follows_rpc_v1.sql
