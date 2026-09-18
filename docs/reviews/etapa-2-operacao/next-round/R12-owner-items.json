@@ -69,7 +69,7 @@
     "e2e": "verified-e2e",
     "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/attendance-history-snapshot-20260918.md",
     "owner": "C0 R12",
-    "nextGate": "Concluído 18/09 (Sessão RESERVA, rota real 3014 com `qa-r06-operacoes`): `20260916180000_attendance_call_history_v1` está em produção desde o lote 74 (16/09); Histórico `/attendance/history` com lista (8 chamadas), filtros (Situação Em andamento 3 / Concluídas 6), cursor por PostgREST (páginas de 3, `has_more`), abre o detalhe, reload; negativas: responsável (`qa-r15-responsavel`) → 403 42501, detalhe alheio → null, status inválido → 22023. **Decisão do Owner pendente (não tomada): onde fica \"Publicar lançamento\" (spec 052 §3).**",
+    "nextGate": "Concluído 18/09 (Sessão RESERVA, rota real 3014 com `qa-r06-operacoes`): `20260916180000_attendance_call_history_v1` está em produção desde o lote 74 (16/09); Histórico `/attendance/history` com lista (8 chamadas), filtros (Situação Em andamento 3 / Concluídas 6), cursor por PostgREST (páginas de 3, `has_more`), abre o detalhe, reload; negativas: responsável (`qa-r15-responsavel`) → 403 42501, detalhe alheio → null, status inválido → 22023. Decidido em 18/09 (Owner delegou à RESERVA): \"Publicar lançamento\" fica no Histórico › Lançamentos de rotina (spec 052 §3).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
