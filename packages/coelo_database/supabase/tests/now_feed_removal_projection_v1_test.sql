@@ -19,10 +19,12 @@ select ok(
   has_function_privilege('authenticated','public.list_visible_now_publications(uuid,uuid,uuid,integer)','EXECUTE')
   and not has_function_privilege('anon','public.list_visible_now_publications(uuid,uuid,uuid,integer)','EXECUTE'),
   'feed keeps authenticated-only execution');
+-- 18/09 (D6, 20260918140000): o feed segue a RPC — can_remove exige so a capacidade no escopo,
+-- como remove_now_publication; a autoria deixou de ser exigida na projecao.
 select ok(
   position('now.publications.remove' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0
-  and position('author_person_id=actor.person_id' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))>0,
-  'can_remove requires the remove permission and authorship (no new right; RPC stays the authority)');
+  and position('author_person_id=actor.person_id' in pg_get_functiondef('public.list_visible_now_publications(uuid,uuid,uuid,integer)'::regprocedure))=0,
+  'can_remove requires the remove permission only (no new right; RPC stays the authority; D6)');
 
 -- Fixtures.
 insert into public.people(id,person_type,first_name,last_name,display_name)
