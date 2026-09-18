@@ -83,6 +83,7 @@ Future<void> main() async {
       formsMediaReader: authScope.formsMediaReader,
       formsMediaScope: authScope.formsMediaScope,
       formsAnonymousEditSecrets: authScope.formsAnonymousEditSecrets,
+      tourStore: authScope.tourStore,
       mealPlanRepository: authScope.mealPlanRepository,
       mealPlanImageRepository: authScope.mealPlanImageRepository,
       authorizedMealPlanTenantId: authScope.authorizedMealPlanTenantId,

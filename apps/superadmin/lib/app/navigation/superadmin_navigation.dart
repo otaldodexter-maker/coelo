@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/scheduler.dart';
 import 'package:flutter/services.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
@@ -120,7 +121,12 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
       ),
       // ADR 0041 B2 (spec 052): historico de chamadas com filtros; Lancamentos
       // saiu do diretorio de Rotina diaria.
-      _leaf('attendance-history', 'Histórico', Icons.history_outlined, keywords: const ['chamadas', 'lançamentos']),
+      _leaf(
+        'attendance-history',
+        'Histórico',
+        Icons.history_outlined,
+        keywords: const ['chamadas', 'lançamentos'],
+      ),
     ]),
     _screen('daily-routine', 'Rotina diária', Icons.view_agenda_outlined, const []),
     _leaf('students', 'Acompanhamento de alunos', Icons.school_outlined),
@@ -137,12 +143,7 @@ final coeloSuperadminNavigation = <CoeloNavigationNode>[
   ]),
   _screen('operations', 'Operação', Icons.tune_outlined, [
     _screen('plans', 'Planos', Icons.loyalty_outlined, const [], availability: _developmentOnly),
-    _screen(
-      'meal-plans',
-      'Cardápios',
-      Icons.restaurant_menu_outlined,
-      const [],
-    ),
+    _screen('meal-plans', 'Cardápios', Icons.restaurant_menu_outlined, const []),
     _screen('forms', 'Formulários', Icons.dynamic_form_outlined, const []),
     _screen('import', 'Importações', Icons.upload_file_outlined, const []),
     _screen('agenda', 'Agenda', Icons.calendar_month_outlined, [
@@ -238,6 +239,31 @@ Set<String> coeloNavigationAncestors(String id) {
   return result;
 }
 
+/// Ambiente do menu pela rota atual: `/dev/...` é desenvolvimento.
+CoeloNavigationEnvironment coeloNavigationEnvironmentOf(BuildContext context) {
+  final path = GoRouter.maybeOf(context)?.routeInformationProvider.value.uri.path;
+  return path != null && path.startsWith('/dev/')
+      ? CoeloNavigationEnvironment.development
+      : CoeloNavigationEnvironment.production;
+}
+
+/// True quando o nó [id] e todos os seus ancestrais estão visíveis no menu.
+bool coeloNavigationNodeVisible(
+  String id, {
+  required CoeloNavigationEnvironment environment,
+  CoeloNavigationCapabilityCheck? canAccess,
+}) {
+  final node = coeloNavigationNodeById(id);
+  if (node == null || !node.isAvailable(environment, canAccess: canAccess)) return false;
+  for (final ancestor in coeloNavigationAncestors(id)) {
+    final ancestorNode = coeloNavigationNodeById(ancestor);
+    if (ancestorNode == null || !ancestorNode.isAvailable(environment, canAccess: canAccess)) {
+      return false;
+    }
+  }
+  return true;
+}
+
 CoeloNavigationNode? coeloNavigationNodeById(String id) {
   CoeloNavigationNode? visit(CoeloNavigationNode node) {
     if (node.id == id) return node;
@@ -255,12 +281,27 @@ CoeloNavigationNode? coeloNavigationNodeById(String id) {
   return null;
 }
 
+/// Pede ao menu expandido que revele um nó (abrindo os grupos acima dele e
+/// limpando a busca). Usado pelo tour do menu; a rolagem até o item fica com
+/// quem pediu, pela âncora `CoeloTourAnchor` de mesmo id.
+final class CoeloNavigationRevealController extends ChangeNotifier {
+  String? _pending;
+
+  String? get pending => _pending;
+
+  void reveal(String nodeId) {
+    _pending = nodeId;
+    notifyListeners();
+  }
+}
+
 class CoeloNavigationContent extends StatefulWidget {
   const CoeloNavigationContent({
     required this.collapsed,
     required this.currentDestination,
     required this.onDestinationSelected,
     this.canAccessCapability,
+    this.revealController,
     super.key,
   });
 
@@ -268,6 +309,7 @@ class CoeloNavigationContent extends StatefulWidget {
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final CoeloNavigationCapabilityCheck? canAccessCapability;
+  final CoeloNavigationRevealController? revealController;
 
   @override
   State<CoeloNavigationContent> createState() => _CoeloNavigationContentState();
@@ -285,6 +327,24 @@ class _CoeloNavigationContentState extends State<CoeloNavigationContent> {
   void initState() {
     super.initState();
     _expanded = coeloNavigationAncestors(widget.currentDestination);
+    widget.revealController?.addListener(_onReveal);
+  }
+
+  void _onReveal() {
+    final id = widget.revealController?.pending;
+    if (id == null || !mounted) return;
+    if (SchedulerBinding.instance.schedulerPhase == SchedulerPhase.persistentCallbacks) {
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onReveal());
+      return;
+    }
+    setState(() {
+      if (_searchActive) {
+        _searchController.clear();
+        _searchActive = false;
+        _expanded = {..._beforeSearch};
+      }
+      _expanded = {..._expanded, ...coeloNavigationAncestors(id)};
+    });
   }
 
   @override
@@ -312,10 +372,15 @@ class _CoeloNavigationContentState extends State<CoeloNavigationContent> {
     if (oldWidget.currentDestination != widget.currentDestination) {
       _expanded = {..._expanded, ...coeloNavigationAncestors(widget.currentDestination)};
     }
+    if (!identical(oldWidget.revealController, widget.revealController)) {
+      oldWidget.revealController?.removeListener(_onReveal);
+      widget.revealController?.addListener(_onReveal);
+    }
   }
 
   @override
   void dispose() {
+    widget.revealController?.removeListener(_onReveal);
     _routeInformationProvider?.removeListener(_onRouteInformationChanged);
     _searchController.dispose();
     _searchFocusNode.dispose();
@@ -468,13 +533,16 @@ class _CoeloNavigationContentState extends State<CoeloNavigationContent> {
             CoeloSpacing.space2,
             CoeloSpacing.space1,
           ),
-          child: CoeloSearchField(
-            key: const Key('superadmin-navigation-search'),
-            controller: _searchController,
-            focusNode: _searchFocusNode,
-            onChanged: _onSearchChanged,
-            semanticLabel: 'Buscar na navegação',
-            hintText: 'Buscar na navegação',
+          child: CoeloTourAnchor(
+            id: 'navigation-search',
+            child: CoeloSearchField(
+              key: const Key('superadmin-navigation-search'),
+              controller: _searchController,
+              focusNode: _searchFocusNode,
+              onChanged: _onSearchChanged,
+              semanticLabel: 'Buscar na navegação',
+              hintText: 'Buscar na navegação',
+            ),
           ),
         ),
         Expanded(
@@ -691,7 +759,7 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
           ? 'superadmin-navigation-section-${widget.node.id}'
           : 'superadmin-navigation-${widget.node.id}',
     );
-    return Padding(
+    final item = Padding(
       padding: EdgeInsetsDirectional.only(
         start: CoeloSpacing.space2 + (widget.level * CoeloSpacing.space3),
         bottom: CoeloSpacing.space1,
@@ -770,5 +838,8 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
         ),
       ),
     );
+    // Só a árvore (sem breadcrumb) é âncora do tour; resultados de busca não.
+    if (widget.breadcrumb != null) return item;
+    return CoeloTourAnchor(id: widget.node.id, child: item);
   }
 }

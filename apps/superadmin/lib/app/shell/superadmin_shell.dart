@@ -3,6 +3,7 @@ import 'dart:math' as math;
 
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
 import 'package:go_router/go_router.dart';
@@ -15,6 +16,8 @@ import '../../features/chat/domain/chat_repository.dart';
 import '../../features/chat/presentation/widgets/superadmin_chat_launcher.dart';
 import '../../features/support/domain/support_ticket.dart';
 import '../theme/superadmin_theme_mode_scope.dart';
+import '../tour/superadmin_menu_tour_steps.dart';
+import '../tour/superadmin_tour_store.dart';
 import 'superadmin_activity_center.dart';
 import 'superadmin_bug_report_dialog.dart';
 import 'superadmin_notice.dart';
@@ -101,6 +104,8 @@ class SuperadminShell extends StatefulWidget {
     this.frameHostedContent = false,
     this.canAccessCapability,
     this.headerProfile,
+    this.tourStore,
+    this.menuTourSteps = superadminMenuTourSteps,
     super.key,
   }) : assert(chatLauncherBottomInset >= 0);
 
@@ -115,6 +120,8 @@ class SuperadminShell extends StatefulWidget {
     this.chatRecentConversationsLoader,
     this.canAccessCapability,
     this.headerProfile,
+    this.tourStore,
+    this.menuTourSteps = superadminMenuTourSteps,
     this.frameHostedContent = false,
     this.chatLauncherBottomInset = 0,
     super.key,
@@ -184,6 +191,14 @@ class SuperadminShell extends StatefulWidget {
   final CoeloNavigationCapabilityCheck? canAccessCapability;
   final SuperadminHeaderProfile? headerProfile;
 
+  /// Preferência local "tour do menu já visto". Com store, o shell que
+  /// desenha o menu abre o tour uma vez no primeiro acesso; sem store, só
+  /// pelo botão "Fazer tour".
+  final SuperadminTourStore? tourStore;
+
+  /// Passos do tour do menu (texto em `superadmin_menu_tour_steps.dart`).
+  final List<CoeloTourStep> menuTourSteps;
+
   @override
   State<SuperadminShell> createState() => _SuperadminShellState();
 }
@@ -199,6 +214,11 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   bool _embeddedChatLauncherVisible = true;
   int _chatLauncherSuppressors = 0;
   _SuperadminShellHostScope? _hostScope;
+  final _scaffoldKey = GlobalKey<ScaffoldState>();
+  final _tourRegistry = CoeloTourAnchorRegistry();
+  final _revealController = CoeloNavigationRevealController();
+  bool _tourRunning = false;
+  bool _autoTourScheduled = false;
 
   @override
   void initState() {
@@ -241,6 +261,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
 
   @override
   void dispose() {
+    _revealController.dispose();
     _sidebarController.dispose();
     if (_ownsActivityController) {
       _activityController.dispose();
@@ -335,6 +356,108 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     ).showSnackBar(SnackBar(content: Text(result.message ?? LogoutResult.genericFailureMessage)));
   }
 
+  bool get _isNarrow => MediaQuery.sizeOf(context).width < CoeloBreakpoints.expanded.minWidth;
+
+  CoeloNavigationEnvironment get _navigationEnvironment => coeloNavigationEnvironmentOf(context);
+
+  /// Passos do shell (busca, sino, conta, botão) sempre contam; nós do menu
+  /// só quando o nó e seus ancestrais estão visíveis neste ambiente e com
+  /// esta capacidade. Passo indisponível é pulado sem aviso.
+  bool _isTourStepAvailable(CoeloTourStep step) {
+    if (superadminTourShellAnchors.contains(step.anchorId)) return true;
+    return coeloNavigationNodeVisible(
+      step.anchorId,
+      environment: _navigationEnvironment,
+      canAccess: _menuCapabilityCheck,
+    );
+  }
+
+  Future<void> _waitMotion(Duration duration) async {
+    if (_reduceMotion) return;
+    await Future<void>.delayed(duration);
+  }
+
+  /// Antes de cada passo: em tela estreita abre o drawer para os passos do
+  /// menu e fecha para os do cabeçalho; no menu, revela o nó (abrindo o grupo)
+  /// e rola até a âncora.
+  Future<void> _prepareTourStep(CoeloTourStep step) async {
+    final id = step.anchorId;
+    final inHeader = id == 'notifications' || id == 'account';
+    final scaffold = _scaffoldKey.currentState;
+    if (_isNarrow && scaffold != null) {
+      if (inHeader && scaffold.isDrawerOpen) {
+        scaffold.closeDrawer();
+        await _waitMotion(const Duration(milliseconds: 300));
+      } else if (!inHeader && !scaffold.isDrawerOpen) {
+        scaffold.openDrawer();
+        await _waitMotion(const Duration(milliseconds: 300));
+      }
+    }
+    if (!mounted) return;
+    if (!superadminTourShellAnchors.contains(id)) {
+      _revealController.reveal(id);
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
+    final anchorContext = _tourRegistry.contextOf(id);
+    if (anchorContext == null || !anchorContext.mounted) return;
+    await Scrollable.ensureVisible(
+      anchorContext,
+      alignment: 0.5,
+      duration: _reduceMotion ? Duration.zero : CoeloMotion.short,
+    );
+  }
+
+  Future<void> _startMenuTour() async {
+    if (_tourRunning || !mounted) return;
+    _tourRunning = true;
+    try {
+      if (!_isNarrow && _sidebarCollapsed) {
+        _toggleSidebar();
+        await _waitMotion(_sidebarMotionDuration);
+        if (!mounted) return;
+      }
+      final outcome = await showCoeloTour(
+        context,
+        steps: widget.menuTourSteps,
+        registry: _tourRegistry,
+        isStepAvailable: _isTourStepAvailable,
+        onPrepareStep: _prepareTourStep,
+      );
+      if (!mounted) return;
+      final scaffold = _scaffoldKey.currentState;
+      if (scaffold != null && scaffold.isDrawerOpen) scaffold.closeDrawer();
+      if (outcome != CoeloTourOutcome.unavailable) {
+        await widget.tourStore?.markMenuTour(
+          outcome == CoeloTourOutcome.completed ? 'done' : 'skipped',
+        );
+      }
+    } finally {
+      _tourRunning = false;
+    }
+  }
+
+  /// Primeiro acesso: com store e sem registro de "visto", abre o tour do
+  /// menu uma única vez depois do primeiro frame do shell que desenha o menu.
+  void _scheduleFirstAccessTour() {
+    final store = widget.tourStore;
+    if (store == null || _autoTourScheduled) return;
+    _autoTourScheduled = true;
+    WidgetsBinding.instance.addPostFrameCallback((_) async {
+      final seen = await store.hasSeenMenuTour();
+      if (seen || !mounted) return;
+      await _startMenuTour();
+    });
+  }
+
+  Widget _withTourScope(Widget child) {
+    _scheduleFirstAccessTour();
+    return CoeloTourScope(
+      registry: _tourRegistry,
+      child: _SuperadminTourScope(startMenuTour: _startMenuTour, child: child),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     final pageBody = widget.child ?? const SizedBox.expand();
@@ -348,140 +471,54 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       );
       return _buildEmbeddedPage(pageBody, hostScope);
     }
-    return LayoutBuilder(
-      builder: (context, constraints) {
-        final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
-        if (!isDesktop) {
-          if (widget.isHost) {
+    return _withTourScope(
+      LayoutBuilder(
+        builder: (context, constraints) {
+          final isDesktop = constraints.maxWidth >= CoeloBreakpoints.expanded.minWidth;
+          if (!isDesktop) {
+            if (widget.isHost) {
+              return _withChatLauncher(
+                Scaffold(
+                  key: _scaffoldKey,
+                  backgroundColor: Theme.of(context).colorScheme.surface,
+                  appBar: widget.frameHostedContent
+                      ? null
+                      : _CompactAppBar(
+                          drawerOpen: _drawerOpen,
+                          onLogout: _handleLogout,
+                          onDestinationSelected: widget.onDestinationSelected,
+                          activityController: _activityController,
+                          headerProfile: headerProfile,
+                          currentScreen:
+                              coeloNavigationNodeById(widget.currentDestination)?.label ??
+                              widget.currentDestination,
+                          onBugReportSubmitted: widget.onBugReportSubmitted,
+                        ),
+                  onDrawerChanged: (open) => setState(() => _drawerOpen = open),
+                  drawer: _buildDrawer(context),
+                  body: SuperadminNoticeHost(child: _hostedContent(pageBody, isDesktop: false)),
+                ),
+                onDestinationSelected: widget.onDestinationSelected,
+                positionController: _chatLauncherPositionController,
+                reservedBottomInset: MediaQuery.paddingOf(context).bottom,
+              );
+            }
             return _withChatLauncher(
               Scaffold(
+                key: _scaffoldKey,
                 backgroundColor: Theme.of(context).colorScheme.surface,
-                appBar: widget.frameHostedContent
-                    ? null
-                    : _CompactAppBar(
-                        drawerOpen: _drawerOpen,
-                        onLogout: _handleLogout,
-                        onDestinationSelected: widget.onDestinationSelected,
-                        activityController: _activityController,
-                        headerProfile: headerProfile,
-                        currentScreen:
-                            coeloNavigationNodeById(widget.currentDestination)?.label ??
-                            widget.currentDestination,
-                        onBugReportSubmitted: widget.onBugReportSubmitted,
-                      ),
+                appBar: _CompactAppBar(
+                  drawerOpen: _drawerOpen,
+                  onLogout: _handleLogout,
+                  onDestinationSelected: widget.onDestinationSelected,
+                  activityController: _activityController,
+                  headerProfile: headerProfile,
+                  currentScreen: widget.title,
+                  onBugReportSubmitted: widget.onBugReportSubmitted,
+                ),
                 onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-                drawer: Drawer(
-                  backgroundColor: Theme.of(context).colorScheme.surface,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
-                  ),
-                  child: SafeArea(
-                    child: Column(
-                      children: [
-                        _BrandHeader(
-                          collapsed: false,
-                          currentDestination: widget.currentDestination,
-                          onDestinationSelected: widget.onDestinationSelected,
-                        ),
-                        const _InsetDivider(key: Key('superadmin-brand-divider')),
-                        Expanded(
-                          child: CoeloNavigationContent(
-                            collapsed: false,
-                            currentDestination: widget.currentDestination,
-                            onDestinationSelected: widget.onDestinationSelected,
-                            canAccessCapability: _menuCapabilityCheck,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                body: SuperadminNoticeHost(child: _hostedContent(pageBody, isDesktop: false)),
-              ),
-              onDestinationSelected: widget.onDestinationSelected,
-              positionController: _chatLauncherPositionController,
-              reservedBottomInset: MediaQuery.paddingOf(context).bottom,
-            );
-          }
-          return _withChatLauncher(
-            Scaffold(
-              backgroundColor: Theme.of(context).colorScheme.surface,
-              appBar: _CompactAppBar(
-                drawerOpen: _drawerOpen,
-                onLogout: _handleLogout,
-                onDestinationSelected: widget.onDestinationSelected,
-                activityController: _activityController,
-                headerProfile: headerProfile,
-                currentScreen: widget.title,
-                onBugReportSubmitted: widget.onBugReportSubmitted,
-              ),
-              onDrawerChanged: (open) => setState(() => _drawerOpen = open),
-              drawer: Drawer(
-                backgroundColor: Theme.of(context).colorScheme.surface,
-                shape: const RoundedRectangleBorder(
-                  borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
-                ),
-                child: SafeArea(
-                  child: Column(
-                    children: [
-                      _BrandHeader(
-                        collapsed: false,
-                        currentDestination: widget.currentDestination,
-                        onDestinationSelected: widget.onDestinationSelected,
-                      ),
-                      const _InsetDivider(key: Key('superadmin-brand-divider')),
-                      Expanded(
-                        child: CoeloNavigationContent(
-                          collapsed: false,
-                          currentDestination: widget.currentDestination,
-                          onDestinationSelected: widget.onDestinationSelected,
-                          canAccessCapability: _menuCapabilityCheck,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              body: SuperadminNoticeHost(
-                child: Column(
-                  children: [
-                    _PageHeader(
-                      title: widget.title,
-                      subtitle: widget.subtitle,
-                      actions: widget.actions,
-                      compactActions: widget.compactActions,
-                      onLogout: _handleLogout,
-                      onDestinationSelected: widget.onDestinationSelected,
-                      activityController: _activityController,
-                      headerProfile: headerProfile,
-                      compact: true,
-                      onBugReportSubmitted: widget.onBugReportSubmitted,
-                    ),
-                    const _InsetDivider(key: Key('superadmin-page-divider')),
-                    Expanded(child: pageBody),
-                  ],
-                ),
-              ),
-            ),
-            reservedBottomInset: MediaQuery.paddingOf(context).bottom,
-          );
-        }
-
-        final contentSurface = Expanded(
-          child: widget.isHost
-              ? _hostedContent(
-                  widget.frameHostedContent
-                      ? _FloatingSurface(
-                          key: const Key('superadmin-floating-content'),
-                          clip: true,
-                          child: pageBody,
-                        )
-                      : pageBody,
-                  isDesktop: true,
-                )
-              : _FloatingSurface(
-                  key: const Key('superadmin-floating-content'),
-                  clip: true,
+                drawer: _buildDrawer(context),
+                body: SuperadminNoticeHost(
                   child: Column(
                     children: [
                       _PageHeader(
@@ -493,6 +530,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                         onDestinationSelected: widget.onDestinationSelected,
                         activityController: _activityController,
                         headerProfile: headerProfile,
+                        compact: true,
                         onBugReportSubmitted: widget.onBugReportSubmitted,
                       ),
                       const _InsetDivider(key: Key('superadmin-page-divider')),
@@ -500,66 +538,145 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
                     ],
                   ),
                 ),
-        );
-        return _withChatLauncher(
-          Scaffold(
-            backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
-            body: SuperadminNoticeHost(
-              child: Padding(
-                padding: const EdgeInsets.all(_shellGutter),
-                child: AnimatedBuilder(
-                  animation: _sidebarController,
-                  child: contentSurface,
-                  builder: (context, content) {
-                    final sidebarWidth =
-                        _expandedSidebarWidth -
-                        (_expandedSidebarWidth - _collapsedSidebarWidth) * _sidebarController.value;
-                    return Stack(
-                      clipBehavior: Clip.none,
+              ),
+              reservedBottomInset: MediaQuery.paddingOf(context).bottom,
+            );
+          }
+
+          final contentSurface = Expanded(
+            child: widget.isHost
+                ? _hostedContent(
+                    widget.frameHostedContent
+                        ? _FloatingSurface(
+                            key: const Key('superadmin-floating-content'),
+                            clip: true,
+                            child: pageBody,
+                          )
+                        : pageBody,
+                    isDesktop: true,
+                  )
+                : _FloatingSurface(
+                    key: const Key('superadmin-floating-content'),
+                    clip: true,
+                    child: Column(
                       children: [
-                        Row(
-                          children: [
-                            SizedBox(
-                              width: sidebarWidth + _shellGutter,
-                              child: Align(
-                                alignment: AlignmentDirectional.centerStart,
-                                child: SizedBox(
-                                  key: const Key('superadmin-sidebar'),
-                                  width: sidebarWidth,
-                                  height: double.infinity,
-                                  child: _FloatingSurface(
-                                    key: const Key('superadmin-floating-sidebar'),
-                                    child: _SidebarTransition(
-                                      progress: _sidebarController.value,
-                                      currentDestination: widget.currentDestination,
-                                      onDestinationSelected: widget.onDestinationSelected,
-                                      canAccessCapability: _menuCapabilityCheck,
+                        _PageHeader(
+                          title: widget.title,
+                          subtitle: widget.subtitle,
+                          actions: widget.actions,
+                          compactActions: widget.compactActions,
+                          onLogout: _handleLogout,
+                          onDestinationSelected: widget.onDestinationSelected,
+                          activityController: _activityController,
+                          headerProfile: headerProfile,
+                          onBugReportSubmitted: widget.onBugReportSubmitted,
+                        ),
+                        const _InsetDivider(key: Key('superadmin-page-divider')),
+                        Expanded(child: pageBody),
+                      ],
+                    ),
+                  ),
+          );
+          return _withChatLauncher(
+            Scaffold(
+              backgroundColor: Theme.of(context).colorScheme.surfaceContainerLowest,
+              body: SuperadminNoticeHost(
+                child: Padding(
+                  padding: const EdgeInsets.all(_shellGutter),
+                  child: AnimatedBuilder(
+                    animation: _sidebarController,
+                    child: contentSurface,
+                    builder: (context, content) {
+                      final sidebarWidth =
+                          _expandedSidebarWidth -
+                          (_expandedSidebarWidth - _collapsedSidebarWidth) *
+                              _sidebarController.value;
+                      return Stack(
+                        clipBehavior: Clip.none,
+                        children: [
+                          Row(
+                            children: [
+                              SizedBox(
+                                width: sidebarWidth + _shellGutter,
+                                child: Align(
+                                  alignment: AlignmentDirectional.centerStart,
+                                  child: SizedBox(
+                                    key: const Key('superadmin-sidebar'),
+                                    width: sidebarWidth,
+                                    height: double.infinity,
+                                    child: _FloatingSurface(
+                                      key: const Key('superadmin-floating-sidebar'),
+                                      child: _SidebarTransition(
+                                        progress: _sidebarController.value,
+                                        currentDestination: widget.currentDestination,
+                                        onDestinationSelected: widget.onDestinationSelected,
+                                        canAccessCapability: _menuCapabilityCheck,
+                                        revealController: _revealController,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            content!,
-                          ],
-                        ),
-                        Positioned(
-                          left: sidebarWidth - CoeloSpacing.space6 - CoeloSpacing.space1,
-                          top: CoeloSpacing.space5,
-                          child: _SidebarToggle(
-                            collapsed: _sidebarCollapsed,
-                            progress: _sidebarController.value,
-                            onPressed: _toggleSidebar,
+                              content!,
+                            ],
                           ),
-                        ),
-                      ],
-                    );
-                  },
+                          Positioned(
+                            left: sidebarWidth - CoeloSpacing.space6 - CoeloSpacing.space1,
+                            top: CoeloSpacing.space5,
+                            child: _SidebarToggle(
+                              collapsed: _sidebarCollapsed,
+                              progress: _sidebarController.value,
+                              onPressed: _toggleSidebar,
+                            ),
+                          ),
+                        ],
+                      );
+                    },
+                  ),
                 ),
               ),
             ),
-          ),
-        );
-      },
+          );
+        },
+      ),
+    );
+  }
+
+  /// Drawer da tela estreita: marca, menu e o botão "Fazer tour" (mesmo
+  /// rodapé da sidebar larga, para o tour poder ser refeito em qualquer
+  /// largura).
+  Widget _buildDrawer(BuildContext context) {
+    return Drawer(
+      backgroundColor: Theme.of(context).colorScheme.surface,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.horizontal(right: Radius.circular(CoeloRadius.xl)),
+      ),
+      child: SafeArea(
+        child: Column(
+          children: [
+            _BrandHeader(
+              collapsed: false,
+              currentDestination: widget.currentDestination,
+              onDestinationSelected: widget.onDestinationSelected,
+            ),
+            const _InsetDivider(key: Key('superadmin-brand-divider')),
+            Expanded(
+              child: CoeloNavigationContent(
+                collapsed: false,
+                currentDestination: widget.currentDestination,
+                onDestinationSelected: widget.onDestinationSelected,
+                canAccessCapability: _menuCapabilityCheck,
+                revealController: _revealController,
+              ),
+            ),
+            const _InsetDivider(),
+            const Padding(
+              padding: EdgeInsets.all(CoeloSpacing.space2),
+              child: _OnboardingTourButton(collapsed: false),
+            ),
+          ],
+        ),
+      ),
     );
   }
 
@@ -713,12 +830,14 @@ class _SidebarTransition extends StatelessWidget {
     required this.currentDestination,
     required this.onDestinationSelected,
     this.canAccessCapability,
+    this.revealController,
   });
 
   final double progress;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final CoeloNavigationCapabilityCheck? canAccessCapability;
+  final CoeloNavigationRevealController? revealController;
 
   @override
   Widget build(BuildContext context) {
@@ -739,6 +858,7 @@ class _SidebarTransition extends StatelessWidget {
                 currentDestination: currentDestination,
                 onDestinationSelected: onDestinationSelected,
                 canAccessCapability: canAccessCapability,
+                revealController: revealController,
               ),
             ),
           ),
@@ -754,12 +874,14 @@ class _Sidebar extends StatelessWidget {
     required this.currentDestination,
     required this.onDestinationSelected,
     this.canAccessCapability,
+    this.revealController,
   });
 
   final bool collapsed;
   final String currentDestination;
   final ValueChanged<String>? onDestinationSelected;
   final CoeloNavigationCapabilityCheck? canAccessCapability;
+  final CoeloNavigationRevealController? revealController;
 
   @override
   Widget build(BuildContext context) {
@@ -777,6 +899,7 @@ class _Sidebar extends StatelessWidget {
             currentDestination: currentDestination,
             onDestinationSelected: onDestinationSelected,
             canAccessCapability: canAccessCapability,
+            revealController: revealController,
           ),
         ),
         const _InsetDivider(),
@@ -980,6 +1103,20 @@ const _accountDestinations = <_NavigationDestinationData>[
   _NavigationDestinationData('settings', 'Configurações', Icons.settings_outlined),
 ];
 
+/// Dá ao botão "Fazer tour" acesso ao tour do shell que desenha o menu.
+class _SuperadminTourScope extends InheritedWidget {
+  const _SuperadminTourScope({required this.startMenuTour, required super.child});
+
+  final Future<void> Function() startMenuTour;
+
+  static _SuperadminTourScope? maybeOf(BuildContext context) =>
+      context.dependOnInheritedWidgetOfExactType<_SuperadminTourScope>();
+
+  @override
+  bool updateShouldNotify(_SuperadminTourScope oldWidget) =>
+      startMenuTour != oldWidget.startMenuTour;
+}
+
 class _OnboardingTourButton extends StatefulWidget {
   const _OnboardingTourButton({required this.collapsed});
 
@@ -1082,13 +1219,20 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
     return CoeloAdminFlyout<String>(
       items: _tourFlyoutItems,
       onSelected: (selection) {
+        // `complete` abre, nesta versão, o mesmo tour do menu: o tour
+        // completo por tela vem depois (ADR 0035, F8).
+        final tour = _SuperadminTourScope.maybeOf(context);
         final message = switch (selection) {
-          'screen' => 'O tour desta tela ser\u00e1 implementado na etapa final.',
-          'menu' => 'O tour do menu ser\u00e1 implementado na etapa final.',
-          'complete' => 'O tour completo ser\u00e1 implementado na etapa final.',
+          'screen' => 'O tour desta tela chega em breve.',
+          'menu' || 'complete' when tour != null => null,
+          'menu' || 'complete' => 'O tour do menu n\u00e3o est\u00e1 dispon\u00edvel nesta tela.',
           _ => null,
         };
-        if (message != null) _showMessage(context, message);
+        if (message != null) {
+          _showMessage(context, message);
+          return;
+        }
+        unawaited(tour!.startMenuTour());
       },
       alignmentOffset: Offset(
         widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 + CoeloSpacing.space1 : 252,
@@ -1161,7 +1305,10 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
             ),
           ),
         );
-        return Tooltip(message: 'Iniciar onboarding', child: content);
+        return CoeloTourAnchor(
+          id: 'tour-button',
+          child: Tooltip(message: 'Iniciar onboarding', child: content),
+        );
       },
     );
   }
@@ -1857,52 +2004,55 @@ class _ProfileSummary extends StatelessWidget {
       },
       alignmentOffset: const Offset(0, CoeloSpacing.space2),
       builder: (context, controller) {
-        return Tooltip(
-          message: 'Abrir menu do usuário',
-          child: Material(
-            color: Colors.transparent,
-            child: InkWell(
-              key: const Key('superadmin-profile-menu'),
-              onTap: () => controller.isOpen ? controller.close() : controller.open(),
-              borderRadius: BorderRadius.circular(CoeloRadius.full),
-              overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-              child: ConstrainedBox(
-                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CoeloSpacing.space2,
-                    vertical: CoeloSpacing.space1,
-                  ),
-                  child: Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      CircleAvatar(
-                        radius: 18,
-                        backgroundColor: profile?.avatarBackgroundColor,
-                        foregroundColor: profile == null
-                            ? null
-                            : (profile.avatarBackgroundColor.computeLuminance() > 0.179
-                                  ? Colors.black
-                                  : Colors.white),
-                        backgroundImage: profile?.avatarImage,
-                        child: profile?.avatarImage == null
-                            ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')
-                            : null,
-                      ),
-                      if (!compact) ...[
-                        const SizedBox(width: CoeloSpacing.space2),
-                        Column(
-                          mainAxisSize: MainAxisSize.min,
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(profile?.name ?? 'Conta', style: theme.textTheme.labelLarge),
-                            Text(profile?.role ?? 'Superadmin', style: theme.textTheme.bodySmall),
-                          ],
+        return CoeloTourAnchor(
+          id: 'account',
+          child: Tooltip(
+            message: 'Abrir menu do usuário',
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                key: const Key('superadmin-profile-menu'),
+                onTap: () => controller.isOpen ? controller.close() : controller.open(),
+                borderRadius: BorderRadius.circular(CoeloRadius.full),
+                overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
+                child: ConstrainedBox(
+                  constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CoeloSpacing.space2,
+                      vertical: CoeloSpacing.space1,
+                    ),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        CircleAvatar(
+                          radius: 18,
+                          backgroundColor: profile?.avatarBackgroundColor,
+                          foregroundColor: profile == null
+                              ? null
+                              : (profile.avatarBackgroundColor.computeLuminance() > 0.179
+                                    ? Colors.black
+                                    : Colors.white),
+                          backgroundImage: profile?.avatarImage,
+                          child: profile?.avatarImage == null
+                              ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')
+                              : null,
                         ),
-                        const SizedBox(width: CoeloSpacing.space1),
-                        const Icon(Icons.arrow_drop_down_rounded),
+                        if (!compact) ...[
+                          const SizedBox(width: CoeloSpacing.space2),
+                          Column(
+                            mainAxisSize: MainAxisSize.min,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(profile?.name ?? 'Conta', style: theme.textTheme.labelLarge),
+                              Text(profile?.role ?? 'Superadmin', style: theme.textTheme.bodySmall),
+                            ],
+                          ),
+                          const SizedBox(width: CoeloSpacing.space1),
+                          const Icon(Icons.arrow_drop_down_rounded),
+                        ],
                       ],
-                    ],
+                    ),
                   ),
                 ),
               ),
@@ -2033,9 +2183,12 @@ class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
           style: _headerUtilityButtonStyle(colors, hoverColor),
           icon: const Icon(Icons.bug_report_outlined),
         ),
-        SuperadminActivityCenter(
-          controller: widget.activityController,
-          buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),
+        CoeloTourAnchor(
+          id: 'notifications',
+          child: SuperadminActivityCenter(
+            controller: widget.activityController,
+            buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),
+          ),
         ),
       ],
     );

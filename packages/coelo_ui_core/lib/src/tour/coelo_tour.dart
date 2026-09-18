@@ -201,6 +201,10 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
     if (_busy || _finished) return;
     _busy = true;
     try {
+      // Cede o turno: `initState` e cliques chegam no meio de um frame e o
+      // hospedeiro pode precisar de setState ao preparar o passo.
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted || _finished) return;
       var index = from;
       while (index >= 0 && index < widget.steps.length) {
         final step = widget.steps[index];

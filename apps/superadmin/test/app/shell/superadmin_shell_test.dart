@@ -1721,19 +1721,13 @@ void main() {
       kind: PointerDeviceKind.mouse,
     );
     await tester.pumpAndSettle();
-    expect(find.text('O tour desta tela será implementado na etapa final.'), findsNothing);
+    expect(find.text('O tour desta tela chega em breve.'), findsNothing);
 
-    for (final option in {
-      'Tour desta tela': 'O tour desta tela será implementado na etapa final.',
-      'Tour do menu': 'O tour do menu será implementado na etapa final.',
-      'Tour completo': 'O tour completo será implementado na etapa final.',
-    }.entries) {
-      await tester.tap(find.text(option.key));
-      await tester.pumpAndSettle();
-      expect(find.text(option.value), findsOneWidget);
-      await tester.tap(find.byKey(const Key('superadmin-onboarding-tour')));
-      await tester.pumpAndSettle();
-    }
+    // `screen` segue placeholder; `menu` e `complete` abrem o tour do menu
+    // (coberto em superadmin_shell_tour_test.dart).
+    await tester.tap(find.text('Tour desta tela'));
+    await tester.pumpAndSettle();
+    expect(find.text('O tour desta tela chega em breve.'), findsOneWidget);
   });
 
   testWidgets('repaints the onboarding egg when semantic colors change', (tester) async {

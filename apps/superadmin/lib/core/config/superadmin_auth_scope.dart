@@ -1,3 +1,4 @@
+import '../../app/tour/superadmin_tour_store.dart';
 import '../../app/activity/context_notification_feed.dart';
 import 'dart:async';
 
@@ -181,6 +182,7 @@ final class SuperadminAuthScope {
     this.formsMediaReader,
     this.formsMediaScope,
     this.formsAnonymousEditSecrets,
+    this.tourStore,
     this.principalRuntimeContextRepository,
     this.profileAboutRepository,
     this.principalCircularRepository,
@@ -250,6 +252,9 @@ final class SuperadminAuthScope {
   final MediaReader? formsMediaReader;
   final SuperadminMediaScope? formsMediaScope;
   final FormsAnonymousEditSecretStoreProvider? formsAnonymousEditSecrets;
+
+  /// Preferência local "tour do menu já visto", por usuário autenticado.
+  final SuperadminTourStore? tourStore;
   final PrincipalRuntimeContextRepository? principalRuntimeContextRepository;
   final ProfileAboutRepository? profileAboutRepository;
 
@@ -482,6 +487,11 @@ Future<SuperadminAuthScope> createSuperadminAuthScope({
       formsMediaReader: FormsMediaReader(gateway: formsBackend),
       formsMediaScope: formsMediaScope,
       formsAnonymousEditSecrets: currentFormsAnonymousEditSecrets,
+      tourStore: SharedPreferencesSuperadminTourStore(
+        currentUserId: () => session.isAuthenticated && !session.isPasswordRecovery
+            ? client.auth.currentUser?.id
+            : null,
+      ),
       principalRuntimeContextRepository: SupabasePrincipalRuntimeContextRepository(client),
       profileAboutRepository: SupabaseProfileAboutRepository(client),
       principalCircularRepository: SupabaseCircularRepository(client),
