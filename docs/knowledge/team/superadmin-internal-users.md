@@ -44,7 +44,7 @@ global não pode ser suspenso, revogado, rebaixado ou limitado.
 
 O preview de Usuários Internos referido no contrato original é local e usa
 dados simulados; ele não prova convite, enforcement, auditoria ou persistência
-produtiva. A [spec Auth-first de 01/09/2026](../../superpowers/specs/2026-09-01-superadmin-auth-first-local-green-design.md)
+produtiva. A [spec Auth-first de 01/09/2026](../../archive/superpowers/specs/2026-09-01-superadmin-auth-first-local-green-design.md)
 autoriza separadamente recuperação, callback e redefinição locais do
 Superadmin. O aceite FE local de Auth não amplia o contrato de convite nem
 comprova execução em produção.

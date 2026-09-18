@@ -1,5 +1,5 @@
 ---
-source: "decisions/0004-auth-permissions.md; docs/security/environment-and-secrets.md; docs/superpowers/specs/2026-07-16-superadmin-supabase-auth-design.md"
+source: "decisions/0004-auth-permissions.md; docs/security/environment-and-secrets.md; docs/archive/superpowers/specs/2026-07-16-superadmin-supabase-auth-design.md"
 status: "implemented-foundation"
 generated_at: "2026-07-16"
 ---

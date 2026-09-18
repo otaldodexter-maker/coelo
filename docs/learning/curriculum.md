@@ -1,6 +1,6 @@
 ---
 title: "Curriculo do Tutor Coelo"
-source: "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md; AGENTS.md; arquitetura e codigo do Coelo"
+source: "docs/archive/superpowers/specs/2026-07-14-coelo-tutor-design.md; AGENTS.md; arquitetura e codigo do Coelo"
 status: "active-learning-path"
 generated_at: "2026-07-14"
 updated_at: "2026-09-08"

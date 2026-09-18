@@ -128,7 +128,7 @@ O historico remoto foi reconciliado em 2026-07-27 pelo fluxo oficial de
 as migrations canonicas locais, e `supabase db push --dry-run` informa que o
 banco remoto esta atualizado. O repair alterou somente o ledger interno de
 migrations; detalhes e fingerprints antes/depois estao em
-`docs/reviews/2026-07-24-contextual-migration-history-reconciliation.md`.
+`docs/reviews/archive/reviews-2026/2026-07-24-contextual-migration-history-reconciliation.md`.
 
 ## Fluxo Oficial Do Supabase CLI
 

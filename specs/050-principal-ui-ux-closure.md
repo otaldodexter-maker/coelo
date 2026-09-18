@@ -1,5 +1,5 @@
 ---
-source: "ajustes visuais e anexos aprovados pelo usuario em 2026-09-01; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; docs/design/design-system.md; specs/005-principal-app.md; specs/036-principal-now-publication-mvp.md"
+source: "ajustes visuais e anexos aprovados pelo usuario em 2026-09-01; docs/archive/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md; docs/design/design-system.md; specs/005-principal-app.md; specs/036-principal-now-publication-mvp.md"
 status: approved
 generated_at: 2026-09-01
 updated_at: 2026-09-09

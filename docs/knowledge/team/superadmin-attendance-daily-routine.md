@@ -1,7 +1,7 @@
 ---
 title: Assiduidade e Rotina Diária produtivas no Superadmin
 knowledge_id: superadmin-attendance-daily-routine-production
-source: docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md
+source: docs/archive/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-08-11

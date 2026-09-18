@@ -1,0 +1,469 @@
+<div id="coelo-range-approaches">
+  <style>
+    #coelo-range-approaches {
+      --coelo-surface: light-dark(#ffffff, #1c1f21);
+      --coelo-surface-soft: light-dark(#fff5f0, #3b241c);
+      --coelo-foreground: light-dark(#3f4549, #f5f1ef);
+      --coelo-muted: light-dark(#747b80, #b8b2ae);
+      --coelo-border: light-dark(#ded9d6, #55504d);
+      --coelo-primary: light-dark(#d63c00, #ff8758);
+      --coelo-on-primary: light-dark(#ffffff, #261208);
+      --coelo-primary-soft: light-dark(#ffe3d6, #4b291d);
+      --coelo-shadow: light-dark(rgba(63, 69, 73, 0.14), rgba(0, 0, 0, 0.34));
+      color: var(--coelo-foreground);
+      font-family: "Nunito Sans", system-ui, sans-serif;
+    }
+
+    #coelo-range-approaches .coelo-intro {
+      margin-bottom: 20px;
+    }
+
+    #coelo-range-approaches .coelo-grid {
+      display: grid;
+      gap: 18px;
+    }
+
+    #coelo-range-approaches .option {
+      align-items: stretch;
+      gap: 0;
+      padding: 0;
+      overflow: hidden;
+    }
+
+    #coelo-range-approaches .coelo-option-head {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 16px 18px 12px;
+    }
+
+    #coelo-range-approaches .coelo-option-copy {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #coelo-range-approaches .coelo-option-copy h3,
+    #coelo-range-approaches .coelo-option-copy p {
+      margin: 0;
+    }
+
+    #coelo-range-approaches .coelo-option-copy p {
+      margin-top: 4px;
+      color: var(--coelo-muted);
+    }
+
+    #coelo-range-approaches .coelo-recommended {
+      align-self: center;
+      border-radius: 999px;
+      background: var(--coelo-primary-soft);
+      color: var(--coelo-primary);
+      padding: 5px 9px;
+      white-space: nowrap;
+    }
+
+    #coelo-range-approaches .coelo-preview {
+      border-top: 1px solid var(--coelo-border);
+      background: var(--coelo-surface);
+      color: var(--coelo-foreground);
+      padding: 18px;
+    }
+
+    #coelo-range-approaches .coelo-preview-layout {
+      display: grid;
+      grid-template-columns: minmax(0, 1.7fr) minmax(240px, 0.8fr);
+      gap: 18px;
+      align-items: start;
+    }
+
+    #coelo-range-approaches .coelo-label {
+      display: block;
+      margin-bottom: 6px;
+      font-weight: 500;
+    }
+
+    #coelo-range-approaches .coelo-field {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      min-height: 48px;
+      border: 1px solid var(--coelo-border);
+      border-radius: 14px;
+      background: var(--coelo-surface);
+      padding: 0 14px;
+      box-sizing: border-box;
+    }
+
+    #coelo-range-approaches .coelo-field.is-active {
+      border: 2px solid var(--coelo-primary);
+      padding: 0 13px;
+    }
+
+    #coelo-range-approaches .coelo-field-value {
+      flex: 1;
+      min-width: 0;
+    }
+
+    #coelo-range-approaches .coelo-arrow,
+    #coelo-range-approaches .coelo-calendar-icon {
+      color: var(--coelo-muted);
+      flex: none;
+    }
+
+    #coelo-range-approaches .coelo-popup {
+      margin-top: 8px;
+      border: 1px solid var(--coelo-border);
+      border-radius: 18px;
+      background: var(--coelo-surface);
+      box-shadow: 0 12px 32px var(--coelo-shadow);
+      overflow: hidden;
+    }
+
+    #coelo-range-approaches .coelo-months {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 22px;
+      padding: 14px 14px 8px;
+    }
+
+    #coelo-range-approaches .coelo-month-head {
+      display: grid;
+      grid-template-columns: 40px 1fr 40px;
+      align-items: center;
+      min-height: 40px;
+      margin-bottom: 6px;
+    }
+
+    #coelo-range-approaches .coelo-month-head strong {
+      text-align: center;
+      font-weight: 500;
+    }
+
+    #coelo-range-approaches .coelo-icon-button {
+      display: inline-grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 0;
+      border-radius: 999px;
+      background: transparent;
+      color: var(--coelo-foreground);
+    }
+
+    #coelo-range-approaches .coelo-icon-spacer {
+      width: 40px;
+      height: 40px;
+    }
+
+    #coelo-range-approaches .coelo-week,
+    #coelo-range-approaches .coelo-days {
+      display: grid;
+      grid-template-columns: repeat(7, minmax(28px, 1fr));
+      text-align: center;
+    }
+
+    #coelo-range-approaches .coelo-week span {
+      color: var(--coelo-muted);
+      padding: 6px 0;
+    }
+
+    #coelo-range-approaches .coelo-day {
+      position: relative;
+      display: grid;
+      place-items: center;
+      min-height: 38px;
+      color: var(--coelo-foreground);
+    }
+
+    #coelo-range-approaches .coelo-day > span {
+      position: relative;
+      z-index: 1;
+      display: grid;
+      place-items: center;
+      width: 34px;
+      height: 34px;
+      border-radius: 999px;
+    }
+
+    #coelo-range-approaches .coelo-day.is-muted {
+      color: var(--coelo-muted);
+      opacity: 0.52;
+    }
+
+    #coelo-range-approaches .coelo-day.is-range::before {
+      content: "";
+      position: absolute;
+      inset: 2px 0;
+      background: var(--coelo-primary-soft);
+    }
+
+    #coelo-range-approaches .coelo-day.is-start::before {
+      left: 50%;
+    }
+
+    #coelo-range-approaches .coelo-day.is-end::before {
+      right: 50%;
+    }
+
+    #coelo-range-approaches .coelo-day.is-start > span,
+    #coelo-range-approaches .coelo-day.is-end > span {
+      background: var(--coelo-primary);
+      color: var(--coelo-on-primary);
+      font-weight: 500;
+    }
+
+    #coelo-range-approaches .coelo-day.is-today > span {
+      box-shadow: inset 0 0 0 1.5px var(--coelo-primary);
+      color: var(--coelo-primary);
+    }
+
+    #coelo-range-approaches .coelo-popup-footer {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      border-top: 1px solid var(--coelo-border);
+      padding: 10px 14px;
+    }
+
+    #coelo-range-approaches .coelo-text-action,
+    #coelo-range-approaches .coelo-primary-action,
+    #coelo-range-approaches .coelo-shortcut {
+      min-height: 40px;
+      border-radius: 999px;
+      padding: 0 13px;
+      font: inherit;
+      font-weight: 500;
+    }
+
+    #coelo-range-approaches .coelo-text-action {
+      border: 0;
+      background: transparent;
+      color: var(--coelo-primary);
+    }
+
+    #coelo-range-approaches .coelo-primary-action {
+      border: 1px solid var(--coelo-primary);
+      background: var(--coelo-primary);
+      color: var(--coelo-on-primary);
+    }
+
+    #coelo-range-approaches .coelo-shortcuts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
+    #coelo-range-approaches .coelo-shortcut {
+      min-height: 36px;
+      border: 1px solid var(--coelo-border);
+      background: var(--coelo-surface);
+      color: var(--coelo-foreground);
+    }
+
+    #coelo-range-approaches .coelo-dual-field {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    #coelo-range-approaches .coelo-panel-layout {
+      display: grid;
+      grid-template-columns: 150px minmax(0, 1fr);
+      gap: 14px;
+      padding: 14px;
+    }
+
+    #coelo-range-approaches .coelo-preset-list {
+      display: grid;
+      align-content: start;
+      gap: 6px;
+      border-right: 1px solid var(--coelo-border);
+      padding-right: 14px;
+    }
+
+    #coelo-range-approaches .coelo-preset-list button {
+      min-height: 40px;
+      border: 0;
+      border-radius: 10px;
+      background: transparent;
+      color: var(--coelo-foreground);
+      text-align: left;
+      padding: 0 10px;
+      font: inherit;
+    }
+
+    #coelo-range-approaches .coelo-preset-list button:first-child {
+      background: var(--coelo-primary-soft);
+      color: var(--coelo-primary);
+    }
+
+    @media (max-width: 760px) {
+      #coelo-range-approaches .coelo-preview-layout {
+        grid-template-columns: 1fr;
+      }
+
+      #coelo-range-approaches .coelo-months {
+        grid-template-columns: 1fr;
+      }
+
+      #coelo-range-approaches .coelo-month:nth-child(2) {
+        display: none;
+      }
+
+      #coelo-range-approaches .coelo-dual-field,
+      #coelo-range-approaches .coelo-panel-layout {
+        grid-template-columns: 1fr;
+      }
+
+      #coelo-range-approaches .coelo-preset-list {
+        grid-template-columns: repeat(3, 1fr);
+        border-right: 0;
+        border-bottom: 1px solid var(--coelo-border);
+        padding: 0 0 12px;
+      }
+
+      #coelo-range-approaches .coelo-preset-list button {
+        text-align: center;
+      }
+    }
+  </style>
+
+  <div class="coelo-intro">
+    <h2>Qual família deve virar o padrão global?</h2>
+    <p class="subtitle">As três opções mantêm localização pt-BR, superfície neutra, laranja Coelo e seleção de intervalo acessível.</p>
+  </div>
+
+  <div class="coelo-grid options">
+    <div class="option" data-choice="a" onclick="toggleSelect(this)">
+      <div class="coelo-option-head">
+        <div class="letter">A</div>
+        <div class="coelo-option-copy">
+          <h3>Faixa contínua + campo compacto</h3>
+          <p>Dois meses no amplo; um mês no compacto. O segundo modelo permanece curto e oferece atalhos abaixo do campo.</p>
+        </div>
+        <span class="coelo-recommended">Recomendado</span>
+      </div>
+      <div class="coelo-preview">
+        <div class="coelo-preview-layout">
+          <div>
+            <span class="coelo-label">Período</span>
+            <div class="coelo-field is-active">
+              <span class="coelo-field-value">13/08/2026</span>
+              <span class="coelo-arrow">→</span>
+              <span class="coelo-field-value">21/09/2026</span>
+              <span class="coelo-calendar-icon">▣</span>
+            </div>
+            <div class="coelo-popup">
+              <div class="coelo-months">
+                <div class="coelo-month">
+                  <div class="coelo-month-head">
+                    <button class="coelo-icon-button" type="button" aria-label="Mês anterior">‹</button>
+                    <strong>Agosto de 2026</strong>
+                    <span class="coelo-icon-spacer"></span>
+                  </div>
+                  <div class="coelo-week"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+                  <div class="coelo-days">
+                    <span class="coelo-day is-muted"><span>26</span></span><span class="coelo-day is-muted"><span>27</span></span><span class="coelo-day is-muted"><span>28</span></span><span class="coelo-day is-muted"><span>29</span></span><span class="coelo-day is-muted"><span>30</span></span><span class="coelo-day is-muted"><span>31</span></span><span class="coelo-day"><span>1</span></span>
+                    <span class="coelo-day"><span>2</span></span><span class="coelo-day"><span>3</span></span><span class="coelo-day"><span>4</span></span><span class="coelo-day"><span>5</span></span><span class="coelo-day"><span>6</span></span><span class="coelo-day"><span>7</span></span><span class="coelo-day"><span>8</span></span>
+                    <span class="coelo-day"><span>9</span></span><span class="coelo-day"><span>10</span></span><span class="coelo-day"><span>11</span></span><span class="coelo-day is-today"><span>12</span></span><span class="coelo-day is-range is-start"><span>13</span></span><span class="coelo-day is-range"><span>14</span></span><span class="coelo-day is-range"><span>15</span></span>
+                    <span class="coelo-day is-range"><span>16</span></span><span class="coelo-day is-range"><span>17</span></span><span class="coelo-day is-range"><span>18</span></span><span class="coelo-day is-range"><span>19</span></span><span class="coelo-day is-range"><span>20</span></span><span class="coelo-day is-range"><span>21</span></span><span class="coelo-day is-range"><span>22</span></span>
+                    <span class="coelo-day is-range"><span>23</span></span><span class="coelo-day is-range"><span>24</span></span><span class="coelo-day is-range"><span>25</span></span><span class="coelo-day is-range"><span>26</span></span><span class="coelo-day is-range"><span>27</span></span><span class="coelo-day is-range"><span>28</span></span><span class="coelo-day is-range"><span>29</span></span>
+                    <span class="coelo-day is-range"><span>30</span></span><span class="coelo-day is-range"><span>31</span></span><span class="coelo-day is-range is-muted"><span>1</span></span><span class="coelo-day is-range is-muted"><span>2</span></span><span class="coelo-day is-range is-muted"><span>3</span></span><span class="coelo-day is-range is-muted"><span>4</span></span><span class="coelo-day is-range is-muted"><span>5</span></span>
+                  </div>
+                </div>
+                <div class="coelo-month">
+                  <div class="coelo-month-head">
+                    <span class="coelo-icon-spacer"></span>
+                    <strong>Setembro de 2026</strong>
+                    <button class="coelo-icon-button" type="button" aria-label="Próximo mês">›</button>
+                  </div>
+                  <div class="coelo-week"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+                  <div class="coelo-days">
+                    <span class="coelo-day is-range is-muted"><span>30</span></span><span class="coelo-day is-range is-muted"><span>31</span></span><span class="coelo-day is-range"><span>1</span></span><span class="coelo-day is-range"><span>2</span></span><span class="coelo-day is-range"><span>3</span></span><span class="coelo-day is-range"><span>4</span></span><span class="coelo-day is-range"><span>5</span></span>
+                    <span class="coelo-day is-range"><span>6</span></span><span class="coelo-day is-range"><span>7</span></span><span class="coelo-day is-range"><span>8</span></span><span class="coelo-day is-range"><span>9</span></span><span class="coelo-day is-range"><span>10</span></span><span class="coelo-day is-range"><span>11</span></span><span class="coelo-day is-range"><span>12</span></span>
+                    <span class="coelo-day is-range"><span>13</span></span><span class="coelo-day is-range"><span>14</span></span><span class="coelo-day is-range"><span>15</span></span><span class="coelo-day is-range"><span>16</span></span><span class="coelo-day is-range"><span>17</span></span><span class="coelo-day is-range"><span>18</span></span><span class="coelo-day is-range"><span>19</span></span>
+                    <span class="coelo-day is-range"><span>20</span></span><span class="coelo-day is-range is-end"><span>21</span></span><span class="coelo-day"><span>22</span></span><span class="coelo-day"><span>23</span></span><span class="coelo-day"><span>24</span></span><span class="coelo-day"><span>25</span></span><span class="coelo-day"><span>26</span></span>
+                    <span class="coelo-day"><span>27</span></span><span class="coelo-day"><span>28</span></span><span class="coelo-day"><span>29</span></span><span class="coelo-day"><span>30</span></span><span class="coelo-day is-muted"><span>1</span></span><span class="coelo-day is-muted"><span>2</span></span><span class="coelo-day is-muted"><span>3</span></span>
+                  </div>
+                </div>
+              </div>
+              <div class="coelo-popup-footer">
+                <button class="coelo-text-action" type="button">Limpar</button>
+                <button class="coelo-primary-action" type="button">Aplicar período</button>
+              </div>
+            </div>
+          </div>
+          <div>
+            <span class="coelo-label">Período</span>
+            <div class="coelo-field">
+              <span class="coelo-field-value">13/08/2026</span>
+              <span class="coelo-arrow">→</span>
+              <span class="coelo-field-value">21/09/2026</span>
+              <span class="coelo-calendar-icon">▣</span>
+            </div>
+            <div class="coelo-shortcuts">
+              <button class="coelo-shortcut" type="button">Hoje</button>
+              <button class="coelo-shortcut" type="button">Esta semana</button>
+              <button class="coelo-shortcut" type="button">Este mês</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option" data-choice="b" onclick="toggleSelect(this)">
+      <div class="coelo-option-head">
+        <div class="letter">B</div>
+        <div class="coelo-option-copy">
+          <h3>Início e fim separados</h3>
+          <p>Validação mais explícita, mas ocupa mais espaço e perde a leitura imediata de intervalo contínuo.</p>
+        </div>
+      </div>
+      <div class="coelo-preview">
+        <div class="coelo-dual-field">
+          <div><span class="coelo-label">Início</span><div class="coelo-field is-active"><span class="coelo-field-value">13/08/2026</span><span class="coelo-calendar-icon">▣</span></div></div>
+          <div><span class="coelo-label">Fim</span><div class="coelo-field"><span class="coelo-field-value">21/09/2026</span><span class="coelo-calendar-icon">▣</span></div></div>
+        </div>
+        <div class="coelo-shortcuts">
+          <button class="coelo-shortcut" type="button">Hoje</button>
+          <button class="coelo-shortcut" type="button">Esta semana</button>
+          <button class="coelo-shortcut" type="button">Este mês</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="option" data-choice="c" onclick="toggleSelect(this)">
+      <div class="coelo-option-head">
+        <div class="letter">C</div>
+        <div class="coelo-option-copy">
+          <h3>Atalhos dentro do painel</h3>
+          <p>Campo fechado mais limpo, porém atalhos menos descobríveis e painel mais largo no desktop.</p>
+        </div>
+      </div>
+      <div class="coelo-preview">
+        <span class="coelo-label">Período</span>
+        <div class="coelo-field is-active"><span class="coelo-field-value">13/08/2026 → 21/09/2026</span><span class="coelo-calendar-icon">▣</span></div>
+        <div class="coelo-popup">
+          <div class="coelo-panel-layout">
+            <div class="coelo-preset-list">
+              <button type="button">Hoje</button>
+              <button type="button">Esta semana</button>
+              <button type="button">Este mês</button>
+            </div>
+            <div>
+              <div class="coelo-month-head"><button class="coelo-icon-button" type="button" aria-label="Mês anterior">‹</button><strong>Agosto de 2026</strong><button class="coelo-icon-button" type="button" aria-label="Próximo mês">›</button></div>
+              <div class="coelo-week"><span>Dom</span><span>Seg</span><span>Ter</span><span>Qua</span><span>Qui</span><span>Sex</span><span>Sáb</span></div>
+              <div class="coelo-days">
+                <span class="coelo-day is-muted"><span>26</span></span><span class="coelo-day is-muted"><span>27</span></span><span class="coelo-day is-muted"><span>28</span></span><span class="coelo-day is-muted"><span>29</span></span><span class="coelo-day is-muted"><span>30</span></span><span class="coelo-day is-muted"><span>31</span></span><span class="coelo-day"><span>1</span></span>
+                <span class="coelo-day"><span>2</span></span><span class="coelo-day"><span>3</span></span><span class="coelo-day"><span>4</span></span><span class="coelo-day"><span>5</span></span><span class="coelo-day"><span>6</span></span><span class="coelo-day"><span>7</span></span><span class="coelo-day"><span>8</span></span>
+                <span class="coelo-day"><span>9</span></span><span class="coelo-day"><span>10</span></span><span class="coelo-day"><span>11</span></span><span class="coelo-day is-today"><span>12</span></span><span class="coelo-day is-range is-start"><span>13</span></span><span class="coelo-day is-range"><span>14</span></span><span class="coelo-day is-range"><span>15</span></span>
+                <span class="coelo-day is-range"><span>16</span></span><span class="coelo-day is-range"><span>17</span></span><span class="coelo-day is-range"><span>18</span></span><span class="coelo-day is-range"><span>19</span></span><span class="coelo-day is-range"><span>20</span></span><span class="coelo-day is-range is-end"><span>21</span></span><span class="coelo-day"><span>22</span></span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

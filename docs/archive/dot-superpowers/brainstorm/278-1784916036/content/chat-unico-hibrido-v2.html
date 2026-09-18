@@ -1,0 +1,84 @@
+<h2>Proposta refinada: uma caixa única com filtros</h2>
+<p class="subtitle">Ao abrir “Conversas”, a família vê tudo. Os filtros só são usados quando ela quiser reduzir a lista.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Tela padrão — todas as conversas</div>
+    <div class="mockup-body" style="background:#f6f7f8;padding:18px">
+      <div style="max-width:360px;margin:auto;background:white;border:1px solid #dfe3e6;border-radius:24px;overflow:hidden;box-shadow:0 8px 24px #00000012">
+        <div style="padding:16px;background:#D63C00;color:white">
+          <div style="font-size:20px;font-weight:800">Conversas</div>
+          <div style="margin-top:10px;padding:9px 12px;background:white;color:#8a9094;border-radius:14px;font-size:13px">⌕ Buscar conversa</div>
+        </div>
+        <div style="display:flex;gap:7px;padding:11px 10px;overflow:hidden;border-bottom:1px solid #eee;font-size:11px;white-space:nowrap">
+          <span style="padding:7px 11px;border-radius:14px;background:#D63C00;color:white;font-weight:800">Todas</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Instituições e unidades</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Turmas</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Atividades</span>
+        </div>
+        <div style="padding:13px 14px;border-bottom:1px solid #eee">
+          <div style="font-size:11px;color:#7b8286">INSTITUIÇÃO</div>
+          <b>Colégio Coelo</b><br><small>Secretaria: Recebemos seu documento</small>
+        </div>
+        <div style="padding:13px 14px;border-bottom:1px solid #eee">
+          <div style="font-size:11px;color:#7b8286">UNIDADE</div>
+          <b>Unidade Centro</b><br><small>Mariana: A saída será às 17h</small>
+        </div>
+        <div style="padding:13px 14px;border-bottom:1px solid #eee">
+          <div style="font-size:11px;color:#7b8286">TURMA • SOFIA</div>
+          <b>Infantil 3</b><br><small>Prof. Ana: Hoje fizemos pintura</small>
+        </div>
+        <div style="padding:13px 14px">
+          <div style="font-size:11px;color:#D63C00">ATIVIDADE • INFANTIL 3 • SOFIA</div>
+          <b>Natação</b><br><small>Prof. Paulo: Aula confirmada</small>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Quando a família toca em “Atividades”</div>
+    <div class="mockup-body" style="background:#f6f7f8;padding:18px">
+      <div style="max-width:360px;margin:auto;background:white;border:1px solid #dfe3e6;border-radius:24px;overflow:hidden;box-shadow:0 8px 24px #00000012">
+        <div style="padding:16px;background:#D63C00;color:white">
+          <div style="font-size:20px;font-weight:800">Conversas</div>
+          <div style="margin-top:10px;padding:9px 12px;background:white;color:#8a9094;border-radius:14px;font-size:13px">⌕ Buscar conversa</div>
+        </div>
+        <div style="display:flex;gap:7px;padding:11px 10px;overflow:hidden;border-bottom:1px solid #eee;font-size:11px;white-space:nowrap">
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Todas</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Instituições e unidades</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#f0f1f2">Turmas</span>
+          <span style="padding:7px 11px;border-radius:14px;background:#D63C00;color:white;font-weight:800">Atividades</span>
+        </div>
+        <div style="padding:13px 14px;border-bottom:1px solid #eee">
+          <div style="font-size:11px;color:#D63C00">ATIVIDADE • INFANTIL 3 • SOFIA</div>
+          <b>Natação</b><br><small>Prof. Paulo: Aula confirmada</small>
+        </div>
+        <div style="padding:13px 14px;border-bottom:1px solid #eee">
+          <div style="font-size:11px;color:#D63C00">ATIVIDADE • INFANTIL 3 • SOFIA</div>
+          <b>Musicalização</b><br><small>Prof. Joana: Novo áudio disponível</small>
+        </div>
+        <div style="padding:13px 14px">
+          <div style="font-size:11px;color:#D63C00">ATIVIDADE • 2º ANO • MIGUEL</div>
+          <b>Inglês</b><br><small>Prof. Lucas: Material da próxima aula</small>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:22px">
+  <h3>Regra proposta</h3>
+  <p><b>“Todas” é a entrada padrão.</b> “Instituições e unidades”, “Turmas” e “Atividades” são apenas filtros — não são telas diferentes.</p>
+  <p>Uma atividade sempre aparece como conversa própria e informa a turma e a criança relacionadas. Se a família tiver vínculos com mais de uma instituição, a instituição também será mostrada.</p>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="aprovar-hibrido" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content">
+      <h3>Aprovar esta organização</h3>
+      <p>Uma caixa única, “Todas” por padrão e três filtros opcionais.</p>
+    </div>
+  </div>
+</div>

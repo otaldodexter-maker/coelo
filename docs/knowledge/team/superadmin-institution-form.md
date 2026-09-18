@@ -1,7 +1,7 @@
 ---
 title: Formulário de instituição do Superadmin
 knowledge_id: superadmin-institution-form
-source: docs/superpowers/specs/2026-07-28-superadmin-institution-form-feedback-design.md
+source: docs/archive/superpowers/specs/2026-07-28-superadmin-institution-form-feedback-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-07-29

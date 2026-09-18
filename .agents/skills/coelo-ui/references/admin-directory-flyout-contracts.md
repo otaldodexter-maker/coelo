@@ -1,5 +1,5 @@
 ---
-source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md; goldens aprovados de Instituições, Bug, Tour, Perfil, Configurações e formulário de Instituições"
+source: "docs/design/design-system.md; docs/archive/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md; goldens aprovados de Instituições, Bug, Tour, Perfil, Configurações e formulário de Instituições"
 status: "active"
 generated_at: "2026-08-03"
 ---

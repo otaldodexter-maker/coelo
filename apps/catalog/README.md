@@ -1,5 +1,5 @@
 ---
-source: "specs/013-ui-packages-componentization.md; docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
+source: "specs/013-ui-packages-componentization.md; docs/archive/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
 status: "implemented-local-foundation"
 generated_at: "2026-08-06"
 ---

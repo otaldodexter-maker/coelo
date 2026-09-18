@@ -1,7 +1,7 @@
 ---
 title: Etapa de conclusão visual do Coelo
 knowledge_id: coelo-visual-completion-stage
-source: docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
+source: docs/archive/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
 status: validated
 lifecycle: "historical"
 generated_at: 2026-08-28

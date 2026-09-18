@@ -1,7 +1,7 @@
 ---
 title: Gestão de locais, mapas e reservas
 knowledge_id: superadmin-locations-maps-scheduling
-source: docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
+source: docs/archive/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-09-02

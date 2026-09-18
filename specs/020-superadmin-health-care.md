@@ -78,7 +78,7 @@ fixture com justificativa, mas não age em nome da instituição.
 - token semântico Histórico em light/dark.
 
 A correção visual aprovada em 2026-08-05 está detalhada em
-`docs/superpowers/specs/2026-08-05-superadmin-health-care-ui-correction-design.md`.
+`docs/archive/superpowers/specs/2026-08-05-superadmin-health-care-ui-correction-design.md`.
 Ela acrescenta Arquivos aos dois diretórios, remove o banner demonstrativo que
 compete com a listagem de Perfis, mantém o toggle compartilhado de 64 × 48 px,
 reforça a centralização e a scrollbar da tabela e leva criar, editar e detalhe

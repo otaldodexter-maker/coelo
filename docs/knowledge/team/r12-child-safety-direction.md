@@ -1,7 +1,7 @@
 ---
 title: "Direção futura R12 para Segurança da criança"
 knowledge_id: r12-child-safety-direction
-source: docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md
+source: docs/reviews/archive/rounds/R12/R12-seguranca-perfis-owner.md
 status: validated
 lifecycle: "historical"
 generated_at: 2026-09-13

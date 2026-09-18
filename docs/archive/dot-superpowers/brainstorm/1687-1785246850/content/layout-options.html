@@ -1,0 +1,94 @@
+<h2>Como Perfil e Configurações devem se organizar?</h2>
+<p class="subtitle">Compare a hierarquia, a facilidade de crescer e a quantidade de navegação. Clique na opção que mais combina com o Superadmin.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f8f8">
+      <div style="display:grid;grid-template-columns:90px 1fr;gap:12px;min-height:270px">
+        <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px;font-size:11px">
+          <strong style="color:#d63c00">Perfil</strong><br><br>Configurações
+        </div>
+        <div>
+          <div style="font-weight:800;font-size:18px;margin-bottom:4px">Meu perfil</div>
+          <div style="font-size:11px;color:#697176;margin-bottom:12px">Gerencie sua identidade e segurança.</div>
+          <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px;margin-bottom:10px">
+            <div style="display:flex;gap:10px;align-items:center">
+              <div style="width:38px;height:38px;border-radius:50%;background:#fff3ee;border:2px solid #d63c00"></div>
+              <div style="font-size:11px"><strong>Foto e dados pessoais</strong><br>Nome, sobrenome e e-mail</div>
+            </div>
+          </div>
+          <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px;font-size:11px">
+            <strong>Segurança</strong><br>Alterar senha
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Seções com navegação lateral</h3>
+      <p>Perfil e Configurações compartilham uma navegação interna permanente. Cresce bem, mas adiciona uma segunda barra lateral.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f8f8">
+      <div style="min-height:270px">
+        <div style="font-weight:800;font-size:18px;margin-bottom:4px">Meu perfil</div>
+        <div style="font-size:11px;color:#697176;margin-bottom:12px">Gerencie seus dados pessoais e a segurança da conta.</div>
+        <div style="display:grid;grid-template-columns:1.25fr .75fr;gap:10px">
+          <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px">
+            <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+              <div style="width:42px;height:42px;border-radius:50%;background:#fff3ee;border:2px solid #d63c00"></div>
+              <div style="font-size:11px"><strong>Adriano Coelo</strong><br>Trocar foto</div>
+            </div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+              <div class="mock-input" style="font-size:10px">Nome</div>
+              <div class="mock-input" style="font-size:10px">Sobrenome</div>
+            </div>
+            <div class="mock-input" style="font-size:10px;margin-top:7px">E-mail</div>
+            <button class="mock-button" style="font-size:10px;margin-top:10px">Salvar alterações</button>
+          </div>
+          <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px;font-size:11px">
+            <strong>Segurança</strong>
+            <p style="font-size:10px">Altere sua senha em um fluxo separado.</p>
+            <button class="mock-button" style="font-size:10px;background:transparent;color:#b83300;border:1px solid #d63c00">Alterar senha</button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Página única em cartões</h3>
+      <p>Dados principais e segurança ficam visíveis na mesma tela. É direta agora e permite adicionar cartões no futuro.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;background:#f7f8f8">
+      <div style="min-height:270px">
+        <div style="font-weight:800;font-size:18px;margin-bottom:10px">Minha conta</div>
+        <div style="display:flex;gap:14px;border-bottom:1px solid #d9dddf;margin-bottom:12px;font-size:11px">
+          <strong style="color:#d63c00;border-bottom:2px solid #d63c00;padding-bottom:7px">Perfil</strong>
+          <span>Segurança</span><span>Preferências</span>
+        </div>
+        <div style="background:#fff;border:1px solid #d9dddf;border-radius:12px;padding:12px">
+          <div style="display:flex;gap:10px;align-items:center;margin-bottom:12px">
+            <div style="width:42px;height:42px;border-radius:50%;background:#fff3ee;border:2px solid #d63c00"></div>
+            <strong style="font-size:11px">Informações pessoais</strong>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:7px">
+            <div class="mock-input" style="font-size:10px">Nome</div>
+            <div class="mock-input" style="font-size:10px">Sobrenome</div>
+          </div>
+          <div class="mock-input" style="font-size:10px;margin-top:7px">E-mail</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Uma conta com abas</h3>
+      <p>Perfil, segurança e preferências viram abas de uma única área. É compacta, porém mistura as duas telas pedidas.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p><strong>Minha recomendação: B.</strong> Preserva Perfil e Configurações como destinos claros no menu existente, evita navegação duplicada e mantém cada página simples para o MVP.</p>
+</div>

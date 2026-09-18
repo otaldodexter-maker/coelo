@@ -21,7 +21,7 @@
       "sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
       "after": "20260901200206_defer_superadmin_internal_mfa_until_mvp_go_live.sql",
       "before": "20260908051500_superadmin_child_context_directory_v2.sql",
-      "source_note": "docs/reviews/etapa-2-operacao/next-round/R02-20260909/handoffs/notes/child-envelope-prerequisite.sql",
+      "source_note": "docs/reviews/archive/rounds/R02/R02-20260909/handoffs/notes/child-envelope-prerequisite.sql",
       "source_note_sha256_crlf_utf8": "6f9342ccad9ce145158e1667a84c5bd58e4577af022204194280b4d8cfaad17a",
       "approved_helper_source": "packages/coelo_database/migrations/20260827235500_superadmin_internal_institution_list_filter.sql",
       "approved_helper_source_sha256_crlf_utf8": "c4496229e2d004907b1c878e9719cadfa60169307eeb92be67cd76c3ad5551aa",

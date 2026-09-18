@@ -1,5 +1,5 @@
 ---
-source: "docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
+source: "docs/archive/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
 status: "verified"
 generated_at: "2026-07-24"
 ---
@@ -461,4 +461,4 @@ Storage na spec da ação foi reconciliada com a ADR 0032.
 
 Os registros anteriores deste arquivo são históricos: instruções de Instituições
 universais não se estendem às famílias Principal e Site. Evidências consolidadas
-em `docs/reviews/2026-09-08-coelo-skills-audit.md`.
+em `docs/reviews/archive/reviews-2026/2026-09-08-coelo-skills-audit.md`.

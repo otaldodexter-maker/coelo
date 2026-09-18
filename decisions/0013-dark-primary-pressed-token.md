@@ -1,6 +1,6 @@
 ---
 title: "Dark Primary Pressed Token"
-source: "docs/design/design-system.md; docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md; decisao aprovada pelo usuario em 2026-07-22"
+source: "docs/design/design-system.md; docs/archive/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md; decisao aprovada pelo usuario em 2026-07-22"
 status: "Accepted for implementation"
 generated_at: "2026-07-22"
 ---

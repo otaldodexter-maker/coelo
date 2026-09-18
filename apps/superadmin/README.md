@@ -1,5 +1,5 @@
 ---
-source: "AGENTS.md; docs/contexts/superadmin-context.md; docs/product/prd-superadmin.md"
+source: "AGENTS.md; docs/archive/contexts/superadmin-context.md; docs/product/prd-superadmin.md"
 status: "implemented-foundation"
 generated_at: "2026-07-24"
 ---

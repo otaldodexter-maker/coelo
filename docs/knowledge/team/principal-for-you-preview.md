@@ -1,7 +1,7 @@
 ---
 title: "Para você do Principal"
 knowledge_id: "principal-for-you-preview"
-source: "docs/superpowers/specs/2026-08-20-coelo-principal-for-you-preview-design.md"
+source: "docs/archive/superpowers/specs/2026-08-20-coelo-principal-for-you-preview-design.md"
 status: "validated"
 lifecycle: "current"
 generated_at: "2026-08-20"

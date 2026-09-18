@@ -1,7 +1,7 @@
 ---
 title: "Limite de tamanho de campo é contrato, e quando falta no cliente o erro chega como queda de rede"
 knowledge_id: "field-length-contract"
-source: "docs/reviews/etapa-2-operacao/handoffs/E2-noturna-operacoes-sistema.md"
+source: "docs/reviews/archive/etapa-2-r01-r02/handoffs/E2-noturna-operacoes-sistema.md"
 status: "draft"
 lifecycle: "future"
 generated_at: "2026-09-10"

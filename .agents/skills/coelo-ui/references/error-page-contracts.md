@@ -1,6 +1,6 @@
 ---
 updated_at: "2026-09-08"
-source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
+source: "docs/design/design-system.md; docs/archive/superpowers/specs/2026-07-28-superadmin-error-pages-design.md"
 status: "active"
 generated_at: "2026-07-29"
 ---

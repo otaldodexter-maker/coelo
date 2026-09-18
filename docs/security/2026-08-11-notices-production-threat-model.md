@@ -1,6 +1,6 @@
 ---
 title: "Avisos: threat model e controles de produção"
-source: "OWASP ASVS; docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md; ADR 0020"
+source: "OWASP ASVS; docs/archive/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md; ADR 0020"
 status: "implementation"
 generated_at: "2026-08-11"
 lifecycle: "current"

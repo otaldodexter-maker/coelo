@@ -1,7 +1,7 @@
 ---
 title: "Direção de modelos, rotina e chamada"
 knowledge_id: r12-routine-attendance-direction
-source: docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md
+source: docs/reviews/archive/rounds/R12/R12-apontamentos-owner.md
 status: validated
 lifecycle: "historical"
 generated_at: 2026-09-13

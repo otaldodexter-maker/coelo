@@ -1,7 +1,7 @@
 ---
 title: Locais, mapas e agendamentos no Superadmin
 knowledge_id: superadmin-locations-maps-scheduling
-source: docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
+source: docs/archive/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-09-02
@@ -50,7 +50,7 @@ reservas ou mídia e não comprova E2E.
 
 ## Contrato de seleção para consumidores
 
-Fonte complementar: `docs/superpowers/specs/2026-09-07-location-selection-contract-design.md`.
+Fonte complementar: `docs/archive/superpowers/specs/2026-09-07-location-selection-contract-design.md`.
 
 `LocationScope` identifica o proprietário do catálogo: instituição ou unidade
 com ambos os IDs explícitos. `LocationReferenceSnapshot` preserva ID do local,

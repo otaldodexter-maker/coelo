@@ -1,6 +1,6 @@
 ---
 title: "Detalhe e reload v2 de Turma para o Superadmin interno"
-source: "specs/039-superadmin-internal-auth-session-context.md; docs/superpowers/specs/2026-07-29-superadmin-group-directory-design.md; docs/open-questions.md#oq-031; packages/coelo_database/migrations/20260811151254_group_management_security.sql; inventario remoto read-only de 2026-08-28"
+source: "specs/039-superadmin-internal-auth-session-context.md; docs/archive/superpowers/specs/2026-07-29-superadmin-group-directory-design.md; docs/open-questions.md#oq-031; packages/coelo_database/migrations/20260811151254_group_management_security.sql; inventario remoto read-only de 2026-08-28"
 status: "approved-for-implementation"
 approval: "Coordenacao Coelo em 2026-08-28; autorizacao tecnica restrita ao detail/reload read-only desta spec"
 generated_at: "2026-08-28"

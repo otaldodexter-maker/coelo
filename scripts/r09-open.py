@@ -2,7 +2,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-p = Path('docs/reviews/etapa-2-operacao/comunicacao/coordenacao.json')
+p = Path('docs/reviews/archive/etapa-2-r01-r02/comunicacao/coordenacao.json')
 d = json.loads(p.read_text(encoding='utf-8-sig'))
 now = datetime.now().astimezone().isoformat()
 d.update(revision=d['revision'] + 1, round='E2-R09-20260912', role='C0 Coordenacao R09', model='gpt-6-astra', reasoningEffort='medium', updatedAt=now)

@@ -1,5 +1,5 @@
 ---
-source: "docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
+source: "docs/archive/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md"
 status: "active"
 generated_at: "2026-07-24"
 ---

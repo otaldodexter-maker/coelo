@@ -91,7 +91,7 @@ server-side aprovado, receber URL temporaria quando permitido e nunca conhecer
 `R2_SECRET_ACCESS_KEY`.
 
 O spike atual de R2 possui seu proprio template em
-`spikes/media-r2/.env.example`. Esse template e descartavel e nao cria regra de
+`docs/archive/docs/archive/spikes-root-root/media-r2/.env.example`. Esse template e descartavel e nao cria regra de
 produto para colocar secrets em apps Flutter.
 
 ## Convencao do repositorio

@@ -1,0 +1,954 @@
+{
+  "generated_at": "2026-09-17",
+  "owner_approval": "Owner em 17/09/2026 (sessão coordenadora R16): lotes L1–L8 aprovados",
+  "entries": [
+    {
+      "lot": "L1",
+      "from": "<raiz>/*.patch, *.log, *.modified.ts (92 arquivos não rastreados)",
+      "to": "C:/Users/adrie/Documents/Coelo-backups/root-scratch-20260917/",
+      "method": "mv (fora do Git)"
+    },
+    {
+      "lot": "L2",
+      "from": "docs/reviews/__pycache__, next-round/__pycache__",
+      "to": "apagado (regenerável)",
+      "method": "rm"
+    },
+    {
+      "lot": "L2",
+      "from": ".recovery-archives/ (5,4 GB, ignorado pelo Git)",
+      "to": "C:/Users/adrie/Documents/Coelo-backups/recovery-archives-20260825/",
+      "method": "Move-Item (fora do Git)"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/Principal-pos-R10.md",
+      "to": "docs/reviews/archive/rounds/R10/Principal-pos-R10.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C01-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C01-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C02-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C02-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C03-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C03-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C04-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C04-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C05-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C05-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C06-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C06-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R01-C07-prompt.md",
+      "to": "docs/reviews/archive/rounds/R01/R01-C07-prompt.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R02-20260909",
+      "to": "docs/reviews/archive/rounds/R02/R02-20260909",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R02-contexto-consolidado.md",
+      "to": "docs/reviews/archive/rounds/R02/R02-contexto-consolidado.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R02-distribuicao-e-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R02/R02-distribuicao-e-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R03-fase0-handoff.md",
+      "to": "docs/reviews/archive/rounds/R03/R03-fase0-handoff.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R03-perguntas-ao-owner-20260910.md",
+      "to": "docs/reviews/archive/rounds/R03/R03-perguntas-ao-owner-20260910.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R03-plano.md",
+      "to": "docs/reviews/archive/rounds/R03/R03-plano.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R03-prompts.md",
+      "to": "docs/reviews/archive/rounds/R03/R03-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md",
+      "to": "docs/reviews/archive/rounds/R04/R04-perguntas-ao-owner-20260911.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R04-prompts.md",
+      "to": "docs/reviews/archive/rounds/R04/R04-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R05-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R05/R05-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R05-perguntas-ao-owner-20260911.md",
+      "to": "docs/reviews/archive/rounds/R05/R05-perguntas-ao-owner-20260911.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R05-prompts.md",
+      "to": "docs/reviews/archive/rounds/R05/R05-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R06-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R06/R06-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R06-perguntas-ao-owner-20260911.md",
+      "to": "docs/reviews/archive/rounds/R06/R06-perguntas-ao-owner-20260911.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R06-prompts.md",
+      "to": "docs/reviews/archive/rounds/R06/R06-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R07-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R07/R07-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R07-perguntas-ao-owner-20260912.md",
+      "to": "docs/reviews/archive/rounds/R07/R07-perguntas-ao-owner-20260912.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R07-prompts.md",
+      "to": "docs/reviews/archive/rounds/R07/R07-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R07-varredura-r01-r06.md",
+      "to": "docs/reviews/archive/rounds/R07/R07-varredura-r01-r06.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R07-varredura-r01-r07.md",
+      "to": "docs/reviews/archive/rounds/R07/R07-varredura-r01-r07.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R08-backlog.md",
+      "to": "docs/reviews/archive/rounds/R08/R08-backlog.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R08-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R08/R08-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R08-perguntas-owner-20260912.md",
+      "to": "docs/reviews/archive/rounds/R08/R08-perguntas-owner-20260912.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R08-plano.md",
+      "to": "docs/reviews/archive/rounds/R08/R08-plano.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R08-prompts.md",
+      "to": "docs/reviews/archive/rounds/R08/R08-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-abertura-20260912-1534.json",
+      "to": "docs/reviews/archive/rounds/R09/R09-abertura-20260912-1534.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-abertura-20260912-1542.json",
+      "to": "docs/reviews/archive/rounds/R09/R09-abertura-20260912-1542.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-backlog.md",
+      "to": "docs/reviews/archive/rounds/R09/R09-backlog.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R09/R09-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-pendencias.md",
+      "to": "docs/reviews/archive/rounds/R09/R09-pendencias.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-plano.md",
+      "to": "docs/reviews/archive/rounds/R09/R09-plano.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R09-prompts.md",
+      "to": "docs/reviews/archive/rounds/R09/R09-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-abertura-20260912-2314.json",
+      "to": "docs/reviews/archive/rounds/R10/R10-abertura-20260912-2314.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-dev-senior.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-dev-senior.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-estado-por-tela.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-estado-por-tela.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-historical-refs.json",
+      "to": "docs/reviews/archive/rounds/R10/R10-historical-refs.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-pendencias.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-pendencias.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-preparacao.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-preparacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-prompt-unico.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-prompt-unico.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R10-proposta-metricas-por-escopo.md",
+      "to": "docs/reviews/archive/rounds/R10/R10-proposta-metricas-por-escopo.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md",
+      "to": "docs/reviews/archive/rounds/R11/R11-checkpoint.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R11-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R11/R11-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R11-pendencias.md",
+      "to": "docs/reviews/archive/rounds/R11/R11-pendencias.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R11-prompt-unico.md",
+      "to": "docs/reviews/archive/rounds/R11/R11-prompt-unico.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-R13-planejamento-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-R13-planejamento-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-apontamentos-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-apontamentos-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-apontamentos-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-cardapios-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-cardapios-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-cardapios-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-chat-contorno-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-chat-contorno-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.historico-pre-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-checkpoint.historico-pre-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-checkpoint.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-checkpoint.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-consolidacao-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao-git.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-consolidacao-git.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-convites-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-convites-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-delta-consolidado-aplicado.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-delta-consolidado-aplicado.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-disparo-luna.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-disparo-luna.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-formularios-agenda-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-formularios-agenda-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-formularios-agenda-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-heranca-R11-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-heranca-R11-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias-herdadas-R11.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-pendencias-herdadas-R11.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-pendencias.historico-pre-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-pendencias.historico-pre-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-perfis-permissoes-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-perfis-permissoes-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.historico-pre-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-plano-de-rodada.historico-pre-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-plano-de-rodada.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-plano-de-rodada.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.historico-pre-consolidacao.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-prompt-unico.historico-pre-consolidacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-prompt-unico.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-prompt-unico.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-saude-cuidado-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-saude-cuidado-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-saude-cuidado-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-seguranca-perfis-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-seguranca-perfis-owner.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-seguranca-perfis-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-sincronizacao-rastreadores.md",
+      "to": "docs/reviews/archive/rounds/R12/R12-sincronizacao-rastreadores.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-R13.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-transferencia-final-R13.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R12-transferencia-final-delta.json",
+      "to": "docs/reviews/archive/rounds/R12/R12-transferencia-final-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1345.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-checkpoint-20260914-1345.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-checkpoint-20260914-1620.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-checkpoint.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-fechamento.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-fechamento.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-luna-continuacao.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-luna-continuacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-owner-items.json",
+      "to": "docs/reviews/archive/rounds/R13/R13-owner-items.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-plano-de-rodada.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-plano-de-rodada.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-projecao-atual.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-projecao-atual.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R13-retomada-cota-owner.md",
+      "to": "docs/reviews/archive/rounds/R13/R13-retomada-cota-owner.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-checkpoint-20260915.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-checkpoint-20260915.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-1.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-1.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-10.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-10.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-2.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-3.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-3.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-4.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-4.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-5.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-5.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-6.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-6.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-7.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-7.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-8.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-8.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-9.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-handoff-sessao-9.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-plano-de-rodada.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-plano-de-rodada.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R14-prompt-unico.md",
+      "to": "docs/reviews/archive/rounds/R14/R14-prompt-unico.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-apoio-bloco-b.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-apoio-bloco-b.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-a.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-handoff-bloco-a.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-b.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-handoff-bloco-b.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-c1.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-handoff-bloco-c1.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-c2.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-handoff-bloco-c2.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/R15-prompts.md",
+      "to": "docs/reviews/archive/rounds/R15/R15-prompts.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r07-fechamento-reconciliados.json",
+      "to": "docs/reviews/archive/rounds/R07/deltas-r07-fechamento-reconciliados.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r07-primeiros-gates.json",
+      "to": "docs/reviews/archive/rounds/R07/deltas-r07-primeiros-gates.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r12-c0-access-profile-cards-grid.json",
+      "to": "docs/reviews/archive/rounds/R12/deltas-r12-c0-access-profile-cards-grid.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r12-c0-access-profile-detail.json",
+      "to": "docs/reviews/archive/rounds/R12/deltas-r12-c0-access-profile-detail.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r12-c0-access-profile-sensitivity.json",
+      "to": "docs/reviews/archive/rounds/R12/deltas-r12-c0-access-profile-sensitivity.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/deltas-r15-c2-b5-b6-r12-38.json",
+      "to": "docs/reviews/archive/rounds/R15/deltas-r15-c2-b5-b6-r12-38.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/r12-luna-dispatch.py",
+      "to": "docs/reviews/archive/rounds/misc/r12-luna-dispatch.py",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/test_r12_luna_dispatch.py",
+      "to": "docs/reviews/archive/rounds/R12/test_r12_luna_dispatch.py",
+      "method": "git mv"
+    },
+    {
+      "lot": "L3",
+      "from": "docs/reviews/etapa-2-operacao/next-round/transferir-abertos-r12-r13.py",
+      "to": "docs/reviews/archive/rounds/R12/transferir-abertos-r12-r13.py",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/noturna",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/noturna",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/reports",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/reports",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/comunicacao",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/comunicacao",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/assignments",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/assignments",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/handoffs",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/handoffs",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/evidence",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/evidence",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/TRABALHO-ATUAL.md",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/TRABALHO-ATUAL.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/PROTOCOLO.md",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/PROTOCOLO.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/build-stage2-dashboard.py",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/build-stage2-dashboard.py",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-operacao/validate-operation.py",
+      "to": "docs/reviews/archive/etapa-2-r01-r02/validate-operation.py",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-07-20-superadmin-ui-componentization-review.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-07-20-superadmin-ui-componentization-review.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-07-24-catalog-security-boundaries.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-07-24-catalog-security-boundaries.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-07-24-contextual-migration-history-reconciliation.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-07-24-contextual-migration-history-reconciliation.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-08-25-coelo-supabase-screen-integration.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-08-25-coelo-supabase-screen-integration.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-08-25-coelo-ui-code-review-pendencias.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-08-25-coelo-ui-code-review-pendencias.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-08-31-supabase-foundation-migration-drift-manifest.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-08-31-supabase-foundation-migration-drift-manifest.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-08-31-worktree-commit-consolidation-ledger.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-08-31-worktree-commit-consolidation-ledger.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-09-08-coelo-skills-audit.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-09-08-coelo-skills-audit.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-09-09-consolidacao-git.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-09-09-consolidacao-git.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/2026-09-09-etapa-2-entrega-e-metricas.md",
+      "to": "docs/reviews/archive/reviews-2026/2026-09-09-etapa-2-entrega-e-metricas.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/coelo-etapa-2-coordenacao.md",
+      "to": "docs/reviews/archive/reviews-2026/coelo-etapa-2-coordenacao.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/etapa-2-painel-2026-09-09.md",
+      "to": "docs/reviews/archive/reviews-2026/etapa-2-painel-2026-09-09.md",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/principal-pos-r10-delta.json",
+      "to": "docs/reviews/archive/reviews-2026/principal-pos-r10-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/r11-preparacao-account-delta.json",
+      "to": "docs/reviews/archive/reviews-2026/r11-preparacao-account-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/r11-preparacao-chat-delta.json",
+      "to": "docs/reviews/archive/reviews-2026/r11-preparacao-chat-delta.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/reviews/tracker-corrections-2026-09-08.json",
+      "to": "docs/reviews/archive/reviews-2026/tracker-corrections-2026-09-08.json",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/superpowers",
+      "to": "docs/archive/superpowers",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/contexts",
+      "to": "docs/archive/contexts",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/handoffs",
+      "to": "docs/archive/handoffs",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "docs/spikes",
+      "to": "docs/archive/spikes",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": "spikes",
+      "to": "docs/archive/spikes-root",
+      "method": "git mv"
+    },
+    {
+      "lot": "L4/L5",
+      "from": ".superpowers",
+      "to": "docs/archive/dot-superpowers",
+      "method": "git mv"
+    }
+  ]
+}

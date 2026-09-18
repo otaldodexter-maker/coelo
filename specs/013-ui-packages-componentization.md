@@ -221,7 +221,7 @@ e status `catalogo desatualizado` ate a correcao.
 ## Status Da Primeira Implementacao
 
 A fundacao Flutter foi implementada e verificada em 2026-07-27 conforme
-`docs/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md`.
+`docs/archive/superpowers/plans/2026-07-22-coelo-ui-foundation-componentization-catalog.md`.
 
 - `coelo_tokens`, `coelo_ui_core` e `coelo_ui_admin` possuem APIs e testes
   publicos iniciais;

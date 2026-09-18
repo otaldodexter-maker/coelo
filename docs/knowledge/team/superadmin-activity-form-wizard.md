@@ -1,7 +1,7 @@
 ---
 title: Wizard de atividade do Superadmin
 knowledge_id: superadmin-activity-form-wizard
-source: docs/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md
+source: docs/archive/superpowers/specs/2026-08-04-superadmin-activity-form-wizard-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-08-11

@@ -23,12 +23,12 @@ Planejar Cloudflare R2 como destino unico de midia privada desde o MVP, com meta
 - A decisao orienta specs futuras, mas nao cria codigo por si so.
 - Qualquer divergencia com documento oficial deve ser registrada em `docs/open-questions.md`.
 - O spike tecnico foi aprovado em `specs/009-media-r2-spike.md`.
-- O desenho tecnico do spike esta registrado em `docs/spikes/media-r2/`.
+- O desenho tecnico do spike esta registrado em `docs/archive/docs/archive/docs/archive/spikes-root-root/media-r2/`.
 - Implementacao de produto e decisao final dependem de verificacao live com credenciais R2 descartaveis.
 
 ## Resultado Do Spike
 
-O spike produziu technical spec, matriz de testes, checklist de ameacas e harness descartavel para presigned URLs em `spikes/media-r2/`. O scan de segredos rastreados retornou sem matches e `npm.cmd run check` passou para o harness.
+O spike produziu technical spec, matriz de testes, checklist de ameacas e harness descartavel para presigned URLs em `docs/archive/docs/archive/spikes-root-root/media-r2/`. O scan de segredos rastreados retornou sem matches e `npm.cmd run check` passou para o harness.
 
 Evidencias:
 
@@ -39,4 +39,4 @@ Evidencias:
 - EV-005 orphan cleanup: desenhado em `media-gateway-technical-spec.md`.
 - EV-006 secret scan: passou sem matches rastreados.
 
-Proxima acao necessaria: criar bucket R2 privado descartavel, preencher `spikes/media-r2/.env` localmente, executar `npm.cmd run smoke` com `R2_EXECUTE_LIVE_HTTP=true`, registrar saida redigida no evidence log e entao reavaliar esta ADR.
+Proxima acao necessaria: criar bucket R2 privado descartavel, preencher `docs/archive/docs/archive/spikes-root-root/media-r2/.env` localmente, executar `npm.cmd run smoke` com `R2_EXECUTE_LIVE_HTTP=true`, registrar saida redigida no evidence log e entao reavaliar esta ADR.

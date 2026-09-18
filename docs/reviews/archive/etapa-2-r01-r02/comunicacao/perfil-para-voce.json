@@ -1,0 +1,1212 @@
+{
+  "revision": 51,
+  "updated_at": "2026-09-10T04:57:00-03:00",
+  "group": "perfil-para-voce",
+  "task": "/root",
+  "model": "Claude Opus 5 (1M context)",
+  "status": "ENTREGUE as 05:00. Residual zero, recursos encerrados, conferencia externa executada e entregue ao coordenador com saida crua.",
+  "coordinator": "Claude",
+  "worktree": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+  "branch": "work/etapa2-noturna-perfil-para-voce",
+  "head": "1d46746ff",
+  "upstream": "origin/work/etapa2-noturna-perfil-para-voce",
+  "base_observed": "origin/dev em 51ed08d0c, lido 2026-09-10T04:49:30-03:00",
+  "scope": [
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> visualizar/editar Sobre",
+    "apps/superadmin -> menu Coelo (Principal) -> Perfil contextual -> Para Voce"
+  ],
+  "not_in_scope": [
+    "Minha conta",
+    "Perfis de acesso",
+    "demais apps",
+    "import/export adiados"
+  ],
+  "action_ids_status": "familia principal_profile, 3 IDs do contrato; mapeamento focal em andamento",
+  "changed": "Lote 14 (06876dac5): cobertura responsiva e de acessibilidade da aba Momentos, com o limite escrito no arquivo — as verificacoes de ausencia de excecao quase nao podem falhar nesta aba, porque todo eixo e rolavel ou Wrap, medido pondo a superficie em 120 px de altura e continuando verde. Por isso o arquivo carrega tambem uma assercao que pode falhar: o refluxo das metricas em 320 px com texto a 300%, vista falhando em 375/200% antes de ser movida.",
+  "closed_criteria": [
+    "Composicao real das tres rotas montada dentro do ShellRoute, sem fixture, com 11/11 provas de rota real PASS",
+    "Audiencia obrigatoria de Para Voce preservada no cliente (gate nao pode ser desligado por argumento omitido)",
+    "Guarda da rota de edicao preservada: capacidade de mutacao declarada, fail-closed sem repositorio de Sobre",
+    "Leitura do Sobre passa a consumir contrato de RPC autorizada, com negacao nunca confundida com ausencia de funcao",
+    "Estado do editor: reload em troca de contexto, membership e pessoa; fail-closed em revogacao; rascunho nunca apresentado como persistido",
+    "Tres ajustes do pacote SQL de Para Voce verificados NO ARQUIVO (p_target_device com allowlist validada no servidor, content_card elegivel, status='active' deixando legado published invisivel ate o cutover)"
+  ],
+  "tests": {
+    "NUMERO_VALIDO_DO_RECORTE": "306 PASS / 10 FAIL, 316 casos, reporter JSON, 03:52:22-03:53:01",
+    "NUMERO_VALIDO_DO_APP": "6390 PASS / 14 SKIP / 144 FAIL, duas corridas concordantes",
+    "analyze": "flutter analyze lib test: No issues found",
+    "negative_controls": "5 executados na noite; dois revelaram guardas incapazes de falhar - literais const canonicalizados, e setSurfaceSize deixando o MediaQuery em 800 px. Ambas refeitas e vistas falhando antes de passarem.",
+    "SUPERADO": "lote12_recorte_base_conjunta P=256 F=10, de base anterior e denominador incompleto"
+  },
+  "reservations": [],
+  "reservations_requested": [
+    "apps/superadmin/lib/app/router/superadmin_router.dart (hunks: 2 builders Principal + rota nova de edicao + 2 parametros opcionais + imports + capacidade de mutacao)",
+    "apps/superadmin/lib/app/router/superadmin_routes.dart (2 constantes principalProfileEdit)",
+    "apps/superadmin/lib/core/config/superadmin_auth_scope.dart, superadmin_app.dart, main.dart (apenas campo/injecao/passagem dos 2 parametros)"
+  ],
+  "blocker": "Nenhum bloqueio retendo trabalho independente. Os bloqueios de decisao estao declarados no tracker_delta_proposto.",
+  "next_step": "Nada. Frente encerrada. A continuacao esta em proxima_rodada, em ordem de execucao.",
+  "wip": [],
+  "artifacts": [],
+  "children": [],
+  "processes": [],
+  "ports": [],
+  "ack": null,
+  "limitations": "Canal nativo com o coordenador verificado nesta janela: houve troca bidirecional com recibo nominal em varias mensagens. A ressalva anterior, de que arquivo publicado nao comprova leitura, continua valendo para o arquivo; nao vale mais para a comunicacao.",
+  "deadline": "2026-09-10T05:00:00-03:00",
+  "eta": "Encerrada.",
+  "alert": "RESOLVIDO. O alerta dizia que registro.json apontava o headSha de L03 em 9c6042732, que e o revert, 48 commits atras. Conferido em 2026-09-10 03:59:53: o arquivo docs/reviews/archive/rounds/R02/R02-20260909/registro.json agora traz b209b4e0f47df8f1a39835a09b8e17191412b969, que e o SHA correto. Nada a fazer. Mantido como registro porque este campo permaneceu descrevendo como aberto um problema ja corrigido - a mesma classe de defeito que encontrei no relatorio do Owner, agora encontrada em mim.",
+  "open_questions": [
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta assume visibility='profile_access' por ser o default dos INSERTs da RPC de escrita. Decisao do Owner.",
+    "Contraste do chip DESTAQUE em Para Voce mede 3,75:1, abaixo do minimo AA 4,5:1 para 11px. Escurecer altera composicao aprovada e quebra 20 goldens. Decisao de coelo-ui e do Owner (herdado de L03, nao regravei golden).",
+    "Contrato visual de Editar perfil segue sem fonte canonica aprovada (herdado de L03)."
+  ],
+  "batches_published": [
+    "b09da7c15",
+    "76e8ada8f",
+    "60f32e292",
+    "6e58b624f",
+    "0399b186e",
+    "35fff6b13",
+    "65e1e5000",
+    "9a82d5dcf",
+    "0e1df2217",
+    "6b05ccb82",
+    "086961de5",
+    "250d0543c",
+    "5401cec1b",
+    "06876dac5",
+    "c5a6fd106",
+    "0f2135398",
+    "cdd549e0a",
+    "ace7b32e1",
+    "1d453e2f3"
+  ],
+  "tracker_delta_proposto": [
+    {
+      "action_id": "principal.profile-view",
+      "camada": "frontend",
+      "estado_atual": "local-green",
+      "estado_proposto": "local-green",
+      "delta": "Mantido, agora com a verificacao de producao respondida por simbolo. main.dart compoe o caminho (linhas 56-59, via authScope); o router monta a pagina PRODUTIVA PrincipalProfileRoutePage em SuperadminRoutes.principalProfile dentro do ShellRoute, linha 1033, e nao apenas a tela /dev; e existem implementacoes de producao concretas, SupabaseProfileAboutRepository, SupabaseCircularRepository, SupabasePrincipalHappensFeedRepository e SupabasePrincipalRuntimeContextRepository, instanciadas em superadmin_auth_scope.dart linhas 382-385. Correcoes desta rodada nesta acao: previa de circular deixou de fechar a cada rebuild da rota; bio ausente deixou de oferecer Ver mais; releitura do Sobre passou a considerar membership e pessoa.",
+      "evidencia": "commits 0399b186e e 65e1e5000; apps/superadmin/lib/main.dart:56-59; apps/superadmin/lib/app/router/superadmin_router.dart:1033; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:382-385; apps/superadmin/test/features/principal_profile/; 2026-09-09"
+    },
+    {
+      "action_id": "principal.for-you",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision",
+      "estado_proposto": "blocked-decision",
+      "delta": "Mantido em blocked-decision pelo contraste 3,75:1 do chip DESTAQUE, decisao do Owner. Progresso desta rodada, sem promocao: o hub deixou de saudar todo ator real como Fernanda, nome do fixture, porque PrincipalRuntimeContext nao carrega o nome da pessoa e a saudacao passou a omitir o nome em vez de inventar um; e os dois gatilhos de troca de contexto deixaram de renderizar com um unico contexto autorizado, ja que o seletor se recusa a abrir abaixo de dois. Verificacao de producao: main.dart compoe (linha 50, noticeRepository), o router monta PrincipalForYouRoutePage em SuperadminRoutes.principalForYou dentro do ShellRoute, linha 990, e SupabaseNoticeRepository e implementacao concreta instanciada em superadmin_auth_scope.dart linha 367.",
+      "evidencia": "commits 35fff6b13 e 9a82d5dcf; apps/superadmin/lib/main.dart:50; apps/superadmin/lib/app/router/superadmin_router.dart:990; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:367; apps/superadmin/test/features/principal_for_you/; 2026-09-09"
+    },
+    {
+      "action_id": "principal.profile-edit",
+      "camada": "frontend",
+      "estado_atual": "blocked-decision",
+      "estado_proposto": "blocked-decision",
+      "delta": "Mantido em blocked-decision por ausencia de contrato visual canonico aprovado. Verificacao de producao, para o registro: main.dart compoe via authScope.profileAboutRepository (linha 57); o router monta PrincipalProfileEditPage em SuperadminRoutes.principalProfileEdit dentro do ShellRoute, linha 1068, com a capacidade de mutacao declarada; e SupabaseProfileAboutRepository e implementacao concreta, instanciada em superadmin_auth_scope.dart linha 383. Sem repositorio real composto a rota permanece fail-closed, nao monta prototipo.",
+      "evidencia": "commits b09da7c15, 60f32e292 e 6e58b624f; apps/superadmin/lib/app/router/superadmin_router.dart:1068; apps/superadmin/lib/core/config/superadmin_auth_scope.dart:383; 2026-09-09"
+    }
+  ],
+  "verificacao_de_producao": {
+    "pergunta_1_main_dart_compoe": "SIM. apps/superadmin/lib/main.dart linhas 50 e 56-59 passam authScope.noticeRepository, authScope.principalRuntimeContextRepository, authScope.profileAboutRepository, authScope.principalCircularRepository e authScope.principalHappensFeedRepository para SuperadminApp. superadmin_app.dart (campos nas linhas 203-204, repasse nas 286-287) entrega ao createSuperadminRouter.",
+    "pergunta_2_router_monta_pagina_produtiva": "SIM. superadmin_router.dart monta, dentro do ShellRoute e fora de /dev: SuperadminRoutes.principalForYou (linha 990) -> PrincipalForYouRoutePage(embedded: true); SuperadminRoutes.principalProfile (linha 1033) -> PrincipalProfileRoutePage(embedded: true); SuperadminRoutes.principalProfileEdit (linha 1068) -> PrincipalProfileEditPage. As tres deixaram de resolver para _unavailableCompositionRootRoute. As telas /dev continuam existindo em paralelo e nao sao estas.",
+    "pergunta_3_implementacao_de_producao_do_repositorio": "SIM para os quatro repositorios do recorte, e sao classes concretas com implementacao Supabase, nao apenas interface: SupabaseProfileAboutRepository (lib/features/profile_about/data/supabase_profile_about_repository.dart), SupabaseCircularRepository (lib/features/principal_circulars/data/supabase_circular_repository.dart), SupabasePrincipalHappensFeedRepository (lib/features/principal_happens/data/supabase_principal_happens_feed_repository.dart) e SupabasePrincipalRuntimeContextRepository (lib/features/principal_shared/data/supabase_principal_runtime_context_repository.dart). Todas instanciadas no ramo autorizado de superadmin_auth_scope.dart, linhas 382-385. Para o hub, SupabaseNoticeRepository (linha 367). No ramo indisponivel (linhas 441 e 453-454) os campos ficam null ou Unavailable, e a rota cai em indisponibilidade honesta em vez de montar prototipo.",
+    "ressalva_que_nao_muda_as_tres_respostas": "SupabaseProfileAboutRepository existe e e real, mas a leitura chama public.get_profile_about, que NAO existe no remoto; nesse caso cai no fallback por tabela sob RLS. Isso mantem o backend em blocked-decision, como ja declarado, e nao afeta a composicao de producao do frontend. SupabaseNoticeRepository consome o diretorio administrativo, o que tambem ja esta declarado como blocked-decision no backend de principal.for-you.",
+    "conferido_em": "2026-09-09, worktree e2-noturna-perfil-para-voce, HEAD 9a82d5dcf"
+  },
+  "defeitos_encontrados_nesta_frente": [
+    "Afordancia morta: botao Pre-visualizar e seletor de audiencia renderizados sem prévia alcancavel abaixo de 1120 px",
+    "Autorizacao: rascunho e conteudo sobrevivendo a troca de membership ou pessoa dentro do mesmo escopo nomeado, em duas paginas",
+    "Identidade fabricada: rotulos de campo exibindo identificador de enum no editor",
+    "Identidade fabricada: hub de producao saudando todo ator real como Fernanda, nome do fixture de demo",
+    "Estado indistinguivel: bio ausente renderizada como paragrafo vazio seguido de Ver mais",
+    "Comparacao por identidade de objetos reconstruidos por frame: releitura integral do diretorio a cada rebuild do hub",
+    "Comparacao por identidade: previa de circular fechando sozinha a cada rebuild da rota",
+    "Gatilho inerte: dois controles de trocar contexto chamando um seletor que se recusa a abrir com um unico contexto",
+    "Convite a corrida: Recarregar sem estado de ocupado, permitindo duas leituras concorrentes",
+    "Acessibilidade: campos do Sobre sem nome para tecnologia assistiva"
+  ],
+  "perguntas_abertas_para_o_owner": [
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*; a proposta get_profile_about assume visibility profile_access por ser o default dos INSERTs da RPC de escrita, e erra para o lado fechado.",
+    "Contraste do chip DESTAQUE em Para Voce: 3,75:1 contra o minimo AA de 4,5:1 para 11 px. Corrigir altera composicao aprovada e quebra 20 goldens. Herdado de L03; nenhum golden foi regravado.",
+    "Contrato visual canonico de Editar perfil: continua inexistente; a tela foi entregue reutilizando o editor de Sobre.",
+    "Rotulo VISIVEL dos campos na aba Sobre: hoje cada campo aparece como valor puro ao lado de um icone generico, sem nome. O rotulo de acessibilidade ja foi entregue no lote 10 e nao depende de decisao. Tornar o rotulo visivel altera a composicao de uma aba sem fonte canonica em coelo-ui, entao NAO foi feito. Proposta pronta: reutilizar profileAboutFieldLabel, que ja e compartilhado.",
+    "Destino da chamada para acao das comunicacoes: PlatformNotice nao modela URL alguma no cliente, embora platform_notices tenha cta_url. O CTA de uma comunicacao real publicada no hub responde honestamente que a capacidade nao esta disponivel, mas nunca leva a lugar nenhum. Estender o contrato compartilhado de Comunicacoes e decisao de quem o mantem, mais decisao sobre abrir URL externa."
+  ],
+  "joint_base_verified": {
+    "merged": "origin/dev ff9143ba4 (merge 77f2b7717 na worktree)",
+    "recorte": "P=247 F=10 B=0 S=0 U=0",
+    "provas_de_rota": "11/11 PASS",
+    "analyze": "flutter analyze lib test: No issues found",
+    "achado_de_integracao": "origin/dev 09d03250e tinha o GoRoute de principal-conversations DUPLICADO byte a byte; go_router assere na construcao, entao createSuperadminRouter lancava e o app Superadmin inteiro nao subia. Confirmado como sendo de dev e nao do meu merge antes de alertar (grep contava 2 em origin/dev e 0 em 0e1df2217). Corrigido pelo coordenador em ff9143ba4.",
+    "SUPERADO": "P=247 F=10 era de base anterior e denominador incompleto, e o bloco nao tinha data. O numero valido e 306/10 na base integrada 98ef12509; ver validacao_na_base_integrada."
+  },
+  "verificado_e_nao_alterado": [
+    "Destino de Mensagem do Perfil e do hub ja aponta para principalConversationsName na base conjunta; nao ha mais desvio para a pagina administrativa com ?from=principal, e nenhum teste meu carrega o destino antigo.",
+    "O beco condicional de /principal-now/publication registrado por L03 nao alcanca a superficie hospedada: com embedded o dock nao e renderizado, entao onPublishNow nao e acionavel no Perfil de producao.",
+    "onAdjustLocation no editor do Sobre ja era guardado por != null.",
+    "Ver mais, Ver todos e Ver no mapa passam por _runOrPreview e nao sao afordancias mortas."
+  ],
+  "suite_completa": {
+    "NUMERO_VALIDO": "6390 PASS / 14 SKIP / 144 FAIL em apps/superadmin",
+    "medido_em": "2026-09-10, duas corridas independentes: 03:12:47-03:28:09 e 03:31:40-03:51. Numero identico nas duas.",
+    "do_recorte": "exatamente 10 falhas, todas de principal_profile_preview_golden_test",
+    "denominador": "apps/superadmin INTEIRO, e NADA ALEM DELE. Existem sete outros conjuntos de teste no monorepo que esta medicao nao cobre; o unico que contem arquivo do meu dominio e coelo_domain, medido a parte.",
+    "SUPERADO": "A medicao anterior, P=6355 S=14 F=146 sobre b2cdba58a, era de outra base e ficou sem data no arquivo. Substituida, nao apagada."
+  },
+  "achados_em_dev_nao_meus": [
+    "test/app/router/principal_real_route_test.dart falha em 3 casos sobre hospedagem do Principal e Acontece. Confirmado em worktree destacado de origin/dev 1c5eaf0bc limpo: as mesmas 3 falham. Causa: a rota de Acontece passou a exigir principalHappensFeedRepository E principalMixedFeedRepository (superadmin_router.dart:902 em dev) e o teste injeta so o primeiro, entao a rota cai em indisponivel. Teste desatualizado pela integracao do feed misto, nao regressao de produto; a producao compoe os dois. Pertence a publicacoes-midia."
+  ],
+  "recursos_proprios": {
+    "worktree_extra": "SIM, UMA: C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, DETACHED em 98ef12509, 0 caminhos alterados, medido 04:49:30. Criada para verificar em base limpa se a rota principal-conversations duplicada era de dev ou do meu merge; reaproveitada para medir o recorte NA BASE INTEGRADA e para a conferencia externa. SERA REMOVIDA apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list.",
+    "containers": "nenhum ativo. coelo-sqlcheck e coelo-pg17 criados e removidos ao longo da noite; docker ps -a conferido vazio apos cada uso.",
+    "processos_portas_agendamentos": "nenhum.",
+    "correcao_de_declaracao": "Ate a revisao 26 este campo dizia 'nenhum', o que era FALSO desde que criei a worktree. Eu declarei a worktree em texto na revisao 9 e depois sobrescrevi o campo ao consolidar. O coordenador pediu a declaracao explicita e ao conferir eu achei a linha errada no meu proprio handoff. E a mesma categoria que passei a noite auditando nos outros: linha que parece informacao e nunca foi relida.",
+    "artefatos_de_instrumento": "recorte.json e recorte-dev.json, deixados pelo reporter JSON dentro do repositorio nas duas worktrees, removidos. Ambas as arvores com 0 caminhos."
+  },
+  "achado_principal_da_noite": {
+    "titulo": "As 10 falhas de principal_profile_preview_golden nao sao deriva de golden nem artefato de host",
+    "como_foi_medido": "Percentagens nao uniformes: 768/1024/1440 diferem 0,73% a 1,35% mas com numero ABSOLUTO de pixels quase igual (11128 a 11708), o que indica elemento de tamanho fixo e nao renderizacao de fonte, que escalaria com a area. As variantes 375 saltam para 22,1% com 91 mil pixels.",
+    "o_que_as_imagens_mostram": "Comparando masterImage com testImage em 1024, o resto da pagina e pixel a pixel identico e diferem exatamente dois elementos. O golden aprovado tem um botao primario Acompanhar ao lado de Mensagem, que o codigo atual nao renderiza; e tem uma faixa de SEIS metricas (1,2 mil Seguidores, 286 Seguindo, 128 Publicacoes, Localizacao, Fundacao, 50+ Colaborando) onde o codigo atual renderiza TRES (128 Publicacoes, 42 Momentos, 12 Circulares). Em 375 px a remocao desloca tudo abaixo, o que explica os 22%.",
+    "inferencia_nao_decisao": "Parece mudanca deliberada de produto e coerente com a visao: o Coelo nao e rede social aberta, e seguidor com botao de seguir num perfil de escola e o que a visao recusa. Nao decido isso.",
+    "acao_correta": "Pergunta binaria ao Owner: a composicao atual, sem Acompanhar e sem Seguidores/Seguindo, e a aprovada? Se sim, regravar as 10 referencias e consequencia administrativa e nao ha defeito. Se nao, o codigo removeu capacidade aprovada e e defeito de produto. Nenhum golden foi regravado.",
+    "custo_enquanto_durar": "Sao 10 de 12 casos do arquivo. A referencia visual da tela principal do Principal esta inutilizavel em todos os temas e larguras; so passam os dois goldens especificos de aba. Qualquer regressao visual da composicao completa do Perfil e invisivel hoje, o que enfraquece o local-green de principal.profile-view mais do que eu havia dito.",
+    "artefatos": "apps/superadmin/test/features/principal_profile/presentation/failures/, par mais legivel principal_profile_light_1024_masterImage.png contra _testImage.png; .gitignore ja exclui **/failures/"
+  },
+  "triagem_de_goldens": {
+    "metodo": "Rodar o arquivo de golden e ler as linhas 'Pixel test failed, X%, Ypx'. Se Y for quase constante entre larguras, e mudanca de CONTEUDO (elemento de tamanho fixo). Se Y crescer com a area, e RENDERIZACAO. Se X ficar perto de 100 com conteudo identico, e GEOMETRIA.",
+    "correcao_do_metodo": "grep de linha unica da FALSO NEGATIVO: com caminho de golden longo o Flutter quebra a mensagem em duas linhas e a suite aparece limpa. activities_golden_test aparecia com zero e tem 31. Comando correto junta as linhas antes: flutter test <arquivo> 2>&1 | tr '\n' ' ' | grep -oE \"Pixel test failed, +[0-9.]+%, +[0-9]+px\" | tr -s ' ' | sort -u",
+    "medicoes": {
+      "principal_profile": "0,73% a 1,35% em 768/1024/1440 com absoluto quase constante (11128-11708); 22,1% em 375. CONTEUDO, confirmado por imagem: botao Acompanhar e tres metricas a menos.",
+      "principal_happens": "0,15% a 0,65% com absoluto constante (2122-2436). CONTEUDO, nao confirmado por imagem.",
+      "principal_moments": "99,17% a 100%. GEOMETRIA, confirmado por imagem: golden com letterbox, codigo full-bleed, mesmo conteudo.",
+      "chat": "dois casos com absoluto constante 1849px e quatro de 12k a 39k crescendo com a area. MISTA.",
+      "agenda_calendar": "11 casos, 10,5% a 21,0%, absoluto 63k a 160k crescendo com a area, mais outlier de 837px.",
+      "activities": "31 casos, 4,9% a 31,9%, absoluto 44k a 380k crescendo com a area, mais o MESMO outlier de 837px."
+    },
+    "fio_barato": "O outlier de 837px aparece identico em agenda e activities: um componente compartilhado diferindo do mesmo jeito pode explicar dois arquivos.",
+    "limite_declarado": "Nao abri imagens de agenda, activities nem chat: sao dominios de outras frentes e classificar sem confirmar seria chute."
+  },
+  "knowledge_gate": "no-op deliberado em docs/knowledge. O gate da skill coelo-knowledge exige projetar apenas regra duravel JA APROVADA em fonte canonica, e a triagem de goldens nao esta aprovada em lugar nenhum. Oferecido ao coordenador como referencia de skill, que e base compartilhada e depende da palavra dele.",
+  "lotes": [
+    {
+      "sha": "b09da7c15",
+      "titulo": "Integracao da composicao L03 sobre dev",
+      "resumo": "Merge de codex/e2-r02-l03-perfil-para-voce (b209b4e0f) com os cinco conflitos resolvidos: colocacao de dev no router, corpo L03 nos builders, embedded:true, rota nova /principal-profile/edit com capacidade de mutacao declarada; nos quatro arquivos de Para Voce prevalece L03 porque dev carregava a revisao antiga com audienceScope OPCIONAL. Achado do merge corrigido: guarda de Circulares usava find.text ambiguo dentro do shell.",
+      "provas": "analyze limpo; 11/11 provas de rota real; recorte P=225 F=10"
+    },
+    {
+      "sha": "76e8ada8f",
+      "titulo": "Leitura do Sobre por RPC autorizada com fallback fail-closed",
+      "resumo": "load passa a chamar public.get_profile_about e so cai para leitura por tabela quando o banco diz que a funcao nao existe (42883 ou PGRST202). Negacao continua negacao e nunca vira select direto. Candidato SQL nao aplicado em packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, fundamentado apenas em objetos que save_profile_about ja chama.",
+      "provas": "5 casos novos; profile_about 29/29 PASS"
+    },
+    {
+      "sha": "60f32e292",
+      "titulo": "Afordancias mortas do editor e reload por membership",
+      "resumo": "Abaixo de 1120px o botao Pre-visualizar e o seletor de audiencia deixam de renderizar sem previa alcancavel. didUpdateWidget da edicao passa a comparar membership e pessoa, nao so o escopo nomeado: a autorizacao pertence ao membership.",
+      "provas": "4 casos novos; teste fixado por L03 INVERTIDO, nao relaxado; P=131 F=10"
+    },
+    {
+      "sha": "6e58b624f",
+      "titulo": "Campos do Sobre com nome em portugues",
+      "resumo": "O editor rotulava cada campo com field.key.name, exibindo displayAddress e preciseLocation ao usuario. Switch exaustivo, entao chave nova para de compilar.",
+      "provas": "guarda varre o enum inteiro; controle negativo executado; profile_about 30/30"
+    },
+    {
+      "sha": "0399b186e",
+      "titulo": "Bio ausente e reload por membership na visualizacao",
+      "resumo": "Bio ausente deixou de renderizar paragrafo vazio seguido de Ver mais. A pagina de visualizacao tinha o mesmo buraco de didUpdateWidget da de edicao.",
+      "provas": "3 casos novos; recorte P=146 F=10"
+    },
+    {
+      "sha": "35fff6b13",
+      "titulo": "Hub deixou de reler o diretorio a cada rebuild",
+      "resumo": "audienceScope e supportingData sao reconstruidos por frame e eram comparados por identidade, entao todo rebuild parecia ator novo: carregando, timer de vigencia cancelado e 100 comunicacoes relidas. Escopo passou a ter igualdade por valor.",
+      "provas": "3 casos novos; controle negativo revelou que a primeira versao da guarda usava literais const e nao podia falhar"
+    },
+    {
+      "sha": "65e1e5000",
+      "titulo": "Previa de circular sobrevive a rebuild da rota",
+      "resumo": "A aba fecha a previa quando onOpen muda; o router entrega closure nova por build, entao o dialogo fechava sozinho. Corrigido do lado do chamador com tear-off estavel, sem tocar no arquivo do dominio de Circulares.",
+      "provas": "1 caso novo; controle negativo executado; recorte P=147 F=10"
+    },
+    {
+      "sha": "9a82d5dcf",
+      "titulo": "Fim da saudacao com nome de fixture em producao",
+      "resumo": "O hub abria com 'Bom dia, Fernanda!' hardcoded na rota real. PrincipalRuntimeContext nao carrega nome de pessoa, entao a saudacao omite o nome em vez de inventar. Dois gatilhos de trocar contexto deixaram de renderizar com um unico contexto autorizado.",
+      "provas": "3 casos novos, um fixando o fixture; principal_for_you 97/97; recorte P=244 F=10"
+    },
+    {
+      "sha": "0e1df2217",
+      "titulo": "Estado de ocupado na acao Recarregar",
+      "resumo": "Recarregar nao dava sinal de ter sido pressionado e um segundo toque iniciava outra leitura. Aplicado o idioma que o botao Salvar ao lado ja tinha.",
+      "provas": "1 caso novo cobrindo comportamento e nao legenda; controle negativo executado"
+    },
+    {
+      "sha": "6b05ccb82",
+      "titulo": "Rotulo de acessibilidade dos campos do Sobre",
+      "resumo": "Leitor de tela anunciava dois numeros de contato sem dizer qual era qual. Semantics nomeia o campo sem mover um pixel: lista de goldens falhando identica antes e depois, comparada por NOME e nao por contagem. Tabela de rotulos promovida a profile_about_labels.dart, compartilhada entre editor e leitor.",
+      "provas": "1 caso novo; controle negativo executado; recorte P=246 F=10"
+    },
+    {
+      "sha": "086961de5",
+      "titulo": "Guarda de unicidade de nome de rota",
+      "resumo": "Le o fonte do router e nomeia qualquer rota declarada duas vezes. Escrita contra a base quebrada e vista falhando la antes de ficar verde. Ja adotada pelo coordenador como parte do gate de integracao.",
+      "provas": "falhou com principalConversationsName x2 na base quebrada; verde apos a correcao"
+    },
+    {
+      "sha": "250d0543c",
+      "titulo": "Aba Momentos conectada a projecao autorizada",
+      "resumo": "Fecha a pendencia 7 de L03, que era dependencia: SupabasePrincipalMomentsFeedRepository chegou na base conjunta e o router ja o tinha. Espelha PrincipalProfileHappensTab; midia por URL assinada ja resolvida; sem repositorio paralelo, sem publicar ou retirar, sem sprite de fixture; escopo por valor.",
+      "provas": "9 casos novos; recorte P=256 F=10"
+    },
+    {
+      "sha": "5401cec1b",
+      "titulo": "Medicao do chrome duplicado da rota de edicao hospedada",
+      "resumo": "Confirma a instrucao que L03 deixou em aberto: abaixo do breakpoint expanded o shell renderiza um _CompactAppBar e a pagina renderiza outra, entao a rota hospedada empilha DUAS AppBars num celular; em 1440px e uma so. Nao corrigido: onde ficam titulo e acao de fechar apos o embedded e contrato visual sem aprovacao.",
+      "provas": "2 casos novos nas provas de rota, 13/13 PASS"
+    },
+    {
+      "sha": "06876dac5",
+      "titulo": "Cobertura responsiva e de acessibilidade da aba Momentos",
+      "resumo": "Divida da entrega anterior. Dez casos, com o limite escrito no arquivo: as verificacoes de ausencia de excecao quase nao podem falhar nesta aba porque todo eixo e rolavel ou Wrap, medido pondo a superficie em 120px e continuando verde. Por isso o arquivo tambem carrega o refluxo das metricas, que pode falhar.",
+      "provas": "10 casos novos, 10/10 PASS"
+    },
+    {
+      "sha": "c5a6fd106",
+      "titulo": "Referencia de skill: triagem de falhas de golden",
+      "resumo": "Arquivo NOVO em .agents/skills/coelo-flutter-review/references/golden-failure-triage.md, com autorizacao explicita do coordenador porque skill e base compartilhada. Nomeia as tres assinaturas, o comando de extracao com o tr que junta linhas, as duas armadilhas de integracao e o fio dos 837 px. Nenhum arquivo existente de skill foi tocado.",
+      "provas": "1 arquivo, 117 linhas; numeros citados de docs/reviews/evidence/etapa-2/formularios-cuidado/2026-09-09-golden-divergence-measurement.md e das medicoes proprias"
+    },
+    {
+      "sha": "0f2135398",
+      "titulo": "Evidencia: a base pode ser reconstruida?",
+      "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md. Quatro fatos medidos: replay das 186 quebra no arquivo 48 e persiste no PG17; o conjunto de 17 que supabase start aplicaria nao tem create table; 40 objetos app_private chamados e nunca criados, agrupados por dominio e com os conferidos a mao marcados; e child_safety e chat versionados por inteiro, que e o que impede o diagnostico de virar catastrofe. Inclui a nota de versao PG15 x PG17 que quase produziu dois falsos positivos.",
+      "provas": "medicoes proprias em Postgres local efemero; containers removidos; nada aplicado remotamente"
+    },
+    {
+      "sha": "e4ce0e49b",
+      "titulo": "Pacote revisavel do selo DESTAQUE",
+      "resumo": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md. Contraste medido nos dois temas (3,75:1 claro, falha AA; 6,25:1 escuro, passa), curva de alfa mostrando que nenhum veu branco resolve, correcao proposta com orange950 a 16% dando 5,75:1, e o custo medido de 13 de 13 goldens. Nao aplicado: o token e compartilhado e a decisao e de coelo-ui.",
+      "provas": "calculo WCAG sobre as cores reais; troca aplicada, medida e revertida com arvore limpa conferida"
+    },
+    {
+      "sha": "cdd549e0a",
+      "titulo": "Sonda das telas fail-closed com dados",
+      "resumo": "As oito telas cuja composicao de producao monta Unavailable no ramo autorizado, montadas pelas rotas /dev que usam os MESMOS page classes com repositorio que devolve dados, em 1440x900 e 375x812. Sete limpas nos dois viewports; /dev/imports transborda 1069 px nos dois. Corrobora por caminho independente a varredura de chat-comunicacoes. /imports fica FIXADO como esperado-a-transbordar, entao a suite fica verde e honesta.",
+      "provas": "16/16 PASS; guarda contra verde vazio asserindo ausencia da tela de erro em cada sonda"
+    },
+    {
+      "sha": "ace7b32e1",
+      "titulo": "Prova produtiva do grid de Seguranca infantil",
+      "resumo": "Rota /safety de PRODUCAO montada com repositorio devolvendo registros, em quatro larguras: 11 cartoes em cada, zero excecao. Contagem de cartoes ANTES de ler takeException, porque grade vazia nao exercita medicao de linha. Confirma que 089c1fafc fechou o defeito.",
+      "provas": "4/4 PASS"
+    },
+    {
+      "sha": "1d453e2f3",
+      "titulo": "Aviso sobre a fresta das rotas de detalhe",
+      "resumo": "A guarda de verde vazio nao se estende a rotas parametrizadas: id inexistente renderiza o detalhe vazio legitimo, sem acionar caminho de erro. A guarda que falta e sobre a ENTRADA. Documentado no proprio arquivo porque estender para detalhes e o passo obvio.",
+      "provas": "comentario; sem mudanca de comportamento"
+    }
+  ],
+  "defeitos_corrigidos": 10,
+  "defeitos_registrados_sem_correcao": [
+    "Chrome duplicado da rota de edicao hospedada abaixo do breakpoint expanded (medido, lote 13)",
+    "Campos do Sobre sem rotulo VISIVEL: acessibilidade entregue, visual depende de decisao",
+    "Contraste 3,75:1 do chip DESTAQUE contra o minimo AA de 4,5:1 (herdado de L03)",
+    "CTA de comunicacao real nao leva a lugar nenhum: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url"
+  ],
+  "invariantes_latentes_declaradas": [
+    "PrincipalForYouRoutePage assume que supportingData e audienceScope derivam do MESMO runtime context, o que o router garante. Se um chamador futuro trocar so os rotulos durante um carregamento em andamento, o resultado usara os rotulos antigos. Nao alcancavel pela composicao atual; declarado em vez de corrigido para nao acrescentar refetch por caminho inexistente.",
+    "A saudacao do hub diz 'Bom dia' em qualquer hora do dia, inclusive a noite. E copy aprovada no fixture e torna-la sensivel ao horario e comportamento novo; registrado, nao alterado."
+  ],
+  "verificacao_sql_local": {
+    "o_que": "CREATE FUNCTION dos dois pacotes nao aplicados do recorte, em Postgres local efemero (docker postgres:15, --rm), com preambulo minimo: schema app_private, papeis authenticated e anon, e tabela stub public.profile_about_pages porque a declaracao p public.profile_about_pages resolve o TIPO no CREATE.",
+    "resultado": "Os dois aceitos e registrados em pg_proc: get_profile_about (candidato proprio) e list_my_principal_for_you (pacote de L03). O unico erro inicial foi role anon inexistente num REVOKE, e anon existe em qualquer projeto Supabase real.",
+    "o_que_nao_prova": "plpgsql valida sintaxe no CREATE e NAO resolve nomes de tabela, coluna, funcao ou enum do corpo. Continua sem prova de que app_private.profile_about_can, profile_about_page_for, as colunas de profile_about_structured_fields e os tokens de visibilidade existem como assumido. Nada de comportamento, RLS ou autorizacao. BE segue nao certificado.",
+    "recursos": "container coelo-sqlcheck criado e removido; docker ps -a vazio; temporario apagado; nada remoto tocado"
+  },
+  "estado": "Recorte executavel esgotado. O que resta e bloqueado por decisao do Owner ou por autorizacao nominal remota.",
+  "disponivel_para": [
+    "conferencia externa de Git",
+    "leitura de imagem de golden para frentes cujo ambiente falha ao abrir PNG",
+    "checagem de sintaxe de pacote SQL nao aplicado de qualquer frente"
+  ],
+  "verificacao_fila_sql": {
+    "atribuicao": "Coordenador pediu verificacao da fila SQL inteira: 13 candidatos em packages/coelo_database/migrations/ mais o pacote de Modelos.",
+    "resultado": "ZERO erros de sintaxe nos 13 candidatos e nos 6 arquivos de models/ e safety-sql/. O de Circulares (20260909212000_circulars_media_private_r2_v1.sql), priorizado por ser trinca inseparavel com Edge Function e R2, passa.",
+    "resultado_mais_forte": "now_publication_expiry_transition_v1, happens_post_withdrawal_v1 e happens_mixed_feed_withdrawal_v1 aplicaram com ZERO erros de qualquer tipo: as dependencias existiam no schema local e eles EXECUTARAM inteiros.",
+    "metodo": "Postgres local efemero (docker postgres:15, --rm) com shim Supabase (schemas auth/extensions/storage/app_private/audit; papeis anon/authenticated/service_role/supabase_admin/authenticator; pgcrypto; auth.uid/role/jwt; stubs auth.users, storage.buckets, storage.objects) e as 186 migrations do historico aplicadas antes. O historico NAO aplica limpo nesse shim: 80 sem erro, 104 com objeto ausente. Schema local e PARCIAL.",
+    "por_que_ON_ERROR_STOP_0": "Parar no primeiro erro esconderia erro de sintaxe posterior atras de um 'relation does not exist' na linha 10. Com ON_ERROR_STOP=0 todas as linhas de ERROR sao coletadas e classificadas: 'syntax error at or near' e defeito do arquivo, 'does not exist' e buraco do schema local.",
+    "stubs_declarados": "auth.uid/role/jwt retornam nulo ou objeto vazio; auth.users so id e email; storage.buckets id/name/public; storage.objects id/bucket_id/name/owner/metadata. Nenhum candidato falhou por causa deles, mas comportamento de auth.uid real nao foi exercitado.",
+    "o_que_nao_prova": "plpgsql valida sintaxe no CREATE e nao resolve nomes de tabela, coluna, funcao ou enum do corpo. Sem prova de comportamento, RLS ou autorizacao.",
+    "borda_registrada_sem_afirmar_defeito": "Dois arquivos do HISTORICO acusaram syntax error neste ambiente (20260812002100_child_safety_read_models.sql e 20260813155005_forms_definition_and_capabilities.sql). Ja estao aplicados em producao ha semanas, entao a explicacao provavel e estado parcial do schema ou dollar-quoting apos erro anterior no mesmo arquivo. Nao tratar como defeito.",
+    "versao_corrigida": "A primeira medicao usou postgres:15 e o Coelo roda Postgres 17. Refeita inteira em public.ecr.aws/supabase/postgres:17.6.1.165 com o mesmo shim e as 186 migrations aplicadas antes.",
+    "resultado_pg17": "13 candidatos syntax=0; 4 arquivos de models/ syntax=0; os 2 planos do recorte syntax=0.",
+    "quatro_com_prova_maior": "now_publication_expiry_transition_v1, happens_post_withdrawal_v1, happens_mixed_feed_withdrawal_v1 e o plano list_my_principal_for_you aplicam INTEIROS no PG17 com o historico aplicado: zero erros de qualquer tipo.",
+    "causa_dos_dois_syntax_errors_do_historico": "RESOLVIDO e nao era defeito: count(authorization.id) usa authorization, palavra reservada que o PG15 recusa como qualificador e o PG17 aceita. Provado por controle: a mesma funcao extraida sozinha falha no 15 e no 17 devolve apenas 'schema app_private does not exist'.",
+    "por_que_a_versao_importa": "O 17 e mais permissivo nesse ponto, entao ausencia de erro no 15 bastaria para o 17; o inverso nao vale, e foi justamente o inverso que produziu dois falsos positivos. Verificar na versao de producao era condicao para a afirmacao valer nos dois sentidos."
+  },
+  "correcao_de_escopo_do_achado_de_golden": "O golden do Perfil renderiza PrincipalProfilePreviewPage com o fixture horizon, ou seja a superficie de PREVIEW, nao a rota real. PrincipalProfilePreviewData.contextual, usado pela rota de producao, tem metrics/highlights/links vazios e nextEvent nulo, e as quatro secoes sao guardadas por isNotEmpty: a rota real nunca mostra metrica nenhuma. A pergunta correta ao Owner e se a referencia aprovada continua sendo a que tem Acompanhar, Seguidores e Seguindo, ou se a composicao atual passa a ser a referencia. Fato adicional para a decisao: nenhuma dessas secoes tem projecao autorizada por tras hoje, entao manter a referencia antiga seria aprovar algo que a rota real nao consegue preencher.",
+  "replay_do_historico": {
+    "correcao_de_numero": "O 80/104 que reportei antes estava ERRADO por defeito do meu shim: create extension pgcrypto sem schema colocou a extensao em public e o create ... with schema extensions virou no-op, entao extensions.digest nao existia e a cadeia morria no arquivo 28 por culpa do ambiente. Refeito com pgcrypto no schema correto e stubs completos de storage e supabase_migrations.",
+    "medicao_corrigida": "186 arquivos em packages/coelo_database/migrations replayados em ordem de nome numa base zerada: arquivos 1 a 47 aplicam LIMPOS; 51 falham a partir do 48.",
+    "primeira_quebra_real": "Arquivo 48, 20260812002000_child_safety_schema.sql linha 192: null value in column module_label of relation platform_permissions violates not-null constraint. Causa rastreada: 20260811215451_access_profile_management_v2.sql, que roda antes, adiciona module_label SEM default e depois faz set not null; o arquivo 48 insere codigos de permissao novos sem module_label e o ON CONFLICT DO UPDATE tambem nao o define. Verificado que child_safety.manage so aparece a partir do proprio 48, entao num replay do zero o caminho de INSERT e o que roda.",
+    "duas_explicacoes_possiveis": "Ou producao aplicou em ordem diferente da ordem de nome, ou as linhas ja existiam por outro caminho e o conflito preservou o valor. Nao ha como escolher daqui, e as duas significam o mesmo para quem precisa recriar a base.",
+    "consequencia": "A pasta de migrations, replayada em ordem de nome a partir do zero, NAO atravessa. Isso e recuperabilidade: ambiente novo, recuperacao de desastre e homologacao real nao tem caminho hoje.",
+    "cuidado_de_leitura": "Os 51 sao majoritariamente cascata, porque com ON_ERROR_STOP cada arquivo aborta no primeiro erro e nao cria o que os seguintes esperam. Nao contar 51 como 51 defeitos.",
+    "nao_afetado": "A verificacao dos 13 candidatos e dos 6 arquivos de Modelos usou ON_ERROR_STOP=0 e o discriminador por mensagem, entao nao depende da completude do schema e continua valendo: zero erros de sintaxe.",
+    "segunda_barreira_no_mesmo_arquivo": "Relaxando o NOT NULL de module_label, o arquivo 48 falha logo depois em 'column updated_at of relation platform_role_permissions does not exist'. Sao pelo menos dois problemas independentes de replay no mesmo arquivo. A primeira barreira persiste no PG17, entao nao e versao: e a cadeia."
+  },
+  "profile_about_nao_versionado": {
+    "medido": "Busca em packages/coelo_database/migrations e supabase/migrations: app_private.profile_about_can NUNCA e criada, so chamada dentro do corpo de save_profile_about; app_private.profile_about_page_for idem; e nao ha nenhum create table de profile_about_*. O unico artefato versionado do dominio e 20260825193131_final_review_profile_about_lint_hardening.sql, que faz CREATE OR REPLACE da RPC de escrita.",
+    "consequencia_para_o_candidato": "2026-09-09-profile-about-read-rpc.sql so pode ser aplicado ao banco REMOTO, onde esses objetos existem. Num banco reconstruido criaria uma funcao que falha na primeira chamada. Isso confirma a pendencia 3 de L03 com evidencia.",
+    "consequencia_para_recuperabilidade": "Somado a quebra do replay no arquivo 48, sao DOIS buracos independentes: um de ordem e um de ausencia. Mesmo corrigindo o 48, um banco reconstruido nao teria o dominio profile_about. Recriar a base hoje depende de dump.",
+    "limite": "Nao verifiquei se outros dominios tem o mesmo padrao; distinguir 'referenciado e nao criado' de 'nome montado dinamicamente' exigiria cuidado que nao cabia na janela."
+  },
+  "por_que_e2e_e_zero": {
+    "tese": "Nao existe base reproduzivel para exercitar rota real contra Postgres. Tres buracos independentes, todos medidos nesta rodada.",
+    "buraco_1": "A cadeia de 186 migrations quebra no arquivo 48 (NOT NULL de module_label) e tem pelo menos uma segunda barreira no mesmo arquivo. Replay do zero nao atravessa. Confirmado tambem no PG17.",
+    "buraco_2": "O conjunto que supabase start aplicaria e outro: packages/coelo_database/supabase/migrations, 17 arquivos, com ZERO create table. Sao 14 CREATE OR REPLACE de funcao mais revokes. list_my_principal_contexts e list_visible_profile_circulars nao estao la. Um supabase start sobe um banco praticamente vazio do ponto de vista do Coelo.",
+    "buraco_3": "O dominio profile_about nao tem schema versionado em conjunto nenhum.",
+    "conclusao_para_o_recorte": "Nao havia como certificar E2E localmente: o schema que as tres telas leem nao existe em nenhum conjunto aplicavel. Dedutivo e assinado.",
+    "limite": "Para outras frentes afirmo menos: o conjunto local e o mesmo e nao cria tabela, entao a situacao provavelmente e a mesma, mas nao medi dominio por dominio.",
+    "releitura_do_numero": "O 0/198 vinha sendo lido como escolha de prioridade. A leitura correta e que a unica base disponivel e a PRODUCAO, onde ninguem pode rodar E2E sem autorizacao nominal. Enquanto nao houver caminho de recriacao, E2E continua zero por construcao e nenhum esforco de frente muda isso."
+  },
+  "schema_versionado_por_dominio": {
+    "pedido": "Coordenador pediu medir o padrao de profile_about em child_safety e depois em chat.",
+    "child_safety": "VERSIONADO. Tabelas (child_contexts, child_group_links, child_safety_alerts, _evidence, _restrictions, child_unit_links, child_unit_access_requests, app_private.child_safety_command_receipts) e dezenas de funcoes app_private do dominio sao criadas em migration.",
+    "chat": "VERSIONADO. conversations, conversation_members, messages, message_receipts, message_edits, chat_attachment_metadata e receipts internos, mais can_access_chat_conversation, chat_send_message, chat_mark_read e outras.",
+    "conclusao": "profile_about NAO e excecao. Varredura sistematica: 605 objetos app_private chamados no SQL versionado contra 527 funcoes e 63 tabelas criadas; sobram 40 chamados e nunca criados.",
+    "dominios_atingidos": "student_tracking (4), superadmin_unit import/export (8), routine (9), profile_about (3), meal_plan (2), mais assert_access_profile_assignment_delegable, assert_unit_file_access, create_unit_for_superadmin, enforce_unit_branding_identity_ownership, normalize_person_handle e quatro de legal_representative.",
+    "conferencia_manual": "profile_about_can, routine_receipt, student_tracking_can_read e normalize_person_handle: ZERO ocorrencias de 'function app_private.<nome>' em todo o SQL versionado, busca que pegaria CREATE e DROP.",
+    "impacto_para_outra_frente": "routine e student_tracking sao o dominio de alunos-rotina, que entregou muito em cima deles nesta rodada. A entrega nao fica invalida; a base que a sustenta e que nao e reconstruivel.",
+    "leitura_positiva": "O buraco e sistemico mas NAO universal. child_safety e chat mostram que existe padrao correto na propria casa para seguir.",
+    "ressalvas": "Os 40 sao objetos, nao defeitos: um helper pode servir a varios dominios. E nao distingo helper que nunca existiu de helper que existe no remoto e nunca foi versionado; para reconstruir a base da no mesmo, para responsabilidade nao da. Cinco conferidos a mao, os outros 35 vem do metodo."
+  },
+  "git": {
+    "medido_em": "2026-09-10T04:49:30-03:00",
+    "head_da_worktree": "1d46746ff",
+    "divergencia_com_upstream": "0 0",
+    "worktree": "0 caminhos alterados",
+    "stash": "0",
+    "origin_dev": "51ed08d0c",
+    "residual": "ZERO, pelos tres criterios; ver PRE_ENTREGA_DEFINITIVA_0450",
+    "SUPERADO": "A versao anterior deste bloco citava b2cdba58a, c5a6fd106 e 0f2135398 como estado corrente e envelheceu horas atras."
+  },
+  "validacao_final_do_recorte": {
+    "NUMERO_VALIDO": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos",
+    "metodo": "flutter test --file-reporter json:recorte.json, reporter que nao trunca nome de caso",
+    "medido_em": "2026-09-10, janela 03:52:22 a 03:53:01",
+    "controle": "o contador da propria corrida declarou +306 -10 e o parser reconstruiu exatamente isso",
+    "SUPERADO_268_10": "A medicao anterior, P=268 F=10, repetida em quatro bases sucessivas, estava CERTA para os caminhos que mediu e ERRADA como denominador: faltavam cinco arquivos do dominio que a inversao do 2b encontrou. A estabilidade em quatro bases nao era sinal de solidez, era o mesmo furo repetido quatro vezes. Guardo o numero antigo aqui porque apaga-lo esconderia como o erro se sustentou.",
+    "aritmetica": "288 + 18 = 306, onde 18 sao os casos dos quatro arquivos recuperados em apps/superadmin",
+    "fora_do_app": "packages/coelo_domain/test/profile_about/profile_about_test.dart, 9 PASS / 0 FAIL",
+    "total_nao_duplicado": "325 casos, 315 passando, 10 falhando"
+  },
+  "servicos_prestados_a_outras_frentes": [
+    "Alerta e diagnostico da rota principal-conversations duplicada em dev, que fazia createSuperadminRouter lancar e o app inteiro nao subir; confirmado em checkout limpo antes de alertar",
+    "Guarda de unicidade de nome de rota, adotada pelo coordenador como parte do gate de integracao",
+    "Triagem de falhas de golden em tres assinaturas, com o comando corrigido; referencia de skill publicada com autorizacao",
+    "Verificacao de sintaxe da fila SQL inteira em Postgres 17: 13 candidatos, 4 arquivos de Modelos e 2 planos, todos syntax=0",
+    "Diagnostico estrutural do E2E 0/198: replay quebrado no arquivo 48, conjunto local sem create table, 40 objetos app_private orfaos em oito dominios",
+    "Capacidade de leitura de imagem de golden, que falha por timeout em outras frentes, oferecida e disponivel"
+  ],
+  "o_que_fica_para_o_owner": [
+    "Referencia aprovada do Perfil: continua a que tem Acompanhar, Seguidores e Seguindo, ou a composicao atual passa a ser a referencia? Na rota real nenhuma dessas secoes aparece, porque nao ha projecao autorizada por tras.",
+    "Regra de visibilidade do leitor Principal no Sobre: nao existe token de leitura em profiles.about.*.",
+    "Contraste 3,75:1 do chip DESTAQUE contra o minimo AA de 4,5:1.",
+    "Contrato visual canonico de Editar perfil, incluindo onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado abaixo do breakpoint expanded.",
+    "Rotulo VISIVEL dos campos do Sobre: a acessibilidade ja foi entregue e nao depende de decisao.",
+    "Destino do CTA das comunicacoes: PlatformNotice nao modela URL no cliente embora platform_notices tenha cta_url.",
+    "Caminho de recriacao da base, do qual dependem homologacao e E2E."
+  ],
+  "proximo_passo": "Rodar a conferencia externa de Git sobre o estado que o coordenador declarar as 05:00, com relogio cru dentro dela, e remover a worktree verify-dev-tmp declarando a remocao com git worktree list.",
+  "reteste_das_linhas_de_bloqueio": {
+    "criterio": "Cada linha chega com o teste que a sustenta NOMEADO, ou marcada como NAO TESTADA. Distingue bloqueio por AUSENCIA do objeto de bloqueio por FALTA DE AUTORIZACAO NOMINAL para verificar: sao coisas diferentes e pedem decisoes diferentes do Owner.",
+    "linhas": [
+      {
+        "linha": "principal.profile-view BE: leitura do Sobre depende de public.get_profile_about, nao aplicada",
+        "classificacao": "bloqueio por AUSENCIA, e a ausencia e certa",
+        "teste_que_sustenta": "A funcao foi escrita por mim nesta rodada como plano em packages/coelo_database/plans/; nunca foi aplicada em lugar nenhum. Sintaxe verificada em Postgres 17 local (syntax=0). Nao existe no remoto por construcao.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-view BE: enquanto isso o caminho real e o fallback por tabela sob RLS",
+        "classificacao": "NAO TESTADO. Corrijo a minha propria redacao anterior.",
+        "teste_que_sustenta": "NENHUM. Eu disse que o fallback 'falha fechado se as tabelas estiverem deny-by-default'. Isso e uma CONDICIONAL que nunca verifiquei: nunca consultei o banco remoto. As tabelas profile_about_* existem no remoto (prova indireta: save_profile_about, que e versionada e aplicada, as le e escreve), entao o fallback pode estar funcionando normalmente hoje. Nao sei.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar, nao por ausencia",
+        "confianca": "baixa; a linha estava mais assertiva do que a evidencia permite"
+      },
+      {
+        "linha": "principal.profile-edit BE: escrita por save_profile_about preservada",
+        "classificacao": "objeto EXISTE no remoto; falta prova, nao objeto",
+        "teste_que_sustenta": "public.save_profile_about e versionada em 20260825193131_final_review_profile_about_lint_hardening.sql e chama app_private.profile_about_can e profile_about_page_for, o que e a unica prova disponivel de que esses existem no remoto. O que falta e execucao por ator autorizado real.",
+        "reclassificacao_correta": "bloqueado por FALTA DE AUTORIZACAO NOMINAL para verificar",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit BE: schema profile_about nao versionado",
+        "classificacao": "bloqueio por AUSENCIA no repositorio, confirmado",
+        "teste_que_sustenta": "Busca em packages/coelo_database/migrations e supabase/migrations: zero create table profile_about_*; profile_about_can e profile_about_page_for com zero ocorrencias de 'function app_private.<nome>'. Publicado em docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you BE: autorizacao ainda no diretorio administrativo",
+        "classificacao": "bloqueio por DECISAO de contrato, nao por ausencia",
+        "teste_que_sustenta": "SupabaseNoticeRepository chama superadmin_notice_directory_v2, que existe e e versionada. O objeto nao falta: o limite e que ele decide por permissao administrativa e a audiencia acaba resolvida no cliente. O pacote list_my_principal_for_you existe como plano, tem syntax=0 no PG17 e aplica inteiro no schema local.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.for-you FE: contraste 3,75:1 do chip DESTAQUE",
+        "classificacao": "bloqueio por DECISAO, agora MEDIDO por mim e nao herdado",
+        "teste_que_sustenta": "Calculo WCAG sobre as cores reais da composicao: tema claro, chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco -> 3,75:1, abaixo dos 4,5 exigidos. Tema escuro: chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950 -> 6,25:1, PASSA. Impacto medido: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test, medido e revertido.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "principal.profile-edit FE: sem contrato visual canonico",
+        "classificacao": "bloqueio por DECISAO",
+        "teste_que_sustenta": "Leitura de .agents/skills/coelo-ui/references/principal-visual-surfaces.md: a matriz nao cobre a tela e manda localizar rota e spec pelo nome. Somado a medicao do chrome duplicado (2 AppBars abaixo do breakpoint expanded, 1 em 1440 px), fixada em teste no lote 13.",
+        "confianca": "alta"
+      },
+      {
+        "linha": "as tres camadas integrated: E2E nao certificado",
+        "classificacao": "bloqueio ESTRUTURAL, medido nesta rodada",
+        "teste_que_sustenta": "Replay das 186 migrations quebra no arquivo 48 (persiste no PG17); o conjunto que supabase start aplicaria tem 17 arquivos e zero create table; 40 objetos app_private chamados e nunca criados. Publicado na evidencia citada acima.",
+        "confianca": "alta"
+      }
+    ],
+    "resultado_do_reteste": "Duas linhas mudam de classificacao e uma perde confianca. A que eu tratava como 'o caminho real falha fechado em producao' era CONDICIONAL nunca verificada, e a reclassificacao correta e falta de autorizacao para verificar. A escrita do Sobre tambem nao esta bloqueada por ausencia: o objeto existe no remoto e o que falta e prova."
+  },
+  "selo_destaque_medido": {
+    "tema_claro": "chip = onPrimary branco a 16% sobre primary orange500, texto onPrimary branco. Composto RGB (221,91,41); contraste 3,75:1, abaixo dos 4,5 exigidos em AA para 11px. Numero herdado CONFIRMADO por calculo proprio.",
+    "tema_escuro": "chip = onPrimary orange950 a 16% sobre primary orange300, texto orange950. Contraste 6,25:1: PASSA. O defeito e so do tema claro, o que ninguem havia dito.",
+    "causa_estrutural": "No tema claro o veu e o texto sao a MESMA cor (onPrimary branco). Curva medida: alpha 0 -> 4,66; 0,08 -> 4,21; 0,16 -> 3,75; 0,24 -> 3,32. Nao existe alpha de veu branco que resolva; so remover o veu, o que apaga o chip.",
+    "proposta": "Inverter o veu para o tom escuro da propria marca: orange950 a 16% sobre orange500 da 5,75:1, passa com folga, usa token de paleta existente e fica simetrico com o tema escuro, que ja veda com orange950.",
+    "nao_aplicado": "O token e scheme.onPrimary, compartilhado, entao pela regra do coordenador vira decisao de coelo-ui. E o custo foi MEDIDO em vez de herdado: trocar o veu quebra 13 de 13 goldens de principal_for_you_preview_golden_test. Medido e revertido; arvore limpa conferida.",
+    "decisao_do_owner": "Entre uma tela que nao cumpre AA no tema claro e treze referencias aprovadas a regravar."
+  },
+  "item_12_do_relatorio_premissa_falsa": {
+    "afirmado_no_relatorio": "o teste da rota do Perfil exige que a frase 'experiencia completa' nao apareca; o teste de Para Voce ESPERA a frase.",
+    "verificado": "FALSO. Sao exatamente duas ocorrencias da frase em todo test/ do superadmin e as DUAS estao dentro de assercoes findsNothing. principal_for_you_route_responsive_test.dart:389 pertence ao teste 'says plainly that a shortcut without a destination is unavailable', que assere 'Cardapio ainda nao esta disponivel.' presente e a frase de previa AUSENTE, com o comentario 'A production route never answers with the preview message'.",
+    "consequencia": "Perfil e Para Voce CONCORDAM. Nao ha decisao a tomar nem trabalho a fazer nas duas. Se as seis ocorrencias de Acontece, Agora e Momentos existirem, o item continua real para essas tres, mas deixa de ser 'o produto esta dividido' e vira 'tres telas ficaram para tras enquanto duas ja foram corrigidas'.",
+    "resposta_sobre_simetria": "Nao ha versao de for_you a fazer. A frase e inalcancavel na rota de producao: embedded esconde o chrome e onAction recebe _handleAction, que usa a mensagem honesta. _feedback so sobrevive para a superficie nao hospedada, que e o /dev.",
+    "padrao": "Terceira ocorrencia na mesma noite do mesmo erro: ler a string e nao a assercao em volta. As outras duas foram minha leitura do golden e a de outra frente medindo widget isolado."
+  },
+  "proxima_rodada": {
+    "como_ler_este_bloco": "Ordem de execucao, nao de importancia. Cada item diz o que desbloqueia e o que fazer PRIMEIRO. Quem pegar este grupo nao precisa reler a noite inteira: comece pelo item 1.",
+    "itens": [
+      {
+        "ordem": 1,
+        "acao": "Confirmar com o Owner qual e a referencia aprovada do Perfil",
+        "primeira_coisa_a_fazer": "Abrir apps/superadmin/test/features/principal_profile/presentation/failures/principal_profile_light_1024_masterImage.png contra _testImage.png (gerar rodando o golden). A referencia tem botao Acompanhar e seis metricas com Seguidores e Seguindo; a composicao atual tem Mensagem e tres metricas.",
+        "desbloqueia": "10 dos 12 goldens do Perfil, que hoje deixam a tela sem guarda visual utilizavel. Enquanto isso durar, regressao visual da composicao completa e invisivel.",
+        "cuidado": "NAO regravar golden para fechar vermelho. Se o Owner confirmar a composicao atual, regravar e consequencia administrativa; se nao, e defeito de produto e volta para esta fila."
+      },
+      {
+        "ordem": 2,
+        "acao": "Decidir o veu do selo DESTAQUE",
+        "primeira_coisa_a_fazer": "Levar a coelo-ui os numeros ja medidos: tema claro 3,75:1 (falha AA), tema escuro 6,25:1 (passa), e a proposta de inverter o veu para orange950 a 16%, que da 5,75:1. Custo medido: quebra 13 de 13 goldens de principal_for_you_preview_golden_test.",
+        "desbloqueia": "principal.for-you FE sair de blocked-decision.",
+        "cuidado": "O token e scheme.onPrimary, compartilhado. Nao e correcao de executor."
+      },
+      {
+        "ordem": 3,
+        "acao": "Decidir o contrato visual de Editar perfil",
+        "primeira_coisa_a_fazer": "Duas perguntas juntas, porque a segunda depende da primeira: quais campos a tela edita e quem edita; e onde ficam titulo e acao de fechar se a pagina receber embedded para resolver o chrome duplicado. A medicao do chrome esta fixada em teste: 2 AppBars abaixo do breakpoint expanded, 1 em 1440 px.",
+        "desbloqueia": "principal.profile-edit FE sair de blocked-decision.",
+        "cuidado": "Inverter o teste de chrome em vez de relaxa-lo quando a decisao vier."
+      },
+      {
+        "ordem": 4,
+        "acao": "Decidir a regra de visibilidade do leitor Principal no Sobre",
+        "primeira_coisa_a_fazer": "Ler o cabecalho de packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql, que registra a decisao necessaria e o que a proposta assumiu: visibility profile_access, por ser o default dos INSERTs da RPC de escrita. Nao existe token de leitura em profiles.about.*.",
+        "desbloqueia": "Aplicacao nominal de get_profile_about, e com ela a leitura autorizada do Sobre.",
+        "cuidado": "A funcao ja tem sintaxe verificada em Postgres 17. O que falta e decisao e autorizacao, nao codigo."
+      },
+      {
+        "ordem": 5,
+        "acao": "Verificar, com autorizacao nominal, se a leitura por tabela do Sobre funciona hoje em producao",
+        "primeira_coisa_a_fazer": "Uma consulta de leitura as tabelas profile_about_* como ator autorizado. E a linha que eu classifiquei errado a noite toda: nao esta bloqueada por ausencia, esta bloqueada por falta de autorizacao para verificar.",
+        "desbloqueia": "Saber se o fallback esta funcionando ou falhando fechado em producao, que muda a urgencia do item 4.",
+        "cuidado": "Nao inferir do codigo. A duvida existe justamente porque ninguem consultou."
+      },
+      {
+        "ordem": 6,
+        "acao": "Aplicar list_my_principal_for_you e mover a audiencia para o servidor",
+        "primeira_coisa_a_fazer": "O pacote esta em packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql, com os tres ajustes do dono do contrato ja aplicados e verificados NO ARQUIVO, e aplica inteiro no Postgres 17 local.",
+        "desbloqueia": "principal.for-you BE. Hoje o filtro de audiencia no cliente e defesa em profundidade, nao controle de acesso.",
+        "cuidado": "Serializacao pelo integrador e autorizacao nominal."
+      },
+      {
+        "ordem": 7,
+        "acao": "Rotulo VISIVEL dos campos na aba Sobre",
+        "primeira_coisa_a_fazer": "Trocar o Semantics por Text usando profileAboutFieldLabel, que ja e compartilhado em features/profile_about/presentation/profile_about_labels.dart. O rotulo de acessibilidade ja foi entregue e nao depende disso.",
+        "desbloqueia": "Nada tecnico; e legibilidade da tela.",
+        "cuidado": "Muda composicao de uma aba sem fonte canonica em coelo-ui. E decisao, nao conserto."
+      },
+      {
+        "ordem": 8,
+        "acao": "Destino do CTA das comunicacoes",
+        "primeira_coisa_a_fazer": "PlatformNotice nao modela URL alguma no cliente, embora platform_notices tenha cta_url. Estender o contrato compartilhado e de quem o mantem; abrir URL externa e decisao de produto e de seguranca.",
+        "desbloqueia": "O CTA de uma comunicacao real publicada deixar de responder apenas que a capacidade nao esta disponivel.",
+        "cuidado": "Nao e do recorte perfil-para-voce sozinho."
+      },
+      {
+        "ordem": 9,
+        "acao": "E2E das tres acoes",
+        "primeira_coisa_a_fazer": "Nao tentar antes de existir caminho de recriacao da base. Ver docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md: o replay quebra no arquivo 48, o conjunto local nao cria tabela e profile_about nao esta versionado.",
+        "desbloqueia": "As tres camadas integrated.",
+        "cuidado": "Enquanto a unica base for producao, E2E continua zero por construcao."
+      }
+    ],
+    "sinal_de_refresh_de_momentos": "Deliberadamente nao consumido. O router entrega principalMomentsWithdrawalRepository e momentsFeedRefreshSignal a rota /principal-moments; a aba do Perfil nao os usa. Publicar e retirar pertencem a superficie de Momentos, e o contrato estava mudando na noite da decisao. Se a frente de Momentos quiser que publicacao nova reflita na aba sem recarregar, o hunk e pequeno e a decisao e de quem mantem o contrato."
+  },
+  "item_12_confirmado_no_relatorio": "A correcao chegou ao destino: o relatorio do Owner ja traz, no item 12, a retificacao com a leitura correta da assercao findsNothing e o reconhecimento explicito de que a string foi lida como expectativa.",
+  "servicos_a_outras_frentes_nesta_janela": {
+    "reteste_externo_operacoes_sistema": "Linhas conferidas por leitura de assercao e fonte. Nenhuma afirma mais do que sustenta. O texto de razao do proprio rpc_contract_test.dart enuncia a bifurcacao ('ou a funcao foi instalada fora do versionamento... ou a superficie falha no primeiro uso real'), entao o teste NAO estabelece blocked-environment: estabelece a duvida.",
+    "reteste_externo_alunos_rotina": "Quatro linhas conferidas uma a uma, todas verdadeiras. B1 esta SUBESTIMADA: cita um nome e sao pelo menos cinco RPCs superadmin_attendance_* chamadas pelo cliente e criadas por migration nenhuma. B3 e B4 sao mais fortes do que escritas: em superadmin_auth_scope, DENTRO do ramo autorizado, routineRepository e studentTrackingRepository recebem Unavailable explicitamente.",
+    "assimetria_encontrada": "No mesmo ramo autorizado, attendanceRepository recebe SupabaseAttendanceRepository real. Rotina e Alunos falham FECHADO por composicao deliberada; Assiduidade tem tudo composto e falharia no PRIMEIRO USO REAL se as RPCs tambem nao existirem no remoto. Ler as tres como 'sem backend' apaga a diferenca.",
+    "convergencia": "As cinco RPCs de Unidades de operacoes-sistema, as cinco de Assiduidade de alunos-rotina e os meus 40 objetos app_private sao o mesmo buraco medido por tres caminhos. create_unit_for_superadmin aparece em duas listas ao mesmo tempo.",
+    "dado_que_so_esta_frente_tinha": "'Instalado fora do versionamento' e fenomeno MEDIDO neste repositorio: profile_about prova. Isso torna a hipotese benigna pelo menos tao provavel quanto a grave, e recomenda um unico select proname from pg_proc que responde pelas tres frentes de uma vez.",
+    "leitura_de_imagem_instituicoes": "NAO e regressao. O cartao 'Criar instituicao' so renderiza if (onCreate != null) e o _goldenApp do teste nao fornece onCreate; em producao o router passa onCreate condicionado a hasStructureMutationCapability(). O fixture inteiro tambem trocou. MAS e perda de COBERTURA: o golden protegia a afordancia e deixou de proteger.",
+    "leitura_de_imagem_conta": "A composicao de Conta NAO mudou em nenhuma das quatro capturas. O que mudou e o SHELL: em 1440 dark a barra lateral ganhou campo de busca e cresceu de 6 para ~9 itens, e o cabecalho perdeu um icone; em 768 light o cabecalho trocou icone de menu por logo e marca, perdeu um icone e ganhou divisor, deslocando tudo ~6px. QUARTA RESPOSTA da taxonomia: deslocamento em bloco por mudanca de shell. O controle segmentado que outra frente viu no diff nao mudou, aparece porque DESLOCOU. E a armadilha do isolatedDiff: elemento identico que se moveu acende igual a elemento alterado. Corroboracao cruzada: o icone que sumiu do cabecalho e o mesmo em Conta e em Instituicoes, entao nao e de nenhuma das duas. Para rebaseline, Conta e seguro quanto a cobertura, mas congela o shell atual como referencia em oito imagens de uma vez.",
+    "icone_do_cabecalho_do_shell": "O icone e Icons.bug_report_outlined, key superadmin-report-bug, primeiro filho de _HeaderUtilityActions; o segundo e o SuperadminActivityCenter, o sino, que renderiza sempre. Ele e gateado por if (widget.onBugReportSubmitted != null), gate existente desde 2026-07-20; o unico commit que tocou a linha desde entao so trocou para widget.<campo> num refactor. NAO foi removido. ACHADO: em producao o handler e productionSupportController?.submitReport, e supportController e parametro opcional de createSuperadminRouter que nem main.dart nem superadmin_app.dart fornecem. E sempre nulo. Logo o botao Reportar bug NAO EXISTE no shell de producao do Superadmin, em tela nenhuma. Mesma causa raiz do /support devolver 503 achada por operacoes-sistema: Suporte nao tem composicao de producao e as duas coisas dependem do mesmo controlador ausente. O /dev preview fornece developmentSupportController, entao la o icone aparece. RESIDUAL DECLARADO: o golden de Instituicoes foi capturado em 2026-08-10, depois do gate existir, e mostra o icone; os dois testes de golden nunca referenciaram onBugReportSubmitted em commit nenhum e eu nao achei o que fornecia o handler naquela epoca. Parei porque a resposta que decide nao depende disso. RECOMENDACAO: regravar Conta e Instituicoes nao aprova regressao, aprova o estado verdadeiro de producao. Mas carimba como referencia aprovada uma tela sem a afordancia de reportar bug, em catorze imagens, sem ninguem ter decidido isso. Primeiro a decisao sobre Suporte no MVP, depois o rebaseline."
+  },
+  "correcao_de_horario": "Os campos updated_at das revisoes anteriores foram TIPADOS por estimativa e nao lidos do relogio: chegaram a ficar cerca de 1h25 adiantados. A partir desta revisao o valor vem de powershell Get-Date -Format 'yyyy-MM-ddTHH:mm:ssK'. Registro porque timestamp de handoff e usado para reconciliar ordem de eventos, e numero estimado com aparencia de medido e a mesma classe de erro que passei a noite catalogando. Nota util para as outras frentes: neste Git Bash o comando date JA devolve horario local -03, conferido contra o PowerShell no mesmo minuto; o que devolve UTC e usar TZ=America/Sao_Paulo, porque nao ha tzdata e o TZ e ignorado.",
+  "residual_de_integracao": {
+    "declaracao": "RESIDUAL ZERO.",
+    "medido_em": "2026-09-10T04:39:18-03:00, com origin/dev em 5ac61f6d7",
+    "metodo": "Tres criterios independentes, porque a integracao e por cherry-pick e ancestralidade do SHA original nao responde: conteudo identico em dev, marca de cherry-pick, e ancestralidade dos SHAs novos.",
+    "todos_os_commits_desta_frente": "ace7b32e1, 1d453e2f3, 6bf733fec, 50ba6a73c, 31cff109d, 2a0da284f, f57459bed integrados por ancestralidade; 3e8de2319 e 1d46746ff integrados como 1ca8a7f81 e 58a5a6ed1.",
+    "estado_git": "worktree de trabalho 0 caminhos, HEAD 1d46746ff, upstream 0 0; worktree de verificacao 0 caminhos; stash 0."
+  },
+  "releitura_do_relatorio_do_owner": {
+    "achados": [
+      "Secao do defeito mais grave descrevia em presente algo corrigido as 23:35 (089c1fafc). Corrigida em df5db511c com prova produtiva propria em ace7b32e1.",
+      "'Zero divergencia nas 80 chamadas de RPC' afirmava cobertura de 80; o teste pula chamada sem assinatura declarada e as cinco de Unidades sao exatamente essas, entao a cobertura e de no maximo 75. Corrigida.",
+      "principal_real_route_test aparecia como tres falhas na rota real do Principal sem a diagnose, que e teste desatualizado pela integracao do feed misto. Corrigida.",
+      "Replay '1 a 47 limpos' sem a clausula do shim, o que faria quem reproduzisse chegar ao arquivo 28. Corrigida.",
+      "Censo de IntrinsicHeight conta DOIS COMENTARIOS como usos (access_profiles e safety, ambos ja convertidos para Table) e PERDE um uso real, o _HeroContent do hub de Para Voce, que e segunda armadilha armada.",
+      "Paragrafo desta frente em 'o que cada frente entregou' omite o recorte proprio e descreve so o servico cruzado.",
+      "Decisao 12 diz que 'nessas tres os testes esperam a frase presente'. Verdade para DUAS: principal_happens (dois findsOneWidget) e principal_now (um). MOMENTOS nao tem teste que assere a frase, embora a ocorrencia exista em lib. O custo do patch nao e uniforme: Momentos e a mais barata e nao quebra teste; Acontece e Agora tem tres assercoes que precisam mudar junto."
+    ],
+    "confirmado_sem_correcao": "Decisao 15: PrincipalProfileContentTabs existe em principal_circulars, tem ZERO consumidor em lib e e protegida por golden verde (19/19). A implementacao viva e a copia privada dentro de principal_profile_preview_page. Dono ambiguo entre duas frentes, que e o que deixou tres achados orfaos nesta rodada.",
+    "classe_predominante": "Nao foi numero errado, foi TEMPO VERBAL: quatro dos cinco achados sao afirmacao escrita cedo, verdadeira sobre o mundo de entao e falsa sobre o mundo agora. Custo de documento que cresce por acrescimo enquanto o codigo muda debaixo dele.",
+    "pratica_sugerida": "Secoes que afirmam ESTADO carregarem o SHA da base em que foram medidas, como as medicoes de suite ja fazem. Secoes de metodo ou decisao nao precisam, porque nao envelhecem.",
+    "encerrada": "Sete achados: quatro corrigidos pelo coordenador, o censo de IntrinsicHeight, a omissao do paragrafo desta frente (corrigida) e o detalhe da decisao 12. Mais a confirmacao da decisao 15, que nao precisou de correcao."
+  },
+  "higiene_de_medicao": "Os 40 objetos orfaos foram REFEITOS com caminhos privados da sessao apos o aviso de que /tmp e compartilhado nesta maquina: 605/527/63/40, lista byte a byte identica. Nao houve contaminacao, mas a verificacao era devida porque o numero ja estava publicado.",
+  "correcao_de_horario_2": "Escrevi 'Sao 03:30 medidas' numa mensagem sem ter medido; a hora real era 02:51. Terceira ocorrencia do mesmo habito contra a minha propria regra. A licao operacional: a regra pegou no JSON, onde a leitura do relogio virou COMANDO, e nao pegou nas mensagens, onde eu ainda digito. Regra que depende de disciplina no momento da escrita nao pega; a que vira comando pega.",
+  "pre_entrega_0450": {
+    "estado": "publicada as 03:35, antes do prazo. Sera reconferida as 04:50 e o que mudar sera declarado COMO MUDANCA, nao reescrito em silencio.",
+    "formato": "os sete itens obrigatorios do coordenador, mais 1b, 2b e 2c acrescentados por ele durante a madrugada",
+    "1_residual_por_sha": {
+      "metodo": "git merge-base --is-ancestor <sha> origin/dev, apos git fetch origin --prune. NAO foi usado git cat-file -e <sha>^{commit}.",
+      "medido_em": "2026-09-10T03:07:38-03:00, reconferido 03:12:33",
+      "origin_dev_na_medicao": "e35437360 docs(e2): put the essential on one page at the top",
+      "meus_shas": [
+        {
+          "sha": "ace7b32e1",
+          "assunto": "test(safety): prove the production child grid lays out with records",
+          "resultado": "INTEGRADO"
+        },
+        {
+          "sha": "1d453e2f3",
+          "assunto": "test(router): warn that the vacuous-green guard does not extend to detail routes",
+          "resultado": "INTEGRADO"
+        }
+      ],
+      "minha_branch": "origin/work/etapa2-noturna-perfil-para-voce em 1d453e2f3 -> INTEGRATED",
+      "residual_meu": "ZERO",
+      "controles_antes_de_confiar": "Controle POSITIVO (origin/dev ancestral de origin/dev) PASSOU; controle NEGATIVO (origin/dev ancestral de origin/dev~1) RECUSOU; e o glob refs/remotes/origin/work/etapa2-noturna-* casa 14 refs, o mesmo total de refs/remotes/origin/work/*, entao o laco nao esta silenciosamente vazio. Uma conferencia que nunca passa nao e rigorosa, e quebrada."
+    },
+    "1b_residual_de_outras_frentes_achado_pela_conferencia": {
+      "por_que_esta_aqui": "Meu papel as 05:00 e conferencia externa de Git. Rodei a conferencia as 03:12:33, com 86 minutos ate o congelamento, e ela achou seis commits de cinco frentes fora de origin/dev. Nao integro nada; entrego o achado.",
+      "medido_em": "2026-09-10T03:12:33-03:00",
+      "desfecho_informado_pelo_coordenador_as_03_38_01": "cinco ja entraram nos ciclos seguintes. O 8d06b8a91 do router-dedupe fica de fora DE PROPOSITO: o conteudo dele ja esta em dev e a branch esta sobre base antiga; sera apagada no fechamento com registro no manifesto. Fui incumbido de confirmar isso na conferencia das 05:00 e avisar se houver conteudo la que ele nao viu.",
+      "commits_fora_de_dev_naquele_instante": [
+        {
+          "branch": "origin/work/etapa2-noturna-chat-comunicacoes-router-dedupe",
+          "tip": "8d06b8a91",
+          "commits": [
+            "8d06b8a91 fix(router): drop the duplicated Principal chat route that breaks the router"
+          ],
+          "nota": "e a rota duplicada que eu diagnostiquei como apagao do dev; conteudo ja em dev por outro caminho"
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-operacoes-sistema",
+          "tip": "646239792",
+          "commits": [
+            "646239792 fix(plans): limit the form to what the plan constraints accept",
+            "5845f01c2 fix(agenda): stop the form from building a payload the column rejects"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-copia-previa",
+          "tip": "80f160599",
+          "commits": [
+            "80f160599 fix(principal): stop production screens from calling themselves a preview"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-chat-volta-mobile",
+          "tip": "05fdcf2d5",
+          "commits": [
+            "05fdcf2d5 test(chat): prove the operator can switch conversations on a phone"
+          ]
+        },
+        {
+          "branch": "origin/work/etapa2-noturna-publicacoes-midia",
+          "tip": "b69c7d00f",
+          "commits": [
+            "b69c7d00f docs(e2): the recorte is eight feature directories, not nine"
+          ]
+        }
+      ],
+      "integradas_no_mesmo_instante": [
+        "acessos-pessoas 992f3530d",
+        "alunos-rotina c73f7b526",
+        "avisos-chave-de-linha cb0a386d8",
+        "chat-comunicacoes c1e6756c7",
+        "chat-comunicacoes-router c2127823f",
+        "chat-comunicacoes-router-from 48d15d8df",
+        "estrutura 6709f1473",
+        "formularios-cuidado 8111ebb67",
+        "perfil-para-voce 1d453e2f3"
+      ]
+    },
+    "2_numeros_de_teste_com_os_caminhos": {
+      "regra_aplicada": "ls em cada caminho ANTES de confiar no total, porque flutter test conta caminho inexistente como UMA falha e o total mente sem barulho.",
+      "lote_1_recorte": {
+        "resultado": "288 PASS / 10 FAIL",
+        "comando": "flutter test <os sete caminhos abaixo> -r expanded",
+        "cwd": "apps/superadmin, na worktree e2-noturna-perfil-para-voce",
+        "janela": "03:08:06 a 03:10:52",
+        "caminhos_conferidos_com_ls": [
+          "apps/superadmin/test/features/principal_profile (13 arquivos _test.dart)",
+          "apps/superadmin/test/features/profile_about (2)",
+          "apps/superadmin/test/features/principal_for_you (7)",
+          "apps/superadmin/test/app/router/principal_profile_for_you_production_routes_test.dart",
+          "apps/superadmin/test/app/router/route_name_uniqueness_test.dart",
+          "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+          "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart"
+        ],
+        "nenhum_caminho_ausente": true
+      },
+      "lote_2_suite_completa_do_app": {
+        "resultado": "6390 PASS / 14 SKIP / 144 FAIL",
+        "comando": "flutter test -r expanded",
+        "cwd": "apps/superadmin, mesma worktree",
+        "janela": "03:12:47 a 03:28:09",
+        "denominador": "apps/superadmin INTEIRO. NAO cobre os outros pacotes do monorepo; ver item 2b."
+      },
+      "lote_3_json": {
+        "estado": "EM EXECUCAO, iniciada 03:31:40",
+        "comando": "flutter test --file-reporter json:<scratchpad>/lote3.json",
+        "por_que": "ver a nota de metodo em 2c; o reporter expanded gravado em arquivo trunca nome de caso e nao serve de denominador"
+      },
+      "NUMERO_VALIDO": "306 PASS / 10 FAIL em 316 casos. Os 288 declarados na rev36 tinham denominador incompleto; ver CORRECAO_rev37."
+    },
+    "2b_inversao_da_pergunta": {
+      "pergunta": "existe teste do meu escopo FORA da minha lista?",
+      "metodo": "duas varreduras no monorepo: por NOME de arquivo casando principal_profile|principal_for_you|profile_about|perfil, e por IMPORT de features/(principal_profile|principal_for_you|profile_about). Casar diretorio de dominio, nao mencao no texto: o falso positivo conhecido e casar feed e pegar feedback.",
+      "resultado": "CINCO arquivos do meu dominio estavam FORA da lista declarada",
+      "achados": [
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_for_you_preview_route_test.dart",
+          "como": "nome",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_profile_preview_route_test.dart",
+          "como": "nome",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/app/router/principal_now_preview_route_test.dart",
+          "como": "SO por import",
+          "arvore": "rota"
+        },
+        {
+          "arquivo": "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart",
+          "como": "nome",
+          "arvore": "feature de OUTRO recorte, mas testa o Sobre"
+        },
+        {
+          "arquivo": "packages/coelo_domain/test/profile_about/profile_about_test.dart",
+          "como": "nome",
+          "arvore": "FORA de apps/superadmin"
+        }
+      ],
+      "medidos": {
+        "os_quatro_do_superadmin": "18 PASS / 0 FAIL, flutter test, 03:25:51 a 03:27:27",
+        "o_de_coelo_domain": "9 PASS / 0 FAIL, dart test, 03:28:18"
+      },
+      "licao": "Nenhum dos cinco falha, e ainda assim os cinco importam: um denominador furado nao vira falso verde por sorte, vira falso verde por construcao. O de coelo_domain e a mesma licao que o coordenador aplicou a si mesmo: eu tambem so media apps/superadmin.",
+      "arvores_que_a_organizacao_por_feature_perde": "rota, shell, menu, core/config, shared e OUTROS PACOTES do monorepo"
+    },
+    "2c_sobreposicao": {
+      "declaracao": "A sobreposicao entre os meus dois numeros e TOTAL: o lote 1 e subconjunto proprio do lote 2. Mesmos caminhos, mesma worktree, mesmo app. Somar 288 com 6390 contaria os 288 duas vezes.",
+      "o_que_NAO_esta_contido": "os 9 casos de packages/coelo_domain/test/profile_about, que vivem em outro pacote e nao entram na suite de apps/superadmin por construcao",
+      "nota_de_metodo_para_as_seis_frentes": {
+        "problema": "Extrair o numero do recorte DA MESMA CORRIDA da suite completa e a ideia certa, mas quebra se a corrida for -r expanded redirecionada para arquivo.",
+        "prova": "Parseei a minha propria corrida e conferi o parser contra o contador oficial DELA MESMA: contador +6390 ~14 -144; casos distintos reconstruidos 733, sendo PASS 589 e FAIL 144. As 144 falhas batem EXATO. Os 6390 viraram 589.",
+        "causa": "O reporter expanded trunca o nome do caso na largura do terminal. Casos distintos do mesmo arquivo com prefixo igual colapsam num so. Falha nao colapsa porque imprime bloco [E] proprio.",
+        "consequencia": "Quem seguir o metodo com expanded entrega denominador SUBESTIMADO e lista de falhas CERTA. E o pior formato de erro, porque a metade conferivel esta certa e empresta confianca a metade errada.",
+        "correcao": "flutter test --file-reporter json:<caminho>, que emite um evento por caso com nome INTEIRO e arquivo de origem, sem depender de largura de terminal. Combina com o expanded na mesma corrida.",
+        "como_eu_peguei": "Conferindo o parser contra um numero que o proprio parser NAO produziu. E a mesma lei do relogio, numa quarta roupa: um controle que depende de quem esta sendo controlado nao e controle.",
+        "distribuida": "reportada ao coordenador as 03:33:12 e publicada por ele em 5553fd6cb"
+      }
+    },
+    "3_falhas_enumeradas": {
+      "extracao": "Juntar as linhas antes do grep, porque mensagem quebrada em duas linhas nao casa com grep de linha unica. Foi assim que uma suite com 31 falhas ja foi lida como zero nesta rodada.",
+      "minhas_dez": [
+        "matches complete profile light_375",
+        "matches complete profile light_768",
+        "matches complete profile light_1024",
+        "matches complete profile light_1440",
+        "matches complete profile dark_375",
+        "matches complete profile dark_768",
+        "matches complete profile dark_1024",
+        "matches complete profile dark_1440",
+        "matches complete profile text_200_light_375",
+        "matches complete profile text_200_dark_1440"
+      ],
+      "arquivo_a_partir_da_raiz": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+      "dono": "MINHAS. As dez sao a MESMA causa unica.",
+      "causa": "A referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas.",
+      "estado": "blocked-decision, item 1 da proxima_rodada. NAO regravei golden para fechar vermelho: regravar aqui apagaria a evidencia da divergencia, que e exatamente a pergunta pendente ao Owner.",
+      "nao_e_regressao": "As dez ja falhavam antes de qualquer alteracao minha.",
+      "as_outras_134_da_suite": "NAO sao minhas. Estao em institutions, groups, forms, chat, activities, health_care, imports, locations, meal_plans, circulars, audit, help_center e em cinco casos de test/app/router de outros recortes. Atribui por caminho, nao por leitura de cada uma. Rodei a suite inteira para saber o que e MEU, nao para certificar o alheio.",
+      "tres_arquivos_de_fronteira_roteados_a_mim": "principal_profile_circulars_projection, principal_profile_happens_tab e principal_profile_happens_tab_responsive CAEM sob test/features/principal_profile/, primeiro caminho da minha lista. Entraram nos 288 e passam. Dono: perfil-para-voce. Confirmo tambem que nao ha transbordamento nos responsivos: escrevi o moments_tab espelhando o happens_tab."
+    },
+    "4_recursos_por_lista": {
+      "declaracao": "Listo tudo, inclusive o que criei fora da minha worktree. Numa revisao anterior eu declarei nenhum com a verify-dev-tmp existindo em disco; o coordenador so soube porque exigiu declaracao explicita.",
+      "itens": [
+        {
+          "recurso": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce",
+          "tipo": "worktree atribuida",
+          "estado": "0 caminhos alterados as 03:12:33",
+          "destino": "permanece ate a entrega"
+        },
+        {
+          "recurso": "C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp",
+          "tipo": "worktree efemera de conferencia, DETACHED",
+          "estado": "0 caminhos alterados",
+          "destino": "REMOVER apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list"
+        },
+        {
+          "recurso": "containers Postgres locais, postgres:15 e supabase/postgres:17.6.1.165",
+          "tipo": "container efemero",
+          "estado": "JA REMOVIDOS"
+        },
+        {
+          "recurso": "scratchpad da sessao",
+          "tipo": "arquivos temporarios",
+          "estado": "caminho privado da sessao, fora do repositorio; NADA em /tmp compartilhado"
+        }
+      ],
+      "sobre_o_aviso_de_tmp": "Refiz em caminho privado a medicao dos objetos app_private que tinha usado /tmp. Resultado byte-identico: 605 chamados / 527 funcoes / 63 tabelas / 40 sem CREATE. Sem contaminacao."
+    },
+    "5_hora_lida": {
+      "metodo": "date na MESMA chamada que produziu o dado, com segundos. Nao ha carimbo estimado nesta revisao.",
+      "leituras": {
+        "residual_por_sha": "2026-09-10 03:07:38 -03:00",
+        "conferencia_de_git": "2026-09-10 03:12:33 -03:00",
+        "lote_2b_superadmin": "2026-09-10 03:25:51 a 03:27:27",
+        "lote_2b_coelo_domain": "2026-09-10 03:28:18 -03:00",
+        "controle_do_parser": "2026-09-10 03:31:36 -03:00",
+        "esta_pre_entrega": "2026-09-10 03:35:00 -03:00"
+      },
+      "aceito_o_cruzamento": "Concordo com o protocolo das 04:40. Colo saida crua e o coordenador cruza com a dele. A lei que o justifica veio de alunos-rotina: um controle que depende de quem esta sendo controlado nao e controle.",
+      "meu_historico_honesto": "Tres vezes nesta noite eu rotulei estimativa como medicao e me corrigi tres vezes. A regra so pegou quando ler o relogio virou COMANDO, nao prosa. Por isso o cruzamento e melhor que a minha disciplina."
+    },
+    "6_citacoes_conferidas": {
+      "regra": "hash e caminho testados a partir da RAIZ do repositorio, nunca por basename",
+      "caminhos": [
+        "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+        "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+        "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart",
+        "apps/superadmin/test/app/router/principal_now_preview_route_test.dart",
+        "apps/superadmin/test/features/activities/presentation/activity_profile_about_section_test.dart",
+        "packages/coelo_domain/test/profile_about/profile_about_test.dart",
+        "packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql",
+        "packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql",
+        "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md",
+        "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md",
+        ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md"
+      ],
+      "hashes": "ace7b32e1 e 1d453e2f3 resolvidos por git log --oneline -1 <sha> na MESMA chamada do merge-base; e35437360 lido de git log --oneline -1 origin/dev",
+      "CORRECAO": "O artefato citado como handoff-snapshot-rev27.json chama-se handoff-snapshot-rev27.json, sem data. Citei de memoria. Todas as 11 citacoes foram reconferidas a partir da raiz com ls-tree as 04:04:20 e as outras 10 estavam certas."
+    },
+    "7_o_que_eu_NAO_verifiquei": [
+      "O numero da corrida com reporter JSON: iniciada 03:31:40, ainda rodando. Entra na reconferencia das 04:50.",
+      "Se a leitura por tabela do Sobre funciona HOJE em producao. Nunca consultei producao; falta autorizacao nominal. A noite toda eu classifiquei isso como bloqueado por ausencia e estava errado: esta bloqueado por falta de autorizacao para VERIFICAR.",
+      "Se get_profile_about e list_my_principal_for_you se comportam em producao. Ambos tem sintaxe verificada em Postgres 17 LOCAL e aplicam inteiros local. NAO foram aplicados remotamente.",
+      "35 dos 40 objetos app_private sem CREATE vem do metodo de conjuntos e nao foram inspecionados um a um. Cinco foram conferidos a mao. 40 nao sao 40 fatos verificados.",
+      "Se as falhas golden historicas da base tem outras causas alem das quatro assinaturas que documentei. Documentei a taxonomia, nao auditei cada falha.",
+      "As 134 falhas da suite que nao sao minhas. Atribui por caminho, nao por leitura de cada uma.",
+      "Os outros pacotes do monorepo, alem do unico arquivo de coelo_domain que e do meu dominio. O coordenador mediu sete pacotes; eu nao os rodei.",
+      "Nada de E2E. Continua zero por construcao enquanto nao existir caminho de recriacao da base.",
+      "Se o coordenador JA recebeu tudo. Reportei por mensagem as 03:33:12 e ele confirmou as 03:38:01. Reportar nao e receber; neste caso houve recibo."
+    ],
+    "CORRECAO_rev37": {
+      "numeros_corrigidos_com_reporter_json": {
+        "por_que_esta_revisao_existe": "A revisao 36 declarou 288 PASS / 10 FAIL. O numero estava CERTO para os caminhos que ele mediu e ERRADO como denominador, porque faltavam os cinco arquivos que a inversao do 2b achou. Aqui esta o numero completo, produzido com reporter JSON, que nao trunca nome de caso.",
+        "recorte_completo": {
+          "resultado": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos distribuidos em 30 arquivos",
+          "comando": "flutter test <os 11 caminhos declarados> --file-reporter json:recorte.json",
+          "cwd": "apps/superadmin, worktree e2-noturna-perfil-para-voce",
+          "janela": "03:52:22 a 03:53:01",
+          "controle": "o contador da propria corrida declarou +306 -10 e o parser reconstruiu PASS 306 / FAIL 10. Bate EXATO. Comparar com a corrida gemea em expanded, onde o parser reconstruiu 589 de 6390.",
+          "aritmetica_que_fecha": "288 + 18 = 306. Os 18 sao exatamente os casos dos quatro arquivos que o 2b achou fora da lista em apps/superadmin. O 2b nao inventou escopo, recuperou escopo que faltava."
+        },
+        "fora_de_apps_superadmin": "packages/coelo_domain/test/profile_about/profile_about_test.dart: 9 PASS / 0 FAIL, dart test, 03:28:18",
+        "total_nao_duplicado_do_escopo": "325 casos, 315 passando, 10 falhando",
+        "sobreposicao": "os 316 sao subconjunto proprio dos 6390+14+144 da suite de apps/superadmin. Os 9 de coelo_domain NAO sao.",
+        "suite_do_app_medida_duas_vezes": "6390 PASS / 14 SKIP / 144 FAIL em duas corridas independentes (03:12:47-03:28:09 e 03:31:40-03:51). Numero identico nas duas."
+      },
+      "as_dez_falhas_no_contexto_do_arquivo": {
+        "arquivo": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart",
+        "composicao": "12 casos no arquivo: 10 falham, 2 passam",
+        "causa_unica": "a referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas",
+        "estado": "blocked-decision. NAO regravei golden para fechar vermelho."
+      },
+      "segunda_armadilha_de_instrumento": {
+        "titulo": "--file-reporter json:C:/caminho nao gera arquivo nenhum no Windows, e nao reclama",
+        "o_que_acontece": "o parser da flag corta no primeiro dois-pontos e o C da letra de unidade vira o nome do arquivo. A corrida roda inteira, imprime o resultado normalmente, devolve exit code correto, e o JSON simplesmente nao existe.",
+        "custo_medido": "uma corrida de 19 minutos perdida. So descobri porque fui abrir o arquivo.",
+        "familia": "e a mesma de git cat-file -e <sha>^{commit}: sintaxe que quebra por caractere de escape e falha em silencio. Pior num aspecto: o cat-file quebrado FALHA a verificacao, e falha e visivel; este deixa a verificacao sem insumo.",
+        "correcao": "caminho RELATIVO executado a partir do diretorio do pacote: --file-reporter json:recorte.json",
+        "efeito_colateral_a_limpar": "o arquivo cai DENTRO do repositorio. O meu apareceu como ?? apps/superadmin/recorte.json no git status e foi removido. Quem usar sem apagar entrega artefato de instrumento no residual.",
+        "balanco_das_duas": "a primeira armadilha mente no numero e acerta a lista; a segunda nao mente, apaga. As duas so aparecem se voce conferir o INSTRUMENTO contra algo que ele nao produziu."
+      },
+      "encargo_do_coordenador_8d06b8a91": {
+        "pedido": "confirmar, antes do apagamento da branch chat-comunicacoes-router-dedupe, se ha conteudo la que o coordenador nao viu",
+        "resposta": "NAO ha. A branch nao carrega conteudo nenhum. Apagar com registro no manifesto esta correto.",
+        "medido_em": "2026-09-10T03:54:21-03:00, com origin/dev em 4ec0de8d1",
+        "prova": "git diff --numstat 8d06b8a91^ 8d06b8a91 devolve ZERO linhas. O commit e VAZIO. git show --stat sai so com cabecalho, sem estatistica de arquivo, que e a assinatura de commit vazio.",
+        "por_que": "o merge-base com dev e ff9143ba4 'fix(router): remove the duplicated Principal conversations route', que ja esta em dev. A correcao ja tinha entrado; o 8d06b8a91 foi criado depois, encontrou o trabalho feito e nao teve o que mudar.",
+        "base_antiga_quantificada": "dev tem 518 commits desde esse merge-base",
+        "armadilha_de_leitura_que_quase_inverte_a_decisao": "git diff origin/dev <branch> devolve 452 arquivos, o que parece conteudo demais para apagar. Nao e: essa direcao mede dev MENOS branch, ou seja, tudo que a branch NAO TEM por estar 518 commits atras. Exemplo reconhecivel: a linha '0 117 .agents/skills/coelo-flutter-review/references/golden-failure-triage.md' - arquivo que EU escrevi nesta madrugada, existe em dev e nao existe na branch. Nao e conteudo a preservar, e ausencia. A direcao do diff e a pergunta inteira."
+      },
+      "estado_da_worktree_saida_crua": {
+        "medido_em": "2026-09-10T03:53:24-03:00",
+        "git_status_porcelain": "vazio",
+        "head": "1d453e2f3",
+        "upstream_ahead_behind": "0 0",
+        "residual": "ZERO",
+        "nota": "o recorte.json deixado pelo reporter foi removido antes desta medicao"
+      }
+    },
+    "lote_3_json_resultado": "a corrida com caminho absoluto NAO gerou arquivo (ver CORRECAO_rev37, segunda armadilha). Refeita com caminho relativo.",
+    "SUPERADA": "Preservada como estava as 03:35. O que vale e PRE_ENTREGA_DEFINITIVA_0450, que declara item por item o que mudou."
+  },
+  "releitura_critica_do_proprio_handoff": {
+    "quando": "2026-09-10, entre 03:58 e 04:02, com 38 minutos ate o congelamento",
+    "por_que": "Passei a noite achando nos arquivos dos outros linhas verdadeiras quando escritas e nunca relidas, inclusive uma secao do relatorio do Owner que descrevia como aberto um defeito ja corrigido. Este arquivo tem 76 chaves acumuladas em 37 revisoes. Seria estranho que a mesma doenca nao estivesse aqui.",
+    "metodo": "listar todas as chaves de topo por tamanho, ler as que carregam ESTADO (numero, SHA, pendencia, bloqueio) e conferir cada uma contra medicao feita agora - nao contra o que eu lembrava.",
+    "achados": [
+      "residual_de_integracao dizia DOIS COMMITS PENDENTES, falso havia quase uma hora. MATERIAL: e exatamente o campo que o coordenador le para montar o residual da rodada.",
+      "validacao_final_do_recorte declarava P=268 F=10 e citava a repeticao em quatro bases como sinal de estabilidade. Era o mesmo denominador furado repetido quatro vezes.",
+      "suite_completa trazia P=6355 F=146 de outra base, sem data, ao lado de campos datados - o formato que faz um numero velho parecer atual.",
+      "tests carregava um terceiro numero de lote, mais antigo ainda.",
+      "alert descrevia como aberto o headSha errado de L03 no registro.json; conferido, o arquivo ja traz b209b4e0f."
+    ],
+    "o_que_NAO_estava_errado": "escopo, nao-escopo, criterios fechados, perguntas abertas ao Owner, tracker_delta_proposto, as evidencias publicadas e a proxima_rodada. O apodrecimento atinge campos de ESTADO, nao campos de CONTEUDO. Faz sentido: conteudo descreve o que foi feito e nao muda; estado descreve como as coisas estao e muda sozinho.",
+    "regra_que_fica": "Campo que carrega numero, SHA ou pendencia precisa carregar TAMBEM a hora em que foi medido. Sem carimbo nao da para saber se envelheceu, e um numero sem data ao lado de numeros com data e lido como atual.",
+    "cinco_de_setenta_e_seis": "Cinco campos em setenta e seis. Nao e catastrofe, e nao seria pego por leitura casual - nenhum dos cinco parecia errado. Foram pegos por conferir contra medicao nova, que e o unico metodo que funciona contra este defeito.",
+    "segunda_passada": {
+      "quando": "2026-09-10T04:49:30-03:00, entre a pre-entrega e a entrega",
+      "achados": "Mais SETE campos de estado podres, uma hora depois da primeira passada: head apontando 1d453e2f3 quando a worktree estava em 1d46746ff; base_observed em d784462c1; o bloco git inteiro citando SHAs de horas antes; eta e next_step descrevendo uma janela ja vencida; recursos_proprios com a worktree destacada no SHA errado; e joint_base_verified com P=247 sem data.",
+      "a_conclusao_que_importa": "A primeira passada achou cinco e eu escrevi a regra do carimbo de hora. Uma hora depois havia sete novos, e varios eram campos que eu tinha ACABADO de olhar. Isso mostra que a regra do carimbo nao basta sozinha: carimbo diz quando algo foi medido, nao obriga a remedir. O que funciona e reauditar os campos de ESTADO a cada publicacao, e nao uma vez por rodada. Sete em setenta e seis, de novo, e de novo nenhum parecia errado na leitura."
+    }
+  },
+  "terceira_armadilha_de_instrumento": {
+    "titulo": "git cat-file -e origin/dev:<caminho> reporta AUSENTE arquivo que esta em dev, por conversao de caminho do MSYS",
+    "descoberta_em": "2026-09-10T04:02:18-03:00, com origin/dev em 87a6ae387",
+    "como_apareceu": "Conferindo que os artefatos desta frente chegaram a dev (publicado nao e integrado), onze arquivos foram testados. Nove voltaram EM DEV e dois voltaram AUSENTE. Um dos ausentes era .agents/skills/coelo-flutter-review/references/golden-failure-triage.md, que o coordenador citara como estando em dev e que eu proprio tinha visto no diff da branch router-dedupe. A contradicao e que puxou o fio.",
+    "erro_cru": "fatal: Not a valid object name origin\\dev;.agents\\skills\\coelo-flutter-review\\references\\golden-failure-triage.md",
+    "causa": "A heuristica de conversao de caminho do Git Bash em Windows ve `a:b/c`, interpreta como lista de caminhos estilo PATH e traduz para formato Windows: o dois-pontos vira ponto-e-virgula e as barras viram contrabarras. O comando pergunta por um objeto inexistente e devolve 128, que e indistinguivel de arquivo ausente.",
+    "o_arquivo_esta_em_dev": "117 linhas. Nunca esteve perdido.",
+    "por_que_e_a_pior_das_tres": "A primeira armadilha mente no numero e acerta a lista. A segunda apaga o dado e nao reclama. Esta AFIRMA QUE TRABALHO SUMIU quando ele esta la. As duas primeiras fazem confiar em menos do que se tem; esta faz AGIR: no fechamento de uma rodada, um artefato declarado ausente dispara republicacao, cherry-pick ou tentativa de recuperar o que nunca se perdeu, em cima de uma base que ja o tem.",
+    "por_que_um_teste_rapido_nao_pega": "git cat-file -e origin/dev:AGENTS.md FUNCIONA, exit 0. Sem barra no caminho nao ha o que converter. Qualquer controle feito com arquivo de raiz PASSA e conclui-se que o comando esta bom.",
+    "correcoes_testadas_com_controle_positivo_e_negativo": [
+      "MSYS_NO_PATHCONV=1 git cat-file -e origin/dev:<caminho> - devolveu EM DEV para os dois arquivos e AUSENTE para um caminho com barras sabidamente inexistente",
+      "git ls-tree -r --name-only origin/dev | grep -qxF <caminho> - nao passa caminho como argumento, entao nao ha conversao. E o metodo adotado no script das 05:00, porque nao depende de lembrar de uma variavel de ambiente."
+    ],
+    "familia_e_regra_geral": "Terceira instancia na mesma noite, junto de git cat-file -e <sha>^{commit} (quebra por escape de shell) e --file-reporter json:C:/... (quebra pelo dois-pontos da unidade). No Git Bash em Windows, argumento que contem dois-pontos, circunflexo ou chaves chega mangled com frequencia, e a falha se apresenta como RESULTADO NEGATIVO, nunca como erro de sintaxe. Preferir o comando que nao recebe o caminho como argumento."
+  },
+  "correcao_de_citacao_minha": {
+    "erro": "Citei o artefato como docs/reviews/evidence/etapa-2/perfil-para-voce/handoff-snapshot-rev27.json. O nome verdadeiro nao tem a data: handoff-snapshot-rev27.json.",
+    "como_aconteceu": "Citei de memoria em vez de conferir a partir da raiz. E o item 6 do formato do coordenador, que existe justamente contra isso.",
+    "estado_real": "O arquivo esta em origin/dev, 538 linhas.",
+    "consequencia": "Dos dois alarmes de ausencia, um era ferramenta quebrada e o outro era eu citando de cabeca. Nenhum era trabalho perdido - mas os dois teriam entrado no fechamento como perda se eu nao fosse conferir."
+  },
+  "conferencia_de_destino_dos_artefatos": {
+    "pergunta": "publicado nao e integrado: os artefatos desta frente chegaram a origin/dev?",
+    "medido_em": "2026-09-10T04:04:20-03:00, com ls-tree, mais controle positivo (AGENTS.md presente) e negativo (caminho inexistente recusado)",
+    "resultado": "TODOS OS ONZE ESTAO EM origin/dev",
+    "lista": [
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-schema-versionado-e-replay.md",
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-selo-destaque-contraste.md",
+      "docs/reviews/evidence/etapa-2/perfil-para-voce/handoff-snapshot-rev27.json",
+      ".agents/skills/coelo-flutter-review/references/golden-failure-triage.md",
+      "packages/coelo_database/plans/2026-09-09-profile-about-read-rpc.sql",
+      "packages/coelo_database/plans/2026-09-09-principal-for-you-read-rpc.sql",
+      "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart",
+      "apps/superadmin/test/features/safety/presentation/safety_production_grid_layout_test.dart",
+      "apps/superadmin/test/features/principal_profile/presentation/principal_profile_moments_tab_test.dart",
+      "apps/superadmin/lib/features/principal_profile/presentation/principal_profile_moments_tab.dart",
+      "apps/superadmin/lib/features/profile_about/presentation/profile_about_labels.dart"
+    ],
+    "nada_ficou_so_na_worktree": true
+  },
+  "script_da_conferencia_das_0500": {
+    "onde": "caminho privado da sessao, NAO em /tmp compartilhado",
+    "escopo": "repositorio inteiro, nao apps/superadmin",
+    "somente_leitura": "nao integra, nao apaga, nao commita",
+    "secoes": [
+      "0 e 7: relogio com saida crua no inicio e no fim, delimitando a janela, para o coordenador cruzar no momento da declaracao",
+      "0b: controles da propria conferencia impressos junto do resultado - positivo tem de passar, negativo tem de recusar, e o glob das branches tem de casar algo",
+      "1: HEAD declarado e divergencia do dev local",
+      "2: branches de grupo contra origin/dev, com deteccao de COMMIT VAZIO, para que fora de dev nunca mais seja lido como trabalho perdido sem perguntar se ha trabalho ali",
+      "3: branches locais, com containment em qualquer origin/* em vez de presenca de upstream",
+      "4: worktrees com branch, HEAD e caminhos nao commitados listados",
+      "5: stashes em todo o repositorio",
+      "6: COMO cada frente produziu o numero dela, mais deteccao de BOM",
+      "6b: artefatos desta frente presentes em origin/dev, por ls-tree e nao por cat-file, com controle positivo e negativo"
+    ],
+    "testado_em_seco": "2026-09-10 03:56:38 a 03:58:23 e novamente 04:04:20. Todos os controles no estado esperado.",
+    "achados_do_teste_em_seco": [
+      "quatro frentes nao declaram sobreposicao: acessos-pessoas, alunos-rotina, estrutura, operacoes-sistema",
+      "cinco frentes nao declaram o METODO de producao do numero: acessos-pessoas, chat-comunicacoes, estrutura, formularios-cuidado, operacoes-sistema. Nao e que usaram o errado; e que nao da para saber, e essa era a lacuna que a armadilha do expanded explora.",
+      "nenhum arquivo de comunicacao tem BOM",
+      "zero stash em todo o repositorio; nenhuma branch local em risco"
+    ]
+  },
+  "residual_zero_declarado_as_0356": "SUPERADO pela revisao 40: era verdadeiro as 03:56:38 e deixou de ser as 04:06:56, quando publiquei o arquivo de skill. Preservado aqui para que a linha do tempo feche.",
+  "varredura_por_nome_de_classe": {
+    "o_que_e": "Um quarto criterio de varredura, alem de nome de arquivo, diretorio de dominio e import. Os tres primeiros sao criterios de CAMINHO; existe artefato do dominio que falha nos tres ao mesmo tempo e so aparece pelo nome da CLASSE.",
+    "quando_nasceu": "2026-09-10, ao conferir uma afirmacao do relatorio do Owner sobre abas de Perfil orfas, feita por outra frente sobre o meu recorte e nunca verificada por mim.",
+    "regra": "Quando o dominio aparece no nome da CLASSE mas nao no caminho, nenhuma varredura de caminho o encontra.",
+    "limite_medido_do_detector": "So vale para classes PUBLICAS. Classe privada de Dart e, por definicao, consumida no proprio arquivo; 'sem consumidor fora do arquivo' e o estado normal dela. A primeira versao do detector marcou 57 orfas no dominio e cerca de 50 eram falso positivo, porque eu excluia as ocorrencias do arquivo declarante e isso apaga tambem os usos legitimos de widget privado. Taxa de falso positivo perto de 90% em codigo Flutter. Filtrando por visibilidade, sobram cinco, das quais duas sao deste recorte."
+  },
+  "orfa_1_abas_de_perfil_publicas": {
+    "classe": "PrincipalProfileContentTabs",
+    "onde": "apps/superadmin/lib/features/principal_circulars/presentation/principal_circular_surfaces.dart, linha 10, arquivo de 795 linhas",
+    "consumidores_em_lib": "ZERO",
+    "o_que_a_mantem_viva": "dois arquivos de teste, ambos em apps/superadmin/test/features/principal_circulars/presentation/ - principal_circular_golden_test.dart e principal_circular_surfaces_test.dart",
+    "medido_em": "2026-09-10T04:11:47-03:00",
+    "NAO_E_DUPLICACAO": "O relatorio do Owner descreve estas abas como duplicando as que a pagina do Perfil ja implementa em privado. A afirmacao de orfandade esta CERTA, mas nao sao os mesmos conjuntos: a orfa oferece QUATRO abas - Acontece, Momentos, Circulares, Sobre - e a tela viva oferece DUAS - happensTab e momentsTab. A orfa nao e copia esquecida da tela existente; descreve um Perfil MAIOR do que o que existe.",
+    "por_que_a_distincao_importa": "Duplicata e desperdicio. Divergencia de contrato e decisao pendente, porque um golden aprovado e evidencia de que alguem, em algum momento, aprovou aquilo. A decisao numero 1 desta frente ja e binaria e esta com o Owner - qual e a referencia aprovada do Perfil, dado que o golden mostra Acompanhar e seis metricas e a composicao atual mostra Mensagem e tres. Esta orfa e um TERCEIRO Perfil. Se a pergunta for feita com duas versoes, a resposta fecha uma divergencia e deixa a outra viva.",
+    "por_que_o_2b_nao_a_pegou": "Falhou nos tres criterios de caminho ao mesmo tempo: nao esta na arvore do recorte (mora em features/principal_circulars), o nome do arquivo nao menciona perfil (principal_circular_surfaces.dart), e a pagina do Perfil nao a importa porque constroi as proprias abas."
+  },
+  "orfa_2_decisao_de_dado_oficial_no_Sobre": {
+    "classe": "ProfileAboutOfficialUpdateRequest",
+    "onde": "packages/coelo_domain/lib/src/profile_about/profile_about.dart, linha 446",
+    "consumidores_em_lib": "ZERO, em todo o monorepo",
+    "o_que_a_mantem_viva": "duas referencias, ambas em packages/coelo_domain/test/profile_about/profile_about_test.dart",
+    "medido_em": "2026-09-10T04:15:48-03:00",
+    "o_que_ela_modela": "A decisao de, ao editar um campo do Sobre, atualizar SO o Sobre ou o Sobre E O DADO OFICIAL. E condicionada a permissao: availableDecisions devolve aboutOnly sempre, e acrescenta aboutAndOfficial somente se canUpdateOfficialData for verdadeiro.",
+    "consequencia": "Editar o Sobre no app nunca apresenta o caminho de atualizar tambem o dado oficial, ainda que o contrato de dominio o preveja e um teste garanta o comportamento das duas variantes. Nao e 'faltou implementar': alguem modelou a distincao, escreveu o teste, e a superficie nao existe. Verde legitimo sobre contrato que nao chega ao usuario.",
+    "forma_conhecida": "E a sexta instancia virando setima do padrao que o coordenador catalogou como camada pronta sem superficie, agora em profile_about.",
+    "toca_decisao_pendente": "A decisao 3 da proxima_rodada pergunta quais campos a tela de Editar perfil edita e quem edita. A resposta do dominio ja existe e e mais rica do que a pergunta assumia: ha uma segunda escolha, gated por permissao, que a pergunta nao contempla."
+  },
+  "nao_inspecionado_e_passado_adiante": "A mesma varredura marcou HealthCareProfileCatalogGroup e HealthCareProfileCatalogItem (features/health_care/domain/health_care.dart) e HealthCareProfileUpdateCommand (features/health_care/presentation/health_care_controller.dart) como publicas sem consumidor em lib, as duas primeiras tambem sem teste algum. NAO sao deste recorte e NAO foram inspecionadas. Registrado como pista para quem tem o recorte de saude, nao como achado.",
+  "conferencia_de_citacoes": {
+    "metodo": "Extrai TODOS os caminhos citados no arquivo por expressao regular e conferi cada um contra git ls-tree -r --name-only origin/dev. Nao por cat-file, que converte caminho iniciado por ponto, e nao por basename.",
+    "medido_em": "2026-09-10T04:21:05-03:00, com origin/dev em 5fdd243c2",
+    "resultado": "31 caminhos citados, 29 presentes em origin/dev, 2 ausentes",
+    "ausente_1_ERRO_MEU_CORRIGIDO": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json nao existe. O nome verdadeiro nao tem o prefixo de data: handoff-snapshot-rev27.json. Corrigido em 2 ocorrencia(s) nesta revisao.",
+    "ausente_2_LEGITIMO": "apps/superadmin/recorte.json e o artefato que o reporter JSON deixou dentro do repositorio e que eu removi de proposito. Esta citado como coisa removida, nao como coisa presente. Ausencia esperada.",
+    "a_licao_que_custou_uma_hora": "Eu identifiquei este erro de citacao as 04:02, escrevi que corrigiria na proxima revisao, publiquei a revisao 39 com uma NOTA sobre o erro, e deixei a CITACAO ERRADA no lugar. Reconhecer o defeito e propagar a correcao sao coisas diferentes. O coordenador precisou cobrar, depois de outra frente varrer 199 caminhos de nove frentes e achar seis ausentes, dois reais - este entre eles."
+  },
+  "analyze": {
+    "CORRECAO": "Este handoff declarava analyze limpo. A afirmacao era verdadeira quando escrita e nao e mais.",
+    "medido_em": "2026-09-10, janela 04:17:46 a 04:20:46",
+    "apps_superadmin_lib_test": "1 issue found - warning unused_import em test/app/router/principal_mixed_feed_pagination_red_test.dart:11:8, import de features/principal_happens/domain/principal_happens_preview_data.dart",
+    "packages_coelo_domain_lib_test": "No issues found",
+    "dono_provavel_do_issue": "NAO e deste recorte. principal_mixed_feed_pagination_red_test.dart e o teste vermelho da paginacao do feed misto, de outra frente. Nao toquei nele e nao o corrijo por conta propria a 20 minutos do congelamento; reporto.",
+    "escopo_declarado": "Estes dois escopos e nada alem deles. Nao rodei analyze nos outros pacotes do monorepo.",
+    "diagnostico_do_unico_issue": {
+      "arquivo": "apps/superadmin/test/app/router/principal_mixed_feed_pagination_red_test.dart, linha 11",
+      "nao_e_regressao_de_merge": "O arquivo tem UM unico commit em toda a historia, f4a86ed7e, que ja esta em origin/dev. O import nasceu orfao. Nenhum merge desta noite o quebrou.",
+      "por_que_parece_usado": "O arquivo tem oito ocorrencias de simbolos PrincipalHappens*, entao a leitura rapida sugere que o import serve. Nao serve: os quatro simbolos vem de outros dois imports ja presentes. PrincipalHappensCircularItem, PrincipalHappensFeedCursor e PrincipalHappensFeedPage moram em features/principal_circulars/domain/principal_happens_mixed_feed.dart; PrincipalHappensFeedRepository mora em features/principal_happens/domain/principal_happens_feed_repository.dart.",
+      "causa_provavel": "Tres classes chamadas PrincipalHappens* moram na arvore principal_circulars. Quem escreveu o import seguiu o NOME e nao o CAMINHO. E a mesma armadilha do quarto criterio de varredura, do outro lado: dessa vez o nome enganou quem escreveu, nao quem procurou.",
+      "correcao": "apagar a linha 11. Verificado simbolo a simbolo, nao por leitura.",
+      "por_que_nao_fiz": "Arquivo de outra frente, teste vermelho intencional, a 17 minutos do congelamento. Entreguei o diagnostico completo ao coordenador.",
+      "hipotese_sobre_a_declaracao_do_coordenador": "flutter analyze lib da limpo; flutter analyze lib test da 1 issue. Se as declaracoes de analyze limpo da rodada omitiram test/, nunca foram falsas, apenas mais estreitas do que o leitor entendeu."
+    }
+  },
+  "validacao_na_base_integrada": {
+    "o_que_e": "O numero do recorte medido NA BASE INTEGRADA, nao na branch da frente. E a unica medicao que responde a pergunta que o coordenador precisa: o recorte continua verde depois de tudo que entrou no dev esta noite?",
+    "base": "98ef12509, origin/dev, em worktree destacada de verificacao",
+    "medido_em": "2026-09-10, janela 04:24:13 a 04:26:14",
+    "comando": "flutter test <os 11 caminhos declarados> --file-reporter json:recorte-dev.json",
+    "resultado": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos",
+    "IDENTICO_A_BRANCH": "Mesmo total, mesma distribuicao POR ARQUIVO e as MESMAS dez falhas nominais que a medicao feita na branch as 03:52. Nada que entrou no dev esta noite mexeu no recorte, e o recorte nao depende de nada que so exista na branch.",
+    "controle": "os 11 caminhos foram conferidos com ls antes da corrida; nenhum ausente. O contador da corrida declarou +306 -10 e o parser reconstruiu exatamente isso.",
+    "as_dez": "todas de principal_profile_preview_golden_test.dart, que tem 12 casos: 10 falham, 2 passam. Causa unica, blocked-decision.",
+    "artefato_removido": "recorte-dev.json foi apagado da worktree de verificacao; git status devolve 0 caminhos."
+  },
+  "defeito_no_meu_proprio_parser": {
+    "o_que_aconteceu": "A primeira analise da corrida na base integrada devolveu recorte com PASS 0, FAIL 0, total 0 - ao lado de totais CERTOS de 316 casos.",
+    "causa": "O normalizador de caminho do meu script tinha a raiz da minha worktree fixada em constante. Rodado contra outra worktree, nenhum caminho casava o prefixo, o filtro de recorte descartava tudo e o resultado era zero.",
+    "por_que_e_perigoso": "Um zero nao parece erro, parece resultado. E ele veio acompanhado do bloco de controle do parser dizendo 316 casos reconstruidos corretamente, o que empresta credibilidade. E a mesma forma da armadilha do reporter expanded: a metade conferivel esta certa.",
+    "como_peguei": "Porque eu ESPERAVA 306 e recebi 0. Expectativa e um controle fraco e nao substitui medicao, mas foi o que disparou a investigacao. Se eu nao tivesse um numero previo, teria publicado zero.",
+    "correcao": "o normalizador passou a cortar tudo ate apps/superadmin/, independente de worktree, e a razao ficou escrita no proprio script."
+  },
+  "afirmacao_falsa_minha_dentro_do_codigo": {
+    "gravidade": "A pior das quatro citacoes erradas desta noite, porque as outras tres estavam em registro da rodada e esta estava em COMENTARIO DE CODIGO INTEGRADO. Registro envelhece junto com a rodada; comentario de codigo e lido como medido por quem chega meses depois sem contexto. Ia sobreviver ao fechamento.",
+    "arquivo": "apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart, integrado em 1d453e2f3",
+    "o_que_dizia": "Another front hit exactly this and found that sixteen of twenty passing detail probes were empty pages.",
+    "por_que_e_falso": "Varri os nove arquivos de comunicacao, as evidencias e o relatorio do Owner com quatro padroes diferentes: a fonte NAO EXISTE. E a medicao que existe aponta o contrario - chat-comunicacoes mediu 22 rotas parametrizadas de Formularios e Circulares, com ids colhidos das PROPRIAS listagens, em 1440x900 e 375x812, incluindo as de tipo LISTA, e TODAS OK. Atribui a outra frente um numero que ela nao produziu e que contradiz o que ela produziu.",
+    "o_que_ficou": "O mecanismo, que e verdadeiro: id que nao pertence a registro nenhum renderiza o detalhe vazio legitimo, nenhum caminho de erro e acionado, e a sonda reporta sucesso sem exercitar nada. A guarda que falta e sobre a ENTRADA e nao sobre a saida.",
+    "o_que_saiu": "a contagem. O comentario agora declara que uma versao anterior trazia numero que nao se sustentou, e cita a medicao das 22 rotas como o que de fato existe.",
+    "correcao": "3e8de2319, medido e publicado 2026-09-10T04:29:35-03:00",
+    "como_peguei": "Decidi usar os ultimos dez minutos antes do congelamento conferindo afirmacoes que EU tinha publicado, em vez de conferir as dos outros. Foi a unica coisa que a encontrou.",
+    "pergunta_para_o_fechamento_das_seis": "Alguma frente escreveu numero de OUTRA frente dentro de codigo ou de skill? Registro se corrige na proxima revisao; codigo integrado nao tem proxima revisao.",
+    "quarta_ocorrencia": "E a quarta vez esta noite que escrevo de cabeca algo lido em outro lugar e nao confiro a partir da fonte. As quatro estao registradas, que e o que impede a quinta."
+  },
+  "mencoes_intencionais_de_caminho_que_nao_existe": {
+    "para_que_serve": "Uma varredura de citacoes conta como AUSENTE todo caminho que nao esta em origin/dev. Nem toda ausencia e defeito. Este campo declara as excecoes deste arquivo para que a varredura das nove frentes nao produza falso positivo, e para que quem a rodar saiba distinguir sem ter de ler o contexto.",
+    "duas_classes": {
+      "citacao_de_REMOCAO": "apps/superadmin/recorte.json - artefato que o reporter JSON deixou dentro do repositorio e que eu removi de proposito. Citado como coisa removida.",
+      "citacao_de_ERRO": "docs/reviews/evidence/etapa-2/perfil-para-voce/2026-09-10-handoff-snapshot-rev27.json - este caminho NAO EXISTE e e citado justamente para registrar que eu o escrevi errado. O nome verdadeiro e handoff-snapshot-rev27.json, sem prefixo de data, e as citacoes reais ja usam o nome certo."
+    },
+    "a_generalizacao": "Toda varredura de presenca precisa separar tres coisas: caminho que deveria existir e nao existe (defeito), caminho citado como removido, e caminho citado como exemplo de erro. Sem essa separacao, corrigir um erro de citacao AUMENTA a contagem de ausentes, porque a correcao precisa nomear o nome errado para explicar o que foi corrigido.",
+    "conferido_em": "2026-09-10T04:32:02-03:00, com origin/dev em 0155b4a5b: 32 caminhos citados, 30 presentes, 2 ausentes e ambos desta lista."
+  },
+  "conferencia_de_shas": {
+    "metodo": "git rev-parse --verify --quiet <sha>^{commit} em todo SHA de 9 digitos citado no arquivo. Nota: aqui o ^{commit} funciona porque o argumento e passado por lista de processo e nao pela linha de comando do shell, entao nao ha conversao.",
+    "medido_em": "2026-09-10T04:32:02-03:00",
+    "resultado": "53 SHAs citados, 53 resolvem, 0 nao resolvem"
+  },
+  "divergencia_no_congelamento": {
+    "o_que_e": "A primeira vez nesta noite em que a minha conferencia externa CONTRADIZ a declaracao do coordenador. Registrado com saida crua porque e exatamente o caso para o qual a conferencia externa existe.",
+    "declaracao_do_coordenador": "3e8de2319 e 1d46746ff integrados, base f2a341855 empurrada, 0/0, residual desta frente zero.",
+    "minha_medicao": "Apos git fetch origin --prune, duas vezes com 13 segundos de intervalo, as 04:33:35 e 04:33:49: origin/dev em f2a341855, e merge-base --is-ancestor devolve NAO para os dois. Testado tambem DIRETO contra o SHA nomeado, sem depender de origin/dev: nem 3e8de2319 nem 1d46746ff sao ancestrais de f2a341855. E a branch inteira nao e ancestral de origin/dev.",
+    "nao_ha_trabalho_em_risco": "git branch -r --contains 3e8de2319 devolve origin/work/etapa2-noturna-perfil-para-voce. Os dois estao publicados; so nao estao em dev.",
+    "hipotese": "merge local sem push, ou push posterior ao meu segundo fetch.",
+    "por_que_insisti": "3e8de2319 e a REMOCAO da afirmacao falsa do comentario de teste. Se ele nao entrar, a base entregue ao Owner contem, dentro de codigo, um numero atribuido a outra frente que ela nao produziu, onde sera lido como medido por quem chegar sem contexto. Dos commits desta frente nesta noite, e o unico que corrige uma coisa ERRADA em vez de acrescentar uma coisa certa.",
+    "quando_reportei": "04:33:49, sete minutos antes do congelamento, e nao as 05:00, porque conferencia que so vale antes da acao tem de acontecer antes da acao.",
+    "RESOLVIDA": {
+      "causa_real": "NAO era push faltando, e a minha hipotese estava errada. O coordenador integra por CHERRY-PICK e nao por merge, entao os commits entram em dev com SHA NOVO: 3e8de2319 virou 1ca8a7f81 e 1d46746ff virou 58a5a6ed1. merge-base --is-ancestor sobre o SHA ORIGINAL responde NAO e vai responder NAO para sempre.",
+      "o_defeito_de_metodo": "O criterio de residual que a coordenacao mandou as seis frentes usar - ancestralidade do SHA original - e incompativel com o metodo de integracao que a propria coordenacao usa. Nenhuma frente tinha como saber. Uma frente que aceitasse o NAO INTEGRADO e reenviasse teria duplicado; uma que aceitasse a declaracao sem medir teria acreditado sem prova.",
+      "criterio_correto": "Residual se mede por CONTEUDO - git diff <sha> origin/dev -- <caminhos do commit> vazio - ou pela marca do cherry-pick, procurando cherry picked from commit <sha> em git log origin/dev. Ancestralidade do SHA original so vale quando o integrador faz merge.",
+      "medicao_final_por_tres_criterios": {
+        "medido_em": "2026-09-10T04:39:18-03:00, com origin/dev em 5ac61f6d7",
+        "por_conteudo": "os dois arquivos tocados pelos dois commits sao IDENTICOS em dev: apps/superadmin/test/app/router/fail_closed_screens_with_data_probe_test.dart e .agents/skills/coelo-flutter-supabase-review/references/medicao-confiavel.md, zero linhas de diff cada",
+        "pela_marca": "3e8de2319 -> cherry-pick em 1ca8a7f81; 1d46746ff -> cherry-pick em 58a5a6ed1",
+        "por_ancestralidade_dos_novos_shas": "1ca8a7f81 e 58a5a6ed1 sao ambos ancestrais de origin/dev"
+      },
+      "RESIDUAL": "ZERO. Confirmado por tres criterios independentes.",
+      "licao": "A conferencia externa serviu exatamente para o que existe: nao para achar erro do coordenador, e sim para expor que declaracao e medicao usavam vocabularios diferentes. O comportamento tinha chegado; o vocabulario e que mentia. E so apareceu porque eu insisti em vez de aceitar a declaracao, e porque ele mediu em vez de repetir a declaracao."
+    }
+  },
+  "PRE_ENTREGA_DEFINITIVA_0450": {
+    "estado": "PRE-ENTREGA DEFINITIVA das 04:50. A versao publicada as 03:35 fica preservada em pre_entrega_0450; este bloco declara o que MUDOU desde ela, item por item, como mudanca e nao por reescrita silenciosa.",
+    "hora_desta_publicacao": "2026-09-10 04:49:00 -03:00",
+    "o_que_mudou_desde_as_0335": [
+      "Item 2, o numero: era 288 PASS / 10 FAIL e passou a 306 PASS / 10 FAIL em 316 casos. O antigo estava certo para os caminhos que mediu e errado como denominador; faltavam os cinco arquivos que a inversao do 2b encontrou. 288 + 18 = 306.",
+      "Item 2, o metodo: o numero passou a vir de reporter JSON e nao de parse de expanded, porque o expanded gravado em arquivo TRUNCA nome de caso e reconstroi 589 de 6390.",
+      "Item 2, a base: o numero foi remedido NA BASE INTEGRADA e nao so na branch, e deu identico arquivo por arquivo.",
+      "Item 1, o residual: variou tres vezes entre 03:35 e 04:39 - zero, quatro, dois, zero - porque continuei commitando. Fechou em ZERO, confirmado por tres criterios.",
+      "Item 1, o METODO do residual: mudou de ancestralidade para rastro de cherry-pick, porque a integracao desta rodada e por cherry-pick e o SHA original nunca vira ancestral.",
+      "Item 6, as citacoes: uma estava errada e foi corrigida; as 32 foram varridas por ls-tree e os 53 SHAs conferidos.",
+      "Item 7: cresceu. Quatro itens novos entraram no que eu NAO verifiquei.",
+      "NOVO: analyze deixou de estar limpo e voltou a estar, por correcao de outra frente.",
+      "NOVO: dois artefatos orfaos do dominio, achados por um quarto criterio de varredura.",
+      "NOVO: uma afirmacao falsa minha DENTRO do codigo integrado, encontrada e removida."
+    ],
+    "1_residual": {
+      "declaracao": "ZERO",
+      "medido_em": "2026-09-10T04:43:46-03:00, com origin/dev em 8211bac07",
+      "metodo": "Tres criterios lado a lado, com o RASTRO de cherry-pick como principal. Ancestralidade do SHA original NAO responde nesta rodada: a integracao e por cherry-pick e o commit entra em dev com SHA novo. Conteudo tambem nao responde sozinho: a base anda e o diff deixa de ser vazio mesmo com a mudanca la dentro.",
+      "os_nove_commits_desta_frente": "ace7b32e1, 1d453e2f3, 6bf733fec, 50ba6a73c, 31cff109d, 2a0da284f, f57459bed integrados por ancestralidade; 3e8de2319 -> 1ca8a7f81 e 1d46746ff -> 58a5a6ed1 por cherry-pick, com conteudo identico conferido arquivo a arquivo.",
+      "estado_git": "worktree de trabalho 0 caminhos, HEAD 1d46746ff, upstream 0 0; worktree de verificacao 0 caminhos, destacada; stash 0."
+    },
+    "2_numeros": {
+      "recorte_na_base_integrada": "306 PASS / 0 SKIP / 10 FAIL, em 316 casos e 30 arquivos. Base 98ef12509, janela 04:24:13 a 04:26:14, reporter JSON.",
+      "recorte_na_branch": "306 PASS / 10 FAIL, identico caso a caso e arquivo a arquivo. Janela 03:52:22 a 03:53:01.",
+      "suite_completa_do_app": "6390 PASS / 14 SKIP / 144 FAIL, duas corridas independentes com resultado identico.",
+      "fora_do_app": "packages/coelo_domain/test/profile_about/profile_about_test.dart, 9 PASS / 0 FAIL.",
+      "sobreposicao": "Os 316 sao subconjunto proprio dos 6548 da suite do app. Os 9 de coelo_domain NAO sao. Total nao-duplicado do escopo: 325 casos, 315 passando, 10 falhando.",
+      "controle_de_caminhos": "ls em cada um dos 11 caminhos antes de cada corrida; nenhum ausente. O contador da corrida e a reconstrucao do parser batem exato."
+    },
+    "3_falhas": {
+      "quantas": 10,
+      "arquivo": "apps/superadmin/test/features/principal_profile/presentation/principal_profile_preview_golden_test.dart, que tem 12 casos: 10 falham e 2 passam",
+      "causa_unica": "a referencia aprovada mostra botao Acompanhar e seis metricas, com Seguidores e Seguindo; a composicao atual mostra Mensagem e tres metricas",
+      "estado": "blocked-decision. NAO regravei golden para fechar vermelho.",
+      "nao_e_regressao": "as dez ja falhavam antes de qualquer alteracao desta frente, e o par 306/10 se manteve identico na branch e na base integrada",
+      "as_outras_134_do_app": "nao sao desta frente; atribuidas por caminho e nao por leitura de cada uma"
+    },
+    "4_recursos": {
+      "worktree_de_trabalho": "C:/Users/adrie/Documents/Coelo.worktrees/e2-noturna-perfil-para-voce, 0 caminhos alterados",
+      "worktree_de_verificacao": "C:/Users/adrie/Documents/Coelo.worktrees/verify-dev-tmp, DETACHED, 0 caminhos. SERA REMOVIDA apos a conferencia das 05:00, com a remocao declarada pela saida crua de git worktree list.",
+      "containers": "postgres:15 e supabase/postgres:17.6.1.165, JA REMOVIDOS",
+      "arquivos_temporarios": "scratchpad privado da sessao; NADA em /tmp compartilhado",
+      "artefatos_de_instrumento_limpos": "recorte.json e recorte-dev.json, deixados pelo reporter JSON dentro do repositorio, removidos das duas worktrees",
+      "processos_portas_agendamentos": "nenhum"
+    },
+    "5_hora": {
+      "metodo": "date na MESMA chamada que produziu cada dado, com segundos. Nao ha carimbo estimado nesta revisao.",
+      "conferencia_final": "inicio 2026-09-10 04:43:46 -03:00, UTC 07:43:46",
+      "residual": "2026-09-10T04:43:46-03:00",
+      "recorte_na_base_integrada": "04:24:13 a 04:26:14",
+      "citacoes_e_shas": "2026-09-10T04:32:02-03:00",
+      "analyze": "04:17:46 a 04:20:46"
+    },
+    "6_citacoes": {
+      "metodo": "todos os caminhos extraidos por expressao regular e conferidos por git ls-tree, nunca por cat-file e nunca por basename",
+      "resultado": "32 caminhos citados, 30 presentes em origin/dev, 2 ausentes e ambos DECLARADOS como mencao intencional - um citado como removido, um citado como exemplo do erro que foi corrigido",
+      "shas": "53 SHAs de nove digitos citados, 53 resolvem, 0 nao resolvem",
+      "erro_corrigido": "eu citava 2026-09-10-handoff-snapshot-rev27.json; o nome verdadeiro nao tem prefixo de data"
+    },
+    "7_o_que_eu_NAO_verifiquei": [
+      "Se a leitura por tabela do Sobre funciona HOJE em producao. Nunca consultei producao; falta autorizacao nominal. Esta bloqueado por falta de autorizacao para VERIFICAR, e nao por ausencia.",
+      "Se get_profile_about e list_my_principal_for_you se comportam em producao. Sintaxe verificada em Postgres 17 LOCAL, aplicam inteiros local, NAO aplicados remotamente.",
+      "35 dos 40 objetos app_private sem CREATE vem do metodo de conjuntos. Cinco conferidos a mao. 40 nao sao 40 fatos verificados.",
+      "As 134 falhas do app que nao sao desta frente: atribuidas por caminho, nao lidas uma a uma.",
+      "Os outros pacotes do monorepo alem de coelo_domain. Nao rodei teste nem analyze neles.",
+      "Os tres achados de health_care que a varredura por nome de classe produziu: passados adiante como pista, nao inspecionados.",
+      "Se o conjunto de 17 migrations e duplicata exata: e medicao de chat-comunicacoes, incorporada com credito, nao reexecutada por mim.",
+      "Os sete totais por pacote que somam 894: soma conferida, totais nao reexecutados. Medicao da coordenacao.",
+      "Se o unused_import corrigido por outra frente fechou analyze limpo em todo o monorepo: conferi apps/superadmin e coelo_domain apenas.",
+      "Nada de E2E. Continua zero por construcao enquanto nao existir caminho de recriacao da base."
+    ],
+    "8_erros_meus_desta_janela_declarados": [
+      "Publiquei numero nao sustentado DENTRO de comentario de codigo integrado, atribuido a outra frente, que a medicao real contradizia. Removido em 3e8de2319.",
+      "Escrevi numero de outra pessoa em arquivo de skill sem atribuicao. Corrigido em 1d46746ff.",
+      "Corrigi um alarme de citacao errada e deixei a CITACAO errada no lugar por uma hora. Foi preciso outra frente varrer 199 caminhos.",
+      "Generalizei a causa da armadilha do ponto inicial a partir de UM caso; outra frente barrou com o argumento certo e o coordenador isolou a condicao.",
+      "Afirmei que o teste de conteudo era imune ao metodo de integracao DEPOIS de o coordenador me avisar que nao era, e com isso produzi uma lista de residual falso que continha uma HIPOTESE DE NEGLIGENCIA sobre outra frente, com narrativa plausivel em volta. E o pior erro meu da noite: numero errado sobre mim custa uma correcao; numero errado sobre outra frente custa a confianca dela, e ela nem fica sabendo que foi acusada.",
+      "Supus push faltando quando a causa era cherry-pick: dado certo, causa errada, pela segunda vez na noite."
+    ]
+  },
+  "entrega_final": {
+    "hora": "2026-09-10T04:56:42-03:00",
+    "origin_dev_lido": "e64657857",
+    "residual": "ZERO. Nove commits, todos em dev: sete por ancestralidade, dois por cherry-pick (3e8de2319 -> 1ca8a7f81 e 1d46746ff -> 58a5a6ed1) com conteudo conferido arquivo a arquivo.",
+    "worktree_de_trabalho": "0 caminhos, HEAD 1d46746ff, upstream 0 0",
+    "worktree_de_verificacao": "REMOVIDA as 04:56:03. Confirmada ausente em git worktree list E em disco - sair da lista e sair do disco sao afirmacoes diferentes e as duas foram conferidas.",
+    "stash": "0",
+    "artefatos": "os 11 desta frente em origin/dev, por ls-tree, com controle positivo e negativo",
+    "recorte": "306 PASS / 10 FAIL na base integrada; as dez de causa unica, blocked-decision",
+    "analyze": "No issues found em apps/superadmin lib+test sobre a base integrada, e em packages/coelo_domain",
+    "conferencia_externa": "Executada duas vezes, as 04:43:46 e as 04:53:46, com relogio cru dentro. Achou tres residuais reais: 80f160599 (WIP retido por decisao) e 69e377f3e e 9754d64e4 de publicacoes-midia, que o coordenador integrou em seguida. Mais o commit vazio 8d06b8a91.",
+    "validacoes_independentes_do_estado_do_coordenador": "validate-trackers PASS com os seis numeros identicos aos declarados; nove JSONs em dev com revisao e carimbo de cada um; analyze limpo na base integrada."
+  },
+  "inferencia_do_coordenador_medida": {
+    "a_inferencia": "que os commits desde a ultima suite eram so de documento e de canal, e portanto o numero 6390/14/144 continuaria valido sem reexecutar",
+    "medido_em": "2026-09-10T04:56:42-03:00",
+    "era_falsa": "TRES arquivos de TESTE mudaram entre 98ef12509 e a base final: fail_closed_screens_with_data_probe_test.dart (+9 -2), principal_mixed_feed_pagination_red_test.dart (+0 -1) e contracts/rpc_contract_test.dart (+3 -1).",
+    "mas_a_conclusao_se_sustenta": "Filtrando as linhas alteradas para excluir comentario e import, as tres devolvem ZERO. Sao a remocao do meu numero nao sustentado, a remocao do import orfao e uma alteracao de comentario. Nenhuma linha executavel mudou, entao 6390/14/144 e 306/10 continuam validos sobre a base final - agora por MEDICAO e nao por inferencia.",
+    "setimo_erro_meu_da_noite": "A minha primeira checagem usou o pathspec apps/*/lib e devolveu ZERO arquivos alterados. Quase reportei nada mudou, confirmado. Peguei porque eu SABIA que o meu proprio commit tinha mudado um arquivo de teste ali dentro. Testado: apps/*/lib da 0; filtrar a saida completa por regex da 25. O pathspec do Git nao casa como presumi. Segundo zero que parecia resultado nesta noite, e nas duas vezes a defesa foi a mesma: ter um caso que eu SEI que deveria aparecer."
+  }
+}

@@ -88,7 +88,7 @@ Nao ha `psql` na maquina; o do container serve.
 ## Contrato para o cliente
 
 Assinaturas, envelopes e capacidades estao em
-`docs/reviews/etapa-2-operacao/comunicacao/realm-interno.json` (campo
+`docs/reviews/archive/etapa-2-r01-r02/comunicacao/realm-interno.json` (campo
 `contrato`). As 10 RPCs que `SupabaseChatRepository` ja chama nao mudam de
 assinatura; Criar grupo e uma RPC nova.
 

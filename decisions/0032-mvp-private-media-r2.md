@@ -178,7 +178,7 @@ primeiro no R2. A política de distribuição é por produto:
 - **Chat:** anexos e vídeos ficam no R2; Stream não é requisito do MVP.
 
 Video Transformations, tiering automático e transcoding complexo ficam para
-spikes posteriores. Import/export geral é adiado; somente
+docs/archive/spikes-root posteriores. Import/export geral é adiado; somente
 `forms.responses.export` exporta um arquivo Excel com as respostas do
 formulário; a exportação geral do Superadmin continua adiada.
 No Superadmin, os botões de importação/exportação permanecem visíveis por

@@ -1,7 +1,7 @@
 ---
 title: "Limite da Etapa 2 de Comunicação no Superadmin"
 knowledge_id: "superadmin-communication-stage-2"
-source: "docs/superpowers/specs/2026-09-01-superadmin-communication-finish-design.md"
+source: "docs/archive/superpowers/specs/2026-09-01-superadmin-communication-finish-design.md"
 status: "validated"
 lifecycle: "current"
 generated_at: "2026-09-01"

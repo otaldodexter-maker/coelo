@@ -49,7 +49,7 @@ Não remover `activity-patch-tree`, `staged-groups-validation`, `chrome-preview`
   classificar cada uma. Não fazer `git add -A`, stash, revert ou remoção.
 - `.claude/settings*.json`, `launch.json` e junctions de skills: manter; revisar
   permissões depois do fechamento da R14.
-- `.superpowers/brainstorm` e `.superpowers/sdd`: manter enquanto houver estado
+- `docs/archive/dot-superpowers/brainstorm` e `docs/archive/dot-superpowers/sdd`: manter enquanto houver estado
   de trabalho ou referência ativa.
 - `.recovery-archives`: somente deduplicar/comprimir após inventário de nomes,
   referências e risco de dados sensíveis.

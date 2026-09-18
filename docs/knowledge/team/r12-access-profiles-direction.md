@@ -1,7 +1,7 @@
 ---
 title: "Direção futura R12 para Perfis e permissões"
 knowledge_id: r12-access-profiles-direction
-source: docs/reviews/etapa-2-operacao/next-round/R12-perfis-permissoes-owner.md
+source: docs/reviews/archive/rounds/R12/R12-perfis-permissoes-owner.md
 status: validated
 lifecycle: "historical"
 generated_at: 2026-09-13

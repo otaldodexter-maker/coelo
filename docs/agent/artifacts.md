@@ -38,7 +38,7 @@ registrados em `artifact-disposition-l2-20260914.json`.
   domínio. `settings.local.json` contém permissões históricas para copiar
   arquivos a uma worktree externa e para executar Cloudflare; isso não é
   requisito do projeto e deve ser revisado antes de reutilizar.
-- `.superpowers/`: brainstorms, SDD, planos e diffs; histórico de processo.
+- `docs/archive/dot-superpowers/`: brainstorms, SDD, planos e diffs; histórico de processo.
 - `.recovery-archives/`: retenção local de recuperação. O antigo `.preserved/`
   foi movido para `C:/Users/adrie/Documents/Coelo.preserved/workspace-preserved-20260914/`
   no Lote L1, com manifesto.

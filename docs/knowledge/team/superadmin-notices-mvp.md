@@ -1,7 +1,7 @@
 ---
 title: Comunicações do app no Superadmin
 knowledge_id: superadmin-notices-mvp
-source: docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md
+source: docs/archive/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-08-20

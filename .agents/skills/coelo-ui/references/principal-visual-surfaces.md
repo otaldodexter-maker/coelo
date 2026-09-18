@@ -41,7 +41,7 @@ de conclusão nem prova de backend conectado.
 - Acontece dá protagonismo à mídia e às interações do feed; não receber toolbar,
   status expansível ou anatomia de card de Instituições por compartilhar host.
 - Publicar usa o compositor e o preview próprios da ação. A aprovação de
-  2026-08-31 em `docs/superpowers/specs/2026-08-20-coelo-happens-publication-design.md`
+  2026-08-31 em `docs/archive/superpowers/specs/2026-08-20-coelo-happens-publication-design.md`
   compartilha geometria externa, insets e rodapé de Criar/Editar Instituição.
   Preservar essa geometria e as etapas existentes com componentes Principal;
   não converter o conteúdo em cadastro administrativo nem eliminar etapas. Reutilizar `PrincipalPublicationFrame` em

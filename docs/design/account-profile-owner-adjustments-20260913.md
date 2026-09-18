@@ -60,7 +60,7 @@ Na R11, rodapé/busca, confirmação do perfil, contraste e propagação da cor 
 Principal hospedado têm código e provas focais. A suspeita do nome não se
 reproduziu no save/reload real. Sigla/cor e metadados possuem candidato SQL local;
 foto R2 ainda não possui transporte persistente. O estado por camada e os gates
-remotos estão em `docs/reviews/etapa-2-operacao/next-round/R11-checkpoint.md`.
+remotos estão em `docs/reviews/archive/rounds/R11/R11-checkpoint.md`.
 Este registro não converte render automatizado em aprovação visual A nem
 certifica a ação inteira.
 

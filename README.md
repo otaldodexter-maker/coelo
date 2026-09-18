@@ -34,6 +34,6 @@ O repositorio esta preparado para Spec-Driven Development antes de qualquer codi
 ## Branches
 
 - `main`: base valida/aprovada do projeto.
-- `dev`: trabalho em teste, specs, spikes e preparacao antes de virar base valida.
+- `dev`: trabalho em teste, specs, docs/archive/spikes-root e preparacao antes de virar base valida.
 
 O repositorio deve manter apenas essas duas branches principais. Trabalhos temporarios devem ser consolidados em `dev` antes de qualquer promocao para `main`.

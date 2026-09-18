@@ -1,10 +1,10 @@
 ---
 title: "Coelo Design System Oficial v1"
-source: "Coelo Design System Oficial v1.docx; docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
+source: "Coelo Design System Oficial v1.docx; docs/archive/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
 source_file: "Coelo Design System Oficial v1.docx"
 source_copy: "docs/source/originals/docx/Coelo Design System Oficial v1.docx"
 original_path: "C:/Users/adrie/Desktop/Coelo/Design/Coelo Design System Oficial v1.docx"
-supplemental_source: "docs/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
+supplemental_source: "docs/archive/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; docs/archive/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/archive/superpowers/specs/2026-07-28-superadmin-error-pages-design.md; docs/archive/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
 status: "derived-from-official-docx"
 version: "v1"
 generated_at: "2026-07-29"
@@ -839,7 +839,7 @@ para falhas de rota, permissão ou disponibilidade que ocupam toda a janela.
 A extensão409 corresponde à ação errors.409 do inventário atribuído pelo Owner na R01 (08/09/2026), reconciliada em docs/open-questions.md. Preserva esta composição; não transforma conflito contextual em erro fullscreen nem autoriza repetir comandos. A ação aceita conclusão assíncrona, impede repetição enquanto pendente, trata falha com mensagem sanitizada e preserva foco/contexto.
 
 A primeira referência implementada é o Superadmin, documentada em
-`docs/superpowers/specs/2026-07-28-superadmin-error-pages-design.md`. Admin e
+`docs/archive/superpowers/specs/2026-07-28-superadmin-error-pages-design.md`. Admin e
 Principal só adotam a composição quando suas specs consumidoras confirmarem
 destino, navegação e contexto; não compartilhar telas entre apps.
 
@@ -918,7 +918,7 @@ seletor podem quebrar internamente e o gatilho pode expandir sem alterar a API.
 ## 17.4 Contratos de superfícies e interação
 
 Esta seção operacional formaliza a decisão aprovada em
-`docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md`. Ela
+`docs/archive/superpowers/specs/2026-07-27-popup-surface-standard-design.md`. Ela
 complementa a fonte oficial deste documento para popups, estados de hover,
 fechamento e filtros; não cria componente público nem altera fluxos de domínio.
 

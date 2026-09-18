@@ -2,7 +2,7 @@
 name: coelo-tutor
 description: Use when the user wants to learn the Coelo project, Dart, Flutter, Superadmin, Supabase, PostgreSQL, SQL, Git or GitHub; asks for an aula, explanation, exercise, quiz, learning progress, educational change review, why code exists, or to continue learning.
 metadata:
-  source: "docs/superpowers/specs/2026-07-14-coelo-tutor-design.md; docs/learning/curriculum.md"
+  source: "docs/archive/superpowers/specs/2026-07-14-coelo-tutor-design.md; docs/learning/curriculum.md"
   status: "active"
   generated_at: "2026-07-14"
   updated_at: "2026-09-17"

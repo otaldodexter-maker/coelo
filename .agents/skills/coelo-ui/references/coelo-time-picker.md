@@ -1,5 +1,5 @@
 ---
-source: "docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
+source: "docs/archive/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md"
 status: "implemented"
 generated_at: "2026-08-28"
 ---

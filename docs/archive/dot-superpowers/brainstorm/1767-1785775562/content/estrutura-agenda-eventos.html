@@ -1,0 +1,92 @@
+<style>
+  #coelo-calendar-options {
+    --coelo-primary: #D63C00;
+    --coelo-primary-soft: #FFF3EE;
+    --coelo-graphite: #3F4549;
+    --coelo-border: #DDE1E3;
+    --coelo-surface: #FFFFFF;
+    color: var(--coelo-graphite);
+    font-family: "Nunito Sans", system-ui, sans-serif;
+  }
+  #coelo-calendar-options .cards { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  #coelo-calendar-options .card-image { padding: 12px; background: #F7F8F8; }
+  #coelo-calendar-options .window { min-height: 250px; background: var(--coelo-surface); border: 1px solid var(--coelo-border); border-radius: 12px; overflow: hidden; }
+  #coelo-calendar-options .top { display: flex; align-items: center; gap: 8px; padding: 9px; border-bottom: 1px solid var(--coelo-border); }
+  #coelo-calendar-options .brand { width: 20px; height: 20px; border-radius: 7px; background: var(--coelo-primary); }
+  #coelo-calendar-options .title { font-weight: 700; flex: 1; }
+  #coelo-calendar-options .create { padding: 5px 8px; border-radius: 8px; color: white; background: var(--coelo-primary); font-size: 11px; }
+  #coelo-calendar-options .tabs { display: flex; gap: 5px; padding: 8px; border-bottom: 1px solid var(--coelo-border); font-size: 10px; }
+  #coelo-calendar-options .tab { padding: 4px 6px; border-radius: 999px; }
+  #coelo-calendar-options .tab.active { color: var(--coelo-primary); background: var(--coelo-primary-soft); font-weight: 700; }
+  #coelo-calendar-options .body { display: grid; grid-template-columns: 56px 1fr; min-height: 194px; }
+  #coelo-calendar-options .side { padding: 8px 5px; border-right: 1px solid var(--coelo-border); font-size: 9px; }
+  #coelo-calendar-options .side div { padding: 5px 3px; margin-bottom: 3px; border-radius: 6px; }
+  #coelo-calendar-options .side .active { color: var(--coelo-primary); background: var(--coelo-primary-soft); }
+  #coelo-calendar-options .content { padding: 8px; }
+  #coelo-calendar-options .toolbar { height: 22px; border: 1px solid var(--coelo-border); border-radius: 8px; margin-bottom: 7px; }
+  #coelo-calendar-options .calendar { display: grid; grid-template-columns: repeat(5, 1fr); gap: 3px; }
+  #coelo-calendar-options .day { min-height: 36px; padding: 3px; border: 1px solid var(--coelo-border); border-radius: 5px; font-size: 8px; }
+  #coelo-calendar-options .event { margin-top: 3px; padding: 2px; border-left: 2px solid var(--coelo-primary); background: var(--coelo-primary-soft); }
+  #coelo-calendar-options .list-row { height: 26px; margin-bottom: 5px; border: 1px solid var(--coelo-border); border-radius: 7px; }
+  #coelo-calendar-options .split-body { display: grid; grid-template-columns: 1fr 76px; gap: 6px; }
+  #coelo-calendar-options .detail { border: 1px solid var(--coelo-border); border-radius: 8px; background: var(--coelo-primary-soft); }
+  #coelo-calendar-options .module-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 7px; }
+  #coelo-calendar-options .module { min-height: 58px; padding: 7px; border: 1px solid var(--coelo-border); border-radius: 8px; font-size: 9px; }
+  #coelo-calendar-options .recommended { color: var(--coelo-primary); font-weight: 700; }
+  @media (max-width: 900px) {
+    #coelo-calendar-options .cards { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div id="coelo-calendar-options">
+  <h2>Qual estrutura deve orientar Eventos e Calendário?</h2>
+  <p class="subtitle">Compare onde ficam calendário, gestão, solicitações e permissões. Selecione a opção que melhor representa o Coelo.</p>
+
+  <div class="cards">
+    <div class="card" data-choice="a" onclick="toggleSelect(this)">
+      <div class="card-image">
+        <div class="window">
+          <div class="top"><span class="brand"></span><span class="title">Agenda</span><span class="create">Criar</span></div>
+          <div class="body">
+            <div class="side"><div class="active">Agenda</div><div>Filtros</div></div>
+            <div class="content"><div class="toolbar"></div><div class="calendar">
+              <div class="day">12<div class="event">Ballet</div></div><div class="day">13</div><div class="day">14<div class="event">Festa</div></div><div class="day">15</div><div class="day">16<div class="event">Natação</div></div>
+              <div class="day">19</div><div class="day">20<div class="event">Aniversário</div></div><div class="day">21</div><div class="day">22</div><div class="day">23</div>
+            </div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body"><h3>A · Calendário único</h3><p>Tudo acontece sobre o calendário, usando painéis laterais e dialogs. É direto, mas criação, aprovações e regras podem sobrecarregar a superfície.</p></div>
+    </div>
+
+    <div class="card" data-choice="b" onclick="toggleSelect(this)">
+      <div class="card-image">
+        <div class="window">
+          <div class="top"><span class="brand"></span><span class="title">Agenda</span><span class="create">Criar item</span></div>
+          <div class="tabs"><span class="tab active">Calendário</span><span class="tab">Eventos</span><span class="tab">Solicitações</span><span class="tab">Permissões</span></div>
+          <div class="content split-body">
+            <div><div class="toolbar"></div><div class="calendar">
+              <div class="day">12<div class="event">Escola</div></div><div class="day">13</div><div class="day">14<div class="event">Dia dos pais</div></div><div class="day">15</div><div class="day">16</div>
+              <div class="day">19</div><div class="day">20<div class="event">Prazo</div></div><div class="day">21</div><div class="day">22</div><div class="day">23</div>
+            </div></div>
+            <div class="detail"></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body"><h3>B · Módulo unificado <span class="recommended">Recomendado</span></h3><p>Calendário é a entrada principal; Eventos, Solicitações e Permissões têm visões próprias dentro do mesmo contexto. Mantém continuidade sem espremer fluxos complexos.</p></div>
+    </div>
+
+    <div class="card" data-choice="c" onclick="toggleSelect(this)">
+      <div class="card-image">
+        <div class="window">
+          <div class="top"><span class="brand"></span><span class="title">Operação</span></div>
+          <div class="body">
+            <div class="side"><div>Calendário</div><div>Eventos</div><div>Pedidos</div><div>Regras</div></div>
+            <div class="content"><div class="toolbar"></div><div class="module-grid"><div class="module">Calendário<br>Visão geral</div><div class="module">Eventos<br>Diretório</div><div class="module">Solicitações<br>Fila</div><div class="module">Permissões<br>Perfis</div></div></div>
+          </div>
+        </div>
+      </div>
+      <div class="card-body"><h3>C · Módulos separados</h3><p>Cada função vira um destino independente do menu. É administrativamente claro, porém fragmenta o contexto e exige mais navegação.</p></div>
+    </div>
+  </div>
+</div>

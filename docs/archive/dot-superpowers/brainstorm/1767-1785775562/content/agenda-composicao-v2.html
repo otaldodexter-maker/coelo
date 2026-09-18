@@ -1,0 +1,126 @@
+<style>
+  #agenda-v2 { font-family: "Nunito Sans", Arial, sans-serif; color: #3F4549; max-width: 1180px; margin: 0 auto; padding: 18px; }
+  #agenda-v2 * { box-sizing: border-box; }
+  #agenda-v2 h2 { margin: 0 0 6px; font-size: 24px; }
+  #agenda-v2 .intro { margin: 0 0 16px; color: #697176; }
+  #agenda-v2 .shell { overflow: hidden; background: #FFFFFF; border: 1px solid #DDE1E3; border-radius: 18px; box-shadow: 0 10px 28px rgba(63,69,73,.10); }
+  #agenda-v2 .header { display: flex; align-items: center; gap: 10px; min-height: 58px; padding: 10px 14px; border-bottom: 1px solid #E7E9EA; }
+  #agenda-v2 .logo { display: grid; place-items: center; width: 34px; height: 34px; color: white; background: #D63C00; border-radius: 11px; font-weight: 800; }
+  #agenda-v2 .heading { flex: 1; min-width: 120px; }
+  #agenda-v2 .heading strong { display: block; }
+  #agenda-v2 .heading span { font-size: 11px; color: #70787C; }
+  #agenda-v2 .context, #agenda-v2 .today, #agenda-v2 .create { min-height: 38px; padding: 0 12px; border-radius: 10px; font: inherit; font-size: 12px; }
+  #agenda-v2 .context, #agenda-v2 .today { color: #3F4549; background: #FFFFFF; border: 1px solid #DDE1E3; }
+  #agenda-v2 .create { color: #FFFFFF; background: #D63C00; border: 1px solid #D63C00; font-weight: 700; }
+  #agenda-v2 .module-tabs { display: flex; gap: 4px; padding: 9px 14px; border-bottom: 1px solid #E7E9EA; overflow-x: auto; }
+  #agenda-v2 .module-tab { white-space: nowrap; padding: 7px 10px; border-radius: 999px; font-size: 12px; }
+  #agenda-v2 .module-tab.active { color: #A92E00; background: #FFF0EA; font-weight: 700; }
+  #agenda-v2 .toolbar { display: flex; align-items: center; gap: 7px; flex-wrap: wrap; padding: 10px 14px; border-bottom: 1px solid #E7E9EA; }
+  #agenda-v2 .period { display: flex; align-items: center; gap: 6px; margin-right: auto; font-size: 13px; font-weight: 700; }
+  #agenda-v2 .pill { padding: 7px 9px; border: 1px solid #DDE1E3; border-radius: 999px; font-size: 11px; background: #FFFFFF; }
+  #agenda-v2 .pill.active { color: #A92E00; border-color: #D63C00; background: #FFF0EA; }
+  #agenda-v2 .view { display: flex; padding: 3px; background: #F1F3F4; border-radius: 9px; }
+  #agenda-v2 .view span { padding: 5px 7px; border-radius: 7px; font-size: 10px; }
+  #agenda-v2 .view .active { color: #A92E00; background: #FFFFFF; font-weight: 700; box-shadow: 0 1px 3px rgba(63,69,73,.12); }
+  #agenda-v2 .workspace { display: grid; grid-template-columns: minmax(0,1fr) 250px; min-height: 410px; }
+  #agenda-v2 .calendar { padding: 12px; }
+  #agenda-v2 .week { display: grid; grid-template-columns: repeat(7,minmax(82px,1fr)); border-top: 1px solid #E1E4E5; border-left: 1px solid #E1E4E5; }
+  #agenda-v2 .day { min-height: 92px; padding: 6px; border-right: 1px solid #E1E4E5; border-bottom: 1px solid #E1E4E5; font-size: 10px; }
+  #agenda-v2 .day.today-cell { background: #FFF9F6; }
+  #agenda-v2 .date { display: inline-flex; align-items: center; justify-content: center; width: 22px; height: 22px; border-radius: 50%; font-weight: 700; }
+  #agenda-v2 .today-cell .date { color: #FFFFFF; background: #D63C00; }
+  #agenda-v2 .item { display: block; margin-top: 4px; padding: 4px 5px; border-left: 3px solid #D63C00; border-radius: 5px; background: #FFF0EA; line-height: 1.25; }
+  #agenda-v2 .item.routine { border-left-color: #687277; background: #F1F3F4; }
+  #agenda-v2 .item.info { border-left-color: #29735E; background: #EAF7F2; }
+  #agenda-v2 .item.important { border-left-width: 5px; box-shadow: inset 0 0 0 1px #F5B298; }
+  #agenda-v2 .more { display: block; margin-top: 4px; color: #A92E00; font-weight: 700; }
+  #agenda-v2 .detail { padding: 14px; background: #FAFBFB; border-left: 1px solid #E1E4E5; }
+  #agenda-v2 .detail h3 { margin: 0 0 4px; font-size: 16px; }
+  #agenda-v2 .scope { display: inline-block; margin: 5px 0 10px; padding: 4px 7px; color: #A92E00; background: #FFF0EA; border-radius: 999px; font-size: 10px; font-weight: 700; }
+  #agenda-v2 .detail-row { padding: 9px 0; border-bottom: 1px solid #E1E4E5; font-size: 12px; }
+  #agenda-v2 .detail-row small { display: block; margin-bottom: 2px; color: #70787C; }
+  #agenda-v2 .legend { display: flex; flex-wrap: wrap; gap: 10px; padding: 10px 14px; border-top: 1px solid #E7E9EA; font-size: 11px; }
+  #agenda-v2 .legend span::before { content: ""; display: inline-block; width: 8px; height: 8px; margin-right: 5px; border-radius: 2px; background: #D63C00; }
+  #agenda-v2 .legend span:nth-child(2)::before { background: #687277; }
+  #agenda-v2 .legend span:nth-child(3)::before { background: #29735E; }
+  #agenda-v2 .choices { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 14px; }
+  #agenda-v2 .choice { cursor: pointer; padding: 12px; background: #FFFFFF; border: 1px solid #DDE1E3; border-radius: 12px; }
+  #agenda-v2 .choice:hover { border-color: #D63C00; }
+  #agenda-v2 .choice h3 { margin: 0 0 3px; font-size: 14px; }
+  #agenda-v2 .choice p { margin: 0; color: #697176; font-size: 12px; }
+  @media (max-width: 820px) {
+    #agenda-v2 { padding: 10px; }
+    #agenda-v2 .header { flex-wrap: wrap; }
+    #agenda-v2 .context { order: 4; width: 100%; }
+    #agenda-v2 .workspace { grid-template-columns: 1fr; }
+    #agenda-v2 .detail { border-left: 0; border-top: 1px solid #E1E4E5; }
+    #agenda-v2 .calendar { overflow-x: auto; }
+    #agenda-v2 .week { min-width: 700px; }
+  }
+  @media (max-width: 520px) {
+    #agenda-v2 .today { display: none; }
+    #agenda-v2 .choices { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div id="agenda-v2">
+  <h2>Agenda unificada · composição proposta</h2>
+  <p class="intro">Calendário como entrada principal, com contexto hierárquico, filtros e detalhe sem abandonar a visão do período.</p>
+  <div class="shell">
+    <div class="header">
+      <div class="logo">C</div>
+      <div class="heading"><strong>Agenda</strong><span>Eventos, rotinas e datas importantes</span></div>
+      <button class="context">Instituição Aurora · Todas as unidades ▾</button>
+      <button class="today">Hoje</button>
+      <button class="create">+ Criar item</button>
+    </div>
+    <div class="module-tabs">
+      <span class="module-tab active">Calendário</span><span class="module-tab">Eventos</span><span class="module-tab">Solicitações · 2</span><span class="module-tab">Permissões</span>
+    </div>
+    <div class="toolbar">
+      <div class="period">‹ <span>Agosto de 2026</span> ›</div>
+      <span class="pill active">3 contextos</span><span class="pill">Tipos</span><span class="pill">Alcance</span><span class="pill">Status</span>
+      <div class="view"><span class="active">Mês</span><span>Semana</span><span>Dia</span><span>Agenda</span></div>
+    </div>
+    <div class="workspace">
+      <div class="calendar">
+        <div class="week">
+          <div class="day"><span class="date">3</span><span class="item routine">08:00 Escola</span></div>
+          <div class="day"><span class="date">4</span><span class="item info">Aniv. Clara</span></div>
+          <div class="day"><span class="date">5</span><span class="item routine">18:00 Ballet</span></div>
+          <div class="day"><span class="date">6</span></div>
+          <div class="day"><span class="date">7</span><span class="item routine">17:30 Natação</span></div>
+          <div class="day"><span class="date">8</span></div>
+          <div class="day"><span class="date">9</span></div>
+          <div class="day"><span class="date">10</span><span class="item routine">08:00 Escola</span></div>
+          <div class="day"><span class="date">11</span><span class="item">Pintando o 7</span></div>
+          <div class="day"><span class="date">12</span><span class="item routine">18:00 Ballet</span></div>
+          <div class="day"><span class="date">13</span><span class="item info">Prazo autorização</span></div>
+          <div class="day"><span class="date">14</span><span class="item routine">17:30 Natação</span></div>
+          <div class="day"><span class="date">15</span></div>
+          <div class="day"><span class="date">16</span></div>
+          <div class="day today-cell"><span class="date">17</span><span class="item important">Dia dos Pais</span><span class="item routine">08:00 Escola</span><span class="more">+2 itens</span></div>
+          <div class="day"><span class="date">18</span></div>
+          <div class="day"><span class="date">19</span><span class="item routine">18:00 Ballet</span></div>
+          <div class="day"><span class="date">20</span><span class="item info">Feriado municipal</span></div>
+          <div class="day"><span class="date">21</span></div>
+          <div class="day"><span class="date">22</span></div>
+        </div>
+      </div>
+      <aside class="detail">
+        <h3>Dia dos Pais</h3>
+        <span class="scope">Instituição · importante</span>
+        <div class="detail-row"><small>Quando</small>17 ago · 09:00–12:00 · 3 h</div>
+        <div class="detail-row"><small>Onde</small>Unidade Centro · Auditório</div>
+        <div class="detail-row"><small>Audiência</small>3 unidades · 12 grupos</div>
+        <div class="detail-row"><small>Resposta</small>RSVP aberto até 13 ago</div>
+      </aside>
+    </div>
+    <div class="legend"><span>Evento</span><span>Rotina recorrente</span><span>Data ou prazo</span><span>Ícone + texto acompanham as cores</span></div>
+  </div>
+
+  <div class="choices">
+    <div class="choice" data-choice="approve-calendar-composition" onclick="toggleSelect(this)"><h3>Aprovar composição</h3><p>Usar esta estrutura como base do prompt.</p></div>
+    <div class="choice" data-choice="revise-calendar-composition" onclick="toggleSelect(this)"><h3>Quero ajustar</h3><p>Selecionar e explicar no chat o que deve mudar.</p></div>
+  </div>
+</div>

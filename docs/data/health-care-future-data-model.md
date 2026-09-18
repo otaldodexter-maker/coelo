@@ -5,7 +5,7 @@ status: "proposed"
 generated_at: "2026-08-04"
 lifecycle: "future"
 updated_at: "2026-09-15"
-reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038; docs/reviews/etapa-2-operacao/next-round/R14-handoff-sessao-2.md"
+reconciled_with: "AGENTS.md; decisions/0032; decisions/0034; decisions/0038; docs/reviews/archive/rounds/R14/R14-handoff-sessao-2.md"
 ---
 
 > **Documento futuro — não é modelo produtivo atual.** Esta proposta não

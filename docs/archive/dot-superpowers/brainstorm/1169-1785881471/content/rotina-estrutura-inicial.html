@@ -1,0 +1,93 @@
+<style>
+  .coelo-accent { color:#D63C00; }
+  .flow { display:flex; gap:10px; align-items:center; flex-wrap:wrap; margin:14px 0; }
+  .node { border:1px solid #d7d9db; border-radius:12px; padding:10px 12px; background:#fff; min-width:120px; text-align:center; font-size:13px; }
+  .node.primary { border-color:#D63C00; box-shadow:inset 0 0 0 1px #D63C00; }
+  .arrow { color:#777; font-weight:700; }
+  .mini-shell { border:1px solid #d7d9db; border-radius:14px; overflow:hidden; background:#fff; }
+  .mini-top { padding:10px 12px; border-bottom:1px solid #e7e8e9; font-weight:700; color:#3F4549; }
+  .mini-body { display:grid; grid-template-columns:120px 1fr; min-height:180px; }
+  .mini-side { padding:12px 8px; background:#fafafa; border-right:1px solid #e7e8e9; }
+  .step { padding:7px 8px; border-radius:8px; margin-bottom:5px; font-size:12px; }
+  .step.on { color:#D63C00; background:#fff0ea; font-weight:700; }
+  .mini-content { padding:12px; }
+  .bar { height:12px; background:#eceeef; border-radius:6px; margin-bottom:9px; }
+  .bar.short { width:58%; }
+  .panel { border:1px solid #e0e2e3; border-radius:10px; padding:10px; margin-top:10px; }
+  .tag { display:inline-block; padding:4px 8px; margin:3px; border-radius:999px; background:#fff0ea; color:#a82f00; font-size:11px; }
+  .recommend { display:inline-block; margin-left:8px; padding:3px 7px; border-radius:999px; background:#D63C00; color:white; font-size:11px; vertical-align:middle; }
+</style>
+
+<h2>Como a Rotina diária deve se organizar?</h2>
+<p class="subtitle">A tela atual mistura configuração do modelo e preenchimento cotidiano. Selecione a estrutura que mais representa o produto que você imagina.</p>
+
+<div class="cards">
+  <div class="card" data-choice="a-tudo-em-um-wizard" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mini-shell">
+        <div class="mini-top">Criar rotina diária</div>
+        <div class="mini-body">
+          <div class="mini-side">
+            <div class="step on">1. Identidade</div>
+            <div class="step">2. Alcance</div>
+            <div class="step">3. Campos</div>
+            <div class="step">4. Participantes</div>
+            <div class="step">5. Revisão</div>
+          </div>
+          <div class="mini-content">
+            <div class="bar short"></div><div class="bar"></div><div class="bar"></div>
+            <div class="panel"><span class="tag">Turmas</span><span class="tag">Atividades</span><span class="tag">Pessoas</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A. Um único wizard</h3>
+      <p>Cadastro, vínculos, campos e prévia operacional ficam em uma sequência única. É direto, mas pode continuar longo e misturar planejamento com execução.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b-separar-modelo-e-operacao" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="flow">
+        <div class="node primary">Modelo de rotina<br><small>configurar uma vez</small></div>
+        <div class="arrow">→</div>
+        <div class="node">Distribuir<br><small>turmas e atividades</small></div>
+        <div class="arrow">→</div>
+        <div class="node primary">Aplicar hoje<br><small>registro rápido</small></div>
+      </div>
+      <div class="split">
+        <div class="mockup">
+          <div class="mockup-header">Configuração</div>
+          <div class="mockup-body"><div class="bar short"></div><div class="bar"></div><div class="panel">Identidade · Alcance · Campos · Regras</div></div>
+        </div>
+        <div class="mockup">
+          <div class="mockup-header">Operação diária</div>
+          <div class="mockup-body"><span class="tag">Turma Infantil A</span><div class="panel">Registro em lote + exceções por criança</div></div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B. Separar modelo e operação <span class="recommend">Recomendado</span></h3>
+      <p>O Superadmin configura o modelo e seus vínculos em um wizard; o preenchimento cotidiano vira uma superfície própria, simples e rápida. Preserva governança sem sacrificar o uso diário.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c-workspace-com-abas" onclick="toggleSelect(this)">
+    <div class="card-image">
+      <div class="mini-shell">
+        <div class="mini-top">Rotina: Educação Infantil</div>
+        <div style="padding:10px 12px;border-bottom:1px solid #e7e8e9"><span class="tag">Modelo</span><span class="tag">Vínculos</span><span class="tag">Aplicação</span><span class="tag">Histórico</span></div>
+        <div class="mini-content"><div class="bar short"></div><div class="bar"></div><div class="panel">Tudo permanece no mesmo workspace, alternado por abas.</div></div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C. Workspace com abas</h3>
+      <p>Configuração, vínculos, aplicação e histórico ficam juntos, mas separados por abas. Dá contexto contínuo, porém aumenta densidade e risco de confusão entre editar o modelo e registrar o dia.</p>
+    </div>
+  </div>
+</div>
+
+<div class="section">
+  <p><strong>Decisão desta etapa:</strong> a configuração e o preenchimento cotidiano devem viver juntos ou separados?</p>
+</div>

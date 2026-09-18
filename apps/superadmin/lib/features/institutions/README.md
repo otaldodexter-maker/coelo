@@ -1,5 +1,5 @@
 ---
-source: "docs/product/prd-superadmin.md; docs/contexts/superadmin-context.md"
+source: "docs/product/prd-superadmin.md; docs/archive/contexts/superadmin-context.md"
 status: "planning-context"
 generated_at: "2026-06-22"
 ---

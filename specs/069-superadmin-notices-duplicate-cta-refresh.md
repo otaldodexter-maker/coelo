@@ -1,6 +1,6 @@
 ---
 title: "Avisos — duplicar (H08), destino do CTA de Comunicação (H13) e atualização sem sumir a lista (H23)"
-source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md (H08 A, H13 B, H23 A); R15-pendencias.md (resíduos H08/H13/H23); docs/reviews/etapa-2-operacao/next-round/R07-varredura-r01-r07.md; docs/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md (ciclo de vida; duplicar cria rascunho); dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.platform_notices (cta_label, cta_url, audience_json, recurrence…), superadmin_notice_save_draft_v2/publish_v2/change_status_v2/detail_v2/directory_v2; apps/superadmin PlatformNotice (sem URL no cliente)"
+source: "decisions/0038-owner-decisions-etapa2-backlog-20260914.md (H08 A, H13 B, H23 A); R15-pendencias.md (resíduos H08/H13/H23); docs/reviews/archive/rounds/R07/R07-varredura-r01-r07.md; docs/archive/superpowers/specs/2026-08-05-superadmin-notices-mvp-design.md (ciclo de vida; duplicar cria rascunho); dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.platform_notices (cta_label, cta_url, audience_json, recurrence…), superadmin_notice_save_draft_v2/publish_v2/change_status_v2/detail_v2/directory_v2; apps/superadmin PlatformNotice (sem URL no cliente)"
 status: "approved-for-implementation"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"

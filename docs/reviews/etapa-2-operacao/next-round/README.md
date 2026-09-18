@@ -1,6 +1,6 @@
 ---
 title: "Arquivo histórico de prompts e retomadas"
-source: "Owner R01; docs/reviews/coelo-etapa-2-coordenacao.md; docs/reviews/inventario-etapa-2.json; AGENTS.md"
+source: "Owner R01; docs/reviews/archive/reviews-2026/coelo-etapa-2-coordenacao.md; docs/reviews/inventario-etapa-2.json; AGENTS.md"
 status: "historical index; use ETAPA-2-estado-atual.md and RODADAS.md"
 generated_at: "2026-09-08T12:19:18-03:00"
 updated_at: "2026-09-15"

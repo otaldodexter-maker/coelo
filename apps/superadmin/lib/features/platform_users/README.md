@@ -1,5 +1,5 @@
 ---
-source: "docs/superpowers/specs/2026-07-29-superadmin-internal-users-preview-design.md; docs/product/prd-superadmin.md"
+source: "docs/archive/superpowers/specs/2026-07-29-superadmin-internal-users-preview-design.md; docs/product/prd-superadmin.md"
 status: "partial-runtime-integration"
 generated_at: "2026-07-29"
 updated_at: "2026-09-07"

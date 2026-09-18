@@ -180,7 +180,7 @@ exige proposta antes de oficializar novo padrão. Goldens não se aprovam sozinh
 
 ## Estados e limites
 
-Para entrega/progresso, aplicar o [contrato comum de métricas da Etapa 2](../../../../docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md).
+Para entrega/progresso, aplicar o [contrato comum de métricas da Etapa 2](../../../../docs/archive/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md).
 O painel nomeia app, menu, tela, subtela e action_id; separa percentuais de
 conclusão das taxas de testes e de sua execução. Manutenção destas skills não
 executa nem certifica testes do app. O geral conhecido usa snapshot datado;

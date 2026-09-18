@@ -1,5 +1,5 @@
 ---
-source: "AGENTS.md; docs/contexts/admin-context.md; docs/product/prd-admin.md"
+source: "AGENTS.md; docs/archive/contexts/admin-context.md; docs/product/prd-admin.md"
 status: "planning-context"
 generated_at: "2026-06-22"
 ---

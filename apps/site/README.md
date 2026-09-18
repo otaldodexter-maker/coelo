@@ -1,5 +1,5 @@
 ---
-source: "AGENTS.md; docs/contexts/site-context.md; decisions/0008-astro-site.md"
+source: "AGENTS.md; docs/archive/contexts/site-context.md; decisions/0008-astro-site.md"
 status: "planning-context"
 generated_at: "2026-06-22"
 ---

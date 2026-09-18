@@ -1,0 +1,73 @@
+<h2>Qual estrutura deve orientar as cinco telas?</h2>
+<p class="subtitle">Compare a consistência entre módulos com a clareza de cada tarefa. São wireframes de estrutura, ainda sem acabamento visual.</p>
+
+<div class="cards" style="grid-template-columns:repeat(auto-fit,minmax(280px,1fr));">
+  <div class="card" data-choice="a-diretorio-unico" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;min-height:310px;background:#f7f7f7;">
+      <div style="display:flex;gap:10px;height:278px;">
+        <div style="width:58px;border-radius:12px;background:#3f4549;color:white;padding:10px 6px;font-size:10px;">COELO<br><br>▣<br><br>◇<br><br>○</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px;">
+          <div style="font-weight:800;color:#3f4549;">Título + ação principal</div>
+          <div style="display:flex;gap:5px;"><span style="flex:1;height:28px;border:1px solid #ccc;border-radius:16px;padding:5px;font-size:9px;">Buscar...</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;">Filtros</span></div>
+          <div style="flex:1;border:1px solid #ddd;border-radius:10px;background:white;padding:9px;">
+            <div style="height:24px;background:#eee;margin:-9px -9px 6px;border-radius:10px 10px 0 0;"></div>
+            <div style="height:35px;border-bottom:1px solid #eee;"></div><div style="height:35px;border-bottom:1px solid #eee;"></div><div style="height:35px;border-bottom:1px solid #eee;"></div>
+          </div>
+          <div style="height:28px;border-radius:8px;background:white;border:1px solid #ddd;text-align:center;font-size:9px;padding:7px;">Paginação</div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>A · Diretório único</h3>
+      <p>Todas as telas usam a mesma busca, filtros, tabela e paginação. Máxima consistência, mas Importações e Avisos ficam artificiais.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="b-modulos-distintos" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;min-height:310px;background:#f7f7f7;">
+      <div style="display:flex;gap:10px;height:278px;">
+        <div style="width:58px;border-radius:12px;background:#3f4549;color:white;padding:10px 6px;font-size:10px;">COELO<br><br>▣<br><br>◇<br><br>○</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px;">
+          <div style="font-weight:800;color:#3f4549;">Painel do módulo</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;">
+            <div style="height:52px;border-radius:9px;background:white;border:1px solid #ddd;padding:7px;font-size:9px;">Indicador<br><b>128</b></div>
+            <div style="height:52px;border-radius:9px;background:white;border:1px solid #ddd;padding:7px;font-size:9px;">Indicador<br><b>24</b></div>
+          </div>
+          <div style="flex:1;border:1px solid #ddd;border-radius:10px;background:white;padding:10px;display:grid;grid-template-columns:1fr 1fr;gap:7px;">
+            <div style="border:1px solid #ddd;border-radius:8px;"></div><div style="border:1px solid #ddd;border-radius:8px;"></div><div style="border:1px solid #ddd;border-radius:8px;"></div><div style="border:1px solid #ddd;border-radius:8px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>B · Módulos distintos</h3>
+      <p>Cada tela ganha uma composição própria e mais expressiva. Resolve cada tarefa bem, mas aumenta código, decisões e inconsistência.</p>
+    </div>
+  </div>
+
+  <div class="card" data-choice="c-hibrido" onclick="toggleSelect(this)">
+    <div class="card-image" style="padding:16px;min-height:310px;background:#f7f7f7;">
+      <div style="display:flex;gap:10px;height:278px;">
+        <div style="width:58px;border-radius:12px;background:#3f4549;color:white;padding:10px 6px;font-size:10px;">COELO<br><br>▣<br><br>◇<br><br>○</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:8px;">
+          <div style="display:flex;justify-content:space-between;align-items:center;"><b style="color:#3f4549;">Título contextual</b><span style="background:#d63c00;color:white;border-radius:16px;padding:6px 9px;font-size:9px;">Nova ação</span></div>
+          <div style="display:flex;gap:5px;"><span style="flex:1;height:28px;border:1px solid #ccc;border-radius:16px;padding:5px;font-size:9px;">Buscar...</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;">Filtros</span></div>
+          <div style="height:48px;border-radius:9px;background:#fff4ef;border:1px solid #f0c6b5;padding:8px;font-size:9px;">Resumo útil somente quando ajuda a tarefa</div>
+          <div style="flex:1;border:1px solid #ddd;border-radius:10px;background:white;padding:9px;">
+            <div style="height:24px;background:#eee;margin:-9px -9px 6px;border-radius:10px 10px 0 0;"></div>
+            <div style="height:32px;border-bottom:1px solid #eee;"></div><div style="height:32px;border-bottom:1px solid #eee;"></div><div style="height:32px;"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="card-body">
+      <h3>C · Híbrido enxuto — recomendado</h3>
+      <p>Compartilha shell, toolbar, tabela, filtros e estados; cada módulo adiciona apenas o bloco necessário, como etapas de importação ou prévia do aviso.</p>
+    </div>
+  </div>
+</div>
+
+<div class="pros-cons" style="margin-top:20px;">
+  <div class="pros"><h4>Por que recomendo C</h4><ul><li>Reutiliza o padrão aprovado de Instituições.</li><li>Preserva identidade comum sem forçar telas diferentes a parecerem iguais.</li><li>É a menor base útil para evoluir Admin e Principal depois.</li></ul></div>
+  <div class="cons"><h4>Limite consciente</h4><ul><li>Não cria um dashboard completo por módulo.</li><li>Os dados e eventos reiniciam ao recarregar o protótipo.</li></ul></div>
+</div>

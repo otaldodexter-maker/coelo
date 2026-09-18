@@ -6,7 +6,7 @@
   "owner": "C0 R13",
   "note": "Projeção dos 50 itens transferidos para R13; seis estão done no catálogo canônico e 47 permanecem não terminais após a execução de 14/09.",
   "executionStatus": "PASS DOCUMENTED_PARTIAL; 6/53 Owner items done e 47/53 permanecem na fila residual",
-  "executionEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-checkpoint-20260914-1620.md",
+  "executionEvidence": "docs/reviews/archive/rounds/R13/R13-checkpoint-20260914-1620.md",
   "historicalExecutionEvidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/r13-execution-audit-20260914.json",
   "nextGate": "Retomar pela fila exata do checkpoint mais recente da R13; gates R2/SMTP e demais bloqueios externos permanecem explícitos",
   "currentQueue": "R13 vigente: 47 owner.r12-* não terminais + H02-H28 herdados de R01-R07; H01 resolved",

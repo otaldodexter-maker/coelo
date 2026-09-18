@@ -1,5 +1,5 @@
 ---
-source: "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png; docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md, item31; referência histórica de20/08 call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
+source: "docs/reviews/evidence/etapa-2/principal-visual/2026-08-31-publicar-agora-approved.png; docs/archive/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md, item31; referência histórica de20/08 call_Xf4KknVH3c3XUaOk6VWaITXM.png; plano aprovado Publicação do Agora; docs/product/prd-app.md; docs/design/design-system.md"
 status: approved
 generated_at: 2026-08-20
 updated_at: 2026-09-15

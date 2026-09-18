@@ -1,7 +1,7 @@
 ---
 title: "Diretório de Convites do Superadmin"
 knowledge_id: "superadmin-invites-directory"
-source: "docs/superpowers/checkpoints/2026-08-04-superadmin-invites-ui-handoff.md"
+source: "docs/archive/superpowers/checkpoints/2026-08-04-superadmin-invites-ui-handoff.md"
 status: "validated"
 lifecycle: "current"
 generated_at: "2026-08-28"

@@ -120,7 +120,7 @@ faz o relé: lê o handoff B, aciona a B′ com o pedido e devolve a resposta ao
 - `R15-handoff-bloco-a|b|c1|c2.md` nesta pasta, `lifecycle: current`; só a
   sessão dona escreve; a coordenadora lê e integra.
 - **Antes de cada tela**: `git fetch origin` e ler os outros handoffs em
-  `origin/r15/bloco-*` (`git show origin/r15/bloco-b:docs/reviews/etapa-2-operacao/next-round/R15-handoff-bloco-b.md`).
+  `origin/r15/bloco-*` (`git show origin/r15/bloco-b:docs/reviews/archive/rounds/R15/R15-handoff-bloco-b.md`).
   Tela reivindicada por outra sessão não se toca.
 - Seções fixas: `## Reivindicações` (tela, action_ids, hora), `## Fatias
   entregues` (SHA, action_ids → estados, Owner items, evidência), `## Avisos

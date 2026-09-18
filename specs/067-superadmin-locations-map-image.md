@@ -1,6 +1,6 @@
 ---
 title: "Operação › Locais — mapa por imagem, mídia com visibilidade e hierarquia (OQ-034)"
-source: "docs/open-questions.md (OQ-034, confirmado pelo Owner em 15/09/2026); docs/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md (design aprovado; catálogo, reservas e política de conflito); OQ-045 (domínio R2 `locations`); decisions/0032-mvp-private-media-r2.md; docs/reviews/inventario-etapa-2.json (institutions.locations-map deferred-post-mvp → substituída); dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.activity_locations, public.location_bindings, public.location_reservations, public.location_reservation_occurrences, public.location_scheduling_policies"
+source: "docs/open-questions.md (OQ-034, confirmado pelo Owner em 15/09/2026); docs/archive/superpowers/specs/2026-09-02-superadmin-locais-mapas-agendamentos-design.md (design aprovado; catálogo, reservas e política de conflito); OQ-045 (domínio R2 `locations`); decisions/0032-mvp-private-media-r2.md; docs/reviews/inventario-etapa-2.json (institutions.locations-map deferred-post-mvp → substituída); dump de schema de produção de 17/09/2026 (SHA-256 c87f4d67…): public.activity_locations, public.location_bindings, public.location_reservations, public.location_reservation_occurrences, public.location_scheduling_policies"
 status: "approved-for-implementation"
 generated_at: "2026-09-17"
 updated_at: "2026-09-17"

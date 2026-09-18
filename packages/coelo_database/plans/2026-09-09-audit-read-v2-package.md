@@ -1,6 +1,6 @@
 ---
 title: "Pacote revisável AUDIT-READ-V2 — cutover dos leitores de Auditoria"
-source: "docs/reviews/etapa-2-operacao/TRABALHO-ATUAL.md; coordenacao.json rev4; candidatos 8b4dfb6a e 89949f30"
+source: "docs/reviews/archive/etapa-2-r01-r02/TRABALHO-ATUAL.md; coordenacao.json rev4; candidatos 8b4dfb6a e 89949f30"
 status: "revisável; NÃO aplicado; aguardando autorização nominal do Owner"
 generated_at: "2026-09-09"
 group: "operacoes-sistema"

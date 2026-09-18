@@ -1,5 +1,5 @@
 ---
-source: "docs/design/design-system.md; docs/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
+source: "docs/design/design-system.md; docs/archive/superpowers/specs/2026-07-27-popup-surface-standard-design.md; docs/archive/superpowers/specs/2026-07-28-superadmin-institution-sticky-pagination-design.md"
 status: "active"
 generated_at: "2026-07-29"
 ---

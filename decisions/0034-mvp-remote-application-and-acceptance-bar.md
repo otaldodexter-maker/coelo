@@ -1,6 +1,6 @@
 ---
 title: "Aplicação remota autorizada e régua de aceite do MVP"
-source: "decisão do Owner Coelo em 2026-09-10; AGENTS.md; docs/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md"
+source: "decisão do Owner Coelo em 2026-09-10; AGENTS.md; docs/archive/superpowers/specs/2026-09-01-coelo-review-progress-metrics-design.md"
 status: "approved"
 generated_at: "2026-09-10"
 amended_by: "decisions/0040-agora-immediate-removal.md (remoção explícita do Agora)"
@@ -321,7 +321,7 @@ pertencem e voltam a contar na revisão profunda.
   como pendência de revisão profunda); dados sintéticos das provas ficam até a
   limpeza aprovada (P37).
 - **Perguntas abertas P22 a P37** em
-  `docs/reviews/etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`;
+  `docs/reviews/archive/rounds/R04/R04-perguntas-ao-owner-20260911.md`;
   as visuais (P26, P28, P33, P34) têm página lado a lado.
 - **Regras operacionais registradas nas skills** (memória da máquina, um
   entrypoint de driver, formato dos deltas, E2E exige FE e BE, prova de rota
@@ -330,7 +330,7 @@ pertencem e voltam a contar na revisão profunda.
 ## Decisão 15 — respostas do Owner ao lote P20–P37 da Rodada 4 (11/09/2026, 10:40)
 
 Respondidas na página de decisões da R04 (artefato "Decisões R04"). Texto
-integral das observações em `docs/reviews/etapa-2-operacao/next-round/R04-perguntas-ao-owner-20260911.md`.
+integral das observações em `docs/reviews/archive/rounds/R04/R04-perguntas-ao-owner-20260911.md`.
 
 - **P20** token antigo da Cloudflare: fica para a revisão de segurança (C).
 - **P22** ponte de ator: confirmada, "se isso funcionar sempre" (A).
@@ -451,7 +451,7 @@ sintéticas, por migration de limpeza com dump prévio.
   modelo de sistema, @ de usuários internos, fail-closed de tenant em
   Cardápios, papel do sincronizador do P35) e o A+ dos goldens
   `agenda_create_*` em
-  `docs/reviews/etapa-2-operacao/next-round/R05-perguntas-ao-owner-20260911.md`.
+  `docs/reviews/archive/rounds/R05/R05-perguntas-ao-owner-20260911.md`.
 
 ## Decisão 18 — respostas do Owner ao artefato de aprovações da R05 (11/09/2026, 16:45)
 

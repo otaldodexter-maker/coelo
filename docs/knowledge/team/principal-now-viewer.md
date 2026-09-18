@@ -1,7 +1,7 @@
 ---
 title: "Visualizador do Agora no Principal"
 knowledge_id: principal-now-viewer
-source: docs/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
+source: docs/archive/superpowers/specs/2026-08-28-coelo-visual-completion-stage-design.md
 status: validated
 lifecycle: "current"
 generated_at: 2026-08-31

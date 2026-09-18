@@ -30,7 +30,7 @@
       "notPatchEquivalent": 20,
       "disposition": "superseded",
       "successor": "4b2c5611eabf7e9f912d388b5fe9c4ad6c21fda4",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -41,7 +41,7 @@
       "notPatchEquivalent": 39,
       "disposition": "superseded",
       "successor": "cb9eb15a5bd9568f675b0fec389fe468e35cbd48",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -52,7 +52,7 @@
       "notPatchEquivalent": 29,
       "disposition": "superseded",
       "successor": "9554aaa3de3fdd2a19d89d4fa02af957f2f70c6f",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -63,7 +63,7 @@
       "notPatchEquivalent": 32,
       "disposition": "superseded",
       "successor": "ecc8eae2b6a80e114a108166be284f6fbf98bd60",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -74,7 +74,7 @@
       "notPatchEquivalent": 50,
       "disposition": "superseded",
       "successor": "0d212729bdb4097583694534e23f38ae2de4fdc3",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -85,7 +85,7 @@
       "notPatchEquivalent": 40,
       "disposition": "superseded",
       "successor": "1e39b2fcf30942ff927c74be5837d5d9eb4e7f43",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -96,7 +96,7 @@
       "notPatchEquivalent": 35,
       "disposition": "superseded",
       "successor": "2b1cf2f0013367f8fcc3d24ae6550bf818818c9c",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -174,7 +174,7 @@
       "disposition": "superseded",
       "successor": "8334d3695",
       "evidence": "docs/reviews/etapa-2-operacao/next-round/R14-fechamento.md",
-      "reason": "Sessão E da R14: código (account-media, chat asset_id, remoção imediata do Agora) integrado em dev por patch na R14; resíduo só cosmético (comentário, plan() de teste) e 3 planos em docs/superpowers trazidos para dev em 17/09; dump preservado no bundle Coelo-backups/r15-fechamento."
+      "reason": "Sessão E da R14: código (account-media, chat asset_id, remoção imediata do Agora) integrado em dev por patch na R14; resíduo só cosmético (comentário, plan() de teste) e 3 planos em docs/archive/superpowers trazidos para dev em 17/09; dump preservado no bundle Coelo-backups/r15-fechamento."
     },
     {
       "branch": "r14/formularios-chat",
@@ -272,7 +272,7 @@
       "notPatchEquivalent": 1,
       "disposition": "superseded",
       "successor": "d0fd94c07eeccc627dd748ed90b59db13538e6a1",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -360,7 +360,7 @@
       "notPatchEquivalent": 1,
       "disposition": "superseded",
       "successor": "03f8bc0b815f5b48c36fb0116b910b4a093d4775",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Content review against successor recorded in R10-consolidacao.md; preserve historical evidence, do not reapply old SQL or replace current UI"
     },
     {
@@ -382,7 +382,7 @@
       "notPatchEquivalent": 0,
       "disposition": "patch-equivalent",
       "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "git cherry origin/dev has no new patch; successor is integrated base"
     },
     {
@@ -393,7 +393,7 @@
       "notPatchEquivalent": 0,
       "disposition": "patch-equivalent",
       "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "git cherry origin/dev has no new patch; successor is integrated base"
     },
     {
@@ -404,7 +404,7 @@
       "notPatchEquivalent": 0,
       "disposition": "patch-equivalent",
       "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "git cherry origin/dev has no new patch; successor is integrated base"
     },
     {
@@ -415,7 +415,7 @@
       "notPatchEquivalent": 0,
       "disposition": "patch-equivalent",
       "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "git cherry origin/dev has no new patch; successor is integrated base"
     },
     {
@@ -426,7 +426,7 @@
       "notPatchEquivalent": 0,
       "disposition": "patch-equivalent",
       "successor": "eecbfa146bce26e3a4494058d7a2e24e86f92bfe",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "git cherry origin/dev has no new patch; successor is integrated base"
     },
     {
@@ -1075,7 +1075,7 @@
       "notPatchEquivalent": 1,
       "disposition": "superseded",
       "successor": "b5a0fe8e7ff5f3d0022f6ff5f805557efa9a3e0c",
-      "evidence": "docs/reviews/etapa-2-operacao/next-round/R10-consolidacao.md",
+      "evidence": "docs/reviews/archive/rounds/R10/R10-consolidacao.md",
       "reason": "Successor adds legacy replay and rejection guards; first delivery must not replace it"
     }
   ],

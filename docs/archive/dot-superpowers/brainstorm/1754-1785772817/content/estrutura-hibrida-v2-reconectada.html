@@ -1,0 +1,55 @@
+<h2>Direção C ajustada: criação dentro do conteúdo</h2>
+<p class="subtitle">O cabeçalho fica limpo. A ação de criar muda de lugar conforme a visualização, seguindo Instituições.</p>
+
+<div class="split">
+  <div class="mockup">
+    <div class="mockup-header">Visualização em cards</div>
+    <div class="mockup-body" style="background:#f7f7f7;padding:16px;">
+      <div style="display:flex;gap:10px;min-height:310px;">
+        <div style="width:58px;border-radius:12px;background:#3f4549;color:white;padding:10px 6px;font-size:10px;">COELO<br><br>▣<br><br>◇<br><br>○</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:10px;">
+          <div><b style="color:#3f4549;">Planos</b><div style="font-size:9px;color:#777;">Catálogo, limites e recursos disponíveis</div></div>
+          <div style="display:flex;gap:5px;"><span style="flex:1;height:28px;border:1px solid #ccc;border-radius:16px;padding:5px;font-size:9px;background:white;">Buscar...</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;background:white;">Filtros</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;background:white;">▦ / ☷</span></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;flex:1;">
+            <div style="border:1px dashed #d63c00;border-radius:10px;background:white;display:flex;align-items:center;justify-content:center;flex-direction:column;color:#d63c00;font-size:10px;"><b style="font-size:22px;">＋</b>Novo plano</div>
+            <div style="border:1px solid #ddd;border-radius:10px;background:white;padding:10px;font-size:9px;"><b>Essencial</b><br><br>5 módulos<br>2.000 usuários<br><br><span style="color:#24824a;">● Ativo</span></div>
+            <div style="border:1px solid #ddd;border-radius:10px;background:white;padding:10px;font-size:9px;"><b>Completo</b><br><br>Todos os módulos<br>Sem limite definido<br><br><span style="color:#24824a;">● Ativo</span></div>
+            <div style="border:1px solid #ddd;border-radius:10px;background:white;padding:10px;font-size:9px;"><b>Legado</b><br><br>3 módulos<br>500 usuários<br><br><span style="color:#777;">● Arquivado</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="mockup">
+    <div class="mockup-header">Visualização em tabela</div>
+    <div class="mockup-body" style="background:#f7f7f7;padding:16px;">
+      <div style="display:flex;gap:10px;min-height:310px;">
+        <div style="width:58px;border-radius:12px;background:#3f4549;color:white;padding:10px 6px;font-size:10px;">COELO<br><br>▣<br><br>◇<br><br>○</div>
+        <div style="flex:1;display:flex;flex-direction:column;gap:9px;">
+          <div><b style="color:#3f4549;">Planos</b><div style="font-size:9px;color:#777;">Catálogo, limites e recursos disponíveis</div></div>
+          <div style="display:flex;gap:5px;"><span style="flex:1;height:28px;border:1px solid #ccc;border-radius:16px;padding:5px;font-size:9px;background:white;">Buscar...</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;background:white;">Filtros</span><span style="height:28px;border:1px solid #ccc;border-radius:16px;padding:5px 9px;font-size:9px;background:white;">▦ / ☷</span></div>
+          <div style="height:38px;border:1px dashed #d63c00;border-radius:9px;background:white;color:#d63c00;padding:11px;text-align:center;font-size:10px;font-weight:700;">＋ Criar novo plano</div>
+          <div style="flex:1;border:1px solid #ddd;border-radius:10px;background:white;overflow:hidden;font-size:9px;">
+            <div style="height:27px;background:#eee;padding:8px;font-weight:700;">Nome &nbsp;&nbsp;&nbsp;&nbsp; Recursos &nbsp;&nbsp;&nbsp;&nbsp; Limites &nbsp;&nbsp;&nbsp;&nbsp; Status</div>
+            <div style="height:39px;border-bottom:1px solid #eee;padding:12px;">Essencial &nbsp;&nbsp;&nbsp; 5 módulos &nbsp;&nbsp;&nbsp; 2.000 &nbsp;&nbsp;&nbsp; Ativo</div>
+            <div style="height:39px;border-bottom:1px solid #eee;padding:12px;">Completo &nbsp;&nbsp;&nbsp; Todos &nbsp;&nbsp;&nbsp; — &nbsp;&nbsp;&nbsp; Ativo</div>
+            <div style="height:39px;padding:12px;">Legado &nbsp;&nbsp;&nbsp; 3 módulos &nbsp;&nbsp;&nbsp; 500 &nbsp;&nbsp;&nbsp; Arquivado</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="section" style="margin-top:20px;">
+  <h3>Aplicação às cinco telas</h3>
+  <p><b>Planos, Convites e Avisos:</b> card “Novo...” ou faixa de criação. <b>Importações:</b> card/faixa “Nova importação”. <b>Auditoria:</b> apenas consulta, sem card ou faixa de criação.</p>
+</div>
+
+<div class="options">
+  <div class="option" data-choice="aprovar-c-v2" onclick="toggleSelect(this)">
+    <div class="letter">✓</div>
+    <div class="content"><h3>Aprovar esta base</h3><p>Usar esta regra nos prompts e detalhar cada módulo a partir dela.</p></div>
+  </div>
+</div>

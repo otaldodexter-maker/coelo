@@ -1,6 +1,6 @@
 ---
 title: "Perfis e Permissões no Superadmin"
-source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04, 2026-08-05 e 2026-09-01; docs/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md"
+source: "AGENTS.md; specs/002-auth-multitenant.md; specs/011-superadmin-database-rls.md; specs/012-superadmin-mvp.md; specs/015-contextual-people-access-attendance.md; docs/security/auth-multitenant-permissions.md; docs/data/data-model.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29, 2026-08-04, 2026-08-05 e 2026-09-01; docs/archive/superpowers/specs/2026-09-01-superadmin-access-health-care-finalization-design.md"
 status: "approved-for-implementation"
 generated_at: "2026-09-01"
 lifecycle: "current"

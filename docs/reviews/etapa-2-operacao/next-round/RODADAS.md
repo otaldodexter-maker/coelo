@@ -53,8 +53,8 @@ proveniência; nenhum item é duplicado ou renumerado. R16 foi aberta em
 ## Navegação rápida
 
 - [Estado atual da Etapa 2](../ETAPA-2-estado-atual.md)
-- [R07 fechamento](R07-fechamento.md)
-- [R07 varredura R01–R07](R07-varredura-r01-r07.md)
+- [R07 fechamento](../../archive/rounds/R07/R07-fechamento.md)
+- [R07 varredura R01–R07](../../archive/rounds/R07/R07-varredura-r01-r07.md)
 - [R12 pendências — origem histórica](R12-pendencias.md)
 - [R13 pendências — histórico](R13-pendencias.md)
 - [R14 pendências — histórico](R14-pendencias.md) e [R14 fechamento](R14-fechamento.md)

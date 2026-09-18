@@ -27,4 +27,4 @@ consumidor. Componente especulativo permanece local. Não criar package vazio.
 
 Ao tocar navegação, contexto, autoria ou chat do Principal, ler
 `decisions/0012-contextual-experiences-and-conversation-history.md` e
-`docs/contexts/principal-context.md`.
+`docs/archive/contexts/principal-context.md`.
