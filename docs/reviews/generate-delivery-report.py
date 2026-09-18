@@ -18,9 +18,12 @@ INVENTORY = ROOT / "docs/reviews/inventario-etapa-2.json"
 OWNER_LEDGER = ROOT / "docs/reviews/etapa-2-operacao/next-round/R12-owner-items.json"
 OWNER_QUEUE = ROOT / "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md"
 CHECKPOINT = "docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md"
-# Last coordination base before the R14 action deltas. This keeps the gate
-# audit anchored to the published cut instead of comparing HEAD with itself.
-BASE_REFERENCE = "9d6636115a15d10f6c44b1ababa4f162fed0ae06"
+# Published cut the gate audits against. Since 17/09/2026 it is the archive
+# commit that closed the Etapa 2 execution (FE/BE/E2E 100%) and moved the
+# historical rounds (docs/agent/archive-manifest-20260917.md); before that it
+# was the last coordination base before the R14 action deltas
+# (9d6636115a15d10f6c44b1ababa4f162fed0ae06).
+BASE_REFERENCE = "fb7f858d53d11c1e267f311cb1e07bc24d5feb7d"
 CURRENT_STATE = "docs/reviews/etapa-2-operacao/ETAPA-2-estado-atual.md"
 PENDENCIES = "docs/reviews/etapa-2-operacao/next-round/R16-pendencias.md"
 ROUND_INDEX = "docs/reviews/etapa-2-operacao/next-round/RODADAS.md"

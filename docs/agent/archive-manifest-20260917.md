@@ -34,6 +34,15 @@ checkpoints finais de R12–R15, pendências congeladas R12–R15, `R12-owner-it
 `R13-prompt-execucao-20260914.md`, `R14-catalogo.md`, `R14/R15-execucao-paralela.md` (modelos) e
 `R07-decisoes-owner-20260912.md` (decisões do Owner citadas por ADR).
 
+## Efeito no delivery gate
+
+Os caminhos de certificação do inventário (`inventario-etapa-2.json`) e dos três
+rastreadores foram reescritos para os novos locais (o `validate-trackers.cjs` exige
+que existam). Como isso altera o texto de 128 ações sem mudar estado, a base de
+auditoria do gate (`BASE_REFERENCE` em `generate-delivery-report.py`) passou a ser o
+commit deste arquivamento (`fb7f858d5`), o corte publicado após o fechamento FE/BE/E2E
+da Etapa 2; a base anterior (`9d6636115`) fica registrada no comentário do script.
+
 ## Recuperação
 
 `git log --follow <novo caminho>` mostra o histórico; `git mv` reverso restaura o caminho antigo.

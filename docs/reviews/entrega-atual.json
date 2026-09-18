@@ -8,7 +8,7 @@
     "roundStatus": "active",
     "nextRound": "R17 not opened",
     "branch": "dev",
-    "head": "e7a9d78100ae6ecc76bf4ddd7103dbbb16fbcf29",
+    "head": "e57bac74b73f496ede35e3a8a53e8a6c6f0e9791",
     "worktree": "source checkout at report generation; report commit follows"
   },
   "sources": {
@@ -1320,7 +1320,7 @@
       "nextGate": "V1: fora do MVP e dos denominadores FE/BE da Etapa 2; reabrir só por decisão do Owner."
     }
   ],
-  "baseReference": "9d6636115a15d10f6c44b1ababa4f162fed0ae06",
+  "baseReference": "fb7f858d53d11c1e267f311cb1e07bc24d5feb7d",
   "target": "C:\\Users\\adrie\\Documents\\Coelo",
   "protectedWorktrees": {},
   "preservedStash": {},
