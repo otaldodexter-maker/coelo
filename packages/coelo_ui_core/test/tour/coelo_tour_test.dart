@@ -183,6 +183,42 @@ void main() {
     expect(balloon.width, 600);
   });
 
+  testWidgets('em tela estreita, âncora na metade de baixo leva a folha ao topo', (tester) async {
+    final registry = CoeloTourAnchorRegistry();
+    _resize(tester, const Size(600, 900));
+    await tester.pumpWidget(
+      MaterialApp(
+        theme: CoeloTheme.light,
+        home: CoeloTourScope(
+          registry: registry,
+          child: Scaffold(
+            body: Builder(
+              builder: (context) => Column(
+                children: [
+                  FilledButton(
+                    key: const Key('start'),
+                    onPressed: () => showCoeloTour(
+                      context,
+                      steps: const [CoeloTourStep(anchorId: 'low', title: 'Baixo', text: 'x')],
+                      registry: registry,
+                    ),
+                    child: const Text('Iniciar'),
+                  ),
+                  const Spacer(),
+                  CoeloTourAnchor(id: 'low', child: const Text('Item baixo')),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+    await _start(tester);
+    final balloon = tester.getRect(find.byKey(const Key('coelo-tour-balloon')));
+    expect(balloon.top, 0);
+    expect(balloon.overlaps(tester.getRect(find.text('Item baixo'))), isFalse);
+  });
+
   testWidgets('em tela larga o balão fica ao lado da âncora sem cobri-la', (tester) async {
     final registry = CoeloTourAnchorRegistry();
     _resize(tester, const Size(1200, 800));

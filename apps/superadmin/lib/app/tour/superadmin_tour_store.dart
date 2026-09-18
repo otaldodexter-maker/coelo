@@ -4,8 +4,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 /// (concluído ou pulado). Sem coluna nem RPC: é preferência local, por
 /// usuário, para o primeiro acesso mostrar o tour uma única vez.
 abstract interface class SuperadminTourStore {
-  /// True quando o tour do menu já foi concluído ou pulado por este usuário.
-  Future<bool> hasSeenMenuTour();
+  /// True quando o tour do menu já foi concluído ou pulado por este usuário;
+  /// false quando ainda não; null quando ainda não dá para saber (usuário não
+  /// identificado neste instante — o shell pergunta de novo depois).
+  Future<bool?> hasSeenMenuTour();
 
   /// Registra que o tour do menu terminou (`done` ou `skipped`).
   Future<void> markMenuTour(String outcome);
@@ -18,7 +20,7 @@ final class InMemorySuperadminTourStore implements SuperadminTourStore {
   String? lastOutcome;
 
   @override
-  Future<bool> hasSeenMenuTour() async => _seen;
+  Future<bool?> hasSeenMenuTour() async => _seen;
 
   @override
   Future<void> markMenuTour(String outcome) async {
@@ -27,8 +29,8 @@ final class InMemorySuperadminTourStore implements SuperadminTourStore {
   }
 }
 
-/// Chave `coelo.superadmin.tour.menu.<userId>`. Sem usuário identificado o
-/// tour conta como já visto (não abre sozinho) e nada é gravado.
+/// Chave `coelo.superadmin.tour.menu.<userId>`. Sem usuário identificado a
+/// resposta é null (o shell tenta de novo) e nada é gravado.
 final class SharedPreferencesSuperadminTourStore implements SuperadminTourStore {
   SharedPreferencesSuperadminTourStore({
     required String? Function() currentUserId,
@@ -48,9 +50,9 @@ final class SharedPreferencesSuperadminTourStore implements SuperadminTourStore 
   }
 
   @override
-  Future<bool> hasSeenMenuTour() async {
+  Future<bool?> hasSeenMenuTour() async {
     final key = _key;
-    if (key == null) return true;
+    if (key == null) return null;
     return (await _store.getString(key)) != null;
   }
 

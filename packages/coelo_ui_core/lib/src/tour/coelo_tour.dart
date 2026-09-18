@@ -276,6 +276,10 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
       builder: (context, constraints) {
         final narrow = constraints.maxWidth < CoeloBreakpoints.expanded.minWidth;
         final highlight = rect.inflate(CoeloSpacing.space1);
+        // Folha inferior por padrão; se a âncora está na metade de baixo da
+        // tela (rodapé do drawer, por exemplo), a folha vai para o topo para
+        // não cobrir o que está apontando.
+        final sheetAtTop = narrow && highlight.center.dy > constraints.maxHeight / 2;
         return Stack(
           key: const Key('coelo-tour-overlay'),
           fit: StackFit.expand,
@@ -292,13 +296,18 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
               ),
             ),
             CustomSingleChildLayout(
-              delegate: _CoeloTourBalloonLayout(anchor: highlight, narrow: narrow),
+              delegate: _CoeloTourBalloonLayout(
+                anchor: highlight,
+                narrow: narrow,
+                sheetAtTop: sheetAtTop,
+              ),
               child: _CoeloTourBalloon(
                 focusNode: _focusNode,
                 step: step,
                 position: index + 1,
                 total: widget.steps.length,
                 narrow: narrow,
+                sheetAtTop: sheetAtTop,
                 onBack: index == 0 ? null : _back,
                 onNext: _next,
                 onSkip: _skip,
@@ -344,10 +353,15 @@ final class _CoeloTourScrimPainter extends CustomPainter {
 /// Em tela larga: à direita da âncora, senão à esquerda, senão abaixo/acima;
 /// sempre dentro da margem. Em tela estreita: folha inferior de largura total.
 final class _CoeloTourBalloonLayout extends SingleChildLayoutDelegate {
-  const _CoeloTourBalloonLayout({required this.anchor, required this.narrow});
+  const _CoeloTourBalloonLayout({
+    required this.anchor,
+    required this.narrow,
+    required this.sheetAtTop,
+  });
 
   final Rect anchor;
   final bool narrow;
+  final bool sheetAtTop;
 
   static const _width = 320.0;
   static const _gap = CoeloSpacing.space3;
@@ -363,7 +377,7 @@ final class _CoeloTourBalloonLayout extends SingleChildLayoutDelegate {
 
   @override
   Offset getPositionForChild(Size size, Size childSize) {
-    if (narrow) return Offset(0, size.height - childSize.height);
+    if (narrow) return Offset(0, sheetAtTop ? 0 : size.height - childSize.height);
     double clampY(double y) =>
         y.clamp(_margin, (size.height - childSize.height - _margin).clamp(_margin, size.height));
     if (anchor.right + _gap + childSize.width <= size.width - _margin) {
@@ -384,7 +398,9 @@ final class _CoeloTourBalloonLayout extends SingleChildLayoutDelegate {
 
   @override
   bool shouldRelayout(_CoeloTourBalloonLayout oldDelegate) =>
-      anchor != oldDelegate.anchor || narrow != oldDelegate.narrow;
+      anchor != oldDelegate.anchor ||
+      narrow != oldDelegate.narrow ||
+      sheetAtTop != oldDelegate.sheetAtTop;
 }
 
 final class _CoeloTourBalloon extends StatelessWidget {
@@ -394,6 +410,7 @@ final class _CoeloTourBalloon extends StatelessWidget {
     required this.position,
     required this.total,
     required this.narrow,
+    required this.sheetAtTop,
     required this.onBack,
     required this.onNext,
     required this.onSkip,
@@ -405,6 +422,7 @@ final class _CoeloTourBalloon extends StatelessWidget {
   final int position;
   final int total;
   final bool narrow;
+  final bool sheetAtTop;
   final VoidCallback? onBack;
   final VoidCallback onNext;
   final VoidCallback onSkip;
@@ -480,12 +498,14 @@ final class _CoeloTourBalloon extends StatelessWidget {
             elevation: CoeloElevation.level3,
             shadowColor: colors.shadow,
             shape: RoundedRectangleBorder(
-              borderRadius: narrow
-                  ? const BorderRadius.vertical(top: Radius.circular(CoeloRadius.xl))
-                  : BorderRadius.circular(CoeloRadius.lg),
+              borderRadius: !narrow
+                  ? BorderRadius.circular(CoeloRadius.lg)
+                  : sheetAtTop
+                  ? const BorderRadius.vertical(bottom: Radius.circular(CoeloRadius.xl))
+                  : const BorderRadius.vertical(top: Radius.circular(CoeloRadius.xl)),
               side: BorderSide(color: colors.outlineVariant),
             ),
-            child: narrow ? SafeArea(top: false, child: body) : body,
+            child: narrow ? SafeArea(top: sheetAtTop, bottom: !sheetAtTop, child: body) : body,
           ),
         ),
       ),

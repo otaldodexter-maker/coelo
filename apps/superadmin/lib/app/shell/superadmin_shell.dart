@@ -219,7 +219,11 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   final _revealController = CoeloNavigationRevealController();
   final _tourMenus = _SuperadminTourMenuHandles();
   bool _tourRunning = false;
-  bool _autoTourScheduled = false;
+  // Primeiro acesso: `_autoTourResolved` fecha quando o store responde sim ou
+  // não; enquanto responde "não sei" (usuário ainda não identificado logo após
+  // o login), cada build do shell tenta de novo.
+  bool _autoTourResolved = false;
+  bool _autoTourChecking = false;
 
   @override
   void initState() {
@@ -461,11 +465,14 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   /// menu uma única vez depois do primeiro frame do shell que desenha o menu.
   void _scheduleFirstAccessTour() {
     final store = widget.tourStore;
-    if (store == null || _autoTourScheduled) return;
-    _autoTourScheduled = true;
+    if (store == null || _autoTourResolved || _autoTourChecking) return;
+    _autoTourChecking = true;
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final seen = await store.hasSeenMenuTour();
-      if (seen || !mounted) return;
+      _autoTourChecking = false;
+      if (!mounted || seen == null) return;
+      _autoTourResolved = true;
+      if (seen) return;
       // Logo após o login o shell ainda está assentando (perfil do cabeçalho,
       // transição de rota): espera a âncora do primeiro passo existir para
       // não pulá-lo.
