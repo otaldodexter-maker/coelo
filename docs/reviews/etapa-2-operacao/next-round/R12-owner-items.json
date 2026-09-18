@@ -140,19 +140,19 @@
   },
   {
     "id": "owner.r12-08",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "attendance.mark",
       "attendance.correct",
       "attendance.finish",
       "daily-routine.apply"
     ],
-    "fe": "FE verified em mark/finish na rota real 15/09 (chamada cd60f2d8: presente salvo, reload, concluída).",
-    "be": "Contratos preservados; set_participant v2 e complete_call v3 em produção.",
-    "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md",
     "owner": "C0 R12",
-    "nextGate": "D4 (18/09): massa sintética liberada. Turma QA R04 já tem 3 crianças + rotina vinculada; mark/finish com 3 alunos provados em 18/09 (chamada `98f6796c`, evidência r16-reserva/attendance-history-snapshot-20260918.md). Falta: fixture `20260918123000` (Turma QA R06 Transferencia, 2 crianças; pgTAP 16/16) executada no lote 82 (item c) e prova de correct + segunda turma → done.",
+    "nextGate": "Concluído 18/09 (Sessão RESERVA, D4): fixture `20260918123000` executada no lote 82 (Turma QA R06 Transferencia com \"QA R15 Crianca 3/4\", vínculos ativos); rota real com duas turmas (3 e 2 alunos) e rotina vinculada `8b317b01`: mark (individual e em lote), finish, reabrir/finish, correct após conclusão (v5, motivo, reload).",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

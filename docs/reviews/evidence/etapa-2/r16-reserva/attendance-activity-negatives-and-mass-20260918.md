@@ -44,6 +44,23 @@ participantes explícitos → 0 esperados. A Mesa R16 (ADR 0044) já decidiu que
   produção = lote 82 item c (autorização nominal D4). A prova de `attendance.correct` (Corrigir chamada concluída) e da
   segunda turma é registrada na seção 3 após o lote.
 
-## 3. Após o lote 82 (a preencher)
+## 3. Após o lote 82 — segunda turma, `attendance.correct` e fechamento de r12-08
 
-_(pendente)_
+Lote 82 item (c) executado em 18/09 ~14:47 UTC (`select app_private.seed_qa_r15_attendance_group_fixture_v1();`):
+`people_created 2`, `contexts_created 2`, `unit_links_created 2`, `group_links_created 2`, `active_children_in_group 2`
+— "QA R15 Crianca 3" (`b2843b9d…`, contexto `5bbf30a8…`) e "QA R15 Crianca 4" (`3500fe7b…`, contexto `41463c27…`) na
+Turma QA R06 Transferencia `1a247741` / Unidade QA R05 Transferencia `cce78909`. Pós-verificação em produção: 2 crianças
+ativas na turma; função sem execute a `anon`/`authenticated`.
+
+| Passo | Resultado | Captura |
+|---|---|---|
+| `superadmin_attendance_create_call` (PostgREST, mesmo contrato da tela: chave reservada) para a Turma QA R06 Transferencia em 18/09 | chamada `de250fe0-52b2-46fd-ad3a-91262ca90e08`, `open` v1, **2 participantes**, rotina vigente `8b317b01` (escopo instituição) | `attendance-11-turma-qa-r06-2-participantes.png` |
+| Tela: Crianca 3 → Atraso → Salvar; "Marcar todos restantes como presentes" (`attendance.mark`) | 2 marcados · 0 sem marcação; `call_detail`: Crianca 3 `late_arrival`, Crianca 4 `present` | `attendance-12-turma-qa-r06-marcada.png` |
+| "Concluir chamada" (`attendance.finish`) | `closed` v4, `routine_source snapshot` | — |
+| "Corrigir chamada" › participante QA R15 Crianca 3 › novo estado Presente › motivo "R16 RESERVA correcao apos conclusao" › Registrar correção (`attendance.correct`) → `reload` | `corrected` **v5**; `revisions`: `late_arrival → present` com o motivo, ator auditado | `attendance-13-corrigir-chamada.png`, `attendance-14-corrigida-reload.png` |
+
+Junto com a Turma QA R04 Estrutura (3 alunos, chamada `98f6796c`: mark de 3, Falta em 1, finish, reabrir/finish — seção 2 e
+`attendance-history-snapshot-20260918.md`), a prova cobre **múltiplas turmas com ≥2 alunos e rotina vinculada** em
+`attendance.mark`, `attendance.correct` e `attendance.finish`.
+
+**Resultado:** `owner.r12-08` → **done**. Nenhum `action_id` muda (já `verified-e2e`).
