@@ -153,14 +153,20 @@ void main() {
     await tester.pumpAndSettle();
     expect(readerA.queries.last.cursor, 'cursor-a');
     await tester.enterText(find.byKey(const Key('forms-directory-search')), 'busca A');
+    // Filtros do diretorio desde ba5cfd2d0 (R12): chip multi-selecao e
+    // gatilho de periodo que abre o seletor de intervalo.
     tester
-        .widget<CoeloAdminMultiSelectField<FormOperationalStatus>>(
-          find.byType(CoeloAdminMultiSelectField<FormOperationalStatus>),
+        .widget<CoeloAdminMultiSelectFilter<FormOperationalStatus>>(
+          find.byType(CoeloAdminMultiSelectFilter<FormOperationalStatus>),
         )
         .onChanged({FormOperationalStatus.active});
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const Key('forms-period-filter')));
+    await tester.pumpAndSettle();
     tester
-        .widget<CoeloDateRangeField>(find.byType(CoeloDateRangeField))
+        .widget<CoeloDateRangePicker>(find.byType(CoeloDateRangePicker))
         .onChanged(DateTimeRange(start: DateTime(2026, 9, 1), end: DateTime(2026, 9, 7)));
+    await tester.pump(const Duration(milliseconds: 100));
     await _pump(tester, readerB);
     await tester.pumpAndSettle(const Duration(milliseconds: 400));
     expect(find.text('Contexto A'), findsNothing);

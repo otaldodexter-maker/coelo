@@ -107,7 +107,7 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
                 onPublishLaunch: widget.onPublishLaunch,
                 tabs: _tabs(),
               )
-            : _CallsDirectory(
+            : _CallsSection(
                 controller: _controller,
                 onOpenCall: widget.onOpenCall,
                 tabs: _tabs(),
@@ -137,8 +137,8 @@ class _AttendanceHistoryPageState extends State<AttendanceHistoryPage> {
         );
 }
 
-class _CallsDirectory extends StatelessWidget {
-  const _CallsDirectory({
+class _CallsSection extends StatelessWidget {
+  const _CallsSection({
     required this.controller,
     required this.onOpenCall,
     required this.tabs,
@@ -309,7 +309,7 @@ class _CallsDirectory extends StatelessWidget {
       ],
       onTableViewSelected: (_) {},
       fileActions: null,
-      table: _CallsTable(items: state.items, onOpenCall: onOpenCall),
+      table: _CallsRows(items: state.items, onOpenCall: onOpenCall),
       pagination: state.status == AttendanceHistoryStatus.data
           ? CoeloAdminDirectoryPagination(
               footerKey: const Key('attendance-history-pagination'),
@@ -326,8 +326,8 @@ class _CallsDirectory extends StatelessWidget {
       options?.where((item) => item.id == id).map((item) => item.name).firstOrNull ?? id;
 }
 
-class _CallsTable extends StatelessWidget {
-  const _CallsTable({required this.items, required this.onOpenCall});
+class _CallsRows extends StatelessWidget {
+  const _CallsRows({required this.items, required this.onOpenCall});
 
   final List<AttendanceHistoryItem> items;
   final ValueChanged<String>? onOpenCall;

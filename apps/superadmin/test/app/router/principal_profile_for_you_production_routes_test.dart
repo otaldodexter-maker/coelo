@@ -20,6 +20,7 @@ import 'package:coelo_superadmin/features/principal_profile/presentation/princip
 import 'package:coelo_superadmin/features/principal_shared/domain/principal_runtime_context.dart';
 import 'package:coelo_superadmin/features/profile_about/domain/profile_about_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_superadmin/features/principal_shared/presentation/principal_global_navigation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:go_router/go_router.dart';
@@ -318,9 +319,13 @@ void main() {
       await tester.pumpWidget(const SizedBox.shrink());
     });
 
-    testWidgets('at desktop widths the page bar is the only one', (tester) async {
-      // The host uses a side rail here, so nothing is duplicated and the page
-      // bar carries the title and the close action.
+    testWidgets('at desktop widths the page bar is the only page-level bar', (tester) async {
+      // The host uses a side rail here, so the shell adds no compact bar. The
+      // Principal family keeps its own global header (PrincipalGlobalHeader,
+      // 64 px, no title — the "Coelo ›" chrome of every hosted Principal route
+      // since the header navigation was unified), and the page bar carries the
+      // title and the close action. Reference updated on 18/09 (R16): the old
+      // "only one AppBar" predates the global header on this route.
       await pumpProductionRoute(
         tester,
         SuperadminRoutes.principalProfileEdit,
@@ -328,7 +333,14 @@ void main() {
         surface: const Size(1440, 1000),
       );
 
-      expect(find.byType(AppBar), findsOneWidget);
+      expect(find.byType(PrincipalGlobalHeader), findsOneWidget);
+      final pageBars = tester
+          .widgetList<AppBar>(find.byType(AppBar))
+          .where((bar) => bar.title != null)
+          .toList();
+      expect(pageBars, hasLength(1), reason: 'exactly one bar owns the page title');
+      expect(find.byKey(const ValueKey('principal-profile-edit-close')), findsOneWidget);
+      expect(find.byType(AppBar), findsNWidgets(2));
       await tester.pumpWidget(const SizedBox.shrink());
     });
   });

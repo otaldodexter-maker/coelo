@@ -89,7 +89,8 @@ void main() {
           'Rascunho A',
         );
         if (creating) {
-          await tester.enterText(find.widgetWithText(CoeloFormTextField, 'Código'), 'modelo.a');
+          // O codigo tecnico deixou de ser digitado (f51cd1f1c, R12): o
+          // formulario de criacao pede so nome e descricao.
           await tester.enterText(
             find.widgetWithText(CoeloFormTextField, 'Descrição'),
             'Descrição nominal',

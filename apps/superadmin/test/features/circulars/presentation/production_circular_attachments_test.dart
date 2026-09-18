@@ -7,6 +7,7 @@ import 'package:coelo_superadmin/features/principal_circulars/application/circul
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular.dart';
 import 'package:coelo_superadmin/features/principal_circulars/domain/circular_repository.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:http/http.dart' as http;
@@ -126,7 +127,9 @@ void main() {
 
     // With the quota reached the composer stops offering a new selection.
     expect(
-      tester.widget<TextButton>(find.byKey(const Key('circular-pick-files'))).onPressed,
+      // O seletor virou CoeloCreateAction (coelo_ui_core); o contrato provado
+      // continua sendo o botao desabilitado quando a cota e atingida.
+      tester.widget<CoeloCreateAction>(find.byKey(const Key('circular-pick-files'))).onPressed,
       isNull,
     );
     expect(media.prepared, hasLength(CircularLimits.files));

@@ -282,7 +282,7 @@ void main() {
       router.go('/activities/$groupId?institutionId=$institutionB');
       await tester.pumpAndSettle();
       expect(
-        tester.widget<OutlinedButton>(find.byKey(const Key('activity-read-edit'))).onPressed,
+        tester.widget<FilledButton>(find.byKey(const Key('activity-read-edit'))).onPressed,
         isNull,
       );
       await tester.scrollUntilVisible(

@@ -125,6 +125,7 @@ class _CoeloCreateActionContentState extends State<_CoeloCreateActionContent> {
                       ? Center(
                           child: Column(
                             mainAxisAlignment: MainAxisAlignment.center,
+                            mainAxisSize: MainAxisSize.min,
                             children: [
                               _CreateActionIcon(icon: widget.icon, progress: progress),
                               SizedBox(
@@ -132,7 +133,17 @@ class _CoeloCreateActionContentState extends State<_CoeloCreateActionContent> {
                                     ? CoeloSpacing.space2
                                     : CoeloSpacing.space3,
                               ),
-                              Text(widget.label),
+                              // Num hospedeiro de altura fixa e texto a 200% o
+                              // rotulo quebra em varias linhas: cede espaco em
+                              // vez de estourar a coluna (375 px, R16).
+                              Flexible(
+                                child: Text(
+                                  widget.label,
+                                  textAlign: TextAlign.center,
+                                  overflow: TextOverflow.ellipsis,
+                                  maxLines: 3,
+                                ),
+                              ),
                             ],
                           ),
                         )

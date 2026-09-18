@@ -578,7 +578,10 @@ void main() {
     );
 
     expect(find.byKey(const Key('moments-publication-empty-media')), findsWidgets);
-    expect(find.text('Adicione uma mídia para começar.'), findsWidgets);
+    // O placeholder e a acao de criar "Adicionar midia" (084e72e1b), nao a
+    // frase antiga; o contrato continua: nada de midia de demonstracao.
+    expect(find.byKey(const Key('moments-publication-empty-add-media')), findsWidgets);
+    expect(find.text('Adicionar mídia'), findsWidgets);
     expect(find.text('1/1'), findsNothing);
     expect(find.byKey(const Key('moments-media-image')), findsNothing);
   });

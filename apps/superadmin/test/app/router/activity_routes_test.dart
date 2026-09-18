@@ -409,7 +409,9 @@ void main() {
       router.go('/activities/10000000-0000-4000-8000-000000000001');
       await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
       await tester.pumpAndSettle();
-      final button = tester.widget<OutlinedButton>(find.byKey(const Key('activity-read-edit')));
+      // Botao primario (FilledButton) desde a componentizacao do detalhe; o
+      // contrato provado aqui e a habilitacao por enableStructureMutations.
+      final button = tester.widget<FilledButton>(find.byKey(const Key('activity-read-edit')));
       expect(button.onPressed, enabled ? isNotNull : isNull, reason: 'enabled=$enabled');
       if (enabled) {
         await tester.ensureVisible(find.byKey(const Key('activity-read-edit')));

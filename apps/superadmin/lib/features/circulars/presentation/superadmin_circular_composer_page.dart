@@ -166,8 +166,10 @@ final class _SuperadminCircularComposerPageState extends State<SuperadminCircula
         for (var index = 0; index < draft.blocks.length; index++) ...[
           _editorBlock(draft.blocks[index], index),
           if (index == 0 || mediaCount < CircularLimits.files)
-            SizedBox(
-              height: 160,
+            // Altura minima, nao fixa: a 200% o rotulo da tile ocupa mais
+            // linhas e a coluna interna estourava 16 px (375 px, R16).
+            ConstrainedBox(
+              constraints: const BoxConstraints(minHeight: 160),
               child: CoeloCreateAction(
                 key: Key(
                   index == 0

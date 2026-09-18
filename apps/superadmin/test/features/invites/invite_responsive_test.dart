@@ -3,7 +3,6 @@ import 'package:coelo_superadmin/features/invites/presentation/invite_detail_pag
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_page.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_directory_widgets.dart';
 import 'package:coelo_superadmin/features/invites/presentation/invite_form_page.dart';
-import 'package:coelo_superadmin/shared/presentation/widgets/superadmin_directory_view_toggle.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:flutter/material.dart';
@@ -12,10 +11,13 @@ import 'package:flutter_test/flutter_test.dart';
 import 'invite_test_repository.dart';
 
 void main() {
+  // Convites e tabela-only desde c0645ddfe (decisao do Owner, R13): sem toggle
+  // cartoes/tabela nem grade de cartoes. A matriz largura x escala prova que a
+  // tabela canonica renderiza sem overflow em todos os pontos de quebra.
   for (final width in [375.0, 768.0, 1024.0, 1440.0]) {
     for (final scale in [1.0, 2.0]) {
       testWidgets(
-        'invite directory follows cards-table at ${width.toInt()} and ${scale.toInt()}00%',
+        'invite directory is table-only at ${width.toInt()} and ${scale.toInt()}00%',
         (tester) async {
           await tester.binding.setSurfaceSize(Size(width, 1100));
           addTearDown(() => tester.binding.setSurfaceSize(null));
@@ -30,27 +32,14 @@ void main() {
           await tester.pumpAndSettle();
 
           expect(tester.takeException(), isNull);
-          expect(
-            find.byType(SuperadminDirectoryViewToggle<InviteDirectoryTableView>),
-            findsOneWidget,
-          );
-          expect(find.byKey(const Key('invite-card-grid')), findsOneWidget);
-          expect(find.byType(CoeloAdminInteractiveCard), findsWidgets);
-          final gridWidth = tester.getSize(find.byKey(const Key('invite-card-grid'))).width;
-          final cardWidth = tester
-              .getSize(find.byKey(const Key('invite-card-11111111-1111-4111-8111-111111111111')))
-              .width;
-          if (width == 375) {
-            expect(cardWidth, closeTo(gridWidth, 1));
-          } else {
-            expect(cardWidth, lessThanOrEqualTo(360));
-          }
-
-          await tester.tap(find.byKey(const Key('invite-view-table')));
-          await tester.pumpAndSettle();
-          expect(tester.takeException(), isNull);
+          expect(find.byKey(const Key('invite-display-toggle')), findsNothing);
+          expect(find.byKey(const Key('invite-card-grid')), findsNothing);
           expect(find.byType(InviteTableRows), findsOneWidget);
           expect(find.byType(CoeloAdminResizableTable<PlatformInvite>), findsOneWidget);
+          expect(
+            tester.getSize(find.byType(CoeloAdminResizableTable<PlatformInvite>)).width,
+            lessThanOrEqualTo(width),
+          );
         },
       );
     }
@@ -96,7 +85,8 @@ void main() {
       expect(tester.takeException(), isNull);
       expect(find.byType(Scrollable), findsWidgets);
       final inviteControl = label == 'directory'
-          ? find.byKey(const Key('invite-create-card'))
+          // Diretorio tabela-only: o botao de criar e o banner, nao o cartao.
+          ? find.byKey(const Key('invite-create-action'))
           : find.byKey(const Key('invite-detail-revoke'));
       expect(inviteControl, findsOneWidget);
       expect(tester.getSize(inviteControl).height, greaterThanOrEqualTo(48));

@@ -162,18 +162,33 @@ void main() {
     await tester.pumpWidget(MaterialApp.router(theme: CoeloTheme.light, routerConfig: router));
     await tester.pumpAndSettle();
 
-    // P28 (Owner, 11/09): com mais de um vinculo o Principal abre no primeiro
-    // e mostra o seletor de perfil (ate 5 inline, "Ver todos" em popup).
+    // P28 (Owner, 11/09): com mais de um vinculo o Principal abre no primeiro.
+    // ADR 0041 B9 (R15): "ver como" saiu da faixa fixa e vive no menu do
+    // perfil do cabecalho; a escolha so troca avatar/nome do cabecalho.
     expect(find.byType(PrincipalHappensPreviewPage), findsOneWidget);
-    expect(find.byKey(const Key('principal-context-selector')), findsOneWidget);
-    expect(find.textContaining('Instituição A'), findsWidgets);
+    expect(find.text('Vendo como'), findsNothing);
+    expect(find.byKey(const ValueKey('principal-context-header-context-label')), findsNothing);
 
-    await tester.tap(find.byKey(const Key('principal-context-selector')));
+    expect(find.byTooltip('Abrir menu do perfil'), findsOneWidget);
+    await tester.tap(find.byTooltip('Abrir menu do perfil'));
     await tester.pumpAndSettle();
-    expect(find.byKey(const Key('principal-context-membership-b')), findsOneWidget);
-    await tester.tap(find.byKey(const Key('principal-context-membership-b')));
+    expect(find.text('Ver como'), findsOneWidget);
+    await tester.tap(find.text('Ver como'));
     await tester.pumpAndSettle();
-    expect(find.textContaining('Instituição B'), findsWidgets);
+    expect(find.byKey(const ValueKey('principal-context-membership-b')), findsOneWidget);
+    // A rota real usa o seletor multiplo (ate 5 perfis) com confirmacao: o
+    // primeiro vinculo ja vem marcado; desmarcar A e marcar B ve so B.
+    await tester.tap(find.byKey(const ValueKey('principal-context-membership-a')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.byKey(const ValueKey('principal-context-membership-b')));
+    await tester.pumpAndSettle();
+    await tester.tap(find.text('Aplicar'));
+    await tester.pumpAndSettle();
+    expect(find.byKey(const ValueKey('principal-context-header-context-label')), findsOneWidget);
+    final contextLabel = tester.widget<Text>(
+      find.byKey(const ValueKey('principal-context-header-context-label')),
+    );
+    expect(contextLabel.data, contains('Instituição B'));
   });
 }
 
