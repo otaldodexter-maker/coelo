@@ -1,6 +1,7 @@
 import 'dart:math';
 import 'dart:typed_data';
 
+import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
@@ -47,7 +48,7 @@ final class SupabaseAccountProfileRepository
             'p_request_id': _uuidV4(),
             'p_first_name': nextProfile.firstName.trim(),
             'p_last_name': nextProfile.lastName.trim(),
-            'p_mobile_phone': nextProfile.mobilePhone.trim(),
+            'p_mobile_phone': CoeloBrazilianPhoneInputFormatter.toE164(nextProfile.mobilePhone),
             'p_requested_email': nextProfile.emailChange?.requestedEmail,
             'p_avatar_initials': nextProfile.avatar.initials.trim(),
             if (_avatarContractVersion >= 2)
@@ -163,6 +164,11 @@ final class SupabaseAccountProfileRepository
     try {
       return await _client.rpc<Object?>(function, params: params);
     } on PostgrestException catch (error) {
+      if (error.message == 'invalid_account_mobile_phone') {
+        throw const AccountProfileRepositoryException(
+          'Celular inválido. Use o formato +55 (DDD) 9XXXX-XXXX.',
+        );
+      }
       throw AccountProfileRepositoryException(error.message);
     } on Exception {
       throw const AccountProfileRepositoryException('Não foi possível concluir a operação.');

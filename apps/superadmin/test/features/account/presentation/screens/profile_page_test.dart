@@ -129,7 +129,7 @@ void main() {
 
     expect(find.byType(CircularProgressIndicator), findsNothing);
     expect(_fieldValue(tester, const Key('account-first-name-field')), 'Maria');
-    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 11 98888-7777');
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (11) 98888-7777');
     expect(
       find.descendant(
         of: find.byKey(const Key('account-avatar-initials')),
@@ -312,7 +312,7 @@ void main() {
     expect(_fieldValue(tester, const Key('account-first-name-field')), 'Owner');
     expect(_fieldValue(tester, const Key('account-last-name-field')), 'Coelo');
     expect(_fieldValue(tester, const Key('account-email-field')), 'owner@coelo.me');
-    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 11 99999-0000');
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (11) 99999-0000');
     expect(_fieldValue(tester, const Key('account-initials-field')), 'XX');
     final beforeSave = await repository.load();
     expect(beforeSave.avatar.mode, AccountAvatarMode.photo);
@@ -707,6 +707,75 @@ void main() {
     expect(cancel, findsOneWidget);
     expect(apply, findsOneWidget);
     expect(tester.getSize(cancel).width, tester.getSize(apply).width);
+  });
+
+  testWidgets('Celular: mascara brasileira na digitacao, exibicao formatada e envio em E.164', (
+    tester,
+  ) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final activities = SuperadminActivityController();
+    final repository = InMemoryAccountProfileRepository(
+      initial: AccountProfile.prototype().copyWith(mobilePhone: '+5511999990000'),
+    );
+    final controller = AccountController(repository: repository, activities: activities);
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+
+    // Valor E.164 gravado no servidor aparece com a mascara.
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (11) 99999-0000');
+
+    // Digitar so digitos aplica a mascara; o campo nunca mostra E.164 cru.
+    await tester.enterText(find.byKey(const Key('account-mobile-phone-field')), '21987654321');
+    await tester.pump();
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (21) 98765-4321');
+
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+
+    // O repositorio recebe E.164 e a tela continua formatada apos a confirmacao.
+    expect((await repository.load()).mobilePhone, '+5521987654321');
+    expect(controller.profile!.mobilePhone, '+5521987654321');
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (21) 98765-4321');
+    expect(find.text('Perfil atualizado.'), findsOneWidget);
+  });
+
+  testWidgets('Celular invalido bloqueia o envio com mensagem clara', (tester) async {
+    await tester.binding.setSurfaceSize(const Size(1440, 1000));
+    addTearDown(() => tester.binding.setSurfaceSize(null));
+    final activities = SuperadminActivityController();
+    final repository = InMemoryAccountProfileRepository();
+    final controller = AccountController(repository: repository, activities: activities);
+    await controller.load();
+    addTearDown(() {
+      controller.dispose();
+      activities.dispose();
+    });
+    await _pumpProfilePage(tester, controller);
+    final before = (await repository.load()).mobilePhone;
+
+    // Fixo (sem o 9) nao e celular.
+    await tester.enterText(find.byKey(const Key('account-mobile-phone-field')), '1133334444');
+    await tester.pump();
+    expect(_fieldValue(tester, const Key('account-mobile-phone-field')), '+55 (11) 3333-4444');
+    await tester.ensureVisible(find.byKey(const Key('account-save-profile')));
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+    expect(find.text('Informe um celular válido: +55 (DDD) 9XXXX-XXXX.'), findsOneWidget);
+    expect((await repository.load()).mobilePhone, before);
+
+    // Vazio.
+    await tester.enterText(find.byKey(const Key('account-mobile-phone-field')), '');
+    await tester.pump();
+    await tester.tap(find.byKey(const Key('account-save-profile')));
+    await tester.pumpAndSettle();
+    expect(find.text('Informe o celular.'), findsOneWidget);
+    expect((await repository.load()).mobilePhone, before);
   });
 }
 

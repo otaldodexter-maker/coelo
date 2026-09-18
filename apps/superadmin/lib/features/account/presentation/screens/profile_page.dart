@@ -95,7 +95,7 @@ class _ProfilePageState extends State<ProfilePage> {
       _firstName.text = profile.firstName;
       _lastName.text = profile.lastName;
       _email.text = profile.email;
-      _mobilePhone.text = profile.mobilePhone;
+      _mobilePhone.text = CoeloBrazilianPhoneInputFormatter.format(profile.mobilePhone);
       _initials.text = profile.avatar.initials;
     } finally {
       _updatingDraft = false;
@@ -130,7 +130,7 @@ class _ProfilePageState extends State<ProfilePage> {
     return _firstName.text != profile.firstName ||
         _lastName.text != profile.lastName ||
         _email.text != profile.email ||
-        _mobilePhone.text != profile.mobilePhone ||
+        _mobilePhone.text != CoeloBrazilianPhoneInputFormatter.format(profile.mobilePhone) ||
         _initials.text != profile.avatar.initials ||
         avatar == null ||
         avatar.mode != profile.avatar.mode ||
@@ -273,6 +273,8 @@ class _ProfilePageState extends State<ProfilePage> {
     final submittedLastName = _lastName.text;
     final submittedEmail = _email.text;
     final submittedMobilePhone = _mobilePhone.text;
+    // D5 (18/09): o servidor grava em E.164; a tela exibe com mascara brasileira.
+    final submittedMobilePhoneE164 = CoeloBrazilianPhoneInputFormatter.toE164(submittedMobilePhone);
     final submittedInitials = _initials.text;
     final submittedAvatar = _avatar!.copyWith(initials: normalizedInitials);
     _avatar = submittedAvatar;
@@ -281,7 +283,7 @@ class _ProfilePageState extends State<ProfilePage> {
         firstName: submittedFirstName,
         lastName: submittedLastName,
         email: submittedEmail,
-        mobilePhone: submittedMobilePhone,
+        mobilePhone: submittedMobilePhoneE164,
         avatar: submittedAvatar,
       );
       if (mounted && generation == _asyncGeneration && identical(controller, widget.controller)) {
@@ -292,7 +294,7 @@ class _ProfilePageState extends State<ProfilePage> {
               controller.state.profileRevision > submittedBaseRevision &&
               confirmed.firstName == submittedFirstName.trim() &&
               confirmed.lastName == submittedLastName.trim() &&
-              confirmed.mobilePhone == submittedMobilePhone.trim() &&
+              confirmed.mobilePhone == submittedMobilePhoneE164 &&
               _sameAvatar(confirmed.avatar, submittedAvatar) &&
               _matchesDraft(
                 firstName: submittedFirstName,
@@ -602,8 +604,10 @@ class _PersonalDataForm extends StatelessWidget {
         labelText: 'Celular',
         prefixIcon: Icons.smartphone_outlined,
         keyboardType: TextInputType.phone,
-        // superadmin_account_profile_save exige 7 a 40 caracteres: validar no
-        // cliente para a mensagem ser honesta em vez do erro generico (R04).
+        hintText: '+55 (11) 91234-5678',
+        // D5 (18/09): mascara brasileira na digitacao; o servidor exige E.164
+        // (+55DDD9NNNNNNNN) e responde invalid_account_mobile_phone fora disso.
+        inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
         validator: _validateMobilePhone,
       ),
       if (emailChange?.status == EmailChangeStatus.pending) ...[
@@ -879,10 +883,15 @@ String? _requiredName(String? value) =>
     value == null || value.trim().isEmpty ? 'Campo obrigatório.' : null;
 
 String? _validateMobilePhone(String? value) {
-  final length = value?.trim().length ?? 0;
-  if (length == 0) return 'Informe o celular.';
-  return length < 7 || length > 40 ? 'Use entre 7 e 40 caracteres.' : null;
+  final e164 = CoeloBrazilianPhoneInputFormatter.toE164(value ?? '');
+  if (e164.isEmpty) return 'Informe o celular.';
+  return _mobilePhoneE164.hasMatch(e164)
+      ? null
+      : 'Informe um celular válido: +55 (DDD) 9XXXX-XXXX.';
 }
+
+/// Celular brasileiro em E.164: +55, DDD sem zero e nove digitos iniciados por 9.
+final RegExp _mobilePhoneE164 = RegExp(r'^\+55[1-9][1-9]9[0-9]{8}$');
 
 String? _validateEmail(String? value) {
   final email = value?.trim() ?? '';
