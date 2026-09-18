@@ -843,7 +843,7 @@
     },
     {
       "id": "owner.r12-49",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "assessments.entry",
         "assessments.gradebook",
@@ -851,12 +851,12 @@
         "assessments.close",
         "assessments.reopen"
       ],
-      "fe": "FE verified em entry/gradebook/detail (rota real 14/09): participante listada, nota 8.5 salva e relida.",
-      "be": "BE done em entry/gradebook/detail (lote 63 + save pela tela); close/reopen local-green.",
-      "e2e": "verified-e2e em entry/gradebook/detail; close/reopen pendentes na rota real.",
-      "evidence": "docs/reviews/evidence/etapa-2/r13-coordenacao/lotes-63-64-provas-producao-20260914.md",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/assessments-close-reopen-20260918.md",
       "owner": "C0 R16",
-      "nextGate": "Aplicar candidato após gate SQL; usar o mesmo diário d2c945d8, lançar/reler nota, fechar/reabrir com versão e provar escopo real. Não duplicar participante, vínculo, configuração ou diário.",
+      "nextGate": "Concluído 18/09 (Sessão RESERVA, rota real 3014, aba visível autenticada como `qa-r06-operacoes`): diário `d2c945d8` devolvido (v12) → reenviado (v13) → revisado (v14), cada passo relido após reload; versão defasada → 409 `SAI_CONCURRENT_CHANGE` sem mutação. Sem candidato SQL: as RPCs estão em produção desde `20260910180350`. Nada duplicado.",
       "sourceRound": "R15"
     },
     {
@@ -1405,7 +1405,9 @@
     "specs/054-archive-activity-routine-models.md",
     "specs/061-superadmin-child-safety-person-search.md",
     "specs/063-superadmin-meal-plan-images-r2.md",
-    "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md"
+    "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md",
+    "docs/reviews/evidence/etapa-2/r16-reserva/assessments-close-reopen-20260918.md",
+    "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
   ],
   "trackerActionIds": [
     "auth.login",
