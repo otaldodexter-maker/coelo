@@ -3,6 +3,7 @@ title: "Pessoas Contextuais, Autorizacoes Operacionais E Assiduidade"
 source: "docs/archive/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md; validacao do usuario em 2026-07-24"
 status: "Accepted"
 generated_at: "2026-07-24"
+lifecycle: "current"
 ---
 
 # Pessoas Contextuais, Autorizacoes Operacionais E Assiduidade

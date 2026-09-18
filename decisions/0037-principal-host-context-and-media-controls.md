@@ -2,6 +2,7 @@
 source: Owner, solicitações e anexos de 13/09/2026 após consolidação R10
 status: accepted
 generated_at: 2026-09-13
+lifecycle: "current"
 ---
 
 # ADR0037 — Contêiner, contexto e mídia do Principal hospedado

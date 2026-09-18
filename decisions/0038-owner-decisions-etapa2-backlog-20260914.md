@@ -2,6 +2,7 @@
 source: Owner, artefato "Decisões do Owner" (claude.ai/code/artifact/1432ea84-6b86-4782-9c67-92689c5097ef) e chat de 14/09/2026; fila R13 (H02–H28, owner.r12-*), docs/open-questions.md, R07-perguntas-ao-owner-20260912.md
 status: accepted
 generated_at: 2026-09-14
+lifecycle: "current"
 ---
 
 # ADR0038 — Decisões do Owner sobre o backlog da Etapa 2 (14/09/2026)

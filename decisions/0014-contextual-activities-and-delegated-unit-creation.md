@@ -3,6 +3,7 @@ title: "Atividades Contextuais E Criacao Delegada Pela Unidade"
 source: "conversa com usuario em 2026-07-23; docs/product/prd-master.md; docs/product/prd-admin.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; specs/014-atividade-contextual.md; packages/coelo_database/migrations/20260910180110_superadmin_activity_save_v2.sql"
 status: "Accepted and implemented"
 generated_at: "2026-07-24"
+lifecycle: "current"
 ---
 
 # Atividades Contextuais E Criacao Delegada Pela Unidade

@@ -3,6 +3,7 @@ title: "Backend produtivo da Agenda institucional do Superadmin"
 source: "decisions/0029-superadmin-agenda-backend-authorization.md; specs/006-comunicacao-agenda.md; docs/product/prd-master.md; docs/security/lgpd-security-media.md"
 status: approved
 generated_at: "2026-09-01"
+lifecycle: "current"
 ---
 
 # Backend produtivo da Agenda institucional do Superadmin

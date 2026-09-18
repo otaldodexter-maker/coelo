@@ -3,6 +3,7 @@ title: "Conversas produtivas do Superadmin"
 source: "Plano aprovado pelo produto em 2026-08-11; AGENTS.md; ADR 0010"
 status: approved
 generated_at: 2026-08-11
+lifecycle: "current"
 ---
 
 # Conversas produtivas do Superadmin

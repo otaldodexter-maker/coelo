@@ -4,6 +4,7 @@ source: "specs/011-superadmin-database-rls.md; specs/017-superadmin-unit-schema-
 status: "approved-for-implementation"
 approval: "Coordenação Coelo em 2026-08-28; autorização técnica restrita ao detail/reload read-only desta spec"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # Detalhe e reload v2 de Unidade para o Superadmin interno

@@ -4,6 +4,7 @@ source: "specs/019-superadmin-people-directory.md; specs/039-superadmin-internal
 status: "approved-for-implementation"
 approval: "Coordenação Coelo em 2026-08-28; recorte técnico derivado das specs 019, 039 e 040"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # Detalhe e reload v2 de Pessoas para o Superadmin interno

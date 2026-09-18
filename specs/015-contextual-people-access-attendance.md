@@ -3,6 +3,7 @@ title: "Pessoas, Acessos Contextuais E Assiduidade"
 source: "decisions/0015-contextual-people-authorizations-attendance.md; docs/archive/superpowers/specs/2026-07-24-contextual-people-access-activities-attendance-design.md"
 status: "implemented-database-foundation"
 generated_at: "2026-07-24"
+lifecycle: "current"
 ---
 
 # Pessoas, Acessos Contextuais E Assiduidade

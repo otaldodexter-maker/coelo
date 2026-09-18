@@ -3,6 +3,7 @@ title: "Governança de perfis de acesso"
 source: "specs/018-profiles-permissions-superadmin.md; decisions/0003-multitenancy.md; decisions/0004-auth-permissions.md; inspeção read-only do Supabase em 2026-07-29; decisões aprovadas pelo usuário em 2026-07-29"
 status: "accepted"
 generated_at: "2026-07-29"
+lifecycle: "current"
 ---
 
 # ADR 0017 — Governança de perfis de acesso

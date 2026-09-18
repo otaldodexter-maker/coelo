@@ -2,6 +2,7 @@
 source: "Owner, 13/09/2026: unificar worktrees/commits e impedir omissão de pendências e avanços"
 status: Accepted
 generated_at: 2026-09-13
+lifecycle: "current"
 ---
 
 # ADR 0036 — Entrega com compromissos e reconciliação verificáveis

@@ -2,6 +2,7 @@
 title: "Admin Instituicao"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Admin Instituicao

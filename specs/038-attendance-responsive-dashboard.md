@@ -3,6 +3,7 @@ title: "Dashboard responsivo de Assiduidade"
 source: "aprovação explícita do usuário em 2026-08-25"
 status: "approved"
 generated_at: "2026-08-25"
+lifecycle: "current"
 ---
 
 # Dashboard responsivo de Assiduidade

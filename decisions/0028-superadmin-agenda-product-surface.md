@@ -3,6 +3,7 @@ title: "Agenda institucional produtiva no Superadmin"
 source: "decisão explícita do Owner em 2026-08-31; docs/product/prd-master.md; docs/product/prd-superadmin.md; docs/product/prd-admin.md; docs/product/prd-app.md; docs/architecture/domain-map.md; specs/006-comunicacao-agenda.md"
 status: approved
 generated_at: "2026-08-31"
+lifecycle: "current"
 ---
 
 # ADR 0028 - Agenda institucional produtiva no Superadmin

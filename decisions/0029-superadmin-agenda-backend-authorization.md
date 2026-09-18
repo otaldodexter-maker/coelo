@@ -3,6 +3,7 @@ title: "Autorização do backend produtivo da Agenda no Superadmin"
 source: "ordens explícitas do Owner Coelo na conversa Finalização de Telas Operações em 2026-09-01; decisions/0028-superadmin-agenda-product-surface.md; specs/006-comunicacao-agenda.md"
 status: approved
 generated_at: "2026-09-01"
+lifecycle: "current"
 ---
 
 # ADR 0029 - Autorização do backend produtivo da Agenda no Superadmin

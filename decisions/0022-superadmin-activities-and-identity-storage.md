@@ -3,6 +3,7 @@ title: Atividades privilegiadas no Superadmin e storage de identidade
 source: plano de Atividades aprovado pelo fundador em 2026-08-11
 status: approved
 generated_at: 2026-08-11
+lifecycle: "current"
 ---
 
 # ADR 0022 - Atividades privilegiadas e identidade

@@ -3,6 +3,7 @@ title: "Saúde e Cuidado no Superadmin"
 source: "pedido aprovado em 2026-08-04; docs/product/prd-master.md; docs/data/data-model.md; docs/security/lgpd-security-media.md; specs/019-superadmin-people-directory.md; decisions/0010-private-media-r2.md; decisions/0015-contextual-people-authorizations-attendance.md; decisão superveniente do Owner Coelo em 2026-08-28"
 status: "approved-for-demonstrative-ui"
 generated_at: "2026-08-04"
+lifecycle: "historical"
 ---
 
 # Saúde e Cuidado no Superadmin

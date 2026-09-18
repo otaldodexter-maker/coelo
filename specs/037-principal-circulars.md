@@ -4,6 +4,7 @@ source: "PRDs App, Auth Multi-tenant, Permissões, LGPD/Segurança/Mídia e Mode
 status: approved
 generated_at: "2026-08-21"
 updated_at: "2026-09-09"
+lifecycle: "current"
 ---
 
 # Circulares privadas e versionadas no Principal

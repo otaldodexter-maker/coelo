@@ -2,6 +2,7 @@
 title: "Astro Site"
 status: "Accepted for planning"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Astro Site

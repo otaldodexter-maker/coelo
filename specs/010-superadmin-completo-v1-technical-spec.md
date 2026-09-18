@@ -3,6 +3,7 @@ title: "Superadmin MVP Technical Spec e SDD"
 source: "docs/product/prd-superadmin.md; specs/003-superadmin-core.md; docs/architecture/macro-architecture.md; docs/security/auth-multitenant-permissions.md; docs/security/lgpd-security-media.md; docs/data/data-model.md"
 status: "draft-for-review"
 generated_at: "2026-06-23"
+lifecycle: "historical"
 ---
 
 # Superadmin MVP Technical Spec e SDD

@@ -3,6 +3,7 @@ title: "Identidade interna exclusiva do Superadmin"
 source: "Decisão aprovada pelo Owner Coelo em 2026-08-05 e 2026-08-27; docs/product/prd-superadmin.md; specs/023-superadmin-internal-users-local-preview.md; decisions/0017-access-profile-governance.md"
 status: "accepted"
 generated_at: "2026-08-27"
+lifecycle: "current"
 ---
 
 # ADR 0019 — Identidade interna exclusiva do Superadmin

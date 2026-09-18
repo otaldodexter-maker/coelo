@@ -2,6 +2,7 @@
 source: "solicitacao aprovada do usuario; docs/product/prd-superadmin.md; docs/design/design-system.md"
 status: "approved-design"
 generated_at: "2026-07-27"
+lifecycle: "historical"
 ---
 
 # Protótipo local de suporte do Superadmin

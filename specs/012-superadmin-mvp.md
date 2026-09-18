@@ -5,6 +5,7 @@ status: "approved-for-planning"
 generated_at: "2026-06-27"
 updated_at: "2026-09-15"
 reconciled_with: "decisions/0039-owner-scope-commercial-plans-auth-stage3-20260915.md"
+lifecycle: "current"
 ---
 
 # Superadmin MVP

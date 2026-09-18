@@ -4,6 +4,7 @@ source: "specs/039-superadmin-internal-auth-session-context.md; specs/011-supera
 status: "approved-for-implementation"
 approval: "Coordenação Coelo em 2026-08-27; derivada estritamente das specs 011 e 039"
 generated_at: "2026-08-27"
+lifecycle: "current"
 ---
 
 # Leitura v2 de Instituições para o Superadmin interno

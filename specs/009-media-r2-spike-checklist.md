@@ -3,6 +3,7 @@ title: "Checklist Da Spec 009 - Midia R2"
 source: "specs/009-media-r2-spike.md"
 status: "complete"
 generated_at: "2026-06-22"
+lifecycle: "historical"
 ---
 
 # Checklist Da Spec 009 - Midia R2

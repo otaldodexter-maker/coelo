@@ -2,6 +2,7 @@
 source: "Plano aprovado pelo Owner Coelo em 2026-08-05; decisions/0019-superadmin-internal-identity.md; specs/018-profiles-permissions-superadmin.md; baselines aprovadas de Pessoas e Instituições"
 status: "approved-for-local-preview"
 generated_at: "2026-08-05"
+lifecycle: "historical"
 ---
 
 # Usuários Internos do Superadmin — preview local

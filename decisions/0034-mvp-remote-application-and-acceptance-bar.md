@@ -4,6 +4,7 @@ source: "decisão do Owner Coelo em 2026-09-10; AGENTS.md; docs/archive/superpow
 status: "approved"
 generated_at: "2026-09-10"
 amended_by: "decisions/0040-agora-immediate-removal.md (remoção explícita do Agora)"
+lifecycle: "current"
 ---
 
 # ADR 0034 — Aplicação remota autorizada e régua de aceite do MVP

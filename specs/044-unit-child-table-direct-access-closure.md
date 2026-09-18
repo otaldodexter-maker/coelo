@@ -3,6 +3,7 @@ title: "Acesso direto às tabelas filhas de Unidade — bloqueio de proveniênci
 source: "AGENTS.md; decisions/0016-unit-type-and-plan-inheritance.md; decisions/0019-superadmin-internal-identity.md; specs/017-superadmin-unit-schema-foundation.md; specs/039-superadmin-internal-auth-session-context.md; specs/043-superadmin-internal-unit-detail-v2.md; ledger e catálogo remotos Coelo consultados somente por SELECT em 2026-08-28; reviews Eng Sup de 2026-08-28"
 status: "blocked-provenance"
 generated_at: "2026-08-28"
+lifecycle: "historical"
 ---
 
 # Acesso direto às tabelas filhas de Unidade — bloqueio de proveniência

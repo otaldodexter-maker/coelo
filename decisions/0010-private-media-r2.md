@@ -2,6 +2,7 @@
 title: "Private Media R2"
 status: "superseded-for-mvp"
 generated_at: "2026-06-22"
+lifecycle: "superseded"
 ---
 
 # Private Media R2

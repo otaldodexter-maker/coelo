@@ -2,6 +2,7 @@
 title: "LGPD Seguranca E Midia"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # LGPD Seguranca E Midia

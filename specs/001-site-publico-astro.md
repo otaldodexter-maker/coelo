@@ -2,6 +2,7 @@
 title: "Site Publico Astro"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Site Publico Astro

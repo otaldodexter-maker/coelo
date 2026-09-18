@@ -3,6 +3,7 @@ title: "Diretório de Pessoas do Superadmin"
 source: "pedido aprovado Pessoas do Superadmin; specs/003-superadmin-core.md; specs/011-superadmin-database-rls.md; specs/015-contextual-people-access-attendance.md; docs/product/prd-superadmin.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md"
 status: "implemented-and-validated"
 generated_at: "2026-07-29"
+lifecycle: "current"
 ---
 
 # Diretório de Pessoas do Superadmin

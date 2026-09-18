@@ -5,6 +5,7 @@ status: "approved-for-spike"
 generated_at: "2026-06-22"
 approved_at: "2026-06-22"
 approved_by: "Adriel B Coelho"
+lifecycle: "historical"
 ---
 
 # Spike Tecnico De Midia R2

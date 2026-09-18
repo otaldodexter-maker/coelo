@@ -3,6 +3,7 @@ title: "Agenda institucional do Superadmin"
 source: "decisions/0028-superadmin-agenda-product-surface.md; docs/product/prd-master.md; docs/product/prd-superadmin.md; docs/architecture/domain-map.md; docs/design/design-system.md; docs/design/references/superadmin-agenda-approved-2026-08-31.png; decisões explícitas do Owner em 2026-08-31 e na conversa Codex 01a05d88-3187-79a3-9443-218a0c5cb8ae em 2026-09-01"
 status: "approved"
 generated_at: "2026-09-01"
+lifecycle: "current"
 ---
 
 # Agenda institucional do Superadmin

@@ -3,6 +3,7 @@ title: "Fundação de tipo e herança de plano por unidade"
 source: "decisions/0016-unit-type-and-plan-inheritance.md; specs/011-superadmin-database-rls.md; docs/data/data-model.md"
 status: "implemented-database-foundation"
 generated_at: "2026-07-29"
+lifecycle: "current"
 ---
 
 # Fundação de tipo e herança de plano por unidade

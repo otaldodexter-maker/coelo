@@ -4,6 +4,7 @@ source: "aprovação do plano Tela de Unidades no Superadmin em 2026-07-28; sche
 status: "Accepted"
 generated_at: "2026-07-29"
 updated_at: "2026-08-05"
+lifecycle: "current"
 ---
 
 # Tipo Próprio E Herança De Plano Por Unidade

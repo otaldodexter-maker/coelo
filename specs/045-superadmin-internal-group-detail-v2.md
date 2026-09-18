@@ -4,6 +4,7 @@ source: "specs/039-superadmin-internal-auth-session-context.md; docs/archive/sup
 status: "approved-for-implementation"
 approval: "Coordenacao Coelo em 2026-08-28; autorizacao tecnica restrita ao detail/reload read-only desta spec"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # Detalhe e reload v2 de Turma para o Superadmin interno

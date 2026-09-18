@@ -3,6 +3,7 @@ title: "Superadmin MVP Database e RLS"
 source: "specs/010-superadmin-completo-v1-technical-spec.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; docs/security/lgpd-security-media.md; Supabase RLS/Auth docs consultados em 2026-06-23"
 status: "implemented-foundation-with-contextual-domains"
 generated_at: "2026-07-24"
+lifecycle: "current"
 ---
 
 # Superadmin MVP Database e RLS

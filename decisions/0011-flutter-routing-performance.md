@@ -3,6 +3,7 @@ title: "Flutter Routing and Performance Foundation"
 status: "Accepted for implementation"
 generated_at: "2026-06-30"
 source: "User request on Flutter/Dart performance, componentization, isolates, async/await and GoRouter"
+lifecycle: "current"
 ---
 
 # Flutter Routing and Performance Foundation

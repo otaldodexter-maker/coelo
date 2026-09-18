@@ -3,6 +3,7 @@ title: "Etapa 3 do MVP: acesso contextual de funcionários e entrega dos apps"
 source: "orientação explícita do Owner em 2026-09-12; decisions/0033-contextual-people-roles-and-family-contexts.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md"
 status: "approved-for-planning-not-implementation"
 generated_at: "2026-09-12"
+lifecycle: "current"
 ---
 
 # ADR 0035 — Escopo reservado para a Etapa 3 do MVP

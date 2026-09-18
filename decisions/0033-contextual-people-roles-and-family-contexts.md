@@ -3,6 +3,7 @@ title: "Pessoas, papéis contextuais e contextos familiares"
 source: "decisão do Owner Coelo em 2026-09-03; auditoria Supabase read-only; docs/data/data-model.md"
 status: "approved-for-spec"
 generated_at: "2026-09-03"
+lifecycle: "current"
 ---
 
 # ADR 0033 — Pessoas, papéis contextuais e contextos familiares

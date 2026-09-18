@@ -3,6 +3,7 @@ title: "Listagem e filtros v2 de Instituições para o Superadmin interno"
 source: "specs/011-superadmin-database-rls.md; specs/039-superadmin-internal-auth-session-context.md; specs/040-superadmin-internal-institution-read-v2.md; autorização técnica da Coordenação Coelo em 2026-08-27"
 status: "approved-for-implementation"
 generated_at: "2026-08-27"
+lifecycle: "current"
 ---
 
 # Listagem e filtros v2 de Instituições para o Superadmin interno

@@ -4,6 +4,7 @@ source: "specs/010-superadmin-completo-v1-technical-spec.md; specs/011-superadmi
 status: "approved-for-implementation"
 approval: "Coordenação Coelo em 2026-08-27; continuidade explícita do lote EDIT CORE v2, sem CREATE/activation, plan, branding ou representantes/admin"
 generated_at: "2026-08-27"
+lifecycle: "current"
 ---
 
 # Edição cadastral core v2 de Instituições pelo Superadmin interno

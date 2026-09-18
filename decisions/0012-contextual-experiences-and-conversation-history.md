@@ -3,6 +3,7 @@ title: "Experiencias Contextuais E Continuidade De Conversas"
 source: "AGENTS.md; docs/architecture/macro-architecture.md; docs/data/data-model.md; docs/security/auth-multitenant-permissions.md; specs/012-superadmin-mvp.md; decisoes de produto validadas em conversa em 2026-07-22"
 status: "Accepted for planning"
 generated_at: "2026-07-22"
+lifecycle: "current"
 ---
 
 # Experiencias Contextuais E Continuidade De Conversas

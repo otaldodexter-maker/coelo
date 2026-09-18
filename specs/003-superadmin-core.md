@@ -2,6 +2,7 @@
 title: "Superadmin Core"
 status: "approved-for-technical-spec"
 generated_at: "2026-06-23"
+lifecycle: "current"
 ---
 
 # Superadmin Core

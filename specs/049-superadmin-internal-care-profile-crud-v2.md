@@ -3,6 +3,7 @@ title: "CRUD v2 de Perfis de cuidado para o Superadmin interno"
 source: "decisions/0017-access-profile-governance.md; decisions/0019-superadmin-internal-identity.md; specs/020-superadmin-health-care.md; specs/039-superadmin-internal-auth-session-context.md; decisão do Owner Coelo em 2026-08-28 pelas opções B+C e recorte exclusivamente Superadmin"
 status: "draft-for-review"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # CRUD v2 de Perfis de cuidado para o Superadmin interno

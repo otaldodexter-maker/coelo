@@ -2,6 +2,7 @@
 title: "Principal App"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Principal App

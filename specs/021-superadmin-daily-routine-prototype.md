@@ -3,6 +3,7 @@ title: "Protótipo local de Rotina diária"
 source: "plano aprovado pelo usuário em 2026-08-03; correções de UI/UX aprovadas pelo usuário em 2026-08-05"
 status: "implemented-local-prototype"
 generated_at: "2026-08-06"
+lifecycle: "historical"
 ---
 
 # Protótipo local de Rotina diária

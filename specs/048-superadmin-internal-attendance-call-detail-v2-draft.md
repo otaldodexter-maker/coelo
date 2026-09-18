@@ -3,6 +3,7 @@ title: "Rascunho técnico — Assiduidade Call DETAIL/RELOAD CORE v2"
 source: "decisions/0015-contextual-people-authorizations-attendance.md; decisions/0019-superadmin-internal-identity.md; specs/015-contextual-people-access-attendance.md; specs/038-attendance-responsive-dashboard.md; specs/039-superadmin-internal-auth-session-context.md; OQ-040"
 status: "draft-for-review"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # Assiduidade — Call DETAIL/RELOAD CORE v2

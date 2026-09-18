@@ -3,6 +3,7 @@ title: "Pacotes UI, Catalogo e Governanca de Componentes"
 source: "docs/design/design-system.md; specs/007-design-system-base.md; decisions/0012-contextual-experiences-and-conversation-history.md; apps/superadmin/lib/app/shell/superadmin_shell.dart; apps/superadmin/lib/features/institutions/presentation/screens/institution_directory_page.dart"
 status: "implemented-foundation-with-operational-gates"
 generated_at: "2026-07-27"
+lifecycle: "current"
 ---
 
 # Pacotes UI, Catalogo e Governanca de Componentes

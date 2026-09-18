@@ -4,6 +4,7 @@ source: "decisão explícita do Owner Coelo em 2026-09-01; decisions/0010-privat
 status: "superseded"
 generated_at: "2026-09-01"
 superseded_by: "decisions/0032-mvp-private-media-r2.md"
+lifecycle: "superseded"
 ---
 
 # ADR 0030 — Mídia privada do MVP no Supabase Storage (histórica)

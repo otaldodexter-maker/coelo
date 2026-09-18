@@ -6,6 +6,7 @@ generated_at: "2026-09-03"
 updated_at: "2026-09-03"
 supersedes: "decisions/0030-mvp-private-media-supabase-storage.md"
 amended_by: "decisions/0040-agora-immediate-removal.md (remoção explícita do Agora)"
+lifecycle: "current"
 ---
 
 # ADR 0032 — Mídia privada de produção no Cloudflare R2 e Stream

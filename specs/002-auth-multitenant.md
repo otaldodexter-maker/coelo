@@ -2,6 +2,7 @@
 title: "Auth Multi-tenant"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Auth Multi-tenant

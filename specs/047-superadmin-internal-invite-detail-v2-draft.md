@@ -3,6 +3,7 @@ title: "Rascunho técnico — Convites DETAIL/RELOAD CORE v2 e ponte de schema"
 source: "decisions/0019-superadmin-internal-identity.md; specs/039-superadmin-internal-auth-session-context.md; specs/011-superadmin-database-rls.md; specs/015-contextual-people-access-attendance.md; histórico removido specs/026-superadmin-invites-production.md e 20260811233609_superadmin_invites_production.sql; OQ-039"
 status: "draft-for-review"
 generated_at: "2026-08-28"
+lifecycle: "current"
 ---
 
 # Convites DETAIL/RELOAD CORE v2 — rascunho

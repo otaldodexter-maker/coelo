@@ -2,6 +2,7 @@
 title: "Design System Base"
 status: "draft"
 generated_at: "2026-06-22"
+lifecycle: "current"
 ---
 
 # Design System Base

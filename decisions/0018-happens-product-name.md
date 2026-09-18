@@ -3,6 +3,7 @@ title: "Acontece como nome oficial do feed privado"
 status: "Accepted for planning"
 generated_at: "2026-08-04"
 source: "Aprovação explícita do Coelo Owner"
+lifecycle: "current"
 ---
 
 # Acontece como nome oficial do feed privado

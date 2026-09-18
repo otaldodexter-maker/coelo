@@ -3,6 +3,7 @@ title: "Importação e exportação como controles visuais no MVP"
 source: "decisão explícita do Owner Coelo em 2026-09-01; rastreadores da Etapa 2"
 status: "approved"
 generated_at: "2026-09-01"
+lifecycle: "current"
 ---
 
 # ADR 0031 — Importação e exportação como controles visuais no MVP
