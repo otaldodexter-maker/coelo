@@ -217,6 +217,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _tourRegistry = CoeloTourAnchorRegistry();
   final _revealController = CoeloNavigationRevealController();
+  final _tourMenus = _SuperadminTourMenuHandles();
   bool _tourRunning = false;
   bool _autoTourScheduled = false;
 
@@ -382,7 +383,25 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   /// e rola até a âncora.
   Future<void> _prepareTourStep(CoeloTourStep step) async {
     final id = step.anchorId;
-    final inHeader = id == 'notifications' || id == 'account';
+    final inHeader =
+        id == 'report-bug' ||
+        id == 'notifications' ||
+        id == 'account' ||
+        superadminTourAccountMenuAnchors.contains(id);
+    final accountMenu = _tourMenus.account;
+    // Itens do menu da conta: o menu precisa estar aberto; nos demais passos,
+    // fechado (o menu fica acima do overlay do tour).
+    if (superadminTourAccountMenuAnchors.contains(id)) {
+      if (accountMenu != null && !accountMenu.isOpen) {
+        accountMenu.open();
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+      }
+    } else if (accountMenu != null && accountMenu.isOpen) {
+      accountMenu.close();
+      await WidgetsBinding.instance.endOfFrame;
+      if (!mounted) return;
+    }
     final scaffold = _scaffoldKey.currentState;
     if (_isNarrow && scaffold != null) {
       if (inHeader && scaffold.isDrawerOpen) {
@@ -427,6 +446,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
       if (!mounted) return;
       final scaffold = _scaffoldKey.currentState;
       if (scaffold != null && scaffold.isDrawerOpen) scaffold.closeDrawer();
+      if (_tourMenus.account?.isOpen ?? false) _tourMenus.account!.close();
       if (outcome != CoeloTourOutcome.unavailable) {
         await widget.tourStore?.markMenuTour(
           outcome == CoeloTourOutcome.completed ? 'done' : 'skipped',
@@ -446,6 +466,15 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     WidgetsBinding.instance.addPostFrameCallback((_) async {
       final seen = await store.hasSeenMenuTour();
       if (seen || !mounted) return;
+      // Logo após o login o shell ainda está assentando (perfil do cabeçalho,
+      // transição de rota): espera a âncora do primeiro passo existir para
+      // não pulá-lo.
+      final first = widget.menuTourSteps.firstOrNull?.anchorId;
+      for (var frame = 0; frame < 30 && first != null; frame++) {
+        if (_tourRegistry.contextOf(first) != null) break;
+        await WidgetsBinding.instance.endOfFrame;
+        if (!mounted) return;
+      }
       await _startMenuTour();
     });
   }
@@ -454,7 +483,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _scheduleFirstAccessTour();
     return CoeloTourScope(
       registry: _tourRegistry,
-      child: _SuperadminTourScope(startMenuTour: _startMenuTour, child: child),
+      child: _SuperadminTourScope(startMenuTour: _startMenuTour, menus: _tourMenus, child: child),
     );
   }
 
@@ -1105,16 +1134,28 @@ const _accountDestinations = <_NavigationDestinationData>[
 
 /// Dá ao botão "Fazer tour" acesso ao tour do shell que desenha o menu.
 class _SuperadminTourScope extends InheritedWidget {
-  const _SuperadminTourScope({required this.startMenuTour, required super.child});
+  const _SuperadminTourScope({
+    required this.startMenuTour,
+    required this.menus,
+    required super.child,
+  });
 
   final Future<void> Function() startMenuTour;
+  final _SuperadminTourMenuHandles menus;
 
   static _SuperadminTourScope? maybeOf(BuildContext context) =>
       context.dependOnInheritedWidgetOfExactType<_SuperadminTourScope>();
 
   @override
   bool updateShouldNotify(_SuperadminTourScope oldWidget) =>
-      startMenuTour != oldWidget.startMenuTour;
+      startMenuTour != oldWidget.startMenuTour || menus != oldWidget.menus;
+}
+
+/// Controladores de menus que o tour precisa abrir (menu da conta). Quem
+/// desenha o menu registra o controller a cada build; o shell que roda o tour
+/// usa o mais recente.
+class _SuperadminTourMenuHandles {
+  MenuController? account;
 }
 
 class _OnboardingTourButton extends StatefulWidget {
@@ -1231,6 +1272,12 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
         if (message != null) {
           _showMessage(context, message);
           return;
+        }
+        if (selection == 'complete') {
+          _showMessage(
+            context,
+            'O tour completo (menu e todas as telas) chega em breve. Abrindo o tour do menu.',
+          );
         }
         unawaited(tour!.startMenuTour());
       },
@@ -1978,6 +2025,7 @@ class _ProfileSummary extends StatelessWidget {
           value: destination.id,
           label: destination.label,
           icon: destination.icon,
+          tourAnchorId: 'account-${destination.id}',
         ),
       const CoeloAdminFlyoutItem<String>(
         value: 'logout',
@@ -1985,6 +2033,7 @@ class _ProfileSummary extends StatelessWidget {
         icon: Icons.logout,
         startsGroup: true,
         tone: CoeloAdminFlyoutTone.negative,
+        tourAnchorId: 'account-logout',
       ),
     ];
     return CoeloAdminFlyout<String>(
@@ -2004,6 +2053,7 @@ class _ProfileSummary extends StatelessWidget {
       },
       alignmentOffset: const Offset(0, CoeloSpacing.space2),
       builder: (context, controller) {
+        _SuperadminTourScope.maybeOf(context)?.menus.account = controller;
         return CoeloTourAnchor(
           id: 'account',
           child: Tooltip(
@@ -2120,68 +2170,71 @@ class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
         // MENU/MENU-M (decisão do Owner de 10/09/2026): o botão de Bug nunca é
         // omitido. Sem canal de envio, o relato não é descartado em silêncio:
         // a tela avisa que o envio ainda não está conectado.
-        IconButton(
-          key: const Key('superadmin-report-bug'),
-          tooltip: 'Reportar bug',
-          onPressed: () async {
-            if (!mounted || _reportRoute != null) return;
-            final generation = _reportGeneration;
-            final submit = widget.onBugReportSubmitted;
-            bool isCurrent() => mounted && generation == _reportGeneration;
-            DialogRoute<SupportReportDraft>? openedRoute;
-            final draft = await showSuperadminBugReportDialog(
-              context,
-              currentScreen: widget.currentScreen,
-              isContextCurrent: isCurrent,
-              onRouteCreated: (route) {
-                openedRoute = route;
-                _reportRoute = route;
-              },
-              sections: {
-                for (final section in coeloSuperadminNavigation.where(
-                  (node) => node.children.isNotEmpty,
-                ))
-                  section.label: [...section.children.map((node) => node.label), 'Outro'],
-                'Conta': [
-                  ..._accountDestinations.map((destination) => destination.label),
-                  'Outros',
-                ],
-                'Outros': const [],
-              },
-            );
-            if (identical(_reportRoute, openedRoute)) _reportRoute = null;
-            if (draft == null || !isCurrent()) {
-              return;
-            }
-            if (submit == null) {
-              if (!context.mounted) return;
-              showSuperadminNotice(
+        CoeloTourAnchor(
+          id: 'report-bug',
+          child: IconButton(
+            key: const Key('superadmin-report-bug'),
+            tooltip: 'Reportar bug',
+            onPressed: () async {
+              if (!mounted || _reportRoute != null) return;
+              final generation = _reportGeneration;
+              final submit = widget.onBugReportSubmitted;
+              bool isCurrent() => mounted && generation == _reportGeneration;
+              DialogRoute<SupportReportDraft>? openedRoute;
+              final draft = await showSuperadminBugReportDialog(
                 context,
-                'O envio de relatos ainda não está conectado nesta tela.',
-                icon: Icons.info_outline_rounded,
+                currentScreen: widget.currentScreen,
+                isContextCurrent: isCurrent,
+                onRouteCreated: (route) {
+                  openedRoute = route;
+                  _reportRoute = route;
+                },
+                sections: {
+                  for (final section in coeloSuperadminNavigation.where(
+                    (node) => node.children.isNotEmpty,
+                  ))
+                    section.label: [...section.children.map((node) => node.label), 'Outro'],
+                  'Conta': [
+                    ..._accountDestinations.map((destination) => destination.label),
+                    'Outros',
+                  ],
+                  'Outros': const [],
+                },
               );
-              return;
-            }
-            try {
-              await submit(draft);
-            } on Object {
+              if (identical(_reportRoute, openedRoute)) _reportRoute = null;
+              if (draft == null || !isCurrent()) {
+                return;
+              }
+              if (submit == null) {
+                if (!context.mounted) return;
+                showSuperadminNotice(
+                  context,
+                  'O envio de relatos ainda não está conectado nesta tela.',
+                  icon: Icons.info_outline_rounded,
+                );
+                return;
+              }
+              try {
+                await submit(draft);
+              } on Object {
+                if (!context.mounted || !isCurrent()) return;
+                showSuperadminNotice(
+                  context,
+                  'Não foi possível enviar o relato. Tente novamente.',
+                  icon: Icons.error_outline_rounded,
+                );
+                return;
+              }
               if (!context.mounted || !isCurrent()) return;
               showSuperadminNotice(
                 context,
-                'Não foi possível enviar o relato. Tente novamente.',
-                icon: Icons.error_outline_rounded,
+                'Relato enviado com sucesso.',
+                icon: Icons.check_circle_outline_rounded,
               );
-              return;
-            }
-            if (!context.mounted || !isCurrent()) return;
-            showSuperadminNotice(
-              context,
-              'Relato enviado com sucesso.',
-              icon: Icons.check_circle_outline_rounded,
-            );
-          },
-          style: _headerUtilityButtonStyle(colors, hoverColor),
-          icon: const Icon(Icons.bug_report_outlined),
+            },
+            style: _headerUtilityButtonStyle(colors, hoverColor),
+            icon: const Icon(Icons.bug_report_outlined),
+          ),
         ),
         CoeloTourAnchor(
           id: 'notifications',

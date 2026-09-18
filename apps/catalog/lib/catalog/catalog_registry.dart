@@ -343,7 +343,7 @@ final class _TourOverlayExampleState extends State<_TourOverlayExample> {
     CoeloTourStep(
       anchorId: 'missing',
       title: 'Passo oculto',
-      text: 'Sem âncora na tela, este passo é pulado sem aviso.',
+      text: 'Sem âncora na tela (após alguns frames de espera), este passo é pulado sem aviso.',
     ),
     CoeloTourStep(
       anchorId: 'notifications',
@@ -770,7 +770,13 @@ final class _FlyoutExample extends StatelessWidget {
   @override
   Widget build(BuildContext context) => CoeloAdminFlyout<String>(
     items: const [
-      CoeloAdminFlyoutItem(value: 'profile', label: 'Perfil', icon: Icons.person_outline_rounded),
+      // `tourAnchorId` deixa o item do menu aberto ser apontado pelo tour.
+      CoeloAdminFlyoutItem(
+        value: 'profile',
+        label: 'Perfil',
+        icon: Icons.person_outline_rounded,
+        tourAnchorId: 'account-profile',
+      ),
       CoeloAdminFlyoutItem(
         value: 'settings',
         label: 'Configurações',

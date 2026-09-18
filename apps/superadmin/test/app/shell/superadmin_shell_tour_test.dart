@@ -53,18 +53,55 @@ void main() {
 
     expect(find.byKey(_balloon), findsOneWidget);
     expect(find.text('Bem-vindo ao Coelo'), findsOneWidget);
-    // Planos, Catálogo e Importações não têm passo; fora do /dev o menu
-    // completo tem 42 passos disponíveis.
-    expect(find.text('1 de 42'), findsOneWidget);
+    // Só Planos (dev-only) fica sem passo; fora do /dev todos os passos
+    // estão disponíveis.
+    expect(find.text('1 de ${superadminMenuTourSteps.length}'), findsOneWidget);
   });
 
-  testWidgets('"Tour completo" abre, nesta versão, o mesmo tour do menu', (tester) async {
+  testWidgets('"Tour completo" abre, nesta versão, o mesmo tour do menu e avisa', (tester) async {
     await _resize(tester, const Size(1440, 900));
     await tester.pumpWidget(_shellApp());
     await _openMenuTour(tester, option: 'Tour completo');
 
     expect(find.byKey(_balloon), findsOneWidget);
     expect(find.text('Bem-vindo ao Coelo'), findsOneWidget);
+    expect(find.textContaining('O tour completo (menu e todas as telas) chega em breve'), findsOneWidget);
+  });
+
+  testWidgets('passos do menu da conta abrem o menu, apontam cada item e fecham ao sair', (
+    tester,
+  ) async {
+    await _resize(tester, const Size(1440, 900));
+    const steps = <CoeloTourStep>[
+      CoeloTourStep(anchorId: 'account', title: 'Sua conta', text: 'x'),
+      CoeloTourStep(anchorId: 'account-profile', title: 'Perfil do tour', text: 'x'),
+      CoeloTourStep(anchorId: 'account-logout', title: 'Sair do tour', text: 'x'),
+      CoeloTourStep(anchorId: 'report-bug', title: 'Bug do tour', text: 'x'),
+    ];
+    await tester.pumpWidget(_shellApp(steps: steps));
+    await _openMenuTour(tester);
+    expect(find.text('Sua conta'), findsOneWidget);
+    expect(find.text('Configurações'), findsNothing);
+
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    expect(find.text('Perfil do tour'), findsOneWidget);
+    expect(find.text('Configurações'), findsOneWidget);
+    // O balão não cobre o menu aberto (o menu fica acima do overlay).
+    final menuItem = tester.getRect(find.text('Configurações'));
+    final balloon = tester.getRect(find.byKey(_balloon));
+    expect(balloon.overlaps(menuItem), isFalse);
+
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    expect(find.text('Sair do tour'), findsOneWidget);
+    expect(find.text('Sair'), findsOneWidget);
+
+    await tester.tap(find.byKey(_next));
+    await tester.pumpAndSettle();
+    expect(find.text('Bug do tour'), findsOneWidget);
+    expect(find.text('Configurações'), findsNothing);
+    expect(find.byKey(const Key('superadmin-logout-dialog')), findsNothing);
   });
 
   testWidgets('passo de nó oculto por ambiente é pulado e grupo colapsado abre no passo', (

@@ -2,10 +2,10 @@ import 'package:coelo_superadmin/app/navigation/superadmin_navigation.dart';
 import 'package:coelo_superadmin/app/tour/superadmin_menu_tour_steps.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-/// Nós de primeiro e segundo nível que o rascunho do Owner deixa sem passo:
-/// "Itens que não existem no ambiente do usuário (Planos, Catálogo,
-/// Importações) não recebem passo." Qualquer outro nó novo precisa de passo.
-const _withoutStep = <String>{'plans', 'catalog', 'import'};
+/// Nós de primeiro e segundo nível sem passo: só Planos (dev-only). Em 18/09 o
+/// Owner pediu passos para Importações e Catálogo. Qualquer nó novo precisa de
+/// passo.
+const _withoutStep = <String>{'plans'};
 
 void main() {
   test('cobre todo nó de primeiro e segundo nível do menu', () {
@@ -33,14 +33,24 @@ void main() {
     }
   });
 
-  test('começa e termina no botão "Fazer tour", com busca, sino e conta antes do fim', () {
+  test('começa e termina no botão "Fazer tour", com busca, bug, sino e conta antes do fim', () {
     expect(superadminMenuTourSteps.first.anchorId, 'tour-button');
     expect(superadminMenuTourSteps.last.anchorId, 'tour-button');
     final tail = superadminMenuTourSteps
-        .skip(superadminMenuTourSteps.length - 4)
+        .skip(superadminMenuTourSteps.length - 8)
         .map((step) => step.anchorId)
         .toList();
-    expect(tail, ['navigation-search', 'notifications', 'account', 'tour-button']);
+    expect(tail, [
+      'navigation-search',
+      'report-bug',
+      'notifications',
+      'account',
+      'account-profile',
+      'account-settings',
+      'account-logout',
+      'tour-button',
+    ]);
+    expect(superadminTourAccountMenuAnchors, everyElement(isIn(superadminTourShellAnchors)));
   });
 
   test('segue a ordem do menu e respeita o limite de 220 caracteres', () {

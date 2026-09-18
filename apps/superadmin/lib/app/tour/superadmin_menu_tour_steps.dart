@@ -12,8 +12,19 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 const superadminTourShellAnchors = <String>{
   'tour-button',
   'navigation-search',
+  'report-bug',
   'notifications',
   'account',
+  'account-profile',
+  'account-settings',
+  'account-logout',
+};
+
+/// Passos que apontam itens do menu da conta: o shell abre o menu antes.
+const superadminTourAccountMenuAnchors = <String>{
+  'account-profile',
+  'account-settings',
+  'account-logout',
 };
 
 /// Limite do rascunho: 220 caracteres por passo.
@@ -182,6 +193,14 @@ const formsTourStep = CoeloTourStep(
   text: 'Crie perguntas, escolha quem responde e acompanhe as respostas. Exporte quando precisar.',
 );
 
+/// Passo 22b — Operação › Importações (pedido do Owner em 18/09; texto
+/// provisório desta sessão, para o Owner ajustar).
+const importTourStep = CoeloTourStep(
+  anchorId: 'import',
+  title: 'Importações',
+  text: 'Acompanhe as importações de dados em lote da plataforma e o resultado de cada arquivo.',
+);
+
 /// Passo 23 — Operação › Agenda.
 const agendaTourStep = CoeloTourStep(
   anchorId: 'agenda',
@@ -236,6 +255,15 @@ const auditTourStep = CoeloTourStep(
   anchorId: 'audit',
   title: 'Auditoria',
   text: 'Quem fez o quê, quando. Toda ação sensível fica registrada aqui.',
+);
+
+/// Passo 30b — Governança › Catálogo (pedido do Owner em 18/09; texto
+/// provisório desta sessão, para o Owner ajustar).
+const catalogTourStep = CoeloTourStep(
+  anchorId: 'catalog',
+  title: 'Catálogo',
+  text:
+      'Os fundamentos, componentes e padrões visuais aprovados do Coelo, para consulta da equipe.',
 );
 
 /// Passo 31 — Coelo (Principal).
@@ -301,6 +329,14 @@ const navigationSearchTourStep = CoeloTourStep(
   text: 'Digite o nome de qualquer tela na busca do menu para chegar direto nela.',
 );
 
+/// Passo 39b — botão Bug (pedido do Owner em 18/09; texto provisório desta
+/// sessão, para o Owner ajustar).
+const reportBugTourStep = CoeloTourStep(
+  anchorId: 'report-bug',
+  title: 'Reportar bug',
+  text: 'Encontrou algo errado? Relate aqui, dizendo a tela e o que aconteceu, e a equipe recebe.',
+);
+
 /// Passo 40 — sino.
 const notificationsTourStep = CoeloTourStep(
   anchorId: 'notifications',
@@ -313,6 +349,26 @@ const accountTourStep = CoeloTourStep(
   anchorId: 'account',
   title: 'Sua conta',
   text: 'Foto, celular, senha e a opção de sair.',
+);
+
+/// Passos 41b–41d — itens do menu da conta (pedido do Owner em 18/09;
+/// textos provisórios desta sessão, para o Owner ajustar).
+const accountProfileTourStep = CoeloTourStep(
+  anchorId: 'account-profile',
+  title: 'Perfil',
+  text: 'Seus dados: nome, foto, celular e senha.',
+);
+
+const accountSettingsTourStep = CoeloTourStep(
+  anchorId: 'account-settings',
+  title: 'Configurações',
+  text: 'Preferências da sua conta neste dispositivo, como aparência e notificações.',
+);
+
+const accountLogoutTourStep = CoeloTourStep(
+  anchorId: 'account-logout',
+  title: 'Sair',
+  text: 'Encerra sua sessão neste dispositivo. O Coelo pede confirmação antes.',
 );
 
 /// Passo 42 — botão "Fazer tour".
@@ -346,6 +402,7 @@ const superadminMenuTourSteps = <CoeloTourStep>[
   operationsTourStep,
   mealPlansTourStep,
   formsTourStep,
+  importTourStep,
   agendaTourStep,
   communicationTourStep,
   conversationsTourStep,
@@ -354,6 +411,7 @@ const superadminMenuTourSteps = <CoeloTourStep>[
   governanceTourStep,
   supportTourStep,
   auditTourStep,
+  catalogTourStep,
   principalTourStep,
   principalHappensTourStep,
   principalForYouTourStep,
@@ -363,7 +421,11 @@ const superadminMenuTourSteps = <CoeloTourStep>[
   principalProfileTourStep,
   circularsTourStep,
   navigationSearchTourStep,
+  reportBugTourStep,
   notificationsTourStep,
   accountTourStep,
+  accountProfileTourStep,
+  accountSettingsTourStep,
+  accountLogoutTourStep,
   tourButtonFinalTourStep,
 ];

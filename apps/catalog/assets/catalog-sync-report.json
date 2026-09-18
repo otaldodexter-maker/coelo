@@ -136,12 +136,12 @@
       "example": "1df9c52e"
     },
     "core.tour-overlay": {
-      "source": "b61edd66",
-      "example": "a59d5528"
+      "source": "6821b73f",
+      "example": "ca097b7d"
     },
     "core.tour-anchor": {
-      "source": "b61edd66",
-      "example": "5dd6d92a"
+      "source": "6821b73f",
+      "example": "aa785bfd"
     },
     "admin.listing-toolbar": {
       "source": "c0609c20",
@@ -188,8 +188,8 @@
       "example": "47071b90"
     },
     "admin.flyout": {
-      "source": "001f7c5c",
-      "example": "ca75003d"
+      "source": "a46c6237",
+      "example": "5f087d45"
     },
     "admin.resizable-table": {
       "source": "e1976518",

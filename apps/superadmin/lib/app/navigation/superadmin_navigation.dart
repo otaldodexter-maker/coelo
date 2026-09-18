@@ -759,7 +759,11 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
           ? 'superadmin-navigation-section-${widget.node.id}'
           : 'superadmin-navigation-${widget.node.id}',
     );
-    final item = Padding(
+    // Só a árvore (sem breadcrumb) é âncora do tour; resultados de busca não.
+    // A âncora envolve o retângulo do item, não o padding, para o contorno
+    // do tour ficar centrado nele.
+    final anchorId = widget.breadcrumb == null ? widget.node.id : null;
+    return Padding(
       padding: EdgeInsetsDirectional.only(
         start: CoeloSpacing.space2 + (widget.level * CoeloSpacing.space3),
         bottom: CoeloSpacing.space1,
@@ -792,44 +796,47 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
             child: GestureDetector(
               onTap: widget.onTap,
               behavior: HitTestBehavior.opaque,
-              child: Container(
-                key: itemKey,
-                constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                decoration: BoxDecoration(
-                  color: background,
-                  borderRadius: BorderRadius.circular(CoeloRadius.md),
-                ),
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: CoeloSpacing.space2,
-                    vertical: CoeloSpacing.space2,
+              child: _maybeTourAnchor(
+                anchorId,
+                Container(
+                  key: itemKey,
+                  constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
+                  decoration: BoxDecoration(
+                    color: background,
+                    borderRadius: BorderRadius.circular(CoeloRadius.md),
                   ),
-                  child: Row(
-                    children: [
-                      Icon(
-                        widget.node.icon,
-                        color: foreground,
-                        size: widget.level == 0 ? CoeloSize.iconMd : CoeloSize.iconSm,
-                      ),
-                      const SizedBox(width: CoeloSpacing.space2),
-                      Expanded(
-                        child: Text(
-                          widget.node.label,
-                          style: theme.textTheme.labelLarge?.copyWith(
-                            color: foreground,
-                            fontWeight: widget.active || widget.level == 0
-                                ? FontWeight.w700
-                                : FontWeight.w500,
+                  child: Padding(
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: CoeloSpacing.space2,
+                      vertical: CoeloSpacing.space2,
+                    ),
+                    child: Row(
+                      children: [
+                        Icon(
+                          widget.node.icon,
+                          color: foreground,
+                          size: widget.level == 0 ? CoeloSize.iconMd : CoeloSize.iconSm,
+                        ),
+                        const SizedBox(width: CoeloSpacing.space2),
+                        Expanded(
+                          child: Text(
+                            widget.node.label,
+                            style: theme.textTheme.labelLarge?.copyWith(
+                              color: foreground,
+                              fontWeight: widget.active || widget.level == 0
+                                  ? FontWeight.w700
+                                  : FontWeight.w500,
+                            ),
                           ),
                         ),
-                      ),
-                      if (widget.node.children.isNotEmpty)
-                        Icon(
-                          widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
-                          color: foreground,
-                          size: CoeloSize.iconSm,
-                        ),
-                    ],
+                        if (widget.node.children.isNotEmpty)
+                          Icon(
+                            widget.expanded ? Icons.expand_less_rounded : Icons.expand_more_rounded,
+                            color: foreground,
+                            size: CoeloSize.iconSm,
+                          ),
+                      ],
+                    ),
                   ),
                 ),
               ),
@@ -838,8 +845,8 @@ class _NavigationTreeItemState extends State<_NavigationTreeItem> {
         ),
       ),
     );
-    // Só a árvore (sem breadcrumb) é âncora do tour; resultados de busca não.
-    if (widget.breadcrumb != null) return item;
-    return CoeloTourAnchor(id: widget.node.id, child: item);
   }
 }
+
+Widget _maybeTourAnchor(String? anchorId, Widget child) =>
+    anchorId == null ? child : CoeloTourAnchor(id: anchorId, child: child);

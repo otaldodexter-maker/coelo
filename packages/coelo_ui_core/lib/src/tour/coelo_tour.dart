@@ -212,7 +212,14 @@ final class _CoeloTourOverlayState extends State<CoeloTourOverlay> {
         if (!mounted || _finished) return;
         await WidgetsBinding.instance.endOfFrame;
         if (!mounted || _finished) return;
-        final rect = widget.registry.rectOf(step.anchorId);
+        var rect = widget.registry.rectOf(step.anchorId);
+        // A âncora pode estar montando (menu abrindo, drawer, transição de
+        // rota): tenta mais alguns frames antes de considerar o passo ausente.
+        for (var retry = 0; rect == null && retry < 3; retry++) {
+          await WidgetsBinding.instance.endOfFrame;
+          if (!mounted || _finished) return;
+          rect = widget.registry.rectOf(step.anchorId);
+        }
         if (rect != null) {
           setState(() {
             _index = index;
