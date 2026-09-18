@@ -611,12 +611,12 @@
         "medication.edit",
         "medication.detail"
       ],
-      "fe": "FE local-green (Sessão 10, 16/09): sino já lia `context_notification_*`; rótulos para plano criado/atualizado/status e dose registrada (resumo por desfecho).",
-      "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); **aplicada em produção no lote 74 (16/09 17:40 UTC; correção de 18/09 — o texto anterior dizia \"NÃO aplicada\")**.",
-      "e2e": "Pendente (Sessão RESERVA 18/09): v2 `20260918120000_medication_in_app_notifications_v2` (E7 = b: responsável destinatário; `recipients-bug`: membership `guardian`/`student` não é equipe) pgTAP 27/27 + v1 29/29 no espelho `mirror-r16-reserva`; aplicar no lote 82 (item a) e provar o sino com admin da unidade, educador da turma e `qa-r15-responsavel` por PostgREST.",
-      "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e (responsável)",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/medication-bell-v2-20260918.md",
       "owner": "C0 R16",
-      "nextGate": "Lote 82 (item a, autorização nominal de 18/09): aplicar a v2 pelo rito; editar plano e registrar dose reais; observar o sino com três identidades (admin da unidade, educador da turma, `qa-r15-responsavel` por PostgREST — OQ-048); sem e-mail/push.",
+      "nextGate": "18/09 (Sessão RESERVA): v1 em produção desde o lote 74; **v2 `20260918120000` aplicada no lote 82** (E7 = b: responsável destinatária; `recipients-bug` corrigido nos dois leitores); pgTAP 27/27 + 29/29 no espelho fiel. Rota real: plano `2ecf267e` (QA R15 Crianca 1) editado (v2, dose 7) e dose registrada pela tela; `qa-r15-responsavel` vê `plan.created`, `plan.updated` e `dose.recorded` no sino (PostgREST, OQ-048). **Resíduo:** admin da unidade / educador da turma não observáveis em produção — as 11 memberships do tenant QA R04 Cuidado são pessoas de serviço (nunca destinatárias); exigiria fixture de membership (SQL fora da autorização a–d). Decisão do Owner: aceitar a prova do espelho ou autorizar a fixture.",
       "sourceRound": "R15"
     },
     {
@@ -808,7 +808,7 @@
       "e2e": "E2E verified-e2e: reload e nova sessão veem a foto do R2; remoção relida.",
       "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-a/account-profile-20260917.md",
       "owner": "C0 R16",
-      "nextGate": "Falta só a máscara/formatação de entrada e a normalização do Celular (cliente valida 7–40 caracteres; servidor grava como digitado). Decidir formato (E.164 × exibição) e implementar; opcional: mapear denied da Edge para 403. **Mesa R16 (ADR 0044): Etapa 3, tela a tela.**",
+      "nextGate": "**Celular concluído em 18/09 (D5, Sessão RESERVA, lote 82 item b):** E.164 `+55DDD9NNNNNNNN` no servidor (`normalize_mobile_phone_e164`, 22023 `invalid_account_mobile_phone`) e máscara `+55 (DD) 9NNNN-NNNN` no cliente; provado na rota real (evidência r16-reserva/account-mobile-phone-e164-20260918.md). Resta o layout A+ \"Meu acesso\" (Etapa 3, tela a tela) e, opcional, mapear denied da Edge para 403. 8 goldens da Conta divergem só no campo Celular (não regravados, D7).",
       "sourceRound": "R15"
     },
     {
@@ -1407,7 +1407,8 @@
     "specs/063-superadmin-meal-plan-images-r2.md",
     "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md",
     "docs/reviews/evidence/etapa-2/r16-reserva/assessments-close-reopen-20260918.md",
-    "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md"
+    "docs/reviews/evidence/etapa-2/r14-sessao-3/assessments-close-reopen/assessments-close-reopen-20260915.md",
+    "docs/reviews/evidence/etapa-2/r16-reserva/medication-bell-v2-20260918.md"
   ],
   "trackerActionIds": [
     "auth.login",
