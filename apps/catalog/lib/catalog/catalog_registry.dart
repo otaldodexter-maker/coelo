@@ -20,6 +20,8 @@ const catalogRegistryManifestJson = r'''
   "core.brazilian-phone-input-formatter": ["landline", "mobile"],
   "core.status-chip": [],
   "core.state-panel": [],
+  "core.tour-overlay": ["wide", "narrow-sheet"],
+  "core.tour-anchor": [],
   "admin.listing-toolbar": [],
   "admin.multi-select-filter": [],
   "admin.multi-select-field": ["searchable", "non-searchable"],
@@ -77,6 +79,8 @@ Map<String, CatalogExample> buildCatalogRegistry() {
     'core.brazilian-phone-input-formatter': (_) => const _BrazilianPhoneFormatterExample(),
     'core.status-chip': (_) => const _StatusChipExample(),
     'core.state-panel': (_) => const _StatePanelExample(),
+    'core.tour-overlay': (_) => const _TourOverlayExample(),
+    'core.tour-anchor': (_) => const _TourOverlayExample(),
     'admin.listing-toolbar': (_) => const _ListingToolbarExample(),
     'admin.multi-select-filter': (_) => const _MultiSelectFilterExample(),
     'admin.multi-select-field': (_) => const _MultiSelectFieldExample(),
@@ -307,6 +311,88 @@ final class _StatePanelExample extends StatelessWidget {
       title: 'Sem resultados',
       message: 'Ajuste os filtros para tentar novamente.',
       icon: Icons.search_off_outlined,
+    );
+  }
+}
+
+// Tour guiado (ADR 0035 F8): a tela envolve os alvos com CoeloTourAnchor e
+// abre o tour com showCoeloTour; o balão aponta o alvo e pula passos sem âncora.
+final class _TourOverlayExample extends StatefulWidget {
+  const _TourOverlayExample();
+
+  @override
+  State<_TourOverlayExample> createState() => _TourOverlayExampleState();
+}
+
+final class _TourOverlayExampleState extends State<_TourOverlayExample> {
+  final _registry = CoeloTourAnchorRegistry();
+  final _search = TextEditingController();
+
+  @override
+  void dispose() {
+    _search.dispose();
+    super.dispose();
+  }
+
+  static const _steps = <CoeloTourStep>[
+    CoeloTourStep(
+      anchorId: 'search',
+      title: 'Procure em vez de navegar',
+      text: 'Digite o nome de qualquer tela para chegar direto nela.',
+    ),
+    CoeloTourStep(
+      anchorId: 'missing',
+      title: 'Passo oculto',
+      text: 'Sem âncora na tela, este passo é pulado sem aviso.',
+    ),
+    CoeloTourStep(
+      anchorId: 'notifications',
+      title: 'Notificações',
+      text: 'Aqui chegam os avisos do sistema.',
+    ),
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return CoeloTourScope(
+      registry: _registry,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Row(
+            children: [
+              Expanded(
+                child: CoeloTourAnchor(
+                  id: 'search',
+                  child: CoeloSearchField(
+                    controller: _search,
+                    semanticLabel: 'Buscar na navegação',
+                    hintText: 'Buscar na navegação',
+                    onChanged: (_) {},
+                  ),
+                ),
+              ),
+              const SizedBox(width: CoeloSpacing.space2),
+              CoeloTourAnchor(
+                id: 'notifications',
+                child: IconButton(
+                  tooltip: 'Notificações',
+                  onPressed: () {},
+                  icon: const Icon(Icons.notifications_none_rounded),
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: CoeloSpacing.space3),
+          FilledButton.icon(
+            key: const Key('catalog-tour-start'),
+            onPressed: () => showCoeloTour(context, steps: _steps, registry: _registry),
+            icon: const Icon(Icons.tour_outlined),
+            label: const Text('Fazer tour'),
+          ),
+        ],
+      ),
     );
   }
 }
@@ -764,11 +850,18 @@ final class _DirectoryExampleState extends State<_DirectoryExample> {
         groupedTableView: CoeloAdminDirectoryDisplay.table,
         selectedTableView: CoeloAdminDirectoryDisplay.table,
         tableViews: const [
-          CoeloAdminDirectoryTableViewOption(value: CoeloAdminDirectoryDisplay.table, label: 'Tabela'),
+          CoeloAdminDirectoryTableViewOption(
+            value: CoeloAdminDirectoryDisplay.table,
+            label: 'Tabela',
+          ),
         ],
         onTableViewSelected: (_) => setState(() => _display = CoeloAdminDirectoryDisplay.table),
         fileActions: [
-          CoeloAdminFileAction(label: 'Exportar XLSX', icon: Icons.grid_on_outlined, onPressed: () {}),
+          CoeloAdminFileAction(
+            label: 'Exportar XLSX',
+            icon: Icons.grid_on_outlined,
+            onPressed: () {},
+          ),
         ],
         create: CoeloAdminDirectoryCreate(label: 'Criar instituição', onPressed: () {}),
         cards: [

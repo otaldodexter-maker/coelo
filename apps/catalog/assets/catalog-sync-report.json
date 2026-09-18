@@ -1,6 +1,79 @@
 {
-  "status": "synchronized",
-  "diagnostics": [],
+  "status": "catalogStale",
+  "diagnostics": [
+    {
+      "code": "missing-index-entry",
+      "message": "Componente publico exportado ausente no indice.",
+      "id": "CoeloCreateAction",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/r16-tour/packages/coelo_ui_core/lib/src/action/coelo_create_action.dart"
+    },
+    {
+      "code": "missing-index-entry",
+      "message": "Componente publico exportado ausente no indice.",
+      "id": "CoeloAdminCardGrid",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/r16-tour/packages/coelo_ui_admin/lib/src/directory/coelo_admin_card_grid.dart"
+    },
+    {
+      "code": "missing-index-entry",
+      "message": "Componente publico exportado ausente no indice.",
+      "id": "CoeloAdminFilterTrigger",
+      "path": "C:/Users/adrie/Documents/Coelo.worktrees/r16-tour/packages/coelo_ui_admin/lib/src/filter/coelo_admin_filter_trigger.dart"
+    },
+    {
+      "code": "registry-index-variants-mismatch",
+      "message": "As variantes do registry e do índice são diferentes.",
+      "id": "admin.single-select-field",
+      "path": "lib/catalog/catalog_registry.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.multi-select-filter",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "public-widget-not-exported",
+      "message": "O widget público não foi localizado nos exports do pacote.",
+      "id": "admin.create-action",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.create-action",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.resizable-table",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.forms-editor",
+      "path": "apps/superadmin/lib/features/forms/presentation/editor/forms_editor_page.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "superadmin.forms-response",
+      "path": "apps/superadmin/lib/features/forms/presentation/response/form_response_page.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.directory",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    },
+    {
+      "code": "source-example-fingerprint-mismatch",
+      "message": "A fonte mudou sem atualização do exemplo.",
+      "id": "admin.directory-status-tabs",
+      "path": "packages/coelo_ui_admin/lib/coelo_ui_admin.dart"
+    }
+  ],
   "fingerprints": {
     "pattern.rejected-visual-patterns": {
       "source": "811c9dc5",
@@ -62,6 +135,14 @@
       "source": "3357170f",
       "example": "1df9c52e"
     },
+    "core.tour-overlay": {
+      "source": "b61edd66",
+      "example": "a59d5528"
+    },
+    "core.tour-anchor": {
+      "source": "b61edd66",
+      "example": "5dd6d92a"
+    },
     "admin.listing-toolbar": {
       "source": "c0609c20",
       "example": "82aded08"
@@ -75,8 +156,8 @@
       "example": "0711a539"
     },
     "admin.single-select-field": {
-      "source": "000b2f9c",
-      "example": "d2d36330"
+      "source": "2c3be387",
+      "example": "42e7785f"
     },
     "admin.toggle-field": {
       "source": "e39005c4",
