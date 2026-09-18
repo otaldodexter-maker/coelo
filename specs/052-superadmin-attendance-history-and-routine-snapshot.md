@@ -4,7 +4,7 @@ source: "decisions/0041-owner-decisions-r14-mesa-20260916.md (B2, B3); docs/revi
 status: "approved-contract; implementação local R14 Sessão 10"
 lifecycle: "current"
 generated_at: "2026-09-16"
-updated_at: "2026-09-16"
+updated_at: "2026-09-18"
 audience: "team"
 ---
 
@@ -55,9 +55,12 @@ Histórico. Para não perder o comando certificado:
 - "Sem edição nessa tela" (B2) vale para as chamadas: presença, conclusão,
   reabertura e correção continuam exclusivas do detalhe da chamada.
 
-Se o Owner entender que publicar lançamentos também deve sair do Histórico,
-o segmento vira somente leitura e o comando volta para Rotinas; isso é um
-ajuste de composição, não de contrato de dados.
+**Decidido em 18/09/2026** (Owner delegou a decisão à Sessão RESERVA da R16):
+**Publicar lançamento fica no Histórico › Lançamentos de rotina**, como
+implementado e provado na rota real — é a única superfície do comando
+`daily-routine.publish` certificado, e devolvê-lo a Rotinas seria ajuste de
+composição sem ganho para a operação. O segmento continua sendo a única ação
+de escrita do Histórico; chamadas seguem editáveis só no detalhe (B2).
 
 ## 4. Backend
 
