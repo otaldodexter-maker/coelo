@@ -18,37 +18,16 @@ pelo estado atual e siga os links; não procure requisitos em arquivos de
 - Invariantes de segurança abaixo continuam valendo.
 - Só o que ficar pendente vai para `docs/agent/pendentes.md`, uma linha por item.
 
-## Entrada obrigatória
+## Entrada
 
-1. `docs/agent/current-state.md` — o que está sendo trabalhado e o que está em
-   reserva.
-2. `docs/agent/source-of-truth.md` — qual fonte tem autoridade e em que ordem.
-3. `docs/agent/backlog.md` — só quando a tarefa envolver Etapa 3, V1, V2 ou
-   pendências gerais.
-4. A spec (`specs/README.md`), a ADR (`decisions/README.md`), o contrato ou a
-   skill apontada pelo índice.
+1. `docs/agent/pendentes.md` — a lista única do que falta.
+2. `decisions/0045-mvp-definition-etapa3-etapa4-20260918.md` — o que é o MVP e o
+   corte Etapa 3 × Etapa 4.
+3. A skill do que você vai tocar: `coelo-frontend` (Flutter), `coelo-backend`
+   (Supabase), `coelo-fullstack` (os dois), `coelo-ui` (componente).
 
-## Estado em 18/09/2026
-
-- **ADR 0045 (18/09)**: Etapa 2 fechada; MVP = Etapa 3 (correções da revisão
-  de telas com a reserva R16, tour, acesso contextual, specs 065–069) + Etapa 4
-  (publicação, `apps/admin`, `apps/principal`/spec 064, push preparado,
-  analytics, IA). Importação, MFA e lojas: V1. Regra de trabalho leve da Etapa 3
-  em ADR 0045 §7. Lotes 82–83 em produção; Owner 45/53.
-
-### Leitura de 17/09/2026 (histórico)
-
-- **Etapa 2 do MVP: FE 199/199, BE 186/186, E2E 186/186 (100%)**, provados na
-  rota real em produção (`docs/reviews/etapa-2-operacao/next-round/R16-checkpoint-20260917.md`).
-- A **R16** continua a rodada vigente (ADR 0043) apenas como **reserva**: 14
-  Owner items, resíduos H, ajustes de UI/UX e dívida técnica da Mesa R16
-  (ADR 0044), guardados em `R16-pendencias.md` para a **revisão de telas antes
-  da Etapa 3**. Não execute a reserva sem pedido do Owner; não abra R17.
-- A **Etapa 3** (ADR 0035) só abre por decisão explícita do Owner, com proposta
-  consolidada; nada dela foi implementado.
-- Produção: projeto Supabase `evvbomzejfijozbtgvpt` é o único remoto; último
-  lote aplicado: **81**. O GitHub tem só a branch `dev`; trabalho paralelo usa
-  worktrees locais criadas de `dev` e integradas por cherry-pick.
+`current-state.md`, `backlog.md`, `R16-pendencias.md`, specs e ADRs antigas são
+histórico: consulte só se precisar de um detalhe.
 
 ## Produto e arquitetura
 
@@ -74,34 +53,14 @@ de `apps/superadmin`. Baselines em `docs/product/`, `docs/architecture/`,
   permissões, vínculos, ownership e auditoria.
 - Versão defasada sinaliza `PT409`, nunca `40001` (OQ-047).
 
-## Documentação
+## Documentação e revisão
 
-- Regra durável nasce na fonte canônica (ADR/spec) e, se necessário, é
-  projetada em `docs/knowledge/`. `status` informa qualidade; `lifecycle`
-  informa se o artigo é `current`, `future`, `historical` ou `superseded`.
-- `docs/archive/`, `docs/reviews/archive/` e `docs/reviews/evidence/` são
-  proveniência, não instrução atual (manifesto:
-  `docs/agent/archive-manifest-20260917.md`).
-- Conflitos entre fontes vão para `docs/open-questions.md`; não resolva em
-  silêncio.
-- Não excluir, mover ou sobrescrever artefatos sem aprovação explícita do
-  Owner e sem manifesto recuperável.
-
-## Revisão e implementação
-
-Para revisão Flutter/Supabase use `docs/agent/review-workflow.md` e a skill
-correta: `coelo-flutter-review` (frontend), `coelo-supabase` (backend) ou
-`coelo-flutter-supabase-review` (ponta a ponta). O recorte declara objetivo,
-incluído, fora de escopo, ordem, parada e evidências. Estados por `action_id`
-mudam só por `docs/reviews/apply-tracker-delta.cjs` com certificação;
-`validate-trackers.cjs` PASS antes de commitar. Escrita em produção segue o
-rito por lote (`docs/knowledge/team/stale-version-pt409-and-production-rite.md`)
-com autorização nominal do Owner.
-
-Antes de concluir, rode os testes pertinentes e confira o diff. `delivery_gate.py`
-e os rastreadores só quando o Owner pedir revisão formal.
-
-Conhecimento do produto: `.agents/skills/coelo-knowledge/SKILL.md`. UI:
-`coelo-ui`. Aprendizado: `coelo-tutor`. Skills compartilhadas vivem em
-`.agents/skills`; `.claude/skills` e `.codex/skills` são camadas de acesso.
-Saída de terminal muito grande: `RTK.md`.
+- Não crie spec, ADR, evidência ou rodada para trabalho de MVP/V1. Regra
+  durável nova: uma linha na skill certa. Pendência: uma linha em
+  `docs/agent/pendentes.md`.
+- `docs/archive/`, `docs/reviews/` e specs/ADRs antigas são histórico.
+- Não apague nem mova artefato sem pedido do Owner.
+- Skills: `coelo-frontend`, `coelo-backend`, `coelo-fullstack`, `coelo-ui`,
+  `coelo-knowledge` (produto), `coelo-tutor` (aprendizado). Vivem em
+  `.agents/skills`; `.claude/skills` e `.codex/skills` são junctions.
+- Saída de terminal grande: `RTK.md`.

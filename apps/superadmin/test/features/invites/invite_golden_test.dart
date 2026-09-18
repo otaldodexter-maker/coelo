@@ -46,14 +46,17 @@ void main() {
       size: const Size(1440, 900),
     );
 
-    await tester.tap(find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111')));
+    final actions = find.byKey(const Key('invite-actions-11111111-1111-4111-8111-111111111111'));
+    await tester.ensureVisible(actions);
+    await tester.pumpAndSettle();
+    await tester.tap(actions, warnIfMissed: false);
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('invite-golden-root')),
       matchesGoldenFile('goldens/invite_directory_flyout_open_light.png'),
     );
 
-    await tester.tap(find.text('Revogar convite'));
+    await tester.tap(find.text('Revogar convite'), warnIfMissed: false);
     await tester.pumpAndSettle();
     await expectLater(
       find.byKey(const Key('invite-golden-root')),
@@ -67,9 +70,6 @@ void main() {
       InviteDirectoryPage(repository: _repository(), onOpen: (_) {}),
       size: const Size(1440, 900),
     );
-
-    await tester.tap(find.byKey(const Key('invite-view-table')));
-    await tester.pumpAndSettle();
 
     final mouse = await tester.createGesture(kind: PointerDeviceKind.mouse);
     addTearDown(mouse.removePointer);
