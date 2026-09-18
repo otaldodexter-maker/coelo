@@ -59,17 +59,17 @@
   },
   {
     "id": "owner.r12-04",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "daily-routine.list",
       "attendance.dashboard"
     ],
-    "fe": "FE local-green (Sessão 10, 16/09): tela Acompanhamento › Assiduidade › Histórico em `/attendance/history` (tabela data/turma-atividade/quem lançou/presentes/ausentes/rotina/situação, filtros instituição/unidade/turma/atividade/situação/período, cursor, abre o detalhe; sem edição); aba Lançamentos retirada do diretório de Rotina (Lançar hoje → Histórico › Lançamentos de rotina); 280 testes verdes, 10 goldens pré-existentes (C1).",
-    "be": "BE local-green: `20260916180000_attendance_call_history_v1` (leitor por cursor com escopo do painel, só agregados) + pgTAP 44/44 no espelho; NÃO aplicada em produção.",
-    "e2e": "Pendente: aplicar a migration, rota real autenticada, reload e negativa cross-tenant (bloqueio: incidente PostgREST 504).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-history-20260916.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/attendance-history-snapshot-20260918.md",
     "owner": "C0 R12",
-    "nextGate": "Aplicar `20260916180000` pelo rito (espelho verde) após o fim do incidente; provar `/attendance/history` com `qa-r06-operacoes`, reload e negativa; decidir se Publicar lançamento fica no Histórico ou volta a Rotinas (spec 052 §3).",
+    "nextGate": "Concluído 18/09 (Sessão RESERVA, rota real 3014 com `qa-r06-operacoes`): `20260916180000_attendance_call_history_v1` está em produção desde o lote 74 (16/09); Histórico `/attendance/history` com lista (8 chamadas), filtros (Situação Em andamento 3 / Concluídas 6), cursor por PostgREST (páginas de 3, `has_more`), abre o detalhe, reload; negativas: responsável (`qa-r15-responsavel`) → 403 42501, detalhe alheio → null, status inválido → 22023. **Decisão do Owner pendente (não tomada): onde fica \"Publicar lançamento\" (spec 052 §3).**",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -98,17 +98,17 @@
   },
   {
     "id": "owner.r12-06",
-    "status": "partial",
+    "status": "done",
     "actionIds": [
       "attendance.create",
       "daily-routine.apply"
     ],
-    "fe": "FE local-green (Sessão 10, 16/09): detalhe da chamada e Histórico mostram a rotina (snapshot \"registrada na conclusão\"; aberta = vigente; legado concluído sem snapshot = \"rotina atual (não registrada na época)\"); repositório mapeia PT409; FE verified anterior (wizard sem etapa de rotina) preservado.",
-    "be": "BE local-green: `20260916183000_attendance_routine_snapshot_v1` (colunas de snapshot, `attendance_effective_routine`, complete_call grava só na primeira conclusão, call_detail expõe routine_snapshot/routine_current/routine_source, histórico projeta a rotina, 40001 → PT409 na família) + pgTAP 43/43 no espelho; NÃO aplicada em produção.",
-    "e2e": "Pendente: aplicar a migration, concluir/reabrir chamada real, reload do detalhe e negativa 409 PT409 (bloqueio: incidente PostgREST 504).",
-    "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/attendance-routine-snapshot-20260916.md",
+    "fe": "verified",
+    "be": "done",
+    "e2e": "verified-e2e",
+    "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/attendance-history-snapshot-20260918.md",
     "owner": "C0 R12",
-    "nextGate": "Aplicar `20260916183000` pelo rito após `20260916180000` e o fim do incidente; provar na rota real: concluir grava snapshot, reabrir/concluir preserva, legado mostra a indicação; negativa de versão defasada responde 409 PT409.",
+    "nextGate": "Concluído 18/09 (Sessão RESERVA, rota real): `20260916183000_attendance_routine_snapshot_v1` em produção desde o lote 74; rotina `8b317b01` ativada pela tela (escopo instituição QA R04); chamada `98f6796c` (3 participantes) concluída → detalhe e Histórico mostram \"registrada na conclusão\" (snapshot revisão 2, 14:07:30Z), reload; reabrir (v5) e concluir (v6) preservam o mesmo snapshot; legado `cd60f2d8` mostra \"rotina atual (não registrada na época)\"; versão defasada → 409 PT409.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [
@@ -637,11 +637,11 @@
       "medication.detail"
     ],
     "fe": "FE local-green (Sessão 10, 16/09): sino já lia `context_notification_*`; rótulos para plano criado/atualizado/status e dose registrada (resumo por desfecho).",
-    "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); NÃO aplicada em produção.",
-    "e2e": "Pendente: aplicar a migration, editar plano e registrar dose reais e observar o sino com identidade da unidade/educador (bloqueio: incidente PostgREST 504).",
+    "be": "BE local-green: `20260916190000_medication_in_app_notifications_v1` (destinatários = admins da unidade + educadores da turma, sem responsáveis; editar plano → `medication.plan.updated`; cada dose → `medication.dose.recorded`; `not_tracked` silencia) + pgTAP 29/29 no espelho; criar plano já notificava em produção (trigger existente, audiência mantida); **aplicada em produção no lote 74 (16/09 17:40 UTC; correção de 18/09 — o texto anterior dizia \"NÃO aplicada\")**.",
+    "e2e": "Pendente (Sessão RESERVA 18/09): v2 `20260918120000_medication_in_app_notifications_v2` (E7 = b: responsável destinatário; `recipients-bug`: membership `guardian`/`student` não é equipe) pgTAP 27/27 + v1 29/29 no espelho `mirror-r16-reserva`; aplicar no lote 82 (item a) e provar o sino com admin da unidade, educador da turma e `qa-r15-responsavel` por PostgREST.",
     "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-10/medication-notifications-20260916.md",
     "owner": "C0 R12",
-    "nextGate": "Aplicar `20260916190000` pelo rito após o incidente; provar o sino na rota real com duas identidades (admin da unidade e educador da turma); sem e-mail/push.",
+    "nextGate": "Lote 82 (item a, autorização nominal de 18/09): aplicar a v2 pelo rito; editar plano e registrar dose reais; observar o sino com três identidades (admin da unidade, educador da turma, `qa-r15-responsavel` por PostgREST — OQ-048); sem e-mail/push.",
     "destinationRound": "R13",
     "destinationEvidence": "docs/reviews/etapa-2-operacao/next-round/R13-pendencias.md",
     "sourceRounds": [

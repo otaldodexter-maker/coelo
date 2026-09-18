@@ -91,7 +91,9 @@ create temporary table mn_recipients as
   select r from app_private.medication_notification_recipients_v1(pg_temp.mn_id(10),pg_temp.mn_id(11),pg_temp.mn_id(311),pg_temp.mn_id(221)) r;
 select ok(exists(select 1 from mn_recipients where r=pg_temp.mn_id(222)),'unit admin of the child unit is a recipient');
 select ok(exists(select 1 from mn_recipients where r=pg_temp.mn_id(223)),'group educator of the child group is a recipient');
-select ok(not exists(select 1 from mn_recipients where r=pg_temp.mn_id(224)),'guardian is not a recipient (B8 audience)');
+-- 18/09 (v2, ADR 0042 E7 = b): o responsavel por guardian_link passa a ser destinatario;
+-- a v1 (sem chamadores) continua sem responsavel.
+select ok(not exists(select 1 from mn_recipients where r=pg_temp.mn_id(224)),'v1 helper (preserved, no callers) still excludes the guardian');
 select ok(not exists(select 1 from mn_recipients where r=pg_temp.mn_id(221)),'the actor never notifies itself');
 select ok(not exists(select 1 from mn_recipients where r=pg_temp.mn_id(225)),'admin of another unit is not a recipient');
 select ok(not exists(select 1 from mn_recipients where r=pg_temp.mn_id(226)),'educator of another group is not a recipient');
@@ -113,7 +115,7 @@ select is((select e.unit_id from public.context_notification_events e where e.ob
   pg_temp.mn_id(11),'event unit resolved from the child active unit');
 select ok((select array_agg(r.person_id order by r.person_id) from public.context_notification_recipients r
   join public.context_notification_events e on e.id=r.event_id where e.object_id=pg_temp.mn_id(500) and e.event_code='medication.plan.updated')
-  = array[pg_temp.mn_id(222),pg_temp.mn_id(223)],'plan.updated reaches exactly the unit admin and the group educator');
+  = array[pg_temp.mn_id(222),pg_temp.mn_id(223),pg_temp.mn_id(224)],'plan.updated reaches the unit admin, the group educator and the guardian (E7 = b, v2)');
 
 -- ---------------------------------------------------------------------------
 -- Cada dose registrada notifica
@@ -130,7 +132,7 @@ select ok((select e.payload_json ?& array['outcome','occurred_at','plan_id','pla
   from public.context_notification_events e where e.object_id=pg_temp.mn_id(602)),'dose payload has no free text');
 select ok((select array_agg(r.person_id order by r.person_id) from public.context_notification_recipients r
   join public.context_notification_events e on e.id=r.event_id where e.object_id=pg_temp.mn_id(601))
-  = array[pg_temp.mn_id(221),pg_temp.mn_id(222)],'a dose recorded by the educator notifies the institution/unit admins, not the educator herself');
+  = array[pg_temp.mn_id(221),pg_temp.mn_id(222),pg_temp.mn_id(224)],'a dose recorded by the educator notifies the admins and the guardian, not the educator herself (E7 = b, v2)');
 
 -- ---------------------------------------------------------------------------
 -- Politica da unidade: notify_unit=false exclui a equipe; not_tracked silencia
