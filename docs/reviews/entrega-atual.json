@@ -195,16 +195,16 @@
     },
     {
       "id": "owner.r12-05",
-      "status": "open",
+      "status": "done",
       "actionIds": [
         "attendance.create"
       ],
-      "fe": "FE verified: R15 B 17/09 — contexto **Atividade** exercitado na rota real com atividade real (\"QA R15 Atividade Assiduidade\" `1bd6bc74…`, criada pela tela após 2 defeitos de FE corrigidos): seleção, chamada criada (`bcd47ba2…`, open, `activity_id` preenchido) e reload.",
-      "be": "BE done; `superadmin_attendance_create_call` aceita `p_activity_id`; **achado**: chamada em contexto Atividade nasce com `participants []` (turma com 3 crianças ativas, atividade em modo `all`).",
-      "e2e": "verified-e2e (contexto Turma, R14); contexto Atividade: negativa não executada (prazo).",
-      "evidence": "docs/reviews/evidence/etapa-2/r15-bloco-b/attendance-contexto-atividade-20260917.md",
+      "fe": "verified",
+      "be": "done",
+      "e2e": "verified-e2e",
+      "evidence": "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md",
       "owner": "C0 R16",
-      "nextGate": "ADR 0041 D3: falta a negativa do contexto Atividade e esclarecer `participants []` (derivação por `activity_group_participants` vs modo `all`) — R16",
+      "nextGate": "Concluído 18/09 (Sessão RESERVA): negativas do contexto Atividade em produção por PostgREST com `qa-r06-operacoes` — atividade inexistente e atividade inelegível (vinculada a outra turma) → 403 42501 \"activity outside scope\"; instituição alheia declarada → 403 42501 \"context outside scope\"; nenhuma chamada criada. `participants []` explicado pelo contrato (esperados derivam de `activity_group_participants`; atividade sem participantes é válida — Mesa R16, ADR 0044).",
       "sourceRound": "R15"
     },
     {
@@ -252,7 +252,7 @@
       "e2e": "Pendente só a massa: as turmas do escopo têm no máximo 1 aluno; múltiplos alunos/turmas e rotina vinculada não exercitados.",
       "evidence": "docs/reviews/evidence/etapa-2/r14-sessao-1/attendance-create-20260915.md",
       "owner": "C0 R16",
-      "nextGate": "ADR 0041 D6: Owner não autoriza massa fictícia agora; prova com ≥2 alunos fica para depois. Bloqueado por decisão, não por ambiente.",
+      "nextGate": "D4 (18/09): massa sintética liberada. Turma QA R04 já tem 3 crianças + rotina vinculada; mark/finish com 3 alunos provados em 18/09 (chamada `98f6796c`, evidência r16-reserva/attendance-history-snapshot-20260918.md). Falta: fixture `20260918123000` (Turma QA R06 Transferencia, 2 crianças; pgTAP 16/16) executada no lote 82 (item c) e prova de correct + segunda turma → done.",
       "sourceRound": "R15"
     },
     {
@@ -1404,7 +1404,8 @@
     "docs/reviews/evidence/etapa-2/r14-sessao-9/archive-models-b1-20260916.md",
     "specs/054-archive-activity-routine-models.md",
     "specs/061-superadmin-child-safety-person-search.md",
-    "specs/063-superadmin-meal-plan-images-r2.md"
+    "specs/063-superadmin-meal-plan-images-r2.md",
+    "docs/reviews/evidence/etapa-2/r16-reserva/attendance-activity-negatives-and-mass-20260918.md"
   ],
   "trackerActionIds": [
     "auth.login",

@@ -29,8 +29,10 @@ com o texto "aplicada no lote 74" e o gate da v2).
 
 | Bloco | Commit (branch `r16/reserva-20260918`) | Conteúdo |
 |---|---|---|
-| 1 (D2) — r12-04 Histórico, r12-06 snapshot | (este) | Prova na rota real 3014 com `qa-r06-operacoes`: evidência `docs/reviews/evidence/etapa-2/r16-reserva/attendance-history-snapshot-20260918.md` (+10 capturas). `owner.r12-04` e `owner.r12-06` → `done`; Owner 41/53. Sem SQL em produção. |
-| 1 (D2) — r12-33 sino v2 (preparação) | (este) | `packages/coelo_database/migrations/20260918120000_medication_in_app_notifications_v2.sql` (E7 = b + `recipients-bug` nos dois leitores de destinatários) + `supabase/tests/medication_in_app_notifications_v2_test.sql` **27/27**; v1 alinhada ao contrato novo **29/29**; `unit_care_policies_notifications_v1` 20/20; `health_care_and_medication_plans_v1` 28/30 (15 e 16 pré-existentes, idênticas antes/depois). Migration aplicada 2× no espelho sem erro (idempotente). **Aplicação em produção e prova do sino ficam para o lote 82** (rito ao fim dos blocos 1–4, item a). |
+| 1 (D2) — r12-04 Histórico, r12-06 snapshot | `0612a70fe` | Prova na rota real 3014 com `qa-r06-operacoes`: evidência `docs/reviews/evidence/etapa-2/r16-reserva/attendance-history-snapshot-20260918.md` (+10 capturas). `owner.r12-04` e `owner.r12-06` → `done`; Owner 41/53. Sem SQL em produção. |
+| 1 (D2) — r12-33 sino v2 (preparação) | `0612a70fe` | `packages/coelo_database/migrations/20260918120000_medication_in_app_notifications_v2.sql` (E7 = b + `recipients-bug` nos dois leitores de destinatários) + `supabase/tests/medication_in_app_notifications_v2_test.sql` **27/27**; v1 alinhada ao contrato novo **29/29**; `unit_care_policies_notifications_v1` 20/20; `health_care_and_medication_plans_v1` 28/30 (15 e 16 pré-existentes, idênticas antes/depois). Migration aplicada 2× no espelho sem erro (idempotente). **Aplicação em produção e prova do sino ficam para o lote 82** (rito ao fim dos blocos 1–4, item a). |
+
+| 2 (D4) — r12-05 negativas; r12-08 fixture (preparação) | (este) | `owner.r12-05` → `done` (três negativas 403 42501 por PostgREST; evidência `attendance-activity-negatives-and-mass-20260918.md`). Fixture `20260918123000_qa_r15_attendance_group_fixture_v1` (função privada, 2 crianças "QA R15 Crianca 3/4" na Turma QA R06 Transferencia) + pgTAP **16/16**, aplicada 2× no espelho. Execução em produção e prova de r12-08 (correct + segunda turma) ficam para o lote 82 (item c). Owner 42/53. |
 
 ## Avisos para a coordenadora
 
@@ -62,4 +64,4 @@ com o texto "aplicada no lote 74" e o gate da v2).
 
 ## Contadores
 
-`node docs/reviews/validate-trackers.cjs` **PASS** — FE 199/199, BE 186/186, E2E 186/186; Owner **41/53** (r12-04, r12-06 `done`).
+`node docs/reviews/validate-trackers.cjs` **PASS** — FE 199/199, BE 186/186, E2E 186/186; Owner **42/53** (r12-04, r12-05, r12-06 `done`).
