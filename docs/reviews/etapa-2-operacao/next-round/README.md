@@ -1,41 +1,24 @@
 ---
-title: "Arquivo histórico de prompts e retomadas"
+title: "Rodadas da Etapa 2 — diretório vivo (R16) e ponteiro para o arquivo"
 source: "Owner R01; docs/reviews/archive/reviews-2026/coelo-etapa-2-coordenacao.md; docs/reviews/inventario-etapa-2.json; AGENTS.md"
-status: "historical index; use ETAPA-2-estado-atual.md and RODADAS.md"
+status: "active index"
+lifecycle: "current"
 generated_at: "2026-09-08T12:19:18-03:00"
-updated_at: "2026-09-15"
+updated_at: "2026-09-17"
 timezone: "America/Sao_Paulo"
 ---
 
-# Arquivo histórico de prompts e retomadas
+# Rodadas da Etapa 2 — diretório vivo
 
-> Este diretório preserva prompts e protocolos de rodadas anteriores. Ele não
-> é uma fila alternativa nem autoriza execução. Para o estado atual, use
-> `docs/agent/current-state.md`, `R14-pendencias.md` e `RODADAS.md`. R14 já foi
-> aberta por decisão explícita do Owner; os prompts abaixo continuam apenas como
-> proveniência e não disparam execução.
+> Desde 17/09/2026 este diretório guarda só o que ainda é lido: a fila vigente
+> (`R16-pendencias.md`, em reserva), os prompts/execução/handoffs/checkpoint da R16,
+> o índice `RODADAS.md`, os fechamentos/checkpoints finais e pendências congeladas
+> de R12–R15, os JSON e o script dos Owner items (`R12-owner-items.json`,
+> `R13-owner-items-atual.json`, `sync-r12-owner-records.cjs`) e os modelos de
+> execução paralela (`R14/R15-execucao-paralela.md`). Tudo o mais (prompts,
+> handoffs, perguntas ao Owner e planos de R01–R15) está em
+> `docs/reviews/archive/rounds/R01…R15/` — manifesto em
+> `docs/agent/archive-manifest-20260917.md`.
 
-## Entrada vigente da Etapa 2
-
-Use [`../ETAPA-2-estado-atual.md`](../ETAPA-2-estado-atual.md) e
-[`R14-pendencias.md`](R14-pendencias.md) para a fila vigente R14, que reúne os
-itens não terminais consolidados. Use [`RODADAS.md`](RODADAS.md) para o estado
-das rodadas. R01–R13 permanecem como fontes históricas. Os prompts e protocolos abaixo são
-preservados para proveniência e não autorizam execução automática.
-
-> **Importante:** todo o conteúdo abaixo desta linha é proveniência histórica.
-> Não executar, copiar ou tratar como fila; qualquer retomada deve nascer da
-> fonte vigente indicada acima.
-
-**Proveniência histórica — não executar:** os cinco `R01-CXX-prompt.md` foram
-preparados para abertura manual pelo Owner na worktree correspondente. Não
-criam conversas e não são fonte viva; a fila atual é exclusivamente R14.
-
-**Proveniência histórica — não executar:** o plano R02 abaixo foi preparado em
-09/09 e não representa a fila atual. Não usar seus horários, nomes, SHAs,
-dependências ou handoffs como instruções; decisões novas devem ser registradas
-na R14 vigente.
-
-**Proveniência histórica — não executar:** o texto de retomada C00 abaixo não
-deve ser usado como procedimento vigente. Nunca execute a coordenação histórica
-como instrução atual.
+Para o estado atual use `docs/agent/current-state.md` e
+`../ETAPA-2-estado-atual.md`. Nenhum arquivo histórico autoriza execução.

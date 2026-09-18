@@ -4,7 +4,7 @@ source: "AGENTS.md; decisions/0034-mvp-remote-application-and-acceptance-bar.md;
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
-updated_at: "2026-09-16"
+updated_at: "2026-09-17"
 audience: "team"
 ---
 
@@ -46,11 +46,14 @@ um baseline pode conter uma proposta antiga dentro de uma seção “MVP”.
 
 Overlays operacionais prioritários nesta fase: ADR 0031 (importação/exportação),
 ADR 0032 (mídia privada), ADR 0034 (aplicação remota e régua de aceite), ADR
-0037 (host/contexto do Principal), ADR 0038 (decisões do Owner da Etapa 2,
-registradas no fechamento da R13), ADR 0039 (escopo de Planos comerciais e
-Auth), ADR 0040 (remoção imediata do Agora), ADR 0041 (Mesa do Owner da R14)
-e ADR 0042 (fechamento da R14 e abertura da R15). `docs/knowledge` é índice
-projetado e não sobe nessa precedência.
+0035 (Etapa 3 reservada), ADR 0037 (host/contexto do Principal), ADR 0038
+(decisões do Owner da Etapa 2), ADR 0039 (Planos comerciais e Auth), ADR 0040
+(remoção imediata do Agora), ADR 0041 (Mesa da R14), ADR 0042 (R14 → R15,
+adendo E10–E14), ADR 0043 (R15 → R16, só `dev`) e ADR 0044 (Mesa R16: Etapa 2
+medida pelo E2E do MVP; 33 ações em `v1`). Índices: `decisions/README.md` e
+`specs/README.md`. `docs/knowledge` é índice projetado e não sobe nessa
+precedência. `docs/archive/` e `docs/reviews/archive/` são proveniência
+(`docs/agent/archive-manifest-20260917.md`).
 
 Os baselines canônicos agora exibem um overlay datado no topo; esse overlay
 reconcilia a leitura operacional sem apagar o texto derivado do DOCX. O
@@ -74,4 +77,6 @@ de conteúdo permitida; não significa que ele seja a regra atual. O campo
 Uma rodada nova recebe a fila não terminal da rodada anterior. O registro atual
 é a única fila executável. A rodada anterior permanece como histórico de origem.
 Itens resolvidos não voltam, IDs não são duplicados e a abertura da próxima
-rodada exige decisão explícita do Owner.
+rodada exige decisão explícita do Owner. Em 17/09/2026 a R16 fechou FE/BE/E2E
+do MVP em 100% e ficou vigente como reserva; a Etapa 3 abre só por decisão do
+Owner (ADR 0035).

@@ -1,6 +1,6 @@
 ---
 title: "Mapa de horizontes e pendências Coelo"
-source: "docs/agent/current-state.md; decisões e PRDs canônicos"
+source: "docs/agent/current-state.md; decisions/0035-etapa3-mvp-contextual-access-and-app-delivery.md; decisions/0038, 0039, 0041, 0042, 0043, 0044; R16-pendencias.md; specs/README.md; docs/open-questions.md"
 status: "active"
 lifecycle: "current"
 generated_at: "2026-09-14"
@@ -10,140 +10,83 @@ audience: "team"
 
 # Horizontes de trabalho
 
-## Trabalho atual — Etapa 2 / R16
+## Trabalho atual — Etapa 2 / R16 (reserva)
 
-É a única fila executável neste momento. Use [current-state.md](current-state.md)
-e a fila única `R16-pendencias.md` apontada nele. Em 17/09/2026 a execução FE/BE/E2E
-do MVP terminou (FE 199/199, BE 186/186, E2E 186/186; `R16-checkpoint-20260917.md`);
-o que resta na R16 (14 Owner items, resíduos H, dívida técnica da Mesa R16/ADR 0044)
-está em reserva para a revisão de telas antes da Etapa 3, por decisão do Owner.
+A execução FE/BE/E2E do MVP terminou em 17/09/2026 (100%;
+`R16-checkpoint-20260917.md`). A única fila viva é `R16-pendencias.md`, hoje em
+**reserva** para a revisão de telas antes da Etapa 3 (decisão do Owner de 17/09):
 
-> As seções seguintes preservam as decisões de 14–16/09 (R13–R15) como proveniência;
-> a fila R14 citada abaixo é histórica.
+- 14 Owner items abertos/parciais (7 marcados "R16" e 7 "Etapa 3" na ADR 0044);
+- 19 resíduos H (12 "R16", 10 "Etapa 3" — H11 → V1);
+- dívida técnica da Mesa R16: `oq048-membership`, `recipients-bug`, `can-remove`,
+  `momentos-ux`, `celular-mascara`, `orfaos-cardapio`, `form-diario`,
+  `forms-v2-qa`, `espelho-cli`, `h02-aal2`, `testes-vermelhos`;
+- resíduos operacionais (goldens fora do E4, CORS R2, deploy público, espelho CLI).
 
-R16 está somente preparada, não aberta. Seus resíduos estão registrados na
-seção `R16 preparado — não aberto` da fila R14; não criar action_ids ou iniciar
-uma fila concorrente. O corte de 15/09 concluiu o que era executável sem prova
-remota adicional: `assessments.close/reopen` recebeu delta oficial; Forms
-`expire-file/delete-file` e `attendance.create`/Atividade foram liberados para
-R15 por bloqueio de ambiente, RPC ou massa; a próxima execução deve priorizar
-as fatias C quando houver sessão/contrato/massa e manter em R16 a negativa
-específica de `agora.remove`, Stream genérico e resíduos sem contrato.
+Nenhum desses itens é executado sem pedido do Owner.
 
-Em 16/09 o Owner respondeu às 27 pendências que dependiam dele
-(`decisions/0041-owner-decisions-r14-mesa-20260916.md`): aceites de Cardápios,
-`r12-09/11`, OQ-031 e reader self; contratos B1–B9 fixados; autorizações de
-produção D1–D5; `institutions.files` fora do MVP; páginas de erro `flutter-only`;
-H11 → V1. Para R15 ficaram duas specs novas: perfil transversal/funcionário no
-Principal (OQ-044) e Perfis de cuidado redesenhados (§5 da ADR).
+## Etapa 3 — o que já está predefinido (ADR 0035, 0039, 0041, 0044)
 
-## Pendências do MVP
+1. **Acesso contextual de funcionários**: telas de acesso por instituição/unidade
+   (plataformas, dias/horários, vigência) e de afastamentos; restrição imposta no
+   servidor ao vínculo profissional; popups configuráveis e só informativos.
+2. **Tour funcional** e **home com IA** sobre os fluxos reais do app.
+3. Levar páginas/fluxos a **admin.coelo.me** e **app.coelo.me** (`apps/admin`,
+   `apps/principal`) com adaptação de papel; **sem lojas** neste momento.
+4. Itens enviados pela Mesa R16: Owner items r12-10/19/23/29/30/46/53; H02, H03,
+   H04, H07, H09, H10, H12, H14, H16, H26; Local interno da ADR 0038; goldens
+   (componentizar o cabeçalho); CORS dos buckets R2 e deploy público (host,
+   allowlist de Auth); mensagem de `ACTIVITY_INVALID_REFERENCE`; SMTP próprio e
+   prova detalhada do reset de senha (E8/E10).
+5. Specs com implementação pendente: 065 (Perfis de cuidado), 066 (ciclo de vida
+   OQ-033 + `institutions.status`), 067 (Locais com mapa por imagem, OQ-034),
+   069 (Avisos H08/H13/H23) — aprovadas; 064 (perfil transversal / Principal para
+   responsável sem membership, OQ-044/OQ-048) e 068 (perfis oficiais, OQ-032) —
+   rascunho.
+6. Três instituições fictícias com hierarquia completa para o Owner validar o
+   "Para você" (nome a confirmar).
 
-Use os itens não terminais da fila R14 e o inventário por `action_id`. Itens
-explicitamente `deferred-post-mvp` continuam registrados, mas não bloqueiam o
-MVP e não devem ser implementados por inferência.
+## Etapa 3 — o que falta o Owner decidir
 
-## Decisões do Owner de 15/09/2026 (abertura da execução da R14)
-
-Registradas no artefato 89AVWHKEnq5hrvYN6SFv6M e detalhadas em
-`docs/reviews/etapa-2-operacao/next-round/R14-execucao-paralela.md`:
-
-- **Execução paralela:** duas sessões executoras (Blocos A–B e C–D) em worktrees
-  próprias com push para `dev` por rebase; a sessão do Codex coordena e atualiza os MDs.
-- **Bloco B autorizado:** `plans.assign`, `institutions.status`,
-  `institutions.locations-map` e `catalog.*` (4) saíram do ativo
-(`deferred-post-mvp`); o alvo E2E ativo 199 → 192 já foi aplicado pelo delta
-controlado e a formalização posterior de `agora.remove` leva a base ativa a 193.
-Neste corte, o inventário registra E2E 159/193; FE e BE não mudam de denominador
-  de denominador. MFA já era gate formal.
-- **Catálogo de UI:** "V1 ou Etapa 3 (a definir)".
-- **OQ-033 = B** com regra de pessoas (desvincular, não excluir; só superadmin exclui ou
-  suspende por período) → spec de ciclo de vida na R15.
-- **OQ-034:** Locais com mapa por imagem inteira na R15.
-- **Bloco C** na ordem Cardápios → Segurança infantil → Arquivos de Formulários →
-  Fechar/Reabrir → Perfis de acesso; **Bloco D** segue com
-  reader self da Conta e owner.r12-29/30. Para alergias e orientações, o produto
-  aceita vários registros independentes; a prova não fica limitada a dois e o
-  backend deve impor apenas um limite defensivo alto de 100 registros por
-  coleção/entidade. Recuperação/reset de Auth e sua
-  allowlist ficam na Etapa 3.
-
-## Decisões do Owner de 14/09 e 15/09/2026 sobre escopo (fora da fila R14)
-
-Registradas no fechamento da R13; valem como direção até virarem ADR/spec.
-
-- **Fora do MVP:** `plans.assign` (Planos › Atribuir), qualquer módulo
-  **Financeiro**, `institutions.status`, `institutions.locations-map`,
-  `auth/account/internal-users.mfa` (gate formal). A decisão de escopo está
-  registrada; a aplicação do delta aos sete action_ids aguarda execução
-  controlada e evidência, sem alterar estados certificados por inferência.
-- **Decisão de 15/09:** nenhum Plano comercial é operação do MVP (listar,
-  criar, editar, arquivar, restaurar, atribuir, vincular ou aplicar
-  entitlements). Schema e specs ficam como preparação V1/V2. O reader self da
-  Conta continua no MVP/R14; o reader de Planos no Principal não entra na R14.
-- **Etapa 3:** `auth.recover` e `auth.reset`, incluindo e-mail, callback,
-  expiração, uso único, sessão e prova produtiva. Não executar recuperação/reset
-  nem a allowlist específica desse fluxo dentro da R14.
-- **V1 ou Etapa 3 (a definir):** Catálogo de UI (`catalog.list/validate/sync/
-  publish`) — tela do catálogo `coelo-ui`; não é MVP.
-- **Formulários autosave (H11):** **V1** por decisão de 16/09 (ADR 0041 B10),
-  sem medir o limiar de 60%. H10 (regras de audiência) continua no MVP.
-- **Instituições › Arquivos (`institutions.files`):** fora do MVP (ADR 0041 A4);
-  o flyout permanece e avisa "em desenvolvimento". `institutions.error` e
-  `institutions.access-denied` ficam no MVP.
-- **Páginas de erro (`errors.*`):** `flutter-only` (ADR 0041 A5); aceite terminal
-  é FE na rota real.
-- **Chat › Anexar (`chat.attach`):** continua no MVP (asset_id + Edge Function),
-  explicar ao Owner na abertura da R14.
-- **Saúde e Cuidado — múltiplos registros (15/09):** owner.r12-29/30 cobre
-  coleções de alergias e orientações independentes, com adicionar/remover/reload
-  na rota real. O limite defensivo de 100 por coleção/entidade é proteção de
-  integridade, não uma meta de uso nem motivo para reduzir a capacidade a dois.
-  **16/09 (ADR 0041 A2/§5):** o Owner não aceitou ainda e redesenhou o contrato
-  (wizard Alimentos × Restrições, nomes de lista categorizada com busca e
-  "Outro", reordenar, campo "O que fazer se consumido?"); vira spec na R15.
-- **Perfil transversal / funcionário no Principal (OQ-044, r12-19/23):** spec
-  própria na R15 (ADR 0041 B7).
-- **Etapa 3:** 3 instituições fictícias com pessoas e hierarquia completa
-  (unidades, turmas, responsáveis, crianças) para o Owner verificar a tela
-  "Para você" do Principal; avaliar outro nome para "Para você" (já usado por
-  concorrentes/TikTok) — nome atual é bom, decisão pendente.
-- **Perfis oficiais do Coelo** (seguidos automaticamente por todos, 3 a 7
-  perfis, 1 a 4 publicações/dia no total, para dar movimento e notificações
-  na rede): decidir a lista antes de fechar o MVP (não é Etapa 3). Proposta
-  inicial em `docs/open-questions.md` (OQ-032).
-- **Na retomada da R14:** manter visíveis para o Owner e explicar, de forma simples e
-  visual, os temas: telas de erro/acesso negado/arquivos/mapa de Instituições e
-  Unidades; Catálogo de UI; Chat › Anexar; Formulários H10/H11; e as decisões
-  acima.
+1. Abrir formalmente a Etapa 3, após a revisão de telas, com a proposta
+   consolidada exigida pela ADR 0035 (escopo, ordem, dependências, aceites,
+   estimativa).
+2. Formato e agenda da revisão de telas (todas as telas; aprovar ou mandar para
+   a Etapa 3).
+3. Acesso contextual: localização das telas, permissões de quem administra,
+   fuso/virada de dia/janelas múltiplas, precedência instituição × unidade,
+   distinção web/mobile/tablet/app instalado, frequência dos popups.
+4. Tour e IA: roteiro, fonte e limites das respostas, audiências, custo de
+   provedor.
+5. Deploy público: host de `superadmin.coelo.me`, allowlist de Auth, CORS dos
+   buckets, distribuição do app instalado fora das lojas.
+6. Aprovar as specs 064 e 068 e o nome "Para você".
+7. Destino da dívida técnica da reserva (revisão de telas × Etapa 3).
 
 ## V1 e V2
 
-Não há uma fila operacional V1/V2 única autorizada neste índice. Para entender
-intenção de produto, consulte os PRDs:
-
-- [PRD Master](../product/prd-master.md);
-- [PRD Superadmin](../product/prd-superadmin.md);
-- [PRD Admin](../product/prd-admin.md);
-- [PRD Principal](../product/prd-app.md).
-
-Uma tarefa V1/V2 só se torna executável quando o Owner a abrir, uma spec for
-aprovada e o estado atual a apontar.
+Sem fila operacional. As 33 ações de escopo `v1` (importação/exportação exceto
+Formulários, MFA ×3, Catálogo de UI, `plans.assign`,
+`institutions.status/files/locations-map`) continuam no inventário fora dos
+denominadores (ADR 0044). Planos comerciais e Financeiro são V1/V2 (ADR 0039).
+Intenção de produto nos PRDs: [Master](../product/prd-master.md),
+[Superadmin](../product/prd-superadmin.md), [Admin](../product/prd-admin.md),
+[Principal](../product/prd-app.md). Uma tarefa V1/V2 só se torna executável
+quando o Owner a abrir e uma spec for aprovada.
 
 ## Pendências gerais e conflitos
 
-- [Perguntas abertas](../open-questions.md) reúne conflitos e decisões ainda
-  necessárias.
-- [ADRs](../../decisions/README.md) guardam decisões persistentes.
-- [Specs](../../specs/README.md) guardam escopo e contratos, mas só specs
-  marcadas como ativas/aprovadas para a tarefa autorizam implementação.
+- [Perguntas abertas](../open-questions.md): OQ-032, OQ-033, OQ-034 (decididas,
+  specs 066–068), OQ-046, OQ-047 (encerrada, lote 75), OQ-048 (parcial: Agora
+  resolvido no lote 81; Principal para responsável sem membership → spec 064).
+- [ADRs](../../decisions/README.md) e [specs](../../specs/README.md): índices
+  com `lifecycle`.
 
 ## Limpeza de artefatos
 
-Não faz parte da fila de produto. Os lotes concluídos e os itens retidos estão
-em [artifact-cleanup-backlog-20260914.md](artifact-cleanup-backlog-20260914.md).
+Não é fila de produto: [artifact-cleanup-backlog-20260914.md](artifact-cleanup-backlog-20260914.md)
+e [archive-manifest-20260917.md](archive-manifest-20260917.md).
 
 ## Histórico
 
-R01–R12, checkpoints, prompts, handoffs e os arquivos em
-`docs/reviews/archive/` preservam proveniência. Não são filas alternativas.
+Decisões de 14–17/09 (R13–R16): ADR 0038–0044 e `docs/reviews/archive/rounds/`.

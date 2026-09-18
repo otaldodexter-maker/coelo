@@ -12,29 +12,21 @@ environment: "checkout consolidado local; sem deploy ou mutação remota"
 
 # Etapa 2 — estado atual
 
-Este é o ponto de entrada da Etapa 2 para a fila de pendências. A fila
-operacional vigente é a **R15** (aberta em 16/09/2026, ADR 0042): tudo o que
-ficou não terminal de R01 a R14 foi consolidado nela — 32 Owner items
-abertos/parciais (21 `done` não retornam), resíduos H02–H28 de R01–R07, itens
-da ADR 0038, 27 ações não terminais do inventário e os resíduos operacionais
-da varredura. R01–R14 permanecem como fontes históricas; seus itens pendentes
-não devem continuar apontando para uma rodada anterior como destino executável.
+Ponto de entrada da Etapa 2. **Execução FE/BE/E2E do MVP concluída em 17/09/2026:
+FE 199/199, BE 186/186, E2E 186/186** (`next-round/R16-checkpoint-20260917.md`).
+A fila operacional vigente é a **R16** (ADR 0043), hoje em **reserva** para a
+revisão de telas antes da Etapa 3: 14 Owner items abertos/parciais (39 `done`
+não retornam), resíduos H, itens da ADR 0038, dívida técnica da Mesa R16 (ADR
+0044) e resíduos operacionais — tudo em [`next-round/R16-pendencias.md`](next-round/R16-pendencias.md).
+R01–R15 são históricas (`next-round/RODADAS.md`; arquivos em
+`../archive/rounds/`).
 
-Isso não desfaz código, evidência ou estado do inventário. O inventário mantém
-o último estado canônico por `action_id`; a decisão do Owner de 15/09 acrescenta
-o novo `agora.remove` como ação formal pendente. A separação abaixo distingue a fila R15 das fontes
-históricas e das 29 ações formalmente adiadas para pós-MVP.
-
-Detalhamento operacional: [`R15-pendencias.md`](next-round/R15-pendencias.md) e
-índice das rodadas [`RODADAS.md`](next-round/RODADAS.md). O checkpoint final da
-R13 permanece apenas como proveniência do corte que abriu a R14.
-
-O relatório de entrega corrente enumera a distribuição de estados por camada a
-partir do inventário; não replique aqui uma união manual de ações não terminais.
-As 29 ações `deferred-post-mvp` continuam explicitamente rastreadas, mas ficam
-fora do trabalho corrente do MVP.
-
-> Fila viva desde 17/09/2026: `next-round/R16-pendencias.md` (R12–R15 congeladas).
+O inventário (`../inventario-etapa-2.json`) mantém o estado canônico por
+`action_id`; as 33 ações de escopo `v1` (ADR 0044) ficam fora dos denominadores
+FE/BE e as 13 `flutter-only` são certificadas por FE na rota real. O relatório de
+entrega (`../entrega-atual.json`) é regenerado por `generate-delivery-report.py`
+e não é uma segunda fila. As seções abaixo são snapshots datados; **o primeiro é
+o canônico**, os demais são históricos.
 
 ## Snapshot de 17/09 ~21:20 BRT — execução da R16 concluída: MVP 100% FE/BE/E2E
 
