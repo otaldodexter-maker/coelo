@@ -1,9 +1,10 @@
 {
-  "who": "qa-e3-educadora (conta de pessoa real, realm people-based)",
+  "who": "qa-e3-educadora (conta de pessoa real, realm people-based) — fixture v2: Escola R04 Estrutura revogada, segundo vinculo na QA R04 Instituicao Sintetica",
   "list_my_principal_contexts": [
     {
       "institution_name": "QA R04 Cuidado (sintetico)",
       "role_code": "teacher",
+      "scope_kind": "unit",
       "access_blocked": true,
       "access_reason": "schedule",
       "access_popup": {
@@ -16,48 +17,36 @@
           }
         ],
         "surfaces": [
-          "installed_app",
+          "web",
           "mobile_web",
           "tablet_web",
-          "web"
+          "installed_app"
         ],
         "timezone": "America/Sao_Paulo",
         "valid_from": null,
         "valid_until": null
       }
+    },
+    {
+      "institution_name": "QA R04 Instituicao Sintetica",
+      "role_code": "coordinator",
+      "scope_kind": "institution",
+      "access_blocked": false,
+      "access_reason": null,
+      "access_popup": null
     }
   ],
-  "staff_access_check_v1(own membership)": {
-    "code": "STAFF_ACCESS_DENIED",
-    "popup": {
-      "kind": "schedule",
-      "windows": [
-        {
-          "end": "18:00",
-          "start": "08:00",
-          "weekday": 7
-        }
-      ],
-      "surfaces": [
-        "installed_app",
-        "mobile_web",
-        "tablet_web",
-        "web"
-      ],
-      "timezone": "America/Sao_Paulo",
-      "valid_from": null,
-      "valid_until": null
-    },
-    "reason": "schedule",
-    "allowed": false,
-    "surface": "web",
-    "membership_id": "c25a3367-05d0-456d-9c4f-80eadd983ebb"
+  "list_visible_happens_posts(QA R04 Cuidado)": {
+    "http": 403,
+    "body": {
+      "code": "PT403",
+      "details": "{\"code\": \"STAFF_ACCESS_DENIED\", \"popup\": {\"kind\": \"schedule\", \"windows\": [{\"end\": \"18:00\", \"start\": \"08:00\", \"weekday\": 7}], \"surfaces\": [\"web\", \"mobile_web\", \"tablet_web\", \"installed_app\"], \"timezone\": \"America/Sao_Paulo\", \"valid_from\": null, \"valid_until\": null}, \"reason\": \"schedule\", \"membership_id\": \"c25a3367-05d0-456d-9c4f-80eadd983ebb\", \"institution_id\": \"d0c40000-0000-4000-8000-000000000001\"}",
+      "hint": null,
+      "message": "STAFF_ACCESS_DENIED"
+    }
   },
-  "list_visible_happens_posts(QA R04 Cuidado) -> http": 403,
-  "list_visible_happens_posts(QA R04 Cuidado) -> body": {
-    "code": "PT403",
-    "details": "{\"code\": \"STAFF_ACCESS_DENIED\", \"popup\": {\"kind\": \"schedule\", \"windows\": [{\"end\": \"18:00\", \"start\": \"08:00\", \"weekday\": 7}], \"surfaces\": [\"installed_app\", \"mobile_web\", \"tablet_web\", \"web\"], \"timezone\": \"America/Sao_Paulo\", \"valid_from\": null, \"valid_until\": null}, \"reason\": \"schedule\", \"membership_id\": \"c25a3367-05d0-456d-9c4f-80eadd983ebb\", \"institution_id\": \"d0c40000-0000-4000-8000-000000000001\"}",
-    "hint": null,
-    "message": "STAFF_ACCESS_DENIED"
+  "list_visible_happens_posts(QA R04 Instituicao Sintetica)": {
+    "http": 200,
+    "rows": 3
   }
 }

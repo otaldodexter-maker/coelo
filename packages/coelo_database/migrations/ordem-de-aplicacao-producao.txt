@@ -537,3 +537,7 @@
 # SAI_HANDLE_TAKEN, availability_v1('activity','stem.@escopo') confere o @ completo, set_v1 confere o @ completo; alias capturado em todo
 # UPDATE (antes se perdia na recomposição); backfill de 6 atividades. pgTAP activity_canonical_handle_v2_test 26/26; ledger 20260920030000 reparado.
 20260920030000_activity_canonical_handle_v2.sql
+# Fixture QA (Sessão ACESSO-PERFIL-FECHAMENTO, 20/09/2026, fora da numeração de lotes): seed_qa_e3_educadora_fixture_v1 com o
+# segundo vínculo da educadora real na QA R04 Instituicao Sintetica (coordinator, escopo de instituição) em vez da Escola R04
+# Estrutura (draft); a função revoga (inactive + revoked_at) vínculos da pessoa fora das duas instituições. Reaplicada no próprio arquivo.
+20260920040000_qa_e3_educadora_fixture_v2.sql
