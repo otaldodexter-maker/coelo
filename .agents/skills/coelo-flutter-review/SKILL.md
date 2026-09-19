@@ -52,3 +52,5 @@ Versão anterior em `docs/archive/skills-20260918/`.
 - @ (Decisão 16): campo "@ da unidade/turma (opcional)"; vazio, o servidor gera
   o padrão e a nota mostra a prévia (`structure_handle_preview.dart`); na
   criação o valor viaja como `handle` no payload; na edição só "Alterar @".
+- Negação com motivo (lote 91): `PT403`/`STAFF_ACCESS_DENIED` é reconhecido uma vez só, em `StaffAccessDeniedHttpClient` (o `httpClient` do `Supabase.initialize`) e publicado em `staffAccessDenied`; `StaffAccessDeniedListener` mostra o popup (raiz do app e rota do Principal). Repositório não trata esse código.
+- Campos da regra de acesso (superfícies, janelas, vigência, popup) vivem em `features/staff_access/presentation/staff_access_rule_fields.dart` (`StaffAccessRuleEditor` e blocos) e são reutilizados pelo passo "Utilização do app" do perfil; não duplique.
