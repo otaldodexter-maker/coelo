@@ -649,20 +649,20 @@ Future<SupabaseClient> _initializeSupabase({
   required String publishableKey,
   required LocalStorage localStorage,
 }) async {
-  // ADR 0035 (decisao 4): o cliente declara a superficie; o servidor aplica a
-  // regra de acesso de funcionarios a superficie declarada (fallback web).
-  final view = WidgetsBinding.instance.platformDispatcher.views.firstOrNull;
-  final logicalWidth = view == null ? 1440.0 : view.physicalSize.width / view.devicePixelRatio;
   await Supabase.initialize(
     url: url,
     publishableKey: publishableKey,
     authOptions: FlutterAuthClientOptions(localStorage: localStorage),
-    headers: {
-      'x-coelo-surface': detectStaffAccessSurface(
-        logicalWidth: logicalWidth,
-        userAgent: staffAccessUserAgent,
-      ),
-    },
+  );
+  // ADR 0035 (decisao 4): o cliente declara a superficie; o servidor aplica a
+  // regra de acesso de funcionarios a superficie declarada (fallback web). So
+  // no PostgREST (RPC/RLS): as Edge Functions tem Allow-Headers fixo e um
+  // header global derrubaria o preflight de todas elas.
+  final view = WidgetsBinding.instance.platformDispatcher.views.firstOrNull;
+  final logicalWidth = view == null ? 1440.0 : view.physicalSize.width / view.devicePixelRatio;
+  Supabase.instance.client.rest.headers['x-coelo-surface'] = detectStaffAccessSurface(
+    logicalWidth: logicalWidth,
+    userAgent: staffAccessUserAgent,
   );
   return Supabase.instance.client;
 }
