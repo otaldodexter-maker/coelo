@@ -66,19 +66,7 @@ class AccountAvatar {
         : 'Use uma ou duas letras.';
   }
 
-  static Color foregroundFor(Color background) {
-    final whiteContrast = _contrast(background, Colors.white);
-    final blackContrast = _contrast(background, Colors.black);
-    return whiteContrast >= blackContrast ? Colors.white : Colors.black;
-  }
-
-  static double _contrast(Color first, Color second) {
-    final light = first.computeLuminance();
-    final dark = second.computeLuminance();
-    final max = light > dark ? light : dark;
-    final min = light > dark ? dark : light;
-    return (max + 0.05) / (min + 0.05);
-  }
+  static Color foregroundFor(Color background) => coeloOnColor(background);
 
   AccountAvatar copyWith({
     AccountAvatarMode? mode,

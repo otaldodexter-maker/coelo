@@ -88,9 +88,7 @@ class ShellProfileSummary extends StatelessWidget {
                           backgroundColor: profile?.avatarBackgroundColor,
                           foregroundColor: profile == null
                               ? null
-                              : (profile.avatarBackgroundColor.computeLuminance() > 0.179
-                                    ? Colors.black
-                                    : Colors.white),
+                              : coeloOnColor(profile.avatarBackgroundColor),
                           backgroundImage: profile?.avatarImage,
                           child: profile?.avatarImage == null
                               ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')

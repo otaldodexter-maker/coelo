@@ -141,7 +141,10 @@ final class _SuperadminChatEmojiPickerState extends State<SuperadminChatEmojiPic
                                 padding: EdgeInsets.zero,
                                 foregroundColor: colors.onSurface,
                               ),
-                              child: Text(emoji.value, style: const TextStyle(fontSize: 24)),
+                              child: Text(
+                                emoji.value,
+                                style: Theme.of(context).textTheme.headlineSmall,
+                              ),
                             ),
                           );
                         },

@@ -73,8 +73,19 @@ void main() {
       expect(dark, same(CoeloOnMediaColors.standard));
       expect(light?.foreground, const Color(0xFFFFFFFF));
       expect(light?.backdrop, const Color(0xFF000000));
-      expect(light?.copyWith(foreground: const Color(0xFF000000)).foreground, const Color(0xFF000000));
+      expect(
+        light?.copyWith(foreground: const Color(0xFF000000)).foreground,
+        const Color(0xFF000000),
+      );
       expect(light?.lerp(dark, 0.5), isA<CoeloOnMediaColors>());
+    });
+
+    test('coeloOnColor picks the higher-contrast text over a free color', () {
+      expect(coeloOnColor(const Color(0xFFFFFFFF)), Colors.black);
+      expect(coeloOnColor(const Color(0xFF000000)), Colors.white);
+      expect(coeloOnColor(CoeloPalette.orange500), Colors.white);
+      expect(coeloOnColor(const Color(0xFFFFEB3B)), Colors.black);
+      expect(coeloContrastRatio(Colors.white, Colors.black), closeTo(21, 0.01));
     });
 
     test('history semantic colors meet WCAG AA contrast', () {

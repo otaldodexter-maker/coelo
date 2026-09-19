@@ -1,6 +1,7 @@
 library;
 
 export 'src/coelo_breakpoints.dart';
+export 'src/coelo_on_color.dart';
 export 'src/coelo_on_media_colors.dart';
 export 'src/coelo_palette.dart';
 export 'src/coelo_scales.dart';

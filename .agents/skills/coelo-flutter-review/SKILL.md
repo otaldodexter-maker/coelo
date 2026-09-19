@@ -38,7 +38,10 @@ Versão anterior em `docs/archive/skills-20260918/`.
   `context.coeloActionColors`, `context.coeloVisualColors`,
   `context.coeloOnMediaColors` (texto/ícone/véu SOBRE mídia: `foreground`,
   `foregroundMuted`, `foregroundSubtle`, `scrim*`, `backdrop`; iguais no claro
-  e no escuro — nunca `Colors.white/black` sobre foto) (coelo_tokens); nada de
+  e no escuro — nunca `Colors.white/black` sobre foto) (coelo_tokens); texto
+  sobre cor livre do usuário (avatar, marca): `coeloOnColor(cor)`; o hue wheel
+  do seletor de cor (`superadmin_advanced_color_picker_dialog`) é o único lugar
+  com branco/preto literais (são os extremos do gradiente HSV, fora do sweep); nada de
   `Theme.of(context).extension<…>()!` nem `Colors.black54` em `barrierColor`.
   Seção de formulário: `SuperadminFormSection`/`SuperadminFormSectionHeader`
   (`shared/presentation/widgets`). CPF: `CoeloCpfInputFormatter`; telefone:
