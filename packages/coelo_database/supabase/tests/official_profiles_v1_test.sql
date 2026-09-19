@@ -1,6 +1,6 @@
 -- Prova pgTAP das migrations 20260920002500/003000 (spec 068, perfis oficiais).
 -- Fixture com rollback total (prefixo 9f1): duas pessoas com login (R e S), um oficial extra
--- não obrigatório (Coelo Educa) além do `coelo` obrigatório já carregado.
+-- não obrigatório (Coelo Prova 9f1; desde o lote 104 o catálogo tem 5 ativos) além do `coelo` obrigatório já carregado.
 begin;
 create extension if not exists pgtap with schema extensions;
 select plan(18);
@@ -28,12 +28,12 @@ insert into public.people(id,person_type,first_name,last_name,display_name,statu
 insert into public.person_auth_links(person_id,auth_user_id,status) values
  (pg_temp.f(201),pg_temp.f(101),'active'),(pg_temp.f(202),pg_temp.f(102),'active');
 insert into public.official_profiles(id,person_id,handle,display_name,mandatory,sort_order)
- values (pg_temp.f(301),pg_temp.f(203),'coelo.educa','Coelo Educa',false,1);
+ values (pg_temp.f(301),pg_temp.f(203),'coelo.prova9f1','Coelo Prova 9f1',false,1);
 
 -- backfill
 -- O gatilho global já segue `coelo` (origin manual) ao criar o login; o backfill cobre o resto.
 select ok(app_private.official_profiles_backfill_follows_v1() >= 2,'backfill creates the missing follows');
-select is((select count(*) from public.follow_links f join public.official_profiles o on o.person_id=f.target_id where f.follower_person_id=pg_temp.f(201) and f.target_kind='person' and f.status='active'),2::bigint,'R follows both officials');
+select is((select count(*) from public.follow_links f join public.official_profiles o on o.person_id=f.target_id where f.follower_person_id=pg_temp.f(201) and f.target_kind='person' and f.status='active'),(select count(*) from public.official_profiles where status='active'),'R follows every active official');
 select is(app_private.official_profiles_backfill_follows_v1(),0,'backfill is idempotent');
 
 -- R não consegue deixar de seguir o Coelo; consegue deixar o Educa; backfill não recria
@@ -50,7 +50,7 @@ select is(app_private.official_profiles_backfill_follows_v1(),0,'backfill respec
 insert into auth.users(id) values (pg_temp.f(103));
 insert into public.people(id,person_type,first_name,last_name,display_name,status) values (pg_temp.f(204),'adult','9f1','Novo','9f1 Novo','active');
 insert into public.person_auth_links(person_id,auth_user_id,status) values (pg_temp.f(204),pg_temp.f(103),'active');
-select is((select count(*) from public.follow_links f join public.official_profiles o on o.person_id=f.target_id where f.follower_person_id=pg_temp.f(204) and f.status='active') + app_private.official_profiles_backfill_follows_v1(),2::bigint,'new account ends up following every active official');
+select is((select count(*) from public.follow_links f join public.official_profiles o on o.person_id=f.target_id where f.follower_person_id=pg_temp.f(204) and f.status='active') + app_private.official_profiles_backfill_follows_v1(),(select count(*) from public.official_profiles where status='active'),'new account ends up following every active official');
 
 -- publicação atribuída ao perfil oficial: json expõe author
 insert into public.platform_notices(notice_type,status,title,body_text,starts_at,official_profile_id,priority_code,audience_json,audience_label)

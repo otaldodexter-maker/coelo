@@ -565,3 +565,7 @@
 # refeitos); list_visible_happens_feed e get_visible_circular projetam author_person_id; authorize_moments_media_read e
 # authorize_circular_media_read aceitam o responsável. pgTAP media_feeds_guardian_reader_author_v1_test 26/26; ledger 20260920071000 reparado.
 20260920071000_media_feeds_guardian_reader_author_v1.sql
+# Lote 104 (Sessão ETAPA-3, 20/09/2026): carga final dos perfis oficiais (coelo, coelo.alimentacao, coelo.educa, coelo.cuidado, coelo.brincar;
+# pessoas técnicas c0e10000-…0002..0005, @ reservados) e leitor principal_official_profiles_v1 (catálogo + perfil por handle com as publicações
+# visíveis ao ator). pgTAP official_profiles_catalog_reader_v1_test 14/14; official_profiles_v1_test ajustado 18/18.
+20260920080000_official_profiles_catalog_reader_v1.sql
