@@ -42,6 +42,8 @@ void main() {
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
     await tester.enterText(find.byKey(const Key('platform-user-email')), 'synthetic@example.test');
+    await tester.enterText(find.byKey(const Key('platform-user-mobile')), '11987654321');
+    expect(find.text('+55 (11) 98765-4321'), findsOneWidget);
     await tester.enterText(find.byKey(const Key('platform-user-job-title')), 'Analista');
     await tester.tap(find.text('Continuar'));
     await tester.pumpAndSettle();
@@ -55,6 +57,7 @@ void main() {
     expect(repository.creates, 1);
     expect(repository.lastDraft?.profile.id, profileId);
     expect(repository.lastDraft?.scopeIds, [institutionId]);
+    expect(repository.lastDraft?.identity.mobile, '+5511987654321');
   });
   testWidgets('late creation catalog cannot restore revoked editor capability', (tester) async {
     final repository = _Repository('A');

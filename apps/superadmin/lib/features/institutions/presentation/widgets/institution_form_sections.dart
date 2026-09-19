@@ -1040,7 +1040,7 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     lastName: _lastName.text.trim(),
     displayName: _displayName.text.trim(),
     email: _email.text.trim(),
-    mobilePhone: _mobilePhone.text.trim(),
+    mobilePhone: CoeloBrazilianPhoneInputFormatter.toE164(_mobilePhone.text),
     cpf: _cpf.text.trim(),
   );
 
@@ -1058,7 +1058,9 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     _lastName = TextEditingController(text: person?.lastName ?? '');
     _displayName = TextEditingController(text: person?.displayName ?? '');
     _email = TextEditingController(text: person?.email ?? '');
-    _mobilePhone = TextEditingController(text: person?.mobilePhone ?? '');
+    _mobilePhone = TextEditingController(
+      text: CoeloBrazilianPhoneInputFormatter.format(person?.mobilePhone ?? ''),
+    );
     _cpf = TextEditingController(text: person?.cpf ?? '');
     _emailFocusNode = FocusNode();
     if (widget.focusEmail) {
@@ -1124,6 +1126,7 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
             'Telefone (opcional)',
             'mobile-phone',
             keyboardType: TextInputType.phone,
+            inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
           ),
           _personField(
             _cpf,

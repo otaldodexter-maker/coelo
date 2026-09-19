@@ -1653,6 +1653,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         hintText: 'Com ou sem máscara',
         prefixIcon: Icons.numbers_outlined,
         keyboardType: TextInputType.number,
+        inputFormatters: const [CoeloCpfInputFormatter()],
       ),
       const SizedBox(height: CoeloSpacing.space3),
       CoeloFormTextField(
@@ -1661,6 +1662,7 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
         labelText: 'Celular (opcional)',
         prefixIcon: Icons.phone_outlined,
         keyboardType: TextInputType.phone,
+        inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
       ),
       const SizedBox(height: CoeloSpacing.space3),
       CoeloFormTextField(
@@ -1709,7 +1711,10 @@ final class _ChildSafetyWizardPageState extends State<ChildSafetyWizardPage> {
           unitId: selected.unitId!,
           fullName: name,
           cpf: cpfDigits,
-          mobilePhone: registerPhone.text.trim().isEmpty ? null : registerPhone.text.trim(),
+          mobilePhone: switch (CoeloBrazilianPhoneInputFormatter.toE164(registerPhone.text)) {
+            '' => null,
+            final e164 => e164,
+          },
           email: registerEmail.text.trim().isEmpty ? null : registerEmail.text.trim(),
         ),
       );

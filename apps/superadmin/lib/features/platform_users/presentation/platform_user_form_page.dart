@@ -288,8 +288,10 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
     _birthDateValue = record.identity.birthDate;
     _cpf.text = CoeloCpfInputFormatter.format(record.identity.cpf);
     _email.text = record.email;
-    _mobile.text = record.identity.mobile;
-    _additionalPhone.text = record.identity.additionalPhone;
+    _mobile.text = CoeloBrazilianPhoneInputFormatter.format(record.identity.mobile);
+    _additionalPhone.text = CoeloBrazilianPhoneInputFormatter.format(
+      record.identity.additionalPhone,
+    );
     _jobTitle.text = record.identity.jobTitle;
     _department.text = record.identity.department;
     _internalFunction.text = record.identity.internalFunction;
@@ -402,8 +404,8 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
       birthDate: _birthDateValue,
       cpf: _cpf.text,
       professionalEmail: _email.text,
-      mobile: _mobile.text,
-      additionalPhone: _additionalPhone.text,
+      mobile: CoeloBrazilianPhoneInputFormatter.toE164(_mobile.text),
+      additionalPhone: CoeloBrazilianPhoneInputFormatter.toE164(_additionalPhone.text),
       jobTitle: _jobTitle.text,
       department: _department.text,
       internalFunction: _internalFunction.text,
@@ -849,7 +851,14 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
           validator: (value) =>
               value == null || !value.contains('@') ? 'Informe um e-mail válido.' : null,
         ),
-        _field(_mobile, 'Celular', Icons.phone_android_outlined, keyboardType: TextInputType.phone),
+        _field(
+          _mobile,
+          'Celular',
+          Icons.phone_android_outlined,
+          key: const Key('platform-user-mobile'),
+          keyboardType: TextInputType.phone,
+          inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
+        ),
       ]),
       const SizedBox(height: CoeloSpacing.space4),
       Builder(
@@ -881,6 +890,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage>
           'Telefone adicional',
           Icons.phone_outlined,
           keyboardType: TextInputType.phone,
+          inputFormatters: const [CoeloBrazilianPhoneInputFormatter()],
         ),
         _field(
           _jobTitle,
