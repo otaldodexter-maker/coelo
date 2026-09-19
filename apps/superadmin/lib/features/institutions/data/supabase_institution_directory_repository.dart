@@ -8,14 +8,60 @@ import '../domain/institution_directory_item.dart';
 import '../domain/institution_directory_page.dart';
 import '../domain/institution_directory_query.dart';
 import '../domain/institution_directory_repository.dart';
+import '../domain/institution_lifecycle.dart';
 import '../domain/institution_people.dart';
 import '../domain/institution_record.dart';
 
-final class SupabaseInstitutionDirectoryRepository implements InstitutionDirectoryRepository {
+final class SupabaseInstitutionDirectoryRepository
+    implements InstitutionDirectoryRepository, InstitutionLifecycleCommands {
   SupabaseInstitutionDirectoryRepository(this._client);
 
   final SupabaseClient _client;
   _PendingInstitutionRequest? _pendingRequest;
+
+  @override
+  Future<InstitutionLifecycleResult> changeStatus(
+    String institutionId, {
+    required int expectedVersion,
+    required InstitutionStatus status,
+    required String requestId,
+    String? reason,
+  }) => _lifecycle('superadmin_institution_change_status_v1', {
+    'p_request_id': requestId,
+    'p_institution_id': institutionId,
+    'p_expected_version': expectedVersion,
+    'p_status': status.databaseValue,
+    'p_reason': reason,
+  });
+
+  @override
+  Future<InstitutionLifecycleResult> delete(
+    String institutionId, {
+    required int expectedVersion,
+    required String requestId,
+    required String reason,
+  }) => _lifecycle('superadmin_institution_delete_v1', {
+    'p_request_id': requestId,
+    'p_institution_id': institutionId,
+    'p_expected_version': expectedVersion,
+    'p_reason': reason,
+  });
+
+  Future<InstitutionLifecycleResult> _lifecycle(String rpc, Map<String, Object?> params) async {
+    try {
+      final data = _asMap(_unwrapEnvelope(await _client.rpc<Object?>(rpc, params: params)));
+      return InstitutionLifecycleResult(
+        institutionId: data['institution_id']?.toString() ?? '',
+        status: data['status']?.toString() ?? '',
+        hardDeleted: data['hard_deleted'] == true,
+        managementVersion: (data['management_version'] as num?)?.toInt(),
+      );
+    } on PostgrestException catch (error) {
+      _throwMappedException(error);
+    } on ClientException {
+      throw const InstitutionDirectoryUnavailableException();
+    }
+  }
 
   @override
   Future<InstitutionDirectoryPage> fetchPage(InstitutionDirectoryQuery query) async {
@@ -482,10 +528,7 @@ Map<String, Object?>? _institutionContactsPayload(
   }
   final representatives = [
     for (final item in draft.legalRepresentatives)
-      {
-        ..._personPayload(item.person, personId: item.personId),
-        'is_primary': item.isPrimary,
-      },
+      {..._personPayload(item.person, personId: item.personId), 'is_primary': item.isPrimary},
   ];
   if (jsonEncode(representatives) != jsonEncode(_representativesSnapshot(current))) {
     payload['representatives'] = representatives;

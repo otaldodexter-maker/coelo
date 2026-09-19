@@ -37,6 +37,7 @@ final class InstitutionDirectoryItem {
     required this.planName,
     required this.unitsCount,
     required this.groupsCount,
+    this.managementVersion = 0,
     this.district,
     this.street,
     this.addressNumber,
@@ -71,6 +72,7 @@ final class InstitutionDirectoryItem {
       planName: _optionalString(json['plan_name']),
       unitsCount: _integer(json['units_count']),
       groupsCount: _integer(json['groups_count']),
+      managementVersion: _integer(json['management_version']),
     );
   }
 
@@ -96,6 +98,10 @@ final class InstitutionDirectoryItem {
   final String? planName;
   final int unitsCount;
   final int groupsCount;
+
+  /// Versão otimista para os comandos de ciclo de vida (spec 066); 0 quando o
+  /// leitor não a expõe (fixtures antigas).
+  final int managementVersion;
 
   String get initials {
     final words = publicName.trim().split(RegExp(r'\s+'));

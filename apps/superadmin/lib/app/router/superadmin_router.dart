@@ -151,6 +151,7 @@ import '../../features/health_care/presentation/health_medication_plan_directory
 import '../../features/institutions/data/fake_institution_directory_repository.dart';
 import '../../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../../features/institutions/domain/institution_directory_repository.dart';
+import '../../features/institutions/domain/institution_lifecycle.dart';
 import '../../features/institutions/domain/institution_directory_query.dart';
 import '../../features/institutions/presentation/screens/institution_directory_page.dart';
 import '../../features/institutions/presentation/screens/institution_form_page.dart';
@@ -1996,6 +1997,11 @@ GoRouter createSuperadminRouter({
             name: SuperadminRoutes.institutionsName,
             builder: (context, state) => InstitutionDirectoryPage(
               repository: institutionDirectoryRepository,
+              lifecycle:
+                  hasStructureMutationCapability() &&
+                      institutionDirectoryRepository is InstitutionLifecycleCommands
+                  ? institutionDirectoryRepository as InstitutionLifecycleCommands
+                  : null,
               logout: logout,
               onHomeOpen: () => context.goNamed(SuperadminRoutes.homeName),
               onUnitsOpen: () => context.goNamed(SuperadminRoutes.unitsName),

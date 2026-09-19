@@ -5,7 +5,8 @@ Uma linha por item: tela · o que falta · quem pediu · data. Apague a linha qu
 - Assiduidade · r12-18 envio final "pessoa sem conta" pela tela; upload do documento depende do CORS (Etapa 4) · Owner · 18/09
 - Conta · layout A+ "Meu acesso" (r12-46) · Owner · 18/09
 - Segurança da criança · diretório contra a Table canônica (r12-10) · Owner · 18/09
-- Instituições · spec 066 ciclo de vida + status; spec 067 Locais com mapa · Owner · 18/09
+- Instituições · spec 066 entregue para instituições (ativar/inativar/excluir com motivo, PT409, auditoria, lote 94); falta estender a unidades/turmas/atividades pelo mesmo predicado `lifecycle_can_hard_delete_v1`, cascata de visibilidade nos leitores de unidades/turmas quando a instituição está inativa, e pessoas/suspensão por período · Sessão ETAPA-3 · 20/09
+- Locais · spec 067 mapa por imagem (planta) com pontos/áreas · Owner · 18/09
 - Avisos · spec 069: CTA por tipo tem rota real no Principal só para circular; formulário/convite/aviso ficam na mensagem honesta até existir rota no Principal hospedado (Etapa 4) · Sessão ETAPA-3 · 19/09
 - Principal · spec 068 perfis oficiais · Owner · 18/09
 - Acessos · acesso por perfil: conta de pessoa real (`qa-e3-educadora`, realm people-based) não abre o shell do Superadmin (trigger de realms separados) — prova visual do popup usou o espelho interno de qa-r06-principal herdando o perfil "QA E3 Educador"; a educadora real está provada pela API (`19-api-educadora-real-*.json`); prova visual com pessoa real só no Principal próprio (Etapa 4) · Sessão ACESSO-PERFIL · 19/09

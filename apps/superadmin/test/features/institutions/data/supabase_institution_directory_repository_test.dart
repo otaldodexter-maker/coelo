@@ -85,36 +85,39 @@ void main() {
         detailVersion = 9;
         return _json(request, _ok({'institution_id': 'institution-1', 'management_version': 9}));
       }
-      return _json(request, _ok({
-        ..._detailRow(version: detailVersion),
-        if (detailVersion == 9) 'document_type': 'cnpj',
-        if (detailVersion == 9) 'document_ref': '12345678000195',
-        if (detailVersion == 9)
-          'representatives': [
-            {
-              'id': 'rep-1',
-              'person_id': 'person-1',
-              'is_primary': true,
-              'first_name': 'Ana',
-              'last_name': 'Lima',
-              'display_name': 'Ana Lima',
-              'email_masked': 'a***@example.test',
-            },
-          ],
-        if (detailVersion == 9)
-          'administrators': [
-            {
-              'membership_id': 'mem-1',
-              'person_id': 'person-1',
-              'level': 'admin_master',
-              'first_name': 'Ana',
-              'last_name': 'Lima',
-              'display_name': 'Ana Lima',
-              'invitation_status': 'not_sent',
-              'source_representative_id': 'rep-1',
-            },
-          ],
-      }));
+      return _json(
+        request,
+        _ok({
+          ..._detailRow(version: detailVersion),
+          if (detailVersion == 9) 'document_type': 'cnpj',
+          if (detailVersion == 9) 'document_ref': '12345678000195',
+          if (detailVersion == 9)
+            'representatives': [
+              {
+                'id': 'rep-1',
+                'person_id': 'person-1',
+                'is_primary': true,
+                'first_name': 'Ana',
+                'last_name': 'Lima',
+                'display_name': 'Ana Lima',
+                'email_masked': 'a***@example.test',
+              },
+            ],
+          if (detailVersion == 9)
+            'administrators': [
+              {
+                'membership_id': 'mem-1',
+                'person_id': 'person-1',
+                'level': 'admin_master',
+                'first_name': 'Ana',
+                'last_name': 'Lima',
+                'display_name': 'Ana Lima',
+                'invitation_status': 'not_sent',
+                'source_representative_id': 'rep-1',
+              },
+            ],
+        }),
+      );
     });
 
     final saved = await repository.update(

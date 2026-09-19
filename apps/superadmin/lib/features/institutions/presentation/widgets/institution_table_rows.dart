@@ -15,6 +15,7 @@ class InstitutionTableRows extends StatelessWidget {
     required this.items,
     required this.view,
     this.onEdit,
+    this.menuBuilder,
     required this.sortColumn,
     required this.sortAscending,
     required this.onSort,
@@ -24,6 +25,9 @@ class InstitutionTableRows extends StatelessWidget {
   final List<InstitutionDirectoryItem> items;
   final InstitutionDirectoryTableView view;
   final ValueChanged<InstitutionDirectoryItem>? onEdit;
+
+  /// Menu ⋯ de ciclo de vida por linha (spec 066) na visão agrupada.
+  final Widget Function(InstitutionDirectoryItem item)? menuBuilder;
   final InstitutionDirectorySortColumn sortColumn;
   final bool sortAscending;
   final ValueChanged<InstitutionDirectorySortColumn> onSort;
@@ -49,9 +53,19 @@ class InstitutionTableRows extends StatelessWidget {
     items: items,
     rowKey: (item) => 'institution-table-row-${item.id}',
     pinnedColumn: _column(_InstitutionColumn.institution),
-    columns: _columnsFor(
-      InstitutionDirectoryTableView.grouped,
-    ).map(_column).toList(growable: false),
+    columns: [
+      ..._columnsFor(InstitutionDirectoryTableView.grouped).map(_column),
+      if (menuBuilder case final builder?)
+        CoeloAdminTableColumn<InstitutionDirectoryItem>(
+          id: 'actions',
+          label: 'Ações',
+          initialWidth: 88,
+          minWidth: 72,
+          maxWidth: 120,
+          cellBuilder: (context, item) =>
+              Align(alignment: Alignment.centerLeft, child: builder(item)),
+        ),
+    ],
     headerHeight: 56,
     rowHeight: 64,
     onRowPressed: onEdit,

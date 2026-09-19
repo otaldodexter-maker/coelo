@@ -9,11 +9,13 @@ import '../../../auth/domain/logout_action.dart';
 import '../../../support/domain/support_ticket.dart';
 import '../../domain/institution_directory_item.dart';
 import '../../domain/institution_directory_repository.dart';
+import '../../domain/institution_lifecycle.dart';
 import '../institution_directory_table_view.dart';
 import '../view_models/institution_directory_view_model.dart';
 import '../widgets/institution_card.dart';
 import '../widgets/institution_file_actions.dart';
 import '../widgets/institution_filter_menu.dart';
+import '../widgets/institution_lifecycle_menu.dart';
 import '../widgets/institution_table_rows.dart';
 
 /// Diretório de Instituições: instância do `CoeloAdminDirectory` com o
@@ -31,11 +33,15 @@ class InstitutionDirectoryPage extends StatefulWidget {
     this.onConversationsOpen,
     this.onCreate,
     this.onEdit,
+    this.lifecycle,
     this.successMessage,
     super.key,
   });
 
   final InstitutionDirectoryRepository repository;
+
+  /// Comandos de ciclo de vida (spec 066). Sem eles o menu ⋯ não aparece.
+  final InstitutionLifecycleCommands? lifecycle;
   final LogoutAction logout;
   final VoidCallback? onHomeOpen;
   final VoidCallback? onUnitsOpen;
@@ -160,6 +166,89 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
     );
   }
 
+  Widget? _lifecycleMenu(InstitutionDirectoryItem item) {
+    if (widget.lifecycle == null) return null;
+    return InstitutionLifecycleMenu(
+      item: item,
+      canEdit: widget.onEdit != null,
+      onSelected: (action) => _runLifecycle(action, item),
+    );
+  }
+
+  bool _lifecycleRunning = false;
+
+  Future<void> _runLifecycle(
+    InstitutionLifecycleAction action,
+    InstitutionDirectoryItem item,
+  ) async {
+    final lifecycle = widget.lifecycle;
+    if (lifecycle == null || _lifecycleRunning) return;
+    if (action == InstitutionLifecycleAction.edit) {
+      widget.onEdit?.call(item.id);
+      return;
+    }
+    String? reason;
+    if (action != InstitutionLifecycleAction.activate) {
+      reason = await showInstitutionLifecycleReasonDialog(context, action: action, item: item);
+      if (reason == null || !mounted) return;
+    }
+    setState(() => _lifecycleRunning = true);
+    final requestId = _viewModel.newRequestId();
+    try {
+      final result = switch (action) {
+        InstitutionLifecycleAction.activate => await lifecycle.changeStatus(
+          item.id,
+          expectedVersion: item.managementVersion,
+          status: InstitutionStatus.active,
+          requestId: requestId,
+        ),
+        InstitutionLifecycleAction.inactivate => await lifecycle.changeStatus(
+          item.id,
+          expectedVersion: item.managementVersion,
+          status: InstitutionStatus.inactive,
+          requestId: requestId,
+          reason: reason,
+        ),
+        InstitutionLifecycleAction.delete => await lifecycle.delete(
+          item.id,
+          expectedVersion: item.managementVersion,
+          requestId: requestId,
+          reason: reason!,
+        ),
+        InstitutionLifecycleAction.edit => throw StateError('unreachable'),
+      };
+      if (!mounted) return;
+      _feedback(switch (action) {
+        InstitutionLifecycleAction.activate => '${item.publicName} ativada.',
+        InstitutionLifecycleAction.inactivate => '${item.publicName} inativada.',
+        InstitutionLifecycleAction.delete =>
+          result.hardDeleted
+              ? '${item.publicName} excluída.'
+              : '${item.publicName} arquivada: tinha vínculos, então ficou no histórico.',
+        InstitutionLifecycleAction.edit => '',
+      });
+      await _viewModel.load();
+    } on InstitutionDirectoryConflictException {
+      if (!mounted) return;
+      _feedback('A instituição foi alterada por outra pessoa. A lista foi recarregada.');
+      await _viewModel.load();
+    } on InstitutionDirectoryValidationException catch (error) {
+      if (mounted) _feedback(error.message);
+    } on InstitutionDirectoryUnauthorizedException {
+      if (mounted) _feedback('Você não tem permissão para alterar esta instituição.');
+    } on Object {
+      if (mounted) _feedback('Não foi possível concluir a operação.');
+    } finally {
+      if (mounted) setState(() => _lifecycleRunning = false);
+    }
+  }
+
+  void _feedback(String message) {
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(SnackBar(content: Text(message)));
+  }
+
   Widget _directory(BuildContext context) {
     final viewModel = _viewModel;
     final page = viewModel.page;
@@ -231,12 +320,17 @@ class _InstitutionDirectoryPageState extends State<InstitutionDirectoryPage> {
             ),
       cards: [
         for (final item in page.items)
-          InstitutionCard(item: item, onPressed: onEdit == null ? null : () => onEdit(item.id)),
+          InstitutionCard(
+            item: item,
+            onPressed: onEdit == null ? null : () => onEdit(item.id),
+            menu: _lifecycleMenu(item),
+          ),
       ],
       table: InstitutionTableRows(
         items: page.items,
         view: _tableView,
         onEdit: onEdit == null ? null : (item) => onEdit(item.id),
+        menuBuilder: widget.lifecycle == null ? null : (item) => _lifecycleMenu(item)!,
         sortColumn: viewModel.query.sortColumn,
         sortAscending: viewModel.query.sortAscending,
         onSort: viewModel.setSort,

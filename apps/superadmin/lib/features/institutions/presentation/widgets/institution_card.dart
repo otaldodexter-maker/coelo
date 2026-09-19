@@ -13,7 +13,10 @@ Duration _interactionDuration(BuildContext context, Duration duration) {
 /// Card de domínio de Instituições, baseline dos cards administrativos.
 /// Largura, grade e o card Criar vêm do `CoeloAdminDirectory`.
 class InstitutionCard extends StatefulWidget {
-  const InstitutionCard({required this.item, required this.onPressed, super.key});
+  const InstitutionCard({required this.item, required this.onPressed, this.menu, super.key});
+
+  /// Menu ⋯ de ciclo de vida (spec 066); nulo quando não há comando disponível.
+  final Widget? menu;
 
   final InstitutionDirectoryItem item;
   final VoidCallback? onPressed;
@@ -137,6 +140,10 @@ class _InstitutionCardState extends State<InstitutionCard> {
                               itemId: item.id,
                               status: item.status,
                             ),
+                            if (widget.menu case final menu?) ...[
+                              const SizedBox(width: CoeloSpacing.space1),
+                              menu,
+                            ],
                           ],
                         ),
                         const SizedBox(height: CoeloSpacing.space4),
