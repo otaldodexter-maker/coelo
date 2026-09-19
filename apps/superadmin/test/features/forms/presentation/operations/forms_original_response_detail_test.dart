@@ -78,7 +78,10 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: CoeloTheme.light,
-        home: FormsOperationsPage.responseDetail(api: _Api(_numericDetail()), responseId: 'response-1'),
+        home: FormsOperationsPage.responseDetail(
+          api: _Api(_numericDetail()),
+          responseId: 'response-1',
+        ),
       ),
     );
     await tester.pumpAndSettle();

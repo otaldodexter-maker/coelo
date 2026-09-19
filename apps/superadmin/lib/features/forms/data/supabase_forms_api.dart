@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 
@@ -6,6 +8,24 @@ import 'forms_editor_context.dart';
 import 'forms_file_jobs_reader.dart';
 import 'forms_media_reader.dart';
 
+/// Upload da imagem em um POST binário pela Edge (prepare → PUT → finalize no
+/// servidor): o navegador nunca recebe URL assinada do R2.
+abstract interface class FormsBytesUploadApi {
+  Future<FormAsset> uploadQuestionImageBytes(
+    FormQuestionImageTarget target, {
+    required String requestId,
+    required MediaUploadMetadata sourceMetadata,
+    required Uint8List bytes,
+  });
+
+  Future<FormAsset> uploadAnswerImageBytes(
+    FormAssetUploadPayload payload, {
+    required String requestId,
+    required String finalizeRequestId,
+    required Uint8List bytes,
+  });
+}
+
 final class SupabaseFormsApi
     implements
         FormsApi,
@@ -13,7 +33,8 @@ final class SupabaseFormsApi
         FormsResponseContextReader,
         FormsFileJobsReader,
         FormsAnonymousImageApi,
-        FormsQuestionImageApi {
+        FormsQuestionImageApi,
+        FormsBytesUploadApi {
   const SupabaseFormsApi(this._backend, {FormCursorCodec cursorCodec = const FormCursorCodec()})
     : _cursorCodec = cursorCodec;
 
@@ -53,6 +74,69 @@ final class SupabaseFormsApi
       uploadUrl: Uri.parse(_string(payload, 'upload_url')),
       requiredHeaders: _stringMap(payload['required_headers']),
       expiresAt: _dateTime(payload, 'expires_at'),
+    );
+  });
+
+  @override
+  Future<FormAsset> uploadQuestionImageBytes(
+    FormQuestionImageTarget target, {
+    required String requestId,
+    required MediaUploadMetadata sourceMetadata,
+    required Uint8List bytes,
+  }) => _guard(() async {
+    final payload = _map(
+      await _backend.mediaUpload({
+        'request_id': requestId,
+        'expected_version': 0,
+        'payload': {
+          'purpose': 'question-image',
+          'form_id': target.formId,
+          'form_version_id': target.formVersionId,
+          'item_id': target.itemId,
+          'mime_type': sourceMetadata.mimeType,
+          'byte_size': sourceMetadata.byteLength,
+          'sha256': sourceMetadata.checksumSha256,
+        },
+      }, bytes),
+    );
+    if (payload['status'] != 'ready' || payload['asset_id'] is! String) {
+      throw const WireFormatException('Question image was not confirmed.');
+    }
+    return FormAsset(
+      id: _string(payload, 'asset_id'),
+      itemId: target.itemId,
+      mimeType: _string(payload, 'mime_type'),
+      byteLength: _integer(payload, 'byte_size'),
+    );
+  });
+
+  @override
+  Future<FormAsset> uploadAnswerImageBytes(
+    FormAssetUploadPayload value, {
+    required String requestId,
+    required String finalizeRequestId,
+    required Uint8List bytes,
+  }) => _guard(() async {
+    final payload = _map(
+      await _backend.mediaUpload({
+        'request_id': requestId,
+        'expected_version': 0,
+        'finalize_request_id': finalizeRequestId,
+        'payload': {
+          'occurrence_id': value.occurrenceId,
+          'item_id': value.itemId,
+          'mime_type': value.mimeType,
+          'byte_length': value.byteLength,
+          'checksum': value.checksum,
+          if (value.editSecret != null) 'edit_secret': value.editSecret,
+        },
+      }, bytes),
+    );
+    return FormAsset(
+      id: _string(payload, 'id'),
+      itemId: _string(payload, 'item_id'),
+      mimeType: _string(payload, 'mime_type'),
+      byteLength: _integer(payload, 'byte_length'),
     );
   });
 

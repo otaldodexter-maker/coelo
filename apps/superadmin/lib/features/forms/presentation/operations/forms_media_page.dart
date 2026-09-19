@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:typed_data';
 
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
+import '../../data/forms_media_reader.dart';
 
 enum FormsMediaState { content, notFound, unavailable }
 
@@ -53,7 +55,7 @@ final class FormsMediaPage extends StatefulWidget {
 final class _FormsMediaPageState extends State<FormsMediaPage> with WidgetsBindingObserver {
   bool _previewVisible = false;
   MediaReadState? _readState = MediaReadState.unavailable;
-  NetworkImage? _image;
+  ImageProvider? _image;
   DateTime? _expiresAt;
   Timer? _expiry;
   void Function()? _unregister;
@@ -124,6 +126,23 @@ final class _FormsMediaPageState extends State<FormsMediaPage> with WidgetsBindi
     unawaited(_clearImage());
     setState(() => _readState = null);
     try {
+      if (reader is FormsInlineMediaReader) {
+        // Bytes pela Edge: sem URL assinada no navegador.
+        final inlineReader = reader as FormsInlineMediaReader;
+        final inline = await session.run<FormsInlineMedia>(
+          () => inlineReader.readBytes(
+            MediaReadRequest(assetId: widget.assetId, rendition: widget.rendition),
+          ),
+        );
+        if (!mounted || generation != _generation) return;
+        setState(() {
+          _readState = MediaReadState.available;
+          _image = MemoryImage(Uint8List.fromList(inline.bytes));
+          _expiresAt = inline.expiresAt;
+          _expiry = Timer(inline.expiresAt.difference(DateTime.now().toUtc()), _expire);
+        });
+        return;
+      }
       final result = await SessionMediaReader(
         delegate: reader,
         session: session,

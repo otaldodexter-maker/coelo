@@ -5,6 +5,7 @@ import {
   R2TransportError,
   validateR2Config,
 } from "../_shared/r2_s3.ts";
+import { bytesResponse, decodeEnvelope, envelopeHeader, isBinaryUpload } from "../_shared/edge_bytes.ts";
 import {
   allowedOrigin,
   corsHeaders,
@@ -52,6 +53,8 @@ export type FormMediaDependencies = Readonly<{
   createR2?: (config: R2Config) => Pick<R2Client, "presignGet">;
   /** Transporte completo do ramo question-image (testes injetam um falso). */
   createTransport?: (config: R2Config) => FormMediaTransport;
+  /** GET/PUT do upload binário e da leitura inline (testes injetam um falso). */
+  fetch?: typeof fetch;
 }>;
 const productionDependencies: FormMediaDependencies = {
   envGet: (name) => Deno.env.get(name),
@@ -606,7 +609,168 @@ async function handleWorker(
   }
 }
 
+/** Cabeçalhos CORS do form-media mais os do upload binário / leitura inline (edge_bytes). */
+function bytesCorsHeaders(origin: string | null): Record<string, string> {
+  return {
+    ...corsHeaders(origin),
+    "access-control-allow-headers":
+      `authorization, x-client-info, apikey, content-type, ${envelopeHeader}`,
+    "cache-control": "no-store",
+  };
+}
+
+function cloneRequest(request: Request, body: Json): Request {
+  const headers = new Headers();
+  for (const name of ["authorization", "apikey", "origin", "x-client-info"]) {
+    const value = request.headers.get(name);
+    if (value) headers.set(name, value);
+  }
+  headers.set("content-type", "application/json");
+  return new Request(request.url, { method: "POST", headers, body: JSON.stringify(body) });
+}
+
+async function jsonOf(response: Response): Promise<Json> {
+  const text = await response.text();
+  try {
+    const parsed = JSON.parse(text);
+    return parsed && typeof parsed === "object" ? parsed as Json : {};
+  } catch {
+    return {};
+  }
+}
+
+/** Bytes de mídia pela Edge (mesmo desenho das outras funções de mídia): o navegador nunca fala com o R2
+ * nem com o Storage. Upload binário: `x-coelo-media-envelope` = envelope do "prepare" (question-image ou
+ * answer-image) + `finalize_request_id`; a Edge prepara, faz o PUT no servidor e finaliza. Leitura inline:
+ * `inline: true` em `read` / `resolve` / `download`; a Edge segue a URL assinada e devolve os bytes com
+ * `X-Coelo-Content-Type`. A autorização continua toda nos ramos JSON (RPCs do Postgres). */
 export async function handleFormMediaRequest(
+  request: Request,
+  dependencies: FormMediaDependencies = productionDependencies,
+): Promise<Response> {
+  const origin = allowedOrigin(request, dependencies.envGet("COELO_ALLOWED_ORIGINS") ?? "");
+  if (request.method === "OPTIONS") {
+    return new Response(null, { status: origin ? 204 : 403, headers: bytesCorsHeaders(origin) });
+  }
+  if (request.method === "POST" && isBinaryUpload(request)) {
+    return await handleBinaryUpload(request, origin, dependencies);
+  }
+  if (request.method === "POST" && !request.headers.has(envelopeHeader)) {
+    let body: Json | null = null;
+    try {
+      const text = await request.clone().text();
+      const parsed = JSON.parse(text);
+      body = parsed && typeof parsed === "object" && !Array.isArray(parsed) ? parsed as Json : null;
+    } catch {
+      body = null;
+    }
+    if (body && body.inline === true) {
+      const { inline: _inline, ...rest } = body;
+      return await handleInlineRead(request, origin, rest, dependencies);
+    }
+  }
+  return await handleFormMediaJsonRequest(request, dependencies);
+}
+
+async function handleBinaryUpload(
+  request: Request,
+  origin: string | null,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  const fail = (status: number, error: string) =>
+    new Response(JSON.stringify({ error }), {
+      status,
+      headers: { ...bytesCorsHeaders(origin), "content-type": "application/json; charset=utf-8" },
+    });
+  let envelope: Json;
+  try {
+    envelope = decodeEnvelope(request);
+  } catch {
+    return fail(400, "invalid_request");
+  }
+  const { action: _action, finalize_request_id: finalizeRequestId, ...prepare } = envelope;
+  if (finalizeRequestId != null && (typeof finalizeRequestId !== "string" || !UUID.test(finalizeRequestId))) {
+    return fail(400, "invalid_request");
+  }
+  const bytes = new Uint8Array(await request.arrayBuffer());
+  if (bytes.byteLength < 1 || bytes.byteLength > MAX_IMAGE_BYTES) return fail(413, "media_too_large");
+  const payload = prepare.payload && typeof prepare.payload === "object" ? prepare.payload as Json : null;
+  if (!payload) return fail(400, "invalid_request");
+  const declared = Number(payload.byte_size ?? payload.byte_length);
+  if (Number.isSafeInteger(declared) && declared !== bytes.byteLength) return fail(400, "uploaded_media_mismatch");
+
+  // 1. prepare (ramo JSON: autoriza no Postgres e assina o PUT para a própria Edge usar)
+  const prepared = await handleFormMediaJsonRequest(
+    cloneRequest(request, { ...prepare, action: "prepare" }),
+    dependencies,
+  );
+  const preparedBody = await jsonOf(prepared);
+  if (prepared.status !== 200) {
+    return fail(prepared.status, String(preparedBody.error ?? "prepare_failed"));
+  }
+  const assetId = String(preparedBody.asset_id ?? "");
+  const uploadUrl = typeof preparedBody.upload_url === "string"
+    ? preparedBody.upload_url
+    : typeof preparedBody.signed_upload_url === "string"
+    ? preparedBody.signed_upload_url
+    : null;
+  if (!UUID.test(assetId) || !uploadUrl) return fail(502, "prepare_failed");
+  // 2. PUT no servidor (R2 presigned ou Storage assinado); o navegador nunca vê a URL
+  const requiredHeaders = preparedBody.required_headers && typeof preparedBody.required_headers === "object"
+    ? preparedBody.required_headers as Record<string, string>
+    : { "content-type": String(payload.mime_type ?? "application/octet-stream") };
+  const put = await (dependencies.fetch ?? fetch)(uploadUrl, { method: "PUT", headers: requiredHeaders, body: bytes });
+  if (!put.ok) return fail(502, "upload_failed");
+  // 3. finalize (mesmo ramo do cliente: mede bytes/sha no servidor)
+  const isQuestionImage = payload.purpose === "question-image";
+  const finalizeBody: Json = isQuestionImage
+    ? { action: "finalize", payload: { purpose: "question-image", asset_id: assetId } }
+    : {
+      action: "finalize",
+      request_id: finalizeRequestId ?? prepare.request_id,
+      expected_version: prepare.expected_version ?? 0,
+      payload: { asset_id: assetId, ...(payload.edit_secret ? { edit_secret: payload.edit_secret } : {}) },
+    };
+  const finalized = await handleFormMediaJsonRequest(cloneRequest(request, finalizeBody), dependencies);
+  const finalizedBody = await jsonOf(finalized);
+  return new Response(JSON.stringify({ ...finalizedBody, asset_id: finalizedBody.asset_id ?? assetId }), {
+    status: finalized.status,
+    headers: { ...bytesCorsHeaders(origin), "content-type": "application/json; charset=utf-8" },
+  });
+}
+
+async function handleInlineRead(
+  request: Request,
+  origin: string | null,
+  body: Json,
+  dependencies: FormMediaDependencies,
+): Promise<Response> {
+  const fail = (status: number, error: string) =>
+    new Response(JSON.stringify({ error }), {
+      status,
+      headers: { ...bytesCorsHeaders(origin), "content-type": "application/json; charset=utf-8" },
+    });
+  const resolved = await handleFormMediaJsonRequest(cloneRequest(request, body), dependencies);
+  const resolvedBody = await jsonOf(resolved);
+  if (resolved.status !== 200) return fail(resolved.status, String(resolvedBody.error ?? "media_unavailable"));
+  const ticket = resolvedBody.ticket && typeof resolvedBody.ticket === "object" ? resolvedBody.ticket as Json : null;
+  const url = typeof resolvedBody.signed_url === "string"
+    ? resolvedBody.signed_url
+    : ticket && typeof ticket.url === "string"
+    ? ticket.url
+    : null;
+  if (!url) return fail(404, "media_unavailable");
+  const fetched = await (dependencies.fetch ?? fetch)(url, { method: "GET" });
+  if (!fetched.ok) return fail(404, "media_unavailable");
+  const bytes = new Uint8Array(await fetched.arrayBuffer());
+  if (bytes.byteLength < 1 || bytes.byteLength > MAX_IMAGE_BYTES) return fail(404, "media_unavailable");
+  const contentType = typeof resolvedBody.mime_type === "string"
+    ? resolvedBody.mime_type
+    : sniffImageMime(bytes) ?? fetched.headers.get("content-type")?.split(";", 1)[0]?.trim() ?? "application/octet-stream";
+  return bytesResponse(bytesCorsHeaders(origin), bytes, contentType);
+}
+
+async function handleFormMediaJsonRequest(
   request: Request,
   dependencies: FormMediaDependencies = productionDependencies,
 ): Promise<Response> {

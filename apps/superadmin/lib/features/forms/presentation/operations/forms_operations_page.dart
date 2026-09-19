@@ -1287,10 +1287,7 @@ final class _OriginalResponseAnswers extends StatelessWidget {
       FormDecimalValue(:final value) => '$value',
       // Same shared formatter the editor and the response use, so money
       // cannot read differently depending on which surface shows it.
-      FormMoneyValue(:final minorUnits) => FormNumericLimits.format(
-        FormItemKind.money,
-        minorUnits,
-      ),
+      FormMoneyValue(:final minorUnits) => FormNumericLimits.format(FormItemKind.money, minorUnits),
       FormDateValue(:final value) => MaterialLocalizations.of(context).formatFullDate(value),
       FormYesNoValue(:final value) => value ? 'Sim' : 'Não',
       FormChoiceValue(:final optionIds) =>

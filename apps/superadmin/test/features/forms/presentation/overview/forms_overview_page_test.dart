@@ -204,7 +204,9 @@ void main() {
             theme: CoeloTheme.light,
             home: MediaQuery(
               data: MediaQueryData(textScaler: TextScaler.linear(scale)),
-              child: Scaffold(body: FormsOverviewPage(api: _Api(), formId: 'form-1')),
+              child: Scaffold(
+                body: FormsOverviewPage(api: _Api(), formId: 'form-1'),
+              ),
             ),
           ),
         );

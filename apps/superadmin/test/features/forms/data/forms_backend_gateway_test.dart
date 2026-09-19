@@ -16,18 +16,14 @@ void main() {
   test('an rpc that never reaches the backend fails as a backend failure', () async {
     await expectLater(
       unreachable().rpc('form_get_editor', const {'p_form_id': 'form-1'}),
-      throwsA(
-        isA<FormsBackendFailure>().having((error) => error.code, 'code', 'transport'),
-      ),
+      throwsA(isA<FormsBackendFailure>().having((error) => error.code, 'code', 'transport')),
     );
   });
 
   test('a media call that never reaches the backend fails as a backend failure', () async {
     await expectLater(
       unreachable().media(const {'action': 'read', 'payload': <String, Object?>{}}),
-      throwsA(
-        isA<FormsBackendFailure>().having((error) => error.code, 'code', 'transport'),
-      ),
+      throwsA(isA<FormsBackendFailure>().having((error) => error.code, 'code', 'transport')),
     );
   });
 

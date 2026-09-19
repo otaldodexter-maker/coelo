@@ -1,4 +1,8 @@
+import 'dart:typed_data';
+
 import 'package:supabase_flutter/supabase_flutter.dart';
+
+import '../../../shared/data/edge_media_bytes.dart';
 
 final class FormsBackendFailure implements Exception {
   const FormsBackendFailure({required this.code, required this.message, this.detail});
@@ -22,6 +26,22 @@ abstract interface class FormsBackendGateway {
   Future<Object?> rpc(String functionName, Map<String, Object?> parameters);
 
   Future<Object?> media(Map<String, Object?> envelope);
+
+  /// Upload binário pela Edge `form-media`: [envelope] é o corpo do `prepare`
+  /// (+ `finalize_request_id`); a Edge prepara, grava no R2 e finaliza.
+  /// Devolve o JSON do `finalize`.
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes);
+
+  /// Leitura inline pela Edge (`inline: true`): bytes + MIME real, sem URL
+  /// assinada no navegador.
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope);
+}
+
+final class FormsMediaBytes {
+  const FormsMediaBytes({required this.bytes, required this.mimeType});
+
+  final Uint8List bytes;
+  final String mimeType;
 }
 
 final class SupabaseFormsBackendGateway implements FormsBackendGateway {
@@ -75,6 +95,37 @@ final class SupabaseFormsBackendGateway implements FormsBackendGateway {
       throw const FormsBackendFailure(
         code: formsBackendTransportCode,
         message: 'Form media request unreachable.',
+      );
+    }
+  }
+
+  @override
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) async {
+    try {
+      return await uploadBytesThroughEdge(
+        _client,
+        'form-media',
+        envelope: envelope,
+        bytes: bytes,
+        failure: 'media_upload_failed',
+      );
+    } on EdgeMediaException catch (error) {
+      throw FormsBackendFailure(
+        code: error.status == null ? formsBackendTransportCode : error.code,
+        message: 'Form media upload failed.',
+      );
+    }
+  }
+
+  @override
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) async {
+    try {
+      final bytes = await readBytesThroughEdge(_client, 'form-media', envelope);
+      return FormsMediaBytes(bytes: bytes, mimeType: sniffMediaMimeType(bytes));
+    } on EdgeMediaException catch (error) {
+      throw FormsBackendFailure(
+        code: error.status == null ? formsBackendTransportCode : error.code,
+        message: 'Form media read failed.',
       );
     }
   }

@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_backend_gateway.dart';
 import 'package:coelo_superadmin/features/forms/data/forms_file_jobs_reader.dart';
@@ -200,6 +202,13 @@ Map<String, Object?> _context({bool hasMore = false, List<Map<String, Object?>>?
 };
 
 final class _Backend implements FormsBackendGateway {
+  @override
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) =>
+      throw UnsupportedError('binary upload is not exercised by this test');
+
+  @override
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) =>
+      throw UnsupportedError('inline read is not exercised by this test');
   _Backend(this.response);
   Object? response;
   final calls = <(String, Map<String, Object?>)>[];

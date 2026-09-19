@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dart:async';
 
 import 'package:coelo_api/coelo_api.dart';
@@ -281,6 +283,13 @@ final class _Downloads implements FormExportDownloadGateway {
 }
 
 final class _Backend implements FormsBackendGateway {
+  @override
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) =>
+      throw UnsupportedError('binary upload is not exercised by this test');
+
+  @override
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) =>
+      throw UnsupportedError('inline read is not exercised by this test');
   final envelopes = <Map<String, Object?>>[];
   final pending = <Completer<Object?>>[];
   @override

@@ -538,12 +538,7 @@ void main() {
     addTearDown(() => tester.binding.setSurfaceSize(null));
     final api = _Api(manage: true)
       ..customItems = [
-        FormItem(
-          id: 'gate',
-          kind: FormItemKind.yesNo,
-          label: 'Precisa de valor',
-          position: 0,
-        ),
+        FormItem(id: 'gate', kind: FormItemKind.yesNo, label: 'Precisa de valor', position: 0),
         FormItem(
           id: 'branch-money',
           kind: FormItemKind.money,
@@ -603,7 +598,6 @@ void main() {
     expect(items.map((item) => item.config.minValue), [100, 100]);
     expect(items.map((item) => item.config.maxValue), [1050, 1050]);
   });
-
 
   _Api galleryApi({FormItemConfig config = const FormItemConfig()}) => _Api(manage: true)
     ..customItems = [

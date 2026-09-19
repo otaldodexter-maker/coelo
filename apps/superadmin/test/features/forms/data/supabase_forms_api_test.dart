@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'package:coelo_api/coelo_api.dart';
 import 'package:coelo_domain/coelo_domain.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -1211,6 +1213,13 @@ Map<String, Object?> _applicationProjection() => {
 };
 
 final class _Backend implements FormsBackendGateway {
+  @override
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) =>
+      throw UnsupportedError('binary upload is not exercised by this test');
+
+  @override
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) =>
+      throw UnsupportedError('inline read is not exercised by this test');
   _Backend(this.response) : failureCode = null, failureMessage = '', failureDetail = null;
   _Backend.internal(Map<String, Object?> data)
     : response = {'ok': true, 'data': data, 'error': null},

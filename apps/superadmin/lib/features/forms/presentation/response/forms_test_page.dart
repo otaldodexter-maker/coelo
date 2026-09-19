@@ -247,10 +247,7 @@ final class _FormsTestPageState extends State<FormsTestPage> {
             border: Border.all(color: Theme.of(context).colorScheme.outlineVariant),
             borderRadius: BorderRadius.circular(CoeloRadius.lg),
           ),
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(CoeloRadius.lg),
-            child: child,
-          ),
+          child: ClipRRect(borderRadius: BorderRadius.circular(CoeloRadius.lg), child: child),
         ),
       );
     },
@@ -609,11 +606,7 @@ final class _PreviewItem extends StatelessWidget {
       spacing: CoeloSpacing.space2,
       runSpacing: CoeloSpacing.space2,
       children: [
-        for (
-          var value = item.config.scaleMin ?? 1;
-          value <= (item.config.scaleMax ?? 10);
-          value++
-        )
+        for (var value = item.config.scaleMin ?? 1; value <= (item.config.scaleMax ?? 10); value++)
           ChoiceChip(label: Text('$value'), selected: false, onSelected: null),
       ],
     ),
@@ -632,22 +625,23 @@ final class _PreviewItem extends StatelessWidget {
     ),
     // P16: opcoes de Local vem do snapshot do servidor; sem opcao, o preview
     // diz de onde elas virao em vez de mostrar uma caixa de texto.
-    FormItemKind.location => item.options.isEmpty
-        ? const Text('As opções vêm do catálogo de Locais ativos da instituição.')
-        : Wrap(
-            spacing: CoeloSpacing.space2,
-            runSpacing: CoeloSpacing.space2,
-            children: [
-              for (final option in item.options)
-                ChoiceChip(
-                  label: Text(
-                    option.isSelectable ? option.label : '${option.label} (indisponível)',
+    FormItemKind.location =>
+      item.options.isEmpty
+          ? const Text('As opções vêm do catálogo de Locais ativos da instituição.')
+          : Wrap(
+              spacing: CoeloSpacing.space2,
+              runSpacing: CoeloSpacing.space2,
+              children: [
+                for (final option in item.options)
+                  ChoiceChip(
+                    label: Text(
+                      option.isSelectable ? option.label : '${option.label} (indisponível)',
+                    ),
+                    selected: false,
+                    onSelected: null,
                   ),
-                  selected: false,
-                  onSelected: null,
-                ),
-            ],
-          ),
+              ],
+            ),
     FormItemKind.yesNo => const Wrap(
       spacing: CoeloSpacing.space2,
       children: [

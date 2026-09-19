@@ -6,6 +6,8 @@ import 'package:coelo_domain/coelo_domain.dart';
 import 'package:crypto/crypto.dart';
 import 'package:http/http.dart' as http;
 
+import 'supabase_forms_api.dart';
+
 /// One selected image, one authorized form target, and one media lifetime.
 /// An uncertain transfer retains its asset ID for finalize/discard; it never
 /// invents success, repeats the PUT or deletes a possibly completed upload.
@@ -82,6 +84,58 @@ final class FormsImageUpload {
     }
     _sourceMime = mime;
     _sourceLength = bytes.length;
+    final bytesApi = questionApi ?? api;
+    if (bytesApi is FormsBytesUploadApi) {
+      // Bytes pela Edge: um POST binário faz prepare → PUT → finalize no servidor.
+      final unregister = session.registerPurge(() {
+        cancel();
+        bytes.fillRange(0, bytes.length, 0);
+      });
+      try {
+        final checksum = sha256.convert(bytes).toString();
+        final result = await session.run(
+          () => questionApi != null
+              ? bytesApi.uploadQuestionImageBytes(
+                  questionTarget!,
+                  requestId: requestId,
+                  sourceMetadata: MediaUploadMetadata(
+                    mimeType: mime,
+                    byteLength: bytes.length,
+                    checksumSha256: checksum,
+                  ),
+                  bytes: bytes,
+                )
+              : bytesApi.uploadAnswerImageBytes(
+                  FormAssetUploadPayload(
+                    occurrenceId: occurrenceId,
+                    itemId: itemId,
+                    mimeType: mime,
+                    byteLength: bytes.length,
+                    checksum: checksum,
+                    editSecret: editSecret,
+                  ),
+                  requestId: requestId,
+                  finalizeRequestId: finalizeRequestId,
+                  bytes: bytes,
+                ),
+        );
+        assetId = result.id;
+        if (_cancelled ||
+            result.itemId != itemId ||
+            result.mimeType != mime ||
+            result.byteLength != bytes.length) {
+          throw const FormsImageUploadException();
+        }
+        return result;
+      } on FormsImageUploadException {
+        rethrow;
+      } on Object {
+        throw const FormsImageUploadException();
+      } finally {
+        unregister();
+        bytes.fillRange(0, bytes.length, 0);
+      }
+    }
     http.Client? client;
     http.AbortableRequest? request;
     final unregister = session.registerPurge(() {

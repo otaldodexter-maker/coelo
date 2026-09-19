@@ -1,3 +1,5 @@
+import 'dart:typed_data';
+
 import 'dart:async';
 
 import 'package:coelo_superadmin/app/router/superadmin_routes.dart';
@@ -290,6 +292,13 @@ Map<String, Object?> _summary(
 };
 
 final class _RpcBackend implements FormsBackendGateway {
+  @override
+  Future<Object?> mediaUpload(Map<String, Object?> envelope, Uint8List bytes) =>
+      throw UnsupportedError('binary upload is not exercised by this test');
+
+  @override
+  Future<FormsMediaBytes> mediaBytes(Map<String, Object?> envelope) =>
+      throw UnsupportedError('inline read is not exercised by this test');
   _RpcBackend(this.respond);
   final FutureOr<Object?> Function(String, Map<String, Object?>) respond;
   final calls = <(String, Map<String, Object?>)>[];

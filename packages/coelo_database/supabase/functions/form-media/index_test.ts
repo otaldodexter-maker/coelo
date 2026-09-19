@@ -1444,3 +1444,72 @@ Deno.test("sem COELO_FORMS_MEDIA_PROVIDER o legado de respostas continua no Stor
   assertEquals(harness.calls, ["form_prepare_asset_upload"]);
   assertEquals(harness.r2, []);
 });
+
+Deno.test("inline read follows the signed URL on the server and returns bytes with the real type", async () => {
+  const harness = readHarness();
+  const webp = new Uint8Array([0x52, 0x49, 0x46, 0x46, 0, 0, 0, 0, 0x57, 0x45, 0x42, 0x50, 1, 2, 3]);
+  const fetched: string[] = [];
+  const result = await handleFormMediaRequest(
+    request({ ...readCommand, inline: true }),
+    {
+      ...harness.dependencies,
+      fetch: ((input: string | URL | Request) => {
+        fetched.push(String(input));
+        return Promise.resolve(new Response(webp.slice().buffer as ArrayBuffer, { status: 200 }));
+      }) as unknown as typeof fetch,
+    },
+  );
+  assertEquals(result.status, 200);
+  assertEquals(result.headers.get("content-type"), "application/octet-stream");
+  assertEquals(result.headers.get("x-coelo-content-type"), "image/webp");
+  assertEquals(new Uint8Array(await result.arrayBuffer()), webp);
+  assertEquals(fetched, ["https://r2.example.test/temporary"], "a Edge segue a URL assinada; o navegador nunca a recebe");
+  assertEquals(result.headers.get("access-control-allow-headers")?.includes("x-coelo-media-envelope"), true);
+});
+
+Deno.test("binary upload rejects a missing or malformed envelope before touching the backend", async () => {
+  const harness = readHarness();
+  for (const headers of [{}, { "x-coelo-media-envelope": "%%%" }] as Record<string, string>[]) {
+    const result = await handleFormMediaRequest(
+      new Request("https://edge.example.test/form-media", {
+        method: "POST",
+        headers: {
+          authorization: "Bearer token",
+          origin: environment.COELO_ALLOWED_ORIGINS,
+          "content-type": "application/octet-stream",
+          ...headers,
+        },
+        body: new Uint8Array([1, 2, 3]),
+      }),
+      harness.dependencies,
+    );
+    assertEquals(result.status, 400);
+    assertEquals(await result.json(), { error: "invalid_request" });
+  }
+  assertEquals(harness.calls, []);
+});
+
+Deno.test("binary upload refuses bytes that do not match the declared size before prepare", async () => {
+  const harness = readHarness();
+  const envelope = btoa(JSON.stringify({
+    request_id: id,
+    expected_version: 0,
+    payload: { purpose: "question-image", form_id: id, form_version_id: id, item_id: id, mime_type: "image/png", byte_size: 10, sha256: "a".repeat(64) },
+  })).replace(/\+/g, "-").replace(/\//g, "_").replace(/=+$/, "");
+  const result = await handleFormMediaRequest(
+    new Request("https://edge.example.test/form-media", {
+      method: "POST",
+      headers: {
+        authorization: "Bearer token",
+        origin: environment.COELO_ALLOWED_ORIGINS,
+        "content-type": "application/octet-stream",
+        "x-coelo-media-envelope": envelope,
+      },
+      body: new Uint8Array([1, 2, 3]),
+    }),
+    harness.dependencies,
+  );
+  assertEquals(result.status, 400);
+  assertEquals(await result.json(), { error: "uploaded_media_mismatch" });
+  assertEquals(harness.calls, []);
+});

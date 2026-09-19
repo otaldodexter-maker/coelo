@@ -4,9 +4,23 @@ import 'package:coelo_api/coelo_api.dart';
 
 import 'forms_backend_gateway.dart';
 
+/// Leitura dos bytes pela Edge (`inline: true`): quem exibe usa `MemoryImage`
+/// e nunca vê URL assinada. Os três leitores de Formulários implementam.
+abstract interface class FormsInlineMediaReader {
+  Future<FormsInlineMedia> readBytes(MediaReadRequest request);
+}
+
+final class FormsInlineMedia {
+  const FormsInlineMedia({required this.bytes, required this.mimeType, required this.expiresAt});
+
+  final List<int> bytes;
+  final String mimeType;
+  final DateTime expiresAt;
+}
+
 /// Uses the answer-image download endpoint, which reauthorizes the opaque
 /// editing secret. The secret is only placed in the authenticated POST body.
-final class FormsAnonymousImageReader implements MediaReader {
+final class FormsAnonymousImageReader implements MediaReader, FormsInlineMediaReader {
   FormsAnonymousImageReader({
     required FormsBackendGateway gateway,
     required String editSecret,
@@ -20,19 +34,35 @@ final class FormsAnonymousImageReader implements MediaReader {
   final DateTime Function() _now;
 
   @override
+  Future<FormsInlineMedia> readBytes(MediaReadRequest request) async {
+    if (request.rendition != MediaReadRendition.original) {
+      throw const MediaProtocolException();
+    }
+    try {
+      final media = await _gateway.mediaBytes({
+        'action': 'download',
+        'request_id': _requestId(),
+        'expected_version': 0,
+        'payload': {'asset_id': request.assetId, 'edit_secret': _editSecret},
+      });
+      return FormsInlineMedia(
+        bytes: media.bytes,
+        mimeType: media.mimeType,
+        expiresAt: _now().toUtc().add(const Duration(minutes: 5)),
+      );
+    } on Object {
+      throw const MediaProtocolException();
+    }
+  }
+
+  @override
   Future<MediaReadResult> read(MediaReadRequest request) async {
     if (request.rendition != MediaReadRendition.original) {
       throw const MediaProtocolException();
     }
     try {
       final started = _now().toUtc();
-      final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
-      bytes[6] = (bytes[6] & 15) | 64;
-      bytes[8] = (bytes[8] & 63) | 128;
-      final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
-      final requestId =
-          '${hex.substring(0, 8)}-${hex.substring(8, 12)}-'
-          '${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
+      final requestId = _requestId();
       final raw = await _gateway.media({
         'action': 'download',
         'request_id': requestId,
@@ -62,12 +92,38 @@ final class FormsAnonymousImageReader implements MediaReader {
   }
 }
 
-final class FormsQuestionImageReader implements MediaReader {
+String _requestId() {
+  final bytes = List<int>.generate(16, (_) => Random.secure().nextInt(256));
+  bytes[6] = (bytes[6] & 15) | 64;
+  bytes[8] = (bytes[8] & 63) | 128;
+  final hex = bytes.map((byte) => byte.toRadixString(16).padLeft(2, '0')).join();
+  return '${hex.substring(0, 8)}-${hex.substring(8, 12)}-'
+      '${hex.substring(12, 16)}-${hex.substring(16, 20)}-${hex.substring(20)}';
+}
+
+final class FormsQuestionImageReader implements MediaReader, FormsInlineMediaReader {
   FormsQuestionImageReader({required FormsBackendGateway gateway, DateTime Function()? now})
     : _gateway = gateway,
       _now = now ?? DateTime.now;
   final FormsBackendGateway _gateway;
   final DateTime Function() _now;
+
+  @override
+  Future<FormsInlineMedia> readBytes(MediaReadRequest request) async {
+    try {
+      final media = await _gateway.mediaBytes({
+        'action': 'resolve',
+        'payload': {'purpose': 'question-image', 'asset_id': request.assetId},
+      });
+      return FormsInlineMedia(
+        bytes: media.bytes,
+        mimeType: media.mimeType,
+        expiresAt: _now().toUtc().add(const Duration(minutes: 5)),
+      );
+    } on Object {
+      throw const MediaProtocolException();
+    }
+  }
 
   @override
   Future<MediaReadResult> read(MediaReadRequest request) async {
@@ -103,13 +159,27 @@ final class FormsQuestionImageReader implements MediaReader {
 /// Adapter for the candidate Forms media read envelope. Endpoint support and
 /// server authorization must be verified separately before production wiring.
 /// The consumer supplies its existing session through [SessionMediaReader].
-final class FormsMediaReader implements MediaReader {
+final class FormsMediaReader implements MediaReader, FormsInlineMediaReader {
   FormsMediaReader({required FormsBackendGateway gateway, DateTime Function()? now})
     : _gateway = gateway,
       _now = now ?? DateTime.now;
 
   final FormsBackendGateway _gateway;
   final DateTime Function() _now;
+
+  @override
+  Future<FormsInlineMedia> readBytes(MediaReadRequest request) async {
+    try {
+      final media = await _gateway.mediaBytes({'action': 'read', 'payload': request.toJson()});
+      return FormsInlineMedia(
+        bytes: media.bytes,
+        mimeType: media.mimeType,
+        expiresAt: _now().toUtc().add(const Duration(seconds: 120)),
+      );
+    } on Object {
+      throw const MediaProtocolException();
+    }
+  }
 
   @override
   Future<MediaReadResult> read(MediaReadRequest request) async {

@@ -572,8 +572,7 @@ final class _FormOperationalStatusChip extends StatelessWidget {
 }
 
 (Color, Color) _operationalStatusColors(BuildContext context, FormOperationalStatus status) {
-  final colors =
-      context.coeloStatusColors;
+  final colors = context.coeloStatusColors;
   return switch (status) {
     FormOperationalStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
     FormOperationalStatus.scheduled => (colors.warningContainer, colors.onWarningContainer),

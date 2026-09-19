@@ -14,15 +14,26 @@ void main() {
     final camera = _Camera()..captureGate = Completer<Uint8List>();
     final visible = ValueNotifier<bool>(true);
     addTearDown(visible.dispose);
-    await tester.pumpWidget(MaterialApp(home: ValueListenableBuilder<bool>(
-      valueListenable: visible,
-      builder: (context, value, _) => value
-          ? _SessionOwner(session: session, child: TextButton(
-              onPressed: () => showDialog<Uint8List>(context: context,
-                builder: (_) => FormsCameraCaptureDialog(session: session, createCamera: () => camera)),
-              child: const Text('Open')))
-          : const SizedBox.shrink(),
-    )));
+    await tester.pumpWidget(
+      MaterialApp(
+        home: ValueListenableBuilder<bool>(
+          valueListenable: visible,
+          builder: (context, value, _) => value
+              ? _SessionOwner(
+                  session: session,
+                  child: TextButton(
+                    onPressed: () => showDialog<Uint8List>(
+                      context: context,
+                      builder: (_) =>
+                          FormsCameraCaptureDialog(session: session, createCamera: () => camera),
+                    ),
+                    child: const Text('Open'),
+                  ),
+                )
+              : const SizedBox.shrink(),
+        ),
+      ),
+    );
     await tester.tap(find.text('Open'));
     await tester.pumpAndSettle();
     await tester.tap(find.text('Usar foto'));
@@ -225,6 +236,7 @@ final class _SessionOwnerState extends State<_SessionOwner> {
     unawaited(widget.session.invalidate());
     super.dispose();
   }
+
   @override
   Widget build(BuildContext context) => widget.child;
 }
