@@ -690,16 +690,7 @@ final class InstitutionFormController extends ChangeNotifier {
   bool isPersonValid(InstitutionPersonDraft person) =>
       InstitutionPersonField.values.every((field) => personError(person, field) == null);
 
-  String formatCpf(String value) {
-    final digits = characters.Characters(value.replaceAll(RegExp(r'\D'), '')).take(11).toString();
-    final buffer = StringBuffer();
-    for (var index = 0; index < digits.length; index++) {
-      if (index == 3 || index == 6) buffer.write('.');
-      if (index == 9) buffer.write('-');
-      buffer.write(digits[index]);
-    }
-    return buffer.toString();
-  }
+  String formatCpf(String value) => CoeloCpfInputFormatter.format(value);
 
   String? get trialEndError {
     if (!_attemptedSteps.contains(InstitutionFormStep.plan) ||

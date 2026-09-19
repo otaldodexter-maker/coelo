@@ -105,8 +105,7 @@ final class _ExpandableInstitutionStatusIndicatorState
 (Color, Color) institutionStatusColors(BuildContext context, InstitutionStatus status) {
   final theme = Theme.of(context);
   final statusColors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   final colors = theme.colorScheme;
   return switch (status) {
     InstitutionStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),

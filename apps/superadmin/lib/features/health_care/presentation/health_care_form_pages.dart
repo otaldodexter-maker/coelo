@@ -282,7 +282,7 @@ final class _HealthCareProfileFormPageState extends State<HealthCareProfileFormP
     }
     final discard = await showDialog<bool>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (dialogContext) => CoeloAdminDialogShell(
         dialogKey: const Key('health-care-profile-confirm-exit-dialog'),
         title: 'Sair sem salvar?',

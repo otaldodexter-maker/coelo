@@ -192,6 +192,17 @@ abstract final class CoeloTheme {
           secondaryText: secondaryText,
         ).bodyMedium,
       ),
+      datePickerTheme: DatePickerThemeData(
+        backgroundColor: colorScheme.surface,
+        surfaceTintColor: Colors.transparent,
+        headerBackgroundColor: colorScheme.surface,
+        headerForegroundColor: colorScheme.onSurface,
+        dividerColor: colorScheme.outlineVariant,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(CoeloRadius.lg),
+          side: BorderSide(color: colorScheme.outlineVariant),
+        ),
+      ),
       bottomSheetTheme: BottomSheetThemeData(
         backgroundColor: colorScheme.surface,
         surfaceTintColor: colorScheme.surfaceTint,

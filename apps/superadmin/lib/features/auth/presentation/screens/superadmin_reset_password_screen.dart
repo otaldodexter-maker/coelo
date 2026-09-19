@@ -168,7 +168,7 @@ class _SuperadminResetPasswordScreenState extends State<SuperadminResetPasswordS
 
   Widget _buildProcessing() {
     final theme = Theme.of(context);
-    final status = theme.extension<CoeloStatusColors>()!;
+    final status = context.coeloStatusColors;
 
     return Semantics(
       container: true,
@@ -203,7 +203,7 @@ class _SuperadminResetPasswordScreenState extends State<SuperadminResetPasswordS
     required VoidCallback onBackToLogin,
   }) {
     final theme = Theme.of(context);
-    final status = theme.extension<CoeloStatusColors>()!;
+    final status = context.coeloStatusColors;
     final backgroundColor = isSuccess ? status.successContainer : status.errorContainer;
     final foregroundColor = isSuccess ? status.onSuccessContainer : status.onErrorContainer;
 

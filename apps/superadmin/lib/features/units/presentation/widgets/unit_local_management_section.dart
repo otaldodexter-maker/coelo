@@ -302,7 +302,7 @@ Future<UnitLocalEntry?> _showEntryDialog(
   bool search = false,
 }) => showDialog<UnitLocalEntry>(
   context: context,
-  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  barrierColor: context.coeloScrim,
   builder: (context) => _UnitLocalEntryDialog(kind: kind, initial: initial, search: search),
 );
 

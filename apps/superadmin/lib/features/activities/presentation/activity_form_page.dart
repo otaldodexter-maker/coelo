@@ -260,7 +260,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
     if (controller == null || !controller.isDirty) return true;
     return await showDialog<bool>(
           context: context,
-          barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+          barrierColor: context.coeloScrim,
           builder: (context) => CoeloAdminDialogShell(
             dialogKey: const Key('activity-confirm-exit-dialog'),
             title: 'Sair sem salvar?',

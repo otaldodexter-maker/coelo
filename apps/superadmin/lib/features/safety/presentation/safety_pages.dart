@@ -697,7 +697,7 @@ final class _PendingNotice extends StatelessWidget {
   final int count;
   @override
   Widget build(BuildContext context) {
-    final colors = _statusColors(context);
+    final colors = context.coeloStatusColors;
     return Container(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       decoration: BoxDecoration(
@@ -2404,13 +2404,8 @@ Future<void> _transition(
   if (context.mounted && succeeded) Navigator.of(context).pop();
 }
 
-CoeloStatusColors _statusColors(BuildContext context) =>
-    Theme.of(context).extension<CoeloStatusColors>() ??
-    (Theme.brightnessOf(context) == Brightness.dark
-        ? CoeloStatusColors.dark
-        : CoeloStatusColors.light);
 (Color, Color) _statusPair(BuildContext context, PickupAuthorizationStatus status) {
-  final colors = _statusColors(context);
+  final colors = context.coeloStatusColors;
   return switch (status) {
     PickupAuthorizationStatus.pending => (colors.warningContainer, colors.onWarningContainer),
     PickupAuthorizationStatus.approved => (colors.successContainer, colors.onSuccessContainer),

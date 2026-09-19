@@ -212,7 +212,7 @@ class _PasswordRecoverySuccess extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final status = theme.extension<CoeloStatusColors>()!;
+    final status = context.coeloStatusColors;
 
     return Semantics(
       container: true,

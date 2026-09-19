@@ -891,7 +891,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     await _showOwnedDialog<void>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Prévia do formulário',
         maxWidth: 560,
@@ -908,7 +908,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final generation = _contextGeneration;
     _catalogSearch.clear();
     await _showOwnedDialog<void>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (dialogContext) {
         var query = '';
         return StatefulBuilder(
@@ -1082,7 +1082,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final generation = _contextGeneration;
     if (_sections.length <= 1) return;
     final delete = await _showOwnedDialog<bool>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir seção?',
         body: Text('A seção ${_section.title} e todas as perguntas locais nela serão removidas.'),
@@ -1473,7 +1473,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     final questions = siblings ?? _section.questions;
     final question = questions[index];
     final delete = await _showOwnedDialog<bool>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Excluir pergunta?',
         body: Text('A pergunta ${question.label.text} será removida desta seção.'),
@@ -1509,7 +1509,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     };
     var destination = _sections.indexWhere((section) => section != _section);
     final moved = await _showOwnedDialog<bool>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) => CoeloAdminDialogShell(
           title: 'Mover pergunta para seção',
@@ -1956,7 +1956,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
       return;
     }
     final intent = await _showOwnedDialog<_FormsPublishIntent>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (_) => _FormsPublishDialog(allowSchedule: widget.development),
     );
     if (intent == null || !_isCurrentContext(generation)) return;
@@ -2014,7 +2014,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> {
     _confirmingDiscard = true;
     final generation = _contextGeneration;
     final cancel = await _showOwnedDialog<bool>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Descartar alterações locais?',
         body: Text(

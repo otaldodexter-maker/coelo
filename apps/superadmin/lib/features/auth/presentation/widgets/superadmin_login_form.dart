@@ -134,7 +134,7 @@ class _KeepSessionOpenControlState extends State<_KeepSessionOpenControl> {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>()!;
+    final actionColors = context.coeloActionColors;
     final radius = BorderRadius.circular(CoeloRadius.sm);
 
     return MergeSemantics(

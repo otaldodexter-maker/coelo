@@ -12,14 +12,13 @@ Future<SupportReportDraft?> showSuperadminBugReportDialog(
   ValueChanged<DialogRoute<SupportReportDraft>>? onRouteCreated,
   bool Function()? isContextCurrent,
 }) {
-  final theme = Theme.of(context);
   final navigator = Navigator.of(context, rootNavigator: true);
   final route = DialogRoute<SupportReportDraft>(
     context: context,
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
-    barrierColor: theme.extension<CoeloOverlayColors>()!.scrim,
+    barrierColor: context.coeloScrim,
     builder: (context) => isContextCurrent?.call() == false
         ? const SizedBox.shrink()
         : _SuperadminBugReportDialog(

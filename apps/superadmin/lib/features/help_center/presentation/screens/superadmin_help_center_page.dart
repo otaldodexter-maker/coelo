@@ -263,7 +263,7 @@ class _HistoryPanel extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>()!;
+    final actionColors = context.coeloActionColors;
     return Padding(
       padding: const EdgeInsets.all(CoeloSpacing.space4),
       child: Column(
@@ -340,7 +340,7 @@ class _HistoryRail extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>()!;
+    final actionColors = context.coeloActionColors;
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: CoeloSpacing.space3),
       child: Column(
@@ -404,7 +404,7 @@ class _StackedHistory extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final actionColors = theme.extension<CoeloActionColors>()!;
+    final actionColors = context.coeloActionColors;
     final selected = conversations
         .where((conversation) => conversation.id == selectedId)
         .firstOrNull;

@@ -201,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
       return;
     }
     final adjusted = await _showOwnedDialog<AvatarCropResult>(
-      barrierColor: Colors.black54,
+      barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: bytes),
     );
     if (adjusted != null && mounted && generation == _asyncGeneration) {

@@ -325,7 +325,7 @@ final class ProfileAboutEditor extends StatelessWidget {
     final body = TextEditingController(text: section.body);
     final save = await showDialog<bool>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         dialogKey: const Key('profile-about-section-dialog'),
         title: 'Editar seção',
@@ -373,7 +373,7 @@ final class ProfileAboutEditor extends StatelessWidget {
     final value = TextEditingController(text: field.value);
     final save = await showDialog<bool>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         dialogKey: const Key('profile-about-field-dialog'),
         title: 'Editar informação',
@@ -645,7 +645,7 @@ Future<Map<ProfileAboutFieldKey, String>> confirmProfileAboutOfficialUpdate(
   if (changes.isEmpty || !canUpdateOfficialData) return const {};
   final update = await showDialog<bool>(
     context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+    barrierColor: context.coeloScrim,
     builder: (context) => CoeloAdminDialogShell(
       dialogKey: const Key('profile-about-official-update-dialog'),
       title: 'Atualizar também no cadastro oficial?',

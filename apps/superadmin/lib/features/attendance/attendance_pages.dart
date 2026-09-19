@@ -1807,8 +1807,7 @@ class _AttendanceStateButton extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final isNegative = state == AttendancePresenceState.absent;
     final isAttention =
         state == AttendancePresenceState.late || state == AttendancePresenceState.lateAndEarly;
@@ -1867,8 +1866,7 @@ class _AttendanceStatusLabel extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final label = state == AttendancePresenceState.absent ? 'Falta' : state.label;
     final (backgroundColor, foregroundColor) = switch (state) {
       AttendancePresenceState.unmarked => (colors.surfaceContainerHighest, colors.onSurfaceVariant),

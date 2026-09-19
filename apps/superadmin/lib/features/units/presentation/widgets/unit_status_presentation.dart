@@ -6,8 +6,7 @@ import '../../domain/unit_directory.dart';
 (Color, Color) unitStatusColors(BuildContext context, UnitStatus status) {
   final theme = Theme.of(context);
   final statusColors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     UnitStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     UnitStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),

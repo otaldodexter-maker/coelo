@@ -8,7 +8,7 @@ Future<bool> showInstitutionExitDialog(
 }) async {
   final result = await showDialog<bool>(
     context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+    barrierColor: context.coeloScrim,
     builder: (context) => CoeloAdminDialogShell(
       dialogKey: const Key('institution-confirm-exit-dialog'),
       title: 'Sair sem salvar?',
@@ -35,7 +35,7 @@ Future<bool> showInstitutionSubscriptionDialog(
 }) async {
   return await showDialog<bool>(
         context: context,
-        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+        barrierColor: context.coeloScrim,
         builder: (context) => CoeloAdminDialogShell(
           dialogKey: const Key('institution-subscription-dialog'),
           title: title,

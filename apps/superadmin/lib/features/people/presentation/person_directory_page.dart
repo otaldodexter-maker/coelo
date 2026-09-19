@@ -663,8 +663,7 @@ final class _PersonStatusIndicatorState extends State<_PersonStatusIndicator> {
   final theme = Theme.of(context);
   final colors = theme.colorScheme;
   final statusColors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     PersonStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     PersonStatus.inactive => (statusColors.errorContainer, statusColors.onErrorContainer),

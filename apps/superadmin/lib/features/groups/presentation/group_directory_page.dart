@@ -673,8 +673,7 @@ final class _GroupStatusChip extends StatelessWidget {
 (Color, Color) _groupStatusColors(BuildContext context, GroupStatus status) {
   final theme = Theme.of(context);
   final colors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     GroupStatus.active => (colors.successContainer, colors.onSuccessContainer),
     GroupStatus.suspended => (colors.errorContainer, colors.onErrorContainer),

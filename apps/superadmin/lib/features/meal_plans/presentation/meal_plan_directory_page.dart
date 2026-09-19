@@ -1088,10 +1088,7 @@ final class _MealPlanStatusIndicator extends StatelessWidget {
 
 (Color, Color) _statusColors(BuildContext context, MealPlanStatus status) {
   final colors =
-      Theme.of(context).extension<CoeloStatusColors>() ??
-      (Theme.brightnessOf(context) == Brightness.dark
-          ? CoeloStatusColors.dark
-          : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     MealPlanStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
     MealPlanStatus.inReview => (colors.warningContainer, colors.onWarningContainer),

@@ -1601,7 +1601,7 @@ class _OnboardingTourButtonState extends State<_OnboardingTourButton>
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
-    final visual = theme.extension<CoeloVisualColors>()!;
+    final visual = context.coeloVisualColors;
     return CoeloAdminFlyout<String>(
       items: _tourFlyoutItems,
       onSelected: (selection) {
@@ -1974,8 +1974,7 @@ class _CarrotThumb extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final visual = theme.extension<CoeloVisualColors>()!;
+    final visual = context.coeloVisualColors;
     return Container(
       width: size,
       height: size,

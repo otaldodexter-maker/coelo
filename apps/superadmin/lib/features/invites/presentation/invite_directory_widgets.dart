@@ -225,10 +225,7 @@ final class _InviteCardStatus extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColors =
-        Theme.of(context).extension<CoeloStatusColors>() ??
-        (Theme.brightnessOf(context) == Brightness.dark
-            ? CoeloStatusColors.dark
-            : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final (background, foreground) = switch (status) {
       InviteStatus.pending => (statusColors.warningContainer, statusColors.onWarningContainer),
       InviteStatus.accepted => (statusColors.successContainer, statusColors.onSuccessContainer),

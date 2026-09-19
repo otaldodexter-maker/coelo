@@ -138,7 +138,7 @@ Future<void> showNoticePreview(
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
-    barrierColor: Colors.black54,
+    barrierColor: context.coeloScrim,
     builder: (_) => isContextCurrent?.call() == false
         ? const SizedBox.shrink()
         : NoticePreviewDialog(

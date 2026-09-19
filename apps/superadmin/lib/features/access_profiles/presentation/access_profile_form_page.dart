@@ -297,7 +297,7 @@ final class _AccessProfileFormPageState extends State<AccessProfileFormPage> {
     final navigator = Navigator.of(context, rootNavigator: true);
     final route = DialogRoute<bool>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: builder,
     );
     _ownedDialogs.add(route);

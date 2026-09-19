@@ -426,7 +426,7 @@ final class _ActivityDirectoryContentState extends State<_ActivityDirectoryConte
     if (options == null || widget.onDuplicateTemplate == null) return;
     await showDialog<void>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => _ActivityTemplateCopyDialog(
         template: template,
         institutions: options.institutions,
@@ -1972,8 +1972,7 @@ final class _ActivityStatusChip extends StatelessWidget {
 (Color, Color) _activityStatusColors(BuildContext context, ActivityStatus status) {
   final theme = Theme.of(context);
   final statusColors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     ActivityStatus.active => (statusColors.successContainer, statusColors.onSuccessContainer),
     ActivityStatus.suspended => (statusColors.errorContainer, statusColors.onErrorContainer),

@@ -311,10 +311,9 @@ final class _InviteDirectoryPageState extends State<InviteDirectoryPage> {
 
   Future<T?> _showOwnedDialog<T>({required WidgetBuilder builder}) async {
     final navigator = Navigator.of(context, rootNavigator: true);
-    final overlay = Theme.of(context).extension<CoeloOverlayColors>();
     final route = DialogRoute<T>(
       context: context,
-      barrierColor: overlay?.scrim ?? Colors.black54,
+      barrierColor: context.coeloScrim,
       builder: builder,
     );
     final owned = _OwnedInviteOverlay(navigator, route);

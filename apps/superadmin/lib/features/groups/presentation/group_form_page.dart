@@ -1960,7 +1960,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
     final identityRepository = widget.personIdentityRepository;
     final result = await showDialog<_GroupPersonBinding>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (dialogContext) => _GroupPersonDialog(
         mode: 'search',
         title: 'Buscar usuário',
@@ -2041,7 +2041,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
   }) {
     return showDialog<_GroupPersonBinding>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => _GroupPersonDialog(
         mode: 'person',
         title: title,
@@ -2057,7 +2057,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
 
   Future<_GroupInviteBinding?> _showInviteDialog() => showDialog<_GroupInviteBinding>(
     context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+    barrierColor: context.coeloScrim,
     builder: (context) => _GroupInviteDialog(
       mode: 'invite',
       title: 'Convidar usuário para a turma',

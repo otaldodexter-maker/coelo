@@ -66,7 +66,7 @@ final class _PersonHandleSectionState extends State<PersonHandleSection> {
     if (current == null) return;
     final changed = await showDialog<PersonHandle>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (_) => _ChangeHandleDialog(repository: widget.repository, current: current),
     );
     if (changed != null && mounted) setState(() => _handle = changed);

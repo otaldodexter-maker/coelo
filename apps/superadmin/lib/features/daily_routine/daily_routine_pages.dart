@@ -830,8 +830,7 @@ final class _RoutineStatusIndicator extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final normalized = status.trim().toLowerCase();
     final label = routineStatusLabel(status);
     final colors = switch (normalized) {

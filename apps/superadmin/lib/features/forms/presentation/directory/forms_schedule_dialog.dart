@@ -51,7 +51,7 @@ Future<bool?> showFormsScheduleDialog({
   String? unavailableReason,
 }) => showDialog<bool>(
   context: context,
-  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  barrierColor: context.coeloScrim,
   builder: (context) => _FormsScheduleDialog(
     initialValue: initialValue,
     onSave: onSave,
@@ -70,7 +70,7 @@ Future<void> showFormsProductionScheduleDialog({
   VoidCallback? onSaved,
 }) => showDialog<void>(
   context: context,
-  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  barrierColor: context.coeloScrim,
   builder: (context) => _FormsProductionAudienceDialog(
     api: api,
     contextApi: contextApi,

@@ -517,8 +517,7 @@ final class _PlanStatusIndicator extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final pair = plan.status == PlanStatus.active
         ? (statusColors.successContainer, statusColors.onSuccessContainer)
         : (colors.surfaceContainerHighest, colors.onSurfaceVariant);

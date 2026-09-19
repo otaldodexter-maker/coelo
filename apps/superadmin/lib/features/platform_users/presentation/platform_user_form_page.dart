@@ -283,7 +283,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     _lastName.text = record.lastName;
     _displayName.text = record.identity.displayName;
     _birthDateValue = record.identity.birthDate;
-    _cpf.text = _formatCpfInput(record.identity.cpf);
+    _cpf.text = CoeloCpfInputFormatter.format(record.identity.cpf);
     _email.text = record.email;
     _mobile.text = record.identity.mobile;
     _additionalPhone.text = record.identity.additionalPhone;
@@ -758,7 +758,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
             Icons.fingerprint,
             key: const Key('platform-user-cpf'),
             keyboardType: TextInputType.number,
-            inputFormatters: const [_CpfInputFormatter()],
+            inputFormatters: const [CoeloCpfInputFormatter()],
             validator: (value) =>
                 value == null || !isValidPlatformUserCpf(value) ? 'Informe um CPF válido.' : null,
           ),
@@ -772,7 +772,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     final file = await pickInstitutionLogo();
     if (file == null || !mounted || !_isCurrent(revision)) return;
     final adjusted = await _showOwnedDialog<AvatarCropResult>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim ?? Colors.black54,
+      barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
     if (adjusted == null || !_isCurrent(revision)) return;
@@ -1212,7 +1212,7 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
     final route = DialogRoute<T>(
       context: context,
       builder: builder,
-      barrierColor: barrierColor ?? Theme.of(context).dialogTheme.barrierColor ?? Colors.black54,
+      barrierColor: barrierColor ?? context.coeloScrim,
     );
     _ownedDialogs.add(route);
     try {
@@ -1237,29 +1237,4 @@ final class _PlatformUserFormPageState extends State<PlatformUserFormPage> {
 
 final class _CancelIntent extends Intent {
   const _CancelIntent();
-}
-
-final class _CpfInputFormatter extends TextInputFormatter {
-  const _CpfInputFormatter();
-
-  @override
-  TextEditingValue formatEditUpdate(TextEditingValue oldValue, TextEditingValue newValue) {
-    final digits = normalizePlatformUserDigits(newValue.text);
-    final formatted = _formatCpfInput(digits.length > 11 ? digits.substring(0, 11) : digits);
-    return TextEditingValue(
-      text: formatted,
-      selection: TextSelection.collapsed(offset: formatted.length),
-    );
-  }
-}
-
-String _formatCpfInput(String value) {
-  final digits = normalizePlatformUserDigits(value);
-  final buffer = StringBuffer();
-  for (var index = 0; index < digits.length && index < 11; index++) {
-    if (index == 3 || index == 6) buffer.write('.');
-    if (index == 9) buffer.write('-');
-    buffer.write(digits[index]);
-  }
-  return buffer.toString();
 }

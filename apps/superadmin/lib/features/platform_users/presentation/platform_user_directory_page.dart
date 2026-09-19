@@ -825,10 +825,7 @@ final class _MembershipStatusDot extends StatelessWidget {
   Widget build(BuildContext context) {
     final colors = Theme.of(context).colorScheme;
     final statusColors =
-        Theme.of(context).extension<CoeloStatusColors>() ??
-        (Theme.of(context).brightness == Brightness.dark
-            ? CoeloStatusColors.dark
-            : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final (background, foreground) = switch (status) {
       PlatformMembershipStatus.active => (
         statusColors.successContainer,
@@ -856,10 +853,7 @@ final class _MembershipStatusDot extends StatelessWidget {
 Widget _statusChip(BuildContext context, PlatformMembershipStatus status) {
   final colors = Theme.of(context).colorScheme;
   final statusColors =
-      Theme.of(context).extension<CoeloStatusColors>() ??
-      (Theme.of(context).brightness == Brightness.dark
-          ? CoeloStatusColors.dark
-          : CoeloStatusColors.light);
+      context.coeloStatusColors;
   final (background, foreground) = switch (status) {
     PlatformMembershipStatus.active => (
       statusColors.successContainer,

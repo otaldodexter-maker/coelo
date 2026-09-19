@@ -154,7 +154,7 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
             : FormCopyOrMoveMode.move;
         final target = await showDialog<String>(
           context: context,
-          barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+          barrierColor: context.coeloScrim,
           builder: (_) => _TransferDialog(mode: mode, formTitle: widget.formTitle),
         );
         if (target == null || !mounted) return;
@@ -212,7 +212,7 @@ final class _FormsLifecycleActionsState extends State<FormsLifecycleActions> {
   }) async =>
       await showDialog<bool>(
         context: context,
-        barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+        barrierColor: context.coeloScrim,
         builder: (dialogContext) => CoeloAdminDialogShell(
           title: title,
           closeTooltip: 'Fechar confirmação',

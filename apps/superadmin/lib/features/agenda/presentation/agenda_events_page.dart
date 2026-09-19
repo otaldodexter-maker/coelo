@@ -529,10 +529,7 @@ final class _AgendaEventStatusChip extends StatelessWidget {
 
 (Color, Color) _statusColors(BuildContext context, AgendaItemStatus status) {
   final colors =
-      Theme.of(context).extension<CoeloStatusColors>() ??
-      (Theme.brightnessOf(context) == Brightness.dark
-          ? CoeloStatusColors.dark
-          : CoeloStatusColors.light);
+      context.coeloStatusColors;
   return switch (status) {
     AgendaItemStatus.draft => (colors.historyContainer, colors.onHistoryContainer),
     AgendaItemStatus.scheduled => (colors.warningContainer, colors.onWarningContainer),

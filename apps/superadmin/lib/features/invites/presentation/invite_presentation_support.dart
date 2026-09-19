@@ -36,10 +36,7 @@ final class InviteStatusChip extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final statusColors =
-        Theme.of(context).extension<CoeloStatusColors>() ??
-        (Theme.brightnessOf(context) == Brightness.dark
-            ? CoeloStatusColors.dark
-            : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final (background, foreground, icon) = switch (status) {
       InviteStatus.pending => (
         statusColors.warningContainer,
@@ -78,14 +75,13 @@ Future<bool> showInviteRevokeConfirmation(
   bool Function()? isContextCurrent,
 }) async {
   final colors = Theme.of(context).colorScheme;
-  final overlay = Theme.of(context).extension<CoeloOverlayColors>();
   final navigator = Navigator.of(context, rootNavigator: true);
   final route = DialogRoute<bool>(
     context: context,
     themes: InheritedTheme.capture(from: context, to: navigator.context),
     animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
     traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
-    barrierColor: overlay?.scrim ?? Colors.black54,
+    barrierColor: context.coeloScrim,
     builder: (dialogContext) => isContextCurrent?.call() == false
         ? const SizedBox.shrink()
         : CoeloAdminDialogShell(

@@ -173,7 +173,7 @@ final class _AccessProfileDirectoryContent extends StatelessWidget {
   ) async {
     final choice = await showDialog<String>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         dialogKey: const Key('access-profile-create-mode-dialog'),
         title: 'Como criar o perfil?',

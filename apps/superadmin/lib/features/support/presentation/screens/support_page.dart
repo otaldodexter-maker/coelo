@@ -385,7 +385,7 @@ class _SupportPageState extends State<SupportPage> {
       animationStyle: MediaQuery.disableAnimationsOf(context) ? AnimationStyle.noAnimation : null,
       traversalEdgeBehavior: TraversalEdgeBehavior.closedLoop,
       barrierDismissible: false,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (_) {
         if (!isCurrent()) return const SizedBox.shrink();
         return _DraggableSupportDialog(
@@ -541,7 +541,7 @@ class _SupportPageState extends State<SupportPage> {
   Future<String?> _chooseOwner() {
     return showDialog<String>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => CoeloAdminDialogShell(
         title: 'Escolha o responsável',
         body: ConstrainedBox(
@@ -593,7 +593,7 @@ class _SupportPageState extends State<SupportPage> {
   }
 
   Widget _chip(SupportTicketStatus status, {String? closureReason}) {
-    final c = Theme.of(context).extension<CoeloStatusColors>()!;
+    final c = context.coeloStatusColors;
     final colors = switch (status) {
       SupportTicketStatus.newRequest => (c.infoContainer, c.onInfoContainer),
       SupportTicketStatus.inProgress => (c.warningContainer, c.onWarningContainer),

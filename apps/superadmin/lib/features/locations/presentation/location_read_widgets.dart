@@ -29,8 +29,7 @@ String locationOptionalText(String? text) => text == null || text.isEmpty ? 'Nã
 Widget locationStatusIndicator(BuildContext context, LocationCatalogEntry item) {
   final theme = Theme.of(context);
   final colors =
-      theme.extension<CoeloStatusColors>() ??
-      (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+      context.coeloStatusColors;
   final (background, foreground) = switch (item.status) {
     LocationCatalogStatus.active => (colors.successContainer, colors.onSuccessContainer),
     LocationCatalogStatus.draft => (colors.warningContainer, colors.onWarningContainer),

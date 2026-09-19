@@ -389,7 +389,7 @@ final class _CircularTableRows extends StatelessWidget {
 
 Widget _status(BuildContext context, CircularStatus status) {
   final colors = Theme.of(context).colorScheme;
-  final statusColors = Theme.of(context).extension<CoeloStatusColors>();
+  final statusColors = context.coeloStatusColors;
   final (label, background, foreground) = switch (status) {
     CircularStatus.draft => ('Rascunho', colors.surfaceContainerHighest, colors.onSurface),
     CircularStatus.scheduled => (
@@ -399,8 +399,8 @@ Widget _status(BuildContext context, CircularStatus status) {
     ),
     CircularStatus.published => (
       'Publicada',
-      statusColors?.successContainer ?? colors.primaryContainer,
-      statusColors?.onSuccessContainer ?? colors.onPrimaryContainer,
+      statusColors.successContainer,
+      statusColors.onSuccessContainer,
     ),
     CircularStatus.closed => ('Encerrada', colors.tertiaryContainer, colors.onTertiaryContainer),
     CircularStatus.archived => ('Arquivada', colors.errorContainer, colors.onErrorContainer),

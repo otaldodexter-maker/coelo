@@ -944,7 +944,7 @@ Future<InstitutionPersonDraft?> _showPersonDialog(
   InstitutionPersonDraft? initialValue,
 }) => showDialog<InstitutionPersonDraft>(
   context: context,
-  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  barrierColor: context.coeloScrim,
   builder: (context) =>
       _PersonEditorDialog(controller: controller, title: title, initialPerson: initialValue),
 );
@@ -961,7 +961,7 @@ Future<_AdministratorDialogResult?> _showAdministratorDialog(
       InstitutionAdministratorLevel.authorizedAdministrator,
 }) => showDialog<_AdministratorDialogResult>(
   context: context,
-  barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+  barrierColor: context.coeloScrim,
   builder: (context) => _PersonEditorDialog(
     controller: controller,
     title: title,
@@ -1106,16 +1106,7 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
             'CPF (opcional)',
             'cpf',
             keyboardType: TextInputType.number,
-            onChanged: (value) {
-              final formatted = widget.controller.formatCpf(value);
-              if (_cpf.text != formatted) {
-                _cpf.value = TextEditingValue(
-                  text: formatted,
-                  selection: TextSelection.collapsed(offset: formatted.length),
-                );
-              }
-              setState(() {});
-            },
+            inputFormatters: const [CoeloCpfInputFormatter()],
           ),
           if (widget.initialLevel != null)
             _dropdown<InstitutionAdministratorLevel>(
@@ -1139,12 +1130,14 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     TextInputType? keyboardType,
     FocusNode? focusNode,
     ValueChanged<String>? onChanged,
+    List<TextInputFormatter>? inputFormatters,
   }) => CoeloFormTextField(
     controller: controller,
     fieldKey: Key('institution-person-$keyName'),
     labelText: label,
     keyboardType: keyboardType,
     focusNode: focusNode,
+    inputFormatters: inputFormatters,
     prefixIcon: Icons.person_outline_rounded,
     errorText: _personError(keyName),
     onChanged: onChanged ?? (_) => setState(() {}),
@@ -1209,7 +1202,7 @@ final class _PersonEditorDialogState extends State<_PersonEditorDialog> {
     if (!mounted) return;
     final adjusted = await showDialog<AvatarCropResult>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
     if (adjusted == null || !mounted) return;
@@ -2501,29 +2494,12 @@ final class _DateControl extends StatelessWidget {
     return InkWell(
       key: controlKey,
       onTap: () async {
-        final colors = Theme.of(context).colorScheme;
         final selected = await showDatePicker(
           context: context,
           locale: const Locale('pt', 'BR'),
           initialDate: value ?? DateUtils.dateOnly(DateTime.now()),
           firstDate: DateTime(2020),
           lastDate: DateTime(2035),
-          builder: (context, child) => Theme(
-            data: Theme.of(context).copyWith(
-              datePickerTheme: DatePickerThemeData(
-                backgroundColor: colors.surface,
-                surfaceTintColor: Colors.transparent,
-                headerBackgroundColor: colors.surface,
-                headerForegroundColor: colors.onSurface,
-                dividerColor: colors.outlineVariant,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(CoeloRadius.lg),
-                  side: BorderSide(color: colors.outlineVariant),
-                ),
-              ),
-            ),
-            child: child!,
-          ),
         );
         if (selected != null) {
           onChanged(selected);

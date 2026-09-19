@@ -111,7 +111,7 @@ final class _IdentitySection extends StatelessWidget {
     if (file == null || !context.mounted) return;
     final result = await showDialog<AvatarCropResult>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => AvatarCropDialog(bytes: file.bytes),
     );
     if (result != null) controller.setImage(name: file.name, bytes: result.bytes);
@@ -382,7 +382,7 @@ final class _StructureSection extends StatelessWidget {
     if (institutionId == null || controller.selectedUnitIds.isEmpty) return;
     final options = await showDialog<List<ActivityFormLocationOption>>(
       context: context,
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+      barrierColor: context.coeloScrim,
       builder: (context) => _CreateLocationDialog(
         institutionId: institutionId,
         units: controller.units
@@ -1570,7 +1570,7 @@ final class _ProfessionalsSection extends StatelessWidget {
     ActivityAssignmentRole role = ActivityAssignmentRole.instructor,
   }) => showDialog<void>(
     context: context,
-    barrierColor: Theme.of(context).extension<CoeloOverlayColors>()!.scrim,
+    barrierColor: context.coeloScrim,
     builder: (context) =>
         _ProfessionalPickerDialog(controller: controller, groupId: groupId, role: role),
   );

@@ -643,7 +643,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
         case _NoticeCardAction.preview:
           _actionRequestIds.remove(requestKey);
           await _showOwnedDialog<void>(
-            barrierColor: Colors.black54,
+            barrierColor: context.coeloScrim,
             builder: (_) => NoticePreviewDialog(notice: notice),
           );
           return;
@@ -787,7 +787,7 @@ final class _NoticeDirectoryPageState extends State<NoticeDirectoryPage> {
   Future<String?> _requestCancellationReason() async {
     final controller = TextEditingController();
     final result = await _showOwnedDialog<String>(
-      barrierColor: Theme.of(context).extension<CoeloOverlayColors>()?.scrim,
+      barrierColor: context.coeloScrim,
       builder: (dialogContext) => StatefulBuilder(
         builder: (context, setDialogState) {
           final reason = controller.text.trim();

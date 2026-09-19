@@ -84,8 +84,7 @@ final class _PopupSurface extends StatelessWidget {
     final theme = Theme.of(context);
     final colors = theme.colorScheme;
     final statusColors =
-        theme.extension<CoeloStatusColors>() ??
-        (theme.brightness == Brightness.dark ? CoeloStatusColors.dark : CoeloStatusColors.light);
+        context.coeloStatusColors;
     final backgroundColor = notice.backgroundColorValue == null
         ? _backgroundFallback(colors, statusColors, notice.backgroundTone)
         : Color(notice.backgroundColorValue!);
