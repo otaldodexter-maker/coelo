@@ -381,6 +381,8 @@ class _InstitutionStatusTabs extends StatelessWidget {
         CoeloAdminUnderlineTab(value: InstitutionStatus.active, label: 'Ativos'),
         CoeloAdminUnderlineTab(value: InstitutionStatus.onboarding, label: 'Em Implantação'),
         CoeloAdminUnderlineTab(value: InstitutionStatus.inactive, label: 'Inativos'),
+        // spec 066: excluídas com vínculos ficam no histórico (só aqui).
+        CoeloAdminUnderlineTab(value: InstitutionStatus.archived, label: 'Arquivadas'),
       ],
       onSelected: (status) => viewModel.setStatuses(status == null ? const {} : {status}),
     );

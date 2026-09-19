@@ -198,7 +198,28 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
           templates: catalog.templates,
         );
       } else if (initialInstitutionId != null) {
-        options = await repository.fetchFormOptions(institutionId: initialInstitutionId);
+        // Instituicao fixa pela rota: a form_options_v2 nao traz a lista de
+        // instituicoes (e o @ dela, lote 101); o catalogo entra pela mesma
+        // chamada da criacao livre para a previa do @ ficar completa.
+        final scoped = await repository.fetchFormOptions(institutionId: initialInstitutionId);
+        ActivityTemplateOptions catalog;
+        try {
+          catalog = await repository.fetchTemplateOptions(institutionId: initialInstitutionId);
+        } on ActivityDirectoryUnauthorizedException {
+          rethrow;
+        } on Exception {
+          catalog = const ActivityTemplateOptions();
+        }
+        options = ActivityFormOptions(
+          institutions: scoped.institutions.isNotEmpty ? scoped.institutions : catalog.institutions,
+          units: scoped.units,
+          locations: scoped.locations,
+          groups: scoped.groups,
+          professionals: scoped.professionals,
+          students: scoped.students,
+          taxonomy: scoped.taxonomy.isNotEmpty ? scoped.taxonomy : catalog.taxonomy,
+          templates: scoped.templates.isNotEmpty ? scoped.templates : catalog.templates,
+        );
       } else {
         try {
           options = _formOptionsFromTemplates(await repository.fetchTemplateOptions());

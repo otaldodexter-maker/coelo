@@ -60,6 +60,12 @@ Versão anterior em `docs/archive/skills-20260918/`.
 - @ (Decisão 16): campo "@ da unidade/turma (opcional)"; vazio, o servidor gera
   o padrão e a nota mostra a prévia (`structure_handle_preview.dart`); na
   criação o valor viaja como `handle` no payload; na edição só "Alterar @".
+- @ completo (lote 100): unidade `nomedaunidade.instituicao`, turma `nomedaturma.@daunidade`,
+  atividade `stem.@dainstituicao` (stem = segmento sem hífen, `[a-z0-9_]`). A prévia usa o
+  `handle` que as opções trazem (instituição em `ActivityFormInstitutionOption`, unidade em
+  `GroupDirectoryFilterOption`); a disponibilidade da atividade envia o @ completo
+  (`stem.@instituição`) porque o servidor só confere unicidade do @ inteiro. Cooldown de
+  "Alterar @" mostra `next_allowed_at` (`StructureHandleChange.nextAllowedAt`).
 - Negação com motivo (lote 91): `PT403`/`STAFF_ACCESS_DENIED` é reconhecido uma vez só, em `StaffAccessDeniedHttpClient` (o `httpClient` do `Supabase.initialize`) e publicado em `staffAccessDenied`; `StaffAccessDeniedListener` mostra o popup (raiz do app e rota do Principal). Repositório não trata esse código.
 - Campos da regra de acesso (superfícies, janelas, vigência, popup) vivem em `features/staff_access/presentation/staff_access_rule_fields.dart` (`StaffAccessRuleEditor` e blocos) e são reutilizados pelo passo "Utilização do app" do perfil; não duplique.
 - Comando novo numa tela com muitos fakes de teste (`implements XRepository`): não engorde a interface; crie uma interface pequena (`InstitutionLifecycleCommands`, `NoticeCtaTargetOptionsReader`, `LocationMapReader/Writer`) implementada pelo repositório Supabase e passada como parâmetro opcional — sem ela o menu/seletor some.

@@ -1378,6 +1378,12 @@ final class _InitialScopeRepository extends FakeActivityDirectoryRepository {
         ? (pending[institutionId] ??= Completer<ActivityFormOptions>()).future
         : Future.value(options);
   }
+
+  // O catalogo (instituicoes com @) e carregado junto da instituicao fixa; aqui
+  // nao passa pela form_options para nao contar como chamada de escopo.
+  @override
+  Future<ActivityTemplateOptions> fetchTemplateOptions({String? institutionId}) async =>
+      const ActivityTemplateOptions();
 }
 
 final class _DelayedActivityRepository implements ActivityDirectoryRepository {
