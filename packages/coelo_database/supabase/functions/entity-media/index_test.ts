@@ -10,3 +10,10 @@ Deno.test("entity gateway: bytes pela Edge, ticket no Postgres, sem segredo no c
   assertEquals(source.includes("origin_not_allowed"), true);
   assertEquals(source.includes("x-coelo-asset-id"), true, "upload binario identifica o asset pelo cabecalho");
 });
+
+Deno.test("entity gateway: svg do icone e leitor do Principal", async () => {
+  const source = await Deno.readTextFile(new URL("./index.ts", import.meta.url));
+  assertEquals(source.includes("isAcceptableSvg"), true, "svg passa pelo contrato estreito");
+  assertEquals(source.includes('"icon_vector"'), true);
+  assertEquals(source.includes('"principal_entity_image_authorize_read_v1"'), true, "responsavel le pela regra do Postgres");
+});

@@ -1,10 +1,10 @@
--- Prova pgTAP da migration 20260919210000_media_entity_images_list_v1 (lote 87).
+-- Prova pgTAP das migrations 20260919210000_media_entity_images_list_v1 (lote 87) e 20260919211000_media_entity_images_expire_cron_v1 (lote 88).
 -- Fixture sintética com rollback (prefixo e2): instituição A (unidade A1, turma, atividade) e B (unidade B1).
 -- P: owner de plataforma com escopo em A. Q: owner com escopo em B. L: professora em A (só leitura).
 -- G1: responsável com guardian_links + can_view em A (sem membership). G2: responsável sem can_view.
 begin;
 create extension if not exists pgtap with schema extensions;
-select plan(32);
+select plan(34);
 
 create function pg_temp.e2(n integer) returns uuid language sql immutable as $$
   select ('e2000000-0000-4000-8000-'||lpad(n::text,12,'0'))::uuid;
@@ -40,7 +40,8 @@ select ok((select bool_and(has_function_privilege('authenticated',p.oid,'execute
 select ok(not has_function_privilege('authenticated','public.superadmin_entity_image_expire_v1(integer)','execute')
   and has_function_privilege('service_role','public.superadmin_entity_image_expire_v1(integer)','execute'),'expire: service_role only');
 select ok(exists(select 1 from cron.job where jobname='coelo-entity-media-expire'),'cron job coelo-entity-media-expire scheduled');
-select is((select app_private.entity_media_dispatch_expire_worker()), null, 'dispatch is a no-op while Vault secrets are missing');
+select is((select command from cron.job where jobname='coelo-entity-media-expire'), 'select app_private.entity_image_expire_drafts_v1(200);', 'cron expires drafts directly in Postgres (no Edge, no secret)');
+select ok(to_regprocedure('app_private.entity_media_dispatch_expire_worker()') is null, 'lote 87 dispatch function is gone');
 
 -- fixture ------------------------------------------------------------------------------------------
 insert into public.institution_types(id,code,name,status) values (pg_temp.e2(1),'e2-type','E2 type','active');
@@ -151,6 +152,8 @@ select pg_temp.as_service();
 select is((select (public.superadmin_entity_image_expire_v1(10))->>'expired'), '1', 'service_role expires the stale draft');
 select is((select status from public.entity_image_assets where request_id=pg_temp.e2(530)), 'inactive', 'expired draft is inactive');
 select is((select (public.superadmin_entity_image_expire_v1(10))->>'expired'), '0', 'second run finds nothing');
+update public.entity_image_assets set status='draft', revoked_at=null where request_id = pg_temp.e2(530);
+select is((select app_private.entity_image_expire_drafts_v1(200)), 1, 'cron function expires the stale draft without any JWT');
 
 select * from finish();
 rollback;

@@ -451,6 +451,9 @@
 # ícone vetorial 'icon_vector' (image/svg+xml ≤256 KiB) ao lado do PNG, superadmin_entity_image_expire_v1 (service_role) +
 # app_private.entity_media_dispatch_expire_worker + cron coelo-entity-media-expire (*/10). pgTAP media_entity_images_list_v1_test 32/32 no espelho.
 20260919210000_media_entity_images_list_v1.sql
+# Lote 88 (MÍDIA-E2E 19/09): expiração dos rascunhos de entity_image_assets direto no Postgres
+# (app_private.entity_image_expire_drafts_v1 pelo cron coelo-entity-media-expire, sem Edge/Vault/segredo; dispatch do 87 removido).
+20260919211000_media_entity_images_expire_cron_v1.sql
 # Lote 91 (Sessão ETAPA-3, 19/09/2026): Avisos spec 069. platform_notices.cta_target_kind/cta_target_id (destino interno do
 # CTA: circular | form | invite | notice; validado contra o catálogo e a audiência por instituição); superadmin_notice_json expõe
 # cta_target (Superadmin e leitor do Principal); save_draft_v2 aceita cta_target; superadmin_notice_duplicate_v2 (notices.publish,

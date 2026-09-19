@@ -5,12 +5,19 @@ import { createClient } from "@supabase/supabase-js";
 
 import { matchesDeclaredType, sha256Hex } from "../chat-media/stored_bytes.ts";
 import { EntityR2Client, entityR2Config } from "./r2_s3.ts";
+import { isAcceptableSvg, maximumSvgBytes } from "./svg_contract.ts";
 
 type Json = Record<string, unknown>;
-const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp"]);
+const allowedMimeTypes = new Set(["image/jpeg", "image/png", "image/webp", "image/svg+xml"]);
 const maximumBytes = 5 * 1024 * 1024;
 const entityKinds = new Set(["institution", "unit", "group", "activity", "person"]);
-const imageKinds = new Set(["profile", "cover", "icon"]);
+const imageKinds = new Set(["profile", "cover", "icon", "icon_vector"]);
+
+// Assinatura real dos bytes: raster pelo cabeçalho; SVG pelo contrato estreito (sem script/href/externo).
+function bytesMatchDeclaredType(bytes: Uint8Array, contentType: string) {
+  if (contentType === "image/svg+xml") return isAcceptableSvg(bytes);
+  return matchesDeclaredType(bytes, contentType);
+}
 
 function allowedOrigins() {
   return new Set((Deno.env.get("ENTITY_MEDIA_ALLOWED_ORIGINS") ?? Deno.env.get("COELO_ALLOWED_ORIGINS") ?? "")
@@ -59,6 +66,8 @@ function input(body: Json) {
     typeof body.content_type !== "string" || !allowedMimeTypes.has(body.content_type) ||
     typeof body.byte_size !== "number" || !Number.isSafeInteger(body.byte_size) ||
     body.byte_size < 1 || body.byte_size > maximumBytes || typeof body.sha256 !== "string" ||
+    ((body.image_kind === "icon_vector") !== (body.content_type === "image/svg+xml")) ||
+    (body.content_type === "image/svg+xml" && body.byte_size > maximumSvgBytes) ||
     !/^[0-9a-f]{64}$/.test(body.sha256) ||
     (body.icon_spec != null && (typeof body.icon_spec !== "object" || Array.isArray(body.icon_spec)))) {
     throw new Error("invalid_request");
@@ -86,6 +95,8 @@ Deno.serve(async (request) => {
       ? { action: "upload", asset_id: request.headers.get("x-coelo-asset-id") } as Json
       : await request.json() as Json;
     const url = requiredSecret("SUPABASE_URL");
+    const r2 = new EntityR2Client(entityR2Config(environment()));
+
     const authorization = request.headers.get("authorization");
     if (!authorization?.startsWith("Bearer ")) return reply(origin, 401, { error: "authentication_required" });
     const user = createClient(url, requiredSecret("SUPABASE_ANON_KEY"), {
@@ -93,7 +104,6 @@ Deno.serve(async (request) => {
     });
     const identity = await user.auth.getUser();
     if (identity.error || !identity.data.user) return reply(origin, 401, { error: "authentication_required" });
-    const r2 = new EntityR2Client(entityR2Config(environment()));
 
     if (body.action === "prepare") {
       const value = input(body);
@@ -110,7 +120,7 @@ Deno.serve(async (request) => {
       const contentType = String(ticket.content_type);
       const sha256 = await sha256Hex(bytes);
       if (bytes.byteLength !== Number(ticket.byte_size) || sha256 !== String(ticket.sha256) ||
-        !matchesDeclaredType(bytes, contentType)) {
+        !bytesMatchDeclaredType(bytes, contentType)) {
         throw new Error("entity_image_mismatch");
       }
       await r2.put(String(ticket.object_key), bytes, contentType);
@@ -125,7 +135,11 @@ Deno.serve(async (request) => {
       return reply(origin, 200, finalized);
     }
     if (body.action === "read") {
-      const descriptor = await rpc(user, "superadmin_entity_image_authorize_read_v1", { p_asset_id: uuid(body.asset_id) });
+      // reader "principal": equipe do tenant ou responsável por guardian_links + can_view (regra no Postgres).
+      const readRpc = body.reader === "principal"
+        ? "principal_entity_image_authorize_read_v1"
+        : "superadmin_entity_image_authorize_read_v1";
+      const descriptor = await rpc(user, readRpc, { p_asset_id: uuid(body.asset_id) });
       const bytes = await r2.get(String(descriptor.object_key), Number(descriptor.byte_size));
       return replyBytes(origin, bytes, String(descriptor.content_type));
     }
