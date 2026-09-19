@@ -1419,6 +1419,7 @@ final class _FilesContentState extends State<_FilesContent> {
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
+          style: coeloDestructiveFilledButtonStyle(context),
           child: const Text('Excluir arquivo'),
         ),
       ),

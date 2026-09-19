@@ -1059,10 +1059,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> with Superadmin
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.error,
-            foregroundColor: Theme.of(context).colorScheme.onError,
-          ),
+          style: coeloDestructiveFilledButtonStyle(context),
           child: const Text('Excluir seção'),
         ),
       ),
@@ -1450,10 +1447,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> with Superadmin
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.error,
-            foregroundColor: Theme.of(context).colorScheme.onError,
-          ),
+          style: coeloDestructiveFilledButtonStyle(context),
           child: const Text('Excluir pergunta'),
         ),
       ),
@@ -1995,10 +1989,7 @@ final class _FormsEditorPageState extends State<FormsEditorPage> with Superadmin
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(context).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.error,
-            foregroundColor: Theme.of(context).colorScheme.onError,
-          ),
+          style: coeloDestructiveFilledButtonStyle(context),
           child: const Text('Descartar'),
         ),
       ),

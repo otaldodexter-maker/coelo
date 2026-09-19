@@ -472,6 +472,7 @@ final class _DailyRoutineWizardPageState extends State<DailyRoutineWizardPage> {
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: coeloDestructiveFilledButtonStyle(dialogContext),
           child: const Text('Sair sem salvar'),
         ),
       ),

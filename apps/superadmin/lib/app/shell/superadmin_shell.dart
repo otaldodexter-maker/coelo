@@ -349,10 +349,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
         primaryAction: FilledButton(
           key: const Key('superadmin-logout-confirm'),
           onPressed: () => Navigator.of(dialogContext).pop(true),
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(dialogContext).colorScheme.error,
-            foregroundColor: Theme.of(dialogContext).colorScheme.onError,
-          ),
+          style: coeloDestructiveFilledButtonStyle(dialogContext),
           child: const Text('Sair'),
         ),
       ),

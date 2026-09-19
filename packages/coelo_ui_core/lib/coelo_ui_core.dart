@@ -13,4 +13,5 @@ export 'src/input/coelo_brazilian_phone_input_formatter.dart';
 export 'src/input/coelo_cpf_input_formatter.dart';
 export 'src/status/coelo_status_chip.dart';
 export 'src/action/coelo_create_action.dart';
+export 'src/action/coelo_destructive_button_style.dart';
 export 'src/tour/coelo_tour.dart';

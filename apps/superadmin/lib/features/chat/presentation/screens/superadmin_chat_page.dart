@@ -663,6 +663,7 @@ final class _SuperadminChatPageState extends State<SuperadminChatPage> {
         FilledButton(
           key: const Key('superadmin-chat-revoke-confirm'),
           onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: coeloDestructiveFilledButtonStyle(dialogContext),
           child: const Text('Revogar'),
         ),
       ],

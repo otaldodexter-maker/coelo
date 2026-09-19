@@ -296,6 +296,7 @@ final class _ActivityFormPageState extends State<ActivityFormPage> {
             ),
             primaryAction: FilledButton(
               onPressed: () => Navigator.of(context).pop(true),
+              style: coeloDestructiveFilledButtonStyle(context),
               child: const Text('Sair sem salvar'),
             ),
           ),

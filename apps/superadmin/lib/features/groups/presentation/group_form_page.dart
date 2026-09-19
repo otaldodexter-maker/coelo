@@ -531,6 +531,7 @@ final class _GroupFormPageState extends State<GroupFormPage> {
         ),
         primaryAction: FilledButton(
           onPressed: () => Navigator.of(dialogContext).pop(true),
+          style: coeloDestructiveFilledButtonStyle(dialogContext),
           child: const Text('Sair sem salvar'),
         ),
       ),
@@ -1496,12 +1497,16 @@ final class _GroupFormPageState extends State<GroupFormPage> {
       avatar: Icon(
         required ? Icons.star_rounded : Icons.star_border_rounded,
         size: 14,
-        color: required ? Colors.white : Theme.of(context).colorScheme.onSurface,
+        color: required
+            ? Theme.of(context).colorScheme.onPrimary
+            : Theme.of(context).colorScheme.onSurface,
       ),
       label: Text(
         required ? '$label (obrigatória)' : label,
         style: TextStyle(
-          color: required ? Colors.white : Theme.of(context).colorScheme.onSurface,
+          color: required
+              ? Theme.of(context).colorScheme.onPrimary
+              : Theme.of(context).colorScheme.onSurface,
           fontWeight: FontWeight.w600,
         ),
       ),
