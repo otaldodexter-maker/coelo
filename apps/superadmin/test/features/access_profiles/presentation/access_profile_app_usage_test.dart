@@ -3,7 +3,6 @@ import 'package:coelo_superadmin/features/access_profiles/domain/access_profile.
 import 'package:coelo_superadmin/features/access_profiles/presentation/access_profile_form_page.dart';
 import 'package:coelo_superadmin/features/auth/domain/logout_action.dart';
 import 'package:coelo_superadmin/features/staff_access/data/fake_staff_access_repository.dart';
-import 'package:coelo_superadmin/features/staff_access/domain/staff_access.dart';
 import 'package:coelo_tokens/coelo_tokens.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';

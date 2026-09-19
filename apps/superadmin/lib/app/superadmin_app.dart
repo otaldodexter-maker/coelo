@@ -30,6 +30,7 @@ import '../features/account/data/user_preferences_repository.dart';
 import '../features/account/data/account_profile_repository.dart';
 import '../features/account/data/account_sessions_repository.dart';
 import '../features/support/data/support_repository.dart';
+import '../features/staff_access/presentation/staff_access_denied_listener.dart';
 import '../features/account/presentation/user_preferences_controller.dart';
 import '../features/institutions/data/supabase_institution_directory_repository.dart';
 import '../features/institutions/domain/institution_directory_repository.dart';
@@ -488,13 +489,18 @@ class _SuperadminAppState extends State<SuperadminApp> {
               disableAnimations:
                   inherited.disableAnimations || _preferencesController.preferences.reduceMotion,
             ),
-            child: images == null
-                ? child ?? const SizedBox.shrink()
-                : EntityImageScope(
-                    cache: images,
-                    principalCache: _principalEntityImageCache,
-                    child: child ?? const SizedBox.shrink(),
-                  ),
+            child: StaffAccessDeniedListener(
+              // Lote 91: vínculo bloqueado durante a sessão -> popup com motivo
+              // em qualquer tela do Superadmin (o Principal trata na própria rota).
+              enabled: () => !_router.routeInformationProvider.value.uri.path.startsWith('/principal'),
+              child: images == null
+                  ? child ?? const SizedBox.shrink()
+                  : EntityImageScope(
+                      cache: images,
+                      principalCache: _principalEntityImageCache,
+                      child: child ?? const SizedBox.shrink(),
+                    ),
+            ),
           ),
         );
       },

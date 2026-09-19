@@ -3,7 +3,9 @@ import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 
 import '../../../app/shell/superadmin_shell.dart';
+import '../../staff_access/domain/staff_access_denied.dart';
 import '../../staff_access/domain/staff_access_popup_text.dart';
+import '../../staff_access/presentation/staff_access_denied_listener.dart';
 import '../domain/principal_runtime_context.dart';
 import 'principal_global_navigation.dart';
 
@@ -115,6 +117,19 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
 
   void _retry() => setState(_reload);
 
+  /// Sessão que já estava dentro quando o horário virou: o servidor negou com
+  /// motivo (PT403/STAFF_ACCESS_DENIED); o popup já foi mostrado pelo
+  /// listener — aqui só voltamos ao seletor com os contextos recarregados.
+  void _onDenied(StaffAccessDenial denial) {
+    if (!mounted) return;
+    setState(() {
+      _selectedMembershipId = null;
+      _selectedMembershipIds = {};
+      if (denial.membershipId != null) _blockedPopupShown.add(denial.membershipId!);
+      _reload();
+    });
+  }
+
   void _select(PrincipalRuntimeContext selected) =>
       setState(() => _selectedMembershipId = selected.membershipId);
 
@@ -209,7 +224,9 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
           : selectedContexts.length > 1
           ? '${selectedContexts.length} perfis'
           : selected.label;
-      return Column(
+      return StaffAccessDeniedListener(
+        onDismissed: _onDenied,
+        child: Column(
         children: [
           PrincipalGlobalHeader(
             notificationAction: widget.notificationAction,
@@ -292,6 +309,7 @@ final class _PrincipalRuntimeContextRouteState extends State<PrincipalRuntimeCon
                 widget.builder!(context, selected),
           ),
         ],
+        ),
       );
     },
   );

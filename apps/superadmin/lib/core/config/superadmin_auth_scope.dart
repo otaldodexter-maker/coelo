@@ -98,9 +98,9 @@ import '../../features/access_profiles/data/supabase_access_profile_repository.d
 import '../../features/access_profiles/domain/access_profile.dart';
 import '../../features/platform_users/data/supabase_platform_user_repository.dart';
 import '../../features/platform_users/domain/platform_user.dart';
-import '../../features/staff_access/data/staff_access_user_agent.dart';
+import '../../features/staff_access/data/staff_access_denied_http_client.dart';
 import '../../features/staff_access/data/supabase_staff_access_repository.dart';
-import '../../features/staff_access/domain/staff_access_surface_detector.dart';
+import '../../features/staff_access/domain/staff_access_surface_binding.dart';
 import '../../features/staff_access/domain/staff_access.dart';
 import '../../features/units/data/unavailable_unit_composition.dart';
 import '../../features/units/data/supabase_unit_backend_commands_gateway.dart';
@@ -653,17 +653,15 @@ Future<SupabaseClient> _initializeSupabase({
     url: url,
     publishableKey: publishableKey,
     authOptions: FlutterAuthClientOptions(localStorage: localStorage),
+    // Lote 91: PT403/STAFF_ACCESS_DENIED vira popup com motivo em qualquer tela.
+    httpClient: StaffAccessDeniedHttpClient(),
   );
   // ADR 0035 (decisao 4): o cliente declara a superficie; o servidor aplica a
   // regra de acesso de funcionarios a superficie declarada (fallback web). So
   // no PostgREST (RPC/RLS): as Edge Functions tem Allow-Headers fixo e um
-  // header global derrubaria o preflight de todas elas.
-  final view = WidgetsBinding.instance.platformDispatcher.views.firstOrNull;
-  final logicalWidth = view == null ? 1440.0 : view.physicalSize.width / view.devicePixelRatio;
-  Supabase.instance.client.rest.headers['x-coelo-surface'] = detectStaffAccessSurface(
-    logicalWidth: logicalWidth,
-    userAgent: staffAccessUserAgent,
-  );
+  // header global derrubaria o preflight de todas elas. Recalculada ao
+  // redimensionar a janela (debounce).
+  StaffAccessSurfaceObserver(headers: Supabase.instance.client.rest.headers).bind();
   return Supabase.instance.client;
 }
 
