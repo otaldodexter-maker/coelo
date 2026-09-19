@@ -426,3 +426,17 @@
 # medication.dose.recorded gravados para admin da unidade, educadora da turma e responsavel (audiencia v2, lote 82).
 # Ledger 20260918170000 reparado e listado local+remoto; candidato 20260917113000 continua NAO aplicado.
 20260918170000_qa_r15_care_staff_fixture_v1.sql
+# lote 84 (19/09 ~08:10 UTC) - Sessao ACESSO-CONTEXTUAL (Etapa 3 F7, ADR 0035 / ADR 0045 item 3; modo de construcao). Dump previo
+# Coelo-backups/schema-producao-20260919-acesso-lote84-before.sql. Capacidade institution 'staff_access.manage' (institution_admin);
+# tabelas public.staff_access_rules (1/vinculo: superficies, janelas por dia com virada de meia-noite, vigencia inclusiva + suas
+# superficies, popup, versao) e public.staff_leaves (afastamentos, popup, motivo interno, versao), RLS deny-by-default (leitura pela
+# hierarquia via staff_access.manage ou pelo titular; escrita so por RPC). app_private.staff_access_evaluate (fuso da unidade >
+# instituicao > America/Sao_Paulo; precedencia afastamento > vigencia > horario > superficie; sem configuracao = liberado) e
+# staff_access_blocked (superficie do header x-coelo-surface, fallback web) passam a filtrar active_memberships em
+# app_private.has_context_permission e has_active_institution_membership (restricao vale no servidor para toda RLS/RPC contextual).
+# RPCs staff_access_list_v1 / staff_access_rule_get_v1 / staff_access_rule_save_v1 / staff_leaves_list_v1 / staff_leave_save_v1 /
+# staff_access_check_v1 (PT409 STAFF_ACCESS_STALE_VERSION; auditoria v1 em audit.audit_logs). public.list_my_principal_contexts
+# recriada (+access_blocked, access_reason, access_popup): vinculo bloqueado segue listado, sem dados do contexto.
+# pgTAP staff_access_v1_test 68/68 e principal_runtime_contexts_test 13/13 no espelho mirror-acesso (dump de producao de 19/09);
+# ledger 20260919100000 reparado e listado local+remoto.
+20260919100000_staff_access_v1.sql
