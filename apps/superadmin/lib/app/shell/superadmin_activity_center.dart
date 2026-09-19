@@ -546,8 +546,7 @@ String _activityStatusLabel(SuperadminActivityStatus status) => switch (status) 
 };
 
 (Color, Color) _activityStatusColors(BuildContext context, SuperadminActivityStatus status) {
-  final statusColors =
-      context.coeloStatusColors;
+  final statusColors = context.coeloStatusColors;
   return switch (status) {
     SuperadminActivityStatus.inProgress => (
       statusColors.infoContainer,

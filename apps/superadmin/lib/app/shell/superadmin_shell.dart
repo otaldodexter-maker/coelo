@@ -6,7 +6,6 @@ import 'package:coelo_ui_admin/coelo_ui_admin.dart';
 import 'package:coelo_ui_core/coelo_ui_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widget_previews.dart';
-import 'package:go_router/go_router.dart';
 
 import '../activity/superadmin_activity.dart';
 import '../brand/superadmin_brand_mark.dart';
@@ -20,9 +19,12 @@ import '../tour/superadmin_menu_tour_steps.dart';
 import '../tour/superadmin_screen_tours.dart';
 import '../tour/superadmin_tour_store.dart';
 import '../widgets/superadmin_page_heading.dart';
-import 'superadmin_activity_center.dart';
-import 'superadmin_bug_report_dialog.dart';
 import 'superadmin_notice.dart';
+import 'widgets/shell_header_utility_actions.dart';
+import 'widgets/shell_onboarding_tour_button.dart';
+import 'widgets/shell_profile_summary.dart';
+import 'widgets/shell_theme_mode_control.dart';
+import 'widgets/superadmin_tour_scope.dart';
 
 const _sidebarMotionDuration = CoeloMotion.emphasized;
 const _sidebarMotionCurve = Cubic(0.4, 0, 0.2, 1);
@@ -31,7 +33,6 @@ const _headerHeight = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _expandedSidebarWidth = 260.0;
 const _collapsedSidebarWidth = CoeloSpacing.space20 + CoeloSpacing.space2;
 const _shellGutter = CoeloSpacing.space3;
-const _coeloMotionCurve = Curves.easeInOut;
 
 /// Envio do relato do botão de Bug. Pode ser síncrono (protótipo local) ou
 /// assíncrono (repositório produtivo); a shell aguarda e avisa o resultado.
@@ -225,7 +226,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
   final _scaffoldKey = GlobalKey<ScaffoldState>();
   final _tourRegistry = CoeloTourAnchorRegistry();
   final _revealController = CoeloNavigationRevealController();
-  final _tourMenus = _SuperadminTourMenuHandles();
+  final _tourMenus = SuperadminTourMenuHandles();
   bool _tourRunning = false;
   // Primeiro acesso: `_autoTourResolved` fecha quando o store responde sim ou
   // não; enquanto responde "não sei" (usuário ainda não identificado logo após
@@ -812,7 +813,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
     _scheduleCompleteTourResume();
     return CoeloTourScope(
       registry: _tourRegistry,
-      child: _SuperadminTourScope(
+      child: SuperadminTourScope(
         startMenuTour: _startMenuTour,
         startScreenTour: _startScreenTour,
         startCompleteTour: _startCompleteTour,
@@ -1038,7 +1039,7 @@ class _SuperadminShellState extends State<SuperadminShell> with TickerProviderSt
             const _InsetDivider(),
             const Padding(
               padding: EdgeInsets.all(CoeloSpacing.space2),
-              child: _OnboardingTourButton(collapsed: false),
+              child: ShellOnboardingTourButton(collapsed: false),
             ),
           ],
         ),
@@ -1271,7 +1272,7 @@ class _Sidebar extends StatelessWidget {
         const _InsetDivider(),
         Padding(
           padding: const EdgeInsets.all(CoeloSpacing.space2),
-          child: _OnboardingTourButton(collapsed: collapsed),
+          child: ShellOnboardingTourButton(collapsed: collapsed),
         ),
         const _InsetDivider(),
         Padding(
@@ -1281,7 +1282,7 @@ class _Sidebar extends StatelessWidget {
             CoeloSpacing.space2,
             CoeloSpacing.space3,
           ),
-          child: _ThemeModeControl(collapsed: collapsed),
+          child: ShellThemeModeControl(collapsed: collapsed),
         ),
       ],
     );
@@ -1456,685 +1457,6 @@ class _SidebarToggle extends StatelessWidget {
   }
 }
 
-class _NavigationDestinationData {
-  const _NavigationDestinationData(this.id, this.label, this.icon);
-
-  final String id;
-  final String label;
-  final IconData icon;
-}
-
-const _accountDestinations = <_NavigationDestinationData>[
-  _NavigationDestinationData('profile', 'Perfil', Icons.person_outline),
-  _NavigationDestinationData('settings', 'Configurações', Icons.settings_outlined),
-];
-
-/// Dá ao botão "Fazer tour" acesso ao tour do shell que desenha o menu.
-class _SuperadminTourScope extends InheritedWidget {
-  const _SuperadminTourScope({
-    required this.startMenuTour,
-    required this.startScreenTour,
-    required this.startCompleteTour,
-    required this.menus,
-    required super.child,
-  });
-
-  final Future<void> Function() startMenuTour;
-
-  /// Devolve false quando a tela atual não tem tour.
-  final Future<bool> Function() startScreenTour;
-  final Future<void> Function() startCompleteTour;
-  final _SuperadminTourMenuHandles menus;
-
-  static _SuperadminTourScope? maybeOf(BuildContext context) =>
-      context.dependOnInheritedWidgetOfExactType<_SuperadminTourScope>();
-
-  @override
-  bool updateShouldNotify(_SuperadminTourScope oldWidget) =>
-      startMenuTour != oldWidget.startMenuTour ||
-      startScreenTour != oldWidget.startScreenTour ||
-      startCompleteTour != oldWidget.startCompleteTour ||
-      menus != oldWidget.menus;
-}
-
-/// Controladores de menus que o tour precisa abrir (menu da conta). Quem
-/// desenha o menu registra o controller a cada build; o shell que roda o tour
-/// usa o mais recente.
-class _SuperadminTourMenuHandles {
-  MenuController? account;
-}
-
-class _OnboardingTourButton extends StatefulWidget {
-  const _OnboardingTourButton({required this.collapsed});
-
-  final bool collapsed;
-
-  @override
-  State<_OnboardingTourButton> createState() => _OnboardingTourButtonState();
-}
-
-class _OnboardingTourButtonState extends State<_OnboardingTourButton>
-    with SingleTickerProviderStateMixin {
-  late final AnimationController _animationController;
-  late final Animation<double> _rotation;
-  late final Animation<double> _glow;
-  Timer? _restTimer;
-  bool? _reduceMotion;
-
-  @override
-  void initState() {
-    super.initState();
-    _animationController = AnimationController(
-      vsync: this,
-      duration: const Duration(milliseconds: 835),
-    );
-    _rotation = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 7.3 * math.pi / 180), weight: 20),
-      TweenSequenceItem(
-        tween: Tween(begin: 7.3 * math.pi / 180, end: -7.3 * math.pi / 180),
-        weight: 25,
-      ),
-      TweenSequenceItem(
-        tween: Tween(begin: -7.3 * math.pi / 180, end: 3.65 * math.pi / 180),
-        weight: 20,
-      ),
-      TweenSequenceItem(
-        tween: Tween(begin: 3.65 * math.pi / 180, end: -3.65 * math.pi / 180),
-        weight: 20,
-      ),
-      TweenSequenceItem(tween: Tween(begin: -3.65 * math.pi / 180, end: 0), weight: 15),
-    ]).animate(_animationController);
-    _glow = TweenSequence<double>([
-      TweenSequenceItem(tween: Tween(begin: 0, end: 1), weight: 1),
-      TweenSequenceItem(tween: Tween(begin: 1, end: 0), weight: 1),
-    ]).animate(_animationController);
-    _animationController.addStatusListener(_handleAnimationStatus);
-  }
-
-  @override
-  void didChangeDependencies() {
-    super.didChangeDependencies();
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    if (_reduceMotion == reduceMotion) {
-      return;
-    }
-    _reduceMotion = reduceMotion;
-    _cancelTimer();
-    _animationController.stop();
-    _animationController.reset();
-    if (!reduceMotion) {
-      _scheduleNextCycle();
-    }
-  }
-
-  void _handleAnimationStatus(AnimationStatus status) {
-    if (status == AnimationStatus.completed) {
-      _scheduleNextCycle();
-    }
-  }
-
-  void _scheduleNextCycle() {
-    _cancelTimer();
-    if (_reduceMotion == true) {
-      return;
-    }
-    _restTimer = Timer(const Duration(milliseconds: 3500), () {
-      _restTimer = null;
-      if (mounted && _reduceMotion != true) {
-        _animationController.forward(from: 0);
-      }
-    });
-  }
-
-  void _cancelTimer() {
-    _restTimer?.cancel();
-    _restTimer = null;
-  }
-
-  @override
-  void dispose() {
-    _cancelTimer();
-    _animationController.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final visual = context.coeloVisualColors;
-    return CoeloAdminFlyout<String>(
-      items: _tourFlyoutItems,
-      onSelected: (selection) {
-        final tour = _SuperadminTourScope.maybeOf(context);
-        if (tour == null) {
-          _showMessage(context, 'O tour n\u00e3o est\u00e1 dispon\u00edvel nesta tela.');
-          return;
-        }
-        switch (selection) {
-          case 'screen':
-            unawaited(
-              tour.startScreenTour().then((started) {
-                if (!started && context.mounted) {
-                  _showMessage(context, 'Esta tela ainda n\u00e3o tem tour.');
-                }
-              }),
-            );
-          case 'complete':
-            unawaited(tour.startCompleteTour());
-          default:
-            unawaited(tour.startMenuTour());
-        }
-      },
-      alignmentOffset: Offset(
-        widget.collapsed ? CoeloSize.touchMin + CoeloSpacing.space4 + CoeloSpacing.space1 : 252,
-        0,
-      ),
-      builder: (context, controller) {
-        final content = Material(
-          color: Colors.transparent,
-          child: InkWell(
-            key: const Key('superadmin-onboarding-tour'),
-            onTap: () => controller.isOpen ? controller.close() : controller.open(),
-            borderRadius: BorderRadius.circular(CoeloRadius.md),
-            overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-            child: SizedBox(
-              width: widget.collapsed ? CoeloSize.touchMin : double.infinity,
-              height: CoeloSize.touchMin,
-              child: LayoutBuilder(
-                builder: (context, constraints) {
-                  final useCompactLayout = widget.collapsed || constraints.maxWidth < 180;
-                  return Row(
-                    mainAxisAlignment: useCompactLayout
-                        ? MainAxisAlignment.center
-                        : MainAxisAlignment.start,
-                    children: [
-                      if (!useCompactLayout) const SizedBox(width: CoeloSpacing.space3),
-                      AnimatedBuilder(
-                        animation: _animationController,
-                        builder: (context, child) {
-                          return Transform.rotate(
-                            key: const Key('superadmin-onboarding-egg-motion'),
-                            angle: _rotation.value,
-                            child: DecoratedBox(
-                              decoration: BoxDecoration(
-                                shape: BoxShape.circle,
-                                boxShadow: [
-                                  BoxShadow(
-                                    color: CoeloPalette.orange300.withValues(
-                                      alpha: 0.38 * _glow.value,
-                                    ),
-                                    blurRadius: CoeloSpacing.space5 * _glow.value,
-                                    spreadRadius: CoeloSpacing.space2 * _glow.value,
-                                  ),
-                                ],
-                              ),
-                              child: child,
-                            ),
-                          );
-                        },
-                        child: SizedBox.square(
-                          dimension: CoeloSize.iconMd,
-                          child: CustomPaint(
-                            key: const Key('superadmin-onboarding-egg'),
-                            painter: _FlatEggPainter(
-                              baseColor: visual.eggBase,
-                              ornamentColor: visual.eggOrnament,
-                            ),
-                          ),
-                        ),
-                      ),
-                      if (!useCompactLayout) ...[
-                        const SizedBox(width: CoeloSpacing.space3),
-                        Expanded(child: Text('Fazer tour', style: theme.textTheme.labelLarge)),
-                        Icon(Icons.chevron_right_rounded, color: colors.onSurfaceVariant),
-                        const SizedBox(width: CoeloSpacing.space2),
-                      ],
-                    ],
-                  );
-                },
-              ),
-            ),
-          ),
-        );
-        return CoeloTourAnchor(
-          id: 'tour-button',
-          child: Tooltip(message: 'Iniciar onboarding', child: content),
-        );
-      },
-    );
-  }
-}
-
-const _tourFlyoutItems = <CoeloAdminFlyoutItem<String>>[
-  CoeloAdminFlyoutItem<String>(
-    value: 'screen',
-    label: 'Tour desta tela',
-    icon: Icons.web_asset_outlined,
-  ),
-  CoeloAdminFlyoutItem<String>(value: 'menu', label: 'Tour do menu', icon: Icons.menu_open_rounded),
-  CoeloAdminFlyoutItem<String>(
-    value: 'complete',
-    label: 'Tour completo',
-    icon: Icons.play_circle_outline_rounded,
-  ),
-];
-
-class _FlatEggPainter extends CustomPainter {
-  const _FlatEggPainter({required this.baseColor, required this.ornamentColor});
-
-  final Color baseColor;
-  final Color ornamentColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final egg = Path()
-      ..moveTo(size.width * 0.5, 0)
-      ..cubicTo(
-        size.width * 0.78,
-        size.height * 0.08,
-        size.width,
-        size.height * 0.5,
-        size.width * 0.84,
-        size.height * 0.82,
-      )
-      ..cubicTo(
-        size.width * 0.7,
-        size.height,
-        size.width * 0.3,
-        size.height,
-        size.width * 0.16,
-        size.height * 0.82,
-      )
-      ..cubicTo(0, size.height * 0.5, size.width * 0.22, size.height * 0.08, size.width * 0.5, 0)
-      ..close();
-    canvas.drawPath(egg, Paint()..color = baseColor);
-    canvas
-      ..save()
-      ..clipPath(egg);
-    final wave = Path()
-      ..moveTo(-size.width * 0.08, size.height * 0.62)
-      ..cubicTo(
-        size.width * 0.2,
-        size.height * 0.45,
-        size.width * 0.34,
-        size.height * 0.8,
-        size.width * 0.58,
-        size.height * 0.6,
-      )
-      ..cubicTo(
-        size.width * 0.76,
-        size.height * 0.44,
-        size.width * 0.9,
-        size.height * 0.7,
-        size.width * 1.08,
-        size.height * 0.54,
-      );
-    canvas
-      ..drawPath(
-        wave,
-        Paint()
-          ..color = ornamentColor
-          ..style = PaintingStyle.stroke
-          ..strokeWidth = math.max(2, size.height * 0.1)
-          ..strokeCap = StrokeCap.round,
-      )
-      ..restore();
-    final dots = Paint()..color = ornamentColor;
-    for (final center in [
-      Offset(size.width * 0.3, size.height * 0.28),
-      Offset(size.width * 0.5, size.height * 0.24),
-      Offset(size.width * 0.7, size.height * 0.28),
-    ]) {
-      canvas.drawCircle(center, size.width * 0.06, dots);
-    }
-  }
-
-  @override
-  bool shouldRepaint(covariant _FlatEggPainter oldDelegate) {
-    return baseColor != oldDelegate.baseColor || ornamentColor != oldDelegate.ornamentColor;
-  }
-}
-
-class _ThemeModeControl extends StatelessWidget {
-  const _ThemeModeControl({required this.collapsed});
-
-  final bool collapsed;
-
-  @override
-  Widget build(BuildContext context) {
-    final scope = SuperadminThemeModeScope.maybeOf(context);
-    final mode = scope?.mode ?? ThemeMode.system;
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final isDark =
-        mode == ThemeMode.dark || (mode == ThemeMode.system && theme.brightness == Brightness.dark);
-    final reduceMotion = MediaQuery.maybeOf(context)?.disableAnimations ?? false;
-    final duration = reduceMotion ? Duration.zero : const Duration(milliseconds: 420);
-
-    void toggle() => scope?.onChanged(isDark ? ThemeMode.light : ThemeMode.dark);
-
-    return SizedBox(
-      width: collapsed ? CoeloSize.touchMin : double.infinity,
-      height: collapsed ? 80 : CoeloSize.touchMin,
-      child: LayoutBuilder(
-        builder: (context, constraints) {
-          final useCompactLayout =
-              collapsed ||
-              constraints.maxWidth < 180 ||
-              MediaQuery.textScalerOf(context).scale(1) >= 1.5;
-          return Tooltip(
-            message: isDark ? 'Ativar tema claro' : 'Ativar tema escuro',
-            child: Semantics(
-              button: true,
-              toggled: isDark,
-              label: isDark ? 'Tema escuro ativo' : 'Tema claro ativo',
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  key: const Key('superadmin-theme-mode-control'),
-                  onTap: toggle,
-                  borderRadius: BorderRadius.circular(
-                    useCompactLayout ? CoeloRadius.full : CoeloRadius.lg,
-                  ),
-                  overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-                  child: Container(
-                    key: const Key('superadmin-theme-mode-surface'),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: useCompactLayout ? CoeloSpacing.space1 : CoeloSpacing.space3,
-                      vertical: CoeloSpacing.space1,
-                    ),
-                    decoration: BoxDecoration(
-                      color: colors.surfaceContainerHighest,
-                      borderRadius: BorderRadius.circular(
-                        useCompactLayout ? CoeloRadius.full : CoeloRadius.lg,
-                      ),
-                      border: Border.all(color: colors.outlineVariant),
-                    ),
-                    child: useCompactLayout
-                        ? _CollapsedCarrotSwitch(isDark: isDark, duration: duration, colors: colors)
-                        : Row(
-                            children: [
-                              Expanded(child: Text('Aparência', style: theme.textTheme.labelLarge)),
-                              AnimatedSwitcher(
-                                duration: duration,
-                                switchInCurve: _coeloMotionCurve,
-                                switchOutCurve: _coeloMotionCurve,
-                                child: Row(
-                                  key: ValueKey(isDark),
-                                  mainAxisSize: MainAxisSize.min,
-                                  children: [
-                                    Icon(
-                                      isDark ? Icons.dark_mode_outlined : Icons.light_mode_outlined,
-                                      size: CoeloSize.iconSm,
-                                      color: colors.onSurfaceVariant,
-                                    ),
-                                    const SizedBox(width: CoeloSpacing.space1),
-                                    Text(
-                                      isDark ? 'Escuro' : 'Claro',
-                                      style: theme.textTheme.bodySmall?.copyWith(
-                                        color: colors.onSurfaceVariant,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                              ),
-                              const SizedBox(width: CoeloSpacing.space2),
-                              _HorizontalCarrotSwitch(
-                                isDark: isDark,
-                                duration: duration,
-                                colors: colors,
-                              ),
-                            ],
-                          ),
-                  ),
-                ),
-              ),
-            ),
-          );
-        },
-      ),
-    );
-  }
-}
-
-class _CollapsedCarrotSwitch extends StatelessWidget {
-  const _CollapsedCarrotSwitch({
-    required this.isDark,
-    required this.duration,
-    required this.colors,
-  });
-
-  final bool isDark;
-  final Duration duration;
-  final ColorScheme colors;
-
-  @override
-  Widget build(BuildContext context) {
-    return Stack(
-      children: [
-        const Positioned(
-          top: CoeloSpacing.space2,
-          left: 0,
-          right: 0,
-          child: Icon(Icons.light_mode_outlined, size: CoeloSize.iconSm),
-        ),
-        const Positioned(
-          bottom: CoeloSpacing.space2,
-          left: 0,
-          right: 0,
-          child: Icon(Icons.dark_mode_outlined, size: CoeloSize.iconSm),
-        ),
-        AnimatedAlign(
-          duration: duration,
-          curve: _coeloMotionCurve,
-          alignment: isDark ? Alignment.bottomCenter : Alignment.topCenter,
-          child: _CarrotThumb(colors: colors),
-        ),
-      ],
-    );
-  }
-}
-
-class _HorizontalCarrotSwitch extends StatelessWidget {
-  const _HorizontalCarrotSwitch({
-    required this.isDark,
-    required this.duration,
-    required this.colors,
-  });
-
-  final bool isDark;
-  final Duration duration;
-  final ColorScheme colors;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      width: CoeloSpacing.space16,
-      height: CoeloSpacing.space8,
-      padding: const EdgeInsets.all(CoeloSpacing.space1),
-      decoration: BoxDecoration(
-        color: colors.surfaceContainer,
-        borderRadius: BorderRadius.circular(CoeloRadius.full),
-      ),
-      child: AnimatedAlign(
-        duration: duration,
-        curve: _coeloMotionCurve,
-        alignment: isDark ? Alignment.centerRight : Alignment.centerLeft,
-        child: _CarrotThumb(colors: colors, size: CoeloSpacing.space6),
-      ),
-    );
-  }
-}
-
-class _CarrotThumb extends StatelessWidget {
-  const _CarrotThumb({required this.colors, this.size = CoeloSpacing.space8});
-
-  final ColorScheme colors;
-  final double size;
-
-  @override
-  Widget build(BuildContext context) {
-    final visual = context.coeloVisualColors;
-    return Container(
-      width: size,
-      height: size,
-      padding: const EdgeInsets.all(CoeloSpacing.space1),
-      decoration: BoxDecoration(
-        color: colors.primaryContainer,
-        shape: BoxShape.circle,
-        boxShadow: [
-          BoxShadow(color: colors.primary.withValues(alpha: 0.12), blurRadius: CoeloSpacing.space1),
-        ],
-      ),
-      child: CustomPaint(
-        key: const Key('superadmin-theme-carrot'),
-        painter: _FlatCarrotPainter(
-          bodyColor: colors.primary,
-          markColor: colors.onPrimary,
-          leafColor: visual.carrotLeaf,
-          leafAccentColor: visual.carrotLeafAccent,
-        ),
-      ),
-    );
-  }
-}
-
-class _FlatCarrotPainter extends CustomPainter {
-  const _FlatCarrotPainter({
-    required this.bodyColor,
-    required this.markColor,
-    required this.leafColor,
-    required this.leafAccentColor,
-  });
-
-  final Color bodyColor;
-  final Color markColor;
-  final Color leafColor;
-  final Color leafAccentColor;
-
-  @override
-  void paint(Canvas canvas, Size size) {
-    final carrot = Path()
-      ..moveTo(size.width * 0.28, size.height * 0.31)
-      ..cubicTo(
-        size.width * 0.46,
-        size.height * 0.24,
-        size.width * 0.68,
-        size.height * 0.27,
-        size.width * 0.73,
-        size.height * 0.38,
-      )
-      ..cubicTo(
-        size.width * 0.65,
-        size.height * 0.6,
-        size.width * 0.48,
-        size.height * 0.85,
-        size.width * 0.35,
-        size.height * 0.97,
-      )
-      ..cubicTo(
-        size.width * 0.27,
-        size.height * 0.72,
-        size.width * 0.16,
-        size.height * 0.43,
-        size.width * 0.28,
-        size.height * 0.31,
-      )
-      ..close();
-    canvas.drawPath(carrot, Paint()..color = bodyColor);
-    final leftLeaf = Path()
-      ..moveTo(size.width * 0.39, size.height * 0.31)
-      ..cubicTo(
-        size.width * 0.3,
-        size.height * 0.2,
-        size.width * 0.1,
-        size.height * 0.2,
-        size.width * 0.12,
-        size.height * 0.03,
-      )
-      ..cubicTo(
-        size.width * 0.32,
-        size.height * 0.06,
-        size.width * 0.43,
-        size.height * 0.19,
-        size.width * 0.39,
-        size.height * 0.31,
-      )
-      ..close();
-    final middleLeaf = Path()
-      ..moveTo(size.width * 0.41, size.height * 0.3)
-      ..cubicTo(
-        size.width * 0.34,
-        size.height * 0.16,
-        size.width * 0.35,
-        size.height * 0.05,
-        size.width * 0.49,
-        0,
-      )
-      ..cubicTo(
-        size.width * 0.57,
-        size.height * 0.14,
-        size.width * 0.53,
-        size.height * 0.25,
-        size.width * 0.41,
-        size.height * 0.3,
-      )
-      ..close();
-    final rightLeaf = Path()
-      ..moveTo(size.width * 0.43, size.height * 0.31)
-      ..cubicTo(
-        size.width * 0.5,
-        size.height * 0.18,
-        size.width * 0.64,
-        size.height * 0.08,
-        size.width * 0.79,
-        size.height * 0.12,
-      )
-      ..cubicTo(
-        size.width * 0.73,
-        size.height * 0.29,
-        size.width * 0.57,
-        size.height * 0.36,
-        size.width * 0.43,
-        size.height * 0.31,
-      )
-      ..close();
-    canvas
-      ..drawPath(leftLeaf, Paint()..color = leafColor)
-      ..drawPath(middleLeaf, Paint()..color = leafAccentColor)
-      ..drawPath(rightLeaf, Paint()..color = leafColor);
-    final marks = Paint()
-      ..color = markColor
-      ..strokeWidth = math.max(1, size.width * 0.055)
-      ..strokeCap = StrokeCap.round;
-    canvas
-      ..drawLine(
-        Offset(size.width * 0.38, size.height * 0.44),
-        Offset(size.width * 0.58, size.height * 0.41),
-        marks,
-      )
-      ..drawLine(
-        Offset(size.width * 0.34, size.height * 0.58),
-        Offset(size.width * 0.5, size.height * 0.55),
-        marks,
-      )
-      ..drawLine(
-        Offset(size.width * 0.34, size.height * 0.72),
-        Offset(size.width * 0.43, size.height * 0.7),
-        marks,
-      );
-  }
-
-  @override
-  bool shouldRepaint(covariant _FlatCarrotPainter oldDelegate) {
-    return bodyColor != oldDelegate.bodyColor ||
-        markColor != oldDelegate.markColor ||
-        leafColor != oldDelegate.leafColor ||
-        leafAccentColor != oldDelegate.leafAccentColor;
-  }
-}
-
 class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
   const _CompactAppBar({
     required this.drawerOpen,
@@ -2204,12 +1526,12 @@ class _CompactAppBar extends StatelessWidget implements PreferredSizeWidget {
         end: CoeloSpacing.space5,
       ),
       actions: [
-        _HeaderUtilityActions(
+        ShellHeaderUtilityActions(
           activityController: activityController,
           currentScreen: currentScreen,
           onBugReportSubmitted: onBugReportSubmitted,
         ),
-        _ProfileSummary(
+        ShellProfileSummary(
           onLogout: onLogout,
           onDestinationSelected: onDestinationSelected,
           compact: true,
@@ -2291,13 +1613,13 @@ class _PageHeader extends StatelessWidget {
                   ),
                 ],
                 if (!compact) ...[
-                  _HeaderUtilityActions(
+                  ShellHeaderUtilityActions(
                     activityController: activityController,
                     currentScreen: title,
                     onBugReportSubmitted: onBugReportSubmitted,
                   ),
                   const SizedBox(width: CoeloSpacing.space2),
-                  _ProfileSummary(
+                  ShellProfileSummary(
                     onLogout: onLogout,
                     onDestinationSelected: onDestinationSelected,
                     compact: compactProfile,
@@ -2313,275 +1635,6 @@ class _PageHeader extends StatelessWidget {
   }
 }
 
-class _ProfileSummary extends StatelessWidget {
-  const _ProfileSummary({
-    required this.onLogout,
-    required this.onDestinationSelected,
-    required this.compact,
-    this.headerProfile,
-  });
-
-  final VoidCallback onLogout;
-  final ValueChanged<String>? onDestinationSelected;
-  final bool compact;
-  final SuperadminHeaderProfile? headerProfile;
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final profile = headerProfile;
-    final items = <CoeloAdminFlyoutItem<String>>[
-      for (final destination in _accountDestinations)
-        CoeloAdminFlyoutItem<String>(
-          value: destination.id,
-          label: destination.label,
-          icon: destination.icon,
-          tourAnchorId: 'account-${destination.id}',
-        ),
-      const CoeloAdminFlyoutItem<String>(
-        value: 'logout',
-        label: 'Sair',
-        icon: Icons.logout,
-        startsGroup: true,
-        tone: CoeloAdminFlyoutTone.negative,
-        tourAnchorId: 'account-logout',
-      ),
-    ];
-    return CoeloAdminFlyout<String>(
-      items: items,
-      alignPanelToViewportEnd: compact,
-      onSelected: (selection) {
-        if (selection == 'logout') {
-          onLogout();
-          return;
-        }
-        onDestinationSelected?.call(selection);
-        final router = GoRouter.maybeOf(context);
-        final isDevelopmentPreview =
-            router?.routeInformationProvider.value.uri.path.startsWith('/dev/') ?? false;
-        final prefix = isDevelopmentPreview ? '/dev' : '';
-        router?.go('$prefix/$selection');
-      },
-      alignmentOffset: const Offset(0, CoeloSpacing.space2),
-      builder: (context, controller) {
-        _SuperadminTourScope.maybeOf(context)?.menus.account = controller;
-        return CoeloTourAnchor(
-          id: 'account',
-          child: Tooltip(
-            message: 'Abrir menu do usuário',
-            child: Material(
-              color: Colors.transparent,
-              child: InkWell(
-                key: const Key('superadmin-profile-menu'),
-                onTap: () => controller.isOpen ? controller.close() : controller.open(),
-                borderRadius: BorderRadius.circular(CoeloRadius.full),
-                overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-                child: ConstrainedBox(
-                  constraints: const BoxConstraints(minHeight: CoeloSize.touchMin),
-                  child: Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: CoeloSpacing.space2,
-                      vertical: CoeloSpacing.space1,
-                    ),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        CircleAvatar(
-                          radius: 18,
-                          backgroundColor: profile?.avatarBackgroundColor,
-                          foregroundColor: profile == null
-                              ? null
-                              : (profile.avatarBackgroundColor.computeLuminance() > 0.179
-                                    ? Colors.black
-                                    : Colors.white),
-                          backgroundImage: profile?.avatarImage,
-                          child: profile?.avatarImage == null
-                              ? Text(profile?.initials.isNotEmpty == true ? profile!.initials : '–')
-                              : null,
-                        ),
-                        if (!compact) ...[
-                          const SizedBox(width: CoeloSpacing.space2),
-                          Column(
-                            mainAxisSize: MainAxisSize.min,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(profile?.name ?? 'Conta', style: theme.textTheme.labelLarge),
-                              Text(profile?.role ?? 'Superadmin', style: theme.textTheme.bodySmall),
-                            ],
-                          ),
-                          const SizedBox(width: CoeloSpacing.space1),
-                          const Icon(Icons.arrow_drop_down_rounded),
-                        ],
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ),
-          ),
-        );
-      },
-    );
-  }
-}
-
-class _HeaderUtilityActions extends StatefulWidget {
-  const _HeaderUtilityActions({
-    required this.activityController,
-    required this.currentScreen,
-    this.onBugReportSubmitted,
-  });
-
-  final SuperadminActivityController activityController;
-  final String currentScreen;
-  final SuperadminBugReportSubmit? onBugReportSubmitted;
-
-  @override
-  State<_HeaderUtilityActions> createState() => _HeaderUtilityActionsState();
-}
-
-class _HeaderUtilityActionsState extends State<_HeaderUtilityActions> {
-  DialogRoute<SupportReportDraft>? _reportRoute;
-  var _reportGeneration = 0;
-
-  void _invalidateReport() {
-    _reportGeneration++;
-    final route = _reportRoute;
-    _reportRoute = null;
-    if (route != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (route.isActive) route.navigator?.removeRoute(route);
-      });
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant _HeaderUtilityActions oldWidget) {
-    super.didUpdateWidget(oldWidget);
-    if (oldWidget.currentScreen != widget.currentScreen ||
-        oldWidget.onBugReportSubmitted != widget.onBugReportSubmitted) {
-      _invalidateReport();
-    }
-  }
-
-  @override
-  void dispose() {
-    _invalidateReport();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final colors = theme.colorScheme;
-    final hoverColor = theme.extension<CoeloActionColors>()?.primaryHover ?? colors.primary;
-    return Row(
-      mainAxisSize: MainAxisSize.min,
-      children: [
-        // MENU/MENU-M (decisão do Owner de 10/09/2026): o botão de Bug nunca é
-        // omitido. Sem canal de envio, o relato não é descartado em silêncio:
-        // a tela avisa que o envio ainda não está conectado.
-        CoeloTourAnchor(
-          id: 'report-bug',
-          child: IconButton(
-            key: const Key('superadmin-report-bug'),
-            tooltip: 'Reportar bug',
-            onPressed: () async {
-              if (!mounted || _reportRoute != null) return;
-              final generation = _reportGeneration;
-              final submit = widget.onBugReportSubmitted;
-              bool isCurrent() => mounted && generation == _reportGeneration;
-              DialogRoute<SupportReportDraft>? openedRoute;
-              final draft = await showSuperadminBugReportDialog(
-                context,
-                currentScreen: widget.currentScreen,
-                isContextCurrent: isCurrent,
-                onRouteCreated: (route) {
-                  openedRoute = route;
-                  _reportRoute = route;
-                },
-                sections: {
-                  for (final section in coeloSuperadminNavigation.where(
-                    (node) => node.children.isNotEmpty,
-                  ))
-                    section.label: [...section.children.map((node) => node.label), 'Outro'],
-                  'Conta': [
-                    ..._accountDestinations.map((destination) => destination.label),
-                    'Outros',
-                  ],
-                  'Outros': const [],
-                },
-              );
-              if (identical(_reportRoute, openedRoute)) _reportRoute = null;
-              if (draft == null || !isCurrent()) {
-                return;
-              }
-              if (submit == null) {
-                if (!context.mounted) return;
-                showSuperadminNotice(
-                  context,
-                  'O envio de relatos ainda não está conectado nesta tela.',
-                  icon: Icons.info_outline_rounded,
-                );
-                return;
-              }
-              try {
-                await submit(draft);
-              } on Object {
-                if (!context.mounted || !isCurrent()) return;
-                showSuperadminNotice(
-                  context,
-                  'Não foi possível enviar o relato. Tente novamente.',
-                  icon: Icons.error_outline_rounded,
-                );
-                return;
-              }
-              if (!context.mounted || !isCurrent()) return;
-              showSuperadminNotice(
-                context,
-                'Relato enviado com sucesso.',
-                icon: Icons.check_circle_outline_rounded,
-              );
-            },
-            style: _headerUtilityButtonStyle(colors, hoverColor),
-            icon: const Icon(Icons.bug_report_outlined),
-          ),
-        ),
-        CoeloTourAnchor(
-          id: 'notifications',
-          child: SuperadminActivityCenter(
-            controller: widget.activityController,
-            buttonStyle: _headerUtilityButtonStyle(colors, hoverColor),
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-ButtonStyle _headerUtilityButtonStyle(ColorScheme colors, Color hoverColor) {
-  return IconButton.styleFrom(
-    foregroundColor: colors.onSurfaceVariant,
-    shape: const CircleBorder(),
-  ).copyWith(
-    foregroundColor: WidgetStateProperty.resolveWith((states) {
-      if (states.contains(WidgetState.hovered) ||
-          states.contains(WidgetState.focused) ||
-          states.contains(WidgetState.pressed)) {
-        return hoverColor;
-      }
-      return colors.onSurfaceVariant;
-    }),
-    overlayColor: WidgetStatePropertyAll(colors.primaryContainer),
-  );
-}
-
-void _showMessage(BuildContext context, String message) {
-  showSuperadminNotice(context, message);
-}
-
-@Preview(name: 'Rodapé da navegação · expandido · light', size: Size(260, 180))
 Widget superadminExpandedFooterLightPreview() {
   return _shellFooterPreview(collapsed: false, themeMode: ThemeMode.light);
 }
@@ -2635,7 +1688,7 @@ Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMod
               children: [
                 Padding(
                   padding: const EdgeInsets.all(CoeloSpacing.space2),
-                  child: _OnboardingTourButton(collapsed: collapsed),
+                  child: ShellOnboardingTourButton(collapsed: collapsed),
                 ),
                 const _InsetDivider(),
                 Padding(
@@ -2645,7 +1698,7 @@ Widget _shellFooterPreview({required bool collapsed, required ThemeMode themeMod
                     CoeloSpacing.space2,
                     CoeloSpacing.space3,
                   ),
-                  child: _ThemeModeControl(collapsed: collapsed),
+                  child: ShellThemeModeControl(collapsed: collapsed),
                 ),
               ],
             ),
@@ -2690,7 +1743,7 @@ class _TourSubmenuPreviewAnchorState extends State<_TourSubmenuPreviewAnchor> {
   @override
   Widget build(BuildContext context) {
     return CoeloAdminFlyout<String>(
-      items: _tourFlyoutItems,
+      items: shellTourFlyoutItems,
       onSelected: _ignoreTourSelection,
       builder: (context, controller) {
         _controller = controller;
